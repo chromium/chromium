@@ -669,7 +669,7 @@ TEST_F(PrivateAggregationManagerImplTest,
        BudgetDeniedWithSendNullReportBehavior_RequestSent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kPrivateAggregationApiBundledEnhancements);
+      kPrivateAggregationApiContextIdEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -754,7 +754,7 @@ TEST_F(
     BudgetDeniedWithSendNullReportBehaviorButFeatureParamDisabled_RequestNotSent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      kPrivateAggregationApiBundledEnhancements);
+      kPrivateAggregationApiContextIdEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -813,7 +813,7 @@ TEST_F(PrivateAggregationManagerImplTest,
        NoContributions_BudgetNotCheckedButNullReportSent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kPrivateAggregationApiBundledEnhancements);
+      kPrivateAggregationApiContextIdEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =

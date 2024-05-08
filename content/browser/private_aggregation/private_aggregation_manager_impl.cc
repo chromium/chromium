@@ -221,8 +221,9 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
     PrivateAggregationBudgetKey::Api api_for_budgeting) {
   // Temporary feature until change is approved.
   // TODO(alexmt): Remove once approved.
-  if (contributions.empty() && !base::FeatureList::IsEnabled(
-                                   kPrivateAggregationApiBundledEnhancements)) {
+  if (contributions.empty() &&
+      !base::FeatureList::IsEnabled(
+          kPrivateAggregationApiContextIdEnhancements)) {
     return;
   }
 

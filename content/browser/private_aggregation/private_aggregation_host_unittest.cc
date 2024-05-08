@@ -82,8 +82,11 @@ class PrivateAggregationHostTest : public testing::Test {
   PrivateAggregationHostTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        kPrivateAggregationApiBundledEnhancements);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {kPrivateAggregationApiDebugModeRequires3pcEligibility,
+         kPrivateAggregationApiContextIdEnhancements},
+        /*disabled_features=*/{});
     host_ = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_received=*/mock_callback_.Get(),
         /*browser_context=*/&test_browser_context_);
@@ -1406,21 +1409,24 @@ TEST_F(PrivateAggregationHostTest,
               AggregatableReportSharedInfo::DebugMode::kDisabled,
       },
       {
-          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
+          .enabled_features =
+              {{kPrivateAggregationApiDebugModeRequires3pcEligibility, {}}},
           .expected_debug_mode_settings_check = true,
           .approve_debug_mode_settings_check = false,
           .expected_debug_mode =
               AggregatableReportSharedInfo::DebugMode::kDisabled,
       },
       {
-          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
+          .enabled_features =
+              {{kPrivateAggregationApiDebugModeRequires3pcEligibility, {}}},
           .expected_debug_mode_settings_check = true,
           .approve_debug_mode_settings_check = true,
           .expected_debug_mode =
               AggregatableReportSharedInfo::DebugMode::kEnabled,
       },
       {
-          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
+          .enabled_features =
+              {{kPrivateAggregationApiDebugModeRequires3pcEligibility, {}}},
           .expected_debug_mode_settings_check = false,
           .call_enable_debug_mode = false,
           .expected_debug_mode =

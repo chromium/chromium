@@ -236,7 +236,7 @@ bool PrivateAggregationHost::IsDebugModeAllowed(
   }
 
   if (!base::FeatureList::IsEnabled(
-          kPrivateAggregationApiBundledEnhancements)) {
+          kPrivateAggregationApiDebugModeRequires3pcEligibility)) {
     return true;
   }
 
@@ -513,7 +513,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   bool should_not_delay_this_report =
       should_not_delay_reports_ ||
       (base::FeatureList::IsEnabled(
-           kPrivateAggregationApiBundledEnhancements) &&
+           kPrivateAggregationApiContextIdEnhancements) &&
        receiver_context.timeout_enabled);
 
   ReportRequestGenerator report_request_generator = base::BindOnce(

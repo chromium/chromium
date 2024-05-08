@@ -10,16 +10,21 @@
 
 namespace content {
 
-// Enables a set of bundled Private Aggregation API enhancements. Specifically:
-// - Controls whether third-party cookie eligibility should be queried before
-//   allowing debug mode to be used by a context. If enabled, any
-//   `enableDebugMode()` calls in a context that does not have third-party
-//   cookie eligibility will essentially have no effect. This feature has no
-//   effect on debug mode if
-//   `blink::features::kPrivateAggregationApiDebugModeEnabledAtAll` is disabled.
+// Controls whether third-party cookie eligibility should be queried before
+// allowing debug mode to be used by a context. If enabled, any
+// `enableDebugMode()` calls in a context that does not have third-party cookie
+// eligibility will essentially have no effect. This feature has no effect on
+// debug mode if `blink::features::kPrivateAggregationApiDebugModeEnabledAtAll`
+// is disabled.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrivateAggregationApiDebugModeRequires3pcEligibility);
+
+// Enables two bundled Private Aggregation API enhancements relating to context
+// IDs. Specifically:
 // - Whether to send a null report if a context ID is specified.
 // - Whether to reduce the delay for reports if a context ID is specified.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiBundledEnhancements);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrivateAggregationApiContextIdEnhancements);
 
 }  // namespace content
 
