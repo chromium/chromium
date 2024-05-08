@@ -530,6 +530,8 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
       (video_frame->IsMappable() &&
        (video_frame->format() == media::PIXEL_FORMAT_I420 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A));
+  auto timestamp = video_frame->metadata().capture_begin_time.value_or(
+      video_frame->metadata().reference_time.value_or(capture_timestamp));
   scoped_refptr<media::VideoFrame> frame = std::move(video_frame);
   // First, pixel format is converted to NV12, I420 or I420A.
   if (!is_format_supported) {
@@ -551,7 +553,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
       WTF::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
                     num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
-  EncodeFrame(std::move(frame), capture_timestamp,
+  EncodeFrame(std::move(frame), timestamp,
               request_key_frame_for_testing_ || force_key_frame);
   request_key_frame_for_testing_ = false;
 }

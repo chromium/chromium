@@ -14,6 +14,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/time/time.h"
 #include "media/base/limits.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
@@ -853,6 +854,35 @@ TEST_P(VideoTrackRecorderTestParam, KeyFramesGeneratedWithIntervalDuration) {
   run_loop.Run();
 }
 
+TEST_P(VideoTrackRecorderTestParam, UsesFrameTimestampsIfProvided) {
+  // Configure 1 key frame every 2 secs.
+  InitializeRecorder(testing::get<0>(GetParam()),
+                     /*keyframe_config=*/base::Seconds(2));
+  base::TimeTicks estimated_capture_time = base::TimeTicks() + base::Seconds(3);
+  base::TimeTicks reference_time = base::TimeTicks() + base::Seconds(2);
+  base::TimeTicks capture_begin_time = base::TimeTicks() + base::Seconds(1);
+  auto frame1 = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
+  frame1->metadata().capture_begin_time = capture_begin_time;
+  auto frame2 = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
+  frame2->metadata().reference_time = reference_time;
+  // No metadata timestamp is set up here.
+  auto frame3 = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
+
+  InSequence s;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_callback_interface_,
+              OnEncodedVideo(_, _, _, _, capture_begin_time, _));
+  EXPECT_CALL(*mock_callback_interface_,
+              OnEncodedVideo(_, _, _, _, reference_time, _));
+  EXPECT_CALL(*mock_callback_interface_,
+              OnEncodedVideo(_, _, _, _, estimated_capture_time, _))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  Encode(frame1, estimated_capture_time);
+  Encode(frame2, estimated_capture_time);
+  Encode(frame3, estimated_capture_time);
+  run_loop.Run();
+}
+
 std::string PrintTestParams(
     const testing::TestParamInfo<testing::tuple<VideoTrackRecorder::CodecId,
                                                 gfx::Size,
@@ -1112,6 +1142,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam, RequiredRefreshRate) {
 INSTANTIATE_TEST_SUITE_P(All,
                          VideoTrackRecorderTestMediaVideoEncoderParam,
                          ::testing::Bool());
+
 class VideoTrackRecorderPassthroughTest
     : public TestWithParam<VideoTrackRecorder::CodecId>,
       public VideoTrackRecorderTestBase {
