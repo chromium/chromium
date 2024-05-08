@@ -100,5 +100,6 @@ public final class ImageServiceBridgeUnitTest {
     public void testDestroy() {
         mImageServiceBridge.destroy();
         verify(mImageServiceBridgeJni).destroy(anyLong());
+        verify(mImageFetcher).destroy();
     }
 }

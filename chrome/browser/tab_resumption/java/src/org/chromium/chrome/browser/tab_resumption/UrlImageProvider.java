@@ -15,13 +15,8 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
-import org.chromium.page_image_service.mojom.ClientId;
 import org.chromium.url.GURL;
 
 /** Helper to retrieve or create an image to represent a URL. */
@@ -46,13 +41,15 @@ public class UrlImageProvider {
     private final boolean mUseSalientImage;
 
     @Nullable private ImageServiceBridge mImageServiceBridge;
-    @Nullable private ImageFetcher mImageFetcher;
 
     private int mSalientImageSizeBigPx;
 
     private int mSalientImageSizeSmallPx;
 
-    UrlImageProvider(Profile profile, UrlImageSource source, Context context) {
+    UrlImageProvider(
+            UrlImageSource source,
+            Context context,
+            @Nullable ImageServiceBridge imageServiceBridge) {
         Resources res = context.getResources();
         mMinIconSizePx = res.getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDesiredIconSizePx =
@@ -60,29 +57,20 @@ public class UrlImageProvider {
         mLargeIconBridge = source.createLargeIconBridge();
         mIconGenerator = source.createIconGenerator();
 
+        mImageServiceBridge = imageServiceBridge;
         mUseSalientImage = TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE.getValue();
         if (mUseSalientImage) {
-            mImageFetcher =
-                    ImageFetcherFactory.createImageFetcher(
-                            ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                            profile.getProfileKey(),
-                            GlobalDiscardableReferencePool.getReferencePool());
-            mImageServiceBridge =
-                    new ImageServiceBridge(
-                            ClientId.NTP_TAB_RESUMPTION,
-                            ImageFetcher.TAB_RESUMPTION_MODULE_NAME,
-                            profile,
-                            mImageFetcher);
-
             mSalientImageSizeBigPx =
                     res.getDimensionPixelSize(R.dimen.tab_resumption_module_single_icon_size);
             mSalientImageSizeSmallPx = mDesiredIconSizePx;
         }
     }
 
-    UrlImageProvider(Profile profile, Context context) {
+    UrlImageProvider(
+            Profile profile, Context context, @Nullable ImageServiceBridge imageServiceBridge) {
         this(
-                profile,
+                // TODO(b/339269597): Moves the UrlImageSource into an separate java file and is
+                // owned by the TabResumptionModuleBuilder.
                 new UrlImageSource() {
                     @Override
                     public LargeIconBridge createLargeIconBridge() {
@@ -94,7 +82,8 @@ public class UrlImageProvider {
                         return FaviconUtils.createRoundedRectangleIconGenerator(context);
                     }
                 },
-                context);
+                context,
+                imageServiceBridge);
     }
 
     /**
@@ -103,12 +92,10 @@ public class UrlImageProvider {
     public void destroy() {
         mLargeIconBridge.destroy();
 
+        // The ImageServiceBridge is owned by the TabResumptionModuleBuilder, and will be destroyed
+        // by TabResumptionModuleBuilder.
         if (mImageServiceBridge != null) {
-            mImageServiceBridge.destroy();
-        }
-
-        if (mImageFetcher != null) {
-            mImageFetcher.destroy();
+            mImageServiceBridge = null;
         }
     }
 
@@ -142,7 +129,7 @@ public class UrlImageProvider {
             boolean showBigImage,
             Callback<Bitmap> onSalientImageReadyCallback,
             UrlImageCallback fallback) {
-        assert mUseSalientImage;
+        assert mUseSalientImage && mImageServiceBridge != null;
         int imageSize = showBigImage ? mSalientImageSizeBigPx : mSalientImageSizeSmallPx;
 
         mImageServiceBridge.fetchImageFor(

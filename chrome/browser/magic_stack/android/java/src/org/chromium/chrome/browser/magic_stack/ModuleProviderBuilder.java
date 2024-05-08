@@ -45,4 +45,7 @@ public interface ModuleProviderBuilder {
             @NonNull PropertyModel model,
             @NonNull ViewGroup view,
             @NonNull PropertyKey propertyKey);
+
+    /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
+    default void destroy() {}
 }

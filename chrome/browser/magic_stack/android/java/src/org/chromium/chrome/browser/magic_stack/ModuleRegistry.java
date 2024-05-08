@@ -96,6 +96,9 @@ public class ModuleRegistry {
 
     /** Destroys the registry. */
     public void destroy() {
+        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
+            builder.destroy();
+        }
         mModuleBuildersMap.clear();
     }
 

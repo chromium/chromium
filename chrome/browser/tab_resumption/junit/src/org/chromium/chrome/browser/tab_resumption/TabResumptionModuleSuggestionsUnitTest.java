@@ -238,7 +238,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         when(urlImageSource.createLargeIconBridge()).thenReturn(largeIconBridge);
         when(urlImageSource.createIconGenerator()).thenReturn(roundedIconGenerator);
         Context context = ApplicationProvider.getApplicationContext();
-        UrlImageProvider urlImageProvider = new UrlImageProvider(mProfile, urlImageSource, context);
+        UrlImageProvider urlImageProvider = new UrlImageProvider(urlImageSource, context, null);
 
         urlImageProvider.fetchImageForUrl(
                 urlWithFavicon,

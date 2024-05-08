@@ -3557,6 +3557,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mStartupPaintPreviewHelperSupplier.destroy();
         }
 
+        if (mModuleRegistrySupplier.hasValue()) {
+            mModuleRegistrySupplier.get().destroy();
+        }
+
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
 
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
