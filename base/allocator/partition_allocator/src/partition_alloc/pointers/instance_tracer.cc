@@ -16,9 +16,9 @@
 
 namespace base::internal {
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
-static_assert(BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT),
+static_assert(PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT),
               "Instance tracing requires BackupRefPtr support.");
 
 namespace {

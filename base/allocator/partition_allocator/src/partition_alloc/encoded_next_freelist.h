@@ -177,7 +177,7 @@ class EncodedNextFreelistEntry {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
@@ -186,7 +186,7 @@ class EncodedNextFreelistEntry {
                         (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
       FreelistCorruptionDetected(0);
     }
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
     encoded_next_ = EncodedFreelistPtr(entry);
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -281,7 +281,7 @@ class EncodedNextFreelistEntry {
     const bool same_super_page = (here_address & kSuperPageBaseMask) ==
                                  (next_address & kSuperPageBaseMask);
 
-#if BUILDFLAG(USE_FREESLOT_BITMAP)
+#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
     bool marked_as_free_in_bitmap = !FreeSlotBitmapSlotIsUsed(next_address);
 #else
     constexpr bool marked_as_free_in_bitmap = true;

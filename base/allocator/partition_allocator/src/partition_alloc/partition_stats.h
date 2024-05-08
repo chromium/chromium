@@ -77,7 +77,7 @@ struct PartitionMemoryStats {
   size_t total_active_count;  // Total count of active objects in the partition.
   size_t total_decommittable_bytes;  // Total bytes that could be decommitted.
   size_t total_discardable_bytes;    // Total bytes that could be discarded.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t
       total_brp_quarantined_bytes;  // Total bytes that are quarantined by BRP.
   size_t total_brp_quarantined_count;       // Total number of slots that are

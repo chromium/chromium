@@ -86,9 +86,9 @@ std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator(
     internal::PartitionFreelistEncoding encoding =
         internal::PartitionFreelistEncoding::kEncodedFreeList) {
   PartitionOptions opts;
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.thread_cache = PartitionOptions::kEnabled;
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.star_scan_quarantine = PartitionOptions::kAllowed;
   opts.use_pool_offset_freelists =
       (encoding == internal::PartitionFreelistEncoding::kPoolOffsetFreeList)
@@ -539,7 +539,7 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
 
 #if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // iOS and MacOS 15 create worker threads internally(start_wqthread).
   // So thread caches are created for the worker threads, because the threads
   // allocate memory for initialization (_dispatch_calloc is invoked).
@@ -567,7 +567,7 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
 
 #if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||   \
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_for_testing(), nullptr);
   EXPECT_EQ(parent_thread_tcache->next_for_testing(), nullptr);
@@ -676,7 +676,7 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   ThreadCacheStats wqthread_stats{0};
 #if (BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_LINUX)) &&                                                   \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     // iOS and MacOS 15 create worker threads internally(start_wqthread).
     // So thread caches are created for the worker threads, because the threads
@@ -1202,13 +1202,13 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
     uint8_t count = 0;
     auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       head = freelist_dispatcher->GetNextForThreadCacheTrue(
           head, tcache->bucket_for_testing(index).slot_size);
 #else
       head = freelist_dispatcher->GetNextForThreadCache<true>(
           head, tcache->bucket_for_testing(index).slot_size);
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       count++;
     }
     return count;
@@ -1313,11 +1313,11 @@ TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
   auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
   const internal::PartitionFreelistDispatcher* freelist_dispatcher =
       root()->get_freelist_dispatcher();
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   curr = freelist_dispatcher->GetNextForThreadCacheTrue(curr, kMediumSize);
 #else
   curr = freelist_dispatcher->GetNextForThreadCache<true>(curr, kMediumSize);
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
   freelist_dispatcher->CorruptNextForTesting(curr, 0x12345678);
   tcache->TryPurge();
   freelist_dispatcher->SetNext(curr, nullptr);

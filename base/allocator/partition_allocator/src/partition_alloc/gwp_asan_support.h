@@ -8,7 +8,7 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
 #include <cstddef>
 #include <cstdint>
@@ -115,6 +115,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) GwpAsanSupport {
 
 }  // namespace partition_alloc
 
-#endif  // BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
 #endif  // PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_

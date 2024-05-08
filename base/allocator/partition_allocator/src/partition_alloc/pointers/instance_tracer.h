@@ -18,7 +18,7 @@
 
 namespace base::internal {
 
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 // When the buildflag is disabled, use a minimal no-state implementation so
 // sizeof(raw_ptr<T>) == sizeof(T*).

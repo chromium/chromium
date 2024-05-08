@@ -26,7 +26,7 @@ class MockLogSource {
 TEST(PALoggingTest, BasicLogging) {
   MockLogSource mock_log_source;
   constexpr int kTimes =
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
       16;
 #else
       8;
@@ -38,7 +38,7 @@ TEST(PALoggingTest, BasicLogging) {
   SetMinLogLevel(LOGGING_INFO);
 
   EXPECT_TRUE(PA_LOG_IS_ON(INFO));
-  EXPECT_EQ(BUILDFLAG(PA_DCHECK_IS_ON), PA_DLOG_IS_ON(INFO));
+  EXPECT_EQ(PA_BUILDFLAG(PA_DCHECK_IS_ON), PA_DLOG_IS_ON(INFO));
   EXPECT_TRUE(PA_VLOG_IS_ON(0));
 
   PA_LOG(INFO) << mock_log_source.Log();
@@ -88,8 +88,8 @@ TEST(PALoggingTest, LogIsOn) {
   EXPECT_FALSE(PA_LOG_IS_ON(ERROR));
   // PA_LOG_IS_ON(FATAL) should always be true.
   EXPECT_TRUE(PA_LOG_IS_ON(FATAL));
-  // If BUILDFLAG(PA_DCHECK_IS_ON) then DFATAL is FATAL.
-  EXPECT_EQ(BUILDFLAG(PA_DCHECK_IS_ON), PA_LOG_IS_ON(DFATAL));
+  // If PA_BUILDFLAG(PA_DCHECK_IS_ON) then DFATAL is FATAL.
+  EXPECT_EQ(PA_BUILDFLAG(PA_DCHECK_IS_ON), PA_LOG_IS_ON(DFATAL));
 }
 
 TEST(PALoggingTest, LoggingIsLazyBySeverity) {
@@ -131,7 +131,7 @@ TEST(PALoggingTest, LogIsAlwaysToStdErr) {
 }
 
 TEST(PALoggingTest, DebugLoggingReleaseBehavior) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
   int debug_only_variable = 1;
 #endif
   // These should avoid emitting references to |debug_only_variable|

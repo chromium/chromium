@@ -56,7 +56,7 @@ PA_ALWAYS_INLINE void* ShimCppNew(size_t size) {
   void* ptr;
   do {
     void* context = nullptr;
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_function(chain_head, size, context);
@@ -66,7 +66,7 @@ PA_ALWAYS_INLINE void* ShimCppNew(size_t size) {
 
 PA_ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
   void* context = nullptr;
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const allocator_shim::AllocatorDispatch* const chain_head =
@@ -80,7 +80,7 @@ PA_ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   void* ptr;
   do {
     void* context = nullptr;
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
@@ -91,7 +91,7 @@ PA_ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 
 PA_ALWAYS_INLINE void ShimCppDelete(void* address) {
   void* context = nullptr;
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const allocator_shim::AllocatorDispatch* const chain_head =

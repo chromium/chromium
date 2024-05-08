@@ -54,17 +54,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ZxLogMessage
 #define PA_ZX_DLOG(severity, zx_err) \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), PA_DLOG_IS_ON(severity))
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err)   \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), \
                  PA_DLOG_IS_ON(severity) && (condition))
-#else  // BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err) PA_EAT_STREAM_PARAMETERS
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
-#define PA_ZX_DCHECK(condition, zx_err)                      \
-  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err),           \
-                 BUILDFLAG(PA_DCHECK_IS_ON) && !(condition)) \
+#define PA_ZX_DCHECK(condition, zx_err)                         \
+  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err),              \
+                 PA_BUILDFLAG(PA_DCHECK_IS_ON) && !(condition)) \
       << "Check failed: " #condition << ". "
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_

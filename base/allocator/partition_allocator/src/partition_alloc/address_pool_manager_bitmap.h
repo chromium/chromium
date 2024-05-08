@@ -18,7 +18,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_lock.h"
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 namespace partition_alloc {
 
@@ -102,7 +102,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManagerBitmap {
         brp_pool_bits_)[address >> kBitShiftOfBRPPoolBitmap];
   }
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   static void BanSuperPageFromBRPPool(uintptr_t address) {
     brp_forbidden_super_page_map_[address >> kSuperPageShift].store(
         true, std::memory_order_relaxed);
@@ -126,7 +126,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManagerBitmap {
   }
 
   static void IncrementBlocklistHitCount() { ++blocklist_hit_count_; }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
  private:
   friend class AddressPoolManager;
@@ -136,11 +136,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManagerBitmap {
   static std::bitset<kRegularPoolBits> regular_pool_bits_
       PA_GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ PA_GUARDED_BY(GetLock());
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;
   static std::atomic_size_t blocklist_hit_count_;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 };
 
 }  // namespace internal
@@ -150,11 +150,11 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
   // No need to add IsManagedByConfigurablePool, because Configurable Pool
   // doesn't exist on 32-bit.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_DCHECK(!internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address));
 #endif
   return internal::AddressPoolManagerBitmap::IsManagedByRegularPool(address)
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
          || internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address)
 #endif
       ;
@@ -184,6 +184,6 @@ PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 }  // namespace partition_alloc
 
-#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 #endif  // PARTITION_ALLOC_ADDRESS_POOL_MANAGER_BITMAP_H_

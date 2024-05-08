@@ -52,7 +52,7 @@
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_cache.h"
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
 
@@ -621,7 +621,7 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
   PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(maybe_ptr));
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Check if |maybe_ptr| points to a quarantined card.
   if (PA_LIKELY(
@@ -642,11 +642,11 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     return nullptr;
   }
 #endif  // PA_CONFIG(STARSCAN_USE_CARD_TABLE)
-#else   // BUILDFLAG(HAS_64_BIT_POINTERS)
+#else   // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   if (PA_LIKELY(!IsManagedByPartitionAllocRegularPool(maybe_ptr))) {
     return nullptr;
   }
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // We are certain here that |maybe_ptr| points to an allocated super-page.
   return StateBitmapFromAddr(maybe_ptr);
@@ -785,14 +785,14 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   size_t quarantine_size() const { return quarantine_size_; }
 
  private:
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBase() {
     return PartitionAddressSpace::RegularPoolBase();
   }
   PA_ALWAYS_INLINE static uintptr_t RegularPoolMask() {
     return PartitionAddressSpace::RegularPoolBaseMask();
   }
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr_maybe_tagged) {
     // |maybe_ptr| may have an MTE tag, so remove it first.
@@ -1296,7 +1296,7 @@ PCScanInternal::~PCScanInternal() = default;
 
 void PCScanInternal::Initialize(PCScan::InitConfig config) {
   PA_DCHECK(!is_initialized_);
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   // Make sure that pools are initialized.
   PartitionAddressSpace::Init();
 #endif

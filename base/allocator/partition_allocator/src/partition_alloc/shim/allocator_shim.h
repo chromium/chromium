@@ -10,14 +10,14 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/types/strong_alias.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/tagging.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/starscan/pcscan.h"
 #endif
 
@@ -91,16 +91,16 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr);
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_APPLE)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void InitializeDefaultAllocatorPartitionRoot();
 bool IsDefaultAllocatorPartitionRootInitialized();
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // On macOS, the allocator shim needs to be turned on during runtime.
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void InitializeAllocatorShim();
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void EnablePartitionAllocMemoryReclaimer();
 
 using EnableBrp =
@@ -137,14 +137,14 @@ PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForForeground();
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void AdjustDefaultAllocatorForBackground();
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_STARSCAN)
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_H_

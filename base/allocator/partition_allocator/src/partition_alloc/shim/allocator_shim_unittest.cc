@@ -423,7 +423,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 
 // See allocator_shim_override_glibc_weak_symbols.h for why we intercept
 // internal libc symbols.
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if defined(LIBC_GLIBC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   void* libc_memalign_ptr = __libc_memalign(512, 56);
   ASSERT_NE(nullptr, memalign_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(libc_memalign_ptr) % 512);
@@ -467,7 +467,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 
 #endif  // !BUILDFLAG(IS_WIN)
 
-#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if defined(LIBC_GLIBC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   free(libc_memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
 #endif
@@ -484,7 +484,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
 }
 
 // PartitionAlloc-Everywhere does not support batch_malloc / batch_free.
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST_F(AllocatorShimTest, InterceptLibcSymbolsBatchMallocFree) {
   InsertAllocatorDispatch(&g_mock_dispatch);
 
@@ -523,7 +523,7 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbolsFreeDefiniteSize) {
   ASSERT_GE(free_definite_sizes_intercepted_by_size[19], 1u);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(AllocatorShimTest, InterceptUcrtAlignedAllocationSymbols) {
@@ -587,7 +587,7 @@ TEST_F(AllocatorShimTest, InterceptCppSymbols) {
 
 // PartitionAlloc disallows large allocations to avoid errors with int
 // overflows.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 struct TooLarge {
   char padding1[1UL << 31];
   int padding2;
@@ -742,7 +742,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Non-regression test for crbug.com/1166558.
 TEST_F(AllocatorShimTest, InterceptVasprintf) {
   // Printing a float which expands to >=30 characters calls vasprintf() in
@@ -775,11 +775,11 @@ TEST_F(AllocatorShimTest, InterceptLongVasprintf) {
   free(str);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 
 // Non-regression test for crbug.com/1291885.
 TEST_F(AllocatorShimTest, BatchMalloc) {
@@ -798,7 +798,7 @@ TEST_F(AllocatorShimTest, MallocGoodSize) {
   EXPECT_GE(good_size, kTestSize);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 
 TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {
   const AllocatorDispatch* prev = GetAllocatorDispatchChainHeadForTesting();

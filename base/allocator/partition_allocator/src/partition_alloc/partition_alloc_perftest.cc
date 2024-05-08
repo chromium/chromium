@@ -139,7 +139,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
  private:
   static constexpr partition_alloc::PartitionOptions kOpts = []() {
     partition_alloc::PartitionOptions opts;
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     opts.thread_cache = PartitionOptions::kEnabled;
 #endif
     return opts;

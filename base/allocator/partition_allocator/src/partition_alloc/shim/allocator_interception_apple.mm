@@ -19,7 +19,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
@@ -135,7 +135,7 @@ bool DeprotectMallocZone(ChromeMallocZone* default_zone,
 MallocZoneFunctions g_old_zone;
 MallocZoneFunctions g_old_purgeable_zone;
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void* oom_killer_malloc(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_zone.malloc(zone, size);
@@ -189,7 +189,7 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
   return result;
 }
 
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void* oom_killer_malloc_purgeable(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_purgeable_zone.malloc(zone, size);
@@ -428,7 +428,7 @@ void InterceptAllocationsMac() {
 #if !defined(ADDRESS_SANITIZER)
   // Don't do anything special on OOM for the malloc zones replaced by
   // AddressSanitizer, as modifying or protecting them may not work correctly.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // The malloc zone backed by PartitionAlloc crashes by default, so there is
   // no need to install the OOM killer.
   ChromeMallocZone* default_zone =
@@ -446,7 +446,7 @@ void InterceptAllocationsMac() {
     ReplaceZoneFunctions(default_zone, &new_functions);
     g_replaced_default_zone = true;
   }
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   ChromeMallocZone* purgeable_zone =
       reinterpret_cast<ChromeMallocZone*>(malloc_default_purgeable_zone());
@@ -630,4 +630,4 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

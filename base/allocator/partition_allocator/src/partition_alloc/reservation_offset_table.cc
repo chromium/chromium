@@ -8,11 +8,11 @@
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 ReservationOffsetTable ReservationOffsetTable::singleton_;
 #else
 ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace partition_alloc::internal

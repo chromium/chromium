@@ -45,7 +45,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/asan_interface.h>
 #include "base/debug/asan_service.h"
 #endif
@@ -60,7 +60,7 @@ using testing::Test;
 
 // The instance tracer has unavoidable per-instance overhead, but when disabled,
 // there should be no size difference between raw_ptr<T> and T*.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 static_assert(sizeof(raw_ptr<void>) == sizeof(void*),
               "raw_ptr shouldn't add memory overhead");
 static_assert(sizeof(raw_ptr<int>) == sizeof(int*),
@@ -69,10 +69,11 @@ static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
               "raw_ptr shouldn't add memory overhead");
 #endif
 
-#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&   \
-    !BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) && \
-    !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&     \
-    !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) && !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#if !PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&   \
+    !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) && \
+    !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&     \
+    !PA_BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) &&          \
+    !PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
 static_assert(std::is_trivially_copyable_v<raw_ptr<void>>,
@@ -81,17 +82,17 @@ static_assert(std::is_trivially_copyable_v<raw_ptr<int>>,
               "raw_ptr should be trivially copyable");
 static_assert(std::is_trivially_copyable_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially copyable");
-#endif  // !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
-        // !BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) &&
-        // !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
-        // !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) &&
-        // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#endif  // !PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
+        // !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) &&
+        // !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
+        // !PA_BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) &&
+        // !PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
-#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&   \
-    !BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) && \
-    !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&     \
-    !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&     \
-    !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#if !PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&   \
+    !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) && \
+    !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&     \
+    !PA_BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&     \
+    !PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_default_constructible| assertion helps retain implicit default
 // constructors when raw_ptr is used as a union field.  Example of an error
 // if this assertion didn't hold:
@@ -110,11 +111,11 @@ static_assert(std::is_trivially_default_constructible_v<raw_ptr<int>>,
               "raw_ptr should be trivially default constructible");
 static_assert(std::is_trivially_default_constructible_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially default constructible");
-#endif  // !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
-        // !BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) &&
-        // !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
-        // !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&
-        // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#endif  // !PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
+        // !PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) &&
+        // !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
+        // !PA_BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&
+        // !PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
 // Verify that raw_ptr is a literal type, and its entire interface is constexpr.
 //
@@ -1338,10 +1339,10 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   RawPtrCountingImpl::ClearCounters();
   size_t number_of_cleared_elements = vector.size();
   vector.clear();
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||   \
-    BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) || \
-    BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||     \
-    BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||   \
+    PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) || \
+    PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||     \
+    PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   EXPECT_EQ((int)number_of_cleared_elements,
             RawPtrCountingImpl::release_wrapped_ptr_cnt);
 #else
@@ -1352,9 +1353,9 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   // BackupRefPtr ships to the Stable channel).
   EXPECT_EQ(0, RawPtrCountingImpl::release_wrapped_ptr_cnt);
   std::ignore = number_of_cleared_elements;
-#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
-        // BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) ||
-        // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
+#endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
+        // PA_BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL) ||
+        // PA_BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 }
 
 struct BaseStruct {
@@ -1564,7 +1565,7 @@ TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
 
 // InstanceTracer has additional fields, so just skip this test when instance
 // tracing is enabled.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 #if defined(COMPILER_GCC) && !defined(__clang__)
 // In GCC this test will optimize the return value of the constructor, so
 // assert fails. Disable optimizations to verify uninitialized attribute works
@@ -1582,13 +1583,13 @@ TEST_F(RawPtrTest, AllowUninitialized) {
 #if defined(COMPILER_GCC) && !defined(__clang__)
 #pragma GCC pop_options
 #endif
-#endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
 
 }  // namespace
 
 namespace base::internal {
 
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) && \
+#if PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 void HandleOOM(size_t unused_size) {
@@ -1648,10 +1649,10 @@ TEST_F(BackupRefPtrTest, Basic) {
   EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
 
   allocator_.root()->Free(raw_ptr1);
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
-#else   // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#else   // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   if (cpu.has_mte()) {
     // If the hardware supports MTE, the use-after-free should also be caught.
     EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
@@ -1672,7 +1673,7 @@ TEST_F(BackupRefPtrTest, Basic) {
   EXPECT_EQ(partition_alloc::UntagPtr(raw_ptr1),
             partition_alloc::UntagPtr(raw_ptr3));
   allocator_.root()->Free(raw_ptr3);
-#endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#endif  // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 }
 
 TEST_F(BackupRefPtrTest, ZeroSized) {
@@ -1753,7 +1754,7 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
 void RunBackupRefPtrImplAdvanceTest(
     partition_alloc::PartitionAllocator& allocator,
     size_t requested_size) {
-#if BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
   char* ptr = static_cast<char*>(allocator.root()->Alloc(requested_size));
   raw_ptr<char, AllowPtrArithmetic> protected_ptr = ptr;
   protected_ptr += 123;
@@ -1764,7 +1765,7 @@ void RunBackupRefPtrImplAdvanceTest(
   // end-of-allocation address should not cause an error immediately, but it may
   // result in the pointer being poisoned.
   protected_ptr = protected_ptr + (requested_size + 1) / 2;
-#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr = ' ', "");
   protected_ptr -= 1;  // This brings the pointer back within
                        // bounds, which causes the poison to be removed.
@@ -1785,7 +1786,7 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(protected_ptr -= 1);
   EXPECT_CHECK_DEATH(--protected_ptr);
 
-#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   // An array of a size that doesn't cleanly fit into the allocation. This is to
   // check that one can't access elements that don't fully fit in the
   // allocation.
@@ -1804,11 +1805,11 @@ void RunBackupRefPtrImplAdvanceTest(
   protected_arr_ptr++;
   EXPECT_CHECK_DEATH(** protected_arr_ptr = 4);
   protected_arr_ptr = nullptr;
-#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
   protected_ptr = nullptr;
   allocator.root()->Free(ptr);
-#endif  // BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
+#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
 }
 
 TEST_F(BackupRefPtrTest, Advance) {
@@ -1875,7 +1876,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
             checked_cast<ptrdiff_t>(requested_size));
   EXPECT_EQ(protected_ptr1 - protected_ptr1_4,
             -checked_cast<ptrdiff_t>(requested_size));
-#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
+#if PA_BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1);
   EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2);
   EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1_4);
@@ -1884,7 +1885,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
   EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2_2);
   EXPECT_CHECK_DEATH(protected_ptr2_2 - protected_ptr1_4);
   EXPECT_CHECK_DEATH(protected_ptr1_4 - protected_ptr2_2);
-#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
+#endif  // PA_BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
   EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
   EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
 
@@ -1902,7 +1903,7 @@ TEST_F(BackupRefPtrTest, GetDeltaElems) {
 volatile char g_volatile_char_to_ignore;
 
 TEST_F(BackupRefPtrTest, IndexOperator) {
-#if BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
   size_t requested_size = GetRequestSizeThatFills512BSlot();
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
   {
@@ -1911,13 +1912,13 @@ TEST_F(BackupRefPtrTest, IndexOperator) {
     std::ignore = array[requested_size - 1];
     EXPECT_CHECK_DEATH(std::ignore = array[-1]);
     EXPECT_CHECK_DEATH(std::ignore = array[requested_size + 1]);
-#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     EXPECT_DEATH_IF_SUPPORTED(g_volatile_char_to_ignore = array[requested_size],
                               "");
 #endif
   }
   allocator_.root()->Free(ptr);
-#endif  // BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
+#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS)
 }
 
 bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {
@@ -2098,7 +2099,7 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
 
   void* ptr = allocator_.root()->Alloc(16);
   raw_ptr<void> dangling_ptr = ptr;
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
@@ -2196,7 +2197,7 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
 
   raw_ptr<int> ptr =
       static_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
@@ -2208,7 +2209,7 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
 #else
   allocator_.root()->Free(ptr.get());
   ptr = nullptr;
-#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 }
 
 TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
@@ -2300,7 +2301,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   allocator_.root()->Free(ptr);
 }
 
-#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 TEST_F(BackupRefPtrTest, Duplicate) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size));
@@ -2327,9 +2328,9 @@ TEST_F(BackupRefPtrTest, Duplicate) {
   protected_ptr3 = nullptr;
   allocator_.root()->Free(ptr);
 }
-#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+#endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
-#if BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
 TEST_F(BackupRefPtrTest, WriteAfterFree) {
   constexpr uint64_t kPayload = 0x1234567890ABCDEF;
 
@@ -2349,7 +2350,7 @@ TEST_F(BackupRefPtrTest, WriteAfterFree) {
       },
       "");
 }
-#endif  // BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
 
 namespace {
 constexpr uint8_t kCustomQuarantineByte = 0xff;
@@ -2402,7 +2403,8 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
     // Freeing would  update the MTE tag so use |TagPtr()| to dereference it
     // below.
     allocator_.root()->Free(ptr);
-#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     // Recreate the raw_ptr so we can use a pointer with the updated MTE tag.
     // Reassigning to |ptr| would hit the PartitionRefCount cookie check rather
     // than the |IsPointeeAlive()| check.
@@ -2432,10 +2434,10 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
   allocator_.root()->Free(sentinel);
 }
 
-#endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
+#endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#if BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
+#if PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 
 namespace {
 #define FOR_EACH_RAW_PTR_OPERATION(F) \
@@ -2577,7 +2579,7 @@ TEST_F(HookableRawPtrImplTest, CrossKindCopyConstruction) {
   EXPECT_EQ(CountingHooks::Get()->unsafely_unwrap_for_duplication_count, 1u);
 }
 
-#endif  // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
+#endif  // PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 
 TEST(DanglingPtrTest, DetectAndReset) {
   auto instrumentation = test::DanglingPtrInstrumentation::Create();
@@ -2638,8 +2640,8 @@ TEST(DanglingPtrTest, DetectResetAndDestructor) {
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER) && \
-    BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER) && \
+    PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 TEST(RawPtrInstanceTracerTest, CreateAndDestroy) {
   auto owned = std::make_unique<int>(8);
 
@@ -2959,7 +2961,7 @@ TEST(RawPtrInstanceTracerTest, MoveConversionAssignment) {
   EXPECT_THAT(InstanceTracer::GetStackTracesForAddressForTest(owned2.get()),
               IsEmpty());
 }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER) &&
-        // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER) &&
+        // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL)
 
 }  // namespace base::internal

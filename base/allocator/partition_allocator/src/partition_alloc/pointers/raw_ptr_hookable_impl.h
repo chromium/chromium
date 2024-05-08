@@ -14,7 +14,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_forward.h"
 
-#if !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
+#if !PA_BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 #error "Included under wrong build option"
 #endif
 

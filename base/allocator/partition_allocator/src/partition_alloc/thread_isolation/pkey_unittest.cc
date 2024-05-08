@@ -8,7 +8,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
 
 #include <link.h>
 #include <sys/mman.h>
@@ -271,4 +271,4 @@ TEST_F(PkeyTest, DumpPkeyPoolStats) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)

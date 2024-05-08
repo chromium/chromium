@@ -33,7 +33,7 @@ ThreadCacheRegistry g_instance;
 namespace tools {
 uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
     kNeedle1, reinterpret_cast<uintptr_t>(&g_instance),
-#if BUILDFLAG(RECORD_ALLOC_INFO)
+#if PA_BUILDFLAG(RECORD_ALLOC_INFO)
     reinterpret_cast<uintptr_t>(&internal::g_allocs),
 #else
     0,
@@ -179,7 +179,7 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   internal::ScopedGuard scoped_locker(GetLock());
   ThreadCache* tcache = list_head_;
   while (tcache) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     // Before fork(), locks are acquired in the parent process. This means that
     // a concurrent allocation in the parent which must be filled by the central
     // allocator (i.e. the thread cache bucket is empty) will block inside the
@@ -704,17 +704,17 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       head = freelist_dispatcher->GetNextForThreadCacheBool(
           head, crash_on_corruption, bucket.slot_size);
 #else
       head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
           head, bucket.slot_size);
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
       items++;
     }
 
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     FreeAfter<crash_on_corruption>(
         freelist_dispatcher->GetNextForThreadCacheBool(
             head, crash_on_corruption, bucket.slot_size),
@@ -724,7 +724,7 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
         freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
             head, bucket.slot_size),
         bucket.slot_size);
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     freelist_dispatcher->SetNext(head, nullptr);
   }
   bucket.count = limit;
@@ -747,13 +747,13 @@ void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
     const internal::PartitionFreelistDispatcher* freelist_dispatcher =
         root_->get_freelist_dispatcher();
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     head = freelist_dispatcher->GetNextForThreadCacheBool(
         head, crash_on_corruption, slot_size);
 #else
     head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
         head, slot_size);
-#endif  // BUILDFLAG(USE_FREELIST_DISPATCHER)
+#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
     root_->RawFreeLocked(slot_start);
   }
 }

@@ -24,11 +24,12 @@ class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
   void DumpStats(
       const partition_alloc::AddressSpaceStats* address_space_stats) override {
     regular_pool_usage_ = address_space_stats->regular_pool_stats.usage;
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     regular_pool_largest_reservation_ =
         address_space_stats->regular_pool_stats.largest_available_reservation;
 #endif
-#if !BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS) && \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     blocklist_size_ = address_space_stats->blocklist_size;
 #endif
   }
@@ -38,7 +39,7 @@ class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
   size_t blocklist_size_ = 0;
 };
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 class AddressPoolManagerForTesting : public AddressPoolManager {
  public:
@@ -277,7 +278,7 @@ TEST_F(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   ASSERT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt);
 }
 
-#else  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   constexpr size_t kAllocCount = 8;
@@ -327,7 +328,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   }
 }
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
   constexpr size_t kAllocCount = 4;
   // Totally (1+3+7+11) * 2MB = 44MB allocation
@@ -375,7 +376,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   AddressSpaceStatsDumperForTesting dumper{};
@@ -400,6 +401,6 @@ TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   EXPECT_EQ(dumper.regular_pool_usage_, usage_before);
 }
 
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace partition_alloc::internal

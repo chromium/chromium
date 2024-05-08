@@ -22,10 +22,11 @@
 #include <malloc/malloc.h>
 #endif
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && BUILDFLAG(USE_PARTITION_ALLOC)
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC)
 namespace allocator_shim::internal {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Platforms on which we override weak libc symbols.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -90,7 +91,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Note: the tests below are quite simple, they are used as simple smoke tests
 // for PartitionAlloc-Everywhere. Most of these directly dispatch to
@@ -186,7 +187,7 @@ TEST(PartitionAllocAsMalloc, Alignment) {
                     alignof(partition_alloc::PartitionRoot));
 }
 
-#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Make sure that a sequence a "good sizes" grows fast enough. This is
 // implicitly required by CoreFoundation, and to match Apple's implementation.
 // Non-regression test for crbug.com/1501312
@@ -199,8 +200,8 @@ TEST(PartitionAllocAsMalloc, GoodSize) {
   }
   EXPECT_LT(iterations, 100);
 }
-#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&
-        // BUILDFLAG(USE_PARTITION_ALLOC)
+        // PA_BUILDFLAG(USE_PARTITION_ALLOC)

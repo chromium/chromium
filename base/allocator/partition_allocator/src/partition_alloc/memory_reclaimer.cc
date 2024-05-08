@@ -10,7 +10,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_STARSCAN)
 #include "partition_alloc/starscan/pcscan.h"
 #endif
 
@@ -65,7 +65,7 @@ void MemoryReclaimer::Reclaim(int flags) {
   //
   // Lastly decommit empty slot spans and lastly try to discard unused pages at
   // the end of the remaining active slots.
-#if PA_CONFIG(STARSCAN_ENABLE_STARSCAN_ON_RECLAIM) && BUILDFLAG(USE_STARSCAN)
+#if PA_CONFIG(STARSCAN_ENABLE_STARSCAN_ON_RECLAIM) && PA_BUILDFLAG(USE_STARSCAN)
   {
     using PCScan = internal::PCScan;
     const auto invocation_mode = flags & PurgeFlags::kAggressiveReclaim
@@ -74,7 +74,7 @@ void MemoryReclaimer::Reclaim(int flags) {
     PCScan::PerformScanIfNeeded(invocation_mode);
   }
 #endif  // PA_CONFIG(STARSCAN_ENABLE_STARSCAN_ON_RECLAIM) &&
-        // BUILDFLAG(USE_STARSCAN)
+        // PA_BUILDFLAG(USE_STARSCAN)
 
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED)
   // Don't completely empty the thread cache outside of low memory situations,

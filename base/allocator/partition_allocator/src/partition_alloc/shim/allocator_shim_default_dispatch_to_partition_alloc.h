@@ -7,7 +7,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/shim/allocator_shim.h"
@@ -78,7 +78,7 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 
 }  // namespace internal
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Provide a ConfigurePartitions() helper, to mimic what Chromium uses. This way
 // we're making it more resilient to ConfigurePartitions() interface changes, so
 // that we don't have to modify multiple callers. This is particularly important
@@ -104,10 +104,10 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
                       scheduler_loop_quarantine_capacity_in_bytes,
                       zapping_by_free_flags, use_pool_offset_freelists);
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_DEFAULT_DISPATCH_TO_PARTITION_ALLOC_H_

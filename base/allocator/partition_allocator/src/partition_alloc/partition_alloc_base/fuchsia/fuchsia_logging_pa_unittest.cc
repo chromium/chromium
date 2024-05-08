@@ -28,7 +28,7 @@ class MockLogSource {
 TEST(FuchsiaLoggingTestPA, FuchsiaLogging) {
   MockLogSource mock_log_source;
   constexpr int kTimes =
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
       2;
 #else
       1;
@@ -40,7 +40,7 @@ TEST(FuchsiaLoggingTestPA, FuchsiaLogging) {
   logging::SetMinLogLevel(logging::LOGGING_INFO);
 
   EXPECT_TRUE(PA_LOG_IS_ON(INFO));
-  EXPECT_EQ(BUILDFLAG(PA_DCHECK_IS_ON), PA_DLOG_IS_ON(INFO));
+  EXPECT_EQ(PA_BUILDFLAG(PA_DCHECK_IS_ON), PA_DLOG_IS_ON(INFO));
 
   PA_ZX_LOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();
   PA_ZX_DLOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();

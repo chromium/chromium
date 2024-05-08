@@ -25,7 +25,7 @@
 // As a consequence:
 // - When PartitionAlloc is not malloc(), use the regular macros
 // - Otherwise, crash immediately. This provides worse error messages though.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !PA_BASE_CHECK_WILL_STREAM()
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !PA_BASE_CHECK_WILL_STREAM()
 
 // For official build discard log strings to reduce binary bloat.
 // See base/check.h for implementation details.
@@ -33,11 +33,11 @@
   PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
                             : PA_EAT_CHECK_STREAM_PARAMS()
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
 #define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_PCHECK(condition)                                 \
   if (!(condition)) {                                        \
@@ -47,25 +47,25 @@
   }                                                          \
   static_assert(true)
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
 #define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
-#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#else  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
        // !PA_BASE_CHECK_WILL_STREAM()
 #define PA_CHECK(condition) PA_BASE_CHECK(condition)
 #define PA_DCHECK(condition) PA_BASE_DCHECK(condition)
 #define PA_PCHECK(condition) PA_BASE_PCHECK(condition)
 #define PA_DPCHECK(condition) PA_BASE_DPCHECK(condition)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !PA_BASE_CHECK_WILL_STREAM()
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(PA_DCHECK_IS_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif

@@ -210,7 +210,7 @@ class PoolOffsetFreelistEntry {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
@@ -219,7 +219,7 @@ class PoolOffsetFreelistEntry {
                         (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
       FreelistCorruptionDetected(0);
     }
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
 
     encoded_next_ = EncodedPoolOffset(entry);
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -325,7 +325,7 @@ class PoolOffsetFreelistEntry {
     const bool same_super_page = (here_address & kSuperPageBaseMask) ==
                                  (next_address & kSuperPageBaseMask);
 
-#if BUILDFLAG(USE_FREESLOT_BITMAP)
+#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
     // TODO(crbug.com/40274683): Add support for freeslot bitmaps.
     static_assert(false, "USE_FREESLOT_BITMAP not supported");
 #else

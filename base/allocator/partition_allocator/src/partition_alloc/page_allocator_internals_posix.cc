@@ -8,7 +8,7 @@
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING) || \
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) || \
     (defined(__ARM_FEATURE_BTI_DEFAULT) && (__ARM_FEATURE_BTI_DEFAULT == 1))
 struct __ifunc_arg_t;
 
