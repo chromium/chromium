@@ -61,7 +61,11 @@ class BASE_EXPORT CPU final {
     AVX = 7,
     AVX2 = 8,
     FMA3 = 9,
-    MAX_INTEL_MICRO_ARCHITECTURE = 10
+    AVX_VNNI = 10,
+    AVX512F = 11,
+    AVX512BW = 12,
+    AVX512_VNNI = 13,
+    MAX_INTEL_MICRO_ARCHITECTURE = 14
   };
 
   // Accessors for CPU information.
@@ -86,6 +90,10 @@ class BASE_EXPORT CPU final {
   bool has_avx() const { return has_avx_; }
   bool has_fma3() const { return has_fma3_; }
   bool has_avx2() const { return has_avx2_; }
+  bool has_avx_vnni() const { return has_avx_vnni_; }
+  bool has_avx512_f() const { return has_avx512_f_; }
+  bool has_avx512_bw() const { return has_avx512_bw_; }
+  bool has_avx512_vnni() const { return has_avx512_vnni_; }
 #endif
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
@@ -151,6 +159,10 @@ class BASE_EXPORT CPU final {
   bool has_avx_ = false;
   bool has_fma3_ = false;
   bool has_avx2_ = false;
+  bool has_avx_vnni_ = false;
+  bool has_avx512_f_ = false;
+  bool has_avx512_bw_ = false;
+  bool has_avx512_vnni_ = false;
 #endif
   bool has_aesni_ = false;
 #if defined(ARCH_CPU_ARM_FAMILY)

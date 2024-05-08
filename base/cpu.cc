@@ -106,23 +106,33 @@ namespace {
 
 #if defined(__pic__) && defined(__i386__)
 
-void __cpuid(int cpu_info[4], int info_type) {
+// Requests extended feature information via |ecx|.
+void __cpuidex(int cpu_info[4], int eax, int ecx) {
   __asm__ volatile(
       "mov %%ebx, %%edi\n"
       "cpuid\n"
       "xchg %%edi, %%ebx\n"
       : "=a"(cpu_info[0]), "=D"(cpu_info[1]), "=c"(cpu_info[2]),
         "=d"(cpu_info[3])
-      : "a"(info_type), "c"(0));
+      : "a"(eax), "c"(ecx));
+}
+
+void __cpuid(int cpu_info[4], int info_type) {
+  __cpuidex(cpu_info, info_type, /*ecx=*/0);
 }
 
 #else
 
-void __cpuid(int cpu_info[4], int info_type) {
+// Requests extended feature information via |ecx|.
+void __cpuidex(int cpu_info[4], int eax, int ecx) {
   __asm__ volatile("cpuid\n"
                    : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]),
                      "=d"(cpu_info[3])
-                   : "a"(info_type), "c"(0));
+                   : "a"(eax), "c"(ecx));
+}
+
+void __cpuid(int cpu_info[4], int info_type) {
+  __cpuidex(cpu_info, info_type, /*ecx=*/0);
 }
 
 #endif
@@ -235,9 +245,13 @@ void CPU::Initialize(bool require_branding) {
   // Interpret CPU feature information.
   if (num_ids > 0) {
     int cpu_info7[4] = {0};
+    int cpu_einfo7[4] = {0};
     __cpuid(cpu_info, 1);
     if (num_ids >= 7) {
       __cpuid(cpu_info7, 7);
+      if (cpu_info7[0] >= 1) {
+        __cpuidex(cpu_einfo7, 7, 1);
+      }
     }
     signature_ = cpu_info[0];
     stepping_ = cpu_info[0] & 0xf;
@@ -281,7 +295,16 @@ void CPU::Initialize(bool require_branding) {
         (xgetbv(0) & 6) == 6 /* XSAVE enabled by kernel */;
     has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
     has_fma3_ = (cpu_info[2] & 0x00001000) != 0;
-    has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
+    if (has_avx_) {
+      has_avx2_ = (cpu_info7[1] & 0x00000020) != 0;
+      has_avx_vnni_ = (cpu_einfo7[0] & 0x00000010) != 0;
+      // Check AVX-512 state, bits 5-7.
+      if ((xgetbv(0) & 0xe0) == 0xe0) {
+        has_avx512_f_ = (cpu_info7[1] & 0x00010000) != 0;
+        has_avx512_bw_ = (cpu_info7[1] & 0x40000000) != 0;
+        has_avx512_vnni_ = (cpu_info7[2] & 0x00000800) != 0;
+      }
+    }
 
     has_pku_ = (cpu_info7[2] & 0x00000010) != 0;
   }
@@ -364,6 +387,10 @@ void CPU::Initialize(bool require_branding) {
 
 #if defined(ARCH_CPU_X86_FAMILY)
 CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
+  if (has_avx512_vnni()) return AVX512_VNNI;
+  if (has_avx512_bw()) return AVX512BW;
+  if (has_avx512_f()) return AVX512F;
+  if (has_avx_vnni()) return AVX_VNNI;
   if (has_avx2()) return AVX2;
   if (has_fma3()) return FMA3;
   if (has_avx()) return AVX;

@@ -78,6 +78,30 @@ TEST(CPU, RunExtendedInstructions) {
     __asm__ __volatile__("vpunpcklbw %%ymm0, %%ymm0, %%ymm0\n" : : : "xmm0");
   }
 
+  if (cpu.has_avx_vnni()) {
+    // Execute an AVX VNNI instruction. {vex} prevents EVEX encoding, which
+    // would shift it to AVX512 VNNI.
+    __asm__ __volatile__("%{vex%} vpdpbusd %%ymm0, %%ymm0, %%ymm0\n"
+                         :
+                         :
+                         : "ymm0");
+  }
+
+  if (cpu.has_avx512_f()) {
+    // Execute an AVX-512 Foundation (F) instruction.
+    __asm__ __volatile__("vpxorq %%zmm0, %%zmm0, %%zmm0\n" : : : "zmm0");
+  }
+
+  if (cpu.has_avx512_bw()) {
+    // Execute an AVX-512 Byte & Word (BW) instruction.
+    __asm__ __volatile__("vpabsw %%zmm0, %%zmm0\n" : : : "zmm0");
+  }
+
+  if (cpu.has_avx512_vnni()) {
+    // Execute an AVX-512 VNNI instruction.
+    __asm__ __volatile__("vpdpbusd %%zmm0, %%zmm0, %%zmm0\n" : : : "zmm0");
+  }
+
   if (cpu.has_pku()) {
     // rdpkru
     uint32_t pkru;

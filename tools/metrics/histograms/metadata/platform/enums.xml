@@ -660,6 +660,10 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="AVX"/>
   <int value="8" label="AVX2"/>
   <int value="9" label="FMA3"/>
+  <int value="10" label="AVX_VNNI"/>
+  <int value="11" label="AVX512F"/>
+  <int value="12" label="AVX512BW"/>
+  <int value="13" label="AVX512_VNNI"/>
 </enum>
 
 <enum name="InternalStorageCapabilities">
