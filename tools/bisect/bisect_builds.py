@@ -40,8 +40,6 @@ DEFAULT_CATAPULT_DIR = os.path.abspath(os.path.join(
 CATAPULT_DIR = os.environ.get('CATAPULT_DIR', DEFAULT_CATAPULT_DIR)
 CATAPULT_REPO = 'https://github.com/catapult-project/catapult.git'
 DEVIL_PATH = os.path.abspath(os.path.join(CATAPULT_DIR, 'devil'))
-sys.path.append(DEVIL_PATH)
-from devil.android.sdk import version_codes
 
 # The base URL for stored build archives.
 CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
@@ -1761,6 +1759,8 @@ def SetupAndroidEnvironment():
             'Attempt to download Catapult failed.')
   SetupCatapult()
   sys.path.append(DEVIL_PATH)
+  from devil.android.sdk import version_codes
+
   # Modules required from devil
   devil_imports = {
     'devil_env': 'devil.devil_env',
