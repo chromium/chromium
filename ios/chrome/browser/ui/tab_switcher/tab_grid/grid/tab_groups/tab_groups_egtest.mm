@@ -662,7 +662,15 @@ void DeleteGroupAtIndex(int group_cell_index) {
 }
 
 // Tests re-opening a group from Search in another window.
-- (void)testReopenGroupFromAnotherWindow {
+// TODO:(crbug.com/339415297) Test fails on some iPad devices. Re-enable test
+// once fixed.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testReopenGroupFromAnotherWindow testReopenGroupFromAnotherWindow
+#else
+#define MAYBE_testReopenGroupFromAnotherWindow \
+  DISABLED_testReopenGroupFromAnotherWindow
+#endif
+- (void)MAYBE_testReopenGroupFromAnotherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
