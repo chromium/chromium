@@ -22,7 +22,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -31,6 +30,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/win/accessibility_ids_win.h"
 #include "ui/base/win/atl_module.h"
 
@@ -43,8 +43,8 @@ const uint32_t kScreenReaderAndHTMLAccessibilityModes =
 namespace content {
 
 void AddAccessibilityModeFlags(ui::AXMode mode_flags) {
-  BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-      mode_flags);
+  ui::AXPlatform::GetInstance().NotifyAccessibilityApiUsage();
+  ui::AXPlatformNode::NotifyAddAXModeFlags(mode_flags);
 }
 
 //
