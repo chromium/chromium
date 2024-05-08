@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/renderer_host/policy_container_host.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,43 +33,6 @@ void ServiceWorkerMainResourceHandle::OnCreatedContainerHost(
          container_info->client_receiver.is_valid());
 
   container_info_ = std::move(container_info);
-}
-
-void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
-    const GlobalRenderFrameHostId& rfh_id,
-    const PolicyContainerPolicies& policy_container_policies,
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter,
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
-    ukm::SourceId document_ukm_source_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // We may have failed to pre-create the container host.
-  if (!container_info_)
-    return;
-  *out_container_info = std::move(container_info_);
-
-  if (service_worker_client_) {
-    service_worker_client_->OnBeginNavigationCommit(
-        rfh_id, policy_container_policies, std::move(coep_reporter),
-        document_ukm_source_id);
-  }
-}
-
-void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (service_worker_client_) {
-    service_worker_client_->OnEndNavigationCommit();
-  }
-}
-
-void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
-    const PolicyContainerPolicies& policy_container_policies,
-    ukm::SourceId worker_ukm_source_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (service_worker_client_) {
-    service_worker_client_->CompleteWebWorkerPreparation(
-        policy_container_policies, worker_ukm_source_id);
-  }
 }
 
 }  // namespace content

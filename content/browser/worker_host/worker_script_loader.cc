@@ -279,12 +279,14 @@ void WorkerScriptLoader::CommitCompleted(
   DCHECK(!completed_);
   completed_ = true;
 
-  if (status.error_code == net::OK && service_worker_handle_) {
+  if (status.error_code == net::OK && service_worker_handle_ &&
+      service_worker_handle_->service_worker_client()) {
     // TODO(crbug.com/41478971): Pass the PolicyContainerPolicies. It can
     // be built from `WorkerScriptLoader::OnReceiveResponse` from the
     // `response_head->parsed_headers`.
-    service_worker_handle_->OnBeginWorkerCommit(PolicyContainerPolicies(),
-                                                ukm_source_id_);
+    service_worker_handle_->service_worker_client()
+        ->CompleteWebWorkerPreparation(PolicyContainerPolicies(),
+                                       ukm_source_id_);
   }
 
   client_->OnComplete(status);

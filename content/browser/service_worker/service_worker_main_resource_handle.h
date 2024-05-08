@@ -9,20 +9,12 @@
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-
-namespace network {
-namespace mojom {
-class CrossOriginEmbedderPolicyReporter;
-}  // namespace mojom
-}  // namespace network
 
 namespace content {
 
 class ServiceWorkerContextWrapper;
-struct GlobalRenderFrameHostId;
 
 // This class is used to manage the lifetime of ServiceWorkerContainerHosts
 // created for main resource requests (navigations and web workers).
@@ -63,32 +55,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   // pre-created for the navigation.
   void OnCreatedContainerHost(
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info);
-
-  // Called when the navigation is ready to commit.
-  // Provides |rfh_id|, and |policy_container_policies| to the pre-created
-  // service worker client. Fills in |out_container_info| so the caller can send
-  // it to the renderer process as part of the navigation commit IPC.
-  // |out_container_info| can be filled as null if we failed to pre-create the
-  // service worker client for some security reasons.
-  void OnBeginNavigationCommit(
-      const GlobalRenderFrameHostId& rfh_id,
-      const PolicyContainerPolicies& policy_container_policies,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
-      ukm::SourceId document_ukm_source_id);
-
-  // Called after the renderer reports back that the navigation has been
-  // committed.
-  void OnEndNavigationCommit();
-
-  // Similar to OnBeginNavigationCommit() for shared workers (and dedicated
-  // workers when PlzDedicatedWorker is on).
-  // |policy_container_policies| is passed to the pre-created service worker
-  // client.
-  void OnBeginWorkerCommit(
-      const PolicyContainerPolicies& policy_container_policies,
-      ukm::SourceId worker_ukm_source_id);
 
   blink::mojom::ServiceWorkerContainerInfoForClientPtr TakeContainerInfo() {
     return std::move(container_info_);

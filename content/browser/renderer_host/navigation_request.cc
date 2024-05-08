@@ -6028,12 +6028,16 @@ void NavigationRequest::CommitNavigation() {
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         reporter_remote;
     coep_reporter()->Clone(reporter_remote.InitWithNewPipeAndPassReceiver());
+    service_worker_container_info = service_worker_handle_->TakeContainerInfo();
+
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
-    service_worker_handle_->OnBeginNavigationCommit(
-        GetRenderFrameHost()->GetGlobalId(),
-        policy_container_builder_->FinalPolicies(), std::move(reporter_remote),
-        &service_worker_container_info, commit_params_->document_ukm_source_id);
+    if (service_worker_handle_->service_worker_client()) {
+      service_worker_handle_->service_worker_client()->OnBeginNavigationCommit(
+          GetRenderFrameHost()->GetGlobalId(),
+          policy_container_builder_->FinalPolicies(),
+          std::move(reporter_remote), commit_params_->document_ukm_source_id);
+    }
   }
 
   // Determine if top-level navigation is allowed without sticky user
@@ -7531,10 +7535,11 @@ void NavigationRequest::DidCommitNavigation(
     frame_tree_node()->SetCollapsed(false);
   }
 
-  if (service_worker_handle_) {
+  if (service_worker_handle_ &&
+      service_worker_handle_->service_worker_client()) {
     // Notify the service worker navigation handle that the navigation finished
     // committing.
-    service_worker_handle_->OnEndNavigationCommit();
+    service_worker_handle_->service_worker_client()->OnEndNavigationCommit();
   }
 
   // TODO(crbug.com/40249865): consider using NavigationOrDocumentHandle
