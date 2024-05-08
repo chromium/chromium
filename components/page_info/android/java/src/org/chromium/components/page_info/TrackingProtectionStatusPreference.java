@@ -46,14 +46,13 @@ public class TrackingProtectionStatusPreference extends Preference {
                         getContext(), enabled ? R.drawable.tp_cookie_off : R.drawable.tp_cookie);
         Drawable ipIcon =
                 AppCompatResources.getDrawable(
-                        getContext(),
-                        enabled ? R.drawable.tp_ip_protection_on : R.drawable.tp_ip_protection_off);
+                        getContext(), enabled ? R.drawable.tp_ip_off : R.drawable.tp_ip);
         Drawable fingerprintIcon =
                 AppCompatResources.getDrawable(
                         getContext(),
                         enabled ? R.drawable.tp_fingerprint_off : R.drawable.tp_fingerprint);
 
-        // TODO(b/330745124): Use the actual strings.
+        // TODO(b/330745124): Show a distinction between 3PC being blocked and limited.
         mCookieStatus.setText(
                 enabled
                         ? R.string.page_info_tracking_protection_site_info_button_label_limited
@@ -61,13 +60,13 @@ public class TrackingProtectionStatusPreference extends Preference {
         mCookieStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(cookieIcon, null, null, null);
         mIpStatus.setText(
                 enabled
-                        ? R.string.page_info_tracking_protection_site_info_button_label_limited
-                        : R.string.page_info_tracking_protection_site_info_button_label_allowed);
+                        ? R.string.page_info_tracking_protection_ip_protection_on
+                        : R.string.page_info_tracking_protection_ip_protection_off);
         mIpStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(ipIcon, null, null, null);
         mFingerprintStatus.setText(
                 enabled
-                        ? R.string.page_info_tracking_protection_site_info_button_label_limited
-                        : R.string.page_info_tracking_protection_site_info_button_label_allowed);
+                        ? R.string.page_info_tracking_protection_anti_fingerprinting_on
+                        : R.string.page_info_tracking_protection_anti_fingerprinting_off);
         mFingerprintStatus.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 fingerprintIcon, null, null, null);
     }

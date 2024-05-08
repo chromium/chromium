@@ -301,6 +301,21 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ON" desc="" formatter_data="android_java" translateable="false">
         You have extra protections on this site to limit tracking while you browse, but some features might not work.
       </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_OFF" desc="" formatter_data="android_java" translateable="false">
+        You temporarily allowed this site to use trackers, which means less browsing protection but site features are more likely to work as expected.
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_OFF" desc="" formatter_data="android_java" translateable="false">
+        IP address visible
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_ON" desc="" formatter_data="android_java" translateable="false">
+        IP address hidden
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_OFF" desc="" formatter_data="android_java" translateable="false">
+        Digital fingerprinting allowed
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
+        Digital fingerprinting limited
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         App not working?
       </message>

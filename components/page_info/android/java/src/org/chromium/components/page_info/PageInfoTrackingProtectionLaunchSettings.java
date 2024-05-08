@@ -236,24 +236,13 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
         boolean permanentException = (expiration == 0);
 
-        NoUnderlineClickableSpan feedbackSpan =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        (view) -> {
-                            mOnFeedbackClicked.onResult(this.getActivity());
-                        });
-
         if (protectionsOn) {
             mTpTitle.setTitle(getString(R.string.page_info_tracking_protection_title_on));
             mTpSwitch.setSummary(R.string.page_info_tracking_protection_toggle_on);
         } else if (permanentException) {
             mTpTitle.setTitle(
                     getString(R.string.page_info_tracking_protection_title_off_permanent));
-            int resId = R.string.page_info_cookies_tracking_protection_description;
-            mTpSwitch.setSummary(
-                    SpanApplier.applySpans(
-                            getString(resId),
-                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+            mTpSwitch.setSummary(R.string.page_info_tracking_protection_toggle_off);
         } else { // Not blocking and temporary exception.
             int days =
                     mFixedExpiration
@@ -261,11 +250,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                             : calculateDaysUntilExpiration(
                                     TimeUtils.currentTimeMillis(), expiration);
             updateTrackingProtectionTitleTemporary(days);
-            int resId = R.string.page_info_cookies_tracking_protection_description;
-            mTpSwitch.setSummary(
-                    SpanApplier.applySpans(
-                            getString(resId),
-                            new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
+            mTpSwitch.setSummary(R.string.page_info_tracking_protection_toggle_off);
         }
         updateCookieSwitch();
     }
