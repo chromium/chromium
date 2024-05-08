@@ -351,8 +351,6 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   PasswordAccessoryController* GetOrCreatePasswordAccessory();
 
-  TouchToFillController* GetOrCreateTouchToFillController();
-
   password_manager::CredentialCache* GetCredentialCacheForTesting() {
     return &credential_cache_;
   }
@@ -364,6 +362,10 @@ class ChromePasswordManagerClient
 
  private:
   friend class content::WebContentsUserData<ChromePasswordManagerClient>;
+
+#if BUILDFLAG(IS_ANDROID)
+  TouchToFillController* GetOrCreateTouchToFillController();
+#endif
 
   // content::WebContentsObserver overrides.
   void PrimaryPageChanged(content::Page& page) override;
