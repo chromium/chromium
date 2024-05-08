@@ -452,10 +452,7 @@ public class TabGridDialogTest {
                     ((TabGroupModelFilter)
                                     selector.getTabModelFilterProvider().getTabModelFilter(false))
                             .mergeListOfTabsToGroup(
-                                    List.of(tab),
-                                    destinationTab,
-                                    /* isSameGroup= */ false,
-                                    /* notify= */ false);
+                                    List.of(tab), destinationTab, /* notify= */ false);
                 });
         CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
         verifyShowingDialog(cta, 3, null);

@@ -101,9 +101,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             sortedTabs.add(tab);
         }
 
-        // Use true for "isSameGroup" to avoid updating the title multiple times.
-        tabGroupModelFilter.mergeListOfTabsToGroup(
-                sortedTabs, destinationTab, /* isSameGroup= */ true, /* notify= */ true);
+        tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
 
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabListEditorActionMetricGroups.GROUP);

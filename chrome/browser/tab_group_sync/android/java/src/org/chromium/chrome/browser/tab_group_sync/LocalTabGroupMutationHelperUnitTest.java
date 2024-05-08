@@ -96,7 +96,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(anyList(), any(), eq(true), eq(false));
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(anyList(), any(), eq(false));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
         verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), any());
@@ -129,7 +129,7 @@ public class LocalTabGroupMutationHelperUnitTest {
                         eq(org.chromium.components.tab_groups.TabGroupColorId.GREEN));
         verify(mTabGroupModelFilter, times(2))
                 .mergeListOfTabsToGroup(
-                        anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false), eq(false));
+                        anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false));
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));

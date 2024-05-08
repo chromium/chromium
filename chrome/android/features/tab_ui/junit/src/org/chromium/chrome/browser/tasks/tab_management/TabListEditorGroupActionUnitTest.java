@@ -209,14 +209,14 @@ public class TabListEditorGroupActionUnitTest {
         mAction.addActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true, true);
+        verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
         verify(mDelegate).hideByAction();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mGroupFilter, times(2)).mergeListOfTabsToGroup(tabs, tabs.get(2), true, true);
+        verify(mGroupFilter, times(2)).mergeListOfTabsToGroup(tabs, tabs.get(2), true);
         verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
     }
@@ -258,7 +258,7 @@ public class TabListEditorGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedTabIds().get(2));
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), true, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), true);
         verify(mDelegate).hideByAction();
     }
 
@@ -299,7 +299,7 @@ public class TabListEditorGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedTabIds().get(0));
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
         verify(mDelegate).hideByAction();
     }
 
@@ -347,7 +347,7 @@ public class TabListEditorGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedTabIds().get(0));
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true, true);
+                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
         verify(mDelegate).hideByAction();
     }
 }

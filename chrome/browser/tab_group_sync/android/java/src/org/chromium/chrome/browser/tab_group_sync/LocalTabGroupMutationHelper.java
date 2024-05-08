@@ -77,8 +77,7 @@ public class LocalTabGroupMutationHelper {
         // tab.
         int rootId = tabs.get(0).getId();
         updateTabGroupVisuals(tabGroup, rootId);
-        mTabGroupModelFilter.mergeListOfTabsToGroup(
-                tabs, tabs.get(0), /* isSameGroup= */ true, /* notify= */ false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), /* notify= */ false);
 
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId =
@@ -192,10 +191,7 @@ public class LocalTabGroupMutationHelper {
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.add(newTab);
         mTabGroupModelFilter.mergeListOfTabsToGroup(
-                tabsToMerge,
-                TabModelUtils.getTabById(getTabModel(), rootId),
-                /* isSameGroup= */ false,
-                /* notify= */ false);
+                tabsToMerge, TabModelUtils.getTabById(getTabModel(), rootId), /* notify= */ false);
         return newTab;
     }
 

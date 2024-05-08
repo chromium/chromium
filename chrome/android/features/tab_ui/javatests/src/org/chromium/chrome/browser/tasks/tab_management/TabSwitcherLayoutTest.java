@@ -1705,6 +1705,9 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
+
         // Click the close action button to close the group
         String closeButtonText = cta.getString(R.string.close_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
@@ -1734,6 +1737,9 @@ public class TabSwitcherLayoutTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
+
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
 
         // Click the rename action button to rename the group
         String renameButtonText = cta.getString(R.string.rename_tab_group_menu_item);
@@ -1788,6 +1794,9 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
+
         // Click the rename action button to rename the group
         String renameButtonText = cta.getString(R.string.rename_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
@@ -1841,6 +1850,9 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
+
         // Click the ungroup action button to ungroup the group
         String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
@@ -1873,6 +1885,9 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
+
         // Click the ungroup action button to ungroup the group
         String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
@@ -1904,6 +1919,9 @@ public class TabSwitcherLayoutTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
+
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
 
         // Click the ungroup action button to ungroup the group
         String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
@@ -1954,6 +1972,9 @@ public class TabSwitcherLayoutTest {
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
+
         // Click the delete action button to close the group
         String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
@@ -1987,6 +2008,9 @@ public class TabSwitcherLayoutTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
+
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(TabGroupColorId.GREY);
 
         // Click the delete action button to close the group
         String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);

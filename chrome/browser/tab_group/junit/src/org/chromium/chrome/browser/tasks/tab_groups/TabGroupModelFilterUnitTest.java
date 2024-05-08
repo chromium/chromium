@@ -1110,9 +1110,11 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab1.getId());
 
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab5, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab6, TAB1_ROOT_ID);
         verify(mTabModel).moveTab(mTab5.getId(), ++startIndex);
         verify(mTabModel).moveTab(mTab6.getId(), ++startIndex);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab5, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab6, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab6, mTabGroupModelFilter);
@@ -1137,9 +1139,11 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
 
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab5, TAB2_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab6, TAB2_ROOT_ID);
         verify(mTabModel).moveTab(mTab5.getId(), ++startIndex);
         verify(mTabModel).moveTab(mTab6.getId(), ++startIndex);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab5, mTab2.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab6, mTab2.getId());
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab6, mTabGroupModelFilter);
@@ -1190,9 +1194,11 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab4.getId());
 
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab2, TAB4_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab3, TAB4_ROOT_ID);
         verify(mTabModel).moveTab(mTab2.getId(), startIndex + 1);
         verify(mTabModel).moveTab(mTab3.getId(), startIndex + 1);
+        verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab2, mTab4.getId());
         verify(mTabGroupModelFilterObserver).didMergeTabToGroup(mTab3, mTab4.getId());
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
@@ -1247,7 +1253,7 @@ public class TabGroupModelFilterUnitTest {
                 new ArrayList<>(Arrays.asList(mTab2, mTab3, mTab5, mTab6, mTab1, mTab4));
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, mTab4));
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab5, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab5, false);
 
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab1, TAB5_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab4, TAB5_ROOT_ID);
@@ -1279,7 +1285,7 @@ public class TabGroupModelFilterUnitTest {
         Token tabGroupId = new Token(123L, 567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab1, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab1, false);
 
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab4, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab, TAB1_ROOT_ID);
@@ -1307,7 +1313,7 @@ public class TabGroupModelFilterUnitTest {
         Token tabGroupId = new Token(1234L, 4567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false);
 
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(mTab1, TAB4_ROOT_ID);
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab, TAB4_ROOT_ID);
@@ -1343,7 +1349,7 @@ public class TabGroupModelFilterUnitTest {
         Token tabGroupId = new Token(91234L, 84567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, newTab0, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, newTab0, false);
 
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab1, newTab0.getId());
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab2, newTab0.getId());
@@ -1377,7 +1383,7 @@ public class TabGroupModelFilterUnitTest {
                                 newTab0));
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(newTab1, newTab2, newTab0));
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, newTab1, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, newTab1, false);
 
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab1, newTab1.getId());
         verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab2, newTab1.getId());
@@ -1400,7 +1406,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     public void mergeListOfTabsToGroup_MultipleGroups() {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab5, false, false);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab5, false);
 
         verify(mTabGroupModelFilterObserver)
                 .didRemoveTabGroup(mTab2.getId(), TAB2_TAB_GROUP_ID, DidRemoveTabGroupReason.MERGE);
@@ -1421,7 +1427,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     public void mergeListOfTabsToGroup_Collapsed() {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
@@ -1431,7 +1437,7 @@ public class TabGroupModelFilterUnitTest {
         when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
                 .thenReturn(false);
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(true));
     }
@@ -1440,7 +1446,7 @@ public class TabGroupModelFilterUnitTest {
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE)
     public void mergeListOfTabsToGroup_CollapsedWithoutFeature() {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, false, true);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabsToMerge, mTab4, true);
         verify(mTabGroupModelFilterObserver)
                 .didCreateGroup(any(), any(), any(), any(), any(), anyInt(), eq(false));
     }

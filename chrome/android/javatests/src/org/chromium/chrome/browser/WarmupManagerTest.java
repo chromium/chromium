@@ -186,8 +186,7 @@ public class WarmupManagerTest {
             }
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabGroupModelFilter.mergeListOfTabsToGroup(
-                                tabs, tabs.get(0), false, false);
+                        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), false);
                     });
         }
     }

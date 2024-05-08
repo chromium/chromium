@@ -270,10 +270,7 @@ public class TabGroupUiTest {
                                             .getTabModelFilterProvider()
                                             .getTabModelFilter(false);
                     filter.mergeListOfTabsToGroup(
-                            List.of(tab),
-                            filter.getTabAt(0),
-                            /* isSameGroup= */ true,
-                            /* notify= */ false);
+                            List.of(tab), filter.getTabAt(0), /* notify= */ false);
                 });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

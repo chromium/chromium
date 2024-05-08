@@ -56,47 +56,42 @@ public class TabGroupCreationDialogManager implements Destroyable {
                         }
 
                         @Override
-                        public void onDismiss(PropertyModel model, int dismissalCause) {
-                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                    || dismissalCause
-                                            == DialogDismissalCause
-                                                    .NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
-                                @TabGroupColorId
-                                int defaultColorId =
-                                        mTabGroupVisualDataDialogManager.getDefaultColorId();
-                                @TabGroupColorId
-                                int currentColorId =
-                                        mTabGroupVisualDataDialogManager.getCurrentColorId();
-                                boolean didChangeColor = currentColorId != defaultColorId;
-                                filter.setTabGroupColor(rootId, currentColorId);
+                        public void onDismiss(
+                                PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                            @TabGroupColorId
+                            int defaultColorId =
+                                    mTabGroupVisualDataDialogManager.getDefaultColorId();
+                            @TabGroupColorId
+                            int currentColorId =
+                                    mTabGroupVisualDataDialogManager.getCurrentColorId();
+                            boolean didChangeColor = currentColorId != defaultColorId;
+                            filter.setTabGroupColor(rootId, currentColorId);
 
-                                // Only save the group title input text if it has been changed from
-                                // the suggested default title and if it is not empty.
-                                String defaultGroupTitle =
-                                        mTabGroupVisualDataDialogManager.getDefaultGroupTitle();
-                                String inputGroupTitle =
-                                        mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
-                                boolean didChangeTitle =
-                                        !Objects.equals(defaultGroupTitle, inputGroupTitle);
-                                if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
-                                    filter.setTabGroupTitle(rootId, inputGroupTitle);
-                                }
+                            // Only save the group title input text if it has been changed from
+                            // the suggested default title and if it is not empty.
+                            String defaultGroupTitle =
+                                    mTabGroupVisualDataDialogManager.getDefaultGroupTitle();
+                            String inputGroupTitle =
+                                    mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
+                            boolean didChangeTitle =
+                                    !Objects.equals(defaultGroupTitle, inputGroupTitle);
+                            if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle)) {
+                                filter.setTabGroupTitle(rootId, inputGroupTitle);
+                            }
 
-                                // Refresh the GTS tab list with the newly set color and title.
-                                mOnDialogAcceptedRunnable.run();
-                                recordDialogSelectionHistogram(didChangeColor, didChangeTitle);
+                            // Refresh the GTS tab list with the newly set color and title.
+                            mOnDialogAcceptedRunnable.run();
+                            recordDialogSelectionHistogram(didChangeColor, didChangeTitle);
 
-                                if (dismissalCause
-                                        == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
-                                    TabUiMetricsHelper
-                                            .recordTabGroupCreationDialogResultActionMetrics(
-                                                    TabGroupCreationDialogResultAction
-                                                            .DISMISSED_SCRIM_OR_BACKPRESS);
-                                } else {
-                                    TabUiMetricsHelper
-                                            .recordTabGroupCreationDialogResultActionMetrics(
-                                                    TabGroupCreationDialogResultAction.ACCEPTED);
-                                }
+                            if (dismissalCause
+                                    == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+                                TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
+                                        TabGroupCreationDialogResultAction
+                                                .DISMISSED_SCRIM_OR_BACKPRESS);
+                            } else if (dismissalCause
+                                    == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                                TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
+                                        TabGroupCreationDialogResultAction.ACCEPTED);
                             } else {
                                 TabUiMetricsHelper.recordTabGroupCreationDialogResultActionMetrics(
                                         TabGroupCreationDialogResultAction.DISMISSED_OTHER);
