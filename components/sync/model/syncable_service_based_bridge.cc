@@ -5,6 +5,7 @@
 #include "components/sync/model/syncable_service_based_bridge.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,6 +18,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -185,7 +187,8 @@ class LocalChangeProcessor : public SyncChangeProcessor {
             batch->GetMetadataChangeList()->ClearMetadata(storage_key);
             other_->UntrackEntityForStorageKey(storage_key);
           } else {
-            other_->Delete(storage_key, batch->GetMetadataChangeList());
+            other_->Delete(storage_key, DeletionOrigin::Unspecified(),
+                           batch->GetMetadataChangeList());
           }
 
           in_memory_store_->erase(storage_key);

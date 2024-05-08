@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"

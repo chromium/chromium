@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -169,7 +170,8 @@ void FakeModelTypeSyncBridge::DeleteItem(const std::string& key) {
   if (change_processor()->IsTrackingMetadata()) {
     std::unique_ptr<MetadataChangeList> change_list =
         CreateMetadataChangeList();
-    change_processor()->Delete(key, change_list.get());
+    change_processor()->Delete(key, syncer::DeletionOrigin::Unspecified(),
+                               change_list.get());
     ApplyMetadataChangeList(std::move(change_list));
   }
 }

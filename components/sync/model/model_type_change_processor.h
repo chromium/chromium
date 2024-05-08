@@ -12,7 +12,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -20,6 +19,7 @@
 namespace syncer {
 
 class ClientTagHash;
+class DeletionOrigin;
 class MetadataBatch;
 class MetadataChangeList;
 class ModelTypeSyncBridge;
@@ -46,13 +46,6 @@ class ModelTypeChangeProcessor {
   virtual void Delete(const std::string& storage_key,
                       const DeletionOrigin& origin,
                       MetadataChangeList* metadata_change_list) = 0;
-
-  // Convenience overload without DeletionOrigin.
-  // TODO(crbug.com/334001702): Remove this overload.
-  void Delete(const std::string& storage_key,
-              MetadataChangeList* metadata_change_list) {
-    Delete(storage_key, DeletionOrigin::Unspecified(), metadata_change_list);
-  }
 
   // Sets storage key for the new entity. This function only applies to
   // datatypes that can't generate storage key based on EntityData. Bridge
