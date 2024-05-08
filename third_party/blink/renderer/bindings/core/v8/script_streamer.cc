@@ -1371,7 +1371,7 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   watcher_->Watch(body_.get(), MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
                   MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                   WTF::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
-                                     WTF::Unretained(this)));
+                                     scoped_refptr(this)));
   MojoResult ready_result;
   mojo::HandleSignalsState ready_state;
   MojoResult rv = watcher_->Arm(&ready_result, &ready_state);
@@ -1602,6 +1602,7 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
 void BackgroundResourceScriptStreamer::BackgroundProcessor::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
   SetState(BackgroundProcessorState::kCancelled);
+  watcher_.reset();
   client_ = nullptr;
   if (!background_task_runner_) {
     return;

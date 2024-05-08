@@ -9,11 +9,13 @@
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -766,8 +768,8 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
   bool load_started() const { return load_started_; }
-  scoped_refptr<BackgroundResponseProcessor> GetBackgroundResponseProcessor() {
-    return background_response_processor_;
+  scoped_refptr<BackgroundResponseProcessor> TakeBackgroundResponseProcessor() {
+    return std::move(background_response_processor_);
   }
 
  private:
@@ -984,7 +986,7 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
 
     CHECK(dummy_loader_factory->load_started());
     background_response_processor_ =
-        dummy_loader_factory->GetBackgroundResponseProcessor();
+        dummy_loader_factory->TakeBackgroundResponseProcessor();
 
     background_resource_fetch_task_runner_ =
         base::ThreadPool::CreateSequencedTaskRunner(
@@ -1622,6 +1624,47 @@ TEST_F(BackgroundResourceScriptStreamerTest,
                    compile_options, no_cache_reason)
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
+}
+
+// Regression test for https://crbug.com/337998760.
+TEST_F(BackgroundResourceScriptStreamerTest, DataPipeReadableAfterGC) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+
+  // Start blocking the background thread.
+  base::WaitableEvent waitable_event;
+  background_resource_fetch_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        waitable_event.Wait();
+      }));
+
+  // Resetting `producer_handle_` will triggers OnDataPipeReadable() on the
+  // background thread. But the background thread is still blocked by the
+  // `waitable_event`.
+  producer_handle_.reset();
+
+  Cancel();
+  background_response_processor_.reset();
+  resource_ = nullptr;
+  resource_client_ = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Unblock the background thread to call OnDataPipeReadable().
+  waitable_event.Signal();
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace blink

@@ -6,6 +6,9 @@ specific_include_rules = {
   "script_promise_resolver_test.cc": [
     "+base/run_loop.h",
   ],
+  "script_streamer_test.cc": [
+    "+base/threading/thread_restrictions.h",
+  ],
   "serialized_script_value_fuzzer.cc": [
     "+testing/libfuzzer/libfuzzer_exports.h",
   ],
