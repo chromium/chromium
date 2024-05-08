@@ -76,7 +76,7 @@ suite('ExtensionsReviewPanel', function() {
     const expandButton = element.$.expandButton;
     assertTrue(!!expandButton);
 
-    const extensionsList = element.shadowRoot!.querySelector('iron-collapse');
+    const extensionsList = element.shadowRoot!.querySelector('cr-collapse');
     assertTrue(!!extensionsList);
 
     // Button and list start out expanded.

@@ -97,7 +97,7 @@ suite('ExtensionErrorPageTest', function() {
         'message',
         error.querySelector<HTMLElement>(
                  '.error-message')!.textContent!.trim());
-    assertTrue(error.querySelector('iron-icon')!.icon === 'cr:error');
+    assertTrue(error.querySelector('cr-icon')!.icon === 'cr:error');
 
     const manifestError = Object.assign(
         {
@@ -116,7 +116,7 @@ suite('ExtensionErrorPageTest', function() {
         'invalid key',
         error.querySelector<HTMLElement>(
                  '.error-message')!.textContent!.trim());
-    assertTrue(error.querySelector('iron-icon')!.icon === 'cr:warning');
+    assertTrue(error.querySelector('cr-icon')!.icon === 'cr:warning');
 
     mockDelegate.testClickingCalls(
         error.querySelector<HTMLElement>('.icon-delete-gray')!, 'deleteErrors',
@@ -172,10 +172,9 @@ suite('ExtensionErrorPageTest', function() {
 
     const errorElements = errorPage.shadowRoot!.querySelectorAll<HTMLElement>(
         '.error-item .start');
-    const ironCollapses =
-        errorPage.shadowRoot!.querySelectorAll('iron-collapse');
+    const crCollapses = errorPage.shadowRoot!.querySelectorAll('cr-collapse');
     assertEquals(2, errorElements.length);
-    assertEquals(2, ironCollapses.length);
+    assertEquals(2, crCollapses.length);
 
     // The first error should be focused by default, and we should have
     // requested the source for it.
@@ -183,8 +182,8 @@ suite('ExtensionErrorPageTest', function() {
     assertTrue(!!mockDelegate.requestFileSourceArgs);
     let args = mockDelegate.requestFileSourceArgs;
     assertEquals('source.html', args.pathSuffix);
-    assertTrue(ironCollapses[0]!.opened);
-    assertFalse(ironCollapses[1]!.opened);
+    assertTrue(crCollapses[0]!.opened);
+    assertFalse(crCollapses[1]!.opened);
 
     mockDelegate.requestFileSourceResolver = new PromiseResolver();
     mockDelegate.requestFileSourceArgs = undefined;
@@ -196,17 +195,17 @@ suite('ExtensionErrorPageTest', function() {
     assertTrue(!!mockDelegate.requestFileSourceArgs);
     args = mockDelegate.requestFileSourceArgs;
     assertEquals('other_source.html', args.pathSuffix);
-    assertTrue(ironCollapses[1]!.opened);
-    assertFalse(ironCollapses[0]!.opened);
+    assertTrue(crCollapses[1]!.opened);
+    assertFalse(crCollapses[0]!.opened);
 
     assertEquals(
         'Unknown',
-        ironCollapses[0]!.querySelector<HTMLElement>(
-                             '.context-url')!.textContent!.trim());
+        crCollapses[0]!.querySelector<HTMLElement>(
+                           '.context-url')!.textContent!.trim());
     assertEquals(
         nextRuntimeError.contextUrl,
-        ironCollapses[1]!.querySelector<HTMLElement>(
-                             '.context-url')!.textContent!.trim());
+        crCollapses[1]!.querySelector<HTMLElement>(
+                           '.context-url')!.textContent!.trim());
   });
 
   // Tests that the element can still be shown with an invalid URL. Regression

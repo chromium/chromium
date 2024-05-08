@@ -4,19 +4,19 @@
     height: 100%;
   }
 
-  iron-icon {
+  cr-icon {
     --iron-icon-fill-color: var(--google-grey-700);
     flex-shrink: 0;
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
   }
 
-  iron-icon[icon='cr:warning'] {
+  cr-icon[icon='cr:warning'] {
     /* TODO(dbeam): find dark mode equivalent for this orange. */
     --iron-icon-fill-color: #ff9800;  /* --paper-orange-500 */
   }
 
-  iron-icon[icon='cr:error'] {
+  cr-icon[icon='cr:error'] {
     --iron-icon-fill-color: var(--error-color);
   }
 
@@ -133,9 +133,9 @@
                   on-keydown="onErrorItemAction_" tabindex="0"
                   role="button" aria-expanded$="[[isAriaExpanded_(
                       index, selectedEntry_)]]">
-                <iron-icon icon$="cr:[[computeErrorIcon_(item)]]"
+                <cr-icon icon$="cr:[[computeErrorIcon_(item)]]"
                     title$="[[computeErrorTypeLabel_(item)]]">
-                </iron-icon>
+                </cr-icon>
                 <div id$="[[item.id]]" class="error-message">
                   [[item.message]]
                 </div>
@@ -148,7 +148,7 @@
                   aria-describedby$="[[item.id]]"
                   aria-label="$i18n{clearEntry}"></cr-icon-button>
             </div>
-            <iron-collapse opened="[[isOpened_(index, selectedEntry_)]]">
+            <cr-collapse opened="[[isOpened_(index, selectedEntry_)]]">
               <div class="devtools-controls">
                 <template is="dom-if"
                     if="[[computeIsRuntimeError_(item)]]">
@@ -183,7 +183,7 @@
                     could-not-display-code="$i18n{noErrorsToShow}">
                 </extensions-code-section>
               </div>
-            </iron-collapse>
+            </cr-collapse>
           </div>
         </template>
       </div>

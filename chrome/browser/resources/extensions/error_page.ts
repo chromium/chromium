@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './code_section.js';
 import './shared_style.css.js';
 
@@ -353,7 +353,7 @@ export class ExtensionsErrorPageElement extends PolymerElement {
   }
 
   /**
-   * Determine if the iron-collapse should be opened (expanded).
+   * Determine if the cr-collapse should be opened (expanded).
    */
   private isOpened_(index: number): boolean {
     return index === this.selectedEntry_;
