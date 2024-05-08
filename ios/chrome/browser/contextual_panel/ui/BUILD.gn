@@ -10,11 +10,20 @@ source_set("ui") {
     "panel_content_view_controller.mm",
   ]
   deps = [
+    ":public",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  sources = [
+    "panel_block_data.h",
+    "panel_block_data.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }

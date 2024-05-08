@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -31,7 +32,7 @@ NSString* const kSectionIdentifier = @"section1";
 
 @implementation PanelContentViewController {
   // The header view at the top of the panel.
-  UIView* _headerView;
+  UIVisualEffectView* _headerView;
 
   // The button to close the view.
   UIButton* _closeButton;
@@ -41,28 +42,27 @@ NSString* const kSectionIdentifier = @"section1";
 
   // The data source for this collection view.
   UICollectionViewDiffableDataSource<NSString*, NSString*>* _diffableDataSource;
+
+  // The blocks currently being displayed.
+  NSArray<PanelBlockData*>* _panelBlocks;
 }
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   [self createCollectionView];
 
-  // Set up some initial test data for the collection view.
-  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
-      [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot appendSectionsWithIdentifiers:@[ kSectionIdentifier ]];
-  [snapshot appendItemsWithIdentifiers:@[ @"testItem1", @"testItem2" ]];
-  [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
-
   [self.view addSubview:_collectionView];
   AddSameConstraints(self.view, _collectionView);
 
   // Create and set up the header view. This should be added after the
   // collection view because the header should go above the collection view.
-  _headerView = [[UIView alloc] init];
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+  _headerView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _headerView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   [self.view addSubview:_headerView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -75,29 +75,87 @@ NSString* const kSectionIdentifier = @"section1";
 
   [self createCloseButton];
 
-  [_headerView addSubview:_closeButton];
+  [_headerView.contentView addSubview:_closeButton];
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.topAnchor constraintEqualToAnchor:_headerView.topAnchor
-                                           constant:kCloseButtonTopMargin],
-    [_headerView.trailingAnchor
+    [_closeButton.topAnchor
+        constraintEqualToAnchor:_headerView.contentView.topAnchor
+                       constant:kCloseButtonTopMargin],
+    [_headerView.contentView.trailingAnchor
         constraintEqualToAnchor:_closeButton.trailingAnchor
                        constant:kCloseButtonTrailingMargin],
   ]];
 }
 
-- (void)closeButtonTapped {
-  [self.contextualSheetCommandHandler hideContextualSheet];
+#pragma mark - Public methods
+
+- (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks {
+  _panelBlocks = [panelBlocks copy];
+
+  if (_diffableDataSource) {
+    [_diffableDataSource applySnapshot:[self dataSnapshot]
+                  animatingDifferences:NO];
+  }
 }
 
 #pragma mark - Private
 
+// Generates and returns a data source snapshot for the current data.
+- (NSDiffableDataSourceSnapshot<NSString*, NSString*>*)dataSnapshot {
+  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[ kSectionIdentifier ]];
+  NSMutableArray<NSString*>* itemIdentifiers = [[NSMutableArray alloc] init];
+  for (PanelBlockData* data in _panelBlocks) {
+    [itemIdentifiers addObject:data.blockType];
+  }
+  [snapshot appendItemsWithIdentifiers:itemIdentifiers];
+  return snapshot;
+}
+
+// Target for the close button.
+- (void)closeButtonTapped {
+  [self.contextualSheetCommandHandler hideContextualSheet];
+}
+
+// Looks up the correct registration for the provided item. Wrapper for
+// UICollectionViewDiffableDataSource's cellProvider parameter.
+- (UICollectionViewCell*)
+    diffableDataSourceCellProviderForCollectionView:
+        (UICollectionView*)collectionView
+                                          indexPath:(NSIndexPath*)indexPath
+                                     itemIdentifier:(id)itemIdentifier {
+  UICollectionViewCellRegistration* registration =
+      [_panelBlocks[indexPath.row] cellRegistration];
+  return [collectionView
+      dequeueConfiguredReusableCellWithRegistration:registration
+                                       forIndexPath:indexPath
+                                               item:itemIdentifier];
+}
+
+#pragma mark - View Initialization
+
 // Creates the layout for the collection view.
 - (UICollectionViewLayout*)createLayout {
-  UICollectionLayoutListConfiguration* configuration =
-      [[UICollectionLayoutListConfiguration alloc]
-          initWithAppearance:UICollectionLayoutListAppearancePlain];
-  return [UICollectionViewCompositionalLayout
-      layoutWithListConfiguration:configuration];
+  NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 fractionalWidthDimension:1.]
+             heightDimension:[NSCollectionLayoutDimension
+                                 estimatedDimension:200]];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+
+  NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 fractionalWidthDimension:1.]
+             heightDimension:[NSCollectionLayoutDimension
+                                 estimatedDimension:200]];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup verticalGroupWithLayoutSize:groupSize
+                                                  subitems:@[ item ]];
+
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  return [[UICollectionViewCompositionalLayout alloc] initWithSection:section];
 }
 
 // Creates and initializes `_collectionView`.
@@ -106,29 +164,16 @@ NSString* const kSectionIdentifier = @"section1";
       [[UICollectionView alloc] initWithFrame:CGRectZero
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-  _collectionView.backgroundColor = UIColor.greenColor;
   _collectionView.contentInset = UIEdgeInsetsMake(kHeaderHeight, 0, 0, 0);
 
-  UICollectionViewCellRegistration* registration =
-      [UICollectionViewCellRegistration
-          registrationWithCellClass:[UICollectionViewListCell class]
-               configurationHandler:^(UICollectionViewListCell* cell,
-                                      NSIndexPath* indexPath, id item) {
-                 UIListContentConfiguration* configuration =
-                     cell.defaultContentConfiguration;
-
-                 configuration.text = @"Test Test";
-
-                 cell.contentConfiguration = configuration;
-               }];
-
+  __weak __typeof(self) weakSelf = self;
   auto cellProvider =
       ^UICollectionViewCell*(UICollectionView* collectionView,
                              NSIndexPath* indexPath, id itemIdentifier) {
-        return [collectionView
-            dequeueConfiguredReusableCellWithRegistration:registration
-                                             forIndexPath:indexPath
-                                                     item:itemIdentifier];
+        return [weakSelf
+            diffableDataSourceCellProviderForCollectionView:collectionView
+                                                  indexPath:indexPath
+                                             itemIdentifier:itemIdentifier];
       };
 
   _diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
@@ -136,6 +181,9 @@ NSString* const kSectionIdentifier = @"section1";
                 cellProvider:cellProvider];
 
   _collectionView.dataSource = _diffableDataSource;
+
+  [_diffableDataSource applySnapshot:[self dataSnapshot]
+                animatingDifferences:NO];
 }
 
 // Creates and initializes `_closeButton`.

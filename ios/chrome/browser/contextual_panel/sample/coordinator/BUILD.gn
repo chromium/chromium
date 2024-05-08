@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "sample_block_modulator.h",
+    "sample_block_modulator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/contextual_panel/coordinator:public",
+    "//ios/chrome/browser/contextual_panel/ui:public",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

@@ -40,6 +40,11 @@ bool ContextualPanelTabHelper::HasCachedConfigsAvailable() {
   return !sorted_weak_configurations_.empty();
 }
 
+std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+ContextualPanelTabHelper::GetCurrentCachedConfigurations() {
+  return sorted_weak_configurations_;
+}
+
 base::WeakPtr<ContextualPanelItemConfiguration>
 ContextualPanelTabHelper::GetFirstCachedConfig() {
   return HasCachedConfigsAvailable() ? sorted_weak_configurations_[0] : nullptr;
@@ -134,6 +139,9 @@ void ContextualPanelTabHelper::ModelCallbackReceived(
     ContextualPanelItemType item_type,
     std::unique_ptr<ContextualPanelItemConfiguration> configuration) {
   DCHECK(!responses_[item_type].completed);
+  if (configuration) {
+    DCHECK_EQ(item_type, configuration->item_type);
+  }
   responses_[item_type] = ModelResponse(std::move(configuration));
 
   // Check if all models have returned.

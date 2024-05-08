@@ -38,6 +38,11 @@ class ContextualPanelTabHelper
   // false before all the models have returned a response or timed out.
   bool HasCachedConfigsAvailable();
 
+  // Returns a list of the finalized Contextual Panel model configs
+  // currently available in the cached list of sorted configs.
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+  GetCurrentCachedConfigurations();
+
   // Gets the first config in the cached list of sorted Contextual Panel model
   // configs.
   base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig();

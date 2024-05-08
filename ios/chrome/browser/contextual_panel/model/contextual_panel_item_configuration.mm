@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+
 const int ContextualPanelItemConfiguration::high_relevance = 80;
 
 const int ContextualPanelItemConfiguration::low_relevance = 20;
 
-ContextualPanelItemConfiguration::ContextualPanelItemConfiguration() = default;
+ContextualPanelItemConfiguration::ContextualPanelItemConfiguration(
+    ContextualPanelItemType item_type)
+    : item_type(item_type) {}
 
 ContextualPanelItemConfiguration::~ContextualPanelItemConfiguration() = default;

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ContextualSheetCommands;
+@class PanelBlockData;
 
 // A view controller to display the contents of the Contextual Panel.
 @interface PanelContentViewController : UIViewController
@@ -15,6 +16,9 @@
 // The handler for ContextualSheetCommands.
 @property(nonatomic, weak) id<ContextualSheetCommands>
     contextualSheetCommandHandler;
+
+// Updates the current block data.
+- (void)setPanelBlocks:(NSArray<PanelBlockData*>*)panelBlocks;
 
 @end
 

@@ -9,6 +9,7 @@
 #import "components/commerce/core/subscriptions/subscriptions_storage.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/web/public/web_state.h"
 
 PriceInsightsModel::PriceInsightsModel() {}
@@ -134,13 +135,17 @@ bool PriceInsightsModel::HasPendingExecutions(const GURL& url) {
   return false;
 }
 
-PriceInsightsItemConfiguration::PriceInsightsItemConfiguration() = default;
+PriceInsightsItemConfiguration::PriceInsightsItemConfiguration()
+    : ContextualPanelItemConfiguration(
+          ContextualPanelItemType::PriceInsightsItem) {}
 
 PriceInsightsItemConfiguration::~PriceInsightsItemConfiguration() = default;
 
 PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
     PriceInsightsItemConfiguration* config)
-    : can_price_track(config->can_price_track),
+    : ContextualPanelItemConfiguration(
+          ContextualPanelItemType::PriceInsightsItem),
+      can_price_track(config->can_price_track),
       is_subscribed(config->is_subscribed),
       product_info(config->product_info),
       price_insights_info(config->price_insights_info) {

@@ -9,6 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 
+enum class ContextualPanelItemType;
+
 // Data to configure a Contextual Panel item. Individual features can subclass
 // this to add their own data.
 struct ContextualPanelItemConfiguration
@@ -19,7 +21,7 @@ struct ContextualPanelItemConfiguration
   // A constant defined to always be a low relevance amount.
   static const int low_relevance;
 
-  ContextualPanelItemConfiguration();
+  explicit ContextualPanelItemConfiguration(ContextualPanelItemType item_type);
   ~ContextualPanelItemConfiguration();
   ContextualPanelItemConfiguration(
       const ContextualPanelItemConfiguration& other) = delete;
@@ -33,6 +35,9 @@ struct ContextualPanelItemConfiguration
     // The image name is an SFSymbol to display.
     SFSymbol,
   };
+
+  // The item type of this item.
+  const ContextualPanelItemType item_type;
 
   // The string the UI can show the user if this item is the primary item in the
   // contextual panel. If none is provided, no large entrypoint can be shown.
