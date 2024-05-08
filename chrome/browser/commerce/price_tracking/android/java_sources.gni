@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 price_tracking_java_sources = [
+  "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/CurrentTabPriceTrackingStateSupplier.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotificationManagerFactory.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotificationManagerImpl.java",
   "//chrome/browser/commerce/price_tracking/android/java/src/org/chromium/chrome/browser/price_tracking/PriceDropNotifier.java",
