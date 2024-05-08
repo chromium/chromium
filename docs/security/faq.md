@@ -608,6 +608,29 @@ mitigations within the browser. For users, the very marginal security benefit is
 not usually a good trade-off for the compatibility issues and performance
 degradation the toolkit can cause.
 
+<a name="TOC-dangling-pointers"></a>
+### Dangling pointers
+
+Chromium can be instrumented to detect [dangling
+pointers](https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md):
+
+Notable build flags are:
+- `enable_dangling_raw_ptr_checks=true`
+- `use_asan_unowned_ptr=true`
+
+Notable runtime flags are:
+- `--enable-features=PartitionAllocDanglingPtr`
+
+It is important to note that detecting a dangling pointer alone does not
+necessarily indicate a security vulnerability. A dangling pointer becomes a
+security vulnerability only when it is dereferenced and used after it becomes
+dangling.
+
+In general, dangling pointer issues should be assigned to feature teams as
+ordinary bugs and be fixed by them. However, they can be considered only if
+there is a demonstrable way to show a memory corruption. e.g. with a POC causing
+crash with ASAN **without the flags above**.
+
 ## Certificates & Connection Indicators
 
 <a name="TOC-Where-are-the-security-indicators-located-in-the-browser-window-"></a>
