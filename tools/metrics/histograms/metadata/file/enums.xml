@@ -731,6 +731,17 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Failed to get authorization code: access denied"/>
   <int value="12" label="Failed to get authorization code: server error"/>
   <int value="13" label="Failed to get authorization code: developer error"/>
+  <int value="14"
+      label="Failed to get authorization code: session information not
+             sufficient"/>
+  <int value="15"
+      label="Failed to get authorization code: multi factor auth required"/>
+  <int value="16" label="Failed to get authorization code: password expired"/>
+  <int value="17" label="Failed to get authorization code: unauthorized scope"/>
+  <int value="18"
+      label="Failed to get authorization code: sign in and application access
+             required"/>
+  <int value="19" label="Failed to get authorization code: user account error"/>
 </enum>
 
 <enum name="OfficeOneDriveOpenErrors">
