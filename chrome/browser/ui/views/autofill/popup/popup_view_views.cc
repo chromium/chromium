@@ -716,6 +716,17 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
     return false;
   }
 
+// TODO(b/339187209): On MaOS, conversion of a character key event to
+// `NativeWebKeyboardEvent` hits `NOTREACHED` in `ui::DomKeyFromNSEvent`. This
+// doesn't affect our use case as we handle only non-character events
+// (Arrows/Esc/etc) for navigation. But it needs to be investigated and ideally
+// removed.
+#if BUILDFLAG(IS_MAC)
+  if (event.is_char()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   // Handling events in the controller (the delegate's handler is prioritized by
   // the search bar) enables keyboard navigation when the search bar input
   // field is focused.
