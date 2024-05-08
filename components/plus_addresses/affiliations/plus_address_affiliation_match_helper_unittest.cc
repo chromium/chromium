@@ -45,6 +45,31 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
         plus_address_service(), mock_affiliation_service());
   }
 
+  testing::AssertionResult ExpectMatchHelperToReturnProfiles(
+      const PlusProfile& requested_profile,
+      const std::vector<PlusProfile>& expected_profiles) {
+    base::MockCallback<
+        PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
+        callback;
+    int calls = 0;
+    ON_CALL(callback, Run(UnorderedElementsAreArray(expected_profiles)))
+        .WillByDefault([&] { ++calls; });
+    match_helper()->GetAffiliatedPlusProfiles(requested_profile,
+                                              callback.Get());
+    return calls == 1
+               ? testing::AssertionSuccess()
+               : (testing::AssertionFailure() << "Error fetching profiles.");
+  }
+
+  void SaveProfiles(const std::vector<PlusProfile>& profiles) {
+    std::vector<PlusAddressDataChange> changes;
+    for (const PlusProfile& profile : profiles) {
+      changes.push_back(
+          PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile));
+    }
+    plus_address_service()->OnWebDataChangedBySync(changes);
+  }
+
   MockAffiliationService* mock_affiliation_service() {
     return &mock_affiliation_service_;
   }
@@ -125,24 +150,87 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
   PlusProfile profile4 = test::CreatePlusProfileWithFacet(
       FacetURI::FromCanonicalSpec("https://bar.example.com"));
 
-  plus_address_service()->OnWebDataChangedBySync(
-      {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
-       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2),
-       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile3),
-       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile4)});
-  EXPECT_THAT(
+  SaveProfiles({profile1, profile2, profile3, profile4});
+  ASSERT_THAT(
       plus_address_service()->GetPlusProfiles(),
       UnorderedElementsAreArray({profile1, profile2, profile3, profile4}));
 
   EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
       .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
-  base::MockCallback<
-      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
-      callback;
+  // Simulate no grouping affiliations, only the requested facet is returned.
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
   // `profile3` is not a PSL match because it is an Android facet.
   // `profile4` is not a match due to the PSL extension list exception.
-  EXPECT_CALL(callback, Run(UnorderedElementsAreArray({profile1, profile2})));
-  match_helper()->GetAffiliatedPlusProfiles(profile1, callback.Get());
+  EXPECT_TRUE(
+      ExpectMatchHelperToReturnProfiles(profile1, {profile1, profile2}));
+}
+
+// Verifies that group affiliation matches are returned.
+TEST_F(PlusAddressAffiliationMatchHelperTest, GroupedMatchesTest) {
+  PlusProfile profile1 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example.com"));
+  PlusProfile profile2 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example2.com"));
+  PlusProfile android_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec(kAffiliatedAndroidApp));
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  SaveProfiles({profile1, profile2, android_profile, group_profile});
+  ASSERT_THAT(plus_address_service()->GetPlusProfiles(),
+              UnorderedElementsAreArray(
+                  {profile1, profile2, android_profile, group_profile}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
+  group.facets.emplace_back(absl::get<FacetURI>(android_profile.facet));
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // `profile2` was not a PSL match nor group affiliated.
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
+      profile1, {profile1, android_profile, group_profile}));
+}
+
+// Verifies that elements in both group and PSL matches matches are returned
+// only once.
+TEST_F(PlusAddressAffiliationMatchHelperTest,
+       GroupedAndPSLMatchesIntersectTest) {
+  PlusProfile profile1 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example.com"));
+  PlusProfile psl_match = test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://foo.example.com"));
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  SaveProfiles({profile1, psl_match, group_profile});
+  ASSERT_THAT(
+      plus_address_service()->GetPlusProfiles(),
+      testing::UnorderedElementsAreArray({profile1, psl_match, group_profile}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(profile1.facet));
+  group.facets.emplace_back(absl::get<FacetURI>(psl_match.facet));
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // `psl_match` is part of both group and PSL matches but must be returned only
+  // once.
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
+      profile1, {profile1, psl_match, group_profile}));
 }
 
 }  // namespace plus_addresses

@@ -37,10 +37,10 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
     return;
   }
 
-  FacetURI facet = absl::get<FacetURI>(plus_profile.facet);
-  // TODO(b/324553908): Include other sources (e.g. credential sharing, grouped
-  // affiliations).
-  const int kCallsNumber = 1;
+  const FacetURI& facet = absl::get<FacetURI>(plus_profile.facet);
+  // The barrier is used to collect affiliated plus addresses from multiple
+  // sources (i.e. grouped affiliations, PSL matches), combine and return them.
+  const int kCallsNumber = 2;
   auto barrier_callback = base::BarrierCallback<std::vector<PlusProfile>>(
       kCallsNumber,
       base::BindOnce(&PlusAddressAffiliationMatchHelper::MergeResults,
@@ -49,6 +49,11 @@ void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
   GetPSLExtensions(base::BindOnce(
       &PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches,
       weak_factory_.GetWeakPtr(), barrier_callback, facet));
+
+  affiliation_service_->GetGroupingInfo(
+      {facet},
+      base::BindOnce(&PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived,
+                     weak_factory_.GetWeakPtr(), barrier_callback));
 }
 
 void PlusAddressAffiliationMatchHelper::GetPSLExtensions(
@@ -99,15 +104,38 @@ void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
   std::move(matches_received_callback).Run(std::move(matches));
 }
 
+void PlusAddressAffiliationMatchHelper::OnGroupingInfoReceived(
+    base::RepeatingCallback<void(std::vector<PlusProfile>)>
+        matches_received_callback,
+    const std::vector<affiliations::GroupedFacets>& results) {
+  // GetGroupingInfo() returns a an affiliation group for each facet. Asking for
+  // only one facet means that it must return only one group that includes
+  // requested facet itself.
+  CHECK_EQ(1U, results.size());
+
+  std::vector<PlusProfile> matches;
+  for (const affiliations::Facet& facet : results[0].facets) {
+    std::optional<PlusProfile> profile =
+        plus_address_service_->GetPlusProfile(facet.uri);
+    if (profile) {
+      matches.push_back(std::move(*profile));
+    }
+  }
+  std::move(matches_received_callback).Run(std::move(matches));
+}
+
 void PlusAddressAffiliationMatchHelper::MergeResults(
     AffiliatedPlusProfilesCallback result_callback,
     std::vector<std::vector<PlusProfile>> results) {
   std::vector<PlusProfile> response;
   for (std::vector<PlusProfile>& profiles : results) {
-    for (PlusProfile& profile : profiles) {
-      response.push_back(std::move(profile));
-    }
+    response.insert(response.end(), std::make_move_iterator(profiles.begin()),
+                    std::make_move_iterator(profiles.end()));
   }
+  // Remove duplicates.
+  std::sort(response.begin(), response.end(), PlusProfileFacetComparator());
+  response.erase(std::unique(response.begin(), response.end()), response.end());
+
   std::move(result_callback).Run(std::move(response));
 }
 

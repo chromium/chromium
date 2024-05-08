@@ -69,6 +69,11 @@ class PlusAddressAffiliationMatchHelper {
       const affiliations::FacetURI& facet,
       const base::flat_set<std::string>& psl_extensions);
 
+  void OnGroupingInfoReceived(
+      base::RepeatingCallback<void(std::vector<PlusProfile>)>
+          matches_received_callback,
+      const std::vector<affiliations::GroupedFacets>& results);
+
   // Merges results from various affiliation types, prioritizes them, eliminates
   // duplicates, and delivers a ranked list of affiliated plus profiles.
   void MergeResults(AffiliatedPlusProfilesCallback result_callback,
