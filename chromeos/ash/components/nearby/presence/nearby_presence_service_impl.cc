@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
+#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
@@ -22,56 +22,18 @@
 
 namespace {
 
-::nearby::internal::DeviceType ConvertMojomDeviceType(
-    ash::nearby::presence::mojom::PresenceDeviceType mojom_type) {
-  switch (mojom_type) {
-    case ash::nearby::presence::mojom::PresenceDeviceType::kUnknown:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_UNKNOWN;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kPhone:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_PHONE;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kTablet:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_TABLET;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kDisplay:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_DISPLAY;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kLaptop:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kTv:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_TV;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kWatch:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_WATCH;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kChromeos:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS;
-    case ash::nearby::presence::mojom::PresenceDeviceType::kFoldable:
-      return ::nearby::internal::DeviceType::DEVICE_TYPE_FOLDABLE;
-  }
-}
-
-::nearby::internal::DeviceIdentityMetaData ConvertMetadataFromMojom(
-    ash::nearby::presence::mojom::Metadata* metadata) {
-  ::nearby::internal::DeviceIdentityMetaData proto;
-
-  proto.set_device_type(ConvertMojomDeviceType(metadata->device_type));
-  proto.set_device_name(metadata->device_name);
-  proto.set_bluetooth_mac_address(
-      std::string(metadata->bluetooth_mac_address.begin(),
-                  metadata->bluetooth_mac_address.end()));
-  proto.set_device_id(
-      std::string(metadata->device_id.begin(), metadata->device_id.end()));
-  return proto;
-}
-
 ::nearby::presence::PresenceDevice BuildPresenceDevice(
     ash::nearby::presence::mojom::PresenceDevicePtr device) {
   ::nearby::presence::PresenceDevice presence_device(device->endpoint_id);
   presence_device.SetDeviceIdentityMetaData(
-      ConvertMetadataFromMojom(device->metadata.get()));
+      ash::nearby::presence::MetadataFromMojom(device->metadata.get()));
   for (auto action : device->actions) {
     presence_device.AddAction(static_cast<uint32_t>(action));
   }
 
   if (device->decrypt_shared_credential.get()) {
     presence_device.SetDecryptSharedCredential(
-        ash::nearby::presence::proto::SharedCredentialFromMojom(
+        ash::nearby::presence::SharedCredentialFromMojom(
             device->decrypt_shared_credential.get()));
   }
 
