@@ -35,7 +35,7 @@ build_webui_tests("build_webui_tests") {
     "frequency_channel_utils_test.ts",
     "input_card_test.ts",
     "input_list_test.ts",
-    "ip_config_info_drawer_test.js",
+    "ip_config_info_drawer_test.ts",
     "keyboard_tester_test.js",
     "memory_card_test.ts",
     "mojo_interface_provider_test.js",

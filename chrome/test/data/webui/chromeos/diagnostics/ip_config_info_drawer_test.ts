@@ -6,86 +6,78 @@ import 'chrome://diagnostics/ip_config_info_drawer.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
+import {CellularNetwork, EthernetNetwork, WiFiNetwork} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork, fakeWifiNetwork, fakeWifiNetworkEmptyNameServers, fakeWifiNetworkMultipleNameServers, fakeWifiNetworkNoNameServers} from 'chrome://diagnostics/fake_data.js';
 import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
 import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
+import {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 suite('ipConfigInfoDrawerTestSuite', function() {
-  /** @type {?IpConfigInfoDrawerElement} */
-  let ipConfigInfoDrawerElement = null;
+  let ipConfigInfoDrawerElement: IpConfigInfoDrawerElement|null = null;
 
-  /** @type {?TestDiagnosticsBrowserProxy} */
-  let DiagnosticsBrowserProxy = null;
+  const DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
 
   suiteSetup(() => {
-    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
     DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    ipConfigInfoDrawerElement.remove();
+    ipConfigInfoDrawerElement?.remove();
     ipConfigInfoDrawerElement = null;
   });
 
-  /**
-   * @param {!Network=} network
-   */
-  function initializeIpConfigInfoDrawerElement(network = fakeEthernetNetwork) {
-    ipConfigInfoDrawerElement = /** @type {!IpConfigInfoDrawerElement} */ (
-        document.createElement('ip-config-info-drawer'));
-    ipConfigInfoDrawerElement.network = network;
+  function initializeIpConfigInfoDrawerElement(
+      network: WiFiNetwork|EthernetNetwork|CellularNetwork =
+          fakeEthernetNetwork) {
+    ipConfigInfoDrawerElement = document.createElement('ip-config-info-drawer');
+    ipConfigInfoDrawerElement.network = network as Network;
     document.body.appendChild(ipConfigInfoDrawerElement);
-    assertTrue(!!ipConfigInfoDrawerElement);
+    assert(ipConfigInfoDrawerElement);
     return flushTasks();
   }
 
   /**
    * Selects the drawer's hideable content area if the drawer is expanded.
-   * @return {HTMLElement}
    */
-  function getDrawerContentContainer() {
-    return /** @type {!HTMLElement} */ (
-        ipConfigInfoDrawerElement.shadowRoot.querySelector(
-            '#ipConfigInfoElement'));
+  function getDrawerContentContainer(): HTMLDivElement|null {
+    assert(ipConfigInfoDrawerElement);
+    return ipConfigInfoDrawerElement.shadowRoot!.querySelector<HTMLDivElement>(
+        '#ipConfigInfoElement');
   }
 
   /**
    * Selects the drawer's toggle button.
-   * @return {!HTMLElement}
    */
-  function getDrawerToggle() {
+  function getDrawerToggle(): CrExpandButtonElement {
+    assert(ipConfigInfoDrawerElement);
     const toggleButton =
-        ipConfigInfoDrawerElement.shadowRoot.querySelector('#drawerToggle');
-    assertTrue(!!toggleButton);
-    return /** @type {!HTMLElement} */ (toggleButton);
+        ipConfigInfoDrawerElement.shadowRoot!
+            .querySelector<CrExpandButtonElement>('#drawerToggle');
+    assert(toggleButton);
+    return toggleButton;
   }
 
-  /** @return {string} */
-  function getNameServersHeaderText() {
+  function getNameServersHeaderText(): string {
+    assert(ipConfigInfoDrawerElement);
     return dx_utils.getDataPoint(ipConfigInfoDrawerElement, '#nameServers')
         .header;
   }
 
-  /**
-   * @suppress {visibility}
-   * @param {number} prefix
-   * @return {!Promise}
-   */
-  function setRoutingPrefix(prefix) {
-    assertTrue(
-        !!ipConfigInfoDrawerElement.network &&
-        !!ipConfigInfoDrawerElement.network.ipConfig);
+  function setRoutingPrefix(prefix: number): Promise<void> {
+    assert(ipConfigInfoDrawerElement);
+    assert(ipConfigInfoDrawerElement.network);
+    assert(ipConfigInfoDrawerElement.network.ipConfig);
 
     ipConfigInfoDrawerElement.network.ipConfig.routingPrefix = prefix;
     ipConfigInfoDrawerElement.notifyPath('network.ipConfig.routingPrefix');
@@ -95,11 +87,11 @@ suite('ipConfigInfoDrawerTestSuite', function() {
 
   test('IpConfigInfoDrawerInitialized', () => {
     return initializeIpConfigInfoDrawerElement().then(() => {
+      assert(ipConfigInfoDrawerElement);
       assertTrue(isVisible(getDrawerToggle()));
       dx_utils.assertElementContainsText(
-          /** @type {HTMLElement} */ (
-              ipConfigInfoDrawerElement.shadowRoot.querySelector(
-                  '#drawerTitle')),
+          ipConfigInfoDrawerElement.shadowRoot!
+              .querySelector<CrExpandButtonElement>('#drawerTitle'),
           ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerTitle'));
     });
   });
@@ -125,8 +117,8 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#gateway',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerGateway'),
-              `${fakeWifiNetwork.ipConfig.gateway}`);
+              ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerGateway'),
+              `${fakeWifiNetwork!.ipConfig!.gateway}`);
         });
   });
 
@@ -137,7 +129,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerSubnetMask'),
               '255.255.255.0');
 
           return setRoutingPrefix(0);
@@ -145,7 +137,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerSubnetMask'),
               '');
 
           return setRoutingPrefix(32);
@@ -153,7 +145,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerSubnetMask'),
               '255.255.255.255');
 
           return setRoutingPrefix(33);
@@ -161,7 +153,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
-              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              ipConfigInfoDrawerElement!.i18n('ipConfigInfoDrawerSubnetMask'),
               '');
         });
   });
@@ -173,7 +165,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#nameServers', 'Name Server',
-              `${fakeEthernetNetwork.ipConfig.nameServers.join(', ')}`);
+              `${fakeEthernetNetwork!.ipConfig!.nameServers!.join(', ')}`);
         });
   });
 
@@ -183,7 +175,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#nameServers', 'Name Servers',
-              ipConfigInfoDrawerElement.i18n('networkDnsNotConfigured'));
+              ipConfigInfoDrawerElement!.i18n('networkDnsNotConfigured'));
         });
   });
 
@@ -193,7 +185,7 @@ suite('ipConfigInfoDrawerTestSuite', function() {
         .then(() => {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#nameServers', 'Name Servers',
-              ipConfigInfoDrawerElement.i18n('networkDnsNotConfigured'));
+              ipConfigInfoDrawerElement!.i18n('networkDnsNotConfigured'));
         });
   });
 
