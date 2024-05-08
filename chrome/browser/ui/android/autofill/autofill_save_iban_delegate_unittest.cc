@@ -23,7 +23,8 @@ const std::u16string kUserProvidedNickname = u"My doctor's IBAN";
 
 }  // namespace
 
-using SaveIbanOfferUserDecision = AutofillClient::SaveIbanOfferUserDecision;
+using SaveIbanOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveIbanOfferUserDecision;
 using LocalCallbackArgs = std::pair<SaveIbanOfferUserDecision, std::u16string>;
 
 class AutofillSaveIbanDelegateTest : public ChromeRenderViewHostTestHarness {
@@ -47,7 +48,7 @@ class AutofillSaveIbanDelegateTest : public ChromeRenderViewHostTestHarness {
   void LocalCallback(SaveIbanOfferUserDecision decision,
                      std::u16string_view nickname);
 
-  AutofillClient::SaveIbanPromptCallback MakeLocalCallback();
+  payments::PaymentsAutofillClient::SaveIbanPromptCallback MakeLocalCallback();
 
   std::optional<LocalCallbackArgs> local_offer_decision_;
 
@@ -62,7 +63,7 @@ void AutofillSaveIbanDelegateTest::LocalCallback(
   local_offer_decision_.emplace(decision, nickname);
 }
 
-AutofillClient::SaveIbanPromptCallback
+payments::PaymentsAutofillClient::SaveIbanPromptCallback
 AutofillSaveIbanDelegateTest::MakeLocalCallback() {
   return base::BindOnce(
       &AutofillSaveIbanDelegateTest::LocalCallback,

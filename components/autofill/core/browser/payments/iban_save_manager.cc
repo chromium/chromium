@@ -176,10 +176,11 @@ bool IbanSaveManager::AttemptToOfferLocalSave(Iban& import_candidate) {
         AutofillMetrics::SaveTypeMetric::LOCAL);
   }
 
-  client_->ConfirmSaveIbanLocally(
+  client_->GetPaymentsAutofillClient()->ConfirmSaveIbanLocally(
       import_candidate, show_save_prompt,
       base::BindOnce(&IbanSaveManager::OnUserDidDecideOnLocalSave,
                      weak_ptr_factory_.GetWeakPtr(), import_candidate));
+
   return show_save_prompt;
 }
 
@@ -214,7 +215,7 @@ IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
 
 void IbanSaveManager::OnUserDidDecideOnLocalSave(
     Iban import_candidate,
-    AutofillClient::SaveIbanOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
   if (!nickname.empty()) {
     std::u16string trimmed_nickname;
@@ -225,7 +226,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
   const std::string& partial_iban_hash =
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value()));
   switch (user_decision) {
-    case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kAccepted:
       autofill_metrics::LogStrikesPresentWhenIbanSaved(
           iban_save_strike_database_->GetStrikes(partial_iban_hash),
           /*is_upload_save=*/false);
@@ -239,8 +240,8 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
         observer_for_testing_->OnAcceptSaveIbanComplete();
       }
       break;
-    case AutofillClient::SaveIbanOfferUserDecision::kIgnored:
-    case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kIgnored:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kDeclined:
       GetIbanSaveStrikeDatabase()->AddStrike(partial_iban_hash);
       if (observer_for_testing_) {
         observer_for_testing_->OnDeclineSaveIbanComplete();
@@ -252,7 +253,7 @@ void IbanSaveManager::OnUserDidDecideOnLocalSave(
 void IbanSaveManager::OnUserDidDecideOnUploadSave(
     Iban import_candidate,
     bool show_save_prompt,
-    AutofillClient::SaveIbanOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
     std::u16string_view nickname) {
   CHECK_NE(import_candidate.record_type(), Iban::kServerIban);
   if (!nickname.empty()) {
@@ -265,16 +266,16 @@ void IbanSaveManager::OnUserDidDecideOnUploadSave(
 
   autofill_metrics::UploadIbanActionMetric action_metric;
   switch (user_decision) {
-    case AutofillClient::SaveIbanOfferUserDecision::kAccepted:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kAccepted:
       action_metric = autofill_metrics::UploadIbanActionMetric::kAccepted;
       SendUploadRequest(import_candidate, show_save_prompt);
       break;
-    case AutofillClient::SaveIbanOfferUserDecision::kIgnored:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kIgnored:
       action_metric = autofill_metrics::UploadIbanActionMetric::kIgnored;
       GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
           base::UTF16ToUTF8(import_candidate.value())));
       break;
-    case AutofillClient::SaveIbanOfferUserDecision::kDeclined:
+    case payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kDeclined:
       action_metric = autofill_metrics::UploadIbanActionMetric::kDeclined;
       GetIbanSaveStrikeDatabase()->AddStrike(GetPartialIbanHashString(
           base::UTF16ToUTF8(import_candidate.value())));
@@ -306,7 +307,7 @@ void IbanSaveManager::OnDidGetUploadDetails(
     if (LegalMessageLine::Parse(*legal_message, &parsed_legal_message_lines,
                                 /*escape_apostrophes=*/true)) {
       context_token_ = context_token;
-      client_->ConfirmUploadIbanToCloud(
+      client_->GetPaymentsAutofillClient()->ConfirmUploadIbanToCloud(
           import_candidate, std::move(parsed_legal_message_lines),
           show_save_prompt,
           base::BindOnce(&IbanSaveManager::OnUserDidDecideOnUploadSave,

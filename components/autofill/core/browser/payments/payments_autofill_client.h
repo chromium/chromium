@@ -23,6 +23,7 @@ struct CardUnmaskPromptOptions;
 class CreditCard;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
+class Iban;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
@@ -42,6 +43,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
  public:
   ~PaymentsAutofillClient() override;
 
+  enum class SaveIbanOfferUserDecision {
+    // The user accepted IBAN save.
+    kAccepted,
+
+    // The user explicitly declined IBAN save.
+    kDeclined,
+
+    // The user ignored the IBAN save prompt.
+    kIgnored,
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -54,6 +66,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // storage.
   using MigrationDeleteCardCallback =
       base::RepeatingCallback<void(const std::string&)>;
+  // Callback to run after local/upload IBAN save is offered. The callback runs
+  // with `user_decision` indicating whether the prompt was accepted, declined,
+  // or ignored. `nickname` is optionally provided by the user when IBAN local
+  // or upload save is offered, and can be an empty string.
+  using SaveIbanPromptCallback =
+      base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
+                              std::u16string_view nickname)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
@@ -61,8 +80,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge();
 #elif !BUILDFLAG(IS_IOS)
-  // Runs `show_migration_dialog_closure` if the user accepts the card migration
-  // offer. This causes the card migration dialog to be shown.
+  // Runs `show_migration_dialog_closure` if the user accepts the card
+  // migration offer. This causes the card migration dialog to be shown.
   virtual void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure);
 
@@ -106,6 +125,21 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Hides save card offer or confirmation prompt.
   virtual void HideSaveCardPromptPrompt();
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmSaveIbanLocally(const Iban& iban,
+                                      bool should_show_prompt,
+                                      SaveIbanPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmUploadIbanToCloud(const Iban& iban,
+                                        LegalMessageLines legal_message_lines,
+                                        bool should_show_prompt,
+                                        SaveIbanPromptCallback callback);
 
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.

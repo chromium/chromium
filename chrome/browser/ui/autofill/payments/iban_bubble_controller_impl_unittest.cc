@@ -72,7 +72,7 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
  private:
   void LocalSaveIbanCallback(
-      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname) {
     saved_nickname_ = nickname;
   }

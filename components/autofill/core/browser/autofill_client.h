@@ -162,17 +162,6 @@ class AutofillClient {
     kIgnored,
   };
 
-  enum class SaveIbanOfferUserDecision {
-    // The user accepted IBAN save.
-    kAccepted,
-
-    // The user explicitly declined IBAN save.
-    kDeclined,
-
-    // The user ignored the IBAN save prompt.
-    kIgnored,
-  };
-
   enum class UnmaskCardReason {
     // The card is being unmasked for PaymentRequest.
     kPaymentRequest,
@@ -344,14 +333,6 @@ class AutofillClient {
       const UserProvidedCardDetails& user_provided_card_details)>;
 
   using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
-
-  // Callback to run after local/upload IBAN save is offered. The callback runs
-  // with `user_decision` indicating whether the prompt was accepted, declined,
-  // or ignored. `nickname` is optionally provided by the user when IBAN local
-  // or upload save is offered, and can be an empty string.
-  using SaveIbanPromptCallback =
-      base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
-                              std::u16string_view nickname)>;
 
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.
@@ -605,21 +586,6 @@ class AutofillClient {
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
-
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmSaveIbanLocally(const Iban& iban,
-                                      bool should_show_prompt,
-                                      SaveIbanPromptCallback callback);
-
-  // Runs `callback` once the user makes a decision with respect to the
-  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
-  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
-  virtual void ConfirmUploadIbanToCloud(const Iban& iban,
-                                        LegalMessageLines legal_message_lines,
-                                        bool should_show_prompt,
-                                        SaveIbanPromptCallback callback);
 
   // Will show an infobar to get user consent for Credit Card assistive filling.
   // Will run |callback| on success.

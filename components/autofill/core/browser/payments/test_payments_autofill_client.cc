@@ -51,6 +51,24 @@ void TestPaymentsAutofillClient::ConfirmMigrateLocalCardToCloud(
   }
   std::move(start_migrating_cards_callback).Run(migration_card_selection_);
 }
+
+void TestPaymentsAutofillClient::ConfirmSaveIbanLocally(
+    const Iban& iban,
+    bool should_show_prompt,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
+  confirm_save_iban_locally_called_ = true;
+  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+}
+
+void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    LegalMessageLines legal_message_lines,
+    bool should_show_prompt,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
+  confirm_upload_iban_to_cloud_called_ = true;
+  legal_message_lines_ = std::move(legal_message_lines);
+  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TestPaymentsAutofillClient::ShowAutofillProgressDialog(

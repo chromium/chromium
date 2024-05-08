@@ -185,16 +185,6 @@ void AutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 }
 
-void AutofillClient::ConfirmSaveIbanLocally(const Iban& iban,
-                                            bool should_show_prompt,
-                                            SaveIbanPromptCallback callback) {}
-
-void AutofillClient::ConfirmUploadIbanToCloud(
-    const Iban& iban,
-    LegalMessageLines legal_message_lines,
-    bool should_show_prompt,
-    SaveIbanPromptCallback callback) {}
-
 bool AutofillClient::ShowTouchToFillIban(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::Iban> ibans_to_suggest) {

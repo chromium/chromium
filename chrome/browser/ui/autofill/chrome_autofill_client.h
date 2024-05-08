@@ -172,13 +172,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void ConfirmSaveIbanLocally(const Iban& iban,
-                              bool should_show_prompt,
-                              SaveIbanPromptCallback callback) override;
-  void ConfirmUploadIbanToCloud(const Iban& iban,
-                                LegalMessageLines legal_message_lines,
-                                bool should_show_prompt,
-                                SaveIbanPromptCallback callback) override;
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override;
   void ShowEditAddressProfileDialog(

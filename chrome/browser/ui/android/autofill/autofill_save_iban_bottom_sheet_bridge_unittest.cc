@@ -20,7 +20,8 @@
 namespace autofill {
 namespace {
 
-using SaveIbanOfferUserDecision = AutofillClient::SaveIbanOfferUserDecision;
+using SaveIbanOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveIbanOfferUserDecision;
 
 std::u16string_view kIbanLabel = u"CH56 0483 5012 3456 7800 9";
 std::u16string kUserProvidedNickname = u"My Doctor's IBAN";
@@ -33,7 +34,7 @@ class AutofillSaveIbanBottomSheetBridgeTest
     base::DoNothing();
   }
 
-  AutofillClient::SaveIbanPromptCallback MakeLocalCallback() {
+  payments::PaymentsAutofillClient::SaveIbanPromptCallback MakeLocalCallback() {
     return base::BindOnce(&AutofillSaveIbanBottomSheetBridgeTest::LocalCallback,
                           base::Unretained(this));
   }
@@ -41,9 +42,9 @@ class AutofillSaveIbanBottomSheetBridgeTest
 
 class MockDelegate : public AutofillSaveIbanDelegate {
  public:
-  explicit MockDelegate(
-      AutofillClient::SaveIbanPromptCallback save_iban_callback,
-      content::WebContents* web_contents)
+  explicit MockDelegate(payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                            save_iban_callback,
+                        content::WebContents* web_contents)
       : AutofillSaveIbanDelegate(std::move(save_iban_callback), web_contents) {}
   MOCK_METHOD(void, OnUiAccepted, (base::OnceClosure, std::u16string_view));
   MOCK_METHOD(void, OnUiCanceled, ());

@@ -309,23 +309,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ConfirmSaveIbanLocally(
-      const Iban& iban,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback callback) override {
-    confirm_save_iban_locally_called_ = true;
-    offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
-  }
-
-  void ConfirmUploadIbanToCloud(
-      const Iban& iban,
-      LegalMessageLines legal_message_lines,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback callback) override {
-    confirm_upload_iban_to_cloud_called_ = true;
-    legal_message_lines_ = std::move(legal_message_lines);
-    offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
-  }
 
   bool CloseWebauthnDialog() override { return true; }
 
@@ -602,19 +585,6 @@ class TestAutofillClientTemplate : public T {
     return confirm_save_credit_card_to_cloud_called_;
   }
 
-  bool ConfirmSaveIbanLocallyWasCalled() const {
-    return confirm_save_iban_locally_called_;
-  }
-
-  bool ConfirmUploadIbanToCloudWasCalled() const {
-    return confirm_upload_iban_to_cloud_called_ &&
-           !legal_message_lines_.empty();
-  }
-
-  bool offer_to_save_iban_bubble_was_shown() {
-    return offer_to_save_iban_bubble_was_shown_;
-  }
-
   bool get_offer_to_save_credit_card_bubble_was_shown() {
     return offer_to_save_credit_card_bubble_was_shown_.value();
   }
@@ -753,9 +723,6 @@ class TestAutofillClientTemplate : public T {
 
   bool confirm_save_credit_card_to_cloud_called_ = false;
 
-  bool confirm_save_iban_locally_called_ = false;
-  bool confirm_upload_iban_to_cloud_called_ = false;
-  LegalMessageLines legal_message_lines_;
 
   bool format_for_large_keyboard_accessory_ = false;
 
@@ -790,10 +757,6 @@ class TestAutofillClientTemplate : public T {
   // User decision when credit card / CVC local save or upload was offered.
   AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
       AutofillClient::SaveCardOfferUserDecision::kAccepted;
-
-  // Populated if IBAN save was offered. True if bubble was shown, false
-  // otherwise.
-  bool offer_to_save_iban_bubble_was_shown_ = false;
 
   // Populated if mandatory re-auth opt-in was offered, or re-offered,
   // respectively.

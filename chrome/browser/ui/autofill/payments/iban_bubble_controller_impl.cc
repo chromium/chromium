@@ -44,7 +44,8 @@ IbanBubbleControllerImpl::~IbanBubbleControllerImpl() = default;
 void IbanBubbleControllerImpl::OfferLocalSave(
     const Iban& iban,
     bool should_show_prompt,
-    AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback) {
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
@@ -70,7 +71,8 @@ void IbanBubbleControllerImpl::OfferUploadSave(
     const Iban& iban,
     LegalMessageLines legal_message_lines,
     bool should_show_prompt,
-    AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback) {
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
@@ -197,7 +199,9 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
           !nickname.empty(), /*is_upload_save=*/false);
       iban_.set_nickname(nickname);
       std::move(save_iban_prompt_callback_)
-          .Run(AutofillClient::SaveIbanOfferUserDecision::kAccepted, nickname);
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kAccepted,
+               nickname);
       return;
     case IbanBubbleType::kUploadSave:
       CHECK(!save_iban_prompt_callback_.is_null());
@@ -205,7 +209,9 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
           !nickname.empty(), /*is_upload_save=*/true);
       iban_.set_nickname(nickname);
       std::move(save_iban_prompt_callback_)
-          .Run(AutofillClient::SaveIbanOfferUserDecision::kAccepted, nickname);
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kAccepted,
+               nickname);
       return;
     case IbanBubbleType::kManageSavedIban:
       return;
@@ -235,11 +241,13 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
       current_bubble_type_ == IbanBubbleType::kUploadSave) {
     if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
       std::move(save_iban_prompt_callback_)
-          .Run(AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kDeclined,
                /*nickname=*/u"");
     } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
       std::move(save_iban_prompt_callback_)
-          .Run(AutofillClient::SaveIbanOfferUserDecision::kIgnored,
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kIgnored,
                /*nickname=*/u"");
     }
   }

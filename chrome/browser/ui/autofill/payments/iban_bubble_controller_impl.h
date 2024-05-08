@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -42,19 +43,19 @@ class IbanBubbleControllerImpl
   // Sets up the controller and offers to save the `iban` locally.
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
   // with respect to the offer-to-save prompt.
-  void OfferLocalSave(
-      const Iban& iban,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
+  void OfferLocalSave(const Iban& iban,
+                      bool should_show_prompt,
+                      payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                          save_iban_prompt_callback);
 
   // Sets up the controller and offers to save the `iban` to the GPay server.
   // `save_iban_prompt_callback` will be invoked once the user makes a decision
   // with respect to the offer-to-upload save prompt.
-  void OfferUploadSave(
-      const Iban& iban,
-      LegalMessageLines legal_message_lines,
-      bool should_show_prompt,
-      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
+  void OfferUploadSave(const Iban& iban,
+                       LegalMessageLines legal_message_lines,
+                       bool should_show_prompt,
+                       payments::PaymentsAutofillClient::SaveIbanPromptCallback
+                           save_iban_prompt_callback);
 
   // No-op if the bubble is already shown, otherwise, shows the bubble.
   void ReshowBubble();
@@ -125,7 +126,8 @@ class IbanBubbleControllerImpl
 
   // Callback to run once the user makes a decision with respect to the local
   // or GPay server IBAN offer-to-save prompt.
-  AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback_;
+  payments::PaymentsAutofillClient::SaveIbanPromptCallback
+      save_iban_prompt_callback_;
 
   // Whether the bubble is shown after user interacted with the omnibox icon.
   bool is_reshow_ = false;

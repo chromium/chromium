@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/signatures.h"
@@ -70,7 +71,7 @@ class IbanSaveManager {
 
   void OnUserDidDecideOnLocalSaveForTesting(
       const Iban& import_candidate,
-      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"") {
     OnUserDidDecideOnLocalSave(import_candidate, user_decision, nickname);
   }
@@ -78,7 +79,7 @@ class IbanSaveManager {
   void OnUserDidDecideOnUploadSaveForTesting(
       const Iban& import_candidate,
       bool show_save_prompt,
-      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"") {
     OnUserDidDecideOnUploadSave(import_candidate, show_save_prompt,
                                 user_decision, nickname);
@@ -93,6 +94,8 @@ class IbanSaveManager {
     observer_for_testing_ = observer;
   }
 
+  // TODO(crbug.com/b/40937065): Iban needs to be immutable reference
+  // and pass it by value in this case.
   bool AttemptToOfferLocalSaveForTesting(Iban& iban) {
     return AttemptToOfferLocalSave(iban);
   }
@@ -136,12 +139,12 @@ class IbanSaveManager {
   // only be provided in the kAccepted case if the user entered a nickname.
   void OnUserDidDecideOnLocalSave(
       Iban import_candidate,
-      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"");
   void OnUserDidDecideOnUploadSave(
       Iban import_candidate,
       bool show_save_prompt,
-      AutofillClient::SaveIbanOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"");
 
   // Called when a GetIbanUploadDetails call is completed. `show_save_prompt`

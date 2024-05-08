@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
@@ -722,32 +721,6 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
   SaveCardBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferUploadSave(card, legal_message_lines, options,
                         std::move(callback));
-#endif
-}
-
-void ChromeAutofillClient::ConfirmSaveIbanLocally(
-    const Iban& iban,
-    bool should_show_prompt,
-    SaveIbanPromptCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  // Do lazy initialization of IbanBubbleControllerImpl.
-  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
-  IbanBubbleControllerImpl::FromWebContents(web_contents())
-      ->OfferLocalSave(iban, should_show_prompt, std::move(callback));
-#endif
-}
-
-void ChromeAutofillClient::ConfirmUploadIbanToCloud(
-    const Iban& iban,
-    LegalMessageLines legal_message_lines,
-    bool should_show_prompt,
-    SaveIbanPromptCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  // Do lazy initialization of IbanBubbleControllerImpl.
-  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
-  IbanBubbleControllerImpl::FromWebContents(web_contents())
-      ->OfferUploadSave(iban, std::move(legal_message_lines),
-                        should_show_prompt, std::move(callback));
 #endif
 }
 

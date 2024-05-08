@@ -76,6 +76,13 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void CreditCardUploadCompleted(bool card_saved) override;
   bool IsSaveCardPromptVisible() const override;
   void HideSaveCardPromptPrompt() override;
+  void ConfirmSaveIbanLocally(const Iban& iban,
+                              bool should_show_prompt,
+                              SaveIbanPromptCallback callback) override;
+  void ConfirmUploadIbanToCloud(const Iban& iban,
+                                LegalMessageLines legal_message_lines,
+                                bool should_show_prompt,
+                                SaveIbanPromptCallback callback) override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
