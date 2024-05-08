@@ -386901,6 +386901,10 @@
      "e500009f91c0201a2a397a4267a6764cdb1eae8a",
      []
     ],
+    "percent-encoding-expected.txt": [
+     "38856ebfaf3692042c1f4e552616692eafb0b178",
+     []
+    ],
     "redirects-target.html": [
      "5e44230a958c591fa4af082a70e8cd08bc421722",
      []
@@ -632444,7 +632448,7 @@
      ]
     ],
     "percent-encoding.html": [
-     "1f1794bdae09db3a501479717121d93938e9869a",
+     "be688eabfc6222f80ea041a2317bb739d31f8f4c",
      [
       null,
       {
