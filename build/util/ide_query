@@ -91,11 +91,22 @@ def main():
     args.extend(targets)
     env = os.environ.copy()
     env['SISO_EXPERIMENTS'] = 'no-fast-deps'
-    p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2, env=env)
-    if p.returncode != 0:
-      # TODO: report error in IdeAnalysis.Status?
-      sys.stderr.write('build failed with %d\n' % p.returncode)
-      # even if build fails, it should report ideanalysis back.
+    with subprocess.Popen(
+        args,
+        cwd=repo_root,
+        env=env,
+        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+        universal_newlines=True
+    ) as p:
+      for line in p.stdout:
+          print(line, end='', file=sys.stderr)
+      # loop ends when program finishes, but must wait else returncode is None.
+      p.wait()
+      if p.returncode != 0:
+        # TODO: report error in IdeAnalysis.Status?
+        sys.stderr.write('build failed with %d\n' % p.returncode)
+        # even if build fails, it should report ideanalysis back.
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
   args.extend(targets)
