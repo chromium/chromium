@@ -48,6 +48,9 @@ constexpr char kTestPageTitle[] = "Page Title";
 // The url parameter key for the search context.
 constexpr char kSearchContextParamKey[] = "mactx";
 
+// The timestamp param.
+constexpr char kStartTimeQueryParam[] = "qsubts";
+
 // The encoded search context for the test page and title.
 constexpr char kTestEncodedSearchContext[] =
     "ChdodHRwczovL3d3dy5nb29nbGUuY29tLxIKUGFnZSBUaXRsZQ";
@@ -227,6 +230,11 @@ TEST_F(LensOverlayQueryControllerTest,
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
+  std::string actual_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &actual_start_time);
+
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_EQ(query_controller.sent_objects_request_.image_data()
                 .image_metadata()
@@ -283,6 +291,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .has_query_metadata());
+  ASSERT_TRUE(has_start_time);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -322,6 +331,11 @@ TEST_F(LensOverlayQueryControllerTest,
                                          additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
+
+  std::string actual_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &actual_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_EQ(query_controller.sent_objects_request_.image_data()
@@ -377,6 +391,7 @@ TEST_F(LensOverlayQueryControllerTest,
           .text_query()
           .query(),
       kTestQueryText);
+  ASSERT_TRUE(has_start_time);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -412,6 +427,11 @@ TEST_F(LensOverlayQueryControllerTest,
                                        additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
+
+  std::string actual_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &actual_start_time);
 
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_EQ(query_controller.sent_objects_request_.image_data()
@@ -450,6 +470,7 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(
       query_controller.sent_interaction_request_.interaction_request_metadata()
           .has_query_metadata());
+  ASSERT_TRUE(has_start_time);
 }
 
 TEST_F(LensOverlayQueryControllerTest,
@@ -486,10 +507,16 @@ TEST_F(LensOverlayQueryControllerTest,
                              kSearchContextParamKey,
                              &actual_encoded_search_context);
 
+  std::string actual_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &actual_start_time);
+
   ASSERT_TRUE(full_image_response_future.IsReady());
   ASSERT_TRUE(url_response_future.IsReady());
   ASSERT_FALSE(interaction_data_response_future.IsReady());
   ASSERT_EQ(actual_encoded_search_context, kTestEncodedSearchContext);
+  ASSERT_TRUE(has_start_time);
 }
 
 TEST_F(LensOverlayQueryControllerTest,

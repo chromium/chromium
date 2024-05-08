@@ -44,6 +44,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/url_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
@@ -100,6 +101,8 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
     "       imageSrc.startsWith('data:image/jpeg');})();";
 
 constexpr char kTestSuggestSignals[] = "suggest_signals";
+
+constexpr char kStartTimeQueryParamKey[] = "qsubts";
 
 const lens::mojom::GeometryPtr kTestGeometry =
     lens::mojom::Geometry::New(lens::mojom::CenterRotatedBox::New(
@@ -333,6 +336,16 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           ->contents()
           ->CompletedFirstVisuallyNonEmptyPaint();
     }));
+  }
+
+  // Helper to remove the start time query param from the url.
+  GURL RemoveStartTimeParam(const GURL& url_to_process) {
+    std::string actual_start_time;
+    bool has_start_time = net::GetValueForKeyInQuery(
+        GURL(url_to_process), kStartTimeQueryParamKey, &actual_start_time);
+    EXPECT_TRUE(has_start_time);
+    return net::AppendOrReplaceQueryParameter(
+        url_to_process, kStartTimeQueryParamKey, std::nullopt);
   }
 
  private:
@@ -1182,7 +1195,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  EXPECT_EQ(loaded_search_query->search_query_url_, first_search_url);
+  GURL url_without_start_time =
+      RemoveStartTimeParam(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time, first_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
@@ -1205,13 +1220,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
-  EXPECT_EQ(loaded_search_query->search_query_url_, second_search_url);
+  url_without_start_time =
+      RemoveStartTimeParam(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time, second_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 1);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 100);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
-  EXPECT_EQ(observer.last_navigation_url(), second_search_url);
+  url_without_start_time = RemoveStartTimeParam(observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time, second_search_url);
 
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
@@ -1225,13 +1243,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  EXPECT_EQ(loaded_search_query->search_query_url_, first_search_url);
+  url_without_start_time =
+      RemoveStartTimeParam(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time, first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  EXPECT_EQ(pop_observer.last_navigation_url(), first_search_url);
+  url_without_start_time =
+      RemoveStartTimeParam(pop_observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time, first_search_url);
 
   // Verify the text selection was sent back to mojo and any old selections were
   // cleared.

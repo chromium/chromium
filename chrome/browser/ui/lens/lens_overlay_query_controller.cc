@@ -50,6 +50,7 @@ constexpr char kContentType[] = "application/x-protobuf";
 constexpr char kDeveloperKey[] = "X-Developer-Key";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
+constexpr char kStartTimeQueryParameter[] = "qsubts";
 constexpr base::TimeDelta kServerRequestTimeout = base::Minutes(1);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -125,6 +126,14 @@ std::vector<std::string> CreateOAuthHeader(
         base::StringPrintf("Bearer %s", access_token_info.token.c_str()));
   }
   return headers;
+}
+
+std::map<std::string, std::string> AddStartTimeQueryParam(
+    std::map<std::string, std::string> additional_search_query_params) {
+  int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  additional_search_query_params.insert(
+      {kStartTimeQueryParameter, base::NumberToString(current_time_ms)});
+  return additional_search_query_params;
 }
 
 }  // namespace
@@ -316,6 +325,12 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     std::map<std::string, std::string> additional_search_query_params) {
   // Increment the request counter to cancel previously issued fetches.
   request_counter_++;
+
+  // Add the start time to the query params now, so that any additional
+  // client processing time is included.
+  additional_search_query_params =
+      AddStartTimeQueryParam(additional_search_query_params);
+
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
   lens_overlay_url_response.set_url(
       lens::BuildTextOnlySearchURL(query_text, page_url_, page_title_,
@@ -332,6 +347,11 @@ void LensOverlayQueryController::SendInteraction(
     std::map<std::string, std::string> additional_search_query_params) {
   request_counter_++;
   int request_index = request_counter_;
+
+  // Add the start time to the query params now, so that image downscaling
+  // and other client processing time is included.
+  additional_search_query_params =
+      AddStartTimeQueryParam(additional_search_query_params);
 
   // Trigger asynchronous image cropping, then attempt to send the request.
   base::ThreadPool::PostTask(
