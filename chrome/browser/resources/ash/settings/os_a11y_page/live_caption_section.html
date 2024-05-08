@@ -75,6 +75,12 @@
         </template>
       </div>
     </div>
+    <template is="dom-if" if="[[enableLiveTranslate_]]">
+      <settings-live-translate prefs="{{prefs}}"
+          languages="[[languages]]"
+          language-helper="[[languageHelper]]">
+      </settings-live-translate>
+    </template>
   </iron-collapse>
 </template>
 <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>

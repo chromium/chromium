@@ -28,6 +28,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import {Route, routes} from '../router.js';
 
 import {getTemplate} from './audio_and_captions_page.html.js';
@@ -63,6 +64,16 @@ export class SettingsAudioAndCaptionsPageElement extends
       },
 
       /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+      },
+
+      languageHelper: Object,
+
+      /**
        * Whether the user is in kiosk mode.
        */
       isKioskModeActive_: {
@@ -87,6 +98,8 @@ export class SettingsAudioAndCaptionsPageElement extends
   }
 
   prefs: {[key: string]: any};
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private isKioskModeActive_: boolean;
 

@@ -8,18 +8,19 @@
  * equivalent Browser Settings UI (in chrome://settings/captions).
  */
 
-import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_slider.js';
 import '../settings_shared.css.js';
 import './live_caption_section.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 
 import {getTemplate} from './captions_subpage.html.js';
 
@@ -41,6 +42,16 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
         type: Object,
         notify: true,
       },
+
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+      },
+
+      languageHelper: Object,
 
       /**
        * List of options for the background opacity drop-down menu.
@@ -202,6 +213,8 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
   private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
   private readonly colorOptions_: DropdownMenuOptionList;
   private textFontOptions_: DropdownMenuOptionList;

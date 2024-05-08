@@ -168,7 +168,9 @@
   </template>
   <template is="dom-if" route-path="/audioAndCaptions">
     <os-settings-subpage page-title="$i18n{audioAndCaptionsLinkTitle}">
-      <settings-audio-and-captions-page prefs="{{prefs}}">
+      <settings-audio-and-captions-page prefs="{{prefs}}"
+          languages="[[languages]]"
+          language-helper="[[languageHelper]]">
       </settings-audio-and-captions-page>
     </os-settings-subpage>
   </template>
@@ -180,7 +182,10 @@
   </template>
   <template is="dom-if" route-path="/manageAccessibility/captions">
     <os-settings-subpage page-title="$i18n{captionsTitle}">
-      <settings-captions prefs="{{prefs}}"></settings-captions>
+      <settings-captions prefs="{{prefs}}"
+          languages="[[languages]]"
+          language-helper="[[languageHelper]]">
+      </settings-captions>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/switchAccess">

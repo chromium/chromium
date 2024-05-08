@@ -11,7 +11,7 @@ import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -31,7 +31,14 @@ suite('LiveCaptionSection', () => {
     });
   });
 
-  setup(async () => {
+  setup(() => {
+    // Set up test browser proxy.
+    browserProxy = new TestCaptionsBrowserProxy();
+    CaptionsBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  /** Sets up the element for test. Call this after overriding loadTimeData. */
+  async function setupLiveCaptionSection() {
     const settingsPrefs = document.createElement('settings-prefs');
     clearBody();
 
@@ -43,19 +50,19 @@ suite('LiveCaptionSection', () => {
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
-    // Set up test browser proxy.
-    browserProxy = new TestCaptionsBrowserProxy();
-    CaptionsBrowserProxyImpl.setInstance(browserProxy);
-
     liveCaptionSection = document.createElement('settings-live-caption');
     liveCaptionSection.prefs = settingsPrefs.prefs;
     fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
+    liveCaptionSection.languageHelper = settingsLanguages.languageHelper;
     fakeDataBind(settingsLanguages, liveCaptionSection, 'language-helper');
     document.body.appendChild(liveCaptionSection);
-    flush();
-  });
 
-  test('test caption.enable toggle', () => {
+    flush();
+    await liveCaptionSection.languageHelper.whenReady();
+  }
+
+  test('test caption.enable toggle', async () => {
+    await setupLiveCaptionSection();
     const settingsToggle =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#liveCaptionToggleButton');
@@ -79,6 +86,7 @@ suite('LiveCaptionSection', () => {
 
 
   test('add languages and display download progress', async () => {
+    await setupLiveCaptionSection();
     const addLanguagesButton =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#addLanguage');
@@ -122,5 +130,23 @@ suite('LiveCaptionSection', () => {
       whenDialogClosed,
       browserProxy.whenCalled('installLanguagePacks'),
     ]);
+  });
+
+  test('shows live translate if feature enabled', async () => {
+    loadTimeData.overrideValues({enableLiveTranslate: true});
+    await setupLiveCaptionSection();
+
+    const liveTranslateSection =
+        liveCaptionSection.shadowRoot!.querySelector('settings-live-translate');
+    assertTrue(!!liveTranslateSection);
+  });
+
+  test('does not show live translate if feature disabled', async () => {
+    loadTimeData.overrideValues({enableLiveTranslate: false});
+    await setupLiveCaptionSection();
+
+    const liveTranslateSection =
+        liveCaptionSection.shadowRoot!.querySelector('settings-live-translate');
+    assertNull(liveTranslateSection);
   });
 });

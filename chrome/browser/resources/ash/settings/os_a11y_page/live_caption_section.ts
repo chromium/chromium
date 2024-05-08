@@ -9,26 +9,26 @@
  */
 
 
-import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_toggle_button.js';
+import '../os_languages_page/add_items_dialog.js';
+import './live_translate_section.js';
 
-import {WebUiListenerMixin} from '//resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-// clang-format on
-
-
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {Item} from '../os_languages_page/add_items_dialog.js';
+import type {Item} from '../os_languages_page/add_items_dialog.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 
 import {getTemplate} from './live_caption_section.html.js';
 
@@ -68,6 +68,16 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         },
       },
 
+      /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+      },
+
+      languageHelper: Object,
+
       enableLiveTranslate_: {
         type: Boolean,
         value: function() {
@@ -95,11 +105,15 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     };
   }
 
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
+
   private availableLanguagePacks_: LiveCaptionLanguageList;
   private browserProxy_: CaptionsBrowserProxy =
       CaptionsBrowserProxyImpl.getInstance();
   private enableLiveCaptionSubtitle_: string;
   private enableLiveCaptionMultiLanguage_: boolean;
+  private enableLiveTranslate_: boolean;
   private installedLanguagePacks_: LiveCaptionLanguageList;
   private languageOptions_: DropdownMenuOptionList;
   private showAddLanguagesDialog_: boolean;
@@ -107,12 +121,12 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   override ready(): void {
     super.ready();
     this.browserProxy_.getInstalledLanguagePacks().then(
-        (installedLanguagePacks) => {
+        (installedLanguagePacks: LiveCaptionLanguageList) => {
           this.installedLanguagePacks_ = installedLanguagePacks;
         });
 
     this.browserProxy_.getAvailableLanguagePacks().then(
-        (availableLanguagePacks) => {
+        (availableLanguagePacks: LiveCaptionLanguageList) => {
           this.availableLanguagePacks_ = availableLanguagePacks;
         });
     this.addWebUiListener(

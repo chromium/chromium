@@ -25,6 +25,7 @@ import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './os_a11y_page.html.js';
@@ -93,6 +94,16 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
+       * Read-only reference to the languages model provided by the
+       * 'settings-languages' instance.
+       */
+      languages: {
+        type: Object,
+      },
+
+      languageHelper: Object,
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -136,6 +147,9 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   }
 
   currentRoute: Route;
+  languages: LanguagesModel;
+  languageHelper: LanguageHelper;
+
   private browserProxy_: OsA11yPageBrowserProxy;
   private hasScreenReader_: boolean;
   private isGuest_: boolean;

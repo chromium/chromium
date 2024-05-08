@@ -39,6 +39,7 @@ import './os_a11y_page/facegaze_cursor_subpage.js';
 import './os_a11y_page/facegaze_facial_expression_subpage.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/live_caption_section.js';
+import './os_a11y_page/live_translate_section.js';
 import './os_a11y_page/select_to_speak_subpage.js';
 import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/text_to_speech_subpage.js';
@@ -230,6 +231,7 @@ export {SettingsFaceGazeCursorSubpageElement} from './os_a11y_page/facegaze_curs
 export {SettingsFaceGazeFacialExpressionSubpageElement} from './os_a11y_page/facegaze_facial_expression_subpage.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsLiveCaptionElement} from './os_a11y_page/live_caption_section.js';
+export {SettingsLiveTranslateElement} from './os_a11y_page/live_translate_section.js';
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/switch_access_action_assignment_pane.js';

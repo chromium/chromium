@@ -1219,9 +1219,14 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled, OsA11yPage) {
   RunSettingsTest("os_a11y_page/os_a11y_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampOsA11yTestPdfOcrEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsA11yPageLiveCaptionSection) {
   RunSettingsTest("os_a11y_page/live_caption_section_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsA11yPageLiveTranslateSection) {
+  RunSettingsTest("os_a11y_page/live_translate_section_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,

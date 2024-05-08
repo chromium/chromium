@@ -175,6 +175,7 @@ build_webui("build") {
     "os_a11y_page/display_and_magnification_subpage.ts",
     "os_a11y_page/keyboard_and_text_input_page.ts",
     "os_a11y_page/live_caption_section.ts",
+    "os_a11y_page/live_translate_section.ts",
     "os_a11y_page/os_a11y_page.ts",
     "os_a11y_page/select_to_speak_subpage.ts",
     "os_a11y_page/switch_access_action_assignment_dialog.ts",

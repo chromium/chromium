@@ -258,7 +258,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kAccessibility)]]"
         restamp>
       <page-displayer section="[[Section.kAccessibility]]">
-        <os-settings-a11y-page prefs="{{prefs}}">
+        <os-settings-a11y-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </os-settings-a11y-page>
       </page-displayer>
     </template>
