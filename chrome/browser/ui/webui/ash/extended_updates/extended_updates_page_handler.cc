@@ -58,8 +58,19 @@ void ExtendedUpdatesPageHandler::GetInstalledAndroidApps(
   apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_))
       ->AppRegistryCache()
       .ForEachApp([&apps](const apps::AppUpdate& update) {
-        if (update.AppType() == apps::AppType::kArc &&
-            update.Readiness() == apps::Readiness::kReady) {
+        bool is_arc_type = (update.AppType() == apps::AppType::kArc);
+        bool is_ready = (update.Readiness() == apps::Readiness::kReady);
+        bool is_pre_installed =
+            (update.InstallReason() == apps::InstallReason::kSystem ||
+             update.InstallReason() == apps::InstallReason::kDefault ||
+             update.InstallReason() == apps::InstallReason::kOem);
+        // Only select ARC apps that are ready to be used.
+        // Do NOT select ARC apps that come pre-installed, only include
+        // user-installed apps.
+        // Note: because currently policy-enforced apps are mistakenly
+        // marked as system-installed apps (b/338992637), this will
+        // filter out those, too.
+        if (is_arc_type && is_ready && !is_pre_installed) {
           apps.push_back(mojom::App::New(update.AppId(), update.ShortName()));
         }
       });
