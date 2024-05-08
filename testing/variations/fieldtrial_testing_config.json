@@ -732,6 +732,25 @@
             ]
         }
     ],
+    "ArcBlockIoScheduler": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "data_block_io_scheduler": "true"
+                    },
+                    "enable_features": [
+                        "ArcBlockIoScheduler"
+                    ],
+                    "min_os_version": "15880.0.0"
+                }
+            ]
+        }
+    ],
     "ArcIgnoreHoverEventAnr": [
         {
             "platforms": [
