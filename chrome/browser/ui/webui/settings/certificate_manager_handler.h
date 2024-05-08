@@ -9,6 +9,9 @@
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
 
 class Profile;
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Mojo handler for the Certificate Manager v2 page.
 class CertificateManagerPageHandler
@@ -20,7 +23,8 @@ class CertificateManagerPageHandler
       mojo::PendingReceiver<
           certificate_manager_v2::mojom::CertificateManagerPageHandler>
           pending_handler,
-      Profile* profile);
+      Profile* profile,
+      content::WebContents* web_contents);
 
   CertificateManagerPageHandler(const CertificateManagerPageHandler&) = delete;
   CertificateManagerPageHandler& operator=(
@@ -30,6 +34,7 @@ class CertificateManagerPageHandler
 
   void GetChromeRootStoreCerts(
       GetChromeRootStoreCertsCallback callback) override;
+  void ViewCertificate(const std::string& sha256_hex_hash) override;
   void GetPlatformClientCerts(GetPlatformClientCertsCallback callback) override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void GetProvisionedClientCerts(
@@ -42,6 +47,7 @@ class CertificateManagerPageHandler
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPageHandler>
       handler_;
   raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CERTIFICATE_MANAGER_HANDLER_H_

@@ -50,7 +50,10 @@ build_webui("build") {
   }
 
   if (chrome_root_store_cert_management_ui) {
-    web_component_files += [ "certificate_manager_v2.ts" ]
+    web_component_files += [
+      "certificate_entry_v2.ts",
+      "certificate_manager_v2.ts",
+    ]
     non_web_component_files += [ "certificates_v2_browser_proxy.ts" ]
 
     mojo_files_deps = [ ":mojom_ts__generator" ]

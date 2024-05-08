@@ -9,10 +9,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -57,6 +60,31 @@ void PopulateChromeRootStoreLogsAsync(
         cert_info->sha256hash_hex, model.GetTitle()));
   }
   std::move(callback).Run(std::move(cert_infos));
+}
+
+void ViewCertificateAsync(std::string hash,
+                          base::WeakPtr<content::WebContents> web_contents,
+                          cert_verifier::mojom::ChromeRootStoreInfoPtr info) {
+  // Containing web contents went away (e.g. user navigated away). Don't
+  // try to open the dialog.
+  if (!web_contents) {
+    return;
+  }
+
+  for (auto const& cert_info : info->root_cert_info) {
+    if (cert_info->sha256hash_hex != hash) {
+      continue;
+    }
+
+    // Found the cert, open cert viewer dialog if able and then exit function.
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> view_certs;
+    view_certs.push_back(net::x509_util::CreateCryptoBuffer(cert_info->cert));
+    CertificateViewerDialog::ShowConstrained(
+        std::move(view_certs),
+        /*cert_nicknames=*/{}, web_contents.get(),
+        web_contents->GetTopLevelNativeWindow());
+    return;
+  }
 }
 
 class ClientCertSource {
@@ -174,10 +202,12 @@ CertificateManagerPageHandler::CertificateManagerPageHandler(
     mojo::PendingReceiver<
         certificate_manager_v2::mojom::CertificateManagerPageHandler>
         pending_handler,
-    Profile* profile)
+    Profile* profile,
+    content::WebContents* web_contents)
     : remote_client_(std::move(pending_client)),
       handler_(this, std::move(pending_handler)),
-      profile_(profile) {}
+      profile_(profile),
+      web_contents_(web_contents) {}
 
 CertificateManagerPageHandler::~CertificateManagerPageHandler() = default;
 
@@ -188,6 +218,19 @@ void CertificateManagerPageHandler::GetChromeRootStoreCerts(
   DCHECK(factory);
   factory->GetChromeRootStoreInfo(
       base::BindOnce(&PopulateChromeRootStoreLogsAsync, std::move(callback)));
+}
+
+// TODO(crbug.com/40928765): currently only handles CRS certs; will need to
+// expand to handle certs from other data sources.
+void CertificateManagerPageHandler::ViewCertificate(
+    const std::string& sha256hash_hex) {
+  cert_verifier::mojom::CertVerifierServiceFactory* factory =
+      content::GetCertVerifierServiceFactory();
+  DCHECK(factory);
+  // This should really use a cached set of info with other calls to
+  // GetChromeRootStoreInfo.
+  factory->GetChromeRootStoreInfo(base::BindOnce(
+      &ViewCertificateAsync, sha256hash_hex, web_contents_->GetWeakPtr()));
 }
 
 void CertificateManagerPageHandler::GetPlatformClientCerts(

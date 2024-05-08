@@ -6,6 +6,7 @@
 
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 
+import type {CertificateEntryV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_entry_v2.js';
 import type {CertificateManagerV2Element} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.js';
 import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
@@ -29,6 +30,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'getChromeRootStoreCerts',
       'getPlatformClientCerts',
       'getProvisionedClientCerts',
+      'viewCertificate',
     ]);
   }
 
@@ -45,6 +47,10 @@ class FakePageHandler extends TestBrowserProxy implements
   async getProvisionedClientCerts(): Promise<{certs: SummaryCertInfo[]}> {
     this.methodCalled('getProvisionedClientCerts');
     return {'certs': this.provisionedClientCerts_.slice()};
+  }
+
+  viewCertificate(sha256hashHex: string) {
+    this.methodCalled('viewCertificate', sha256hashHex);
   }
 
   setChromeRootStoreCerts(crsCerts: SummaryCertInfo[]) {
@@ -75,6 +81,35 @@ class TestCertificateManagerProxy {
   }
 }
 
+suite('CertificateEntryV2Test', () => {
+  let certEntry: CertificateEntryV2Element;
+  let testProxy: TestCertificateManagerProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy = new TestCertificateManagerProxy();
+    CertificatesV2BrowserProxy.setInstance(testProxy);
+  });
+
+  function initializeElement() {
+    certEntry = document.createElement('certificate-entry-v2');
+    certEntry.set('displayName', 'certname');
+    certEntry.set('sha256hashHex', 'deadbeef');
+    document.body.appendChild(certEntry);
+  }
+
+  test('element check', async () => {
+    initializeElement();
+
+    await microtasksFinished();
+    assertEquals(
+        'deadbeef', certEntry.$.certhash.value, 'wrong hash in input box');
+    certEntry.$.viewbutton.click();
+    const hash = await testProxy.handler.whenCalled('viewCertificate');
+    assertEquals('deadbeef', hash, 'click provided wrong hash');
+  });
+});
+
 
 suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerV2Element;
@@ -104,11 +139,11 @@ suite('CertificateManagerV2Test', () => {
 
     await microtasksFinished();
 
-    const matchEls = certManager.$.crsCerts.querySelectorAll('.cert-row');
+    const matchEls =
+        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
     assertEquals(1, matchEls.length, 'no certs displayed');
-    const inputs = certManager.shadowRoot!.querySelectorAll('cr-input');
-    assertEquals(1, inputs.length, 'no inputs found');
-    assertEquals('deadbeef', inputs[0]!.value);
+    assertEquals('cert1', matchEls[0]!.displayName);
+    assertEquals('deadbeef', matchEls[0]!.sha256hashHex);
   });
 
   test('platform client certs populated', async () => {

@@ -1,0 +1,24 @@
+<style include="cr-shared-style cr-icons">
+  .cert-row {
+    display: flex;
+  }
+
+  .cert-hash {
+    --cr-input-error-display: none;
+    margin-left: auto;
+  }
+</style>
+
+<div class="cr-row cert-row">
+  [[displayName]]
+  <cr-input id="certhash" class="input-field cert-hash"
+      value="[[sha256hashHex]]" readonly>
+    <!-- TODO(crbug.com/40928765): wire up copy button (with toast?)-->
+    <cr-icon-button class="icon-copy-content" slot="inline-suffix"
+        aria-label="Copy hash to clipboard">
+    </cr-icon-button>
+  </cr-input>
+  <cr-icon-button id="viewbutton" class="icon-visibility"
+      on-click="onViewCertificate_" aria-label="View certificate details">
+  </cr-icon-button>
+</div>
