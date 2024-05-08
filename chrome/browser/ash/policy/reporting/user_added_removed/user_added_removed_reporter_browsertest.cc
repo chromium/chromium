@@ -230,9 +230,8 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
                        PRE_ReportRemovedAffiliatedUser) {
   const LoginManagerMixin::TestUserInfo user_info(test_account_id_);
   const auto& context = LoginManagerMixin::CreateDefaultUserContext(user_info);
-  login_manager_mixin_.SkipPostLoginScreens();
   login_manager_mixin_.LoginAsNewRegularUser(context);
-  login_manager_mixin_.WaitForActiveSession();
+  test::WaitForPrimaryUserSessionStart();
   Shell::Get()->session_controller()->RequestSignOut();
 }
 

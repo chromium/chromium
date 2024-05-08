@@ -54,7 +54,6 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
  protected:
   // BaseScreen:
   void ShowImpl() override;
-  void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   bool MaybeSkip(WizardContext& context) override;
 
@@ -68,7 +67,6 @@ class PasswordSelectionScreen : public BaseOSAuthSetupScreen {
 
   // Values obtained from UserContext in `InspectContext`
   bool has_online_password_ = false;
-  bool is_shown_ = false;
   AuthFactorsConfiguration auth_factors_config_;
 
   base::WeakPtr<PasswordSelectionScreenView> view_ = nullptr;

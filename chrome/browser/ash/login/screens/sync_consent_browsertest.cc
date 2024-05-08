@@ -370,11 +370,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedSyncDisabledByPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    // With local passwords feature aborting at this stage would
-    // trigger user cleanup and remove all user information.
-    GTEST_SKIP();
-  }
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
@@ -382,12 +377,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, PRE_AbortedSetup) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    // With local passwords feature aborting at this stage would
-    // trigger user cleanup and remove all user information,
-    // so this test makes no sense.
-    GTEST_SKIP();
-  }
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -787,9 +776,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, Decline) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, PRE_AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    GTEST_SKIP();
-  }
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
   test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
@@ -797,9 +783,6 @@ IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, PRE_AbortedSetup) {
 }
 
 IN_PROC_BROWSER_TEST_F(SyncConsentMinorModeTest, AbortedSetup) {
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    GTEST_SKIP();
-  }
   EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
             session_manager::SessionManager::Get()->session_state());
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
