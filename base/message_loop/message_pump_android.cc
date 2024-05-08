@@ -284,7 +284,7 @@ void MessagePumpAndroid::Attach(Delegate* delegate) {
   // Since the RunLoop was just created above, BeforeRun should be guaranteed to
   // return true (it only returns false if the RunLoop has been Quit already).
   if (!run_loop_->BeforeRun())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 void MessagePumpAndroid::Quit() {

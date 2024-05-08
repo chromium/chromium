@@ -16,6 +16,13 @@
 
 namespace logging {
 
+// Migration in progress: For new code call either NOTREACHED_NORETURN() or
+// NOTREACHED(base::NotFatalUntil::M*). Do not add new callers to NOTREACHED()
+// without a parameter until this comment is updated. Existing NOTREACHED()
+// instances will be renamed to NOTREACHED_IN_MIGRATION() ASAP, then
+// NOTREACHED() without a parameter will refer to the [[noreturn]]
+// always-fatal version which is currently spelled NOTREACHED_NORETURN().
+//
 // NOTREACHED() annotates should-be unreachable code. When a base::NotFatalUntil
 // milestone is provided the instance is non-fatal (dumps without crashing)
 // until that milestone is hit. That is: `NOTREACHED(base::NotFatalUntil::M120)`
@@ -31,18 +38,24 @@ namespace logging {
 // NOTREACHED_NORETURN(). Then rename the [[noreturn]] version back to
 // NOTREACHED().
 #if CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-#define NOTREACHED(...)        \
-  LOGGING_CHECK_FUNCTION_IMPL( \
+#define NOTREACHED_IN_MIGRATION(...) \
+  LOGGING_CHECK_FUNCTION_IMPL(       \
       ::logging::NotReachedError::NotReached(__VA_ARGS__), false)
 #else
 #define BASE_HAS_VA_ARGS(...) 1
-#define NOTREACHED(...)                                            \
+#define NOTREACHED_IN_MIGRATION(...)                               \
   BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                              \
           (true) ? ::logging::NotReachedError::TriggerNotReached() \
                  : EAT_CHECK_STREAM_PARAMS(),                      \
           LOGGING_CHECK_FUNCTION_IMPL(                             \
               ::logging::NotReachedError::NotReached(__VA_ARGS__), false))
 #endif
+
+// TODO(crbug.com/40580068): Migrate existing NOTREACHED() instances to
+// NOTREACHED_IN_MIGRATION() then remove this alias and rename
+// NOTREACHED_NORETURN() to NOTREACHED() below (but with support for
+// not-noreturn base::NotFatalUntil).
+#define NOTREACHED(...) NOTREACHED_IN_MIGRATION(__VA_ARGS__)
 
 // NOTREACHED_NORETURN() annotates paths that are supposed to be unreachable.
 // They crash if they are ever hit.

@@ -28,7 +28,7 @@ FilePath BuildSearchFilter(FileEnumerator::FolderSearchPolicy policy,
     case FileEnumerator::FolderSearchPolicy::ALL:
       return root_path.Append(FILE_PATH_LITERAL("*"));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -127,7 +127,7 @@ FileEnumerator::~FileEnumerator() {
 FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
   DCHECK(!(file_type_ & FileType::NAMES_ONLY));
   if (!has_find_data_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return FileInfo();
   }
   FileInfo ret;
@@ -221,7 +221,7 @@ bool FileEnumerator::IsPatternMatched(const FilePath& src) const {
       // manually.
       return PathMatchSpec(src.value().c_str(), pattern_.c_str()) == TRUE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

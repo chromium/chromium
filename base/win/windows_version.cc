@@ -434,7 +434,7 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
 
   if (major > 6) {
     // Hitting this likely means that it's time for a >11 block above.
-    NOTREACHED() << major << "." << minor << "." << build;
+    NOTREACHED_IN_MIGRATION() << major << "." << minor << "." << build;
     return Version::WIN_LAST;
   }
 

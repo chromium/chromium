@@ -283,7 +283,7 @@ TEST_F(CRBProtocolObserversTest, IgnoresDeallocedObservers) {
 }
 
 - (instancetype)init {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

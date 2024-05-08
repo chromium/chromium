@@ -84,7 +84,7 @@ base::MessagePumpType GetMessagePumpTypeForMainThreadType(
     case TaskEnvironment::MainThreadType::IO:
       return MessagePumpType::IO;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MessagePumpType::DEFAULT;
 }
 

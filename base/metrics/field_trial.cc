@@ -1173,7 +1173,7 @@ void FieldTrialList::AddToAllocatorWhileLocked(
   FieldTrial::FieldTrialRef ref = allocator->Allocate(
       total_size, FieldTrial::FieldTrialEntry::kPersistentTypeId);
   if (ref == FieldTrialAllocator::kReferenceNull) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -100,7 +100,7 @@ bool CategoryRegistry::GetOrCreateCategoryLocked(
   // Create a new category.
   size_t category_index = category_index_.load(std::memory_order_acquire);
   if (category_index >= kMaxCategories) {
-    NOTREACHED() << "must increase kMaxCategories";
+    NOTREACHED_IN_MIGRATION() << "must increase kMaxCategories";
     *category = kCategoryExhausted;
     return false;
   }

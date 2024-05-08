@@ -61,7 +61,8 @@ LogSeverity GetNotReachedSeverity(base::NotFatalUntil fatal_milestone) {
   // NOTREACHED severity is controlled by kNotReachedIsFatal unless
   // `fatal_milestone` overrides it.
   //
-  // NOTREACHED() instances may be hit before base::FeatureList is enabled.
+  // NOTREACHED_IN_MIGRATION() instances may be hit before base::FeatureList is
+  // enabled.
   if (fatal_milestone == base::NotFatalUntil::NoSpecifiedMilestoneInternal &&
       base::FeatureList::GetInstance() &&
       base::FeatureList::IsEnabled(base::features::kNotReachedIsFatal)) {
@@ -370,8 +371,8 @@ NotReachedError NotReachedError::NotReached(base::NotFatalUntil fatal_milestone,
 }
 
 void NotReachedError::TriggerNotReached() {
-  // This triggers a NOTREACHED() error as the returned NotReachedError goes out
-  // of scope.
+  // This triggers a NOTREACHED_IN_MIGRATION() error as the returned
+  // NotReachedError goes out of scope.
   NotReached()
       << "NOTREACHED log messages are omitted in official builds. Sorry!";
 }

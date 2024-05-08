@@ -29,14 +29,14 @@ std::string GetProcStatsFieldAsString(
     const std::vector<std::string>& proc_stats,
     internal::ProcStatsFields field_num) {
   if (field_num < internal::VM_COMM || field_num > internal::VM_STATE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 
   if (proc_stats.size() > static_cast<size_t>(field_num))
     return proc_stats[field_num];
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -109,7 +109,7 @@ bool ProcessIterator::CheckForNextProcess() {
     std::string runstate =
         GetProcStatsFieldAsString(proc_stats, internal::VM_STATE);
     if (runstate.size() != 1) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

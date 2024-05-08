@@ -88,7 +88,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
                             RegisterContextInstructionPointer(thread_context)));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UnwindResult::kCompleted;
 }
 

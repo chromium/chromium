@@ -192,7 +192,7 @@ FilePermissionRestorer::FilePermissionRestorer(const FilePath& path)
 
 FilePermissionRestorer::~FilePermissionRestorer() {
   if (!RestorePermissionInfo(path_, info_, length_))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace base

@@ -95,7 +95,7 @@ UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
     case DURATION_WIDTH_NARROW: return UMEASFMT_WIDTH_NARROW;
     case DURATION_WIDTH_NUMERIC: return UMEASFMT_WIDTH_NUMERIC;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UMEASFMT_WIDTH_COUNT;
 }
 
@@ -106,7 +106,7 @@ const char* DateFormatToString(DateFormat format) {
     case DATE_FORMAT_MONTH_WEEKDAY_DAY:
       return UDAT_MONTH_WEEKDAY_DAY;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UDAT_YEAR_MONTH_DAY;
 }
 

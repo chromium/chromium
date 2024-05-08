@@ -19,7 +19,7 @@ const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
     case MemoryDumpType::kSummaryOnly:
       return "summary_only";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 
@@ -31,7 +31,7 @@ MemoryDumpType StringToMemoryDumpType(const std::string& str) {
     return MemoryDumpType::kExplicitlyTriggered;
   if (str == "summary_only")
     return MemoryDumpType::kSummaryOnly;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MemoryDumpType::kLast;
 }
 
@@ -45,7 +45,7 @@ const char* MemoryDumpLevelOfDetailToString(
     case MemoryDumpLevelOfDetail::kDetailed:
       return "detailed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 
@@ -57,7 +57,7 @@ MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
     return MemoryDumpLevelOfDetail::kLight;
   if (str == "detailed")
     return MemoryDumpLevelOfDetail::kDetailed;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MemoryDumpLevelOfDetail::kLast;
 }
 

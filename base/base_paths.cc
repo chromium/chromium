@@ -79,7 +79,7 @@ bool PathProvider(int key, FilePath* result) {
       return true;
     case base::DIR_SRC_TEST_DATA_ROOT:
       // This is only used by tests and overridden by each platform.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
     case DIR_OUT_TEST_DATA_ROOT:

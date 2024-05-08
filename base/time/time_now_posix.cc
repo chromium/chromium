@@ -131,7 +131,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
     BUILDFLAG(IS_ANDROID)
   return ThreadTicks() + Microseconds(ClockNow(CLOCK_THREAD_CPUTIME_ID));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ThreadTicks();
 #endif
 }

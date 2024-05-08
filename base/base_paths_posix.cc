@@ -42,7 +42,8 @@ bool PathProviderPosix(int key, FilePath* result) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       FilePath bin_dir;
       if (!ReadSymbolicLink(FilePath(kProcSelfExe), &bin_dir)) {
-        NOTREACHED() << "Unable to resolve " << kProcSelfExe << ".";
+        NOTREACHED_IN_MIGRATION()
+            << "Unable to resolve " << kProcSelfExe << ".";
         return false;
       }
       *result = bin_dir;
@@ -51,7 +52,7 @@ bool PathProviderPosix(int key, FilePath* result) {
       int name[] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
       std::optional<std::string> bin_dir = StringSysctl(name, std::size(name));
       if (!bin_dir.has_value() || bin_dir.value().length() <= 1) {
-        NOTREACHED() << "Unable to resolve path.";
+        NOTREACHED_IN_MIGRATION() << "Unable to resolve path.";
         return false;
       }
       *result = FilePath(bin_dir.value());
@@ -59,7 +60,8 @@ bool PathProviderPosix(int key, FilePath* result) {
 #elif BUILDFLAG(IS_SOLARIS)
       char bin_dir[PATH_MAX + 1];
       if (realpath(getexecname(), bin_dir) == NULL) {
-        NOTREACHED() << "Unable to resolve " << getexecname() << ".";
+        NOTREACHED_IN_MIGRATION()
+            << "Unable to resolve " << getexecname() << ".";
         return false;
       }
       *result = FilePath(bin_dir);

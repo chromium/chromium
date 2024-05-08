@@ -87,7 +87,7 @@ const char* JSONFileValueDeserializer::GetErrorMessageForCode(int error_code) {
     case JSON_NO_SUCH_FILE:
       return kNoSuchFile;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

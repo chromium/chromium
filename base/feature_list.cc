@@ -391,9 +391,10 @@ void FeatureList::AssociateReportingFieldTrial(
   // enforced server-side.
   OverrideEntry* entry = &overrides_.find(feature_name)->second;
   if (entry->field_trial) {
-    NOTREACHED() << "Feature " << feature_name
-                 << " already has trial: " << entry->field_trial->trial_name()
-                 << ", associating trial: " << field_trial->trial_name();
+    NOTREACHED_IN_MIGRATION()
+        << "Feature " << feature_name
+        << " already has trial: " << entry->field_trial->trial_name()
+        << ", associating trial: " << field_trial->trial_name();
     return;
   }
 
@@ -851,7 +852,7 @@ FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(
 std::unique_ptr<FeatureList::Accessor> FeatureList::ConstructAccessor() {
   if (initialized_) {
     // This function shouldn't be called after initialization.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   // Use new and WrapUnique because we want to restrict access to the Accessor's

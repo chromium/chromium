@@ -26,11 +26,11 @@ class DummySampleCountIterator : public SampleCountIterator {
 
   // SampleCountIterator:
   bool Done() const override { return true; }
-  void Next() override { NOTREACHED(); }
+  void Next() override { NOTREACHED_IN_MIGRATION(); }
   void Get(HistogramBase::Sample* min,
            int64_t* max,
            HistogramBase::Count* count) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 
@@ -57,7 +57,7 @@ class DummyHistogramSamples : public HistogramSamples {
     return std::make_unique<DummySampleCountIterator>();
   }
   bool IsDefinitelyEmpty() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
   bool AddSubtractImpl(SampleCountIterator* iter, Operator op) override {

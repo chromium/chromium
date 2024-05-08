@@ -55,9 +55,9 @@ const char* ObjectTypeToString(TraceEventMemoryOverhead::ObjectType type) {
     case TraceEventMemoryOverhead::kFrameMetrics:
       return "FrameMetrics";
     case TraceEventMemoryOverhead::kLast:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "BUG";
 }
 

@@ -224,7 +224,7 @@ const char* GetAndroidFrameTimelineJankHistogramName(JankScenario scenario) {
       // per frame metrics for |WEBVIEW_SCROLLING| scenario.
       return HISTOGRAM_NAME(WebviewScrolling);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 #undef HISTOGRAM_NAME
@@ -260,7 +260,7 @@ const char* GetAndroidFrameTimelineDurationHistogramName(
       // per frame metrics for |WEBVIEW_SCROLLING| scenario.
       return HISTOGRAM_NAME(WebviewScrolling);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 #undef HISTOGRAM_NAME

@@ -113,7 +113,7 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   int result = host_info(host.get(), HOST_BASIC_INFO,
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);

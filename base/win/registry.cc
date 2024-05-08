@@ -179,7 +179,7 @@ LONG RegKey::CreateKey(const wchar_t* name, REGSAM access) {
   // behavior.
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   if ((access & kWow64AccessMask) != wow64access_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;
@@ -213,7 +213,7 @@ LONG RegKey::OpenKey(const wchar_t* relative_key_name, REGSAM access) {
   // behavior.
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   if ((access & kWow64AccessMask) != wow64access_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;

@@ -136,7 +136,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
     static_assert(!sizeof(*this),
                   "OnceCallback::Run() may only be invoked on a non-const "
                   "rvalue, i.e. std::move(callback).Run().");
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Calls the bound functor with any already-bound arguments + `args`. Consumes

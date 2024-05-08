@@ -216,7 +216,7 @@ bool CopyFileContents(File& infile, File& outfile) {
     } while (bytes_written_per_read < bytes_read);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

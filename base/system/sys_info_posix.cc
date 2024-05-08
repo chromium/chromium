@@ -51,7 +51,7 @@ uint64_t AmountOfVirtualMemory() {
   struct rlimit limit;
   int result = getrlimit(RLIMIT_DATA, &limit);
   if (result != 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   return limit.rlim_cur == RLIM_INFINITY ? 0 : limit.rlim_cur;
@@ -152,7 +152,7 @@ int SysInfo::NumberOfProcessors() {
     if (res == -1) {
       // `res` can be -1 if this function is invoked under the sandbox, which
       // should never happen.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
     }
 
@@ -209,7 +209,7 @@ int64_t SysInfo::AmountOfTotalDiskSpace(const FilePath& path) {
 std::string SysInfo::OperatingSystemName() {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   return std::string(info.sysname);
@@ -221,7 +221,7 @@ std::string SysInfo::OperatingSystemName() {
 std::string SysInfo::OperatingSystemVersion() {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   return std::string(info.release);
@@ -235,7 +235,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* bugfix_version) {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     *major_version = 0;
     *minor_version = 0;
     *bugfix_version = 0;
@@ -257,7 +257,7 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 std::string SysInfo::OperatingSystemArchitecture() {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   std::string arch(info.machine);

@@ -30,7 +30,7 @@ test::SingleThreadTaskEnvironment::MainThreadType GetMainThreadType(
 #elif BUILDFLAG(IS_APPLE)
     case MessagePumpType::NS_RUNLOOP:
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return test::SingleThreadTaskEnvironment::MainThreadType::DEFAULT;
   }
 }

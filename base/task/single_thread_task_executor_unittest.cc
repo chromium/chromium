@@ -186,7 +186,7 @@ std::ostream& operator<<(std::ostream& os, TaskType type) {
       os << "SLEEP";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       os << "Unknown TaskType";
       break;
   }
@@ -515,7 +515,7 @@ class SingleThreadTaskExecutorTypedTest
         break;
 #endif  // BUILDFLAG(IS_APPLE)
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 };

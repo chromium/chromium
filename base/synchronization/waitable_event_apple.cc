@@ -217,7 +217,7 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 }

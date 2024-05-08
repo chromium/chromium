@@ -75,7 +75,7 @@ void AssertComInitialized(const char* message) {
     return;
   }
 
-  NOTREACHED() << (message ? message : kComNotInitialized);
+  NOTREACHED_IN_MIGRATION() << (message ? message : kComNotInitialized);
 }
 
 void AssertComApartmentType(ComApartmentType apartment_type) {

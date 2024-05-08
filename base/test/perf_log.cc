@@ -19,7 +19,7 @@ static FILE* perf_log_file = nullptr;
 bool InitPerfLog(const FilePath& log_file) {
   if (perf_log_file) {
     // trying to initialize twice
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -30,7 +30,7 @@ bool InitPerfLog(const FilePath& log_file) {
 void FinalizePerfLog() {
   if (!perf_log_file) {
     // trying to cleanup without initializing
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   base::CloseFile(perf_log_file);
@@ -38,7 +38,7 @@ void FinalizePerfLog() {
 
 void LogPerfResult(const char* test_name, double value, const char* units) {
   if (!perf_log_file) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -24,7 +24,7 @@ MessagePumpFuchsia::ZxHandleWatchController::ZxHandleWatchController(
 
 MessagePumpFuchsia::ZxHandleWatchController::~ZxHandleWatchController() {
   if (!StopWatchingZxHandle())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 bool MessagePumpFuchsia::ZxHandleWatchController::WaitBegin() {
@@ -157,7 +157,7 @@ MessagePumpFuchsia::FdWatchController::FdWatchController(
 
 MessagePumpFuchsia::FdWatchController::~FdWatchController() {
   if (!StopWatchingFileDescriptor())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 bool MessagePumpFuchsia::FdWatchController::WaitBegin() {
@@ -198,7 +198,7 @@ bool MessagePumpFuchsia::WatchFileDescriptor(int fd,
   DCHECK(delegate);
 
   if (!controller->StopWatchingFileDescriptor())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   controller->fd_ = fd;
   controller->watcher_ = delegate;
@@ -221,7 +221,7 @@ bool MessagePumpFuchsia::WatchFileDescriptor(int fd,
       controller->desired_events_ = FDIO_EVT_READABLE | FDIO_EVT_WRITABLE;
       break;
     default:
-      NOTREACHED() << "unexpected mode: " << mode;
+      NOTREACHED_IN_MIGRATION() << "unexpected mode: " << mode;
       return false;
   }
 
@@ -247,7 +247,7 @@ bool MessagePumpFuchsia::WatchZxHandle(zx_handle_t handle,
          handle == controller->async_wait_t::object);
 
   if (!controller->StopWatchingZxHandle())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   controller->async_wait_t::object = handle;
   controller->persistent_ = persistent;

@@ -45,7 +45,7 @@ std::string HistogramTypeToString(HistogramType type) {
     case DUMMY_HISTOGRAM:
       return "DUMMY_HISTOGRAM";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UNKNOWN";
 }
 

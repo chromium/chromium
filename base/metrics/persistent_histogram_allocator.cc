@@ -144,11 +144,11 @@ void MergeSamplesToExistingHistogram(
 
   if (!histograms_match) {
     // If the histograms do not match, then the call to AddSamples() below might
-    // trigger a NOTREACHED(). Include the histogram name here for debugging
-    // purposes. This is not done in GetOrCreateStatisticsRecorderHistogram()
-    // directly, since that could incorrectly create crash reports for enum
-    // histograms that have newly appended entries (different bucket max and
-    // count).
+    // trigger a NOTREACHED_IN_MIGRATION(). Include the histogram name here for
+    // debugging purposes. This is not done in
+    // GetOrCreateStatisticsRecorderHistogram() directly, since that could
+    // incorrectly create crash reports for enum histograms that have newly
+    // appended entries (different bucket max and count).
     SCOPED_CRASH_KEY_STRING256("PersistentHistogramAllocator", "histogram",
                                existing->histogram_name());
     existing->AddSamples(*samples);
@@ -743,7 +743,7 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
 GlobalHistogramAllocator::~GlobalHistogramAllocator() {
   // GlobalHistogramAllocator should never be destroyed because Histogram
   // objects may keep pointers to its memory.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -1043,13 +1043,14 @@ bool GlobalHistogramAllocator::MovePersistentFile(const FilePath& dir) {
 bool GlobalHistogramAllocator::WriteToPersistentLocation() {
 #if BUILDFLAG(IS_NACL)
   // NACL doesn't support file operations, including ImportantFileWriter.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #else
   // Stop if no destination is set.
   if (!HasPersistentLocation()) {
-    NOTREACHED() << "Could not write \"" << Name() << "\" persistent histograms"
-                 << " to file because no location was set.";
+    NOTREACHED_IN_MIGRATION()
+        << "Could not write \"" << Name() << "\" persistent histograms"
+        << " to file because no location was set.";
     return false;
   }
 
@@ -1069,7 +1070,7 @@ void GlobalHistogramAllocator::DeletePersistentLocation() {
   memory_allocator()->SetMemoryState(PersistentMemoryAllocator::MEMORY_DELETED);
 
 #if BUILDFLAG(IS_NACL)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   if (!HasPersistentLocation()) {
     return;

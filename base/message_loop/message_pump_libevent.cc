@@ -143,7 +143,7 @@ MessagePumpLibevent::MessagePumpLibevent() {
 #endif
 
   if (!Init())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   DCHECK_NE(wakeup_pipe_in_, -1);
   DCHECK_NE(wakeup_pipe_out_, -1);
   DCHECK(wakeup_event_);
@@ -231,7 +231,8 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
     // It's illegal to use this function to listen on 2 separate fds with the
     // same |controller|.
     if (EVENT_FD(evt.get()) != fd) {
-      NOTREACHED() << "FDs don't match" << EVENT_FD(evt.get()) << "!=" << fd;
+      NOTREACHED_IN_MIGRATION()
+          << "FDs don't match" << EVENT_FD(evt.get()) << "!=" << fd;
       return false;
     }
   }

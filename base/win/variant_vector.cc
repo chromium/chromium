@@ -170,7 +170,7 @@ VARIANT VariantVector::ReleaseAsSafearrayVariant() {
     // VARTYPES. For example a value within VT_TYPEMASK that's joined something
     // outside the typemask like VT_ARRAY or VT_BYREF.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -313,7 +313,7 @@ int VariantVector::Compare(SAFEARRAY* safearray, bool ignore_case) const {
     // VARTYPES. For example a value within VT_TYPEMASK that's joined something
     // outside the typemask like VT_ARRAY or VT_BYREF.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       compare_result = 1;
       break;
   }

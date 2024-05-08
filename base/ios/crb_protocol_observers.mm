@@ -85,7 +85,7 @@ id Iterator::GetNext() {
 }
 
 - (id)init {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

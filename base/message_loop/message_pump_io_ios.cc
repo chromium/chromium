@@ -95,7 +95,7 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
         CFFileDescriptorCreate(kCFAllocatorDefault, fd, false, HandleFdIOEvent,
                                &source_context));
     if (scoped_fdref == NULL) {
-      NOTREACHED() << "CFFileDescriptorCreate failed";
+      NOTREACHED_IN_MIGRATION() << "CFFileDescriptorCreate failed";
       return false;
     }
 
@@ -106,7 +106,7 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
         CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, scoped_fdref,
                                             0));
     if (scoped_fd_source == NULL) {
-      NOTREACHED() << "CFFileDescriptorCreateRunLoopSource failed";
+      NOTREACHED_IN_MIGRATION() << "CFFileDescriptorCreateRunLoopSource failed";
       return false;
     }
     CFRunLoopAddSource(run_loop(), scoped_fd_source, kCFRunLoopCommonModes);
@@ -118,13 +118,13 @@ bool MessagePumpIOSForIO::WatchFileDescriptor(int fd,
     // It's illegal to use this function to listen on 2 separate fds with the
     // same |controller|.
     if (CFFileDescriptorGetNativeDescriptor(fdref) != fd) {
-      NOTREACHED() << "FDs don't match: "
-                   << CFFileDescriptorGetNativeDescriptor(fdref)
-                   << " != " << fd;
+      NOTREACHED_IN_MIGRATION()
+          << "FDs don't match: " << CFFileDescriptorGetNativeDescriptor(fdref)
+          << " != " << fd;
       return false;
     }
     if (persistent != controller->is_persistent_) {
-      NOTREACHED() << "persistent doesn't match";
+      NOTREACHED_IN_MIGRATION() << "persistent doesn't match";
       return false;
     }
 

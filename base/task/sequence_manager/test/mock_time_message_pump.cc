@@ -70,8 +70,9 @@ void MockTimeMessagePump::Run(Delegate* delegate) {
     if (stop_when_message_pump_is_idle_)
       return;
 
-    NOTREACHED() << "Pump would go to sleep. Probably not what you wanted, "
-                    "consider rewriting your test.";
+    NOTREACHED_IN_MIGRATION()
+        << "Pump would go to sleep. Probably not what you wanted, "
+           "consider rewriting your test.";
   }
 }
 

@@ -258,14 +258,14 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
 
     if (syscall(SYS_tgkill, getpid(), thread_delegate_->GetThreadId(),
                 SIGURG) != 0) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     bool finished_waiting = wait_event.Wait();
     TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                      "StackCopierSignal copy stack");
     if (!finished_waiting) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     // Ideally, an accurate timestamp is captured while the sampled thread is

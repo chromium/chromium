@@ -69,7 +69,7 @@ pid_t ProcDirSlotToPid(const char* d_name) {
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   return pid;
@@ -116,12 +116,12 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
     std::vector<std::string_view> split_value_str =
         SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
     }
     size_t value;
     if (!StringToSizeT(split_value_str[0], &value)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
     }
     return value;
@@ -178,7 +178,7 @@ bool ParseProcStats(const std::string& stats_data,
       close_parens_idx == std::string::npos ||
       open_parens_idx > close_parens_idx) {
     DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   open_parens_idx++;

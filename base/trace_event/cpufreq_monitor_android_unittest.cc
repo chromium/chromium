@@ -31,7 +31,7 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   base::TimeDelta delay) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

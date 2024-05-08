@@ -57,7 +57,7 @@ void MemoryAllocatorDump::AddString(const char* name,
                                     const std::string& value) {
   // String attributes are disabled in background mode.
   if (level_of_detail_ == MemoryDumpLevelOfDetail::kBackground) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   entries_.emplace_back(name, units, value);
@@ -172,7 +172,7 @@ bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
     case EntryType::kString:
       return value_string == rhs.value_string;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -187,7 +187,7 @@ void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {
            << entry.value_string << "\")>";
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace trace_event

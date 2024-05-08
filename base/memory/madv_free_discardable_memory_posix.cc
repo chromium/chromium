@@ -293,7 +293,7 @@ MadvFreeDiscardableMemoryPosix::CreateMemoryAllocatorDump(
   pmd->AddSuballocation(dump->guid(), allocator_dump_name);
   return dump;
 #else   // BUILDFLAG(ENABLE_BASE_TRACING)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }

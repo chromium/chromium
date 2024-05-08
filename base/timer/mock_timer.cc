@@ -34,7 +34,8 @@ MockOneShotTimer::~MockOneShotTimer() = default;
 
 void MockOneShotTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED() << "MockOneShotTimer doesn't support SetTaskRunner().";
+  NOTREACHED_IN_MIGRATION()
+      << "MockOneShotTimer doesn't support SetTaskRunner().";
 }
 
 void MockOneShotTimer::Fire() {
@@ -58,7 +59,8 @@ MockRepeatingTimer::~MockRepeatingTimer() = default;
 
 void MockRepeatingTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED() << "MockRepeatingTimer doesn't support SetTaskRunner().";
+  NOTREACHED_IN_MIGRATION()
+      << "MockRepeatingTimer doesn't support SetTaskRunner().";
 }
 
 void MockRepeatingTimer::Fire() {
@@ -77,7 +79,8 @@ MockRetainingOneShotTimer::~MockRetainingOneShotTimer() = default;
 
 void MockRetainingOneShotTimer::SetTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  NOTREACHED() << "MockRetainingOneShotTimer doesn't support SetTaskRunner().";
+  NOTREACHED_IN_MIGRATION()
+      << "MockRetainingOneShotTimer doesn't support SetTaskRunner().";
 }
 
 void MockRetainingOneShotTimer::Fire() {

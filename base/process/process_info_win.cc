@@ -35,7 +35,7 @@ IntegrityLevel GetCurrentProcessIntegrityLevel() {
   if (integrity_level >= SECURITY_MANDATORY_HIGH_RID)
     return HIGH_INTEGRITY;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return INTEGRITY_UNKNOWN;
 }
 

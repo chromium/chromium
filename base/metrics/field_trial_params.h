@@ -332,7 +332,7 @@ struct FeatureParam<Enum, true> {
       if (value == options[i].value)
         return options[i].name;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

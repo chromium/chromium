@@ -64,7 +64,7 @@ std::string ErrorCodeToString(JSONParser::JsonParseError error_code) {
     case JSONParser::JSON_PARSE_ERROR_COUNT:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

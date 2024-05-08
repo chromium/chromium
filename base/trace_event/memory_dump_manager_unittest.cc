@@ -140,7 +140,7 @@ class TestSequencedTaskRunner : public SequencedTaskRunner {
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   TimeDelta delay) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

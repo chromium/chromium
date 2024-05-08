@@ -10,7 +10,7 @@ namespace base {
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter) {
   // TODO(crbug.com/40721279): Implement ProcessIterator on Fuchsia.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ProcessIterator::~ProcessIterator() = default;

@@ -64,7 +64,7 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
     case DiscardableMemoryTrialGroup::kMadvFree:
       return DiscardableMemoryBacking::kMadvFree;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)

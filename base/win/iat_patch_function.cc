@@ -28,7 +28,7 @@ struct InterceptFunctionInformation {
 
 void* GetIATFunction(IMAGE_THUNK_DATA* iat_thunk) {
   if (!iat_thunk) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -58,7 +58,7 @@ bool InterceptEnumCallback(const base::win::PEImage& image,
       reinterpret_cast<InterceptFunctionInformation*>(cookie);
 
   if (!intercept_information) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -114,13 +114,13 @@ DWORD InterceptImportedFunction(HMODULE module_handle,
                                 IMAGE_THUNK_DATA** iat_thunk) {
   if (!module_handle || !imported_from_module || !function_name ||
       !new_function) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_PARAMETER;
   }
 
   base::win::PEImage target_image(module_handle);
   if (!target_image.VerifyMagic()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_PARAMETER;
   }
 
@@ -156,14 +156,14 @@ DWORD RestoreImportedFunction(void* intercept_function,
                               void* original_function,
                               IMAGE_THUNK_DATA* iat_thunk) {
   if (!intercept_function || !original_function || !iat_thunk) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_PARAMETER;
   }
 
   if (GetIATFunction(iat_thunk) != intercept_function) {
     // Check if someone else has intercepted on top of us.
     // We cannot unpatch in this case, just raise a red flag.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERROR_INVALID_FUNCTION;
   }
 
@@ -188,7 +188,7 @@ DWORD IATPatchFunction::Patch(const wchar_t* module,
                               void* new_function) {
   HMODULE module_handle = LoadLibraryW(module);
   if (!module_handle) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return GetLastError();
   }
 

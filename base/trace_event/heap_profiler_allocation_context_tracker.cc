@@ -81,7 +81,7 @@ void AllocationContextTracker::PushCurrentTaskContext(const char* context) {
   if (task_contexts_.size() < kMaxTaskDepth)
     task_contexts_.push_back(context);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 void AllocationContextTracker::PopCurrentTaskContext(const char* context) {

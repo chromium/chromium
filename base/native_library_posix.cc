@@ -53,7 +53,7 @@ void UnloadNativeLibrary(NativeLibrary library) {
   int ret = dlclose(library);
   if (ret < 0) {
     DLOG(ERROR) << "dlclose failed: " << dlerror();
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

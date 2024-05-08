@@ -35,7 +35,7 @@ NSProcessInfoThermalStateToDeviceThermalState(
     case NSProcessInfoThermalStateCritical:
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 }

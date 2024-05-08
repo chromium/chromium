@@ -51,7 +51,7 @@ pid_t ProcDirSlotToPid(const char* d_name) {
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   return pid;

@@ -48,7 +48,7 @@ ScopedHString ScopedHString::Create(std::wstring_view str) {
 
   // This should not happen at runtime. Otherwise we could silently pass nullptr
   // or an empty string to downstream code.
-  NOTREACHED() << "Failed to create HSTRING: " << std::hex << hr;
+  NOTREACHED_IN_MIGRATION() << "Failed to create HSTRING: " << std::hex << hr;
   return ScopedHString(nullptr);
 }
 

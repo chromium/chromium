@@ -521,14 +521,14 @@ TEST(CheckDeathTest, NotReached) {
 
 #if DCHECK_IS_ON()
   // Expect a DCHECK with streamed params intact.
-  EXPECT_DCHECK("Check failed: false. foo", NOTREACHED() << "foo");
+  EXPECT_DCHECK("Check failed: false. foo", NOTREACHED_IN_MIGRATION() << "foo");
 #elif CHECK_WILL_STREAM() || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
   // This block makes sure that base::Location::Current() returns non-dummy
   // values for file_name() and line_number(). This is necessary to avoid a
   // false negative inside EXPECT_LOG_ERROR_WITH_FILENAME() where we exhonorate
-  // the NOTREACHED() macro below even though it didn't provide the expected
-  // filename and line numbers.
-  // See EXPECT_LOG_ERROR_WITH_FILENAME() for the exclusion of "" and -1.
+  // the NOTREACHED_IN_MIGRATION() macro below even though it didn't provide the
+  // expected filename and line numbers. See EXPECT_LOG_ERROR_WITH_FILENAME()
+  // for the exclusion of "" and -1.
   ASSERT_NE(base::Location::Current().file_name(), nullptr);
   EXPECT_STRNE(base::Location::Current().file_name(), "");
   EXPECT_NE(base::Location::Current().line_number(), -1);
@@ -537,7 +537,7 @@ TEST(CheckDeathTest, NotReached) {
   // match __FILE__ (strips ../../ prefix) and __LINE__ (uses __builtin_LINE()).
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
                                  base::Location::Current().line_number(),
-                                 NOTREACHED() << "foo",
+                                 NOTREACHED_IN_MIGRATION() << "foo",
                                  "Check failed: false. foo\n");
 #else
   // Expect LOG(ERROR) that looks like CHECK(false) without file or line intact.
@@ -545,7 +545,7 @@ TEST(CheckDeathTest, NotReached) {
   // The actual location comes from
   // logging::NotReachedError::TriggerNotReached() but we have no good way of
   // asserting what that filename or line number is from here.
-  EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED() << "foo",
+  EXPECT_LOG_ERROR_WITH_FILENAME("", -1, NOTREACHED_IN_MIGRATION() << "foo",
                                  "Check failed: false. NOTREACHED log messages "
                                  "are omitted in official builds. Sorry!\n");
 #endif
@@ -556,7 +556,7 @@ TEST(CheckDeathTest, NotReached) {
 TEST(CheckDeathTest, NotReachedFatalExperiment) {
   base::test::ScopedFeatureList feature_list(
       base::features::kNotReachedIsFatal);
-  EXPECT_CHECK_DEATH(NOTREACHED());
+  EXPECT_CHECK_DEATH(NOTREACHED_IN_MIGRATION());
 }
 
 TEST(CheckDeathTest, DumpWillBeCheck) {
@@ -782,7 +782,7 @@ TEST(CheckDeathTest, CorrectSystemErrorUsed) {
 
   set_last_error(kTestError);
   EXPECT_DCHECK(kExpectedCheckMessageRegex,
-                NOTREACHED() << logging::GetLastSystemErrorCode());
+                NOTREACHED_IN_MIGRATION() << logging::GetLastSystemErrorCode());
 }
 
 }  // namespace

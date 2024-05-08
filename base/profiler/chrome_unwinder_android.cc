@@ -273,7 +273,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
       return UnwindInstructionResult::kAborted;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return UnwindInstructionResult::kInstructionPending;
 }
@@ -300,7 +300,7 @@ uintptr_t GetFirstUnwindInstructionIndexFromFunctionOffsetTableEntry(
 
   } while (true);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

@@ -230,7 +230,7 @@ const void** SamplingHeapProfiler::CaptureStackTrace(const void** frames,
     default:
       // Profiler should not be started if ChooseStackUnwinder() returns
       // anything else.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
