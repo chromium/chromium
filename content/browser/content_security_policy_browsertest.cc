@@ -22,6 +22,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_base.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,21 +34,7 @@
 
 namespace content {
 
-class ContentSecurityPolicyBrowserTest : public ContentBrowserTest {
- protected:
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  WebContentsImpl* web_contents() const {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
-  }
-
-  RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetPrimaryMainFrame();
-  }
-};
+using ContentSecurityPolicyBrowserTest = ContentBrowserTestBase;
 
 // Test that the console error message for a Content Security Policy violation
 // triggered by web assembly compilation does not mention the keyword
@@ -232,10 +219,10 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
     GURL element_url = net::FilePathToFileURL(TestFilePath(
         test_case.element_name == "iframe" ? "empty.html" : "blank.jpg"));
     element_url = element_url.ReplaceComponents(*test_case.element_host);
-    TestNavigationObserver load_observer(shell()->web_contents());
+    TestNavigationObserver load_observer(web_contents());
 
     EXPECT_TRUE(
-        ExecJs(current_frame_host(),
+        ExecJs(main_frame_host(),
                JsReplace(R"(
           var violation = new Promise(resolve => {
             document.addEventListener("securitypolicyviolation", (e) => {
@@ -262,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
       // Since iframes always trigger the onload event, we need to be more
       // careful checking whether the iframe was blocked or not.
       load_observer.Wait();
-      const url::Origin child_origin = current_frame_host()
+      const url::Origin child_origin = main_frame_host()
                                            ->child_at(0)
                                            ->current_frame_host()
                                            ->GetLastCommittedOrigin();
@@ -282,13 +269,13 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
     } else {
       std::string expect_message =
           test_case.expect_allowed ? "allowed" : "blocked";
-      EXPECT_EQ(expect_message, EvalJs(current_frame_host(), "promise"))
+      EXPECT_EQ(expect_message, EvalJs(main_frame_host(), "promise"))
           << element_url << " in " << document_url << " with CSPs \""
           << test_case.csp << "\" should be " << expect_message;
     }
 
     if (!test_case.expect_allowed) {
-      EXPECT_EQ("got violation", EvalJs(current_frame_host(), "violation"));
+      EXPECT_EQ("got violation", EvalJs(main_frame_host(), "violation"));
     }
   }
 }
@@ -306,8 +293,8 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 
-  EXPECT_EQ(current_frame_host()->child_count(), 1u);
-  EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
+  EXPECT_EQ(main_frame_host()->child_count(), 1u);
+  EXPECT_FALSE(main_frame_host()->child_at(0)->csp_attribute());
 }
 
 namespace {
