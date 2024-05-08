@@ -918,6 +918,16 @@ void PopupViewViews::CreateSuggestionViews() {
             .Build();
     body_container_ = scroll_view->SetContents(std::move(body_container));
     scroll_view_ = suggestions_container_->AddChildView(std::move(scroll_view));
+    // If `kUiCompositorScrollWithLayers` is enabled, then a ScrollView performs
+    // scrolling by using layers. These layers are not affected by the clip path
+    // of the widget and their corners remain unrounded, thus going beyond
+    // the popup's rounded corners. To avoid these, set a corner radius for
+    // the ScrollView's ViewPort if layer scrolling is enabled.
+    if (scroll_view_ && base::FeatureList::IsEnabled(
+                            ::features::kUiCompositorScrollWithLayers)) {
+      scroll_view_->SetViewportRoundedCornerRadius(
+          gfx::RoundedCornersF(GetCornerRadius()));
+    }
     suggestions_container_->SetFlexForView(scroll_view_.get(), 1);
   }
 
@@ -1081,17 +1091,6 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
   UpdateClipPath();
-
-  // If `kUiCompositorScrollWithLayers` is enabled, then a ScrollView performs
-  // scrolling by using layers. These layers are not affected by the clip path
-  // of the widget and their corners remain unrounded, thus going beyond
-  // the popup's rounded corners. To avoid these, set a corner radius for
-  // the ScrollView's ViewPort if layer scrolling is enabled.
-  if (scroll_view_ &&
-      base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
-    scroll_view_->SetViewportRoundedCornerRadius(
-        gfx::RoundedCornersF(GetCornerRadius()));
-  }
 
   SchedulePaint();
   return true;
