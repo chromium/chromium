@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -54,7 +56,9 @@ base::WeakPtr<ExtendedUpdatesNotification> ExtendedUpdatesNotification::Create(
 
 void ExtendedUpdatesNotification::Show() {
   Profile* profile = profile_observation_.GetSource();
-  if (!profile) {
+  if (!profile || profile->GetPrefs()->GetBoolean(
+                      prefs::kExtendedUpdatesNotificationDismissed)) {
+    SelfDestruct();
     return;
   }
 
@@ -82,7 +86,13 @@ void ExtendedUpdatesNotification::Show() {
 }
 
 void ExtendedUpdatesNotification::Close(bool by_user) {
-  delete this;
+  if (by_user) {
+    if (Profile* profile = profile_observation_.GetSource()) {
+      profile->GetPrefs()->SetBoolean(
+          prefs::kExtendedUpdatesNotificationDismissed, true);
+    }
+  }
+  SelfDestruct();
 }
 
 void ExtendedUpdatesNotification::Click(
@@ -105,7 +115,7 @@ void ExtendedUpdatesNotification::Click(
 }
 
 void ExtendedUpdatesNotification::OnProfileWillBeDestroyed(Profile* profile) {
-  delete this;
+  SelfDestruct();
 }
 
 base::WeakPtr<ExtendedUpdatesNotification>
@@ -122,6 +132,10 @@ void ExtendedUpdatesNotification::OpenLearnMoreUrl() {
       GURL(chrome::kDeviceExtendedUpdatesLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void ExtendedUpdatesNotification::SelfDestruct() {
+  delete this;
 }
 
 }  // namespace ash

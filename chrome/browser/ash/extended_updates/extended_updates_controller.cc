@@ -197,7 +197,6 @@ void ExtendedUpdatesController::OnOwnershipDetermined(
   }
 }
 
-// TODO(b/333619965): Also check if user has dismissed the notification before.
 // TODO(b/333767804): Show notification again if extended updates date changed.
 bool ExtendedUpdatesController::ShouldShowNotification(
     content::BrowserContext* context) {

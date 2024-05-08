@@ -529,6 +529,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kEolPassedFinalIncentiveDismissed,
                                 false);
 
+  // Extended Updates prefs.
+  registry->RegisterBooleanPref(prefs::kExtendedUpdatesNotificationDismissed,
+                                false);
+
   registry->RegisterBooleanPref(::prefs::kCastReceiverEnabled, false);
   registry->RegisterBooleanPref(::prefs::kShowArcSettingsOnSessionStart, false);
   registry->RegisterBooleanPref(::prefs::kShowSyncSettingsOnSessionStart,

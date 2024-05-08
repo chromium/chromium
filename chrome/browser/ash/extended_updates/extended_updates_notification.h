@@ -55,8 +55,7 @@ class ExtendedUpdatesNotification : public message_center::NotificationObserver,
   virtual void OpenLearnMoreUrl();
 
  private:
-  base::WeakPtr<ExtendedUpdatesNotification> BuildAndDisplayNotification(
-      Profile* profile);
+  void SelfDestruct();
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 

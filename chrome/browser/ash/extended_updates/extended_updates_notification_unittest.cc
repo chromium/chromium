@@ -24,7 +24,7 @@ namespace {
 
 using IndexedButton = ExtendedUpdatesNotification::IndexedButton;
 
-using ::testing::ElementsAre;
+using ::testing::Eq;
 
 class TestExtendedUpdatesNotification final
     : public ExtendedUpdatesNotification {
@@ -69,7 +69,9 @@ class ExtendedUpdatesNotificationTest
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
       const NotificationCommon::Metadata* const metadata) override {
-    displayed_notifications_.push_back(notification.id());
+    if (notification.id() == ExtendedUpdatesNotification::kNotificationId) {
+      ++num_displayed_notifications_;
+    }
   }
   void OnNotificationClosed(const std::string& notification_id) override {}
   void OnNotificationDisplayServiceDestroyed(
@@ -81,18 +83,13 @@ class ExtendedUpdatesNotificationTest
     return (new TestExtendedUpdatesNotification(profile))->AsWeakPtr();
   }
 
-  void ExpectNotificationShown() {
-    EXPECT_THAT(displayed_notifications_,
-                ElementsAre(ExtendedUpdatesNotification::kNotificationId));
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       obs_{this};
 
-  std::vector<std::string> displayed_notifications_;
+  int num_displayed_notifications_ = 0;
 };
 
 }  // namespace
@@ -124,7 +121,7 @@ TEST_F(ExtendedUpdatesNotificationTest, ClickNoButton) {
   note->Show();
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(note);
-  ExpectNotificationShown();
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
 
   note->Click(std::nullopt, std::nullopt);
   EXPECT_TRUE(note);
@@ -136,16 +133,16 @@ TEST_F(ExtendedUpdatesNotificationTest, ClickNoButton) {
 TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
   base::HistogramTester histogram_tester;
   auto note = CreateTestNotification(&profile_);
-  EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
 
   note->Show();
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(note);
-  ExpectNotificationShown();
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
   histogram_tester.ExpectBucketCount(
       kExtendedUpdatesEntryPointEventMetric,
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown, 1);
 
+  EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
   note->Click(static_cast<int>(IndexedButton::kSetUp), std::nullopt);
   EXPECT_TRUE(note);
   histogram_tester.ExpectBucketCount(
@@ -158,18 +155,54 @@ TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
 
 TEST_F(ExtendedUpdatesNotificationTest, OpenLearnMoreUrl) {
   auto note = CreateTestNotification(&profile_);
-  EXPECT_CALL(*note, OpenLearnMoreUrl()).Times(1);
 
   note->Show();
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(note);
-  ExpectNotificationShown();
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
 
+  EXPECT_CALL(*note, OpenLearnMoreUrl()).Times(1);
   note->Click(static_cast<int>(IndexedButton::kLearnMore), std::nullopt);
   EXPECT_TRUE(note);
 
   note->Close(/*by_user=*/true);
   EXPECT_FALSE(note);
+}
+
+TEST_F(ExtendedUpdatesNotificationTest, NoShowAfterUserDismiss) {
+  auto note = CreateTestNotification(&profile_);
+
+  note->Show();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(note);
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
+
+  note->Close(/*by_user=*/true);
+  EXPECT_FALSE(note);
+
+  note = CreateTestNotification(&profile_);
+  note->Show();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(note);
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
+}
+
+TEST_F(ExtendedUpdatesNotificationTest, ReShowAfterNonUserDismiss) {
+  auto note = CreateTestNotification(&profile_);
+
+  note->Show();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(note);
+  EXPECT_THAT(num_displayed_notifications_, Eq(1));
+
+  note->Close(/*by_user=*/false);
+  EXPECT_FALSE(note);
+
+  note = CreateTestNotification(&profile_);
+  note->Show();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(note);
+  EXPECT_THAT(num_displayed_notifications_, Eq(2));
 }
 
 }  // namespace ash

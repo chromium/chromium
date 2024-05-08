@@ -2185,6 +2185,11 @@ inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 // A boolean pref indicating whether Birch should use release notes data.
 inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
 
+// A boolean pref that holds whether the user dismissed the extended updates
+// notification.
+inline constexpr char kExtendedUpdatesNotificationDismissed[] =
+    "ash.extended_updates.notification_dismissed";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
