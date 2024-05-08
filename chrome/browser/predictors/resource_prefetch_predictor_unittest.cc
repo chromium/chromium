@@ -202,7 +202,7 @@ void ResourcePrefetchPredictorTest::TearDown() {
             mock_tables_->host_redirect_table_.data_);
   EXPECT_EQ(predictor_->origin_data_->GetAllCached(),
             mock_tables_->origin_table_.data_);
-  EXPECT_EQ(predictor_->lcpp_data_->GetAllCached(),
+  EXPECT_EQ(predictor_->lcpp_data_->GetAllCachedForTesting(),
             mock_tables_->lcpp_table_.data_);
   loading_predictor_->Shutdown();
 }

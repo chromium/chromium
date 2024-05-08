@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
+class ResourcePrefetchPredictorTables;
 
 namespace lcpp {
 struct LastVisitTimeCompare {
@@ -124,23 +125,37 @@ bool IsURLValidForLcpp(const GURL& url);
 // the first level path or it length exceeds kLCPPMultipleKeyMaxPathLength.
 std::string GetFirstLevelPath(const GURL& url);
 
-using LcppDataMap =
-    sqlite_proto::KeyValueData<LcppData, lcpp::LastVisitTimeCompare>;
+class LcppDataMap {
+ public:
+  using DataMap =
+      sqlite_proto::KeyValueData<LcppData, lcpp::LastVisitTimeCompare>;
 
-// Record LCP element locators after a page has finished loading and LCP has
-// been determined to `lcpp_data_map`.
-// Returns true if it was updated.
-bool LearnLcpp(const LoadingPredictorConfig& config,
-               const GURL& url,
-               const LcppDataInputs& inputs,
-               LcppDataMap& lcpp_data_map);
+  LcppDataMap(ResourcePrefetchPredictorTables& tables,
+              const LoadingPredictorConfig& config);
+  ~LcppDataMap();
+  LcppDataMap(const LcppDataMap&) = delete;
 
-// Returns LcppStat from `lcpp_data_map`
-// for the `url`, or std::nullopt on failure.
-std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
-                                    const GURL& url);
+  void InitializeOnDBSequence();
 
-void DeleteUrls(LcppDataMap& lcpp_data_map, const std::vector<GURL>& urls);
+  // Record LCP element locators after a page has finished loading and LCP has
+  // been determined.
+  // Returns true if it was updated.
+  bool LearnLcpp(const GURL& url, const LcppDataInputs& inputs);
+
+  // Returns LcppStat for the `url`, or std::nullopt on failure.
+  std::optional<LcppStat> GetLcppStat(const GURL& url) const;
+
+  void DeleteUrls(const std::vector<GURL>& urls);
+
+  void DeleteAllData();
+
+ private:
+  friend class ResourcePrefetchPredictorTest;
+  const std::map<std::string, LcppData>& GetAllCachedForTesting();
+
+  const LoadingPredictorConfig config_;
+  DataMap data_map_;
+};
 
 }  // namespace predictors
 

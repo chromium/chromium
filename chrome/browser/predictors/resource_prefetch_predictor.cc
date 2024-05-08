@@ -274,9 +274,7 @@ void ResourcePrefetchPredictor::StartInitialization() {
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
       base::Seconds(config_.flush_data_to_disk_delay_seconds));
-  auto lcpp_data = std::make_unique<LcppDataMap>(
-      tables_, tables_->lcpp_table(), config_.max_hosts_to_track_for_lcpp,
-      base::Seconds(config_.flush_data_to_disk_delay_seconds));
+  auto lcpp_data = std::make_unique<LcppDataMap>(*tables_, config_);
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.
@@ -449,8 +447,7 @@ void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
 
   host_redirect_data_->DeleteData(hosts_to_delete);
   origin_data_->DeleteData(hosts_to_delete);
-  CHECK(lcpp_data_);
-  predictors::DeleteUrls(*lcpp_data_, urls_to_delete);
+  lcpp_data_->DeleteUrls(urls_to_delete);
 }
 
 void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
@@ -631,9 +628,7 @@ void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
-  CHECK(lcpp_data_);
-  const bool data_updated =
-      predictors::LearnLcpp(config_, url, inputs, *lcpp_data_);
+  const bool data_updated = lcpp_data_->LearnLcpp(url, inputs);
   if (data_updated && observer_) {
     observer_->OnLcppLearned();
   }
@@ -648,8 +643,7 @@ std::optional<LcppStat> ResourcePrefetchPredictor::GetLcppStat(
   if (initialization_state_ != INITIALIZED) {
     return std::nullopt;
   }
-  CHECK(lcpp_data_);
-  return predictors::GetLcppStat(*lcpp_data_, url);
+  return lcpp_data_->GetLcppStat(url);
 }
 
 void ResourcePrefetchPredictor::OnHistoryDeletions(

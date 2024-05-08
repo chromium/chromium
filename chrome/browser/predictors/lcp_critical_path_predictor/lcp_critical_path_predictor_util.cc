@@ -911,18 +911,29 @@ std::string GetFirstLevelPath(const GURL& url) {
   return url.path().substr(0, first_level_path_length);
 }
 
+LcppDataMap::LcppDataMap(ResourcePrefetchPredictorTables& tables,
+                         const LoadingPredictorConfig& config)
+    : config_(config),
+      data_map_(&tables,
+                tables.lcpp_table(),
+                config.max_hosts_to_track_for_lcpp,
+                base::Seconds(config.flush_data_to_disk_delay_seconds)) {}
+
+LcppDataMap::~LcppDataMap() = default;
+
+void LcppDataMap::InitializeOnDBSequence() {
+  data_map_.InitializeOnDBSequence();
+}
+
 // Record LCP element locators after a page has finished loading and LCP has
 // been determined.
-bool LearnLcpp(const LoadingPredictorConfig& config,
-               const GURL& url,
-               const LcppDataInputs& inputs,
-               LcppDataMap& lcpp_data_map) {
+bool LcppDataMap::LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
   if (!IsURLValidForLcpp(url)) {
     return false;
   }
   const std::string key = GetLCPPDatabaseKey(url);
   LcppData lcpp_data;
-  bool exists = lcpp_data_map.TryGetData(key, &lcpp_data);
+  bool exists = data_map_.TryGetData(key, &lcpp_data);
   lcpp_data.set_last_visit_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -934,31 +945,30 @@ bool LearnLcpp(const LoadingPredictorConfig& config,
     lcpp_data.mutable_lcpp_key_stat()->Clear();
   }
 
-  LcppStat& lcpp_stat = GetLcppStatToUpdate(config, url, lcpp_data);
+  LcppStat& lcpp_stat = GetLcppStatToUpdate(config_, url, lcpp_data);
   if (!IsValidLcppStat(lcpp_stat)) {
     lcpp_stat.Clear();
     base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
                               true);
   }
   const bool data_updated =
-      UpdateLcppStatWithLcppDataInputs(config, inputs, lcpp_stat);
+      UpdateLcppStatWithLcppDataInputs(config_, inputs, lcpp_stat);
   DCHECK(IsValidLcppStat(lcpp_stat));
   if (data_updated) {
-    lcpp_data_map.UpdateData(key, lcpp_data);
+    data_map_.UpdateData(key, lcpp_data);
   }
   return data_updated;
 }
 
 // Returns LcppStat for the `url`, or std::nullopt on failure.
-std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
-                                    const GURL& url) {
+std::optional<LcppStat> LcppDataMap::GetLcppStat(const GURL& url) const {
   if (!IsURLValidForLcpp(url)) {
     return std::nullopt;
   }
   const std::string key = GetLCPPDatabaseKey(url);
 
   LcppData data;
-  if (!lcpp_data_map.TryGetData(key, &data)) {
+  if (!data_map_.TryGetData(key, &data)) {
     return std::nullopt;
   }
   if (IsLcppMultipleKeyKeyStatEnabled()) {
@@ -977,7 +987,7 @@ std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
   return data.lcpp_stat();
 }
 
-void DeleteUrls(LcppDataMap& lcpp_data_map, const std::vector<GURL>& urls) {
+void LcppDataMap::DeleteUrls(const std::vector<GURL>& urls) {
   std::vector<std::string> keys_to_delete;
   for (const GURL& url : urls) {
     if (!IsURLValidForLcpp(url)) {
@@ -987,7 +997,15 @@ void DeleteUrls(LcppDataMap& lcpp_data_map, const std::vector<GURL>& urls) {
     const std::string key = GetLCPPDatabaseKey(url);
     keys_to_delete.emplace_back(key);
   }
-  lcpp_data_map.DeleteData(keys_to_delete);
+  data_map_.DeleteData(keys_to_delete);
+}
+
+void LcppDataMap::DeleteAllData() {
+  data_map_.DeleteAllData();
+}
+
+const std::map<std::string, LcppData>& LcppDataMap::GetAllCachedForTesting() {
+  return data_map_.GetAllCached();
 }
 
 }  // namespace predictors

@@ -914,10 +914,7 @@ class LcppDataMapTest : public testing::Test {
     mock_tables_ =
         base::MakeRefCounted<StrictMock<MockResourcePrefetchPredictorTables>>(
             db_task_runner_);
-    lcpp_data_map_ = std::make_unique<LcppDataMap>(
-        mock_tables_, mock_tables_->lcpp_table(),
-        config.max_hosts_to_track_for_lcpp,
-        base::Seconds(config.flush_data_to_disk_delay_seconds));
+    lcpp_data_map_ = std::make_unique<LcppDataMap>(*mock_tables_, config);
     db_task_runner_->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
                                 lcpp_data_map_->InitializeOnDBSequence();
                               }));
@@ -935,7 +932,7 @@ class LcppDataMapTest : public testing::Test {
   }
 
   void LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
-    predictors::LearnLcpp(config_, url, inputs, *lcpp_data_map_);
+    lcpp_data_map_->LearnLcpp(url, inputs);
   }
 
   void LearnElementLocator(
@@ -963,7 +960,7 @@ class LcppDataMapTest : public testing::Test {
   }
 
   std::optional<LcppStat> GetLcppStat(const GURL& url) {
-    return predictors::GetLcppStat(*lcpp_data_map_, url);
+    return lcpp_data_map_->GetLcppStat(url);
   }
 
   void TestLearnLcppURL(
@@ -975,8 +972,7 @@ class LcppDataMapTest : public testing::Test {
       const std::string& key = url_key.second;
       LearnElementLocator(GURL(url), "/#a", {});
       // Confirm 'url' was learned as 'key'.
-      auto stat =
-          predictors::GetLcppStat(*lcpp_data_map_, GURL("http://" + key));
+      auto stat = lcpp_data_map_->GetLcppStat(GURL("http://" + key));
       EXPECT_TRUE(stat) << location.ToString() << url;
       LcppData expected;
       InitializeLcpElementLocatorBucket(expected, "/#a", ++frequency[key]);
@@ -1301,7 +1297,7 @@ TEST_F(LcppDataMapTest, DeleteUrls) {
   EXPECT_TRUE(GetLcppStat(url_b));
   EXPECT_TRUE(GetLcppStat(url_c));
 
-  DeleteUrls(*lcpp_data_map_, {url_a, url_b});
+  lcpp_data_map_->DeleteUrls({url_a, url_b});
   EXPECT_FALSE(GetLcppStat(url_a));
   EXPECT_FALSE(GetLcppStat(url_b));
   EXPECT_TRUE(GetLcppStat(url_c));
@@ -1401,7 +1397,7 @@ TEST_P(LcppMultipleKeyTest, DeleteUrls) {
     EXPECT_TRUE(GetLcppStat(url));
   }
 
-  DeleteUrls(*lcpp_data_map_, {url_a_2, url_b});
+  lcpp_data_map_->DeleteUrls({url_a_2, url_b});
   // In kDefault, only exact match entry is removed.
   // In kLcppKeyStat, all entries having same host are removed.
   EXPECT_EQ(!!GetLcppStat(url_a_1), kIsDefault);
