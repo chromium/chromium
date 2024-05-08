@@ -22,16 +22,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.widget.LoadingView;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AutofillSaveCardBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -39,16 +43,43 @@ import java.util.LinkedList;
 public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivityTestCase {
     @DrawableRes private static final int TEST_DRAWABLE_RES = R.drawable.arrow_up;
 
-    private PropertyModel.Builder mModel;
+    private PropertyModel.Builder mModelBuilder;
+    private PropertyModel mModel;
     private AutofillSaveCardBottomSheetView mView;
+
+    private static class LoadingViewObserver implements LoadingView.Observer {
+        @Override
+        public void onShowLoadingUIComplete() {
+            mOnShowHelper.notifyCalled();
+        }
+
+        @Override
+        public void onHideLoadingUIComplete() {
+            mOnHideHelper.notifyCalled();
+        }
+
+        public CallbackHelper getOnShowLoadingUICompleteHelper() {
+            return mOnShowHelper;
+        }
+
+        public CallbackHelper getOnHideLoadingUICompleteHelper() {
+            return mOnHideHelper;
+        }
+
+        private final CallbackHelper mOnShowHelper = new CallbackHelper();
+
+        private final CallbackHelper mOnHideHelper = new CallbackHelper();
+    }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        mModel = new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS);
+        mModelBuilder = new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS);
         mView = new AutofillSaveCardBottomSheetView(getActivity());
-        bind(mModel);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getActivity().setContentView(mView.mContentView));
+        bind(mModelBuilder);
     }
 
     @Test
@@ -78,11 +109,13 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         assertEquals(R.id.autofill_save_card_icon, mView.mLogoIcon.getId());
         assertThat(mView.mLogoIcon.getDrawable(), nullValue());
 
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.LOGO_ICON, 0));
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.LOGO_ICON, 0));
         assertThat(mView.mLogoIcon.getDrawable(), nullValue());
         assertEquals(View.GONE, mView.mLogoIcon.getVisibility());
 
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.LOGO_ICON, TEST_DRAWABLE_RES));
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveCardBottomSheetProperties.LOGO_ICON, TEST_DRAWABLE_RES));
         assertThat(mView.mLogoIcon.getDrawable(), notNullValue());
         assertEquals(View.VISIBLE, mView.mLogoIcon.getVisibility());
     }
@@ -96,11 +129,13 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
     @Test
     @SmallTest
     public void testCardDescription() {
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION, ""));
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION, ""));
         assertThat(String.valueOf(mView.mCardView.getContentDescription()), isEmptyString());
 
         final String descriptionText = "Card Description";
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION, descriptionText));
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION, descriptionText));
         assertEquals(descriptionText, String.valueOf(mView.mCardView.getContentDescription()));
     }
 
@@ -110,10 +145,12 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         assertEquals(R.id.autofill_save_card_credit_card_icon, mView.mCardIcon.getId());
         assertThat(mView.mCardIcon.getDrawable(), nullValue());
 
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.CARD_ICON, 0));
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.CARD_ICON, 0));
         assertThat(mView.mCardIcon.getDrawable(), nullValue());
 
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.CARD_ICON, TEST_DRAWABLE_RES));
+        bind(
+                mModelBuilder.with(
+                        AutofillSaveCardBottomSheetProperties.CARD_ICON, TEST_DRAWABLE_RES));
         assertThat(mView.mCardIcon.getDrawable(), notNullValue());
     }
 
@@ -139,12 +176,12 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         assertEquals(R.id.legal_message, mView.mLegalMessage.getId());
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
 
-        bind(mModel.with(AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE, null));
+        bind(mModelBuilder.with(AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE, null));
         assertThat(String.valueOf(mView.mLegalMessage.getText()), isEmptyString());
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveCardBottomSheetProperties.LegalMessage(
                                 /* lines= */ null, /* link= */ null)));
@@ -152,7 +189,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         assertEquals(View.GONE, mView.mLegalMessage.getVisibility());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveCardBottomSheetProperties.LegalMessage(
                                 ImmutableList.of(), this::openLink)));
@@ -163,7 +200,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         LinkedList<LegalMessageLine> legalMessageLines = new LinkedList<>();
         legalMessageLines.add(new LegalMessageLine(messageText));
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveCardBottomSheetProperties.LegalMessage(
                                 ImmutableList.copyOf(legalMessageLines), this::openLink)));
@@ -175,7 +212,7 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
         legalMessageLines = new LinkedList<>();
         legalMessageLines.add(legalMessageLine);
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
                         new AutofillSaveCardBottomSheetProperties.LegalMessage(
                                 ImmutableList.copyOf(legalMessageLines), this::openLink)));
@@ -199,25 +236,58 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
                 mView.mCancelButton, AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL);
     }
 
+    @Test
+    @SmallTest
+    public void testShowLoadingState() throws TimeoutException {
+        LoadingViewObserver observer = new LoadingViewObserver();
+        mView.mLoadingView.addObserver(observer);
+
+        assertEquals(View.GONE, mView.mLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
+
+        int onShowLoadingUICompleteCount =
+                observer.getOnShowLoadingUICompleteHelper().getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true));
+        observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
+        assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.GONE, mView.mCancelButton.getVisibility());
+
+        int onHideLoadingUICompleteCount =
+                observer.getOnHideLoadingUICompleteHelper().getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false));
+        observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        assertEquals(View.GONE, mView.mLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
+    }
+
     public void openLink(String url) {}
 
     private void bind(PropertyModel.Builder modelBuilder) {
-        PropertyModelChangeProcessor.create(
-                modelBuilder.build(), mView, AutofillSaveCardBottomSheetViewBinder::bind);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = modelBuilder.build();
+                    PropertyModelChangeProcessor.create(
+                            mModel, mView, AutofillSaveCardBottomSheetViewBinder::bind);
+                });
     }
 
     private void verifyPropertyBoundToTextView(
             TextView view, ReadableObjectPropertyKey<String> property) {
-        bind(mModel.with(property, null));
+        bind(mModelBuilder.with(property, null));
         assertEquals(View.GONE, view.getVisibility());
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, ""));
+        bind(mModelBuilder.with(property, ""));
         assertEquals(View.GONE, view.getVisibility());
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
         final String messageText = "Test Message";
-        bind(mModel.with(property, messageText));
+        bind(mModelBuilder.with(property, messageText));
         assertEquals(View.VISIBLE, view.getVisibility());
         assertEquals(messageText, String.valueOf(view.getText()));
     }

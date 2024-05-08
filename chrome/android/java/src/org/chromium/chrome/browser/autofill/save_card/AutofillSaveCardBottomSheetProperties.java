@@ -10,6 +10,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 import java.util.function.Consumer;
 
@@ -69,6 +70,8 @@ import java.util.function.Consumer;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         TITLE,
         DESCRIPTION,
@@ -79,7 +82,8 @@ import java.util.function.Consumer;
         CARD_SUB_LABEL,
         LEGAL_MESSAGE,
         ACCEPT_BUTTON_LABEL,
-        CANCEL_BUTTON_LABEL
+        CANCEL_BUTTON_LABEL,
+        SHOW_LOADING_STATE
     };
 
     /** Do not instantiate. */

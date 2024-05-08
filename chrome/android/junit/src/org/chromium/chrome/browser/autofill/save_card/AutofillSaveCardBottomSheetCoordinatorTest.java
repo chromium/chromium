@@ -132,6 +132,11 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 mCoordinator
                         .getPropertyModelForTesting()
                         .get(AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        assertEquals(
+                false,
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
     }
 
     @Test

@@ -408,6 +408,7 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_credit_card_spacing">16dp</dimen>
     <dimen name="autofill_bottom_sheet_credit_card_width">40dp</dimen>
     <dimen name="autofill_bottom_sheet_drag_handlebar_spacing_top">8dp</dimen>
+    <dimen name="autofill_bottom_sheet_loading_view_bottom_margin">64dp</dimen>
     <dimen name="autofill_bottom_sheet_logo_height">32dp</dimen>
     <dimen name="autofill_bottom_sheet_title_top_margin">24dp</dimen>
 

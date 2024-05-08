@@ -130,6 +130,15 @@ found in the LICENSE file.
           android:minWidth="@dimen/min_touch_target_size"
           tools:text="No Thanks" />
 
+      <org.chromium.ui.widget.LoadingView
+          android:id="@+id/autofill_save_card_loading_view"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+          android:layout_marginBottom="@dimen/autofill_bottom_sheet_loading_view_bottom_margin"
+          android:visibility="gone" />
+
     </LinearLayout>
   </ScrollView>
 </LinearLayout>

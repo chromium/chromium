@@ -55,6 +55,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
         }
     }
 
+    public void onAccepted() {
+        hide(StateChangeReason.INTERACTION_COMPLETE);
+        mDelegate.onUiAccepted();
+    }
+
     @Override
     public void onCanceled() {
         hide(StateChangeReason.INTERACTION_COMPLETE);

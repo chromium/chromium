@@ -68,6 +68,19 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     }
 
     @Test
+    public void testOnAccepted() {
+        mMediator.onAccepted();
+
+        verify(mLifeCycle).end();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mDelegate).onUiAccepted();
+    }
+
+    @Test
     public void testOnCanceled() {
         mMediator.onCanceled();
 
