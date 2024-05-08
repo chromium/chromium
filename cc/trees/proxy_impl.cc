@@ -324,6 +324,14 @@ void ProxyImpl::FrameSinksToThrottleUpdated(
   NOTREACHED();
 }
 
+void ProxyImpl::SetHasActiveThreadedScroll(bool is_scrolling) {
+  scheduler_->SetIsScrolling(is_scrolling);
+}
+
+void ProxyImpl::SetWaitingForScrollEvent(bool waiting_for_scroll_event) {
+  scheduler_->SetWaitingForScrollEvent(waiting_for_scroll_event);
+}
+
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,

@@ -309,12 +309,20 @@ void LayerTreeHostImpl::DidUpdatePinchZoom() {
 
 void LayerTreeHostImpl::DidStartScroll() {
   scroll_affects_scroll_handler_ = active_tree()->have_scroll_event_handlers();
+  if (!settings().single_thread_proxy_scheduler) {
+    client_->SetHasActiveThreadedScroll(true);
+  }
   client_->RenewTreePriority();
 }
 
 void LayerTreeHostImpl::DidEndScroll() {
   scroll_affects_scroll_handler_ = false;
   current_scroll_did_checkerboard_large_area_ = false;
+
+  if (!settings().single_thread_proxy_scheduler) {
+    client_->SetHasActiveThreadedScroll(false);
+    client_->SetWaitingForScrollEvent(false);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (render_frame_metadata_observer_) {
@@ -3007,6 +3015,11 @@ void LayerTreeHostImpl::
 }
 
 bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
+  if (!settings().single_thread_proxy_scheduler) {
+    client_->SetWaitingForScrollEvent(input_delegate_ &&
+                                      input_delegate_->IsCurrentlyScrolling() &&
+                                      !input_delegate_->HasQueuedInput());
+  }
   impl_thread_phase_ = ImplThreadPhase::INSIDE_IMPL_FRAME;
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
@@ -3077,6 +3090,9 @@ void LayerTreeHostImpl::DidFinishImplFrame(const viz::BeginFrameArgs& args) {
   frame_trackers_.NotifyFrameEnd(current_begin_frame_tracker_.Current(), args);
   impl_thread_phase_ = ImplThreadPhase::IDLE;
   current_begin_frame_tracker_.Finish();
+  if (input_delegate_) {
+    input_delegate_->DidFinishImplFrame();
+  }
 }
 
 void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
@@ -4133,8 +4149,12 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id, bool animated) {
   // We may wish to prioritize smoothness over raster when the user is
   // interacting with content, but this needs to be evaluated only for direct
   // user scrolls, not for programmatic scrolls.
-  if (input_delegate_->IsCurrentlyScrolling())
+  if (input_delegate_->IsCurrentlyScrolling()) {
+    if (!settings().single_thread_proxy_scheduler) {
+      client_->SetWaitingForScrollEvent(false);
+    }
     client_->RenewTreePriority();
+  }
 
   if (!animated) {
     // SetNeedsRedraw is only called in non-animated cases since an animation

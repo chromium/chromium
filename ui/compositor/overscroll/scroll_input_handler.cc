@@ -101,5 +101,10 @@ void ScrollInputHandler::UpdateRootLayerStateForSynchronousInputHandler(
 void ScrollInputHandler::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {}
 void ScrollInputHandler::DeliverInputForHighLatencyMode() {}
+void ScrollInputHandler::DidFinishImplFrame() {}
+bool ScrollInputHandler::HasQueuedInput() const {
+  return false;
+}
+void ScrollInputHandler::SetWaitForLateScrollEvents(bool enabled) {}
 
 }  // namespace ui

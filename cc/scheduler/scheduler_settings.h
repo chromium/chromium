@@ -53,6 +53,12 @@ class CC_EXPORT SchedulerSettings {
   // they would be under the default settings.
   bool disable_frame_rate_limit = false;
 
+  // When true BeginImplFrameDeadlineMode::SCROLL will be enabled. This deadline
+  // is used to wait for `scroll_deadline_ratio` of `BeginFramrArgs::interval`
+  // for input to arrive, before attempting to draw.
+  bool scroll_deadline_mode_enabled = false;
+  double scroll_deadline_ratio = 0.333;
+
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 

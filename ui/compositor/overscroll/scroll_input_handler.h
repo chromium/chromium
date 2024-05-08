@@ -43,6 +43,9 @@ class COMPOSITOR_EXPORT ScrollInputHandler : public cc::InputHandlerClient {
       float max_page_scale_factor) override;
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override;
   void DeliverInputForHighLatencyMode() override;
+  void DidFinishImplFrame() override;
+  bool HasQueuedInput() const override;
+  void SetWaitForLateScrollEvents(bool enabled) override;
 
  private:
   // Cleared in WillShutdown().

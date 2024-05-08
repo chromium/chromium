@@ -180,6 +180,9 @@ class LayerTreeHostImplClient {
 
   virtual void ClearHistory() = 0;
 
+  virtual void SetHasActiveThreadedScroll(bool is_scrolling) = 0;
+  virtual void SetWaitingForScrollEvent(bool waiting_for_scroll_event) = 0;
+
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 
  protected:

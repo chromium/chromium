@@ -297,6 +297,8 @@ class LayerTreeHostImplTest : public testing::Test,
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) override {}
   void ClearHistory() override {}
+  void SetHasActiveThreadedScroll(bool is_scrolling) override {}
+  void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override {}
   size_t CommitDurationSampleCountForTesting() const override { return 0; }
   void NotifyTransitionRequestFinished(uint32_t sequence_id) override {}
   void set_reduce_memory_result(bool reduce_memory_result) {
@@ -1021,6 +1023,9 @@ class TestInputHandlerClient : public InputHandlerClient {
   }
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override {}
   void DeliverInputForHighLatencyMode() override {}
+  void DidFinishImplFrame() override {}
+  bool HasQueuedInput() const override { return false; }
+  void SetWaitForLateScrollEvents(bool enabled) override {}
 
   gfx::PointF last_set_scroll_offset() { return last_set_scroll_offset_; }
 
@@ -13971,7 +13976,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
        FluentScrollbarFlashAfterScrollUpdate) {
   auto* root_scrollbar = CreateAndRegisterPaintedScrollbarLayer();
-  
   // Register child scrollable area layer and scrollbar.
   LayerImpl* root_scroll = OuterViewportScrollLayer();
   gfx::Size child_layer_size(250, 150);

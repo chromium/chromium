@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/widget/input/event_with_callback.h"
 
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -13,25 +12,17 @@ namespace blink {
 
 EventWithCallback::EventWithCallback(
     std::unique_ptr<WebCoalescedInputEvent> event,
-    base::TimeTicks timestamp_now,
     InputHandlerProxy::EventDispositionCallback callback,
     std::unique_ptr<cc::EventMetrics> metrics)
-    : event_(std::make_unique<WebCoalescedInputEvent>(*event)),
-      creation_timestamp_(timestamp_now),
-      last_coalesced_timestamp_(timestamp_now) {
+    : event_(std::make_unique<WebCoalescedInputEvent>(*event)) {
   original_events_.emplace_back(std::move(event), std::move(metrics),
                                 std::move(callback));
 }
 
 EventWithCallback::EventWithCallback(
     std::unique_ptr<WebCoalescedInputEvent> event,
-    base::TimeTicks creation_timestamp,
-    base::TimeTicks last_coalesced_timestamp,
     OriginalEventList original_events)
-    : event_(std::move(event)),
-      original_events_(std::move(original_events)),
-      creation_timestamp_(creation_timestamp),
-      last_coalesced_timestamp_(last_coalesced_timestamp) {}
+    : event_(std::move(event)), original_events_(std::move(original_events)) {}
 
 EventWithCallback::~EventWithCallback() = default;
 
@@ -46,8 +37,7 @@ void EventWithCallback::SetScrollbarManipulationHandledOnCompositorThread() {
   }
 }
 
-void EventWithCallback::CoalesceWith(EventWithCallback* other,
-                                     base::TimeTicks timestamp_now) {
+void EventWithCallback::CoalesceWith(EventWithCallback* other) {
   event_->CoalesceWith(*other->event_);
   auto* metrics = original_events_.empty()
                       ? nullptr
@@ -63,7 +53,6 @@ void EventWithCallback::CoalesceWith(EventWithCallback* other,
 
   // Move original events.
   original_events_.splice(original_events_.end(), other->original_events_);
-  last_coalesced_timestamp_ = timestamp_now;
 }
 
 static bool HandledOnCompositorThread(

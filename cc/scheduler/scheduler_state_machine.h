@@ -68,15 +68,17 @@ class CC_EXPORT SchedulerStateMachine {
   // submitting a compositor frame. BeginImplFrameDeadlineMode specifies when
   // the deadline should run.
   enum class BeginImplFrameDeadlineMode {
-    NONE = 0,  // No deadline should be scheduled e.g. for synchronous
-               // compositor.
+    NONE = 0,       // No deadline should be scheduled e.g. for synchronous
+                    // compositor.
     IMMEDIATE = 1,  // Deadline should be scheduled to run immediately.
-    REGULAR = 2,    // Deadline should be scheduled to run at the deadline
-                    // provided by in the BeginFrameArgs.
-    LATE = 3,       // Deadline should be scheduled run when the next frame is
-                    // expected to arrive.
-    BLOCKED = 4,    // Deadline should be blocked indefinitely until the next
-                    // frame arrives.
+    WAIT_FOR_SCROLL = 2,  // Deadline should be delayed as we are expecting
+                          // input for a scroll.
+    REGULAR = 3,          // Deadline should be scheduled to run at the deadline
+                          // provided by in the BeginFrameArgs.
+    LATE = 4,     // Deadline should be scheduled run when the next frame is
+                  // expected to arrive.
+    BLOCKED = 5,  // Deadline should be blocked indefinitely until the next
+                  // frame arrives.
     kMaxValue = BLOCKED,
   };
   // TODO(nuskos): Update Scheduler::ScheduleBeginImplFrameDeadline event to
@@ -358,10 +360,20 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool resourceless_draw() const { return resourceless_draw_; }
 
+  void set_is_scrolling(bool is_scrolling) { is_scrolling_ = is_scrolling; }
+  void set_waiting_for_scroll_event(bool waiting_for_scroll_event) {
+    waiting_for_scroll_event_ = waiting_for_scroll_event;
+  }
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
   bool ProactiveBeginFrameWanted() const;
+
+  // Indicates if we should post a deadline for drawing, and if we should delay
+  // sending BeginMainFrame. This is true when we are expecting a scroll event
+  // to arrive, are prioritizing smoothness, and have begun frame production.
+  bool ShouldWaitForScrollEvent() const;
 
   // Indicates if we should post the deadline to draw immediately. This is true
   // when we aren't expecting a commit or activation, or we're prioritizing
@@ -499,6 +511,15 @@ class CC_EXPORT SchedulerStateMachine {
   bool draw_aborted_for_paused_begin_frame_ = false;
 
   unsigned consecutive_cant_draw_count_ = 0u;
+
+  // When true we will prioritize BeginImplFrameDeadlineMode::SCROLL if
+  // `SchedulerSettings.scroll_deadline_mode_enabled_` is enabled.
+  bool is_scrolling_ = false;
+  // Only true when `is_scrolling_` is also true. While true there was no
+  // available scroll events at the start of OnBeginImplFrame and we were
+  // expecting some. Once `is_scrolling_` is false, we are no longer expecting
+  // scroll events to arrive.
+  bool waiting_for_scroll_event_ = false;
 };
 
 }  // namespace cc

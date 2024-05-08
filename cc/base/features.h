@@ -183,6 +183,19 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsBackfillAdjustmentHoldback);
 // it up into 4MiB increments.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBatchedCopySharedImage);
 
+// Currently there is a race between OnBeginFrames from the GPU process and
+// input arriving from the Browser process. Due to this we can start to produce
+// a frame while scrolling without any input events. Late arriving events are
+// then enqueued for the next VSync.
+//
+// When this feature is enabled we will instead wait until
+// `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for input.
+// During this time scroll events will be dispatched immediately. At the
+// deadline we will resume frame production and enqueuing input.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWaitForLateScrollEvents);
+CC_BASE_EXPORT extern const base::FeatureParam<double>
+    kWaitForLateScrollEventsDeadlineRatio;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

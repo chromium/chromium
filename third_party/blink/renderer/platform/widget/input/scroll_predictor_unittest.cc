@@ -84,7 +84,7 @@ class ScrollPredictorTest : public testing::Test {
     auto event_with_callback = std::make_unique<EventWithCallback>(
         std::make_unique<WebCoalescedInputEvent>(std::move(event),
                                                  ui::LatencyInfo()),
-        base::TimeTicks(), base::NullCallback(), nullptr);
+        base::NullCallback(), nullptr);
     event_with_callback->original_events() = std::move(original_events_);
 
     base::TimeDelta frame_interval = base::Seconds(1.0f / display_refresh_rate);

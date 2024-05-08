@@ -235,7 +235,9 @@ class StateMachine : public SchedulerStateMachine {
   using SchedulerStateMachine::ProactiveBeginFrameWanted;
   using SchedulerStateMachine::ShouldDraw;
   using SchedulerStateMachine::ShouldPrepareTiles;
+  using SchedulerStateMachine::ShouldSendBeginMainFrame;
   using SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately;
+  using SchedulerStateMachine::ShouldWaitForScrollEvent;
   using SchedulerStateMachine::WillCommit;
 
  protected:
@@ -3207,6 +3209,99 @@ TEST(SchedulerStateMachineTest,
       SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
+}
+
+class ScrollingSchedulerStateMachineTest : public testing::Test {
+ public:
+  ScrollingSchedulerStateMachineTest();
+  ~ScrollingSchedulerStateMachineTest() override = default;
+
+  void BeginImplFrameWaitingForScrollEvent();
+
+  void SetUp() override;
+
+ private:
+  SchedulerSettings InitScrollDeadlineMode();
+
+  SchedulerSettings scheduler_settings_;
+
+ public:
+  // Having `state` private breaks the testing macros
+  StateMachine state;
+};
+
+ScrollingSchedulerStateMachineTest::ScrollingSchedulerStateMachineTest()
+    : state(InitScrollDeadlineMode()) {}
+
+void ScrollingSchedulerStateMachineTest::BeginImplFrameWaitingForScrollEvent() {
+  state.IssueNextBeginImplFrame();
+  state.set_waiting_for_scroll_event(true);
+}
+
+SchedulerSettings ScrollingSchedulerStateMachineTest::InitScrollDeadlineMode() {
+  scheduler_settings_.scroll_deadline_mode_enabled = true;
+  return scheduler_settings_;
+}
+
+void ScrollingSchedulerStateMachineTest::SetUp() {
+  testing::Test::SetUp();
+  SET_UP_STATE(state);
+  state.set_is_scrolling(true);
+  state.SetTreePrioritiesAndScrollState(
+      SMOOTHNESS_TAKES_PRIORITY,
+      ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER);
+}
+
+// Tests that when we should wait for scroll events, that we do not send
+// BeginMainFrame. And that either receiving a scroll, or reaching the deadline,
+// that we unblock BeginMainFrames.
+TEST_F(ScrollingSchedulerStateMachineTest, ScrollModeBlocksBeginMainFrame) {
+  state.SetNeedsBeginMainFrame();
+
+  // Once the frame starts, we are told to wait for scroll event.
+  BeginImplFrameWaitingForScrollEvent();
+  EXPECT_TRUE(state.ShouldWaitForScrollEvent());
+  EXPECT_FALSE(state.ShouldSendBeginMainFrame());
+
+  // Once we are told to stop waiting, then BeginMainFrame should be unblocked.
+  state.set_waiting_for_scroll_event(false);
+  EXPECT_FALSE(state.ShouldWaitForScrollEvent());
+  EXPECT_TRUE(state.ShouldSendBeginMainFrame());
+
+  // Start next frame
+  BeginImplFrameWaitingForScrollEvent();
+  EXPECT_TRUE(state.ShouldWaitForScrollEvent());
+  EXPECT_FALSE(state.ShouldSendBeginMainFrame());
+
+  // The deadline should also unblock the BeginMainFrame.
+  state.OnBeginImplFrameDeadline();
+  EXPECT_FALSE(state.ShouldWaitForScrollEvent());
+  EXPECT_TRUE(state.ShouldSendBeginMainFrame());
+}
+
+// Tests that even if we want to delay for scrolls, if we weren't prepared to
+// draw immediately, that we use a longer deadline.
+TEST_F(ScrollingSchedulerStateMachineTest, ScrollModeBlockedByNoImmediateMode) {
+  // We apply back pressure on frame production. After submission we do not
+  // allow Immediate mode until `DidReceiveCompositorFrameAck`.
+  state.DidSubmitCompositorFrame();
+  // We want to draw more.
+  state.SetNeedsRedraw(true);
+
+  // While under back-pressure we should not trigger scroll deadline
+  BeginImplFrameWaitingForScrollEvent();
+  EXPECT_FALSE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
+  EXPECT_TRUE(state.ShouldWaitForScrollEvent());
+  EXPECT_NE(SchedulerStateMachine::BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL,
+            state.CurrentBeginImplFrameDeadlineMode());
+
+  // When we receive the Ack then we should be able select scroll deadline
+  // again.
+  state.DidReceiveCompositorFrameAck();
+  EXPECT_TRUE(state.ShouldTriggerBeginImplFrameDeadlineImmediately());
+  EXPECT_TRUE(state.ShouldWaitForScrollEvent());
+  EXPECT_EQ(SchedulerStateMachine::BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL,
+            state.CurrentBeginImplFrameDeadlineMode());
 }
 
 }  // namespace

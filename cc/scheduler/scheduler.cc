@@ -456,6 +456,14 @@ void Scheduler::SetVideoNeedsBeginFrames(bool video_needs_begin_frames) {
   ProcessScheduledActions();
 }
 
+void Scheduler::SetIsScrolling(bool is_scrolling) {
+  state_machine_.set_is_scrolling(is_scrolling);
+}
+
+void Scheduler::SetWaitingForScrollEvent(bool waiting_for_scroll_event) {
+  state_machine_.set_waiting_for_scroll_event(waiting_for_scroll_event);
+}
+
 void Scheduler::OnDrawForLayerTreeFrameSink(bool resourceless_software_draw,
                                             bool skip_draw) {
   DCHECK(settings_.using_synchronous_renderer_compositor);
@@ -752,6 +760,11 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
       // this method is called in every ProcessScheduledActions() call. Using
       // base::TimeTicks() achieves the same result.
       new_deadline = base::TimeTicks();
+      break;
+    case DeadlineMode::WAIT_FOR_SCROLL:
+      new_deadline = begin_impl_frame_tracker_.Current().frame_time +
+                     begin_impl_frame_tracker_.Current().interval *
+                         settings_.scroll_deadline_ratio;
       break;
   }
 

@@ -131,6 +131,9 @@ class CC_EXPORT InputHandlerClient {
       float max_page_scale_factor) = 0;
   virtual void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) = 0;
   virtual void DeliverInputForHighLatencyMode() = 0;
+  virtual void DidFinishImplFrame() = 0;
+  virtual bool HasQueuedInput() const = 0;
+  virtual void SetWaitForLateScrollEvents(bool enabled) = 0;
 
  protected:
   InputHandlerClient() = default;
@@ -482,6 +485,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   void WillBeginImplFrame(const viz::BeginFrameArgs& args) override;
   void DidCommit() override;
   void DidActivatePendingTree() override;
+  void DidFinishImplFrame() override;
   void RootLayerStateMayHaveChanged() override;
   void DidRegisterScrollbar(ElementId scroll_element_id,
                             ScrollbarOrientation orientation) override;
@@ -493,6 +497,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   ActivelyScrollingType GetActivelyScrollingType() const override;
   bool IsHandlingTouchSequence() const override;
   bool IsCurrentScrollMainRepainted() const override;
+  bool HasQueuedInput() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest,

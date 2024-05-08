@@ -279,8 +279,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
               });
 
   auto event_with_callback = std::make_unique<EventWithCallback>(
-      std::move(event), tick_clock_->NowTicks(), std::move(callback),
-      std::move(metrics));
+      std::move(event), std::move(callback), std::move(metrics));
 
   enum {
     NO_SCROLL_PINCH = 0,
@@ -289,12 +288,15 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   };
   // Note: Other input can race ahead of gesture input as they don't have to go
   // through the queue, but we believe it's OK to do so.
+  //
+  // TODO(b/329346768): this allows Fling events to be dispatched immediately
+  // rather than during the start of the VSync. Confirm if this is another
+  // source of input events missing submitted frames.
   if (!IsGestureScrollOrPinch(event_with_callback->event().GetType())) {
     base::ScopedSampleMetadata metadata("Input.GestureScrollOrPinch",
                                         NO_SCROLL_PINCH,
                                         base::SampleMetadataScope::kProcess);
-    DispatchSingleInputEvent(std::move(event_with_callback),
-                             tick_clock_->NowTicks());
+    DispatchSingleInputEvent(std::move(event_with_callback));
     return;
   } else if (event_with_callback->event().IsGestureScroll() &&
              event_with_callback->metrics()) {
@@ -321,6 +323,29 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
   }
 
   if (currently_active_gesture_device_.has_value()) {
+    // While scrolling, if there were no enqueued events during
+    // DeliverInputForBeginFrame we want to dispatch those immediately. We will
+    // return to `enqueue_scroll_events_` once frame production has begun.
+    if (gesture_event.IsScrollEvent() && do_not_enqueue_late_scroll_events_ &&
+        !enqueue_scroll_events_) {
+      // TODO(jonross): this will update to a prediction that is -5ms before
+      // `current_begin_frame_args_.frame_time`. We should consider not
+      // dispatching if `event_with_callback` is too old, and if we expect a
+      // newer input event to still arrive in time.
+      enqueue_scroll_events_ = true;
+      if (scroll_predictor_) {
+        std::unique_ptr<EventWithCallback> event_to_dispatch =
+            scroll_predictor_->ResampleScrollEvents(
+                std::move(event_with_callback),
+                current_begin_frame_args_.frame_time,
+                current_begin_frame_args_.interval);
+        compositor_event_queue_->Queue(std::move(event_to_dispatch));
+      } else {
+        compositor_event_queue_->Queue(std::move(event_with_callback));
+      }
+      DispatchQueuedInputEvents(false /* frame_aligned */);
+      return;
+    }
     // Scroll updates should typically be queued and wait until a
     // BeginImplFrame to dispatch. However, the first scroll update to be
     // generated from a *blocking* touch sequence will have waited for the
@@ -356,8 +381,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
         is_first_gesture_scroll_update;
 
     bool queue_was_empty = compositor_event_queue_->empty();
-    compositor_event_queue_->Queue(std::move(event_with_callback),
-                                   tick_clock_->NowTicks());
+    compositor_event_queue_->Queue(std::move(event_with_callback));
 
     // |synchronous_input_handler_| is WebView only. WebView has different
     // mechanisms and we want to forward all events immediately.
@@ -374,8 +398,7 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
 
   // We have to dispatch the event to know whether the gesture sequence will be
   // handled by the compositor or not.
-  DispatchSingleInputEvent(std::move(event_with_callback),
-                           tick_clock_->NowTicks());
+  DispatchSingleInputEvent(std::move(event_with_callback));
 }
 
 void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
@@ -415,11 +438,9 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
           cc::EventMetrics::DispatchStage::kArrivedInRendererCompositor);
     }
     auto event_with_callback = std::make_unique<EventWithCallback>(
-        std::move(event), tick_clock_->NowTicks(), std::move(callback),
-        std::move(metrics));
+        std::move(event), std::move(callback), std::move(metrics));
 
-    DispatchSingleInputEvent(std::move(event_with_callback),
-                             tick_clock_->NowTicks());
+    DispatchSingleInputEvent(std::move(event_with_callback));
   } else {
     // If the main thread failed to return a scroller for whatever reason,
     // consider the ScrollBegin to be dropped.
@@ -438,8 +459,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
 }
 
 void InputHandlerProxy::DispatchSingleInputEvent(
-    std::unique_ptr<EventWithCallback> event_with_callback,
-    const base::TimeTicks now) {
+    std::unique_ptr<EventWithCallback> event_with_callback) {
   ui::LatencyInfo monitored_latency_info = event_with_callback->latency_info();
   std::unique_ptr<cc::LatencyInfoSwapPromiseMonitor>
       latency_info_swap_promise_monitor =
@@ -503,7 +523,8 @@ void InputHandlerProxy::DispatchSingleInputEvent(
                                     attribution);
 }
 
-bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(bool frame_aligned) {
+bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(
+    bool frame_aligned) const {
   // Block flushing the compositor gesture event queue while there's an async
   // scroll begin hit test outstanding. We'll flush the queue when the hit test
   // responds.
@@ -525,10 +546,8 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(bool frame_aligned) {
 }
 
 void InputHandlerProxy::DispatchQueuedInputEvents(bool frame_aligned) {
-  // Calling |NowTicks()| is expensive so we only want to do it once.
-  base::TimeTicks now = tick_clock_->NowTicks();
   while (HasQueuedEventsReadyForDispatch(frame_aligned)) {
-    DispatchSingleInputEvent(compositor_event_queue_->Pop(), now);
+    DispatchSingleInputEvent(compositor_event_queue_->Pop());
   }
 }
 
@@ -628,11 +647,10 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
   auto gesture_event_with_callback_update = std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(
           std::move(synthetic_gesture_event), scrollbar_latency_info),
-      original_timestamp, base::DoNothing(), std::move(metrics));
+      base::DoNothing(), std::move(metrics));
 
   bool needs_animate_input = compositor_event_queue_->empty();
-  compositor_event_queue_->Queue(std::move(gesture_event_with_callback_update),
-                                 original_timestamp);
+  compositor_event_queue_->Queue(std::move(gesture_event_with_callback_update));
 
   if (needs_animate_input)
     input_handler_->SetNeedsAnimateInput();
@@ -1418,6 +1436,9 @@ void InputHandlerProxy::Animate(base::TimeTicks time) {
 void InputHandlerProxy::ReconcileElasticOverscrollAndRootScroll() {
   if (elastic_overscroll_controller_)
     elastic_overscroll_controller_->ReconcileStretchAndScroll();
+  // This is called as a result of the starting of draw. We should return to
+  // queueing events.
+  enqueue_scroll_events_ = true;
 }
 
 void InputHandlerProxy::SetPrefersReducedMotion(bool prefers_reduced_motion) {
@@ -1445,6 +1466,7 @@ void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
 void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
   current_begin_frame_args_ = args;
+  enqueue_scroll_events_ = !compositor_event_queue_->empty();
   if (!scroll_predictor_)
     DispatchQueuedInputEvents(true /* frame_aligned */);
 
@@ -1454,7 +1476,7 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
         scroll_predictor_->ResampleScrollEvents(compositor_event_queue_->Pop(),
                                                 args.frame_time, args.interval);
 
-    DispatchSingleInputEvent(std::move(event_with_callback), args.frame_time);
+    DispatchSingleInputEvent(std::move(event_with_callback));
   }
 
   if (!queue_flushed_callback_.is_null()) {
@@ -1466,6 +1488,22 @@ void InputHandlerProxy::DeliverInputForHighLatencyMode() {
   // When prediction enabled, do not handle input after commit complete.
   if (!scroll_predictor_)
     DispatchQueuedInputEvents(false /* frame_aligned */);
+}
+
+void InputHandlerProxy::DidFinishImplFrame() {
+  // While ReconcileElasticOverscrollAndRootScroll is called for the start of
+  // draw. It is possible that there was no non-scrolling updates, which can
+  // result in no draws. Once the frame production as ended we should return to
+  // enqueuing scroll events.
+  enqueue_scroll_events_ = true;
+}
+
+bool InputHandlerProxy::HasQueuedInput() const {
+  return HasQueuedEventsReadyForDispatch(/*frame_aligned=*/true);
+}
+
+void InputHandlerProxy::SetWaitForLateScrollEvents(bool enabled) {
+  do_not_enqueue_late_scroll_events_ = enabled;
 }
 
 void InputHandlerProxy::SetSynchronousInputHandler(

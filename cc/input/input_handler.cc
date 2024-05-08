@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -67,6 +68,8 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
+  input_handler_client_->SetWaitForLateScrollEvents(
+      base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents));
 }
 
 InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
@@ -106,6 +109,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // TODO(bokan): ClearCurrentlyScrollingNode shouldn't happen in ScrollBegin,
   // this should only happen in ScrollEnd. We should DCHECK here that the state
   // is cleared instead. https://crbug.com/1016229
+  //
+  // TODO(b/329346768): Validate that this is no longer needed.
   ClearCurrentlyScrollingNode();
 
   ElementId target_element_id = scroll_state->target_element_id();
@@ -1080,6 +1085,12 @@ void InputHandler::DidActivatePendingTree() {
   UpdateRootLayerStateForSynchronousInputHandler();
 }
 
+void InputHandler::DidFinishImplFrame() {
+  if (input_handler_client_) {
+    input_handler_client_->DidFinishImplFrame();
+  }
+}
+
 void InputHandler::RootLayerStateMayHaveChanged() {
   UpdateRootLayerStateForSynchronousInputHandler();
 }
@@ -1165,6 +1176,13 @@ bool InputHandler::IsCurrentScrollMainRepainted() const {
   uint32_t repaint_reasons =
       GetScrollTree().GetMainThreadRepaintReasons(*scroll_node);
   return repaint_reasons != MainThreadScrollingReason::kNotScrollingOnMain;
+}
+
+bool InputHandler::HasQueuedInput() const {
+  if (input_handler_client_) {
+    return input_handler_client_->HasQueuedInput();
+  }
+  return false;
 }
 
 ScrollNode* InputHandler::CurrentlyScrollingNode() {

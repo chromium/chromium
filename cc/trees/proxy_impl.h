@@ -142,6 +142,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& id) override;
+  void SetHasActiveThreadedScroll(bool is_scrolling) override;
+  void SetWaitingForScrollEvent(bool waiting_for_scroll_event) override;
 
   // SchedulerClient implementation
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override;

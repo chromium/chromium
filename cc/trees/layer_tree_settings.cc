@@ -4,6 +4,8 @@
 
 #include "cc/trees/layer_tree_settings.h"
 
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
@@ -29,6 +31,15 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
   scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
+
+  if (!single_thread_proxy_scheduler) {
+    scheduler_settings.scroll_deadline_mode_enabled =
+        base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents);
+    if (scheduler_settings.scroll_deadline_mode_enabled) {
+      scheduler_settings.scroll_deadline_ratio =
+          ::features::kWaitForLateScrollEventsDeadlineRatio.Get();
+    }
+  }
   return scheduler_settings;
 }
 

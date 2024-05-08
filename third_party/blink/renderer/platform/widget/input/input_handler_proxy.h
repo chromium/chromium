@@ -224,6 +224,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       float max_page_scale_factor) override;
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override;
   void DeliverInputForHighLatencyMode() override;
+  void DidFinishImplFrame() override;
+  bool HasQueuedInput() const override;
+  void SetWaitForLateScrollEvents(bool enabled) override;
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -258,8 +261,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   friend class test::InputHandlerProxyMomentumScrollJankTest;
   friend class test::InputHandlerProxyForceHandlingOnMainThread;
 
-  void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>,
-                                const base::TimeTicks);
+  void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>);
   void DispatchQueuedInputEvents(bool frame_aligned);
   void UpdateElasticOverscroll();
 
@@ -328,7 +330,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                          uint32_t main_thread_hit_tested_reasons,
                          uint32_t main_thread_repaint_reasons);
 
-  bool HasQueuedEventsReadyForDispatch(bool frame_aligned);
+  bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
 
   raw_ptr<InputHandlerProxyClient> client_;
 
@@ -424,6 +426,18 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // subsequent events arriving in HandleInputEventWithLatencyInfo. If frame
   // production stops this will be outdated.
   viz::BeginFrameArgs current_begin_frame_args_;
+
+  // When true, we will not enqueue late scroll events, as detected by
+  // `enqueue_scroll_events_`.
+  bool do_not_enqueue_late_scroll_events_ = false;
+
+  // When true, scroll events arriving in HandleInputEventWithLatencyInfo
+  // will be enqueued to be dispatched during the next
+  // DeliverInputForBeginFrame. When false, the scroll events will be dispatched
+  // immediately. This will occur if DeliverInputForBeginFrame was called while
+  // scrolling, with an empty `compositor_event_queue_`, until frame production
+  // has started, or completed.
+  bool enqueue_scroll_events_ = true;
 };
 
 }  // namespace blink

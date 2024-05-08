@@ -2284,6 +2284,9 @@ class MockInputHandlerClient : public InputHandlerClient {
       float max_page_scale_factor) override {}
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override {}
   void DeliverInputForHighLatencyMode() override {}
+  void DidFinishImplFrame() override {}
+  bool HasQueuedInput() const override { return false; }
+  void SetWaitForLateScrollEvents(bool enabled) override {}
 };
 
 // This is a regression test, see crbug.com/639046.

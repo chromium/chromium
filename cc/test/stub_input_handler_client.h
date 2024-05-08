@@ -5,8 +5,6 @@
 #ifndef CC_TEST_STUB_INPUT_HANDLER_CLIENT_H_
 #define CC_TEST_STUB_INPUT_HANDLER_CLIENT_H_
 
-#include <memory>
-
 #include "cc/input/input_handler.h"
 
 namespace cc {
@@ -28,6 +26,9 @@ class StubInputHandlerClient : public InputHandlerClient {
       float max_page_scale_factor) override {}
   void DeliverInputForBeginFrame(const viz::BeginFrameArgs& args) override {}
   void DeliverInputForHighLatencyMode() override {}
+  void DidFinishImplFrame() override {}
+  bool HasQueuedInput() const override;
+  void SetWaitForLateScrollEvents(bool enabled) override {}
 };
 
 }  // namespace cc
