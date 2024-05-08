@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+ruby, rt {
+  position: sticky;
+  bottom: 0px;
+}
+</style>
+<div style="height:10000px"></div>
+<ruby>base<rt>annon</ruby>
+<script>
+promise_test(async () => {
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  await new Promise(resolve => requestAnimationFrame(resolve));
+}, 'position:sticky should not cause a crash');
+</script>

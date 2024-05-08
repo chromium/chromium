@@ -48,8 +48,14 @@ void LineBoxFragmentBuilder::SetIsEmptyLineBox() {
 void LineBoxFragmentBuilder::PropagateChildrenData(
     LogicalLineContainer& container) {
   PropagateChildrenDataFromLineItems(container.BaseLine());
+  // Propagate annotation box fragments which are not in base box fragment
+  // items. Annotation box fragments inside base box fragments were propagated
+  // through the base box fragments. See BoxData::CreateBoxFragment().
   for (auto& annotation : container.AnnotationLineList()) {
-    PropagateChildrenDataFromLineItems(*annotation.line_items);
+    if (!annotation.line_items->WasPropagated()) {
+      PropagateChildrenDataFromLineItems(*annotation.line_items);
+      annotation.line_items->SetPropagated();
+    }
   }
   DCHECK(oof_positioned_descendants_.empty());
   MoveOutOfFlowDescendantCandidatesToDescendants();

@@ -209,6 +209,7 @@ bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
 
 void InlineLayoutStateStack::Trace(Visitor* visitor) const {
   visitor->Trace(stack_);
+  visitor->Trace(box_data_list_);
   visitor->Trace(ruby_column_list_);
 }
 
@@ -461,6 +462,17 @@ void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
               box_data.margin_border_padding_line_right);
   }
 
+  for (const auto& logical_column : ruby_column_list_) {
+    unsigned base_start = logical_column->start_index;
+    if (box->fragment_start <= base_start && base_start < fragment_end) {
+      if (!box_data.ruby_column_list) {
+        box_data.ruby_column_list =
+            MakeGarbageCollected<HeapVector<Member<LogicalRubyColumn>>>();
+      }
+      box_data.ruby_column_list->push_back(logical_column);
+    }
+  }
+
   DCHECK((*line_box)[box->fragment_start].IsPlaceholder());
   DCHECK_GT(fragment_end, box->fragment_start);
   if (fragment_end > box->fragment_start + 1)
@@ -539,7 +551,7 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
     box_data.fragment_start = box_data.fragment_end = 0;
 
   // Scan children and update start/end from their box_data_index.
-  Vector<BoxData> fragmented_boxes;
+  HeapVector<BoxData> fragmented_boxes;
   for (unsigned index = 0; index < line_box->size();)
     index = UpdateBoxDataFragmentRange(line_box, index, &fragmented_boxes);
 
@@ -564,7 +576,7 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
 unsigned InlineLayoutStateStack::UpdateBoxDataFragmentRange(
     LogicalLineItems* line_box,
     unsigned index,
-    Vector<BoxData>* fragmented_boxes) {
+    HeapVector<BoxData>* fragmented_boxes) {
   // Find the first line box item that should create a box fragment.
   for (; index < line_box->size(); index++) {
     LogicalLineItem* start = &(*line_box)[index];
@@ -620,7 +632,7 @@ unsigned InlineLayoutStateStack::UpdateBoxDataFragmentRange(
 }
 
 void InlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
-    Vector<BoxData>* fragmented_boxes) {
+    HeapVector<BoxData>* fragmented_boxes) {
   DCHECK(!fragmented_boxes->empty());
   // Append in the descending order of |fragmented_box_data_index| because the
   // indices will change as boxes are inserted into |box_data_list_|.
@@ -663,7 +675,7 @@ void InlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
 }
 
 void InlineLayoutStateStack::BoxData::UpdateFragmentEdges(
-    Vector<BoxData, 4>& list) {
+    HeapVector<BoxData, 4>& list) {
   DCHECK(fragmented_box_data_index);
 
   // If this box has the right edge, move it to the last fragment.
@@ -867,14 +879,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
         {true, has_line_right_edge, true, has_line_left_edge});
   }
 
-  for (unsigned i = fragment_start; i < fragment_end; i++) {
-    LogicalLineItem& child = (*line_box)[i];
-
-    // If |child| has a fragment created by previous |CreateBoxFragment|, skip
-    // children that were already added to |child|.
-    if (child.children_count)
-      i += child.children_count - 1;
-
+  auto handle_box_child = [&](LogicalLineItem& child) {
     if (child.out_of_flow_positioned_box) {
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
       BlockNode oof_box(To<LayoutBox>(child.out_of_flow_positioned_box.Get()));
@@ -888,7 +893,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
                                            child.container_direction,
                                            child.is_hidden_for_paint);
       child.out_of_flow_positioned_box = nullptr;
-      continue;
+      return;
     }
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
@@ -900,10 +905,35 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
               ComputeRelativeOffsetForInline(space, child_style),
           ComputeRelativeOffsetForOOFInInline(space, child_style));
     }
+  };
+
+  for (unsigned i = fragment_start; i < fragment_end; i++) {
+    LogicalLineItem& child = (*line_box)[i];
+
+    // If |child| has a fragment created by previous |CreateBoxFragment|, skip
+    // children that were already added to |child|.
+    if (child.children_count) {
+      i += child.children_count - 1;
+    }
+
+    handle_box_child(child);
 
     // |FragmentItems| has a flat list of all descendants, except
     // OOF-positioned descendants. We still create a |PhysicalBoxFragment|,
     // but don't add children to it and keep them in the flat list.
+  }
+  if (ruby_column_list) {
+    for (auto& logical_column : *ruby_column_list) {
+      for (unsigned i = 0; i < logical_column->annotation_items->size(); ++i) {
+        LogicalLineItem& child = (*logical_column->annotation_items)[i];
+        if (child.children_count) {
+          i += child.children_count - 1;
+        }
+        handle_box_child(child);
+      }
+      logical_column->annotation_items->SetPropagated();
+    }
+    ruby_column_list.Clear();
   }
 
   // Inline boxes that produce DisplayItemClient should do full paint
@@ -912,6 +942,10 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
   box.MoveOutOfFlowDescendantCandidatesToDescendants();
   return box.ToInlineBoxFragment();
+}
+
+void InlineLayoutStateStack::BoxData::Trace(Visitor* visitor) const {
+  visitor->Trace(ruby_column_list);
 }
 
 InlineLayoutStateStack::PositionPending

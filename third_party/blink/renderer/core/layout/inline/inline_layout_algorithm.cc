@@ -242,6 +242,10 @@ void FinalizeAnnotationLines(
     const ConstraintSpace& constraint_space,
     const HeapVector<Member<LogicalRubyColumn>>& column_list) {
   for (auto& logical_column : column_list) {
+    // Create deeper box fragments earlier because CreateBoxFragments() below
+    // depends on descendant box fragments.
+    FinalizeAnnotationLines(constraint_space, logical_column->ruby_column_list);
+
     LogicalLineItems* line_items = logical_column->annotation_items;
     InlineLayoutStateStack& state_stack = logical_column->state_stack;
     PlaceRelativePositionedItems(constraint_space, line_items);
@@ -251,8 +255,6 @@ void FinalizeAnnotationLines(
       state_stack.CreateBoxFragments(constraint_space, line_items,
                                      /* is_opaque */ false);
     }
-
-    FinalizeAnnotationLines(constraint_space, logical_column->ruby_column_list);
   }
 }
 

@@ -346,12 +346,18 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
 
+  void SetPropagated() { was_propagated_ = true; }
+  // Returns true if box fragments were created and were propagated to the
+  // parent.
+  bool WasPropagated() const { return was_propagated_; }
+
   void Trace(Visitor*) const;
 
  private:
   void WillInsertChild(unsigned index);
 
   HeapVector<LogicalLineItem, 16> children_;
+  bool was_propagated_ = false;
 };
 
 }  // namespace blink
