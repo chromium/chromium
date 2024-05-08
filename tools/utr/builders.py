@@ -25,8 +25,8 @@ def find_builder_props(bucket_name, builder_name):
     builder_name: Builder name of the builder
 
   Returns:
-    Tuple of (Dict of the builder's input props, Swarming server the builder
-      runs on). Both elements will be None if the builder wasn't found.
+    Tuple of (Dict of the builder's input props, LUCI project of the builder).
+      Both elements will be None if the builder wasn't found.
   """
 
   def _walk_props_dir(props_dir):
@@ -47,23 +47,25 @@ def find_builder_props(bucket_name, builder_name):
         matches.append(prop_file)
     return matches
 
-  swarming_server = 'chrome-swarming'
+  project = 'chrome'
   possible_matches = []
   if _INTERNAL_BUILDER_PROP_DIRS.exists():
     possible_matches += _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
 
   public_matches = _walk_props_dir(_BUILDER_PROP_DIRS)
   if public_matches:
-    # It's probably safe to assume src implies chromium-swarm and src-internal
-    # implies chrome-swarming. If it's not, cr-buildbucket.cfg attaches the
-    # swarming to each and every builder. So could use that instead.
-    swarming_server = 'chromium-swarm'
+    project = 'chromium'
     possible_matches += public_matches
 
   if not possible_matches:
     logging.error(
         '[red]No prop file found for %s.%s. Are you sure you have the '
         'correct bucket and builder name?[/]', bucket_name, builder_name)
+    if not _INTERNAL_BUILDER_PROP_DIRS.exists():
+      logging.warning(
+          'src-internal not detected in this checkout. Perhaps the builder '
+          'is a "chrome" one, in which: case make sure to add src-internal to '
+          "your checkout if a you're a Googler.")
     return None, None
   if len(possible_matches) > 1:
     logging.error('[red]Found multiple prop files for builder %s:[/]',
@@ -77,4 +79,4 @@ def find_builder_props(bucket_name, builder_name):
   with open(possible_matches[0]) as f:
     props = json.load(f)
 
-  return props, swarming_server
+  return props, project

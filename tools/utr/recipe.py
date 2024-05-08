@@ -85,14 +85,12 @@ class LegacyRunner:
   updated to support and utilize that new mode if/when it's available.
   """
 
-  UTR_RECIPE_NAME = 'chromium/universal_test_runner'
-
   def __init__(self,
                recipes_py,
                builder_props,
+               project,
                bucket,
                builder,
-               swarming_server,
                tests,
                skip_compile,
                skip_test,
@@ -104,9 +102,9 @@ class LegacyRunner:
     Args:
       recipes_py: pathlib.Path to the root of the recipe bundle
       builder_props: Dict containing the props for the builder to run as.
+      project: Project name of the builder to run as.
       bucket: Bucket name of the builder to run as.
       builder: Builder name of the builder to run as.
-      swarming_server: Swarming server the builder runs on.
       tests: List of tests to run.
       skip_compile: If True, the UTR will only run the tests.
       skip_test: If True, the UTR will only compile.
@@ -116,17 +114,23 @@ class LegacyRunner:
       additional_test_args: List of additional args to pass to the tests.
     """
     self._recipes_py = recipes_py
-    self._swarming_server = swarming_server
     self._skip_prompts = skip_prompts
     self._console_printer = console.Console()
     assert self._recipes_py.exists()
 
+    # It's probably safe to assume chromium implies chromium-swarm and chrome
+    # implies chrome-swarming. If it's not, cr-buildbucket.cfg attaches the
+    # swarming to each and every builder. So could use that instead.
+    self._swarming_server = 'chrome-swarming'
+    self._utr_recipe = 'chrome/universal_test_runner'
     # Put all results in "try" realms. "try" should be writable for most devs,
     # while other realms like "ci" likely aren't. "try" is generally where we
     # confine untested code, so it's the best fit for our results here.
     self._luci_realm = 'chrome:try'
-    if self._swarming_server == 'chromium-swarm':
+    if project == 'chromium':
+      self._swarming_server = 'chromium-swarm'
       self._luci_realm = 'chromium:try'
+      self._utr_recipe = 'chromium/universal_test_runner'
 
     # Add UTR recipe props. Its schema is located at:
     # https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes/chromium/universal_test_runner.proto
@@ -234,7 +238,7 @@ class LegacyRunner:
           output_path,
           '--properties-file',
           '-',  # '-' means read from stdin
-          self.UTR_RECIPE_NAME,
+          self._utr_recipe,
       ]
       env = os.environ.copy()
       # This env var is read by both the cas and swarming recipe modules to

@@ -43,16 +43,16 @@ class LegacyRunnerTests(unittest.TestCase):
     self.addCleanup(patch_input.stop)
 
   def testProps(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', 'swarming-server', [], False,
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
+                                 'some-bucket', 'some-builder', [], False,
                                  False, False)
     self.assertEqual(
         runner._input_props['$recipe_engine/buildbucket']['build']['builder']
         ['builder'], 'some-builder')
 
   def testRun(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', 'swarming-server', [], False,
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
+                                 'some-bucket', 'some-builder', [], False,
                                  False, False)
     self.subp_mock.returncode = 123
     with mock.patch('asyncio.create_subprocess_exec',
@@ -61,8 +61,8 @@ class LegacyRunnerTests(unittest.TestCase):
       self.assertEqual(exit_code, 123)
 
   def testJson(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', 'swarming-server', [], False,
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
+                                 'some-bucket', 'some-builder', [], False,
                                  False, False)
     with mock.patch('asyncio.create_subprocess_exec',
                     return_value=self.subp_mock):
@@ -92,8 +92,8 @@ class LegacyRunnerTests(unittest.TestCase):
       self.assertEqual(error_msg, 'Build/test failure')
 
   def testReruns(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', 'swarming-server', [], False,
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
+                                 'some-bucket', 'some-builder', [], False,
                                  False, False)
     with mock.patch('asyncio.create_subprocess_exec',
                     return_value=self.subp_mock):
@@ -125,8 +125,8 @@ class LegacyRunnerTests(unittest.TestCase):
 
 
   def testRerunsWithForce(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
-                                 'some-builder', 'swarming-server', [], False,
+    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
+                                 'some-bucket', 'some-builder', [], False,
                                  False, True)
     with mock.patch('asyncio.create_subprocess_exec',
                     return_value=self.subp_mock):

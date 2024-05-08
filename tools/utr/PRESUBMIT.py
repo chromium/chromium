@@ -16,5 +16,5 @@ def CheckPylint(input_api, output_api):
       input_api,
       output_api,
       version='2.7',
-      files_to_skip=[r'^.bundle*$'],
+      files_to_skip=[r'^.bundles*$'],
   )

@@ -32,7 +32,8 @@ class BuilderPropsTests(unittest.TestCase):
 
   def tearDown(self):
     shutil.rmtree(self.tmp_dir)
-    shutil.rmtree(self.tmp_internal_dir)
+    if self.tmp_internal_dir.exists():
+      shutil.rmtree(self.tmp_internal_dir)
 
   def testNoProps(self):
     # Empty base dir
@@ -46,6 +47,11 @@ class BuilderPropsTests(unittest.TestCase):
 
     # Empty builder dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket', 'some-builder'))
+    props, _ = builders.find_builder_props('some-bucket', 'some-builder')
+    self.assertIsNone(props)
+
+    # No src-internal checkout.
+    shutil.rmtree(self.tmp_internal_dir)
     props, _ = builders.find_builder_props('some-bucket', 'some-builder')
     self.assertIsNone(props)
 

@@ -161,24 +161,25 @@ def main():
   if not recipe.check_rdb_auth():
     return 1
 
-  if not args.recipe_dir:
-    recipes_path = cipd.fetch_recipe_bundle(args.verbosity).joinpath('recipes')
-  else:
-    recipes_path = args.recipe_dir.joinpath('recipes')
-
-  builder_props, swarming_server = builders.find_builder_props(
-      args.bucket, args.builder)
+  builder_props, project = builders.find_builder_props(args.bucket,
+                                                       args.builder)
   if not builder_props:
     return 1
+
+  if not args.recipe_dir:
+    recipes_path = cipd.fetch_recipe_bundle(project,
+                                            args.verbosity).joinpath('recipes')
+  else:
+    recipes_path = args.recipe_dir.joinpath('recipes')
 
   skip_compile = args.run_mode == 'test'
   skip_test = args.run_mode == 'compile'
   recipe_runner = recipe.LegacyRunner(
       recipes_path,
       builder_props,
+      project,
       args.bucket,
       args.builder,
-      swarming_server,
       args.tests,
       skip_compile,
       skip_test,
