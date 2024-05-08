@@ -4113,7 +4113,35 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
         ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
     })
-    public void testCollapseSelectedTab_NextTabSelected() {
+    public void testSelectedTabCollapse_MiddleGroup_PrevTabSelected() {
+        // Initialize with 5 tabs. Group last two tabs.
+        initializeTest(false, false, true, 3, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(3, 4);
+
+        // Assert: the 4th tab is selected.
+        assertEquals(
+                "The tab selected is incorrect.", 3, mStripLayoutHelper.getSelectedStripTabIndex());
+
+        // Assert: the fourth view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[3] instanceof StripLayoutGroupTitle);
+
+        // Click to collapse the first tab group.
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[3], true);
+
+        // Assert: the previous tab is selected as there is no expanded tab towards the end.
+        assertEquals(
+                "The tab selected is incorrect.", 2, mStripLayoutHelper.getSelectedStripTabIndex());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testSelectedTabCollapse_StartGroup_NextTabSelected() {
         // Initialize with 5 tabs. Group first three tabs.
         initializeTest(false, false, true, 1, 5);
         mStripLayoutHelper.onSizeChanged(
@@ -4141,7 +4169,7 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
         ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
     })
-    public void testCollapseSelectedTab_PrevTabSelected() {
+    public void testCollapseSelectedTab_EndGroup_PrevTabSelected() {
         // Initialize with 5 tabs. Group last two tabs.
         initializeTest(false, false, true, 3, 5);
         mStripLayoutHelper.onSizeChanged(

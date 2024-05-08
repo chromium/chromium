@@ -2581,7 +2581,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             boolean expandedTabSelected = false;
             if (selectedTab != null && selectedTab.getRootId() == groupTitle.getRootId()) {
                 int index = getSelectedStripTabIndex();
-                for (int i = index; i < mStripTabs.length; i++) {
+                for (int i = index; i >= 0; i--) {
                     if (!mStripTabs[i].isCollapsed()) {
                         expandedTabSelected = true;
                         TabModelUtils.setIndex(mModel, i, false);
@@ -2590,7 +2590,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 }
 
                 if (!expandedTabSelected) {
-                    for (int i = index; i >= 0; i--) {
+                    for (int i = index; i < mStripTabs.length; i++) {
                         if (!mStripTabs[i].isCollapsed()) {
                             expandedTabSelected = true;
                             TabModelUtils.setIndex(mModel, i, false);
