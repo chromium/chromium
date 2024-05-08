@@ -632,9 +632,6 @@ crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
 # Only one pixel difference (187,187,187) vs (188,188,188) occasionally.
 crbug.com/1207960 [ Linux ] compositing/perspective-interest-rect.html [ Failure Pass ]
 
-# Temporarily disabling for landing a UI update in Chrome DevTools
-crbug.com/325442270 http/tests/devtools/elements/elements-tab-stops.js [ Failure ]
-
 # CompositeAfterPaint remaining failures
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 # Need to force the video to be composited in this case, or change pre-CAP
