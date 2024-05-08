@@ -40,6 +40,8 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
@@ -92,6 +94,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -126,6 +129,7 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::FloatNear;
 using ::testing::Optional;
 
 namespace {
@@ -3324,6 +3328,82 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   ASSERT_TRUE(ash::Shell::Get()->overview_controller()->overview_session());
 }
 // TODO(crbug.com/40228006): Add some tests to launch LaCros browser.
+
+class SnapGroupDesksClientTest : public DesksClientTest {
+ public:
+  SnapGroupDesksClientTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kFasterSplitScreenSetup,
+                              ash::features::kSnapGroup},
+        /*disabled_features=*/{});
+  }
+  SnapGroupDesksClientTest(const SnapGroupDesksClientTest&) = delete;
+  SnapGroupDesksClientTest& operator=(const SnapGroupDesksClientTest&) = delete;
+  ~SnapGroupDesksClientTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
+  // Create 1 other window to create a snap group.
+  Browser* browser2 = CreateBrowser({GURL(kExampleUrl2)});
+  aura::Window* w1 = browser()->window()->GetNativeWindow();
+  aura::Window* w2 = browser2->window()->GetNativeWindow();
+
+  auto* snap_group_controller = ash::SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller);
+  const ash::WindowSnapWMEvent snap_primary(
+      ash::WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      ash::WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  auto* window_state1 = ash::WindowState::Get(w1);
+  window_state1->OnWMEvent(&snap_primary);
+  const ash::WindowSnapWMEvent snap_secondary(
+      ash::WM_EVENT_SNAP_SECONDARY, chromeos::kOneThirdSnapRatio,
+      ash::WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  auto* window_state2 = ash::WindowState::Get(w2);
+  window_state2->OnWMEvent(&snap_secondary);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1, w2));
+  const gfx::Rect w1_bounds_before_restore = w1->GetBoundsInScreen();
+  const gfx::Rect w2_bounds_before_restore = w2->GetBoundsInScreen();
+  const float snap_ratio1 = window_state1->snap_ratio().value();
+  const float snap_ratio2 = window_state2->snap_ratio().value();
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Open overview and save the desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  ClickSaveDeskAsTemplateButton();
+
+  // Launch the template.
+  ClickFirstTemplateItem();
+  content::RunAllTasksUntilIdle();
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  BrowserList* browser_list = BrowserList::GetInstance();
+  ASSERT_EQ(4u, browser_list->size());
+  aura::Window* new_w1 = browser_list->get(3)->window()->GetNativeWindow();
+  aura::Window* new_w2 = browser_list->get(2)->window()->GetNativeWindow();
+
+  // The new windows will preserve the snap ratio but not added to a snap
+  // group so no divider will be shown.
+  // TODO(b/335294166): Implement SnapGroups for desks templates.
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(new_w1));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(new_w2));
+  EXPECT_THAT(ash::WindowState::Get(new_w1)->snap_ratio(),
+              Optional(FloatNear(snap_ratio1, /*max_abs_error=*/0.01)));
+  EXPECT_TRUE(new_w1->GetBoundsInScreen().ApproximatelyEqual(
+      w1_bounds_before_restore,
+      /*tolerance=*/ash::kSplitviewDividerShortSideLength));
+  EXPECT_THAT(ash::WindowState::Get(new_w2)->snap_ratio(),
+              Optional(FloatNear(snap_ratio2, /*max_abs_error=*/0.01)));
+  EXPECT_TRUE(new_w2->GetBoundsInScreen().ApproximatelyEqual(
+      w2_bounds_before_restore,
+      /*tolerance=*/ash::kSplitviewDividerShortSideLength));
+}
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:

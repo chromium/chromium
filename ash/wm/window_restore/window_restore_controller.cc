@@ -559,10 +559,15 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       if (chromeos::IsSnappedWindowStateType(*state_type)) {
         base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
             &to_be_snapped_window_, window);
+        // Use the window restore info snap percentage as the target snap ratio.
+        const float snap_ratio = window_info->snap_percentage.value_or(
+                                     chromeos::kDefaultSnapRatio * 100) *
+                                 0.01f;
         const WindowSnapWMEvent snap_event(
             *state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? WM_EVENT_SNAP_PRIMARY
                 : WM_EVENT_SNAP_SECONDARY,
+            snap_ratio,
             WindowSnapActionSource::
                 kSnapByFullRestoreOrDeskTemplateOrSavedDesk);
         window_state->OnWMEvent(&snap_event);
