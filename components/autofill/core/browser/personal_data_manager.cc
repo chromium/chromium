@@ -58,7 +58,9 @@ PersonalDataManager::PersonalDataManager(
 
   Refresh();
 
-  AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
+  AutofillMetrics::LogIsAutofillEnabledAtStartup(
+      address_data_manager_->IsAutofillProfileEnabled() ||
+      payments_data_manager_->IsAutofillPaymentMethodsEnabled());
 
   // Potentially import addresses and credit cards for testing.
   MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
@@ -124,11 +126,6 @@ void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
 void PersonalDataManager::Refresh() {
   address_data_manager_->LoadProfiles();
   payments_data_manager_->Refresh();
-}
-
-bool PersonalDataManager::IsAutofillEnabled() const {
-  return address_data_manager_->IsAutofillProfileEnabled() ||
-         payments_data_manager_->IsAutofillPaymentMethodsEnabled();
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {

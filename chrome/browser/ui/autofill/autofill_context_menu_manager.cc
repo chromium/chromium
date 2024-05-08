@@ -411,7 +411,10 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
   }
 
   // Includes the option of submitting feedback on Autofill.
-  if (personal_data_manager_->IsAutofillEnabled() && IsLikelyDogfoodClient()) {
+  if (static_cast<BrowserAutofillManager&>(
+          autofill_driver->GetAutofillManager())
+          .IsAutofillEnabled() &&
+      IsLikelyDogfoodClient()) {
     menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,

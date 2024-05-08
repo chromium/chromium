@@ -21,7 +21,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class Profile;
 class PrefService;
 
 namespace syncer {
@@ -155,9 +154,6 @@ class PersonalDataManager : public KeyedService,
   // Triggers `OnPersonalDataChanged()` for all `observers_` if no address or
   // payment changes are pending.
   void NotifyPersonalDataObserver();
-
-  // Returns true if either Profile or CreditCard Autofill is enabled.
-  bool IsAutofillEnabled() const;
 
   // TODO(b/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
