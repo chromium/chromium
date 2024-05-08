@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
 namespace ash::input_method {
@@ -55,6 +59,33 @@ EditorTone GetEditorToneFromString(std::string_view tone) {
   }
   return EditorTone::kUnknown;
 }
+
+std::string_view AsString(const EditorOpportunityMode& mode) {
+  switch (mode) {
+    case EditorOpportunityMode::kWrite:
+      return "Write";
+    case EditorOpportunityMode::kRewrite:
+      return "Rewrite";
+    case EditorOpportunityMode::kNone:
+      return "None";
+  }
+}
+
+std::string_view AsString(const LanguageCategory& category) {
+  switch (category) {
+    case LanguageCategory::kEnglish:
+      return "English";
+    case LanguageCategory::kFrench:
+      return "French";
+    case LanguageCategory::kGerman:
+      return "German";
+    case LanguageCategory::kJapanese:
+      return "Japanese";
+    case LanguageCategory::kOther:
+      return "Other";
+  }
+}
+
 }  // namespace
 
 EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
@@ -151,8 +182,9 @@ EditorTone ToEditorMetricTone(orca::mojom::TriggerContextPtr trigger_context) {
   }
 }
 
-EditorMetricsRecorder::EditorMetricsRecorder(EditorOpportunityMode mode)
-    : mode_(mode) {}
+EditorMetricsRecorder::EditorMetricsRecorder(EditorContext* context,
+                                             EditorOpportunityMode mode)
+    : context_(context), mode_(mode) {}
 
 void EditorMetricsRecorder::SetMode(EditorOpportunityMode mode) {
   mode_ = mode;
@@ -177,19 +209,22 @@ void EditorMetricsRecorder::SetTone(EditorTone tone) {
 }
 
 void EditorMetricsRecorder::LogEditorState(EditorStates state) {
-  std::string histogram_name;
-  switch (mode_) {
-    case EditorOpportunityMode::kWrite:
-      histogram_name = "InputMethod.Manta.Orca.States.Write";
-      break;
-    case EditorOpportunityMode::kRewrite:
-      histogram_name = "InputMethod.Manta.Orca.States.Rewrite";
-      break;
-    case EditorOpportunityMode::kNone:
-      return;
+  if (mode_ == EditorOpportunityMode::kNone) {
+    return;
   }
 
-  base::UmaHistogramEnumeration(histogram_name, state);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"InputMethod.Manta.Orca.States.", AsString(mode_)}), state);
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"InputMethod.Manta.Orca.",
+                      AsString(InputMethodToLanguageCategory(
+                          context_->active_engine_id())),
+                      ".States.", AsString(mode_)}),
+        state);
+  }
+
   if (mode_ != EditorOpportunityMode::kRewrite) {
     return;
   }

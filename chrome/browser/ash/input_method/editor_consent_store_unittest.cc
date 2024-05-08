@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -13,6 +14,17 @@
 
 namespace ash::input_method {
 namespace {
+
+constexpr std::string_view kAllowedCountryCode = "au";
+
+class FakeContextObserver : public EditorContext::Observer {
+ public:
+  FakeContextObserver() = default;
+  ~FakeContextObserver() override = default;
+
+  // EditorContext::Observer overrides
+  void OnContextUpdated() override {}
+};
 
 class EditorConsentStoreTest : public ::testing::Test {
  public:
@@ -26,7 +38,10 @@ class EditorConsentStoreTest : public ::testing::Test {
 TEST_F(EditorConsentStoreTest,
        ReceivingDeclineResponseWillLeadToConsentDecline) {
   TestingProfile profile_;
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kNone);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kNone);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kDeclined);
@@ -37,7 +52,10 @@ TEST_F(EditorConsentStoreTest,
 TEST_F(EditorConsentStoreTest,
        ReceivingApprovalResponseWillLeadToConsentApproval) {
   TestingProfile profile_;
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kNone);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kNone);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kApproved);
@@ -48,7 +66,10 @@ TEST_F(EditorConsentStoreTest,
 TEST_F(EditorConsentStoreTest,
        SwitchingOnSettingToggleWillResetConsentWhichWasPreviouslyDeclined) {
   TestingProfile profile_;
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kNone);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kNone);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   store.ProcessConsentAction(ConsentAction::kDeclined);
@@ -61,7 +82,10 @@ TEST_F(EditorConsentStoreTest,
 TEST_F(EditorConsentStoreTest,
        DecliningThePromoCardWillSwitchOffFeatureToggle) {
   TestingProfile profile_;
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kNone);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kNone);
   EditorConsentStore store(profile_.GetPrefs(), &metrics_recorder);
 
   // Switch on the orca toggle in the setting page.

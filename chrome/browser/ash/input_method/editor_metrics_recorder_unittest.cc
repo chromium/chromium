@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -15,6 +18,19 @@
 namespace ash::input_method {
 
 namespace {
+
+using base::test::ScopedFeatureList;
+
+constexpr std::string_view kAllowedCountryCode = "au";
+
+class FakeContextObserver : public EditorContext::Observer {
+ public:
+  FakeContextObserver() = default;
+  ~FakeContextObserver() override = default;
+
+  // EditorContext::Observer overrides
+  void OnContextUpdated() override {}
+};
 
 class EditorMetricsRecorderTest : public testing::Test {
  public:
@@ -40,7 +56,9 @@ class StateRewriteMetricsTest : public EditorMetricsRecorderTest,
 
 TEST_P(StateRewriteMetricsTest, RecordStateMetricPerTone) {
   const StateCase& test_case = GetParam();
-  EditorMetricsRecorder metrics_recorder(test_case.mode);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
   metrics_recorder.LogEditorState(test_case.state);
@@ -89,7 +107,9 @@ class StateWriteMetricsTest : public EditorMetricsRecorderTest,
 
 TEST_P(StateWriteMetricsTest, RecordStateMetricPerTone) {
   const StateCase& test_case = GetParam();
-  EditorMetricsRecorder metrics_recorder(test_case.mode);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
   metrics_recorder.LogEditorState(test_case.state);
@@ -130,7 +150,9 @@ class CharectersInsertedMetricsTest
 
 TEST_P(CharectersInsertedMetricsTest, RecordStateMetricPerTone) {
   const CharectersInsertedCase& test_case = GetParam();
-  EditorMetricsRecorder metrics_recorder(test_case.mode);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
   metrics_recorder.LogNumberOfCharactersInserted(
@@ -183,7 +205,10 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(EditorMetricsRecorderTest, WriteCharectersInsertedMetrics) {
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kWrite);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
 
   metrics_recorder.LogNumberOfCharactersInserted(1);
@@ -210,7 +235,10 @@ class SettingToneFromQueryAndFreeformTest
 
 TEST_P(SettingToneFromQueryAndFreeformTest, ConvertQueryToneToMetricTone) {
   const SetToneCase& test_case = GetParam();
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kRewrite);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.query_tone_string,
                            test_case.freeform_text);
 
@@ -263,7 +291,10 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                          });
 
 TEST_F(EditorMetricsRecorderTest, WriteServerResponseMetrics) {
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kWrite);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
 
   metrics_recorder.LogLengthOfLongestResponseFromServer(100);
@@ -287,7 +318,10 @@ class RewriteServerResponseMetricsTest
 TEST_P(RewriteServerResponseMetricsTest, RewriteServerResponseMetrics) {
   const ServerResponseRewriteCase& test_case = GetParam();
 
-  EditorMetricsRecorder metrics_recorder(EditorOpportunityMode::kRewrite);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.tone);
 
   metrics_recorder.LogLengthOfLongestResponseFromServer(
@@ -319,6 +353,119 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ServerResponseRewriteCase> info) {
       return info.param.test_name;
     });
+
+struct LanguageSegmentationCase {
+  std::string engine_id;
+  std::string expected_histogram_prefix;
+};
+
+class EditorStateMetricsSegmentedByLanguage
+    : public EditorMetricsRecorderTest,
+      public testing::WithParamInterface<LanguageSegmentationCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    EditorMetricsRecorderTest,
+    EditorStateMetricsSegmentedByLanguage,
+    testing::ValuesIn<LanguageSegmentationCase>({
+        // English
+        {"xkb:ca:eng:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:gb::eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:gb:extd:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:gb:dvorak:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:in::eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:pk::eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:altgr-intl:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:colemak:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:dvorak:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:dvp:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:intl_pc:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:intl:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:workman-intl:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us:workman:eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:us::eng", "InputMethod.Manta.Orca.English.States."},
+        {"xkb:za:gb:eng", "InputMethod.Manta.Orca.English.States."},
+        // French
+        {"xkb:be::fra", "InputMethod.Manta.Orca.French.States."},
+        {"xkb:ca::fra", "InputMethod.Manta.Orca.French.States."},
+        {"xkb:ca:multix:fra", "InputMethod.Manta.Orca.French.States."},
+        {"xkb:fr::fra", "InputMethod.Manta.Orca.French.States."},
+        {"xkb:fr:bepo:fra", "InputMethod.Manta.Orca.French.States."},
+        {"xkb:ch:fr:fra", "InputMethod.Manta.Orca.French.States."},
+        // German
+        {"xkb:be::ger", "InputMethod.Manta.Orca.German.States."},
+        {"xkb:de::ger", "InputMethod.Manta.Orca.German.States."},
+        {"xkb:de:neo:ger", "InputMethod.Manta.Orca.German.States."},
+        {"xkb:ch::ger", "InputMethod.Manta.Orca.German.States."},
+        // Japanese
+        {"xkb:jp::jpn", "InputMethod.Manta.Orca.Japanese.States."},
+        {"nacl_mozc_us", "InputMethod.Manta.Orca.Japanese.States."},
+        {"nacl_mozc_jp", "InputMethod.Manta.Orca.Japanese.States."},
+    }));
+
+TEST_P(EditorStateMetricsSegmentedByLanguage,
+       WritesToCorrectHistogramForWriteMode) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix, "Write"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogEditorState(EditorStates::kNativeUIShown);
+  recorder.LogEditorState(EditorStates::kNativeRequest);
+  recorder.LogEditorState(EditorStates::kDismiss);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kNativeUIShown, 1);
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kNativeRequest, 1);
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kDismiss, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 3);
+}
+
+TEST_P(EditorStateMetricsSegmentedByLanguage,
+       WritesToCorrectHistogramForRewriteMode) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogEditorState(EditorStates::kNativeUIShown);
+  recorder.LogEditorState(EditorStates::kNativeRequest);
+  recorder.LogEditorState(EditorStates::kDismiss);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kNativeUIShown, 1);
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kNativeRequest, 1);
+  histogram_tester_.ExpectBucketCount(expected_histogram,
+                                      EditorStates::kDismiss, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 3);
+}
+
+TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
+  ScopedFeatureList feature_list;
+  FakeContextObserver observer;
+  EditorContext context(&observer, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogEditorState(EditorStates::kNativeUIShown);
+  recorder.LogEditorState(EditorStates::kNativeRequest);
+  recorder.LogEditorState(EditorStates::kDismiss);
+
+  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
 
 }  // namespace
 }  // namespace ash::input_method

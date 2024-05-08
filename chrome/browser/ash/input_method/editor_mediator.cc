@@ -34,7 +34,8 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
       editor_switch_(
           std::make_unique<EditorSwitch>(this, profile, &editor_context_)),
       metrics_recorder_(
-          std::make_unique<EditorMetricsRecorder>(GetEditorOpportunityMode())),
+          std::make_unique<EditorMetricsRecorder>(&editor_context_,
+                                                  GetEditorOpportunityMode())),
       consent_store_(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
                                                metrics_recorder_.get())) {

@@ -26,7 +26,7 @@ const std::vector<std::string>& GermanInputMethods();
 
 const std::vector<std::string>& JapaneseInputMethods();
 
-LanguageCategory InputMethodToLanguageCategory(const std::string& input_method);
+LanguageCategory InputMethodToLanguageCategory(std::string_view input_method);
 
 }  // namespace ash::input_method
 

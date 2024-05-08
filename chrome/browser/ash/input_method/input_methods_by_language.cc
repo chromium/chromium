@@ -66,8 +66,7 @@ const std::vector<std::string>& JapaneseInputMethods() {
   return *input_methods;
 }
 
-LanguageCategory InputMethodToLanguageCategory(
-    const std::string& input_method) {
+LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
   if (base::Contains(EnglishInputMethods(), input_method)) {
     return LanguageCategory::kEnglish;
   }
