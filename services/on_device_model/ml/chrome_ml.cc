@@ -211,7 +211,8 @@ bool ChromeML::IsGpuBlocked() const {
                     .blocklist_string = kGpuBlockList.Get(),
                     .ignores =
                         WebGPUBlocklistReason::IndirectComputeRootConstants |
-                        WebGPUBlocklistReason::Consteval22ndBit,
+                        WebGPUBlocklistReason::Consteval22ndBit |
+                        WebGPUBlocklistReason::WindowsARM,
                 });
             if (query_data->blocklisted) {
               wgpu::AdapterProperties properties;
