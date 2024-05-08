@@ -280,8 +280,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private queryState_: QueryState;
   private selectedPage_: string;
   private selectedTab_: number;
-  private lastRecordedSelectedPageHistogramValue_: HistoryPageViewHistogram =
-      HistoryPageViewHistogram.END;
   private showHistoryClusters_: boolean;
   private tabsIcons_: string[];
   private tabsNames_: string[];
@@ -696,12 +694,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = HistoryPageViewHistogram.HISTORY;
         break;
     }
-
-    // Avoid double-recording the same page consecutively.
-    if (histogramValue === this.lastRecordedSelectedPageHistogramValue_) {
-      return;
-    }
-    this.lastRecordedSelectedPageHistogramValue_ = histogramValue;
 
     this.browserService_!.recordHistogram(
         'History.HistoryPageView', histogramValue,
