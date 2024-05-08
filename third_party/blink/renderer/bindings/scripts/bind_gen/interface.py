@@ -2583,9 +2583,17 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
         EmptyNode(),
     ])
 
-    blink_arguments = list(
+    # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
+    blink_arguments = list()
+    if "Isolate" in cg_context.member_like.extended_attributes.values_of(
+            "CallWith"):
+        blink_arguments.append("${isolate}")
+
+    # Append the method arguments next.
+    blink_arguments += list(
         map(lambda arg: "${{{}}}".format(arg.blink_arg_name), arg_list))
-    # If there are following optional arguments with default values, append
+
+    # If there are trailing optional arguments with default values, append
     # them filled with the default values.
     for argument in function_like.arguments[argument_count:]:
         if not argument.default_value:
@@ -2599,6 +2607,8 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
               "auto&& {}{{{}}};".format(blink_arg_name,
                                         default_expr.initializer_expr)))
         blink_arguments.append("${{{}}}".format(blink_arg_name))
+
+    # Pass ${exception_state} after the method arguments.
     if cg_context.may_throw_exception:
         blink_arguments.append("${exception_state}")
     body.append(
