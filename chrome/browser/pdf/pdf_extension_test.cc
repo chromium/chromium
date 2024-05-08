@@ -59,6 +59,7 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -3490,43 +3491,82 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(embedder_host));
 }
 
-// This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
+// Tests that `FindFullPagePdfExtensionHost` fails to find the PDF extension
+// host on a non-PDF page.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
-                       OopifPdfFindFullPagePdfExtensionHost) {
+                       FindFullPagePdfExtensionHostNonPdf) {
+  // Navigate to a non-PDF page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Verify that there is no full-page pdf extension host on non-PDF page.
+  EXPECT_FALSE(
+      pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+}
+
+// Tests that `FindFullPagePdfExtensionHost` fails to find the PDF extension
+// host on an embedded PDF.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       FindFullPagePdfExtensionHostEmbedPdf) {
+  // Load page with embedded PDF and make sure it succeeds.
+  ASSERT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  // Verify that there is no full-page pdf extension host on embedded PDF.
+  EXPECT_FALSE(
+      pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+}
+
+// Tests that `FindFullPagePdfExtensionHost` finds the correct PDF extension
+// host on a full-page PDF.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       FindFullPagePdfExtensionHostFullPagePdf) {
+  // Load a full-page PDF and make sure it succeeds.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   auto* web_contents = GetActiveWebContents();
-  {
-    // Navigate to a non-PDF page.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                  ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame()));
 
-    // Verify that there is no full-page pdf extension host on non-PDF page.
-    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
-  }
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
 
-  {
-    // Load page with embedded PDF and make sure it succeeds.
-    ASSERT_TRUE(LoadPdfInFirstChild(
-        embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
+  EXPECT_EQ(child_frame,
+            pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
+}
 
-    // Verify that there is no full-page pdf extension host on embedded PDF.
-    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
-  }
+// Tests that `FindFullPagePdfExtensionHost` finds the correct PDF extension
+// host on a full-page PDF loaded with MIME type params.
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionOopifTest,
+    FindFullPagePdfExtensionHostFullPagePdfWithMimeTypeParam) {
+  // Load a full-page PDF with MIME type param and make sure it succeeds.
+  const char kPdfFullPageWithMimeTypeParam[] =
+      "data:application/pdf;charset=iso-8859-5;base64,"
+      "JVBERi0xLjcKJaDypPQKMSAwIG9iaiA8PAogIC9UeXBlIC9DYXRhbG9nCiAgL1BhZ2VzIDIg"
+      "MCBSCj4+CmVuZG9iagoyIDAgb2JqIDw8CiAgL1R5cGUgL1BhZ2VzCiAgL0NvdW50IDEKICAv"
+      "S2lkcyBbMyAwIFJdCiAgL1Jlc291cmNlcyA8PCA+Pgo+PgplbmRvYmoKMyAwIG9iaiA8PAog"
+      "IC9UeXBlIC9QYWdlIAogIC9QYXJlbnQgMiAwIFIKICAvTWVkaWFCb3ggWzAgMCAxMDAgNTBd"
+      "Cj4+CmVuZG9iagp4cmVmCjAgNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAw"
+      "MDAgbiAKMDAwMDAwMDA2OCAwMDAwMCBuIAowMDAwMDAwMTUwIDAwMDAwIG4gCnRyYWlsZXIg"
+      "PDwKICAvUm9vdCAxIDAgUgogIC9TaXplIDQKPj4Kc3RhcnR4cmVmCjIyNwolJUVPRgo=";
+  EXPECT_TRUE(LoadPdf(GURL(kPdfFullPageWithMimeTypeParam)));
 
-  {
-    // Load a full-page PDF and make sure it succeeds.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
-                    ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame()));
+  auto* web_contents = GetActiveWebContents();
+  // Validate that the PDF page metadata is set correctly.
+  EXPECT_EQ(pdf::kPDFMimeType, web_contents->GetContentsMimeType());
+  EXPECT_EQ("ISO-8859-5", web_contents->GetEncoding());
 
-    content::RenderFrameHost* child_frame =
-        content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-    ASSERT_TRUE(child_frame);
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
 
-    // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
-    EXPECT_EQ(child_frame,
-              pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
-  }
+  // Verify that `FindFullPagePdfExtensionHost` returns the correct frame,
+  // irrespective of MIME type params (Ex: charset in this test).
+  EXPECT_EQ(child_frame,
+            pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
 }
 
 // Test that re-navigating to the same PDF successfully loads the PDF.
