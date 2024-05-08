@@ -31,17 +31,6 @@ class CSSIdentifierValue;
 
 namespace {
 
-const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
-  CSSParserTokenRange original_range = range;
-
-  if (CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range)) {
-    return value;
-  }
-
-  range = original_range;
-  return nullptr;
-}
-
 bool IsPropertyAllowedInRule(const CSSProperty& property,
                              StyleRule::RuleType rule_type) {
   // This function should be called only when parsing a property. Shouldn't
@@ -116,7 +105,7 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
   DCHECK(context);
   range.ConsumeWhitespace();
 
-  const CSSValue* value = MaybeConsumeCSSWideKeyword(range);
+  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
   if (!value) {
     value = ParseLonghand(property, CSSPropertyID::kInvalid, *context, range);
   }
@@ -418,7 +407,7 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
                                               bool allow_important_annotation) {
   CSSParserTokenRange range_copy = value_.range;
 
-  const CSSValue* value = MaybeConsumeCSSWideKeyword(range_copy);
+  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range_copy);
   if (!value) {
     return false;
   }
