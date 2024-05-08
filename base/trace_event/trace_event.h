@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"
-#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/common/trace_event_common.h"  // IWYU pragma: export
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_category.h"
 #include "base/trace_event/trace_log.h"

@@ -232,8 +232,8 @@ WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation, ::base::Time);
 }  // namespace perfetto
 
 // Pull in the tracing macro definitions from Perfetto.
-#include "third_party/perfetto/include/perfetto/tracing/track_event.h"
-#include "third_party/perfetto/include/perfetto/tracing/track_event_legacy.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event.h"  // IWYU pragma: export
+#include "third_party/perfetto/include/perfetto/tracing/track_event_legacy.h"  // IWYU pragma: export
 
 namespace perfetto {
 namespace legacy {
