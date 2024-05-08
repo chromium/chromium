@@ -614,7 +614,7 @@ WebViewImpl::WebViewImpl(
   SetVisibilityState(visibility, /*is_initial_state=*/true);
   page_->SetIsPrerendering(is_prerendering);
 
-  // TODO(crbug.com/1498140): Remove the in_inside_portal parameter.
+  // TODO(crbug.com/40287334): Remove the is_inside_portal parameter.
 
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
     page_->SetIsMainFrameFencedFrameRoot();
