@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
+
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.View;
@@ -22,6 +24,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -42,13 +45,15 @@ public class IncognitoCustomTabActivityRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParameter =
             Arrays.asList(
-                    new ParameterSet().name("HTTPS").value(true),
-                    new ParameterSet().name("HTTP").value(false));
+                    new ParameterSet().name("EphemeralTab").value(true, true),
+                    new ParameterSet().name("HTTPS").value(true, false),
+                    new ParameterSet().name("HTTP").value(false, false));
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final int PORT_NO = 31415;
 
     private final boolean mRunWithHttps;
+    private final boolean mIsEphemeralTab;
     private Intent mIntent;
 
     @Rule
@@ -74,15 +79,20 @@ public class IncognitoCustomTabActivityRenderTest {
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
     }
 
-    public IncognitoCustomTabActivityRenderTest(boolean runWithHttps) {
+    public IncognitoCustomTabActivityRenderTest(boolean runWithHttps, boolean ephemeralTab) {
         mRunWithHttps = runWithHttps;
+        mIsEphemeralTab = ephemeralTab;
     }
 
     private void prepareCCTIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent =
-                CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                        ApplicationProvider.getApplicationContext(), url);
+                mIsEphemeralTab
+                        ? createMinimalCustomTabIntent(
+                                        ApplicationProvider.getApplicationContext(), url)
+                                .putExtra(IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, true)
+                        : CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
+                                ApplicationProvider.getApplicationContext(), url);
     }
 
     private void startActivity(String renderTestId, int mScreenOrientation) throws IOException {
@@ -97,11 +107,15 @@ public class IncognitoCustomTabActivityRenderTest {
         startActivity(renderTestId, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
+    private String testIdSuffix() {
+        return "_https_" + mRunWithHttps + "_ephemeraltab_" + mIsEphemeralTab;
+    }
+
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testCCTToolbar() throws IOException {
-        startActivity("default_incognito_cct_toolbar_with_https_" + mRunWithHttps);
+        startActivity("default_incognito_cct_toolbar_with_https" + testIdSuffix());
     }
 
     @Test
@@ -109,7 +123,7 @@ public class IncognitoCustomTabActivityRenderTest {
     @Feature("RenderTest")
     public void testCCTToolbarInLandscapeMode() throws IOException {
         startActivity(
-                "default_incognito_cct_toolbar_in_landscape_with_https_" + mRunWithHttps,
+                "default_incognito_cct_toolbar_in_landscape_with_https" + testIdSuffix(),
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 }

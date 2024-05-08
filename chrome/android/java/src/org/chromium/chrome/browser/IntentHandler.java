@@ -324,9 +324,8 @@ public class IntentHandler {
     }
 
     /**
-     * Represents apps that launch Incognito CCT.
-     * DO NOT reorder items in this interface, because it's mirrored to UMA (as
-     * {@link IncognitoCCTCallerId}). Values should be enumerated from 0.
+     * Represents apps that launch Incognito CCT. DO NOT reorder items in this interface, because
+     * it's mirrored to UMA (as {@link IncognitoCCTCallerId}). Values should be enumerated from 0.
      * When removing items, comment them out and keep existing numeric values stable.
      */
     @IntDef({
@@ -334,7 +333,8 @@ public class IntentHandler {
         IncognitoCCTCallerId.GOOGLE_APPS,
         IncognitoCCTCallerId.OTHER_CHROME_FEATURES,
         IncognitoCCTCallerId.READER_MODE,
-        IncognitoCCTCallerId.READ_LATER
+        IncognitoCCTCallerId.READ_LATER,
+        IncognitoCCTCallerId.EPHEMERAL_TAB,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface IncognitoCCTCallerId {
@@ -349,13 +349,20 @@ public class IntentHandler {
         int READER_MODE = 3;
         int READ_LATER = 4;
 
+        // An ephemeral custom tab without incognito branding.
+        int EPHEMERAL_TAB = 5;
+
         // Update {@link IncognitoCCTCallerId} in enums.xml when adding new items.
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /** Intent extra to open an incognito tab. */
     public static final String EXTRA_OPEN_NEW_INCOGNITO_TAB =
             "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB";
+
+    /** Intent extra to open an ephemeral custom tab without incognito branding. */
+    public static final String EXTRA_OPEN_NEW_EPHEMERAL_TAB =
+            "com.google.android.apps.chrome.EXTRA_OPEN_NEW_EPHEMERAL_TAB";
 
     /** Scheme used by web pages to start up Chrome without an explicit Intent. */
     public static final String GOOGLECHROME_SCHEME = "googlechrome";
@@ -1476,7 +1483,8 @@ public class IntentHandler {
         return IntentUtils.safeGetBoolean(extras, EXTRA_INCOGNITO_MODE, false)
                 || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                 || IntentUtils.safeGetBoolean(
-                        extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+                        extras, EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeGetBoolean(extras, EXTRA_OPEN_NEW_EPHEMERAL_TAB, false);
     }
 
     @NativeMethods

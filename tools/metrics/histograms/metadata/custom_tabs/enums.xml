@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
   <int value="54"
       label="Scroll content may resize tab
              EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
+  <int value="55" label="Incognito EXTRA_OPEN_NEW_EPHEMERAL_TAB"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">
@@ -185,6 +186,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Chrome - Other features"/>
   <int value="3" label="Chrome - Reader mode"/>
   <int value="4" label="Chrome - Read later"/>
+  <int value="5" label="Ephemeral Tab"/>
 </enum>
 
 <enum name="MayLaunchUrlType">
