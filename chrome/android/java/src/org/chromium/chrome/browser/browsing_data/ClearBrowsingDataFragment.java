@@ -386,8 +386,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         showProgressDialog();
         Set<Integer> dataTypes = new ArraySet<>();
         for (@DialogOption Integer option : options) {
-            // Tab closure is not implemented yet.
-            if (option.equals(DialogOption.CLEAR_TABS)) continue;
             dataTypes.add(getDataType(option));
         }
 

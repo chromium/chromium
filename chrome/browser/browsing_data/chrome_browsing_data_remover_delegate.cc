@@ -157,6 +157,8 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/installedapp/android/jni_headers/PackageHash_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
@@ -1397,6 +1399,24 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_TABS
+  if (remove_mask & constants::DATA_TYPE_TABS) {
+#if BUILDFLAG(IS_ANDROID)
+    base::RecordAction(UserMetricsAction("ClearBrowsingData_Tabs"));
+
+    for (TabModel* tab_model : TabModelList::models()) {
+      if (tab_model->GetProfile() != profile_ || tab_model->IsOffTheRecord()) {
+        continue;
+      }
+
+      tab_model->CloseTabsNavigatedInTimeWindow(delete_begin, delete_end);
+    }
+#else   // BUILDFLAG(IS_ANDROID)
+    NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 }
 
 void ChromeBrowsingDataRemoverDelegate::OnTaskStarted(

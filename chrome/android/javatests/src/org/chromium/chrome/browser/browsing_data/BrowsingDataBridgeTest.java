@@ -240,6 +240,7 @@ public class BrowsingDataBridgeTest {
                                         BrowsingDataType.HISTORY,
                                         BrowsingDataType.PASSWORDS,
                                         BrowsingDataType.SITE_SETTINGS,
+                                        BrowsingDataType.TABS
                                     },
                                     TimePeriod.LAST_WEEK);
                 });
@@ -258,7 +259,8 @@ public class BrowsingDataBridgeTest {
                         "ClearBrowsingData_Passwords",
                         "ClearBrowsingData_ContentSettings",
                         "ClearBrowsingData_SiteUsageData",
-                        "ClearBrowsingData_ContentLicenses"));
+                        "ClearBrowsingData_ContentLicenses",
+                        "ClearBrowsingData_Tabs"));
     }
 
     /** Tests navigation entries from frozen state are removed by history deletions. */

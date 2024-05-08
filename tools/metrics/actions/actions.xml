@@ -6585,6 +6585,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ClearBrowsingData_Tabs">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>Tabs have been deleted.</description>
+</action>
+
 <action name="ClearBrowsingData_TimePeriodChanged_Everything">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>

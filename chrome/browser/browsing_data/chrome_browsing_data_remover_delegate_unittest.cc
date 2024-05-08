@@ -205,7 +205,10 @@
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "components/feed/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "content/public/browser/host_zoom_map.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -327,6 +330,17 @@ class TestWebappRegistry : public WebappRegistry {
     // Mocks out a JNI call.
   }
 };
+
+class MockTabModel : public TestTabModel {
+ public:
+  explicit MockTabModel(TestingProfile* profile) : TestTabModel(profile) {}
+
+  MOCK_METHOD(void,
+              CloseTabsNavigatedInTimeWindow,
+              (const base::Time& begin_time, const base::Time& end_time),
+              (override));
+};
+
 #endif
 
 class RemoveCookieTester {
@@ -2242,6 +2256,27 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_FALSE(tester.HistoryContainsURL(kOrigin1));
   EXPECT_TRUE(tester.HistoryContainsURL(kOrigin2));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteTabs) {
+  ::testing::NiceMock<MockTabModel> tab_model(GetProfile());
+  TabModelList::AddTabModel(&tab_model);
+
+  ASSERT_EQ(1u, TabModelList::models().size());
+
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+
+  EXPECT_CALL(tab_model,
+              CloseTabsNavigatedInTimeWindow(two_hours_ago, base::Time::Max()))
+      .Times(1);
+
+  BlockUntilBrowsingDataRemoved(two_hours_ago, base::Time::Max(),
+                                chrome_browsing_data_remover::DATA_TYPE_TABS,
+                                false);
+
+  EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest
     : public ChromeBrowsingDataRemoverDelegateTest {

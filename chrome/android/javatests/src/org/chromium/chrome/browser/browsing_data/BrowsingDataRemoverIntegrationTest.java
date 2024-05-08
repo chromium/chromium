@@ -24,6 +24,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BrowsingDataRemoverIntegrationTest {
+    private static final String TEST_PATH = "/chrome/test/data/android/about.html";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -153,5 +156,31 @@ public class BrowsingDataRemoverIntegrationTest {
 
         callbackHelper.waitForCallback(0);
         Assert.assertTrue(mStore.getRelationships().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testClearingTabs() throws TimeoutException {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        String testUrl = testServer.getURL(TEST_PATH);
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(testUrl, /* incognito= */ true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
+                            .clearBrowsingData(
+                                    callbackHelper::notifyCalled,
+                                    new int[] {BrowsingDataType.TABS},
+                                    TimePeriod.ALL_TIME);
+                });
+
+        callbackHelper.waitForCallback(0);
+
+        Assert.assertEquals(0, mActivityTestRule.tabsCount(/* incognito= */ false));
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(/* incognito= */ true));
     }
 }

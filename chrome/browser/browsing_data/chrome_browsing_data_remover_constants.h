@@ -43,6 +43,7 @@ constexpr DataType DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN
 constexpr DataType DATA_TYPE_ISOLATED_WEB_APP_COOKIES = DATA_TYPE_EMBEDDER_BEGIN
                                                         << 13;
 constexpr DataType DATA_TYPE_READING_LIST = DATA_TYPE_EMBEDDER_BEGIN << 14;
+constexpr DataType DATA_TYPE_TABS = DATA_TYPE_EMBEDDER_BEGIN << 15;
 
 // Group datatypes.
 
