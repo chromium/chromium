@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -113,14 +112,6 @@
     self.viewController.presentationDelegate = self;
     self.viewController.modelDelegate = self.mediator;
     self.mediator.consumer = self.viewController;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    NSString* bannerImageName = kChromeNotificationsOptInBannerImage;
-#else
-    NSString* bannerImageName = kChromiumNotificationsOptInBannerImage;
-#endif
-    [self.baseNavigationController.navigationBar
-        setBackgroundImage:[UIImage imageNamed:bannerImageName]
-             forBarMetrics:UIBarMetricsDefault];
     [self.baseNavigationController pushViewController:self.viewController
                                              animated:YES];
   }
