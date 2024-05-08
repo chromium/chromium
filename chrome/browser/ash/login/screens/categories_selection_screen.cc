@@ -10,8 +10,8 @@
 namespace ash {
 namespace {
 
-// constexpr const char kUserActionNext[] = "next";
-// constexpr const char kUserActionSkip[] = "skip";
+constexpr const char kUserActionNext[] = "next";
+constexpr const char kUserActionSkip[] = "skip";
 
 }  // namespace
 
@@ -52,14 +52,29 @@ void CategoriesSelectionScreen::ShowImpl() {
   if (!view_) {
     return;
   }
-
   view_->Show();
+  // TODO(b/337674429) query the endpoint to retrieve list of categories
+  //  and set it in the UI.
 }
 
 void CategoriesSelectionScreen::HideImpl() {}
 
 void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
-  NOTIMPLEMENTED();
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionSkip) {
+    exit_callback_.Run(Result::kSkip);
+    return;
+  }
+
+  if (action_id == kUserActionNext) {
+    CHECK_EQ(args.size(), 2u);
+    // TODO(b/337674429) : save the selected categories into user preferences.
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
+  BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

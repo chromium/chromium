@@ -21,6 +21,8 @@ class CategoriesSelectionScreenView {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+
+  virtual void SetCategoriesData(base::Value::Dict categories) = 0;
 };
 
 class CategoriesSelectionScreenHandler : public BaseScreenHandler,
@@ -43,6 +45,8 @@ class CategoriesSelectionScreenHandler : public BaseScreenHandler,
 
   // CategoriesSelectionScreenView:
   void Show() override;
+
+  void SetCategoriesData(base::Value::Dict categories) override;
 };
 
 }  // namespace ash
