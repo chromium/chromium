@@ -62,6 +62,10 @@ class EmbeddedPermissionPrompt
     kAdministratorDenied = 7,
   };
 
+  // A delegate for handling system permission requests such as requesting new
+  // system permission or querying for current system permission settings.
+  class SystemPermissionDelegate;
+
   void CloseCurrentViewAndMaybeShowNext(bool first_prompt);
 
   // permissions::PermissionPrompt:
