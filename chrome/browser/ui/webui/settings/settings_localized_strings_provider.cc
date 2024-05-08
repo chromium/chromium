@@ -1310,10 +1310,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
-  html_source->AddBoolean(
-      "autofillEnablePaymentsMandatoryReauth",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnablePaymentsMandatoryReauth));
+  // TODO(crbug.com/288458283): Clean up mandatory reauth code branch and remove
+  // the FIDO toggle.
+  html_source->AddBoolean("autofillEnablePaymentsMandatoryReauth", true);
 
   html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",

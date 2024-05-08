@@ -210,14 +210,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [model setFooter:[self cardSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnablePaymentsMandatoryReauth)) {
-    [model addSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-    [model addItem:[self mandatoryReauthSwitchItem]
-        toSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-    [model setFooter:[self mandatoryReauthSwitchFooter]
-        forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  [model addItem:[self mandatoryReauthSwitchItem]
+      toSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  [model setFooter:[self mandatoryReauthSwitchFooter]
+      forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
 
   [self populateCardSection];
 }

@@ -65,13 +65,6 @@ const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
     "merchant_domain parameter populated with the last origin of the main "
     "frame.";
 
-const char kAutofillEnablePaymentsMandatoryReauthName[] =
-    "Enable mandatory re-auth for payments autofill";
-const char kAutofillEnablePaymentsMandatoryReauthDescription[] =
-    "When this is enabled, in use-cases where we would not have triggered any "
-    "user-visible authentication to autofill payment methods, we will trigger "
-    "a device authentication.";
-
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

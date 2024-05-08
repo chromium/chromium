@@ -2865,10 +2865,6 @@ TEST_F(PaymentsDataManagerTest,
     GTEST_SKIP() << "This test should only run on automotive.";
   }
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
   EXPECT_TRUE(payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
 
   EXPECT_CHECK_DEATH_WITH(
@@ -2892,33 +2888,11 @@ TEST_F(PaymentsDataManagerTest, AutofillPaymentMethodsMandatoryReauthEnabled) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   EXPECT_FALSE(
       payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
   payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(true);
   EXPECT_TRUE(payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
   payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(false);
-  EXPECT_FALSE(
-      payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
-}
-
-// Test that setting the `kAutofillEnablePaymentsMandatoryReauth` does not
-// enable the feature when the flag is off.
-TEST_F(PaymentsDataManagerTest,
-       AutofillPaymentMethodsMandatoryReauthEnabled_FlagOff) {
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-  EXPECT_FALSE(
-      payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
-  payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(true);
   EXPECT_FALSE(
       payments_data_manager().IsPaymentMethodsMandatoryReauthEnabled());
 }
@@ -2936,9 +2910,6 @@ TEST_F(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
   for (int i = 0; i < prefs::kMaxValueForMandatoryReauthPromoShownCounter;
        i++) {
@@ -2973,9 +2944,6 @@ TEST_F(PaymentsDataManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
   // Simulate user is already opted in.
   payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(true);
@@ -2999,9 +2967,6 @@ TEST_F(PaymentsDataManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
   // Simulate user is already opted out.
   payments_data_manager().SetPaymentMethodsMandatoryReauthEnabled(false);
@@ -3014,17 +2979,6 @@ TEST_F(PaymentsDataManagerTest,
       autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedOut, 1);
 }
 
-// Test that
-// `PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
-// returns that we should not show the promo if the flag is off.
-TEST_F(PaymentsDataManagerTest,
-       ShouldShowPaymentMethodsMandatoryReauthPromo_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-  EXPECT_FALSE(
-      payments_data_manager().ShouldShowPaymentMethodsMandatoryReauthPromo());
-}
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(PaymentsDataManagerTest, SaveCardLocallyIfNewWithNewCard) {

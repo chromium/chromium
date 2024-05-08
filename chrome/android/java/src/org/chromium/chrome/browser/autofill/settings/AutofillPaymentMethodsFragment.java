@@ -182,25 +182,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             }
         }
 
-        if (isBiometricAvailable()
-                && personalDataManager.isFidoAuthenticationAvailable()
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)) {
-            ChromeSwitchPreference fidoAuthSwitch =
-                    new ChromeSwitchPreference(getStyledContext(), null);
-            fidoAuthSwitch.setTitle(R.string.enable_credit_card_fido_auth_label);
-            fidoAuthSwitch.setSummary(R.string.enable_credit_card_fido_auth_sublabel);
-            fidoAuthSwitch.setKey(PREF_FIDO);
-            fidoAuthSwitch.setChecked(personalDataManager.isAutofillCreditCardFidoAuthEnabled());
-            fidoAuthSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        personalDataManager.setAutofillCreditCardFidoAuthEnabled(
-                                (boolean) newValue);
-                        return true;
-                    });
-            getPreferenceScreen().addPreference(fidoAuthSwitch);
-        }
-
         // TODO(crbug.com/40261690): Confirm with Product on the order of the toggles.
         // Don't show the toggle to enable mandatory reauth on automotive,
         // as the feature is always enabled for automotive builds.
@@ -208,8 +189,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             // The ReauthenticatorBridge is still needed for reauthentication to view/edit
             // payment methods.
             createReauthenticatorBridge();
-        } else if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)) {
+        } else {
             createReauthenticatorBridge();
             createMandatoryReauthSwitch();
         }
@@ -498,20 +478,13 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     /**
      * If mandatory reauth is enabled, trigger device authentication before user can view/edit local
      * card. Else show the local card edit page.
+     *
      * @param preference The {@link Preference} for the local card.
      * @return true if the click was handled, false otherwise.
      */
     private boolean showLocalCardEditPageAfterAuthenticationIfRequired(Preference preference) {
-        // If mandatory reauth is not enabled, just show the local card edit page. Note that
-        // mandatory reauth is always enabled on automotive devices.
-        boolean mandatoryReauthFeatureEnabled =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
-                        || BuildInfo.getInstance().isAutomotive;
-
-        if (!mandatoryReauthFeatureEnabled
-                || !PersonalDataManagerFactory.getForProfile(getProfile())
-                        .isPaymentMethodsMandatoryReauthEnabled()) {
+        if (!PersonalDataManagerFactory.getForProfile(getProfile())
+                .isPaymentMethodsMandatoryReauthEnabled()) {
             showLocalCardEditPage(preference);
             return true;
         }

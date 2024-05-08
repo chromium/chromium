@@ -518,13 +518,6 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
-const char kAutofillEnablePaymentsMandatoryReauthName[] =
-    "Enable mandatory re-auth for payments autofill";
-const char kAutofillEnablePaymentsMandatoryReauthDescription[] =
-    "When enabled, in use-cases where we would not have triggered any "
-    "interactive authentication to autofill payment methods, we will trigger "
-    "a device authentication.";
-
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

@@ -130,19 +130,6 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, in use-cases where we would not have triggered any user-visible
-// authentication to autofill payment methods, we will trigger a device
-// authentication.
-BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauth,
-             "AutofillEnablePaymentsMandatoryReauth",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_IOS)
-
 // When enabled, risk data is prefetched during payments autofill flows to reduce
 // user-perceived latency.
 BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,

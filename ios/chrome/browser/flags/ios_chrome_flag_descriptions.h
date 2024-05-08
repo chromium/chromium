@@ -58,11 +58,6 @@ extern const char
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 
-// Title and description for the flag to control whether the autofill payments
-// mandatory reauth feature is enabled.
-extern const char kAutofillEnablePaymentsMandatoryReauthName[];
-extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
-
 // Title and description for the flag to control the latency optimization where
 // the risk data pre-fetched during retrieval.
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];

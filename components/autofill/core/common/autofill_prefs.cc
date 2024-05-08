@@ -179,15 +179,7 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
-  bool featureEnabled = base::FeatureList::IsEnabled(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    featureEnabled = true;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  return featureEnabled &&
-         prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
+  return prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||

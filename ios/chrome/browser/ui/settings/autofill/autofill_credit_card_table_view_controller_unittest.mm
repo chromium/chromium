@@ -158,8 +158,6 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
 // appears.
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestMandatoryReauthSwitchExists) {
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillEnablePaymentsMandatoryReauth};
   autofill::PersonalDataManager* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           chrome_browser_state_.get());

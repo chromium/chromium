@@ -323,9 +323,6 @@ extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
-extern const char kAutofillEnablePaymentsMandatoryReauthName[];
-extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
-
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[];
 

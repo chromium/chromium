@@ -310,8 +310,6 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
 TEST_F(
     AutofillExperimentsTest,
     IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
@@ -320,18 +318,6 @@ TEST_F(
 #else
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #endif
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsDeviceAuthAvailable_FeatureDisabledAndAuthenticationAvailableForMacAndWin) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-#endif
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 }
 
 }  // namespace autofill

@@ -1113,11 +1113,6 @@ bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 
 bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsMandatoryReauth)) {
-    return false;
-  }
-
   // There is no need to show the promo if the feature is already enabled.
   if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
 #if BUILDFLAG(IS_ANDROID)

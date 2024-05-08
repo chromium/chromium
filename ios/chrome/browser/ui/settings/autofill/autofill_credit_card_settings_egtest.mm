@@ -91,13 +91,6 @@ id<GREYMatcher> BottomToolbar() {
 
 @implementation AutofillCreditCardSettingsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnablePaymentsMandatoryReauth);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 

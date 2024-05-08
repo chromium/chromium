@@ -1350,12 +1350,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-groups-on-ipad", flag_descriptions::kTabGroupsIPadName,
      flag_descriptions::kTabGroupsIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupsIPad)},
-    {"autofill-enable-payments-mandatory-reauth",
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthName,
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentsMandatoryReauth)},
     {"autofill-enable-dynamically-loading-fields-on-input",
      flag_descriptions::
          kAutofillEnableDynamicallyLoadingFieldsForAddressInputName,

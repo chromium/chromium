@@ -10108,15 +10108,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFileBackedBlobFactoryDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kEnableFileBackedBlobFactory)},
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-payments-mandatory-reauth",
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthName,
-     flag_descriptions::kAutofillEnablePaymentsMandatoryReauthDescription,
-     kOsMac | kOsWin | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentsMandatoryReauth)},
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-
     {"enable-compression-dictionary-transport",
      flag_descriptions::kCompressionDictionaryTransportName,
      flag_descriptions::kCompressionDictionaryTransportDescription, kOsAll,

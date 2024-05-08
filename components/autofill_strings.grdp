@@ -359,12 +359,6 @@
         </message>
       </if>
       <if expr="is_android">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The authentication mechanism on Android. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased." formatter_data="android_java">
-          Screen lock
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking for Android. Sentence-Cased." formatter_data="android_java">
-          Use screen lock to confirm cards faster
-        </message>
         <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
           Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
         </message>

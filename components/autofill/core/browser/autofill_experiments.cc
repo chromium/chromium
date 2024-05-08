@@ -258,9 +258,7 @@ bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(device_authenticator);
-  return device_authenticator->CanAuthenticateWithBiometricOrScreenLock() &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillEnablePaymentsMandatoryReauth);
+  return device_authenticator->CanAuthenticateWithBiometricOrScreenLock();
 #else
   return false;
 #endif

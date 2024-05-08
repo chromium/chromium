@@ -613,9 +613,8 @@ class CreditCardAccessManagerMandatoryReauthTest
  protected:
   void SetUp() override {
     CreditCardAccessManagerTest::SetUp();
-    feature_list_.InitWithFeatureStates(
-        {{features::kAutofillEnablePaymentsMandatoryReauth, FeatureFlagIsOn()},
-         {features::kAutofillEnableFpanRiskBasedAuthentication, true}});
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableFpanRiskBasedAuthentication);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::BuildInfo::GetInstance()->is_automotive()) {
       autofill_client_.GetPrefs()->SetBoolean(
@@ -665,8 +664,6 @@ class CreditCardAccessManagerMandatoryReauthTest
         autofill_client_.GetOrCreatePaymentsMandatoryReauthManager());
   }
 
-  virtual bool FeatureFlagIsOn() const = 0;
-
   virtual bool PrefIsEnabled() const = 0;
 
   virtual bool MandatoryReauthResponseIsSuccess() const = 0;
@@ -682,15 +679,13 @@ class CreditCardAccessManagerMandatoryReauthTest
       return true;
     }
 #endif
-    return FeatureFlagIsOn() && PrefIsEnabled();
+    return PrefIsEnabled();
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Parameters of the CreditCardAccessManagerMandatoryReauthFunctionalTest:
-// - bool feature_flag_is_on: Whether the mandatory re-auth feature flag is
-// turned on or off.
 // - bool pref_is_enabled: Whether the mandatory re-auth pref is turned on or
 // off.
 // - bool mandatory_reauth_response_is_success: Whether the response from the
@@ -701,28 +696,25 @@ class CreditCardAccessManagerMandatoryReauthFunctionalTest
       public testing::WithParamInterface<
           std::tuple<bool,
                      bool,
-                     bool,
                      payments::MandatoryReauthAuthenticationMethod>> {
  public:
   CreditCardAccessManagerMandatoryReauthFunctionalTest() = default;
   ~CreditCardAccessManagerMandatoryReauthFunctionalTest() override = default;
 
-  bool FeatureFlagIsOn() const override { return std::get<0>(GetParam()); }
-
-  bool PrefIsEnabled() const override { return std::get<1>(GetParam()); }
+  bool PrefIsEnabled() const override { return std::get<0>(GetParam()); }
 
   bool MandatoryReauthResponseIsSuccess() const override {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   bool HasAuthenticator() const override {
-    return std::get<3>(GetParam()) !=
+    return std::get<2>(GetParam()) !=
            payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
   }
 
   payments::MandatoryReauthAuthenticationMethod GetAuthenticationMethod()
       const override {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
   std::string GetStringForAuthenticationMethod() const {
@@ -986,7 +978,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Bool(),
         testing::Bool(),
-        testing::Bool(),
         testing::Values(
             payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod,
             payments::MandatoryReauthAuthenticationMethod::kBiometric,
@@ -1004,7 +995,6 @@ class CreditCardAccessManagerMandatoryReauthIntegrationTest
   ~CreditCardAccessManagerMandatoryReauthIntegrationTest() override = default;
 
  protected:
-  bool FeatureFlagIsOn() const override { return true; }
 
   bool PrefIsEnabled() const override { return true; }
 
