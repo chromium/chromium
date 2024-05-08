@@ -16,6 +16,17 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      /*
+       * Extensions to display in the panel.
+       */
+      extensions: Array,
+    };
+  }
+
+  extensions: chrome.developerPrivate.ExtensionInfo[];
 }
 
 declare global {

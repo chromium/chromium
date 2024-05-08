@@ -8,7 +8,7 @@ import 'chrome://extensions/extensions.js';
 import type {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createExtensionInfo, testVisible} from './test_util.js';
 
@@ -214,11 +214,26 @@ suite('ExtensionItemListTest', function() {
     // Panel is visible if panel is enabled and has at least one extension
     // affected by the MV2 deprecation.
     itemList.push('extensions', createExtensionInfo({
-                    name: 'Extension',
+                    name: 'Extension D',
                     id: 'd'.repeat(32),
                     isAffectedByMV2Deprecation: true,
                   }));
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
+    const mv2DeprecationPanel =
+        itemList.shadowRoot!.querySelector('extensions-mv2-deprecation-panel');
+    assertTrue(!!mv2DeprecationPanel);
+    assertEquals(1, mv2DeprecationPanel.extensions.length);
+
+    // Panel is visible if panel is enabled and has multiple extensions affected
+    // by the MV2 deprecation.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'Extension E',
+                    id: 'e'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    assertEquals(2, mv2DeprecationPanel.extensions.length);
   });
 });
