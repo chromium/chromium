@@ -142,18 +142,11 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
 
   // Showing the Autofill Popup is an asynchronous task.
   if (expect_popup_to_be_shown) {
-    int counter = 0;
     // `base::RunLoop().RunUntilIdle()` can cause flakiness when waiting for the
     // popup to be shown.
-    if (!base::test::RunUntil([&]() {
-          counter++;
-          return !delegate->popup_hidden();
-        })) {
+    if (!base::test::RunUntil([&]() { return !delegate->popup_hidden(); })) {
       return testing::AssertionFailure()
-             << " " << __func__
-             << "(): Showing the autofill popup timed out. RunUntil checked "
-                "the condition "
-             << counter << " times. ";
+             << " " << __func__ << "(): Showing the autofill popup timed out.";
     }
   } else {
     // `base::test::RunUntil()` cannot be used to wait for something not to
