@@ -186,7 +186,6 @@ public class NewTabPage
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishOmniboxColorEnabled;
     private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -428,9 +427,6 @@ public class NewTabPage
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishOmniboxColorEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
         mIsSurfacePolishLessBrandSpaceEnabled =
                 mIsSurfacePolishEnabled
                         && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
@@ -564,7 +560,6 @@ public class NewTabPage
                 mTab.getProfile(),
                 windowAndroid,
                 mIsSurfacePolishEnabled,
-                mIsSurfacePolishOmniboxColorEnabled,
                 mIsSurfacePolishLessBrandSpaceEnabled,
                 mIsTablet,
                 mTabStripHeightSupplier);
@@ -1040,18 +1035,11 @@ public class NewTabPage
                         mContext, R.dimen.home_surface_background_color_elevation);
             }
 
-            if (mIsSurfacePolishOmniboxColorEnabled) {
-                if (mIsInNightMode) {
-                    return mContext.getColor(R.color.color_primary_with_alpha_20);
-                } else {
-                    return SemanticColorUtils.getColorPrimaryContainer(mContext);
-                }
+            if (mIsInNightMode) {
+                return mContext.getColor(R.color.color_primary_with_alpha_20);
+            } else {
+                return SemanticColorUtils.getColorPrimaryContainer(mContext);
             }
-
-            // When only enable the Surface Polish flag and the location bar has been scrolled
-            // to top.
-            return ChromeColors.getSurfaceColor(
-                    mContext, R.dimen.home_surface_search_box_background_neutral_color_elevation);
         }
         return defaultColor;
     }

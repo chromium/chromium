@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -61,7 +60,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
     private View.OnClickListener mIncognitoCookieControlsIconClickListener;
     private UiConfig mUiConfig;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishOmniboxColorEnabled;
 
     /** Default constructor needed to inflate via XML. */
     public TasksView(Context context, AttributeSet attrs) {
@@ -69,9 +67,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mContext = context;
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishOmniboxColorEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
     }
 
     public void initialize(
@@ -165,14 +160,10 @@ public class TasksView extends CoordinatorLayoutForPointer {
             searchBackground =
                     AppCompatResources.getDrawable(
                             mContext, R.drawable.fake_search_box_bg_incognito);
-        } else if (mIsSurfacePolishOmniboxColorEnabled) {
-            searchBackground =
-                    AppCompatResources.getDrawable(
-                            mContext, R.drawable.home_surface_search_box_background_colorful);
         } else if (mIsSurfacePolishEnabled) {
             searchBackground =
                     AppCompatResources.getDrawable(
-                            mContext, R.drawable.home_surface_search_box_background_neutral);
+                            mContext, R.drawable.home_surface_search_box_background);
         } else {
             searchBackground = AppCompatResources.getDrawable(mContext, R.drawable.ntp_search_box);
         }

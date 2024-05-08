@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColo
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -329,21 +328,14 @@ public class ToolbarPhone extends ToolbarLayout
         mHomeSurfaceToolbarBackgroundColor =
                 ChromeColors.getSurfaceColor(
                         getContext(), R.dimen.home_surface_background_color_elevation);
-        if (mIsSurfacePolishEnabled
-                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue()) {
+        if (mIsSurfacePolishEnabled) {
             float homeSurfaceLocationBarBackgroundColorAlpha =
                     ResourcesCompat.getFloat(
-                            getResources(),
-                            R.dimen.home_surface_search_box_background_colorful_alpha);
+                            getResources(), R.dimen.home_surface_search_box_background_alpha);
             mHomeSurfaceLocationBarBackgroundColor =
                     ColorUtils.setAlphaComponentWithFloat(
                             SemanticColorUtils.getDefaultIconColorAccent1(context),
                             homeSurfaceLocationBarBackgroundColorAlpha);
-        } else if (mIsSurfacePolishEnabled) {
-            mHomeSurfaceLocationBarBackgroundColor =
-                    ChromeColors.getSurfaceColor(
-                            getContext(),
-                            R.dimen.home_surface_search_box_background_neutral_color_elevation);
         }
         mTabCountSupplierObserver = this::onTabCountChanged;
     }
@@ -2634,10 +2626,9 @@ public class ToolbarPhone extends ToolbarLayout
      * Update the appearance (logo background, search text's color and style) of the location bar
      * based on the state of the current page. For Start Surface and NTP, while not on the focus
      * state, the real search box's search text has a particular color and style. The style would be
-     * "google-sans-medium" and the color would be colorOnSurface or colorOnPrimaryContainer based
-     * on whether the variant SURFACE_POLISH_OMNIBOX_COLOR is enabled or not. When being in light
-     * mode, there is also a round white background for the G logo. For other situations such as
-     * browser tabs, and search result pages, the real search box will stay the same.
+     * "google-sans-medium" and the color would be colorOnSurface. When being in light mode, there
+     * is also a round white background for the G logo. For other situations such as browser tabs,
+     * and search result pages, the real search box will stay the same.
      *
      * @param visualState The Visual State of the current page.
      * @param hasFocus True if the current page is the focus state.
@@ -2981,10 +2972,7 @@ public class ToolbarPhone extends ToolbarLayout
                     AppCompatResources.getDrawable(
                             context,
                             ChromeFeatureList.sSurfacePolish.isEnabled()
-                                    ? (StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR
-                                                    .getValue()
-                                            ? R.drawable.home_surface_search_box_background_colorful
-                                            : R.drawable.home_surface_search_box_background_neutral)
+                                    ? R.drawable.home_surface_search_box_background
                                     : R.drawable.ntp_search_box));
 
             mCallback = callback;
