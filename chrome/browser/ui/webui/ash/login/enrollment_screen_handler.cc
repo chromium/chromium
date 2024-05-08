@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -136,15 +135,10 @@ bool ShouldSpecifyLicenseType(const policy::EnrollmentConfig& config) {
   if (config.license_type == policy::LicenseType::kNone) {
     return false;
   }
-  // Retrieve if the device is Education for InitialEnrollment.
-  if (features::IsEducationEnrollmentOobeFlowEnabled()) {
-    return true;
-  }
 
   // Retrieve the License already used for enrollment from DMServer
   // for AutoEnrollment from message DeviceStateRetrievalResponse.
-  if (features::IsAutoEnrollmentKioskInOobeEnabled() &&
-      config.is_automatic_enrollment()) {
+  if (config.is_automatic_enrollment()) {
     return true;
   }
 
@@ -203,8 +197,7 @@ void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
   // start from enter your account view.
   CallExternalAPI("doReload");
 
-  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
-      config_.license_type == policy::LicenseType::kEducation) {
+  if (config_.license_type == policy::LicenseType::kEducation) {
     ShowErrorMessage(
         l10n_util::GetStringFUTF8(
             IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE_ACCOUNT_CHECK,
@@ -339,8 +332,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                     /*retry=*/true);
           break;
         case policy::DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE:
-          if (features::IsEducationEnrollmentOobeFlowEnabled() &&
-              config_.license_type == policy::LicenseType::kEducation) {
+          if (config_.license_type == policy::LicenseType::kEducation) {
             ShowError(
                 IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE,
                 /*retry=*/true);
