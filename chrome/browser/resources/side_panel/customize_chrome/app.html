@@ -1,104 +1,26 @@
-<style include="cr-icons sp-shared-style">
-  #container {
-    box-sizing: border-box;
-    color: var(--cr-primary-text-color);
-    display: block;
-    height: 100%;
-    padding: var(--sp-body-padding) 0;
-    position: relative;
-  }
-
-  .section {
-    display: block;
-  }
-
-  sp-heading {
-    margin: 8px 16px;
-  }
-
-  .sp-card {
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 16px;
-    max-width: calc(360px - 2 * var(--sp-body-padding));
-  }
-
-  #toolbarButton {
-    display: flex;
-    justify-content: space-between;
-    padding-right: 16px;
-    border: none;
-  }
-
-  customize-chrome-appearance,
-  customize-chrome-shortcuts,
-  customize-chrome-cards,
-  customize-chrome-categories,
-  customize-chrome-themes,
-  customize-chrome-wallpaper-search,
-  customize-chrome-toolbar {
-    display: block;
-    max-width: 360px;
-    width: 100%;
-  }
-
-  customize-chrome-appearance {
-    margin-bottom: 0;
-  }
-
-  #extensions .description {
-    color: var(--cr-secondary-text-color);
-    font-weight: 400;
-    padding: 0 16px 4px;
-  }
-
-  .description a {
-    color: var(--cr-link-color);
-    text-decoration: none;
-  }
-
-  #buttonContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px 16px;
-  }
-
-  #couponsButton .cr-icon {
-    --cr-icon-image: url(icons/coupons.svg);
-  }
-
-  #writingButton .cr-icon {
-    --cr-icon-image: url(icons/writing.svg);
-  }
-
-  #productivityButton .cr-icon {
-    --cr-icon-image: url(icons/productivity.svg);
-  }
-</style>
 <iron-pages id="container"
     class="sp-scroller sp-scroller-top-of-page sp-scroller-bottom-of-page"
-    selected="[[page_]]" attr-for-selected="page-name">
+    selected="${this.page_}" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
     <div id="appearance" class="section sp-card">
       <sp-heading hide-back-button>
         <h2 slot="heading">$i18n{appearanceHeader}</h2>
       </sp-heading>
-      <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
-          on-wallpaper-search-click="onWallpaperSearchSelect_"
+      <customize-chrome-appearance @edit-theme-click="${this.onEditThemeClick_}"
+          @wallpaper-search-click="${this.onWallpaperSearchSelect_}"
           id="appearanceElement">
       </customize-chrome-appearance>
     </div>
-    <template is="dom-if" if="[[toolbarCustomizationEnabled_]]">
+    ${this.toolbarCustomizationEnabled_ ? html`
       <hr class="sp-cards-separator">
       <cr-button id="toolbarButton" class="section sp-card"
-          on-click="onToolbarCustomizationButtonClicked_">
+          @click="${this.onToolbarCustomizationButtonClick_}">
         <sp-heading hide-back-button id="toolbar-customization-heading">
           <h2 slot="heading">$i18n{toolbarHeader}</h2>
         </sp-heading>
         <iron-icon icon="cr:chevron-right" slot="suffix-icon"> </iron-icon>
       </cr-button>
-    </template>
+    ` : ''}
     <hr class="sp-cards-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>
@@ -106,7 +28,7 @@
       </sp-heading>
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>
-    <template is="dom-if" if="[[modulesEnabled_]]">
+    ${this.modulesEnabled_ ? html`
       <hr class="sp-cards-separator">
       <div id="modules" class="section sp-card">
         <sp-heading hide-back-button>
@@ -114,52 +36,52 @@
         </sp-heading>
         <customize-chrome-cards></customize-chrome-cards>
       </div>
-    </template>
-    <template is="dom-if" if="[[extensionsCardEnabled_]]" restamp>
+    ` : ''}
+    ${this.extensionsCardEnabled_ ? html`
       <hr class="sp-cards-separator">
       <div id="extensions" class="section sp-card">
         <sp-heading hide-back-button>
           <h2 slot="heading">Extensions</h2>
         </sp-heading>
-        <div class="description">
+        <div class="description" @click="${this.onChromeWebStoreLinkClick_}">
           $i18nRaw{customizeWithChromeWebstoreLabel}
         </div>
         <div id="buttonContainer">
           <cr-chip id="couponsButton" chip-role="link"
-            on-click="onCouponsButtonClick_">
+            @click="${this.onCouponsButtonClick_}">
             <div class="cr-icon"></div>
             $i18n{webstoreShoppingCategoryLabel}
           </cr-chip>
           <cr-chip id="writingButton" chip-role="link"
-            on-click="onWritingButtonClick_">
+            @click="${this.onWritingButtonClick_}">
             <div class="cr-icon"></div>
             $i18n{webstoreWritingHelpCollectionLabel}
           </cr-chip>
           <cr-chip id="productivityButton" chip-role="link"
-            on-click="onProductivityButtonClick_">
+            @click="${this.onProductivityButtonClick_}">
             <div class="cr-icon"></div>
             $i18n{webstoreProductivityCategoryLabel}
           </cr-chip>
         </div>
       </div>
-    </template>
+    ` : ''}
   </div>
-  <customize-chrome-categories on-back-click="onBackClick_"
-      on-collection-select="onCollectionSelect_" page-name="categories"
-      id="categoriesPage" on-local-image-upload="onLocalImageUpload_"
-      on-wallpaper-search-select="onWallpaperSearchSelect_">
+  <customize-chrome-categories @back-click="${this.onBackClick_}"
+      @collection-select="${this.onCollectionSelect_}" page-name="categories"
+      id="categoriesPage" @local-image-upload="${this.onLocalImageUpload_}"
+      @wallpaper-search-select="${this.onWallpaperSearchSelect_}">
   </customize-chrome-categories>
-  <customize-chrome-themes on-back-click="onBackClick_"
+  <customize-chrome-themes @back-click="${this.onBackClick_}"
       page-name="themes" id="themesPage"
-      selected-collection="[[selectedCollection_]]">
+      .selectedCollection="${this.selectedCollection_}">
   </customize-chrome-themes>
-  <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
-    <customize-chrome-wallpaper-search on-back-click="onBackClick_"
+  ${this.wallpaperSearchEnabled_ ? html`
+    <customize-chrome-wallpaper-search @back-click="${this.onBackClick_}"
         page-name="wallpaper-search" id="wallpaperSearchPage">
     </customize-chrome-wallpaper-search>
-  </template>
-  <template is="dom-if" if="[[toolbarCustomizationEnabled_]]">
-    <customize-chrome-toolbar on-back-click="onBackClick_" page-name="toolbar"
-      id="toolbarPage"></customize-chrome-toolbar>
-  </template>
+  ` : ''}
+  ${this.toolbarCustomizationEnabled_ ? html`
+    <customize-chrome-toolbar @back-click="${this.onBackClick_}"
+      page-name="toolbar" id="toolbarPage"></customize-chrome-toolbar>
+  ` : ''}
 </iron-pages>

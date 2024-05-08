@@ -8062,7 +8062,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Device
       </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_WEBSTORE_LABEL" desc="The message that prompts user to customize Chrome with Chrome webstore.">
-        Customize your browser even more with extensions from the <ph name="BEGIN_LINK1">&lt;a href="#" id="chromeWebstoreLink" on-click="onChromeWebStoreLinkClick_"&gt;</ph>Chrome Web Store<ph name="END_LINK1">&lt;/a&gt;</ph>
+        Customize your browser even more with extensions from the <ph name="BEGIN_LINK1">&lt;a href="#" id="chromeWebstoreLink"&gt;</ph>Chrome Web Store<ph name="END_LINK1">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'shopping' category page of the Chrome webstore.">
         Find coupons

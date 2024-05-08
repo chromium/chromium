@@ -42,6 +42,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app.css",
     "appearance.css",
     "button_label.css",
     "cards.css",

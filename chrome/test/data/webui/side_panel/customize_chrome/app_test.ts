@@ -14,7 +14,7 @@ import {assertEquals, assertGE, assertTrue} from 'chrome://webui-test/chai_asser
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -90,6 +90,7 @@ suite('AppTest', () => {
     // Send event for edit theme being clicked.
     customizeChromeApp.$.appearanceElement.dispatchEvent(
         new Event('edit-theme-click'));
+    await microtasksFinished();
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
@@ -99,6 +100,7 @@ suite('AppTest', () => {
     customizeChromeApp.$.categoriesPage.dispatchEvent(
         new CustomEvent<BackgroundCollection>(
             'collection-select', {detail: testCollection}));
+    await microtasksFinished();
     // Current page should now be themes.
     assertTrue(
         customizeChromeApp.$.themesPage.classList.contains('iron-selected'));
@@ -106,6 +108,7 @@ suite('AppTest', () => {
 
     // Send event for back click.
     customizeChromeApp.$.themesPage.dispatchEvent(new Event('back-click'));
+    await microtasksFinished();
     // Current page should now be categories.
     assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
         'iron-selected'));
@@ -114,6 +117,7 @@ suite('AppTest', () => {
     // Send event for upload image.
     customizeChromeApp.$.categoriesPage.dispatchEvent(
         new Event('local-image-upload'));
+    await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
@@ -122,10 +126,12 @@ suite('AppTest', () => {
     // Set page back to categories.
     customizeChromeApp.$.appearanceElement.dispatchEvent(
         new Event('edit-theme-click'));
+    await microtasksFinished();
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
     customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
+    await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
         customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
