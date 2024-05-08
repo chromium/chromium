@@ -28,7 +28,7 @@ CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents,
     OnCloseBubbleCallback callback)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents,true),
       callback_(std::move(callback)) {
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -64,7 +64,6 @@ void CookieControlsBubbleViewImpl::InitReloadingView(
 
 void CookieControlsBubbleViewImpl::UpdateTitle(const std::u16string& title) {
   SetTitle(title);
-  SizeToContents();
 }
 
 void CookieControlsBubbleViewImpl::UpdateSubtitle(
@@ -85,7 +84,7 @@ void CookieControlsBubbleViewImpl::SwitchToReloadingView() {
       base::UserMetricsAction("CookieControls.Bubble.ReloadingShown"));
   GetReloadingView()->SetVisible(true);
   GetContentView()->SetVisible(false);
-  SizeToContents();
+  InvalidateLayout();
 }
 
 CookieControlsContentView* CookieControlsBubbleViewImpl::GetContentView() {
@@ -119,11 +118,6 @@ gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize(
                      views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
                  kMaxBubbleWidth);
   return gfx::Size(width, size.height());
-}
-
-void CookieControlsBubbleViewImpl::ChildPreferredSizeChanged(
-    views::View* child) {
-  SizeToContents();
 }
 
 void CookieControlsBubbleViewImpl::CloseBubble() {

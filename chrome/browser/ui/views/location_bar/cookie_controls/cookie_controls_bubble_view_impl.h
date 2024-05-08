@@ -60,9 +60,6 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
   void CloseBubble() override;
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
 
-  // views::View:
-  void ChildPreferredSizeChanged(views::View* child) override;
-
   raw_ptr<View> reloading_view_ = nullptr;
   raw_ptr<CookieControlsContentView> content_view_ = nullptr;
 
