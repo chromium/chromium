@@ -67,7 +67,6 @@ import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.features.tasks.TasksView;
 import org.chromium.chrome.features.tasks.TasksViewBinder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -669,10 +668,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             realTranslationX =
                     OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
                             + getPixelSize(R.dimen.status_view_highlight_size)
-                            + getPixelSize(
-                                    OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
-                                            ? R.dimen.location_bar_icon_end_padding_focused_smaller
-                                            : R.dimen.location_bar_icon_end_padding_focused)
+                            + getPixelSize(R.dimen.location_bar_icon_end_padding_focused_smaller)
                             - getPixelSize(R.dimen.fake_search_box_start_padding);
         } else {
             realTranslationX =
