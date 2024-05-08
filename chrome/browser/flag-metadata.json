@@ -2003,6 +2003,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "discard-ring-improvements",
+    "owners": [
+      "agale@chromium.org",
+      "chrome-performance-ui-team@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "disconnect-wifi-on-ethernet-connected",
     "owners": [
       "taoyl@chromium.org", "cros-networking@google.com"
@@ -5614,6 +5622,14 @@
     // capture a memlog without disturbing the situation under test by
     // restarting to apply a switch. It should not be removed.
     "expiry_milestone": -1
+  },
+  {
+    "name": "memory-saver-aggressiveness",
+    "owners": [
+      "agale@chromium.org",
+      "chrome-performance-ui-team@google.com"
+    ],
+    "expiry_milestone": 130
   },
   {
     "name": "messages-for-android-ads-blocked",

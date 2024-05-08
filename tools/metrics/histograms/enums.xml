@@ -17410,6 +17410,7 @@ from previous Chrome versions.
   <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
   <int value="-1699908146" label="NtpRealboxCr23ConsistentRowHeight:enabled"/>
+  <int value="-1699855205" label="MemorySaverAggressiveness:disabled"/>
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
   <int value="-1699505493" label="QuickDeleteAndroidFollowup:enabled"/>
@@ -18393,6 +18394,7 @@ from previous Chrome versions.
   <int value="-1282433319" label="WebRtcAllowInputVolumeAdjustment:enabled"/>
   <int value="-1281491005" label="DisableDnsProxy:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
+  <int value="-1280802236" label="MemorySaverAggressiveness:enabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>
   <int value="-1279151596" label="TreatBootstrapAsDefault:enabled"/>
@@ -20591,6 +20593,7 @@ from previous Chrome versions.
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
   <int value="-304594674" label="FedCmSelectiveDisclosure:enabled"/>
+  <int value="-304502255" label="DiscardRingImprovements:enabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
   <int value="-303540818" label="FeedFollowUiUpdate:enabled"/>
   <int value="-303467388" label="ShimlessRMAEnableStandalone:enabled"/>
@@ -20730,6 +20733,7 @@ from previous Chrome versions.
   <int value="-249636068" label="ChromeRootStoreUsed:enabled"/>
   <int value="-249443346" label="PhoneHubCallNotification:disabled"/>
   <int value="-249415830" label="FilteringScrollPrediction:disabled"/>
+  <int value="-248488262" label="MemorySaverModeAggressiveness:enabled"/>
   <int value="-248223420" label="AutofillKeyboardAccessory:disabled"/>
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>
   <int value="-246946362"
@@ -21738,6 +21742,7 @@ from previous Chrome versions.
   <int value="202197713" label="WallpaperRefreshRevamp:enabled"/>
   <int value="202966815" label="SettingsAppNotificationSettings:enabled"/>
   <int value="203239167" label="ImprovedGeoLanguageData:enabled"/>
+  <int value="203570248" label="DiscardRingImprovements:disabled"/>
   <int value="203776499" label="enable-virtual-keyboard-overscroll"/>
   <int value="204042068"
       label="AllowEapDefaultCasWithoutSubjectVerification:disabled"/>
@@ -25939,6 +25944,7 @@ from previous Chrome versions.
   <int value="2044623453" label="DeferredShaping:disabled"/>
   <int value="2046329062" label="ReleaseTrackUi:enabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
+  <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>
   <int value="2049674680" label="EnableAutomaticSnooze:enabled"/>

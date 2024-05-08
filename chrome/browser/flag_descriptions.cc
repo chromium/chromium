@@ -4692,6 +4692,12 @@ const char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
 const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 const char kCastMirroringTargetPlayoutDelay350ms[] = "3500ms.";
 
+const char kDiscardRingImprovementsName[] =
+    "Enable improvements for the discarded tab treatment.";
+const char kDiscardRingImprovementsDescription[] =
+    "When enabled, the discard ring will be larger and have reduced "
+    "transparency.";
+
 const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
 const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "
@@ -4785,13 +4791,6 @@ const char kGlobalMediaControlsCastStartStopDescription[] =
     "Allows global media controls to control when a Cast session is started "
     "or stopped instead of relying on the Cast dialog.";
 
-const char kHeuristicMemorySaverName[] =
-    "Enable the heuristics-based policy for Memory Saver Mode.";
-const char kHeuristicMemorySaverDescription[] =
-    "When enabled, Memory Saver will take multiple signals into account before "
-    "discarding a tab rather than doing it after a fixed amount of time in the "
-    "background.";
-
 const char kLinkPreviewName[] = "Link Preview";
 const char kLinkPreviewDescription[] =
     "When enabled, Link Preview feature gets to be available to preview a "
@@ -4801,6 +4800,12 @@ const char kLinkPreviewDescription[] =
     "understand what's to be the best for users from the viewpoint of "
     "security, privacy, and usability. The feature might be unstable and "
     "unusable on some platforms, e.g. macOS or touch devices.";
+
+const char kMemorySaverAggressivenessName[] =
+    "Enable the ability to configure how aggressive Memory Saver is.";
+const char kMemorySaverAggressivenessDescription[] =
+    "When enabled, the aggressiveness of Memory Saver can be configured via "
+    "chrome://settings/performance.";
 
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";

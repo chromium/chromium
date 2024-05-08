@@ -11246,6 +11246,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFetchGaiaHashOnSignInDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kFetchGaiaHashOnSignIn)},
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"discard-ring-improvements",
+     flag_descriptions::kDiscardRingImprovementsName,
+     flag_descriptions::kDiscardRingImprovementsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kDiscardRingImprovements)},
+    {"memory-saver-aggressiveness",
+     flag_descriptions::kMemorySaverAggressivenessName,
+     flag_descriptions::kMemorySaverAggressivenessDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kMemorySaverModeAggressiveness)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

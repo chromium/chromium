@@ -2739,6 +2739,9 @@ extern const char kCastMirroringTargetPlayoutDelay250ms[];
 extern const char kCastMirroringTargetPlayoutDelay300ms[];
 extern const char kCastMirroringTargetPlayoutDelay350ms[];
 
+extern const char kDiscardRingImprovementsName[];
+extern const char kDiscardRingImprovementsDescription[];
+
 extern const char kEnablePolicyTestPageName[];
 extern const char kEnablePolicyTestPageDescription[];
 
@@ -2793,14 +2796,11 @@ extern const char kReadAnythingLocalSidePanelDescription[];
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 
-extern const char kHeuristicMemorySaverName[];
-extern const char kHeuristicMemorySaverDescription[];
-
 extern const char kLinkPreviewName[];
 extern const char kLinkPreviewDescription[];
 
-extern const char kModalMemorySaverName[];
-extern const char kModalMemorySaverDescription[];
+extern const char kMemorySaverAggressivenessName[];
+extern const char kMemorySaverAggressivenessDescription[];
 
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];
