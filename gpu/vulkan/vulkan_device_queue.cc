@@ -92,8 +92,12 @@ bool VulkanDeviceQueue::Initialize(
   VkResult result = VK_SUCCESS;
 
   VkQueueFlags queue_flags = 0;
-  if (options & DeviceQueueOption::GRAPHICS_QUEUE_FLAG)
+  if (options & DeviceQueueOption::GRAPHICS_QUEUE_FLAG) {
     queue_flags |= VK_QUEUE_GRAPHICS_BIT;
+  }
+  if (allow_protected_memory) {
+    queue_flags |= VK_QUEUE_PROTECTED_BIT;
+  }
 
   // We prefer to use discrete GPU, integrated GPU is the second, and then
   // others.
