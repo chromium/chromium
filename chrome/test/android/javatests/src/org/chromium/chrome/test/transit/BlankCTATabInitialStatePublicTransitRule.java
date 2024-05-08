@@ -46,8 +46,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(false)
+                        .withEntryPoint()
                         .build();
 
         // Null in the first test, non-null from the second test onwards.

@@ -117,8 +117,8 @@ public class Trip extends Transition {
         mDestination.setStateTransitioningTo();
 
         mWaits = calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
-        for (ConditionWait waits : mWaits) {
-            waits.getCondition().onStartMonitoring();
+        for (ConditionWait wait : mWaits) {
+            wait.getCondition().onStartMonitoring();
         }
     }
 
@@ -136,6 +136,10 @@ public class Trip extends Transition {
             mOrigin.setStateFinished();
         }
         mDestination.setStateActive();
+        for (ConditionWait waits : mWaits) {
+            waits.getCondition().onStopMonitoring();
+        }
+
         TrafficControl.notifyActiveStationChanged(mDestination);
     }
 

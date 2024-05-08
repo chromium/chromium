@@ -84,38 +84,38 @@ public abstract class ConditionalState {
     void setStateTransitioningTo() {
         assertInPhase(Phase.NEW);
         mLifecyclePhase = Phase.TRANSITIONING_TO;
-        onStartMonitoringTransitionTo();
+        onTransitionToStarted();
     }
 
-    /** Hook to setup observers for the transition into the ConditionalState. */
-    protected void onStartMonitoringTransitionTo() {}
+    /** Hook to run code before a transition to the ConditionalState. */
+    protected void onTransitionToStarted() {}
 
     void setStateActive() {
         assertInPhase(Phase.TRANSITIONING_TO);
         mLifecyclePhase = Phase.ACTIVE;
-        onStopMonitoringTransitionTo();
+        onTransitionToFinished();
     }
 
-    /** Hook to cleanup observers for the transition into the ConditionalState. */
-    protected void onStopMonitoringTransitionTo() {}
+    /** Hook to run code after a transition to the ConditionalState. */
+    protected void onTransitionToFinished() {}
 
     void setStateTransitioningFrom() {
         assertInPhase(Phase.ACTIVE);
         mLifecyclePhase = Phase.TRANSITIONING_FROM;
-        onStartMonitoringTransitionFrom();
+        onTransitionFromStarted();
     }
 
-    /** Hook to setup observers for the transition from the ConditionalState. */
-    protected void onStartMonitoringTransitionFrom() {}
+    /** Hook to run code before a transition from the ConditionalState. */
+    protected void onTransitionFromStarted() {}
 
     void setStateFinished() {
         assertInPhase(Phase.TRANSITIONING_FROM);
         mLifecyclePhase = Phase.FINISHED;
-        onStopMonitoringTransitionFrom();
+        onTransitionFromFinished();
     }
 
-    /** Hook to cleanup observers for the transition from the ConditionalState. */
-    protected void onStopMonitoringTransitionFrom() {}
+    /** Hook to run code after a transition from the ConditionalState. */
+    protected void onTransitionFromFinished() {}
 
     /**
      * @return the name of the State for use in debugging/error messages.

@@ -41,8 +41,8 @@ public class PopupBlockedMessageFacility extends MessageFacility {
         WebPageStation popupPage =
                 WebPageStation.newWebPageStationBuilder()
                         .initFrom(mHostStation)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(mHostStation, popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
     }

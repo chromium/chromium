@@ -79,8 +79,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                                     PageStation.newPageStationBuilder()
                                             .withActivityTestRule(mHostStation.getTestRule())
                                             .withIncognito(false)
-                                            .withIsOpeningTab(false)
-                                            .withIsSelectingTab(true)
+                                            .withIsOpeningTabs(0)
+                                            .withIsSelectingTabs(1)
                                             .build());
                 }
             } else {
@@ -102,8 +102,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                             PageStation.newPageStationBuilder()
                                     .withActivityTestRule(mHostStation.getTestRule())
                                     .withIncognito(tabModelSelector.isIncognitoSelected())
-                                    .withIsOpeningTab(false)
-                                    .withIsSelectingTab(true)
+                                    .withIsOpeningTabs(0)
+                                    .withIsSelectingTabs(1)
                                     .build());
         }
 
@@ -116,8 +116,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         NewTabPageStation destination =
                 NewTabPageStation.newBuilder()
                         .withActivityTestRule(mHostStation.getTestRule())
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(mHostStation, destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
     }
@@ -127,8 +127,8 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
         IncognitoNewTabPageStation destination =
                 IncognitoNewTabPageStation.newBuilder()
                         .withActivityTestRule(mHostStation.getTestRule())
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(
                 mHostStation, destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));

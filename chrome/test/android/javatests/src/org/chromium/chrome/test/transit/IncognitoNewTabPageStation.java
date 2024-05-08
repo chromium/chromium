@@ -32,6 +32,6 @@ public class IncognitoNewTabPageStation extends PageStation {
         super.declareElements(elements);
         elements.declareView(ICON);
         elements.declareView(GONE_INCOGNITO_TEXT);
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedEnterCondition));
+        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedCondition));
     }
 }

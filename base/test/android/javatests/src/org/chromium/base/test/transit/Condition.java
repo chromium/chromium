@@ -27,7 +27,8 @@ public abstract class Condition {
 
     /**
      * @param isRunOnUiThread true if the Condition should be checked on the UI Thread, false if it
-     *     should be checked on the Instrumentation Thread.
+     *     should be checked on the Instrumentation Thread. Other hooks such as {@link
+     *     #onStartMonitoring()} are always run on the Instrumentation Thread.
      */
     public Condition(boolean isRunOnUiThread) {
         mIsRunOnUiThread = isRunOnUiThread;
@@ -51,10 +52,16 @@ public abstract class Condition {
     public abstract String buildDescription();
 
     /**
-     * Hook run right before the condition starts being monitored. Used, for example, to get initial
-     * callback counts.
+     * Hook run right before the condition starts being checked. Used, for example, to get initial
+     * callback counts and install observers.
      */
     public void onStartMonitoring() {}
+
+    /**
+     * Hook run right after the condition stops being checked. Used, for example, to uninstall
+     * observers.
+     */
+    public void onStopMonitoring() {}
 
     /**
      * @return a short description to be printed as part of a list of conditions.

@@ -18,6 +18,7 @@ class FacilityCheckOut extends Transition {
     private static final String TAG = "Transit";
 
     private Facility mFacility;
+    private List<ConditionWait> mWaits;
 
     /**
      * Constructor. FacilityCheckOut is instantiated to leave a {@link Facility}.
@@ -36,12 +37,15 @@ class FacilityCheckOut extends Transition {
         // TODO(crbug.com/333735412): Unify Trip#travelSyncInternal(), FacilityCheckIn#enterSync()
         // and FacilityCheckOut#exitSync().
         onBeforeTransition();
-        List<ConditionWait> waits = createWaits();
+        mWaits = createWaits();
+        for (ConditionWait wait : mWaits) {
+            wait.getCondition().onStartMonitoring();
+        }
 
         if (mOptions.mTries == 1) {
             triggerTransition();
             Log.i(TAG, "Triggered transition, waiting to exit %s", mFacility);
-            waitUntilExit(waits);
+            waitUntilExit(mWaits);
         } else {
             for (int tryNumber = 1; tryNumber <= mOptions.mTries; tryNumber++) {
                 try {
@@ -52,7 +56,7 @@ class FacilityCheckOut extends Transition {
                             tryNumber,
                             mOptions.mTries,
                             mFacility);
-                    waitUntilExit(waits);
+                    waitUntilExit(mWaits);
                     break;
                 } catch (TravelException e) {
                     Log.w(TAG, "Try #%d failed", tryNumber, e);
@@ -112,6 +116,9 @@ class FacilityCheckOut extends Transition {
 
     private void onAfterTransition() {
         mFacility.setStateFinished();
+        for (ConditionWait wait : mWaits) {
+            wait.getCondition().onStopMonitoring();
+        }
         Log.i(TAG, "Exited %s", mFacility);
     }
 }

@@ -44,6 +44,6 @@ public class NewTabPageStation extends PageStation {
             elements.declareView(MOST_VISITED_TILES);
         }
 
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedEnterCondition));
+        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedCondition));
     }
 }

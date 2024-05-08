@@ -48,8 +48,8 @@ public class PopupOnClickPageStation extends WebPageStation {
         PopupOnClickPageStation newPage =
                 new Builder<PopupOnClickPageStation>(PopupOnClickPageStation::new)
                         .initFrom(this)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(this, newPage, Transition.retryOption(), mLinkToPopup::click);
     }

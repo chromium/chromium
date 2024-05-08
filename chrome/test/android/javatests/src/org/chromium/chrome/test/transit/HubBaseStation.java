@@ -111,8 +111,8 @@ public abstract class HubBaseStation extends Station {
         PageStation destination =
                 PageStation.newPageStationBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(this, destination, () -> Espresso.pressBack());
     }

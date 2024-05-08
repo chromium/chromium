@@ -4,41 +4,51 @@
 
 package org.chromium.base.test.transit;
 
+import androidx.annotation.CallSuper;
+
 import org.chromium.base.test.util.CallbackHelper;
 
 /** A {@link Condition} that checks if a single callback was received. */
 public class CallbackCondition extends Condition {
-    private final CallbackHelper mCallbackHelper;
-    private final String mDescription;
-    private int mStartingCount;
+    protected final CallbackHelper mCallbackHelper;
+    protected final String mCallbackDescription;
+    protected final int mNumCallsExpected;
+    protected int mStartingCount;
 
     /**
-     * Use {@link #instrumentationThread(CallbackHelper, String) or {@link #uiThread(CallbackHelper, String)}
+     * Constructor.
+     *
+     * @param callbackDescription the user-visible name for the callback.
+     * @param numCallsExpected the number of callbacks expected for the Condition to be fulfilled.
+     */
+    protected CallbackCondition(String callbackDescription, int numCallsExpected) {
+        super(/* isRunOnUiThread= */ false);
+        mCallbackHelper = new CallbackHelper();
+        mCallbackDescription = callbackDescription;
+        mNumCallsExpected = numCallsExpected;
+    }
+
+    /**
+     * Constructor.
      *
      * @param callbackHelper the {@link CallbackHelper} to wait for.
-     * @param description the user-visible name for the Condition.
+     * @param callbackDescription the user-visible name for the callback.
+     * @param numCallsExpected the number of callbacks expected for the Condition to be fulfilled.
      */
-    private CallbackCondition(
-            boolean runOnUiThread, CallbackHelper callbackHelper, String description) {
-        super(runOnUiThread);
+    protected CallbackCondition(
+            CallbackHelper callbackHelper, String callbackDescription, int numCallsExpected) {
+        super(/* isRunOnUiThread= */ false);
         mCallbackHelper = callbackHelper;
-        mDescription = description;
-    }
-
-    public static CallbackCondition instrumentationThread(
-            CallbackHelper callbackHelper, String description) {
-        return new CallbackCondition(/* runOnUiThread= */ false, callbackHelper, description);
-    }
-
-    public static CallbackCondition uiThread(CallbackHelper callbackHelper, String description) {
-        return new CallbackCondition(/* runOnUiThread= */ true, callbackHelper, description);
+        mCallbackDescription = callbackDescription;
+        mNumCallsExpected = numCallsExpected;
     }
 
     @Override
     public String buildDescription() {
-        return mDescription;
+        return String.format("Received %d %s callbacks", mNumCallsExpected, mCallbackDescription);
     }
 
+    @CallSuper
     @Override
     public void onStartMonitoring() {
         mStartingCount = mCallbackHelper.getCallCount();
@@ -49,13 +59,18 @@ public class CallbackCondition extends Condition {
         int currentCount = mCallbackHelper.getCallCount();
         if (mStartingCount > 0) {
             return whether(
-                    currentCount > mStartingCount,
-                    "Called %d/1 times (%d - %d)",
+                    currentCount >= mStartingCount + mNumCallsExpected,
+                    "Called %d/%d times (%d - %d)",
                     currentCount - mStartingCount,
+                    mNumCallsExpected,
                     currentCount,
                     mStartingCount);
         } else {
-            return whether(currentCount > 0, "Called %d/1 times", currentCount);
+            return whether(currentCount > 0, "Called %d/%d times", currentCount, mNumCallsExpected);
         }
+    }
+
+    protected void notifyCalled() {
+        mCallbackHelper.notifyCalled();
     }
 }

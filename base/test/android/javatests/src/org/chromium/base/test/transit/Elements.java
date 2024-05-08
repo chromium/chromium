@@ -118,7 +118,7 @@ public class Elements {
          * <p>Further, no promises are made that the Condition is false after exiting the State. Use
          * a scoped {@link LogicalElement} in this case.
          */
-        public Condition declareEnterCondition(Condition condition) {
+        public <T extends Condition> T declareEnterCondition(T condition) {
             mElements.mOtherEnterConditions.add(condition);
             return condition;
         }
@@ -130,7 +130,7 @@ public class Elements {
          * <p>No promises are made that the Condition is false as long as the ConditionalState is
          * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
          */
-        public Condition declareExitCondition(Condition condition) {
+        public <T extends Condition> T declareExitCondition(T condition) {
             mElements.mOtherExitConditions.add(condition);
             return condition;
         }

@@ -33,8 +33,8 @@ public class PopupOnLoadPageStation extends WebPageStation {
         PopupOnLoadPageStation newPage =
                 new Builder<PopupOnLoadPageStation>(PopupOnLoadPageStation::new)
                         .initFrom(currentPageStation)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(false)
+                        .withIsOpeningTabs(0)
+                        .withTabAlreadySelected(currentPageStation.getLoadedTab())
                         .build();
         PopupBlockedMessageFacility popupBlockedMessage =
                 new PopupBlockedMessageFacility(newPage, 2);
@@ -57,8 +57,8 @@ public class PopupOnLoadPageStation extends WebPageStation {
         WebPageStation newPage =
                 NavigatePageStations.newNavigateTwoPageBuilder()
                         .initFrom(currentPageStation)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(2)
+                        .withIsSelectingTabs(2)
                         .build();
         // TODO(crbug.com/329307093): Add condition that two new tabs were opened.
 

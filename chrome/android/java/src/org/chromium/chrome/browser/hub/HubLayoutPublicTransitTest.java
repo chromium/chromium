@@ -142,8 +142,8 @@ public class HubLayoutPublicTransitTest {
         NewTabPageStation destination =
                 NewTabPageStation.newBuilder()
                         .withActivityTestRule(sActivityTestRule)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
                         .build();
         Trip.travelSync(
                 currentStation,

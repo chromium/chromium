@@ -107,8 +107,8 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     protected NewTabPageStation createNewTabPageStation() {
         return NewTabPageStation.newBuilder()
                 .withActivityTestRule(mChromeTabbedActivityTestRule)
-                .withIsOpeningTab(true)
-                .withIsSelectingTab(true)
+                .withIsOpeningTabs(1)
+                .withIsSelectingTabs(1)
                 .build();
     }
 
@@ -116,8 +116,8 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     protected IncognitoNewTabPageStation createIncognitoNewTabPageStation() {
         return IncognitoNewTabPageStation.newBuilder()
                 .withActivityTestRule(mChromeTabbedActivityTestRule)
-                .withIsOpeningTab(true)
-                .withIsSelectingTab(true)
+                .withIsOpeningTabs(1)
+                .withIsSelectingTabs(1)
                 .build();
     }
 

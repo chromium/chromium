@@ -7,18 +7,17 @@ package org.chromium.chrome.test.transit;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
 /** Fulfilled when a page is loaded. */
-class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
-    private final Supplier<ChromeTabbedActivity> mActivitySupplier;
+public class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
+    private final Supplier<Tab> mActivityTabSupplier;
     private final boolean mIncognito;
-    private Tab mMatchedTab;
+    private Tab mLoadedTab;
 
-    PageLoadedCondition(Supplier<ChromeTabbedActivity> activitySupplier, boolean incognito) {
-        mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
+    PageLoadedCondition(Supplier<Tab> activityTabSupplier, boolean incognito) {
+        mActivityTabSupplier = dependOnSupplier(activityTabSupplier, "ActivityTab");
         mIncognito = incognito;
     }
 
@@ -29,11 +28,7 @@ class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        ChromeTabbedActivity activity = mActivitySupplier.get();
-        Tab tab = activity.getActivityTab();
-        if (tab == null) {
-            return notFulfilled("null ActivityTab");
-        }
+        Tab tab = mActivityTabSupplier.get();
 
         boolean isIncognito = tab.isIncognito();
         boolean isLoading = tab.isLoading();
@@ -47,7 +42,7 @@ class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
                 && !isLoading
                 && webContents != null
                 && !shouldShowLoadingUi) {
-            mMatchedTab = tab;
+            mLoadedTab = tab;
             return fulfilled(message);
         } else {
             return notFulfilled(message);
@@ -56,11 +51,11 @@ class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
 
     @Override
     public Tab get() {
-        return mMatchedTab;
+        return mLoadedTab;
     }
 
     @Override
     public boolean hasValue() {
-        return mMatchedTab != null;
+        return mLoadedTab != null;
     }
 }

@@ -106,8 +106,8 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 PageStation.newPageStationBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
                         .build();
 
         return Trip.travelSync(
@@ -168,8 +168,8 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 PageStation.newPageStationBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }

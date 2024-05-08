@@ -130,8 +130,8 @@ public abstract class TabSwitcherStation extends Station {
                 PageStation.newPageStationBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
-                        .withIsOpeningTab(true)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
                         .build();
         return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
@@ -174,8 +174,8 @@ public abstract class TabSwitcherStation extends Station {
                 PageStation.newPageStationBuilder()
                         .withActivityTestRule(mChromeTabbedActivityTestRule)
                         .withIncognito(mIsIncognito)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(true)
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
                         .build();
 
         return Trip.travelSync(

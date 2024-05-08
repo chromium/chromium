@@ -31,8 +31,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
-                        .withIsOpeningTab(false)
-                        .withIsSelectingTab(false)
+                        .withEntryPoint()
                         .build();
         return Trip.travelSync(
                 null, entryPageStation, () -> mActivityTestRule.startMainActivityOnBlankPage());
