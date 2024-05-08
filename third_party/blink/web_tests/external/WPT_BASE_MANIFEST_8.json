@@ -334141,7 +334141,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "e06782e8f5b477831cdb06a2f93d0dc7fc49af1b",
+       "fa39887d52807e3c0753fc1f4b20dc6cbed864fd",
        []
       ],
       "hanging-punctuation-valid-expected.txt": [
@@ -335524,6 +335524,10 @@
       ]
      },
      "white-space": {
+      "WEB_FEATURES.yml": [
+       "89253912e8520ad5496e4a9c5da747f9d16bcf9d",
+       []
+      ],
       "lone-cr-001-ref.html": [
        "943daefee058239e51eef2a4c6b1b46471508696",
        []
