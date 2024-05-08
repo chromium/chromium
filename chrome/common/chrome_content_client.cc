@@ -392,7 +392,9 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
   // Sets up the simplified in-process heap profiler, if it's enabled.
   const auto* heap_profiler_controller =
       heap_profiling::HeapProfilerController::GetInstance();
-  if (heap_profiler_controller && heap_profiler_controller->IsEnabled()) {
+  if (heap_profiler_controller && heap_profiler_controller->IsEnabled() &&
+      base::FeatureList::IsEnabled(
+          heap_profiling::kHeapProfilerCentralControl)) {
     binders->Add<heap_profiling::mojom::SnapshotController>(
         base::BindRepeating(&heap_profiling::ChildProcessSnapshotController::
                                 CreateSelfOwnedReceiver),
