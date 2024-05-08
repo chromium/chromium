@@ -54,7 +54,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
   set consentMetadata(consentMetadata: ConsentMetadata|null) {
     const consentDetailsEl = this.getRequiredElement('#consent-details');
-    const noConsentDetailsEl = this.getRequiredElement('#no-consent');
+    const noConsentDetailsEl = this.getRequiredElement('#no-consent-details');
     if (!consentMetadata) {
       this.showElement(noConsentDetailsEl);
       this.hideElement(consentDetailsEl);
