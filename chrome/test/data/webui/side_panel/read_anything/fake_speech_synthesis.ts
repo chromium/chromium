@@ -16,10 +16,13 @@ export class FakeSpeechSynthesis {
     this.spokenUtterances = [];
   }
 
+  clearSpokenUtterances() {
+    this.spokenUtterances = [];
+  }
+
   cancel() {
     this.canceled = true;
     this.speaking = false;
-    this.spokenUtterances = [];
   }
 
   pause() {

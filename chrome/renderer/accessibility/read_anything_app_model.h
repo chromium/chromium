@@ -201,6 +201,8 @@ class ReadAnythingAppModel {
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
   }
+  bool speech_playing() { return speech_playing_; }
+  void set_speech_playing(bool value) { speech_playing_ = value; }
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
@@ -496,6 +498,9 @@ class ReadAnythingAppModel {
   // This boolean marks when distillation is in progress to avoid sending
   // new distillation requests during that time.
   bool distillation_in_progress_ = false;
+
+  // Whether Read Aloud speech is currently playing or not.
+  bool speech_playing_ = false;
 
   // A mapping of a tree ID to a queue of pending updates on the active AXTree,
   // which will be unserialized once distillation completes.

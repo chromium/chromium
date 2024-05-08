@@ -547,7 +547,7 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // so it’s critical that updates are not unserialized until drawing is
   // complete.
   if (tree_id == active_tree_id_) {
-    if (distillation_in_progress_) {
+    if (distillation_in_progress_ || speech_playing_) {
       AddPendingUpdates(tree_id, updates);
       ProcessNonGeneratedEvents(events);
       return;

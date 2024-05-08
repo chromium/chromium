@@ -273,7 +273,12 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('play/pause', () => {
+    let propagatedPauseState: boolean;
+
     setup(() => {
+      chrome.readingMode.onSpeechPlayingStateChanged = paused => {
+        propagatedPauseState = paused;
+      };
       app.updateContent();
     });
 
@@ -285,6 +290,7 @@ suite('AppReceivesToolbarChanges', () => {
       test('is paused', () => {
         assertTrue(app.speechPlayingState.paused);
         assertFalse(app.speechPlayingState.speechStarted);
+        assertTrue(propagatedPauseState);
       });
     });
 
@@ -296,6 +302,7 @@ suite('AppReceivesToolbarChanges', () => {
       test('starts speech', () => {
         assertFalse(app.speechPlayingState.paused);
         assertTrue(app.speechPlayingState.speechStarted);
+        assertFalse(propagatedPauseState);
       });
     });
 
@@ -308,6 +315,7 @@ suite('AppReceivesToolbarChanges', () => {
       test('stops speech', () => {
         assertTrue(app.speechPlayingState.paused);
         assertTrue(app.speechPlayingState.speechStarted);
+        assertTrue(propagatedPauseState);
       });
     });
 
@@ -321,12 +329,14 @@ suite('AppReceivesToolbarChanges', () => {
       test('first press plays', () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
         assertFalse(app.speechPlayingState.paused);
+        assertFalse(propagatedPauseState);
       });
 
       test('second press pauses', () => {
         app.$.appFlexParent!.dispatchEvent(kPress);
         app.$.appFlexParent!.dispatchEvent(kPress);
         assertTrue(app.speechPlayingState.paused);
+        assertTrue(propagatedPauseState);
       });
     });
   });

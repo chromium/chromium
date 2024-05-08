@@ -144,6 +144,9 @@ declare namespace chrome {
     // shortcuts.
     function onCopy(): void;
 
+    // Called when speech is paused or played.
+    function onSpeechPlayingStateChanged(paused: boolean): void;
+
     // Called when the Read Anything panel is scrolled.
     function onScroll(onSelection: boolean): void;
 

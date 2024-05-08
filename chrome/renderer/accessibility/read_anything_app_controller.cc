@@ -484,10 +484,12 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
 }
 
 void ReadAnythingAppController::Distill() {
-  if (model_.distillation_in_progress()) {
+  if (model_.distillation_in_progress() || model_.speech_playing()) {
     // When distillation is in progress, the model may have queued up tree
     // updates. In those cases, assume we eventually get to `OnAXTreeDistilled`,
-    // where we re-request `Distill`.
+    // where we re-request `Distill`. When speech is playing, assume it will
+    // eventually stop and call `OnSpeechPlayingStateChanged` where we
+    // re-request `Distill`.
     model_.set_requires_distillation(true);
     return;
   }
@@ -522,6 +524,13 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // If speech is playing, we don't want to redraw and disrupt speech. We will
+  // re-distill once speech pauses.
+  if (model_.speech_playing()) {
+    model_.set_requires_distillation(true);
+    model_.SetDistillationInProgress(false);
+    return;
+  }
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
   // This also includes Read Aloud state.
@@ -798,6 +807,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetCurrentTextEndIndex)
       .SetMethod("getCurrentText", &ReadAnythingAppController::GetCurrentText)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
+      .SetMethod("onSpeechPlayingStateChanged",
+                 &ReadAnythingAppController::OnSpeechPlayingStateChanged)
       .SetMethod("getAccessibleBoundary",
                  &ReadAnythingAppController::GetAccessibleBoundary)
       .SetMethod("movePositionToNextGranularity",
@@ -1582,6 +1593,16 @@ void ReadAnythingAppController::ShouldShowUI() {
       "Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded",
       base::TimeTicks::Now() - web_ui_connected_time_ms_);
   page_handler_factory_->ShouldShowUI();
+}
+
+void ReadAnythingAppController::OnSpeechPlayingStateChanged(bool paused) {
+  model_.set_speech_playing(!paused);
+  if (paused && model_.requires_distillation()) {
+    // TODO: b/40927698 - Do something smarter than completely re-distilling
+    // when the update is small. Right now this resets the speech position to
+    // the beginning which is annoying if the page is mostly the same.
+    Distill();
+  }
 }
 
 int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,

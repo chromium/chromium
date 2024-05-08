@@ -135,6 +135,9 @@ export class FakeReadingMode {
   // shortcuts.
   onCopy() {}
 
+  // Called when speech is paused or played.
+  onSpeechPlayingStateChanged(_paused: boolean) {}
+
   // Called when the Read Anything panel is scrolled.
   onScroll(_onSelection: boolean) {}
 

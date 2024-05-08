@@ -56,6 +56,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->SetDistillationInProgress(distillation);
   }
 
+  void SetSpeechPlaying(bool speech_playing) {
+    model_->set_speech_playing(speech_playing);
+  }
+
   bool AreAllPendingUpdatesEmpty() {
     size_t count = 0;
     for (auto const& [tree_id, updates] :
@@ -661,6 +665,64 @@ TEST_F(ReadAnythingAppModelTest,
   // Send update 1. Since distillation is in progress, this will not be
   // unserialized yet.
   SetDistillationInProgress(true);
+  AccessibilityEventReceived({updates[1]});
+  EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
+
+  // Send update 2. This is still not unserialized yet.
+  AccessibilityEventReceived({updates[2]});
+  EXPECT_EQ(2u, GetNumPendingUpdates(tree_id_));
+
+  // Complete distillation which unserializes the pending updates and distills
+  // them.
+  UnserializePendingUpdates(tree_id_);
+  EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
+  ASSERT_TRUE(AreAllPendingUpdatesEmpty());
+}
+
+TEST_F(ReadAnythingAppModelTest, SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
+  // Set the name of each node to be its id.
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(3);
+  std::vector<int> child_ids;
+  for (int i = 0; i < 3; i++) {
+    int id = i + 2;
+    child_ids.push_back(id);
+    initial_update.nodes[i].id = id;
+    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+  }
+  AccessibilityEventReceived({initial_update});
+
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 3; i++) {
+    int id = i + 5;
+    child_ids.push_back(id);
+
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
+    updates.push_back(update);
+  }
+
+  // Send update 0, which starts distillation.
+  AccessibilityEventReceived({updates[0]});
+  EXPECT_EQ(0u, GetNumPendingUpdates(tree_id_));
+  ASSERT_TRUE(AreAllPendingUpdatesEmpty());
+
+  // Send update 1. Since distillation is in progress, this will not be
+  // unserialized yet.
+  SetSpeechPlaying(true);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ(1u, GetNumPendingUpdates(tree_id_));
 

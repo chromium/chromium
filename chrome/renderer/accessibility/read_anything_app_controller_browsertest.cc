@@ -214,6 +214,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->model_.SetDistillationInProgress(in_progress);
   }
 
+  void OnSpeechPlayingStateChanged(bool paused) {
+    controller_->OnSpeechPlayingStateChanged(paused);
+  }
+
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                bool is_pdf = false) {
     controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId,
@@ -1437,6 +1441,65 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ("Node 4", GetTextContent(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceivedWhileSpeaking) {
+  // Tree starts off with no text content.
+  EXPECT_EQ("", GetTextContent(1));
+  EXPECT_EQ("", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send a new update which settings the text content of node 2.
+  ui::AXTreeUpdate update_1;
+  SetUpdateTreeID(&update_1);
+  ui::AXNodeData start_node;
+  start_node.id = 2;
+  start_node.role = ax::mojom::Role::kStaticText;
+  start_node.SetNameChecked("Hello world");
+  update_1.nodes = {start_node};
+  AccessibilityEventReceived({update_1});
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ("Hello world", GetTextContent(2));
+  EXPECT_EQ("", GetTextContent(3));
+  EXPECT_EQ("", GetTextContent(4));
+
+  // Send three updates while playing.
+  OnSpeechPlayingStateChanged(/* paused= */ false);
+  std::vector<ui::AXTreeUpdate> batch_updates;
+  for (int i = 2; i < 5; i++) {
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    ui::AXNodeData node;
+    node.id = i;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked("Node " + base::NumberToString(i));
+    update.nodes = {node};
+    batch_updates.push_back(update);
+  }
+  AccessibilityEventReceived(batch_updates);
+  // The updates shouldn't be applied yet.
+  EXPECT_EQ("Hello world", GetTextContent(1));
+  EXPECT_EQ("Hello world", GetTextContent(2));
+
+  // Send another update after distillation finishes but before
+  // OnAXTreeDistilled would unserialize the pending updates. Since a11y events
+  // happen asynchronously, they can come between the time distillation finishes
+  // and pending updates are unserialized.
+  OnSpeechPlayingStateChanged(true);
+  ui::AXTreeUpdate update_2;
+  SetUpdateTreeID(&update_2);
+  ui::AXNodeData final_node;
+  final_node.id = 2;
+  final_node.role = ax::mojom::Role::kStaticText;
+  final_node.SetNameChecked("Final update");
+  update_2.nodes = {final_node};
+  AccessibilityEventReceived({update_2});
+
+  EXPECT_EQ("Final updateNode 3Node 4", GetTextContent(1));
+  EXPECT_EQ("Final update", GetTextContent(2));
+  EXPECT_EQ("Node 3", GetTextContent(3));
+  EXPECT_EQ("Node 4", GetTextContent(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   // Create three AXTreeUpdates with three different tree IDs.
   std::vector<ui::AXTreeID> tree_ids = {ui::AXTreeID::CreateNewAXTreeID(),
@@ -1694,6 +1757,91 @@ TEST_F(ReadAnythingAppControllerTest,
   // request distillation (deferred from above) with state
   // `requires_distillation_` from the model.
   EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnAXTreeDistilled({1});
+  EXPECT_EQ("234567", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       SpeechPlaying_TreeUpdateReceivedOnActiveTree) {
+  // Set the name of each node to be its id.
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(3);
+  std::vector<int> child_ids;
+  for (int i = 0; i < 3; i++) {
+    int id = i + 2;
+    child_ids.push_back(id);
+    initial_update.nodes[i].id = id;
+    initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
+  }
+  // No events we care about come about, so there's no distillation.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  AccessibilityEventReceived({initial_update});
+  EXPECT_EQ("234", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  std::vector<ui::AXTreeUpdate> updates;
+  for (int i = 0; i < 3; i++) {
+    int id = i + 5;
+    child_ids.push_back(id);
+
+    ui::AXTreeUpdate update;
+    SetUpdateTreeID(&update);
+    ui::AXNodeData root;
+    root.id = 1;
+    root.child_ids = child_ids;
+
+    ui::AXNodeData node;
+    node.id = id;
+    node.role = ax::mojom::Role::kStaticText;
+    node.SetNameChecked(base::NumberToString(id));
+    update.root_id = root.id;
+    update.nodes = {root, node};
+    updates.push_back(update);
+  }
+
+  // Send update 0. Data gets unserialized.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  AccessibilityEventReceived({updates[0]});
+  EXPECT_EQ("2345", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Send update 1. This triggers distillation via a non-generated event. The
+  // data is also unserialized.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  ui::AXEvent load_complete_1(1, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({updates[1]}, {load_complete_1});
+  EXPECT_EQ("23456", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Send update 2. Distillation is still in progress; we get a non-generated
+  // event. This does not result in distillation (yet). The data is not
+  // unserialized. Speech starts playing
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
+  OnSpeechPlayingStateChanged(/*paused=*/false);
+  AccessibilityEventReceived({updates[2]}, {load_complete_2});
+  EXPECT_EQ("23456", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Complete distillation with speech still playing. This does not result in
+  // distillation (yet). The data is not unserialized
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  OnAXTreeDistilled({1});
+  EXPECT_EQ("23456", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Speech stops. We request distillation (deferred from above)
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnSpeechPlayingStateChanged(/*paused=*/true);
+  EXPECT_EQ("23456", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Complete distillation. The queued up tree update gets unserialized.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
   OnAXTreeDistilled({1});
   EXPECT_EQ("234567", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);

@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {NEXT_GRANULARITY_EVENT, PauseActionSource, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
@@ -70,14 +70,14 @@ suite('Speech', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    speechSynthesis = new FakeSpeechSynthesis();
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    app.synth = speechSynthesis;
     // skip highlighting for these tests as we're just focused on what's spoken
     // and the fake speech synthesis causes problems here
     app.highlightNodes = () => {};
     chrome.readingMode.setContentForTesting(axTree, leafIds);
+    speechSynthesis = new FakeSpeechSynthesis();
+    app.synth = speechSynthesis;
   });
 
   suite('on play', () => {
@@ -104,7 +104,7 @@ suite('Speech', () => {
               utterance => utterance.rate === expectedRate),
           '1');
 
-      speechSynthesis.cancel();
+      speechSynthesis.clearSpokenUtterances();
       expectedRate = 1.5;
       emitEvent(app, RATE_EVENT, {detail: {rate: expectedRate}});
       app.playSpeech();
@@ -114,7 +114,7 @@ suite('Speech', () => {
               utterance => utterance.rate === expectedRate),
           '1.5');
 
-      speechSynthesis.cancel();
+      speechSynthesis.clearSpokenUtterances();
       expectedRate = 4;
       emitEvent(app, RATE_EVENT, {detail: {rate: expectedRate}});
       app.playSpeech();
@@ -135,7 +135,7 @@ suite('Speech', () => {
               utterance => utterance.lang === expectedLang),
           '1');
 
-      speechSynthesis.cancel();
+      speechSynthesis.clearSpokenUtterances();
       expectedLang = 'fr';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
@@ -145,7 +145,7 @@ suite('Speech', () => {
               utterance => utterance.lang === expectedLang),
           '1.5');
 
-      speechSynthesis.cancel();
+      speechSynthesis.clearSpokenUtterances();
       expectedLang = 'zh';
       chrome.readingMode.setLanguageForTesting(expectedLang);
       app.playSpeech();
@@ -180,9 +180,10 @@ suite('Speech', () => {
 
       test('with word boundaries cancels and re-speaks', () => {
         app.wordBoundaryState.mode = WordBoundaryMode.BOUNDARY_DETECTED;
+
         app.playSpeech();
 
-        assertTrue(speechSynthesis.speaking);
+        assertGT(speechSynthesis.spokenUtterances.length, 0);
         assertTrue(speechSynthesis.canceled);
       });
     });
@@ -203,8 +204,9 @@ suite('Speech', () => {
 
   test('previous granularity plays from there', () => {
     chrome.readingMode.initAxPositionWithNode(2);
-
     app.playSpeech();
+    speechSynthesis.clearSpokenUtterances();
+
     emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
 
     assertEquals(speechSynthesis.spokenUtterances.length, 1);
@@ -272,7 +274,7 @@ suite('Speech', () => {
           app, 'select-voice',
           {detail: {selectedVoice: speechSynthesis.getVoices()[1]}});
 
-      assertTrue(speechSynthesis.speaking);
+      assertGT(speechSynthesis.spokenUtterances.length, 0);
       assertTrue(speechSynthesis.canceled);
       assertFalse(speechSynthesis.paused);
     });
@@ -280,7 +282,7 @@ suite('Speech', () => {
     test('rate change cancels and restarts speech', () => {
       emitEvent(app, RATE_EVENT, {detail: {rate: 0.8}});
 
-      assertTrue(speechSynthesis.speaking);
+      assertGT(speechSynthesis.spokenUtterances.length, 0);
       assertTrue(speechSynthesis.canceled);
       assertFalse(speechSynthesis.paused);
     });
@@ -405,12 +407,13 @@ suite('Speech', () => {
       });
 
       test('then resumes speech after voice menu is closed', () => {
+        speechSynthesis.clearSpokenUtterances();
+
         emitEvent(
             app, 'voice-menu-close',
             {detail: {voicePlayingWhenMenuOpened: true}});
 
         assertTrue(speechSynthesis.canceled);
-        assertTrue(speechSynthesis.speaking);
         assertFalse(speechSynthesis.paused);
         assertEquals(
             speechSynthesis.spokenUtterances.length,

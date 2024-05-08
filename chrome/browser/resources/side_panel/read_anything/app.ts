@@ -240,6 +240,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      speechPlayingState: {
+        type: Object,
+        observer: 'onSpeechPlayingStateChanged_',
+      },
+    };
+  }
+
   private startTime = Date.now();
   private constructorTime: number;
 
@@ -621,6 +630,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Each time we rebuild the subtree, we should clear the node id of the
     // first text node.
     this.firstTextNodeSetForReadAloud = null;
+    this.synth.cancel();
+    this.clearReadAloudState();
     const container = this.$.container;
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -1109,6 +1120,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     } else {
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
     }
+  }
+
+  private onSpeechPlayingStateChanged_() {
+    chrome.readingMode.onSpeechPlayingStateChanged(
+        this.speechPlayingState.paused);
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
