@@ -11,6 +11,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -275,6 +276,52 @@ TEST_F(ProfileTokenQualityTest,
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(
       quality2.GetObservationTypesForFieldType(ADDRESS_HOME_CITY).empty());
+}
+
+// Tests that calling `LoadSerializedObservationsForStoredType()` with invalid
+// data doesn't lead to a CHECK() failure. This is important, since the function
+// is called with whatever data is read from disk by `AddressAutofillTable`.
+// The expectation of this test is that it doesn't crash.
+// The `serialized_observations` contain pairs of (observation type, form hash).
+// Since the form hash is a hash, the code performs no validation against it and
+// the test simply uses a hash of 0.
+TEST_F(ProfileTokenQualityTest,
+       LoadSerializedObservationsForStoredType_InvalidData) {
+  AutofillProfile profile = test::GetFullProfile();
+  FieldTypeSet supported_types;
+  profile.GetSupportedTypes(&supported_types);
+
+  // Attempt loading observations for an unsupported type.
+  ASSERT_FALSE(supported_types.contains(ADDRESS_HOME_LANDMARK));
+  std::vector<uint8_t> serialized_observations = {
+      base::to_underlying(ObservationType::kAccepted), 0};
+  profile.token_quality().LoadSerializedObservationsForStoredType(
+      ADDRESS_HOME_LANDMARK, serialized_observations);
+
+  // Attempt loading invalid observation types.
+  serialized_observations = {
+      base::to_underlying(ObservationType::kUnknown), 0,
+      base::to_underlying(ObservationType::kMaxValue) + 1, 0};
+  ASSERT_TRUE(supported_types.contains(NAME_FULL));
+  profile.token_quality().LoadSerializedObservationsForStoredType(
+      NAME_FULL, serialized_observations);
+
+  // Attempt loading more than `kMaxObservationsPerToken` observations.
+  serialized_observations.clear();
+  for (size_t i = 0; i <= ProfileTokenQuality::kMaxObservationsPerToken; ++i) {
+    serialized_observations.push_back(
+        base::to_underlying(ObservationType::kAccepted));
+    serialized_observations.push_back(0);
+  }
+  ASSERT_TRUE(supported_types.contains(ADDRESS_HOME_ZIP));
+  profile.token_quality().LoadSerializedObservationsForStoredType(
+      ADDRESS_HOME_ZIP, serialized_observations);
+
+  // Attempt loading serialized observations of odd size.
+  serialized_observations = {base::to_underlying(ObservationType::kAccepted)};
+  ASSERT_TRUE(supported_types.contains(COMPANY_NAME));
+  profile.token_quality().LoadSerializedObservationsForStoredType(
+      COMPANY_NAME, serialized_observations);
 }
 
 // Tests the dropping of random observations during

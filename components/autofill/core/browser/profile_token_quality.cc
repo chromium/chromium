@@ -297,17 +297,26 @@ std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
 void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
     FieldType type,
     base::span<const uint8_t> serialized_data) {
-  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
+  if (!GetSupportedTypes(*profile_).contains(type)) {
+    // Observations only get stored for supported types. However, due to changes
+    // in the data model, it is possible for types to become unsupported.
+    return;
+  }
   // If the database was modified through external means, the `serialized_data`
-  // might not be valid. In this case, the code won't crash, but it might create
-  // observations with incorrect types.
-  for (size_t i = 0; i + 1 < serialized_data.size(); i += 2) {
+  // might not be valid. Any invalid entries are skipped.
+  for (size_t i = 0; i + 1 < serialized_data.size() &&
+                     observations_.size() < kMaxObservationsPerToken;
+       i += 2) {
+    static_assert(base::to_underlying(ObservationType::kUnknown) == 0);
+    if (serialized_data[i] == 0 ||
+        serialized_data[i] > base::to_underlying(ObservationType::kMaxValue)) {
+      // Invalid data read from disk.
+      continue;
+    }
     AddObservation(
         type,
-        Observation{
-            .type = std::min(serialized_data[i],
-                             base::to_underlying(ObservationType::kMaxValue)),
-            .form_hash = FormSignatureHash(serialized_data[i + 1])});
+        Observation{.type = serialized_data[i],
+                    .form_hash = FormSignatureHash(serialized_data[i + 1])});
   }
 }
 

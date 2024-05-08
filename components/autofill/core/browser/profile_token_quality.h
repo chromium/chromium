@@ -144,7 +144,7 @@ class ProfileTokenQuality {
   // first byte represents the `ObservationType` and the second byte the
   // `FormSignatureHash`.
   // Changing the encoding requires adding migration logic to `AutofillTable`.
-  // Tested by autofill_table_unittest.cc.
+  // Tested partially by autofill_table_unittest.cc.
   std::vector<uint8_t> SerializeObservationsForStoredType(FieldType type) const;
   void LoadSerializedObservationsForStoredType(
       FieldType type,
