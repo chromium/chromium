@@ -16,6 +16,7 @@ namespace ash::file_system_provider {
 struct OpenedCloudFile {
   OpenedCloudFile(const base::FilePath& file_path,
                   OpenFileMode mode,
+                  int request_id,
                   const std::string& version_tag,
                   std::optional<int64_t> bytes_in_cloud);
   ~OpenedCloudFile();
@@ -26,6 +27,10 @@ struct OpenedCloudFile {
 
   // The mode the file was opened with, currently write mode is not supported.
   OpenFileMode mode;
+
+  // The request ID that this opened file is associated with with the underlying
+  // FSP.
+  int request_id = -1;
 
   // The version tag for the opened file (as retrieved via the metadata sent
   // back from OpenFile). This is used to compare against the version tag in the

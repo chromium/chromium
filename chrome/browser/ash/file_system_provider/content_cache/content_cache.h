@@ -64,6 +64,13 @@ class ContentCache {
                                int length,
                                FileErrorCallback callback) = 0;
 
+  // Reads and writes are performed in "chunks". An attempt is made to re-use
+  // open file descriptors to avoid opening/closing them on every chunk request.
+  // This requires any N requests of `StartReadBytes` or `StartWriteBytes` to be
+  // followed by a `CloseFile` to ensure any open file descriptors are properly
+  // cleaned up.
+  virtual void CloseFile(const OpenedCloudFile& file) = 0;
+
   // Load files from the content cache directory and the SQLite database. In the
   // event files have been orphaned (i.e. they are on disk with no DB entry or
   // vice versa) then prune them appropriately.

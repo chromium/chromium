@@ -84,6 +84,7 @@ class MockContentCache : public ContentCache {
                int length,
                FileErrorCallback callback),
               (override));
+  MOCK_METHOD(void, CloseFile, (const OpenedCloudFile& file), (override));
   MOCK_METHOD(void, LoadFromDisk, (base::OnceClosure callback), (override));
   MOCK_METHOD(std::vector<base::FilePath>, GetCachedFilePaths, (), (override));
   MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));

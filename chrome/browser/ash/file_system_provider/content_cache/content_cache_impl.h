@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
@@ -51,6 +52,8 @@ class ContentCacheImpl : public ContentCache {
                        int length,
                        FileErrorCallback callback) override;
 
+  void CloseFile(const OpenedCloudFile& file) override;
+
   void LoadFromDisk(base::OnceClosure callback) override;
 
   std::vector<base::FilePath> GetCachedFilePaths() override;
@@ -67,12 +70,13 @@ class ContentCacheImpl : public ContentCache {
 
   // Called when the database returns an ID that will be used as the file name
   // to write the bytes to disk.
-  void OnFileIdGenerated(
-      base::OnceCallback<base::File::Error(const base::FilePath& path)>
-          write_bytes_callback,
-      FileErrorCallback on_bytes_written_callback,
-      int64_t* inserted_id,
-      bool item_add_success);
+  void OnFileIdGenerated(const OpenedCloudFile& file,
+                         scoped_refptr<net::IOBuffer> buffer,
+                         int64_t offset,
+                         int length,
+                         FileErrorCallback on_bytes_written_callback,
+                         int64_t* inserted_id,
+                         bool item_add_success);
 
   void OnBytesWritten(const base::FilePath& file_path,
                       int64_t offset,
@@ -127,10 +131,19 @@ class ContentCacheImpl : public ContentCache {
   // Generates the absolute path on disk from the supplied `item_id`.
   const base::FilePath GetPathOnDiskFromId(int64_t item_id);
 
+  // A `LocalFile` represents a wrapper around an open FD. We either create a
+  // new `LocalFile` or get the existing one to avoid opening up a new FD for
+  // every chunked read request.
+  LocalFile& GetOrCreateLocalFile(int request_id, const base::FilePath& path);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::FilePath root_dir_;
   ContentLRUCache lru_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // A map of `LocalFile`s that are keyed by the incoming request ID. This is
+  // analogous to a 1:1 mapping of request ID <-> file handle.
+  std::map<int, LocalFile> local_files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   BoundContextDatabase context_db_;

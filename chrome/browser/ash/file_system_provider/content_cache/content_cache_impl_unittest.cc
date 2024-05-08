@@ -73,11 +73,11 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     return buffer;
   }
 
-  void WriteFileToCache(const base::FilePath& path,
-                        const std::string& version_tag,
-                        int chunk_size) {
-    OpenedCloudFile file(path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                         chunk_size);
+  OpenedCloudFile WriteFileToCache(const base::FilePath& path,
+                                   const std::string& version_tag,
+                                   int chunk_size) {
+    OpenedCloudFile file(path, OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
+                         version_tag, chunk_size);
 
     // Create a buffer and ensure there is data in the buffer before writing it
     // to disk.
@@ -88,6 +88,8 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
                                                 /*offset=*/0, chunk_size,
                                                 future.GetCallback()));
     EXPECT_EQ(future.Get(), base::File::FILE_OK);
+
+    return file;
   }
 
   int64_t AddItemToDb(const base::FilePath& fsp_path,
@@ -127,6 +129,8 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
         base::RandBytesAsString(kDefaultChunkSize)));
   }
 
+  int request_id_ = 0;
+
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   base::WeakPtr<ContextDatabase> context_db_;
   std::unique_ptr<ContentCacheImpl> content_cache_;
@@ -136,20 +140,36 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
 
 TEST_F(FileSystemProviderContentCacheImplTest, StartWriteBytes) {
   // Perform initial write to cache of length 512 bytes.
-  WriteFileToCache(base::FilePath("random-path"), /*version_tag=*/"versionA",
-                   kDefaultChunkSize);
+  OpenedCloudFile file =
+      WriteFileToCache(base::FilePath("random-path"),
+                       /*version_tag=*/"versionA", kDefaultChunkSize);
 
   // The first write to the disk should use the database ID as the file name.
-  EXPECT_TRUE(base::PathExists(temp_dir_.GetPath().Append("1")));
+  base::FilePath path = temp_dir_.GetPath().Append("1");
+  EXPECT_TRUE(base::PathExists(path));
   EXPECT_THAT(content_cache_->GetCachedFilePaths(),
               ElementsAre(base::FilePath("random-path")));
+
+  // Contiguous writes should be allowed if re-using the same request ID (which
+  // is stored in the `OpenedCloudFile` returned from above).
+  scoped_refptr<net::IOBuffer> buffer = InitializeBufferWithRandBytes(64);
+  TestFuture<base::File::Error> future;
+  EXPECT_TRUE(content_cache_->StartWriteBytes(file, buffer.get(),
+                                              /*offset=*/kDefaultChunkSize, 64,
+                                              future.GetCallback()));
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
+
+  // Ensure the file on disk is the correct size.
+  base::File::Info info;
+  EXPECT_TRUE(base::GetFileInfo(path, &info));
+  EXPECT_EQ(info.size, kDefaultChunkSize + 64);
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailWithEmptyVersionTag) {
   OpenedCloudFile file(base::FilePath("not-in-cache"),
-                       OpenFileMode::OPEN_FILE_MODE_READ, /*version_tag=*/"",
-                       kDefaultChunkSize);
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
+                       /*version_tag=*/"", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartWriteBytes(file, /*buffer=*/nullptr,
                                                /*offset=*/0, kDefaultChunkSize,
                                                base::DoNothing()));
@@ -165,8 +185,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
   // Try to write to the same file but from offset 1024 which leaves a 512 byte
   // hole in the file, not supported.
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartWriteBytes(
       file, /*buffer=*/nullptr,
       /*offset=*/1024, kDefaultChunkSize, base::DoNothing()));
@@ -182,8 +202,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
   // Try to write to the same file with the exact same version_tag and byte
   // range, this should return false.
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartWriteBytes(file, /*buffer=*/nullptr,
                                                /*offset=*/0, kDefaultChunkSize,
                                                base::DoNothing()));
@@ -205,8 +225,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_EQ(content_cache_->GetCachedFilePaths().size(), 0U);
 
   // Cannot write to the file in its evicted state.
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartWriteBytes(file, /*buffer=*/nullptr,
                                                /*offset=*/0, kDefaultChunkSize,
                                                base::DoNothing()));
@@ -232,7 +252,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailIfMultipleWritersAttemptToWriteAtOnce) {
   OpenedCloudFile file(base::FilePath("random-path"),
-                       OpenFileMode::OPEN_FILE_MODE_READ,
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
                        /*version_tag=*/"versionA", kDefaultChunkSize * 2);
   TestFuture<base::File::Error> future;
   scoped_refptr<net::IOBufferWithSize> buffer =
@@ -270,7 +290,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
   // Expect third insertion to succeed, with size of `kDefaultChunkSize` * 3.
   OpenedCloudFile file3(base::FilePath("random-path3"),
-                        OpenFileMode::OPEN_FILE_MODE_READ,
+                        OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
                         /*version_tag=*/"versionA", kDefaultChunkSize * 3);
   TestFuture<base::File::Error> future;
   scoped_refptr<net::IOBufferWithSize> buffer =
@@ -283,7 +303,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   // Oldest file (i.e. `random-path1`) should be evicted now and thus
   // `StartWriteBytes` should return false.
   OpenedCloudFile file1(base::FilePath("random-path1"),
-                        OpenFileMode::OPEN_FILE_MODE_READ,
+                        OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
                         /*version_tag=*/"versionA", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartWriteBytes(
       file1, /*buffer=*/nullptr,
@@ -303,8 +323,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 TEST_F(FileSystemProviderContentCacheImplTest,
        StartReadBytesShouldFailOnFirstRead) {
   OpenedCloudFile file(base::FilePath("not-in-cache"),
-                       OpenFileMode::OPEN_FILE_MODE_READ, /*version_tag=*/"",
-                       kDefaultChunkSize);
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
+                       /*version_tag=*/"", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
@@ -318,6 +338,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
   // Attempt to read from the cache the same file with `versionB`.
   OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_,
                        /*version_tag=*/"versionB", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
@@ -330,8 +351,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   const std::string version_tag("versionA");
   WriteFileToCache(fsp_path, version_tag, kDefaultChunkSize);
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> future;
@@ -351,8 +372,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   const std::string version_tag("versionA");
   WriteFileToCache(fsp_path, version_tag, kDefaultChunkSize);
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> future;
@@ -369,8 +390,8 @@ TEST_F(
   const std::string version_tag("versionA");
   WriteFileToCache(fsp_path, version_tag, /*chunk_size=*/49);
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       49);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, 49);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> future;
@@ -401,8 +422,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   // possibly from a previously interrupted write to the cache).
   WriteFileToCache(fsp_path, version_tag, kDefaultChunkSize);
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize + 128);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize + 128);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> future;
@@ -435,8 +456,8 @@ TEST_F(
   // possibly from a previously interrupted write to the cache).
   WriteFileToCache(fsp_path, version_tag, 576);
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       640);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, 640);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> future;
@@ -477,8 +498,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   content_cache_->LoadFromDisk(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   TestFuture<int, bool, base::File::Error> read_bytes_future;
@@ -528,7 +549,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_FALSE(base::PathExists(path_on_disk));
 
   OpenedCloudFile file(base::FilePath("/test.txt"),
-                       OpenFileMode::OPEN_FILE_MODE_READ,
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
                        /*version_tag=*/"versionA", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
@@ -545,8 +566,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   content_cache_->LoadFromDisk(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
-                       kDefaultChunkSize);
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, version_tag, kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
@@ -566,7 +587,7 @@ TEST_F(FileSystemProviderContentCacheImplTest, RemoveItemsRemovesEvictedFiles) {
   // The evicted item should not be readable again (despite being
   // in the cache).
   OpenedCloudFile file(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
-                       "versionA", kDefaultChunkSize);
+                       ++request_id_, "versionA", kDefaultChunkSize);
   EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
@@ -619,12 +640,12 @@ TEST_F(FileSystemProviderContentCacheImplTest, OldestFilesAreEvictedOnResize) {
   // The evicted items should not be readable again (despite being
   // in the cache).
   OpenedCloudFile file1(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", random_path1_size);
+                        ++request_id_, "versionA", random_path1_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file1, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
   OpenedCloudFile file2(random_path2, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", random_path2_size);
+                        ++request_id_, "versionA", random_path2_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file2, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
@@ -668,12 +689,12 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   // The evicted items should not be readable again (despite being
   // in the cache).
   OpenedCloudFile file1(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", random_path1_size);
+                        ++request_id_, "versionA", random_path1_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file1, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
   OpenedCloudFile file3(random_path3, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", random_path3_size);
+                        ++request_id_, "versionA", random_path3_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file3, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));

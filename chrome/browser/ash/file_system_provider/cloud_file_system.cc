@@ -554,10 +554,10 @@ void CloudFileSystem::OnOpenFileCompleted(
           << "', metadata = " << metadata.get() << "}";
 
   if (result == base::File::FILE_OK) {
-    opened_files_.try_emplace(
-        file_handle,
-        OpenedCloudFile(file_path, mode, GetVersionTag(metadata.get()),
-                        GetCloudSize(metadata.get())));
+    opened_files_.try_emplace(file_handle,
+                              OpenedCloudFile(file_path, mode, file_handle,
+                                              GetVersionTag(metadata.get()),
+                                              GetCloudSize(metadata.get())));
   } else if (result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(file_path);
@@ -571,7 +571,10 @@ void CloudFileSystem::OnCloseFileCompleted(
     base::File::Error result) {
   // Closing is always final. Even if an error happened, we remove it from the
   // list of opened files.
-  opened_files_.erase(file_handle);
+  const auto& opened_file = opened_files_.extract(file_handle);
+  if (content_cache_) {
+    content_cache_->CloseFile(opened_file.mapped());
+  }
   std::move(callback).Run(result);
 }
 

@@ -19,47 +19,13 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/io_buffer.h"
 
 namespace ash::file_system_provider {
 
 namespace {
-
-base::File::Error WriteBytesBlocking(scoped_refptr<net::IOBuffer> buffer,
-                                     int64_t offset,
-                                     int length,
-                                     const base::FilePath& path) {
-  VLOG(2) << "WriteBytesBlocking: {path = '" << path << "', offset = '"
-          << offset << "', length = '" << length << "'}";
-
-  // TODO(b/331275523): We should cache this writer fd to avoid opening a new
-  // one on every write.
-  base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
-  if (file.Write(offset, buffer->data(), length) != length) {
-    return base::File::FILE_ERROR_FAILED;
-  }
-
-  return base::File::FILE_OK;
-}
-
-FileErrorOrBytesRead ReadBytesBlocking(const base::FilePath& path,
-                                       scoped_refptr<net::IOBuffer> buffer,
-                                       int64_t offset,
-                                       int length) {
-  // TODO(b/331275058): We should probably cache these readers to avoid opening
-  // an FD for every read that we make.
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  int bytes_read = file.Read(offset, buffer->data(), length);
-  if (bytes_read < 0) {
-    return base::unexpected(base::File::FILE_ERROR_FAILED);
-  }
-
-  VLOG(2) << "ReadBytesBlocking: {bytes_read = '" << bytes_read
-          << "', file.GetLength = '" << file.GetLength() << "', offset = '"
-          << offset << "', length = '" << length << "'}";
-  return bytes_read;
-}
 
 std::map<int, CacheFileContext> GetIdFromCachedFiles(
     const base::FilePath& cache_directory) {
@@ -331,13 +297,13 @@ bool ContentCacheImpl::StartReadBytes(
   VLOG(1) << "Cache hit: Range {offset = '" << offset << "', length = '"
           << length << "', bytes_on_disk = '" << ctx.bytes_on_disk
           << "'} is available";
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromId(ctx.id),
-                     base::WrapRefCounted(buffer), offset, length),
-      base::BindOnce(&ContentCacheImpl::OnBytesRead,
-                     weak_ptr_factory_.GetWeakPtr(), file.file_path,
-                     std::move(callback)));
+
+  LocalFile& local_file =
+      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id));
+  local_file.ReadBytes(base::WrapRefCounted(buffer), offset, length,
+                       base::BindOnce(&ContentCacheImpl::OnBytesRead,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      file.file_path, std::move(callback)));
 
   return true;
 }
@@ -413,8 +379,6 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
   }
   ctx.in_progress_writer = true;
 
-  auto write_bytes_callback = base::BindOnce(
-      &WriteBytesBlocking, base::WrapRefCounted(buffer), offset, length);
   auto on_bytes_written_callback = base::BindOnce(
       &ContentCacheImpl::OnBytesWritten, weak_ptr_factory_.GetWeakPtr(),
       file.file_path, offset, length, std::move(callback));
@@ -425,29 +389,39 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
     context_db_.AsyncCall(&ContextDatabase::AddItem)
         .WithArgs(file.file_path, file.version_tag, ctx.accessed_time, &ctx.id)
         .Then(base::BindOnce(&ContentCacheImpl::OnFileIdGenerated,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(write_bytes_callback),
+                             weak_ptr_factory_.GetWeakPtr(), file,
+                             base::WrapRefCounted(buffer), offset, length,
                              std::move(on_bytes_written_callback), &ctx.id));
   } else {
     // The ID has already been created and is known on disk, bypass generating
     // the ID and simply start writing to the file.
-    io_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(std::move(write_bytes_callback),
-                       GetPathOnDiskFromId(ctx.id)),
-        std::move(on_bytes_written_callback));
+    LocalFile& local_file =
+        GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id));
+    local_file.WriteBytes(base::WrapRefCounted(buffer), offset, length,
+                          std::move(on_bytes_written_callback));
   }
 
-  VLOG(1) << "Conditions satisified, starting to write file to disk";
   return true;
 }
 
+void ContentCacheImpl::CloseFile(const OpenedCloudFile& file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (auto it = local_files_.find(file.request_id); it != local_files_.end()) {
+    it->second.Close(base::DoNothing());
+  }
+}
+
 void ContentCacheImpl::OnFileIdGenerated(
-    base::OnceCallback<base::File::Error(const base::FilePath& path)>
-        write_bytes_callback,
+    const OpenedCloudFile& file,
+    scoped_refptr<net::IOBuffer> buffer,
+    int64_t offset,
+    int length,
     FileErrorCallback on_bytes_written_callback,
     int64_t* inserted_id,
     bool item_add_success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!item_add_success) {
     LOG(ERROR) << "Failed to add item to the database";
     std::move(on_bytes_written_callback).Run(base::File::FILE_ERROR_FAILED);
@@ -456,11 +430,10 @@ void ContentCacheImpl::OnFileIdGenerated(
 
   DCHECK(inserted_id);
   DCHECK_GT(*inserted_id, 0);
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(std::move(write_bytes_callback),
-                     GetPathOnDiskFromId(*inserted_id)),
-      std::move(on_bytes_written_callback));
+  LocalFile& local_file =
+      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(*inserted_id));
+  local_file.WriteBytes(buffer, offset, length,
+                        std::move(on_bytes_written_callback));
 }
 
 void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
@@ -599,6 +572,16 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
     }
   }
   return cached_file_paths;
+}
+
+LocalFile& ContentCacheImpl::GetOrCreateLocalFile(int request_id,
+                                                  const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto [cached_file, inserted] =
+      local_files_.try_emplace(request_id, path, io_task_runner_);
+  VLOG_IF(1, !inserted) << "Re-using cached file descriptor {request_id = '"
+                        << request_id << "', path = '" << path << "'}";
+  return cached_file->second;
 }
 
 }  // namespace ash::file_system_provider
