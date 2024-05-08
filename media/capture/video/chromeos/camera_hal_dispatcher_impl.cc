@@ -293,10 +293,9 @@ bool CameraHalDispatcherImpl::Start() {
   CreateEnableDisableFile(
       kForceEnableSuperResPath, kForceDisableSuperResPath,
       /*should_enable=*/
-      command_line->GetSwitchValueASCII(switches::kCameraSuperResOverride) ==
-          switches::kCameraSuperResForceEnabled,
-      /*should_remove_both=*/
-      !command_line->HasSwitch(media::switches::kCameraSuperResOverride));
+      command_line->GetSwitchValueASCII(switches::kCameraSuperResOverride) !=
+          switches::kCameraSuperResForceDisabled,
+      /*should_remove_both=*/false);
 
   base::WaitableEvent started;
   // It's important we generate tokens before creating the socket, because
