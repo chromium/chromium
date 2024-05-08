@@ -18,10 +18,12 @@ html {
   --sidebar-width: 256px;
   --cr-toolbar-field-width: 680px;
   --paper-grey-300: #e0e0e0;
+  --panel-icon-color: var(--google-grey-700);
 }
 
 @media (prefers-color-scheme: dark) {
   html {
+    --panel-icon-color: var(--google-grey-500);
     --review-panel-icon-color: var(--google-grey-500); /* #323639 */
     --error-color: var(--google-red-300);
     --warning-color: var(--google-yellow-300);

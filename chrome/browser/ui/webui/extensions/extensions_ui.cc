@@ -334,8 +334,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"noSitesAdded", IDS_EXTENSIONS_NO_SITES_ADDED},
       {"editShortcutInputLabel", IDS_EXTENSIONS_EDIT_SHORTCUT_INPUT_LABEL},
       {"editShortcutButtonLabel", IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL},
-      {"mv2DeprecationPanelWarningHeader",
-       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_TITLE},
+      {"mv2DeprecationPanelDismissButton",
+       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISMISS_BUTTON},
       {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
       {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
       {"shortcutScopeLabel", IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL},
@@ -525,6 +525,12 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                                             IDS_EXTENSIONS_SC_DESCRIPTION);
   plural_string_handler->AddLocalizedString("safetyCheckAllDoneForNow",
                                             IDS_EXTENSIONS_SC_ALL_DONE_FOR_NOW);
+  plural_string_handler->AddLocalizedString(
+      "mv2DeprecationPanelWarningHeader",
+      IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_HEADER);
+  plural_string_handler->AddLocalizedString(
+      "mv2DeprecationPanelWarningSubtitle",
+      IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

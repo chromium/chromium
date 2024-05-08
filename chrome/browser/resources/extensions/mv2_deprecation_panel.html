@@ -1,5 +1,49 @@
-<style include="shared-style"></style>
+<style include="cr-shared-style shared-style">
+  .cr-row {
+    padding: 0;
+  }
+
+  .cr-row.first {
+    padding-top: 5px;
+  }
+
+  .header {
+    align-items: center;
+    display: flex;
+  }
+
+  .header-text {
+    padding-inline-start: 20px;
+  }
+
+  .header-text h3 {
+    margin: 5px 0 3px 0;
+    font-weight: 400;
+  }
+
+  .header-icon {
+    align-items: center;
+    fill: var(--review-panel-icon-color);
+  }
+
+  .header-button {
+    margin-inline-start: auto;
+  }
+</style>
 
 <div class="panel-background" id="panelContainer">
-  $i18n{mv2DeprecationPanelWarningHeader}
+  <div class="header cr-row first">
+    <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+        class="header-icon">
+    </iron-icon>
+    <div class="header-text">
+      <h3 id="headingText">[[headerString_]]</h3>
+      <div class="cr-secondary-text"
+          inner-h-t-m-l="[[getSubtitleString_(subtitleString_)]]">
+      </div>
+    </div>
+    <cr-button class="header-button">
+      $i18n{mv2DeprecationPanelDismissButton}
+    </cr-button>
+  </div>
 </div>

@@ -599,8 +599,20 @@
     More actions for <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
   </message>
   <!-- Extensions Manifest V2 Deprecation Panel strings -->
-  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_TITLE" desc="The label in the manifest v2 deprecation panel.">
-    These extensions may soon no longer be supported
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the warning stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {This extension may soon no longer be suported}
+      other {These extensions may soon no longer be supported}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the warning stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href='https://chromewebstore.google.com/category/extensions'&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISMISS_BUTTON" desc="The label for a button to dismiss the manifest v2 deprecation panel">
+    Got it
   </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
