@@ -9,8 +9,8 @@
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
@@ -32,6 +32,8 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
       base::optional_ref<const ui::DataTransferEndpoint> data_src,
       base::optional_ref<const ui::DataTransferEndpoint> data_dst) = 0;
 
+  void DeleteWidget(views::Widget* widget);
+
  protected:
   // Virtual for tests to override.
   virtual void ShowBlockBubble(const std::u16string& text);
@@ -48,7 +50,7 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  views::UniqueWidgetPtr widget_;
+  std::unique_ptr<views::Widget> widget_;
 
  private:
   void InitWidget();
@@ -58,6 +60,8 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
                            int timeout_duration_ms);
 
   base::OneShotTimer widget_closing_timer_;
+
+  std::unique_ptr<views::WidgetDelegate> widget_delegate_;
 };
 
 }  // namespace policy
