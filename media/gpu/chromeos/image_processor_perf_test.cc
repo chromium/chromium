@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -179,18 +181,41 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     mapped_frame = frame;
   }
 
-  uint8_t* y_plane = mapped_frame->GetWritableVisibleData(VideoFrame::kYPlane);
-  uint8_t* uv_plane =
-      mapped_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+  uint8_t* y_plane_ptr =
+      mapped_frame->GetWritableVisibleData(VideoFrame::kYPlane);
   const auto y_plane_stride = mapped_frame->stride(VideoFrame::kYPlane);
-  for (int row = 0; row < size.height(); row++, y_plane += y_plane_stride) {
-    base::RandBytes(y_plane, size.width());
-  }
+  base::span<uint8_t> y_plane =
+      // TODO(crbug.com/338570700): VideoFrame should return spans instead of
+      // unbounded pointers.
+      UNSAFE_BUFFERS(base::span(
+          y_plane_ptr,
+          y_plane_stride *
+              base::checked_cast<size_t>(mapped_frame->coded_size().height())));
 
+  uint8_t* uv_plane_ptr =
+      mapped_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
   const auto uv_plane_stride = mapped_frame->stride(VideoFrame::kUVPlane);
-  for (int row = 0; row < size.height() / 2;
-       row++, uv_plane += uv_plane_stride) {
-    base::RandBytes(uv_plane, size.width());
+  base::span<uint8_t> uv_plane =
+      // TODO(crbug.com/338570700): VideoFrame should return spans instead of
+      // unbounded pointers. Note: Elsewhere the `height / 2` is rounded up, but
+      // here it is not.
+      UNSAFE_BUFFERS(base::span(
+          uv_plane_ptr,
+          uv_plane_stride *
+              base::checked_cast<size_t>(mapped_frame->coded_size().height()) /
+              2u));
+  const auto width =
+      base::checked_cast<size_t>(mapped_frame->coded_size().width());
+
+  for (int row = 0; row < size.height(); row++) {
+    auto [row_bytes, rem] = y_plane.split_at(y_plane_stride);
+    base::RandBytes(row_bytes.first(width));
+    y_plane = rem;
+  }
+  for (int row = 0; row < size.height() / 2; row++) {
+    auto [row_bytes, rem] = uv_plane.split_at(uv_plane_stride);
+    base::RandBytes(row_bytes.first(width));
+    uv_plane = rem;
   }
 
   return frame;
