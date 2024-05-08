@@ -1222,6 +1222,11 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "model_validation_tests_light",
+    label = "//components/optimization_guide/internal/testing:model_validation_tests_light",
+)
+
+targets.binaries.generated_script(
     name = "module_installer_junit_tests",
     label = "//components/module_installer/android:module_installer_junit_tests",
 )
@@ -1343,6 +1348,11 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ondevice_stability_tests",
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests",
+)
+
+targets.binaries.generated_script(
+    name = "ondevice_stability_tests_light",
+    label = "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
 )
 
 targets.binaries.console_test_launcher(

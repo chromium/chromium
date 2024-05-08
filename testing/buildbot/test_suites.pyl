@@ -4296,6 +4296,17 @@
       'minidump_uploader_test': {},
     },
 
+    'model_validation_tests_light_suite': {
+      'model_validation_tests_light': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--out_dir=.',
+        ],
+      },
+    },
+
     'model_validation_tests_suite': {
       'model_validation_tests': {
         'mixins': [
@@ -4531,6 +4542,11 @@
           'chromedriver.exe',
           '--binary',
           'Chrome.exe',
+        ],
+      },
+      'ondevice_stability_tests_light': {
+        'mixins': [
+          'has_native_resultdb_integration',
         ],
       },
     },
@@ -7626,6 +7642,7 @@
     },
 
     'optimization_guide_desktop_script_tests': {
+      'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {
         'variants': [
           'MODEL_VALIDATION_BASE',
@@ -7651,6 +7668,11 @@
     },
 
     'optimization_guide_linux_script_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
       'model_validation_tests_suite': {
         'mixins': [
           'gce',
@@ -7690,6 +7712,11 @@
     },
 
     'optimization_guide_win_script_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+      },
       'model_validation_tests_suite': {
         'mixins': [
           'gce',

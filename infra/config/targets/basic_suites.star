@@ -4166,6 +4166,20 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "model_validation_tests_light_suite",
+    tests = {
+        "model_validation_tests_light": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--out_dir=.",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "model_validation_tests_suite",
     tests = {
         "model_validation_tests": targets.legacy_test_config(
@@ -4399,6 +4413,11 @@ targets.legacy_basic_suite(
                 "chromedriver.exe",
                 "--binary",
                 "Chrome.exe",
+            ],
+        ),
+        "ondevice_stability_tests_light": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
             ],
         ),
     },

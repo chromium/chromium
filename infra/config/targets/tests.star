@@ -1471,6 +1471,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "model_validation_tests_light",
+)
+
+targets.tests.isolated_script_test(
     name = "module_installer_junit_tests",
 )
 
@@ -1590,6 +1594,10 @@ targets.tests.isolated_script_test(
 
 targets.tests.isolated_script_test(
     name = "ondevice_stability_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "ondevice_stability_tests_light",
 )
 
 targets.tests.gtest_test(

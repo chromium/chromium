@@ -1501,6 +1501,7 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
+        "model_validation_tests_light_suite": None,
         "ondevice_quality_tests_suite": None,
         "ondevice_stability_tests_suite": None,
     },
@@ -1534,6 +1535,11 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
             ],
         ),
         "ondevice_quality_tests_suite": targets.legacy_matrix_config(
@@ -1579,6 +1585,11 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
+            ],
+        ),
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
             ],
         ),
         "ondevice_quality_tests_suite": targets.legacy_matrix_config(
