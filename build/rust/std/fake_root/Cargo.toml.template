@@ -17,6 +17,7 @@ features = [
 ]
 
 [dependencies.compiler_builtins]
+version = "*"
 features = ["weak-intrinsics"]
 
 [patch.crates-io]
