@@ -173,29 +173,35 @@ void SearchResultImageView::OnMetadataChanged() {
   GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
-  if (!result() || result()->icon().icon.IsEmpty()) {
+  if (!result()) {
     result_image_->SetVisible(false);
-    if (result() && !pulsing_block_view_) {
-      CreatePulsingBlockView();
-    }
-
     return;
   }
 
-  result_image_->SetVisible(true);
-  if (pulsing_block_view_) {
-    RemoveChildViewT(pulsing_block_view_.get());
-    pulsing_block_view_ = nullptr;
+  const bool has_icon = !result()->icon().icon.IsEmpty();
+  result_image_->SetVisible(has_icon);
+  if (!has_icon || result()->icon().is_placeholder) {
+    if (!pulsing_block_view_) {
+      CreatePulsingBlockView();
+    }
+  } else {
+    if (pulsing_block_view_) {
+      RemoveChildViewT(pulsing_block_view_.get());
+      pulsing_block_view_ = nullptr;
+    }
   }
 
-  gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());
-  if (!GetContentsBounds().IsEmpty()) {
-    image = gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
-  }
+  if (has_icon) {
+    gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());
+    if (!GetContentsBounds().IsEmpty()) {
+      image = gfx::ImageSkiaOperations::CreateResizedImage(
+          image, skia::ImageOperations::RESIZE_BEST,
+          GetContentsBounds().size());
+    }
 
-  result_image_->SetImageModel(views::Button::STATE_NORMAL,
-                               ui::ImageModel::FromImageSkia(image));
+    result_image_->SetImageModel(views::Button::STATE_NORMAL,
+                                 ui::ImageModel::FromImageSkia(image));
+  }
   SetTooltipText(result()->title());
 }
 

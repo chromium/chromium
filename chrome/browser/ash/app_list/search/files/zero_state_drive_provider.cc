@@ -179,7 +179,7 @@ void ZeroStateDriveProvider::SetSearchResults(
         result.id, result.file_path, result.prediction_reason,
         ash::AppListSearchResultType::kZeroStateDrive,
         ash::SearchResultDisplayType::kContinue, score, std::u16string(),
-        FileResult::Type::kFile, profile_);
+        FileResult::Type::kFile, profile_, /*thumbnail_loader=*/nullptr);
     if (result.modified_time) {
       provider_result->SetContinueFileSuggestionType(
           ash::ContinueFileSuggestionType::kModifiedByCurrentUserDrive);

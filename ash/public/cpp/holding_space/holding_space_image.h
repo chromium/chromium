@@ -96,6 +96,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // the same, and old representations are thus still valid.
   void UpdateBackingFilePath(const base::FilePath& file_path);
 
+  // Whether the image currently uses the placeholder image skia. True if no
+  // bitmaps have been successfully resolved.
+  bool UsingPlaceholder() const;
+
   // Fires the image invalidation timer if it's currently running.
   bool FireInvalidateTimerForTesting();
 

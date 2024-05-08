@@ -34,7 +34,7 @@ class ThumbnailLoader {
   explicit ThumbnailLoader(Profile* profile);
   ThumbnailLoader(const ThumbnailLoader&) = delete;
   ThumbnailLoader& operator=(const ThumbnailLoader&) = delete;
-  ~ThumbnailLoader();
+  virtual ~ThumbnailLoader();
 
   // Thumbnail request data that will be forwarded to the image loader.
   struct ThumbnailRequest {
@@ -55,7 +55,7 @@ class ThumbnailLoader {
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
   // Starts a request for a thumbnail. `callback` called with the generated
   // bitmap. On error, the bitmap will be null.
-  void Load(const ThumbnailRequest& request, ImageCallback callback);
+  virtual void Load(const ThumbnailRequest& request, ImageCallback callback);
 
  private:
   class ThumbnailDecoder;

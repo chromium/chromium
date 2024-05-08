@@ -522,7 +522,8 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo(ui::ImageModel icon, int dimension);
   SearchResultIconInfo(ui::ImageModel icon,
                        int dimension,
-                       SearchResultIconShape shape);
+                       SearchResultIconShape shape,
+                       bool is_placeholder = false);
 
   SearchResultIconInfo(const SearchResultIconInfo&);
 
@@ -537,6 +538,10 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
 
   // The shape to mask the icon with. Only used by the results list view.
   SearchResultIconShape shape = SearchResultIconShape::kDefault;
+
+  // Whether the icon is used as a placeholder while the final icon is being
+  // loaded.
+  bool is_placeholder = false;
 };
 
 // Data required for System Info Answer Card result type.

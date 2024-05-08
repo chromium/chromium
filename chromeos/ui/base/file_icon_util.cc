@@ -401,8 +401,10 @@ gfx::ImageSkia GetIconFromType(const std::string& icon_type,
                                    dark_background, std::nullopt);
 }
 
-gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {
-  return GetVectorIconFromIconType(icon_type, dark_background, std::nullopt);
+gfx::ImageSkia GetIconFromType(IconType icon_type,
+                               bool dark_background,
+                               std::optional<int> dip_size) {
+  return GetVectorIconFromIconType(icon_type, dark_background, dip_size);
 }
 
 SkColor GetIconColorForPath(const base::FilePath& filepath,

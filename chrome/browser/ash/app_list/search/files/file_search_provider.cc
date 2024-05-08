@@ -225,8 +225,7 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
       /*id=*/kFileSearchSchema + path.path.value(), path.path, parent_dir_name,
       ash::AppListSearchResultType::kFileSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
-      profile_);
-  result->RequestThumbnail(&thumbnail_loader_);
+      profile_, &thumbnail_loader_);
   return result;
 }
 

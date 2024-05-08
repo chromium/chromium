@@ -223,7 +223,7 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
       /*id=*/kDriveSearchSchema + reparented_path.value(), reparented_path,
       details, ash::AppListSearchResultType::kDriveSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
-      profile_);
+      profile_, /*thumbnail_loader=*/nullptr);
   result->set_drive_id(GetDriveId(url));
   result->set_url(url);
   return result;

@@ -258,11 +258,18 @@ SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon, int dimension)
 
 SearchResultIconInfo::SearchResultIconInfo(ui::ImageModel icon,
                                            int dimension,
-                                           SearchResultIconShape shape)
-    : icon(icon), dimension(dimension), shape(shape) {}
+                                           SearchResultIconShape shape,
+                                           bool is_placeholder)
+    : icon(icon),
+      dimension(dimension),
+      shape(shape),
+      is_placeholder(is_placeholder) {}
 
 SearchResultIconInfo::SearchResultIconInfo(const SearchResultIconInfo& other)
-    : icon(other.icon), dimension(other.dimension), shape(other.shape) {}
+    : icon(other.icon),
+      dimension(other.dimension),
+      shape(other.shape),
+      is_placeholder(other.is_placeholder) {}
 
 SearchResultIconInfo::~SearchResultIconInfo() = default;
 

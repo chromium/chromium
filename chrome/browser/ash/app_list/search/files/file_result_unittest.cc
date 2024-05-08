@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/image_util.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -25,6 +28,10 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 
 namespace app_list::test {
 
@@ -47,6 +54,38 @@ constexpr uint8_t kJpegData[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xda, 0x00, 0x08,
     0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, 0x37, 0xff, 0xd9};
 constexpr int kJpegDataSize = sizeof(kJpegData);
+
+class TestThumbnailLoader : public ash::ThumbnailLoader {
+ public:
+  explicit TestThumbnailLoader(const base::FilePath& expected_path)
+      : ash::ThumbnailLoader(nullptr), expected_path_(expected_path) {}
+
+  TestThumbnailLoader(const TestThumbnailLoader&) = delete;
+  TestThumbnailLoader& operator=(const TestThumbnailLoader&) = delete;
+  ~TestThumbnailLoader() override = default;
+
+  // ash::ThumbnailLoader:
+  void Load(const ThumbnailRequest& request, ImageCallback callback) override {
+    EXPECT_EQ(gfx::Size(kThumbnailDimension, kThumbnailDimension),
+              request.size);
+    EXPECT_EQ(expected_path_, request.file_path);
+    ASSERT_FALSE(pending_callback_);
+    pending_callback_ = std::move(callback);
+  }
+
+  void RespondToPendingRequest(const SkBitmap* bitmap,
+                               base::File::Error error) {
+    ASSERT_TRUE(pending_callback_);
+    std::move(pending_callback_).Run(bitmap, error);
+  }
+
+  bool HasPendingRequest() const { return !!pending_callback_; }
+
+ private:
+  const base::FilePath expected_path_;
+  ImageCallback pending_callback_;
+};
+
 }  // namespace
 
 class FileResultTest : public testing::Test {
@@ -85,7 +124,7 @@ TEST_F(FileResultTest, CheckMetadata) {
       /*id=*/"zero_state_file://" + path.value(), path, u"some details",
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
+      FileResult::Type::kFile, profile_.get(), nullptr);
   EXPECT_EQ(base::UTF16ToUTF8(result.title()),
             std::string("MIXED_case_FILE.Pdf"));
   EXPECT_EQ(result.details(), u"some details");
@@ -101,13 +140,13 @@ TEST_F(FileResultTest, HostedExtensionsIgnored) {
       /*id=*/"zero_state_file://" + path1.value(), path1, std::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
+      FileResult::Type::kFile, profile_.get(), nullptr);
   const base::FilePath path2("my/Map.gmaps");
   FileResult result_2(
       /*id=*/"zero_state_file://" + path2.value(), path2, std::nullopt,
       ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
+      FileResult::Type::kFile, profile_.get(), nullptr);
 
   EXPECT_EQ(base::UTF16ToUTF8(result_1.title()), std::string("Document"));
   EXPECT_EQ(base::UTF16ToUTF8(result_2.title()), std::string("Map"));
@@ -131,39 +170,88 @@ TEST_F(FileResultTest, PenalizeScore) {
 }
 
 TEST_F(FileResultTest, Icons) {
-  const base::FilePath excelPath("/my/test/mySheet.xlsx");
-  FileResult fileResult(
-      /*id=*/"zero_state_file://" + excelPath.value(), excelPath,
-      u"some details", ash::AppListSearchResultType::kZeroStateFile,
-      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
-  EXPECT_TRUE(fileResult.chip_icon().isNull());
-  EXPECT_FALSE(fileResult.icon().icon.IsEmpty());
-  EXPECT_EQ(fileResult.icon().dimension, kSystemIconDimension);
-  EXPECT_EQ(fileResult.icon().icon, ui::ImageModel::FromVectorIcon(
-                                        chromeos::GetIconForPath(excelPath)));
+  struct TestCase {
+    const std::string description;
+    const std::string path;
+    const FileResult::Type type;
+    const chromeos::IconType expected_placeholder;
+    base::File::Error thumbnail_load_result;
+  } kTestCases[] = {
+      {"file", "/my/test/mySheet.xlsx", FileResult::Type::kFile,
+       chromeos::IconType::kExcel, base::File::FILE_ERROR_FAILED},
+      {"file with  thumbnail", "/my/test/myPicture.jpeg",
+       FileResult::Type::kFile, chromeos::IconType::kImage,
+       base::File::FILE_OK},
+      {"regular folder", "/my/test/Maps", FileResult::Type::kDirectory,
+       chromeos::IconType::kFolder, base::File::FILE_ERROR_NOT_A_FILE},
+      {"shared folder", "/my/test/shared/Maps",
+       FileResult::Type::kSharedDirectory, chromeos::IconType::kFolderShared,
+       base::File::FILE_ERROR_NOT_A_FILE}};
 
-  const base::FilePath folderPath("my/Maps");
-  FileResult folderResult(
-      /*id=*/"zero_state_file://" + folderPath.value(), folderPath,
-      std::nullopt, ash::AppListSearchResultType::kZeroStateFile,
-      ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kDirectory, profile_.get());
-  EXPECT_TRUE(folderResult.chip_icon().isNull());
-  EXPECT_EQ(folderResult.icon().dimension, kSystemIconDimension);
-  EXPECT_EQ(folderResult.icon().icon, ui::ImageModel::FromVectorIcon(
-                                          chromeos::GetIconFromType("folder")));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
 
-  const base::FilePath sharedPath("my/Shared");
-  FileResult sharedResult(
-      /*id=*/"zero_state_file://" + sharedPath.value(), sharedPath,
-      std::nullopt, ash::AppListSearchResultType::kZeroStateFile,
+    TestThumbnailLoader thumbnail_loader(base::FilePath(test_case.path));
+    FileResult result(
+        /*id=*/"zero_state_file://" + test_case.path,
+        base::FilePath(test_case.path), u"some details",
+        ash::AppListSearchResultType::kZeroStateFile,
+        ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
+        test_case.type, profile_.get(), &thumbnail_loader);
+    EXPECT_TRUE(result.chip_icon().isNull());
+    EXPECT_EQ(result.icon().dimension, kThumbnailDimension);
+    EXPECT_FALSE(thumbnail_loader.HasPendingRequest());
+
+    const gfx::ImageSkia expected_placeholder =
+        gfx::ImageSkiaOperations::CreateSuperimposedImage(
+            ash::image_util::CreateEmptyImage(
+                gfx::Size(kThumbnailDimension, kThumbnailDimension)),
+            chromeos::GetIconFromType(test_case.expected_placeholder, true));
+    EXPECT_TRUE(
+        gfx::BitmapsAreEqual(*result.icon().icon.Rasterize(nullptr).bitmap(),
+                             *expected_placeholder.bitmap()));
+
+    EXPECT_TRUE(thumbnail_loader.HasPendingRequest());
+
+    std::optional<const SkBitmap> test_thumbnail;
+    if (test_case.thumbnail_load_result == base::File::FILE_OK) {
+      test_thumbnail.emplace(gfx::test::CreateBitmap(
+          kThumbnailDimension, kThumbnailDimension, SK_ColorRED));
+    }
+
+    thumbnail_loader.RespondToPendingRequest(
+        test_thumbnail ? &test_thumbnail.value() : nullptr,
+        test_case.thumbnail_load_result);
+
+    if (test_thumbnail) {
+      EXPECT_TRUE(gfx::BitmapsAreEqual(
+          *result.icon().icon.Rasterize(nullptr).bitmap(), *test_thumbnail));
+    } else {
+      EXPECT_TRUE(
+          gfx::BitmapsAreEqual(*result.icon().icon.Rasterize(nullptr).bitmap(),
+                               *expected_placeholder.bitmap()));
+    }
+  }
+}
+
+TEST_F(FileResultTest, IconWithNullThumbnailLoader) {
+  base::FilePath path("/my/test/file.jpeg");
+  FileResult result(
+      /*id=*/"zero_state_file://" + path.value(), path, u"some details",
+      ash::AppListSearchResultType::kZeroStateFile,
       ash::SearchResultDisplayType::kList, 0.2f, std::u16string(),
-      FileResult::Type::kSharedDirectory, profile_.get());
-  EXPECT_TRUE(sharedResult.chip_icon().isNull());
-  EXPECT_EQ(sharedResult.icon().dimension, kSystemIconDimension);
-  EXPECT_EQ(sharedResult.icon().icon, ui::ImageModel::FromVectorIcon(
-                                          chromeos::GetIconFromType("shared")));
+      FileResult::Type::kFile, profile_.get(), nullptr);
+  EXPECT_TRUE(result.chip_icon().isNull());
+  EXPECT_EQ(result.icon().dimension, kThumbnailDimension);
+
+  const gfx::ImageSkia expected_placeholder =
+      gfx::ImageSkiaOperations::CreateSuperimposedImage(
+          ash::image_util::CreateEmptyImage(
+              gfx::Size(kThumbnailDimension, kThumbnailDimension)),
+          chromeos::GetIconFromType(chromeos::IconType::kImage, true));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(*result.icon().icon.Rasterize(nullptr).bitmap(),
+                           *expected_placeholder.bitmap()));
 }
 
 TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
@@ -181,7 +269,7 @@ TEST_F(FileResultTest, FileMetadataPopulatedForDisplay) {
       /*id=*/"file://" + path.value(), path, std::nullopt,
       ash::AppListSearchResultType::kImageSearch,
       ash::SearchResultDisplayType::kImage, 0.2f, std::u16string(),
-      FileResult::Type::kFile, profile_.get());
+      FileResult::Type::kFile, profile_.get(), nullptr);
 
   ash::FileMetadata metadata;
   base::RunLoop file_metadata_load_waiter;

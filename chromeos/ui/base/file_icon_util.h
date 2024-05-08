@@ -88,7 +88,9 @@ gfx::ImageSkia GetIconFromType(const std::string& icon_type,
 // `dark_background` is `true`, lighter foreground colors are used to ensure
 // sufficient contrast.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background);
+gfx::ImageSkia GetIconFromType(IconType icon_type,
+                               bool dark_background,
+                               std::optional<int> dip_size = {});
 
 // Returns the resolved color of the file type icon for the specified
 // `filepath`. If `dark_background` is `true`, lighter foreground colors are
