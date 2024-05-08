@@ -2362,6 +2362,58 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-15-x64-rel",
+    description_html = "Run chromium tests on Android 15 emulators.",
+    # TODO(crbug.com/40286106): Enable on branches once stable
+    #branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
+    ),
+    # TODO(crbug.com/40286106): Enable sheriff once tests are stable
+    sheriff_rotations = args.ignore_default(None),
+    # TODO(crbug.com/40286106): Enable tree_closing once compile are stable
+    #tree_closing = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|x64",
+        short_name = "15",
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    execution_timeout = 4 * time.hour,
+)
+
+ci.builder(
     name = "android-webview-13-x64-hostside-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = (
