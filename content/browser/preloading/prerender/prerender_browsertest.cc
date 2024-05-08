@@ -854,7 +854,6 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, ExactUrlMatch) {
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   int host_id = AddPrerender(kPrerenderingUrl);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
@@ -885,7 +884,6 @@ IN_PROC_BROWSER_TEST_F(NoVarySearchPrerenderBrowserTest, InexactUrlMatch) {
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   int host_id = AddPrerender(kPrerenderingUrl);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
@@ -1001,7 +999,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   int host_id = AddPrerender(kPrerenderingUrl);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
@@ -1402,7 +1399,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
   // Start prerendering `kPrerenderingUrl`.
   int host_id = AddPrerender(kPrerenderingUrl);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
-  WaitForPrerenderLoadCompletion(host_id);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
   switch (std::get<0>(GetParam())) {
@@ -2156,7 +2152,6 @@ void PrerenderBrowserTest::TestPrerenderAllowedOnIframeWithStatusCode(
   const GURL kPrerenderingUrl = GetUrl("/title1.html");
   int host_id = AddPrerender(kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
   // Construct an iframe URL whose response has 204/205.
   GURL iframe_url;
@@ -2288,7 +2283,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubframe) {
   const GURL kPrerenderingUrl = GetUrl("/title1.html");
   int host_id = AddPrerender(kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
   // Fetch a subframe that requires authentication.
   const GURL kAuthIFrameUrl = GetUrl("/auth-basic");
@@ -2317,7 +2311,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
   const GURL kPrerenderingUrl = GetUrl("/title1.html");
   int host_id = AddPrerender(kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
-  WaitForPrerenderLoadCompletion(kPrerenderingUrl);
 
   ASSERT_NE(GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
@@ -3846,7 +3839,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameNavigation_NonHttpUrl) {
 
   // Start prerendering.
   int host_id = AddPrerender(prerendering_url);
-  WaitForPrerenderLoadCompletion(prerendering_url);
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
   // Navigation to a non-http(s) URL on a prerendered page should cancel
@@ -3872,7 +3864,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
 
   // Start a prerender.
   int host_id = AddPrerender(kPrerenderingUrl);
-  WaitForPrerenderLoadCompletion(host_id);
 
   // Do a fragment navigation.
   NavigatePrerenderedPage(host_id, kAnchorUrl);
@@ -11634,7 +11625,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
   // Start prerendering.
   GURL prerender_url = GetUrl("/iframe.html?acceptch-full-version");
   int host_id = AddPrerender(prerender_url);
-  WaitForPrerenderLoadCompletion(host_id);
 
   // The main frame request does not contain sec-ch-ua-full-version, because it
   // is using the global setting at this moment. sec-ch-ua-bitness should be
@@ -11688,7 +11678,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
 
   int host_id = AddPrerender(prerender_url);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
-  WaitForPrerenderLoadCompletion(host_id);
   NavigatePrimaryPage(real_navigate_url);
 
   // The request headers should not contain sec-ch-ua-full-version, because no
@@ -11719,7 +11708,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
   // Start prerendering.
   GURL prerender_url = GetUrl("/iframe.html?acceptch-full-version");
   int host_id = AddPrerender(prerender_url);
-  WaitForPrerenderLoadCompletion(host_id);
 
   // The main frame request does not contain sec-ch-ua-full-version, because it
   // is using the global setting at this moment.
@@ -11778,7 +11766,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest, ViewPort_Width) {
   // as the width is 0 due to the lack of a cached/known viewport size.
   GURL prerender_url = GetUrl("/iframe.html?acceptch");
   int host_id = AddPrerender(prerender_url);
-  WaitForPrerenderLoadCompletion(host_id);
   EXPECT_FALSE(HasRequestHeader(prerender_url, "viewport-width"));
   EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-width"));
 
@@ -11814,7 +11801,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest, ViewPort_Height) {
   // as the height is 0 due to the lack of a cached/known viewport size.
   GURL prerender_url = GetUrl("/iframe.html?acceptch");
   int host_id = AddPrerender(prerender_url);
-  WaitForPrerenderLoadCompletion(host_id);
   EXPECT_FALSE(HasRequestHeader(prerender_url, "sec-ch-viewport-height"));
 
   // Resize the window.
