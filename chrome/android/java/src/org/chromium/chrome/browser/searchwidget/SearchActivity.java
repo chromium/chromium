@@ -160,7 +160,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
-    private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
     private Tab mTab;
@@ -229,12 +228,12 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox =
                 (SearchActivityLocationBarLayout)
                         contentView.findViewById(R.id.search_location_bar);
-        mAnchorView = contentView.findViewById(R.id.toolbar);
+        View anchorView = contentView.findViewById(R.id.toolbar);
 
         // Create status bar color controller and assign to search activity.
         if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             // Update the status bar's color based on the toolbar color.
-            Drawable anchorViewBackground = mAnchorView.getBackground();
+            Drawable anchorViewBackground = anchorView.getBackground();
             if (anchorViewBackground instanceof ColorDrawable) {
                 int anchorViewColor = ((ColorDrawable) anchorViewBackground).getColor();
                 StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
@@ -247,7 +246,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
                         mSearchBox,
-                        mAnchorView,
+                        anchorView,
                         mProfileSupplier,
                         PrivacyPreferencesManagerImpl.getInstance(),
                         mSearchBoxDataProvider,
@@ -583,6 +582,10 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
             mLocationBarCoordinator.setUrlFocusChangeInProgress(false);
+        } else {
+            // TODO(crbug.com/329702834): Terminate SearchActivity on focus change:
+            // it's possible that we're running in a multi-window mode.
+            finish();
         }
     }
 
@@ -687,8 +690,8 @@ public class SearchActivity extends AsyncInitializationActivity
         ResettersForTesting.register(() -> sDelegate = oldValue);
     }
 
-    public View getAnchorViewForTesting() {
-        return mAnchorView;
+    /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {
+        mLocationBarCoordinator = coordinator;
     }
 
     /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {

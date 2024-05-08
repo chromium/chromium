@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -71,6 +73,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -364,7 +367,7 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void recordUsage_searchActivity() {
+    public void recordUsage_searchWidget() {
         int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
 
         for (var searchType : searchTypes) {
@@ -397,12 +400,18 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void recordUsage_searchWidget() {
+    public void recordUsage_shortcutsWidget() {
         var searchTypes =
                 Map.of(
-                        SearchType.TEXT, SearchActivity.USED_TEXT_FROM_SHORTCUTS_WIDGET,
-                        SearchType.VOICE, SearchActivity.USED_VOICE_FROM_SHORTCUTS_WIDGET,
-                        SearchType.LENS, SearchActivity.USED_LENS_FROM_SHORTCUTS_WIDGET);
+                        SearchType.TEXT,
+                        Optional.of(SearchActivity.USED_TEXT_FROM_SHORTCUTS_WIDGET),
+                        SearchType.VOICE,
+                        Optional.of(SearchActivity.USED_VOICE_FROM_SHORTCUTS_WIDGET),
+                        SearchType.LENS,
+                        Optional.of(SearchActivity.USED_LENS_FROM_SHORTCUTS_WIDGET),
+                        // Invalid search type.
+                        ~0,
+                        Optional.empty());
 
         for (var searchType : searchTypes.entrySet()) {
             var tester = new UserActionTester();
@@ -411,11 +420,11 @@ public class SearchActivityUnitTest {
                     IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, searchType.getKey());
             var value = searchType.getValue();
             var actions = tester.getActions();
-            if (value == null) {
+            if (value.isEmpty()) {
                 assertEquals(0, actions.size());
             } else {
                 assertEquals(1, actions.size());
-                assertEquals(value, actions.get(0));
+                assertEquals(value.get(), actions.get(0));
             }
 
             tester.tearDown();
@@ -773,5 +782,26 @@ public class SearchActivityUnitTest {
         verify(mUmaObserver).endUmaSession();
         verify(mSetCustomTabSearchClient).onResult(null);
         verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+    }
+
+    @Test
+    public void shouldStartGpuProcess_alwaysTrue() {
+        assertTrue(mActivity.shouldStartGpuProcess());
+    }
+
+    @Test
+    public void onUrlFocusChange_terminateOnFocusLost() {
+        assertFalse(mActivity.isFinishing());
+        mActivity.onUrlFocusChange(false);
+        assertTrue(mActivity.isFinishing());
+    }
+
+    @Test
+    public void onUrlFocusChange_propagateFocusGainEvent() {
+        LocationBarCoordinator coordinator = mock(LocationBarCoordinator.class);
+        mActivity.setLocationBarCoordinatorForTesting(coordinator);
+        mActivity.onUrlFocusChange(true);
+        verify(coordinator).setUrlFocusChangeInProgress(false);
+        assertFalse(mActivity.isFinishing());
     }
 }
