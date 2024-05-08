@@ -48,13 +48,14 @@ public interface TabModelObserver {
 
     /**
      * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
-     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()},
-     * {@link TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger
-     * one event when the tabs associated with a particular closure commit to closing.
+     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()}, {@link
+     * TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger one event
+     * when the tabs associated with a particular closure commit to closing.
      *
      * @param tabs The list of {@link Tab} that were closed.
+     * @param canRestore Whether the closed tabs can be restored to the TabRestoreService.
      */
-    default void onFinishingMultipleTabClosure(List<Tab> tabs) {}
+    default void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.

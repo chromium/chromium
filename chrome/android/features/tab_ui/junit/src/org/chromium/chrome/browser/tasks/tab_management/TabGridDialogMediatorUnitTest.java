@@ -729,7 +729,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onFinishingMultipleTabClosure() {
         List<Tab> tabs = Arrays.asList(mTab1, mTab2);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(tabs));
@@ -738,7 +740,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onFinishingMultipleTabClosure_singleTab() {
         List<Tab> tabs = Arrays.asList(mTab1);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));

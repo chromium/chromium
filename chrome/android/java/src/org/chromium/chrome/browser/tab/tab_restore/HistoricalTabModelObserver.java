@@ -51,8 +51,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     }
 
     @Override
-    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
-        if (tabs.isEmpty()) return;
+    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+        if (tabs.isEmpty() || !canRestore) return;
 
         if (tabs.size() == 1) {
             Tab tab = tabs.get(0);

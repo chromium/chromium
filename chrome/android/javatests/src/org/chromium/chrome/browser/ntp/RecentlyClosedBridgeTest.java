@@ -1509,6 +1509,61 @@ public class RecentlyClosedBridgeTest {
                 });
     }
 
+    /** Tests tabs are not saved when unrestorable. */
+    @Test
+    @MediumTest
+    public void testNoRecentlyClosedEntry_FromBulkClosure_Unrestorable() {
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[2];
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titles[1] = tabA.getTitle();
+                    titles[0] = tabB.getTitle();
+                    mTabModel.closeMultipleTabs(
+                            Arrays.asList(tabB, tabA),
+                            /* canUndo= */ false,
+                            /* canRestore= */ false);
+                    mTabModel.commitAllTabClosures();
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(1, tabCount);
+        Assert.assertEquals(0, recentEntries.size());
+    }
+
+    /** Tests tab groups are not saved when unrestorable. */
+    @Test
+    @MediumTest
+    public void testNoRecentlyClosedEntry_FromGroupClosure_Unrestorable() {
+        if (mTabGroupModelFilter == null) return;
+
+        final String[] urls = new String[] {getUrl(TEST_PAGE_B), getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[1], /* incognito= */ false);
+        final Tab tabB = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[2];
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
+                    titles[1] = tabA.getTitle();
+                    titles[0] = tabB.getTitle();
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            Arrays.asList(tabB, tabA),
+                            /* canUndo= */ false,
+                            /* hideTabGroups= */ true,
+                            /* canRestore= */ false);
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(1, tabCount);
+        Assert.assertEquals(0, recentEntries.size());
+    }
+
     // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,
     // but the flag state is flipped.
 

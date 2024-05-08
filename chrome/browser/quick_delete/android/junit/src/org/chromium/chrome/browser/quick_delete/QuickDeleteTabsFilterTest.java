@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.quick_delete;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -73,6 +75,14 @@ public class QuickDeleteTabsFilterTest {
         doReturn(false).when(mTabModelMock).isIncognito();
         doReturn(mTabModelMock).when(mTabGroupModelFilterMock).getTabModel();
         mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabGroupModelFilterMock);
+
+        doNothing()
+                .when(mTabGroupModelFilterMock)
+                .closeMultipleTabs(
+                        any(),
+                        /* canUndo= */ anyBoolean(),
+                        /* hideTabGroups= */ anyBoolean(),
+                        /* canRestore= */ anyBoolean());
     }
 
     @Test(expected = AssertionError.class)
@@ -168,14 +178,14 @@ public class QuickDeleteTabsFilterTest {
         // Initiate quick delete tabs closure.
         mQuickDeleteTabsFilter.prepareListOfTabsToBeClosed(TimePeriod.LAST_15_MINUTES);
         List<Tab> filteredTabs = mQuickDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
-        doNothing()
-                .when(mTabGroupModelFilterMock)
-                .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
+
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         verify(mTabGroupModelFilterMock)
                 .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
+                        eq(filteredTabs),
+                        /* canUndo= */ eq(false),
+                        /* hideTabGroups= */ eq(true),
+                        /* canRestore= */ eq(false));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -208,14 +218,13 @@ public class QuickDeleteTabsFilterTest {
         List<Tab> filteredTabs = mQuickDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
         assertEquals(5, filteredTabs.size());
 
-        doNothing()
-                .when(mTabGroupModelFilterMock)
-                .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         verify(mTabGroupModelFilterMock)
                 .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
+                        eq(filteredTabs),
+                        /* canUndo= */ eq(false),
+                        /* hideTabGroups= */ eq(true),
+                        /* canRestore= */ eq(false));
     }
 
     @Test
@@ -243,13 +252,12 @@ public class QuickDeleteTabsFilterTest {
         // The oldest tab created in the first week should not be filtered out.
         assertFalse(filteredTabs.contains(mMockTabList.get(0)));
 
-        doNothing()
-                .when(mTabGroupModelFilterMock)
-                .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         verify(mTabGroupModelFilterMock)
                 .closeMultipleTabs(
-                        eq(filteredTabs), /* canUndo= */ eq(false), /* hideTabGroups= */ eq(true));
+                        eq(filteredTabs),
+                        /* canUndo= */ eq(false),
+                        /* hideTabGroups= */ eq(true),
+                        /* canRestore= */ eq(false));
     }
 }

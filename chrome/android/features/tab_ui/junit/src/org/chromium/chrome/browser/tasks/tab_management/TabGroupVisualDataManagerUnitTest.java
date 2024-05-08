@@ -179,7 +179,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab1));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
 
         // Verify that the title and color were not deleted.
         verify(mEditorTitle, never()).remove(eq(String.valueOf(TAB1_ID)));
@@ -200,7 +202,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab2));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
 
         // Verify that the title and color were not deleted.
         verify(mEditorTitle, never()).remove(eq(String.valueOf(TAB1_ID)));
@@ -222,7 +226,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab2));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
 
         // Verify that the title and color were deleted.
         verify(mEditorTitle).remove(eq(String.valueOf(TAB1_ID)));
@@ -243,7 +249,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB1_ID, TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab2));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab2), /* canRestore= */ true);
 
         // Verify that the title and color were not deleted.
         verify(mEditorTitle, never()).remove(eq(String.valueOf(TAB1_ID)));
@@ -254,7 +262,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab1));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab1), /* canRestore= */ true);
 
         // Verify that the title and color were deleted.
         verify(mEditorTitle).remove(eq(String.valueOf(TAB1_ID)));
@@ -276,7 +286,9 @@ public class TabGroupVisualDataManagerUnitTest {
         doReturn(LazyOneshotSupplier.fromValue(Set.of(TAB3_ID, TAB4_ID)))
                 .when(mTabGroupModelFilter)
                 .getLazyAllRootIdsInComprehensiveModel(any());
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(List.of(mTab1, mTab2));
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(List.of(mTab1, mTab2), /* canRestore= */ true);
 
         // Verify that the title and color were deleted.
         verify(mEditorTitle).remove(eq(String.valueOf(TAB1_ID)));

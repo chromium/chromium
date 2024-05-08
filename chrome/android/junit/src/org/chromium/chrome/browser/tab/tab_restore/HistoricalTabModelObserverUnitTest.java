@@ -104,7 +104,17 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Test
     public void testEmpty() {
-        mObserver.onFinishingMultipleTabClosure(new ArrayList<Tab>());
+        mObserver.onFinishingMultipleTabClosure(new ArrayList<Tab>(), /* canRestore= */ true);
+
+        verifyNoMoreInteractions(mHistoricalTabSaver);
+    }
+
+    @Test
+    public void testMultipleTabs_NotRestorable() {
+        MockTab mockTab = createMockTab(0);
+
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ false);
 
         verifyNoMoreInteractions(mHistoricalTabSaver);
     }
@@ -113,7 +123,8 @@ public class HistoricalTabModelObserverUnitTest {
     public void testSingleTab() {
         MockTab mockTab = createMockTab(0);
 
-        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ true);
 
         verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
     }
@@ -127,7 +138,8 @@ public class HistoricalTabModelObserverUnitTest {
         @TabGroupColorId int color = TabGroupColorId.GREY;
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab});
 
-        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -154,7 +166,8 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(null, title, color, new MockTab[] {mockTab});
         when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
 
-        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ true);
 
         verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
     }
@@ -171,7 +184,8 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(false);
         when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
 
-        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -200,7 +214,8 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(false);
         when(mTabGroupModelFilter.isTabInTabGroup(mockTab)).thenReturn(false);
 
-        mObserver.onFinishingMultipleTabClosure(Collections.singletonList(mockTab));
+        mObserver.onFinishingMultipleTabClosure(
+                Collections.singletonList(mockTab), /* canRestore= */ true);
 
         verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab));
     }
@@ -212,7 +227,7 @@ public class HistoricalTabModelObserverUnitTest {
         MockTab mockTab2 = createMockTab(2);
 
         Tab[] tabList = new Tab[] {mockTab0, mockTab1, mockTab2};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -238,7 +253,7 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, tabList);
 
         List<Tab> closingTabList = List.of(mockTab1, mockTab2);
-        mObserver.onFinishingMultipleTabClosure(closingTabList);
+        mObserver.onFinishingMultipleTabClosure(closingTabList, /* canRestore= */ true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -265,7 +280,7 @@ public class HistoricalTabModelObserverUnitTest {
         Token tabGroupId = new Token(1L, 243L);
         final int rootId = createGroup(tabGroupId, title, color, tabList);
 
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single group
         // entry.
@@ -297,7 +312,7 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab1});
 
         MockTab[] tabList = new MockTab[] {mockTab0, mockTab1};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single tab
         // entry.
@@ -329,7 +344,7 @@ public class HistoricalTabModelObserverUnitTest {
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single tab
         // entry.
@@ -353,7 +368,7 @@ public class HistoricalTabModelObserverUnitTest {
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // Close tab 0 first, even though the group is hiding there are still other tabs in the
         // comprehensive model for the group so treat as a separate closure.
@@ -365,7 +380,7 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, tabList);
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -388,7 +403,7 @@ public class HistoricalTabModelObserverUnitTest {
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // Close tab 0 first, even though the group is hiding there are still other tabs in the
         // comprehensive model for the group so treat as a separate closure.
@@ -400,7 +415,7 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab1, mockTab2});
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), true);
 
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
@@ -430,7 +445,7 @@ public class HistoricalTabModelObserverUnitTest {
         final int rootId2 = createGroup(tabGroupId2, groupTitle2, groupColor2, groupTabs2);
 
         Tab[] tabList = new Tab[] {mockTab0, mockTab2, mockTab3, mockTab4, mockTab1, mockTab5};
-        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single group
         // entry.

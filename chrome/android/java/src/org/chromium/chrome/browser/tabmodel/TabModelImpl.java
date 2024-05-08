@@ -156,7 +156,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         @Override
         public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
-            TabModelImpl.this.notifyOnFinishingMultipleTabClosure(tabs);
+            TabModelImpl.this.notifyOnFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
         }
     }
 
@@ -554,7 +554,8 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         if (!canUndo) {
             if (tabCloseType == TabCloseType.SINGLE) {
-                notifyOnFinishingMultipleTabClosure(Collections.singletonList(tabToClose));
+                notifyOnFinishingMultipleTabClosure(
+                        Collections.singletonList(tabToClose), /* canRestore= */ true);
             }
             finalizeTabClosure(tabToClose, false);
         }
@@ -564,6 +565,13 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void closeMultipleTabs(List<Tab> tabs, boolean canUndo) {
+        closeMultipleTabs(tabs, canUndo, /* canRestore= */ true);
+    }
+
+    @Override
+    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore) {
+        assert (!canUndo || canRestore) : "canRestore == false is ignored if canUndo == true.";
+
         for (Tab tab : tabs) {
             if (!containsTab(tab)) {
                 assert false : "Tried to close a tab from another model!";
@@ -573,7 +581,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         final boolean allowUndo = canUndo && supportsPendingClosures();
         if (!allowUndo) {
-            notifyOnFinishingMultipleTabClosure(tabs);
+            notifyOnFinishingMultipleTabClosure(tabs, canRestore);
         }
         for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
@@ -599,7 +607,7 @@ public class TabModelImpl extends TabModelJniBridge {
             commitAllTabClosures();
 
             for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
-            notifyOnFinishingMultipleTabClosure(mTabs);
+            notifyOnFinishingMultipleTabClosure(mTabs, /* canRestore= */ true);
             while (getCount() > 0) {
                 Tab tab = getTabAt(0);
                 closeTab(tab, null, uponExit, false, false, TabCloseType.ALL);
@@ -611,7 +619,7 @@ public class TabModelImpl extends TabModelJniBridge {
         for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
         List<Tab> closedTabs = new ArrayList<>(mTabs);
         if (!supportsPendingClosures()) {
-            notifyOnFinishingMultipleTabClosure(closedTabs);
+            notifyOnFinishingMultipleTabClosure(closedTabs, /* canRestore= */ true);
         }
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
@@ -939,7 +947,10 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void closeTabsNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
-        closeMultipleTabs(getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs), false);
+        closeMultipleTabs(
+                getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs),
+                /* canUndo= */ false,
+                /* canRestore= */ false);
     }
 
     @VisibleForTesting
@@ -958,7 +969,7 @@ public class TabModelImpl extends TabModelJniBridge {
         return tabList;
     }
 
-    private void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {
-        for (TabModelObserver obs : mObservers) obs.onFinishingMultipleTabClosure(tabs);
+    private void notifyOnFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+        for (TabModelObserver obs : mObservers) obs.onFinishingMultipleTabClosure(tabs, canRestore);
     }
 }

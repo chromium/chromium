@@ -41,7 +41,7 @@ public class TabGroupVisualDataManager {
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (tabs.isEmpty()) return;
 
                         TabGroupModelFilter filter = filterFromTab(tabs.get(0));

@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -102,7 +101,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+            public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                 if (!mIsObserving || tabs.isEmpty()) return;
                 LogUtils.log(TAG, "onFinishingMultipleTabClosure, tabs# " + tabs.size());
 

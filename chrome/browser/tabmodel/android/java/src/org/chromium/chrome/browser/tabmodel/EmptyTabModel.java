@@ -72,6 +72,9 @@ public class EmptyTabModel implements IncognitoTabModel {
     public void closeMultipleTabs(List<Tab> tabs, boolean canUndo) {}
 
     @Override
+    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore) {}
+
+    @Override
     public void closeAllTabs() {}
 
     @Override

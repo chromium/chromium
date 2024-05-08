@@ -48,7 +48,8 @@ class TabModelObserverJniBridge {
   void OnFinishingMultipleTabClosure(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
-      const base::android::JavaParamRef<jobjectArray>& jtabs);
+      const base::android::JavaParamRef<jobjectArray>& jtabs,
+      bool canRestore);
 
   void WillAddTab(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& jobj,

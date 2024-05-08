@@ -1456,7 +1456,7 @@ public class UndoTabModelUnitTest {
         model.addObserver(
                 new TabModelObserver() {
                     @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         lastClosedTabs.clear();
                         lastClosedTabs.addAll(tabs);
                     }

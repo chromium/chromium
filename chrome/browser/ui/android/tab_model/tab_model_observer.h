@@ -35,7 +35,8 @@ class TabModelObserver {
 
   // Called right before all |tabs| are destroyed.
   virtual void OnFinishingMultipleTabClosure(
-      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
+      bool canRestore);
 
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);

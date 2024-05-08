@@ -170,6 +170,14 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
+    public void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore) {
+        mCountOfAddingOrClosingTabs++;
+        mDelegateModel.closeMultipleTabs(tabs, canUndo, canRestore);
+        mCountOfAddingOrClosingTabs--;
+        destroyIncognitoIfNecessary();
+    }
+
+    @Override
     public void closeAllTabs() {
         mCountOfAddingOrClosingTabs++;
         mDelegateModel.closeAllTabs();

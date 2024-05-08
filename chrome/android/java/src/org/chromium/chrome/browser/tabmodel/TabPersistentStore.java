@@ -194,7 +194,7 @@ public class TabPersistentStore {
                     }
 
                     @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (!mTabModelSelector.isIncognitoSelected()) {
                             saveTabListAsynchronously();
                         }

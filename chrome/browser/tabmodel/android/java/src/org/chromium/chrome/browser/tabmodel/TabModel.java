@@ -93,6 +93,21 @@ public interface TabModel extends TabList {
     void closeMultipleTabs(List<Tab> tabs, boolean canUndo);
 
     /**
+     * Close multiple tabs on this model.
+     *
+     * @param tabs The tabs to be closed.
+     * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
+     *     #supportsPendingClosures()} is {@code true}, this {@link Tab} will not actually be closed
+     *     until {@link #commitTabClosure(int)} is called for every {@link Tab} in {@code tabs} or
+     *     {@link #commitAllTabClosures()} is called. However, it will be effectively removed from
+     *     this list. To get a comprehensive list of all tabs, including ones that have been
+     *     partially closed, use the {@link TabList} from {@link #getComprehensiveModel()}.
+     * @param canRestore Whether or not the tabs can be restored to the TabRestoreService after
+     *     closure. This is only respected if {@code canUndo} is false.
+     */
+    void closeMultipleTabs(List<Tab> tabs, boolean canUndo, boolean canRestore);
+
+    /**
      * Close all the tabs on this model. Same as closeAllTabs(false).
      *
      * @deprecated in favor of the clearer {@link #closeAllTabs(boolean)}.

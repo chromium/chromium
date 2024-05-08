@@ -64,8 +64,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                 new TabModelObserver() {
                     /**
                      * Decides whether we should disable an attempt to show/hide the undo bar.
-                     * @param showingUndoBar indicates whether the expected behavior of the caller is to
-                     *         show or dismiss the undo bar.
+                     *
+                     * @param showingUndoBar indicates whether the expected behavior of the caller
+                     *     is to show or dismiss the undo bar.
                      */
                     private boolean disableUndo(boolean showingUndoBar) {
                         // When closure(s) happen and we are trying to show the undo bar, check
@@ -101,7 +102,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                     }
 
                     @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (disableUndo(false)) return;
                         mSnackbarManagable
                                 .getSnackbarManager()

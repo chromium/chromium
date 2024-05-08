@@ -306,7 +306,7 @@ public class TabGridDialogMediator
                     }
 
                     @Override
-                    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         // Allow this to update while invisible so the snackbar updates correctly.
                         if (tabs.size() == 1) {
                             dismissSingleTabSnackbar(tabs.get(0).getId());

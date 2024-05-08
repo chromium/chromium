@@ -1544,6 +1544,19 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
      */
     public void closeMultipleTabs(List<Tab> tabsToClose, boolean canUndo, boolean hideTabGroups) {
+        closeMultipleTabs(tabsToClose, canUndo, hideTabGroups, /* canRestore= */ true);
+    }
+
+    /**
+     * Close multiple tabs.
+     *
+     * @param tabsToClose The list of tabs to close.
+     * @param canUndo Whether the operation can be undone.
+     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
+     * @param canRestore Whether the tabs can be restored to TabRestoreService after closure.
+     */
+    public void closeMultipleTabs(
+            List<Tab> tabsToClose, boolean canUndo, boolean hideTabGroups, boolean canRestore) {
         TabModel tabModel = getTabModel();
         if (hideTabGroups && canHideTabGroups()) {
             Set<Integer> closingTabIds =
@@ -1558,7 +1571,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                 }
             }
         }
-        tabModel.closeMultipleTabs(tabsToClose, canUndo);
+        tabModel.closeMultipleTabs(tabsToClose, canUndo, canRestore);
     }
 
     /** Returns whether the tab group is being hidden. */
@@ -1596,8 +1609,8 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     @Override
-    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
-        super.onFinishingMultipleTabClosure(tabs);
+    public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
+        super.onFinishingMultipleTabClosure(tabs, canRestore);
         Set<Token> processedTabGroups = new HashSet<>();
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 getLazyAllTabGroupIdsInComprehensiveModel(tabs);

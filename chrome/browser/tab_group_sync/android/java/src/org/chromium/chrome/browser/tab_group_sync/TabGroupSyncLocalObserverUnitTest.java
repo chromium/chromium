@@ -192,7 +192,9 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testCloseMultipleTabs_EmptyList() {
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(new ArrayList<Tab>());
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(new ArrayList<Tab>(), /* canRestore= */ true);
 
         verify(mTabGroupSyncService, never()).removeTab(any(), anyInt());
     }
@@ -204,7 +206,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         verify(mTabGroupSyncService, never()).removeTab(LOCAL_TAB_GROUP_ID_1, TAB_ID_1);
     }
@@ -216,7 +220,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(TOKEN_1)));
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         // In this scenario the tab group is hiding, but tabs were closed in multiple phases. We
         // should commit any tab removals as "deletions" from the group except for the last event
@@ -229,7 +235,9 @@ public class TabGroupSyncLocalObserverUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(false);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         verify(mTabGroupSyncService).removeTab(LOCAL_TAB_GROUP_ID_1, TAB_ID_1);
     }

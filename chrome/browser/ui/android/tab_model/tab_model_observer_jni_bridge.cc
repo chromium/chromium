@@ -83,12 +83,13 @@ void TabModelObserverJniBridge::OnFinishingTabClosure(
 void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
-    const base::android::JavaParamRef<jobjectArray>& jtabs) {
+    const base::android::JavaParamRef<jobjectArray>& jtabs,
+    bool canRestore) {
   std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs =
       TabAndroid::GetAllNativeTabs(env,
                                    ScopedJavaLocalRef<jobjectArray>(jtabs));
   for (auto& observer : observers_) {
-    observer.OnFinishingMultipleTabClosure(tabs);
+    observer.OnFinishingMultipleTabClosure(tabs, canRestore);
   }
 }
 
