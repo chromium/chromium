@@ -106,7 +106,7 @@ int64_t AugmentedTermTable::GetOrCreateAugmentedTermId(
   return -1;
 }
 
-int64_t AugmentedTermTable::DeleteAugmentedTerm(int64_t augmented_term_id) {
+int64_t AugmentedTermTable::DeleteAugmentedTermById(int64_t augmented_term_id) {
   sql::Statement delete_augmented_term(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAugmentedTermQuery));
   DCHECK(delete_augmented_term.is_valid())

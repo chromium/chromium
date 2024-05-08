@@ -85,10 +85,6 @@ class SqlStorage : public IndexStorage {
   // cannot be located, a new ID is created and returned.
   int64_t GetOrCreateTermId(const std::string& term_bytes) override;
 
-  // Removes the term ID. If the term was present in the database, it returns
-  // the ID that was assigned to the term. Otherwise, it returns - 1.
-  int64_t DeleteTerm(const std::string& term);
-
   // Returns the ID corresponding to the given augmented term. If the augmented
   // term cannot be located, the method returns -1.
   int64_t GetAugmentedTermId(const Term& term) const override;
@@ -96,11 +92,6 @@ class SqlStorage : public IndexStorage {
   // Returns the ID corresponding to the augmented term. If the augmented term
   // cannot be located, a new ID is allocated and returned.
   int64_t GetOrCreateAugmentedTermId(const Term& term) override;
-
-  // Deletes augmented term ID by it ID. If successful, this method returns the
-  // `augmented_term_id`. Otherwise, it returns -1.
-  // TODO(majewski): Add to index_storage.h
-  int64_t DeleteAugmentedTerm(int64_t augmented_term_id);
 
   // Gets an ID for the given URL. Creates a new one, if this URL is seen for
   // the first time.

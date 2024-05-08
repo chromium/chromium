@@ -24,7 +24,7 @@ static constexpr char kCreateUrlTableQuery[] =
 // The statement used to delete a URL from the database by URL ID.
 static constexpr char kDeleteUrlQuery[] =
     // clang-format off
-     "DELETE FROM " URL_TABLE " WHERE " URL_ID "=?";
+    "DELETE FROM " URL_TABLE " WHERE " URL_ID "=?";
 // clang-format on
 
 // The statement used fetch the ID of the URL.

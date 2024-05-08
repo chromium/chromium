@@ -44,7 +44,7 @@ class AugmentedTermTable {
   // Attempts to remove the given augmented term by its ID from the database.
   // If not present, this method returns -1. Otherwise, it returns the
   // `augmented_term_id`.
-  int64_t DeleteAugmentedTerm(int64_t augmented_term_id);
+  int64_t DeleteAugmentedTermById(int64_t augmented_term_id);
 
  private:
   // The pointer to a database owned by the whoever created this table.

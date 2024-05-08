@@ -37,23 +37,30 @@ const std::set<int64_t> RamStorage::GetUrlIdsForAugmentedTermId(
 
 int32_t RamStorage::AddToPostingList(int64_t term_id, int64_t url_id) {
   auto it = posting_lists_.find(term_id);
+  int32_t count;
   if (it == posting_lists_.end()) {
     posting_lists_.emplace(std::piecewise_construct,
                            std::forward_as_tuple(term_id),
                            std::forward_as_tuple(std::set<int64_t>{url_id}));
+    count = 1;
   } else {
-    it->second.insert(url_id);
+    auto ret = it->second.emplace(url_id);
+    count = ret.second ? 1 : 0;
   }
-  return 1;
+  AddToPlainIndex(url_id, term_id);
+  return count;
 }
 
 int32_t RamStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
   auto it = posting_lists_.find(term_id);
-  if (it != posting_lists_.end()) {
-    it->second.erase(url_id);
-    return 1;
+  int32_t count;
+  if (it == posting_lists_.end()) {
+    count = 0;
+  } else {
+    count = it->second.erase(url_id);
   }
-  return 0;
+  DeleteFromPlainIndex(url_id, term_id);
+  return count;
 }
 
 int64_t RamStorage::GetTermId(const std::string& term_bytes) const {
@@ -69,7 +76,7 @@ int64_t RamStorage::GetOrCreateTermId(const std::string& term_bytes) {
   if (term_id >= 0) {
     return term_id;
   }
-  const int64_t this_term_id = term_id_++;
+  const int64_t this_term_id = ++term_id_;
   term_map_.emplace(std::make_pair(term_bytes, this_term_id));
   return this_term_id;
 }
@@ -92,7 +99,7 @@ int64_t RamStorage::GetOrCreateAugmentedTermId(const Term& term) {
   if (augmented_term_id >= 0) {
     return augmented_term_id;
   }
-  int64_t this_augmented_term_id = augmented_term_id_++;
+  int64_t this_augmented_term_id = ++augmented_term_id_;
   int64_t term_id = GetOrCreateTermId(term.text_bytes());
   augmented_term_map_.emplace(std::make_pair(
       std::make_tuple(term.field(), term_id), this_augmented_term_id));
@@ -109,7 +116,7 @@ int64_t RamStorage::GetOrCreateUrlId(const GURL& url) {
   if (url_id >= 0) {
     return url_id;
   }
-  int64_t this_url_id = url_id_++;
+  int64_t this_url_id = ++url_id_;
   url_to_id_.emplace(std::make_pair(url, this_url_id));
   return this_url_id;
 }
@@ -129,7 +136,12 @@ int64_t RamStorage::PutFileInfo(const FileInfo& file_info) {
   if (url_id == -1) {
     return -1;
   }
-  url_id_to_file_info_.emplace(std::make_pair(url_id, file_info));
+  auto it = url_id_to_file_info_.find(url_id);
+  if (it == url_id_to_file_info_.end()) {
+    url_id_to_file_info_.emplace(std::make_pair(url_id, file_info));
+  } else {
+    it->second = file_info;
+  }
   return url_id;
 }
 
@@ -145,7 +157,7 @@ int64_t RamStorage::GetFileInfo(int64_t url_id, FileInfo* file_info) const {
 int64_t RamStorage::DeleteFileInfo(int64_t url_id) {
   auto file_info_it = url_id_to_file_info_.find(url_id);
   if (file_info_it == url_id_to_file_info_.end()) {
-    return -1;
+    return url_id;
   }
   url_id_to_file_info_.erase(file_info_it);
   return url_id;
@@ -156,7 +168,6 @@ void RamStorage::AddAugmentedTermIdsForUrl(
     int64_t url_id) {
   for (const int64_t term_id : augmented_term_ids) {
     AddToPostingList(term_id, url_id);
-    AddToPlainIndex(url_id, term_id);
   }
 }
 
@@ -165,7 +176,6 @@ void RamStorage::DeleteAugmentedTermIdsForUrl(
     int64_t url_id) {
   for (const int64_t term_id : augmented_term_ids) {
     DeleteFromPostingList(term_id, url_id);
-    DeleteFromPlainIndex(url_id, term_id);
   }
 }
 
@@ -176,7 +186,7 @@ void RamStorage::AddToPlainIndex(int64_t url_id, int64_t term_id) {
                          std::forward_as_tuple(url_id),
                          std::forward_as_tuple(std::set<int64_t>{term_id}));
   } else {
-    it->second.insert(term_id);
+    it->second.emplace(term_id);
   }
 }
 

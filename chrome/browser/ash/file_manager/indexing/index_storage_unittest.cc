@@ -2,20 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_manager/indexing/sql_storage.h"
+#include "chrome/browser/ash/file_manager/indexing/index_storage.h"
 
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/indexing/ram_storage.h"
+#include "chrome/browser/ash/file_manager/indexing/sql_storage.h"
 #include "chrome/browser/ash/file_manager/indexing/term.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace file_manager {
 namespace {
+
+// Enumerates the types of storage technology used by test.
+enum StorageType {
+  RAM = 0,
+  SQL,
+};
 
 static constexpr base::Time::Exploded kTestTimeExploded = {
     .year = 2020,
@@ -26,14 +35,18 @@ static constexpr base::Time::Exploded kTestTimeExploded = {
 const base::FilePath::CharType kDatabaseName[] =
     FILE_PATH_LITERAL("SqlStorageTest.db");
 
-class SqlStorageTest : public testing::Test {
+class IndexStorageTest : public testing::TestWithParam<StorageType> {
  public:
-  SqlStorageTest()
+  IndexStorageTest()
       : pinned_("label", u"pinned"), downloaded_("label", u"downloaded") {}
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    storage_ = std::make_unique<SqlStorage>(db_file_path(), "test_uma_tag");
+    if (GetParam() == StorageType::RAM) {
+      storage_ = std::make_unique<RamStorage>();
+    } else {
+      storage_ = std::make_unique<SqlStorage>(db_file_path(), "test_uma_tag");
+    }
     foo_url_ = GURL(
         "filesystem:chrome://file-manager/external/Downloads-u123/foo.txt");
     bar_url_ = GURL(
@@ -55,18 +68,18 @@ class SqlStorageTest : public testing::Test {
   GURL bar_url_;
   base::Time foo_modified_time_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<SqlStorage> storage_;
+  std::unique_ptr<IndexStorage> storage_;
 };
 
-TEST_F(SqlStorageTest, Init) {
+TEST_P(IndexStorageTest, Init) {
   EXPECT_TRUE(storage_->Init());
 }
 
-TEST_F(SqlStorageTest, Close) {
+TEST_P(IndexStorageTest, Close) {
   EXPECT_TRUE(storage_->Close());
 }
 
-TEST_F(SqlStorageTest, GetTermId) {
+TEST_P(IndexStorageTest, GetTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -77,16 +90,7 @@ TEST_F(SqlStorageTest, GetTermId) {
   EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
 }
 
-TEST_F(SqlStorageTest, DeleteTerm) {
-  // Must initialize before use.
-  ASSERT_TRUE(storage_->Init());
-
-  EXPECT_EQ(storage_->DeleteTerm("foo"), -1);
-  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
-  EXPECT_EQ(storage_->DeleteTerm("foo"), 1);
-}
-
-TEST_F(SqlStorageTest, GetAugmentedTermId) {
+TEST_P(IndexStorageTest, GetAugmentedTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -97,23 +101,14 @@ TEST_F(SqlStorageTest, GetAugmentedTermId) {
   EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_), 2);
 }
 
-TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
-  // Must initialize before use.
-  ASSERT_TRUE(storage_->Init());
-
-  EXPECT_EQ(storage_->DeleteAugmentedTerm(1), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
-  EXPECT_EQ(storage_->DeleteAugmentedTerm(1), 1);
-}
-
-TEST_F(SqlStorageTest, GetOrCreateUrlId) {
+TEST_P(IndexStorageTest, GetOrCreateUrlId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
   EXPECT_EQ(storage_->GetOrCreateUrlId(foo_url_), 1);
 }
 
-TEST_F(SqlStorageTest, GetUrlId) {
+TEST_P(IndexStorageTest, GetUrlId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -122,7 +117,7 @@ TEST_F(SqlStorageTest, GetUrlId) {
   EXPECT_EQ(storage_->GetUrlId(foo_url_), 1);
 }
 
-TEST_F(SqlStorageTest, DeleteUrl) {
+TEST_P(IndexStorageTest, DeleteUrl) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -131,7 +126,7 @@ TEST_F(SqlStorageTest, DeleteUrl) {
   EXPECT_EQ(storage_->DeleteUrl(foo_url_), 1);
 }
 
-TEST_F(SqlStorageTest, GetFileInfo) {
+TEST_P(IndexStorageTest, GetFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -162,7 +157,7 @@ TEST_F(SqlStorageTest, GetFileInfo) {
   EXPECT_EQ(remote_id, got_file_info.remote_id);
 }
 
-TEST_F(SqlStorageTest, PutFileInfo) {
+TEST_P(IndexStorageTest, PutFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -174,7 +169,7 @@ TEST_F(SqlStorageTest, PutFileInfo) {
   EXPECT_EQ(foo_url_id, gotten_url_id);
 }
 
-TEST_F(SqlStorageTest, DeleteFileInfo) {
+TEST_P(IndexStorageTest, DeleteFileInfo) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -190,7 +185,7 @@ TEST_F(SqlStorageTest, DeleteFileInfo) {
   EXPECT_EQ(foo_url_id, storage_->DeleteFileInfo(foo_url_id));
 }
 
-TEST_F(SqlStorageTest, AddToPostingList) {
+TEST_P(IndexStorageTest, AddToPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -202,7 +197,7 @@ TEST_F(SqlStorageTest, AddToPostingList) {
   EXPECT_EQ(0, storage_->AddToPostingList(pinned_id, foo_url_id));
 }
 
-TEST_F(SqlStorageTest, DeleteFromPostingList) {
+TEST_P(IndexStorageTest, DeleteFromPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -219,7 +214,7 @@ TEST_F(SqlStorageTest, DeleteFromPostingList) {
   EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_id, foo_url_id));
 }
 
-TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
+TEST_P(IndexStorageTest, GetUrlIdsForTerm) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -257,7 +252,7 @@ TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
       testing::UnorderedElementsAre(foo_url_id, bar_url_id));
 }
 
-TEST_F(SqlStorageTest, GetAugmentedTermIdsForUrl) {
+TEST_P(IndexStorageTest, GetAugmentedTermIdsForUrl) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
@@ -283,6 +278,13 @@ TEST_F(SqlStorageTest, GetAugmentedTermIdsForUrl) {
   storage_->DeleteAugmentedTermIdsForUrl(augmented_ids_of_foo, foo_url_id);
   EXPECT_TRUE(storage_->GetAugmentedTermIdsForUrl(foo_url_id).empty());
 }
+
+INSTANTIATE_TEST_SUITE_P(Sql,
+                         IndexStorageTest,
+                         testing::ValuesIn<StorageType>({StorageType::SQL}));
+INSTANTIATE_TEST_SUITE_P(Ram,
+                         IndexStorageTest,
+                         testing::ValuesIn<StorageType>({StorageType::RAM}));
 
 }  // namespace
 }  // namespace file_manager

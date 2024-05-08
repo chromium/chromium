@@ -163,10 +163,6 @@ int64_t SqlStorage::GetOrCreateTermId(const std::string& term_bytes) {
   return term_table_.GetOrCreateTermId(term_bytes);
 }
 
-int64_t SqlStorage::DeleteTerm(const std::string& term_bytes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return term_table_.DeleteTerm(term_bytes);
-}
 
 int64_t SqlStorage::GetAugmentedTermId(const Term& term) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -188,10 +184,6 @@ int64_t SqlStorage::GetOrCreateAugmentedTermId(const Term& term) {
                                                           term_id);
 }
 
-int64_t SqlStorage::DeleteAugmentedTerm(int64_t augmented_term_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return augmented_term_table_.DeleteAugmentedTerm(augmented_term_id);
-}
 
 int64_t SqlStorage::GetOrCreateUrlId(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
