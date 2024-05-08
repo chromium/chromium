@@ -109,6 +109,11 @@
           "name": "force_installed",
           "description": "The extension is force installed or recommended by policy."
         }]
+      },
+      {
+        "id": "MV2DeprecationStatus",
+        "type": "string",
+        "enum": ["inactive", "warning"]
       }
     ],
     "functions": [
@@ -367,6 +372,18 @@
               }
             }
           ]
+        }
+      },
+      {
+        "name": "getMV2DeprecationStatus",
+        "description": "Returns the current state of the MV2 deprecation experiments.",
+        "parameters" : [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [{
+            "name": "status",
+            "$ref": "MV2DeprecationStatus"
+          }]
         }
       }
     ]

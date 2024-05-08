@@ -381,6 +381,26 @@ class WebstorePrivateGetFullChromeVersionFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class WebstorePrivateGetMV2DeprecationStatusFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webstorePrivate.getMV2DeprecationStatus",
+                             WEBSTOREPRIVATE_GETMV2DEPRECATIONSTATUS)
+
+  WebstorePrivateGetMV2DeprecationStatusFunction();
+
+  WebstorePrivateGetMV2DeprecationStatusFunction(
+      const WebstorePrivateGetMV2DeprecationStatusFunction&) = delete;
+  WebstorePrivateGetMV2DeprecationStatusFunction& operator=(
+      const WebstorePrivateGetMV2DeprecationStatusFunction&) = delete;
+
+ private:
+  ~WebstorePrivateGetMV2DeprecationStatusFunction() override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
