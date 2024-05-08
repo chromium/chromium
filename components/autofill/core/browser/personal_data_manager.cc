@@ -60,9 +60,7 @@ PersonalDataManager::PersonalDataManager(
 
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
 
-  // Potentially import profiles for testing. `Init()` is called whenever the
-  // corresponding Chrome profile is created. This is either during start-up or
-  // when the Chrome profile is changed.
+  // Potentially import addresses and credit cards for testing.
   MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
