@@ -35,6 +35,12 @@ PlusProfile CreatePlusProfile2(bool use_full_domain) {
                      /*is_confirmed=*/true);
 }
 
+PlusProfile CreatePlusProfileWithFacet(const affiliations::FacetURI& facet) {
+  PlusProfile profile = CreatePlusProfile();
+  profile.facet = facet;
+  return profile;
+}
+
 std::string MakeCreationResponse(const PlusProfile& profile) {
   std::string json = base::ReplaceStringPlaceholders(
       R"(

@@ -7,11 +7,14 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +25,11 @@ using ::affiliations::FacetURI;
 using ::affiliations::MockAffiliationService;
 using ::base::test::RunOnceCallback;
 using ::testing::UnorderedElementsAreArray;
+
+constexpr const char kAffiliatedAndroidApp[] =
+    "android://"
+    "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
+    "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
 }  // namespace
 
 class PlusAddressAffiliationMatchHelperTest : public testing::Test {
@@ -53,6 +61,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   testing::StrictMock<MockAffiliationService> mock_affiliation_service_;
   std::unique_ptr<PlusAddressService> plus_address_service_;
   std::unique_ptr<PlusAddressAffiliationMatchHelper> match_helper_;
+  base::test::ScopedFeatureList features_{features::kPlusAddressAffiliations};
 };
 
 // Verifies that PSL extensions are cached within the match helper and a single
@@ -102,6 +111,38 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
   // After all `GetPSLExtensions` are made, resolve the affiliation service
   // callback and make sure all the calls are resolved.
   std::move(first_callback).Run(pls_extensions);
+}
+
+// Verifies that exact and PSL matches (respecting the PSL extensions list) are
+// returned.
+TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
+  PlusProfile profile1 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://one.foo.example.com"));
+  PlusProfile profile2 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://two.foo.example.com"));
+  PlusProfile profile3 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec(kAffiliatedAndroidApp));
+  PlusProfile profile4 = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://bar.example.com"));
+
+  plus_address_service()->OnWebDataChangedBySync(
+      {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
+       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2),
+       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile3),
+       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile4)});
+  EXPECT_THAT(
+      plus_address_service()->GetPlusProfiles(),
+      UnorderedElementsAreArray({profile1, profile2, profile3, profile4}));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
+  base::MockCallback<
+      PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
+      callback;
+  // `profile3` is not a PSL match because it is an Android facet.
+  // `profile4` is not a match due to the PSL extension list exception.
+  EXPECT_CALL(callback, Run(UnorderedElementsAreArray({profile1, profile2})));
+  match_helper()->GetAffiliatedPlusProfiles(profile1, callback.Get());
 }
 
 }  // namespace plus_addresses

@@ -86,15 +86,29 @@ void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
         matches_received_callback,
     const FacetURI& facet,
     const base::flat_set<std::string>& psl_extensions) {
-  // TODO(b/324553908): Complete.
-  std::move(matches_received_callback).Run({});
+  std::vector<PlusProfile> matches;
+  for (PlusProfile& stored_profile : plus_address_service_->GetPlusProfiles()) {
+    FacetURI stored_profile_facet = absl::get<FacetURI>(stored_profile.facet);
+    // Note that exact matches are also PSL matches.
+    if (affiliations::IsExtendedPublicSuffixDomainMatch(
+            GURL(stored_profile_facet.canonical_spec()),
+            GURL(facet.canonical_spec()), psl_extensions)) {
+      matches.push_back(std::move(stored_profile));
+    }
+  }
+  std::move(matches_received_callback).Run(std::move(matches));
 }
 
 void PlusAddressAffiliationMatchHelper::MergeResults(
     AffiliatedPlusProfilesCallback result_callback,
     std::vector<std::vector<PlusProfile>> results) {
-  // TODO(b/324553908): Complete.
-  std::move(result_callback).Run({});
+  std::vector<PlusProfile> response;
+  for (std::vector<PlusProfile>& profiles : results) {
+    for (PlusProfile& profile : profiles) {
+      response.push_back(std::move(profile));
+    }
+  }
+  std::move(result_callback).Run(std::move(response));
 }
 
 }  // namespace plus_addresses

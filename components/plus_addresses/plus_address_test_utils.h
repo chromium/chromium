@@ -22,6 +22,9 @@ PlusProfile CreatePlusProfile(bool use_full_domain = false);
 // on sync data.
 PlusProfile CreatePlusProfile2(bool use_full_domain = false);
 
+// Returns a fully populated, confirmed PlusProfile with the given `facet`.
+PlusProfile CreatePlusProfileWithFacet(const affiliations::FacetURI& facet);
+
 // Used in testing the GetOrCreate, Reserve, and Create network requests.
 std::string MakeCreationResponse(const PlusProfile& profile);
 // Used in testing the List network requests.
