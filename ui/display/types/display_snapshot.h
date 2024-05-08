@@ -146,8 +146,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
     return drm_formats_and_modifiers_;
   }
 
-  void add_mode(const DisplayMode* mode) { modes_.push_back(mode->Clone()); }
-
   // Clones display state.
   std::unique_ptr<DisplaySnapshot> Clone() const;
 
