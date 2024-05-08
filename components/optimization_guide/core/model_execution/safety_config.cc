@@ -148,6 +148,11 @@ bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
   return proto_->request_check(check_idx).check_language_only();
 }
 
+bool SafetyConfig::ShouldIgnoreLanguageResultForRequestCheck(
+    int check_idx) const {
+  return proto_->request_check(check_idx).ignore_language_result();
+}
+
 bool SafetyConfig::IsRequestUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {

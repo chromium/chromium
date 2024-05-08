@@ -1410,6 +1410,45 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
+       RequestCheckFailsWithUnmetRequiredLanguageButIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+  Initialize();
+
+  {
+    // Configure a request safety check on the PageUrl.
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    safety_config->add_allowed_languages("eo");
+    safety_config->mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    auto* check = safety_config->add_request_check();
+    check->set_ignore_language_result(true);
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // This should pass the default raw output safety check
+  SetOnDeviceModelExecuteResultForTesting(
+      {"reasonable but unsafe output in esperanto"});
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "safe_url");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
        RequestCheckPassesWithMetRequiredLanguage) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

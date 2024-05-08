@@ -462,6 +462,8 @@ void SessionImpl::OnRequestSafetyResult(
   bool is_unsafe = on_device_state_->opts.safety_cfg.IsRequestUnsafe(
       request_check_idx, safety_info);
   bool is_unsupported_language =
+      !on_device_state_->opts.safety_cfg
+           .ShouldIgnoreLanguageResultForRequestCheck(request_check_idx) &&
       on_device_state_->opts.safety_cfg
           .IsTextInUnsupportedOrUndeterminedLanguage(safety_info);
 
