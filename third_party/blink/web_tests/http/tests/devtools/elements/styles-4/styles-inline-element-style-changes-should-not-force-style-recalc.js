@@ -26,5 +26,14 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
   `);
 
   UI.Context.Context.instance().setFlavor(Timeline.TimelinePanel.TimelinePanel, Timeline.TimelinePanel.TimelinePanel.instance());
-  PerformanceTestRunner.performActionsAndPrint('performActions()', 'RecalculateStyles');
+  await PerformanceTestRunner.evaluateWithTimeline('performActions()');
+
+  const events = PerformanceTestRunner.traceEngineRawEvents();
+  if (events.length === 0) {
+    TestRunner.addResult('ERROR: did not find any trace engine events.');
+  }
+
+  const updateLayoutTreeEvents = events.filter(event => event.name === 'UpdateLayoutTree');
+  TestRunner.addResult(`Found ${updateLayoutTreeEvents.length} UpdateLayoutTree events (expecting 0).`);
+  TestRunner.completeTest();
 })();
