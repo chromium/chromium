@@ -439,9 +439,23 @@ class CORE_EXPORT CSSParserTokenStream {
   void Restore(State state) {
     DCHECK(has_look_ahead_);
 #if DCHECK_IS_ON()
+    if (offset_ == state.offset_) {
+      // See comment below.
+      return;
+    }
     offset_ = state.offset_;
     DCHECK_EQ(state.boundaries_, boundaries_) << "Boundary-crossing restore";
 #else   // !DCHECK_IS_ON()
+    if (offset_ == state) {
+      // No rewind needed, so we don't need to re-tokenize.
+      // This happens especially often in MathFunctionParser
+      // due to its design; it would perhaps be better to fix that
+      // and other callers (it's cheaper never to rewind than to
+      // test that rewind isn't needed), but this saves
+      // quite a bit of time in total, so the test is generally
+      // worth it.
+      return;
+    }
     offset_ = state;
 #endif  // DCHECK_IS_ON()
     next_ = tokenizer_.Restore(next_, offset_);
