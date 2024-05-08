@@ -140,13 +140,21 @@ void FrameCaret::StopCaretBlinkTimer() {
 
 void FrameCaret::StartBlinkCaret() {
   // Start blinking with a black caret. Be sure not to restart if we're
-  // already blinking in the right location.
-  if (caret_blink_timer_.IsActive())
-    return;
-
+  // already blinking in the right location at the right rate.
   base::TimeDelta blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
-  if (!blink_interval.is_zero())
+  if (caret_blink_timer_.IsActive()) {
+    if (blink_interval == caret_blink_timer_.RepeatInterval()) {
+      // Already blinking at the right rate.
+      return;
+    }
+
+    // If it was active but we are changing the blink rate, reset state.
+    StopCaretBlinkTimer();
+  }
+
+  if (!blink_interval.is_zero()) {
     caret_blink_timer_.StartRepeating(blink_interval, FROM_HERE);
+  }
 
   display_item_client_->SetActive(true);
   SetVisibleIfActive(true);
