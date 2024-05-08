@@ -15,7 +15,18 @@ enum class ProfileReauthPrompt {
 };
 
 namespace prefs {
-extern const char kProfileReauthPrompt[];
+// Whether or not admin wants to guide users through reauth when their GAIA
+// session expires. This is a ProfileReauthPrompt enum.
+inline constexpr char kProfileReauthPrompt[] =
+    "enterprise_signin.profile_reauth_prompt";
+
+// Pref storage for profile level information including user name, email etc.
+// It is separated from entries that stores information for signed-in users
+// since there may not be one in some cases, e.g. OIDC-managed profiles.
+inline constexpr char kProfileUserDisplayName[] =
+    "enterprise_signin.profile_user_display_name";
+inline constexpr char kProfileUserEmail[] =
+    "enterprise_signin.profile_user_email";
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

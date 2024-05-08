@@ -13,13 +13,19 @@ class OidcManagedProfileCreationDelegate
     : public ManagedProfileCreationDelegate {
  public:
   OidcManagedProfileCreationDelegate();
-  OidcManagedProfileCreationDelegate(const std::string& auth_token,
-                                     const std::string& id_token,
-                                     const bool dasher_based);
-  OidcManagedProfileCreationDelegate(
-      const OidcManagedProfileCreationDelegate&) = delete;
+  OidcManagedProfileCreationDelegate(std::string auth_token,
+                                     std::string id_token,
+                                     const bool dasher_based,
+                                     std::string user_display_name,
+                                     std::string user_email);
+
+  OidcManagedProfileCreationDelegate(const OidcManagedProfileCreationDelegate&);
+  OidcManagedProfileCreationDelegate(OidcManagedProfileCreationDelegate&&);
   OidcManagedProfileCreationDelegate& operator=(
-      const OidcManagedProfileCreationDelegate&) = delete;
+      const OidcManagedProfileCreationDelegate&);
+  OidcManagedProfileCreationDelegate& operator=(
+      OidcManagedProfileCreationDelegate&&);
+
   ~OidcManagedProfileCreationDelegate() override;
 
   // ManagedProfileCreationDelegate implementation
@@ -30,9 +36,11 @@ class OidcManagedProfileCreationDelegate
                                    ProfileCreationCallback callback) override;
 
  private:
-  const std::string auth_token_;
-  const std::string id_token_;
-  const bool dasher_based_ = true;
+  std::string auth_token_;
+  std::string id_token_;
+  bool dasher_based_ = true;
+  std::string user_display_name_;
+  std::string user_email_;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_OIDC_MANAGED_PROFILE_CREATION_DELEGATE_H_

@@ -8,18 +8,13 @@
 
 namespace enterprise_signin {
 
-namespace prefs {
-
-// Whether or not admin wants to guide users through reauth when their GAIA
-// session expires. This is a ProfileReauthPrompt enum.
-const char kProfileReauthPrompt[] = "enterprise_signin.profile_reauth_prompt";
-
-}  // namespace prefs
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kProfileReauthPrompt,
       static_cast<int>(ProfileReauthPrompt::kDoNotPrompt));
+
+  registry->RegisterStringPref(prefs::kProfileUserDisplayName, std::string());
+  registry->RegisterStringPref(prefs::kProfileUserEmail, std::string());
 }
 
 }  // namespace enterprise_signin

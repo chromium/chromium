@@ -84,6 +84,10 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/trusted_vault/features.h"
 #endif
@@ -576,9 +580,21 @@ void ProfileMenuView::BuildIdentity() {
         ui::ImageModel::FromImage(account_info.account_image),
         badge_image_model, menu_title_, menu_subtitle_, management_label);
   } else {
-    menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+    std::string profile_user_display_name, profile_user_email;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    profile_user_display_name = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserDisplayName);
+    profile_user_email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+#endif
+    menu_title_ =
+        profile_user_display_name.empty()
+            ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
+            : base::UTF8ToUTF16(profile_user_display_name);
     // The email may be empty.
-    menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
+    menu_subtitle_ = base::UTF8ToUTF16(
+        profile_user_email.empty() ? account_info.email : profile_user_email);
+
     std::u16string management_label;
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,

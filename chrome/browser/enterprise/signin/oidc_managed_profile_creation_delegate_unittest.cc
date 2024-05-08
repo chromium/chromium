@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -20,6 +21,9 @@
 
 constexpr char kOAuthToken[] = "fake-oauth-token";
 constexpr char kIdToken[] = "fake-id-token";
+
+constexpr char kSampleEmail[] = "email@domain.com";
+constexpr char kSampleName[] = "People Person";
 
 class OidcManagedProfileCreationDelegateTest
     : public testing::TestWithParam<bool> {
@@ -52,7 +56,7 @@ class OidcManagedProfileCreationDelegateTest
 TEST_P(OidcManagedProfileCreationDelegateTest,
        CreatesProfileWithManagementInfo) {
   auto delegate = std::make_unique<OidcManagedProfileCreationDelegate>(
-      kOAuthToken, kIdToken, is_dasher_based());
+      kOAuthToken, kIdToken, is_dasher_based(), kSampleName, kSampleEmail);
 
   auto* entry = TestingBrowserProcess::GetGlobal()
                     ->profile_manager()
@@ -68,7 +72,7 @@ TEST_P(OidcManagedProfileCreationDelegateTest,
 
 TEST_P(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
   auto delegate = std::make_unique<OidcManagedProfileCreationDelegate>(
-      kOAuthToken, kIdToken, is_dasher_based());
+      kOAuthToken, kIdToken, is_dasher_based(), kSampleName, kSampleEmail);
   Profile* new_profile =
       profile_manager_->CreateTestingProfile("new_test_profile");
 
@@ -76,7 +80,14 @@ TEST_P(OidcManagedProfileCreationDelegateTest, OnManagedProfileInitialized) {
   delegate->OnManagedProfileInitialized(
       profile_, new_profile,
       base::BindOnce(
-          [](base::OnceClosure quit_closure, base::WeakPtr<Profile> profile) {
+          [&](base::OnceClosure quit_closure, base::WeakPtr<Profile> profile) {
+            auto* prefs = profile->GetPrefs();
+            EXPECT_EQ(kSampleName,
+                      prefs->GetString(
+                          enterprise_signin::prefs::kProfileUserDisplayName));
+            EXPECT_EQ(
+                kSampleEmail,
+                prefs->GetString(enterprise_signin::prefs::kProfileUserEmail));
             std::move(quit_closure).Run();
           },
           loop.QuitClosure()));

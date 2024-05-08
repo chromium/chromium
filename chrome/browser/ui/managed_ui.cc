@@ -70,14 +70,6 @@ enum ManagementStringType : size_t {
 
 const char* g_device_manager_for_testing = nullptr;
 
-const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return profile->GetUserCloudPolicyManagerAsh();
-#else
-  return profile->GetUserCloudPolicyManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 std::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
   if (g_browser_process->profile_manager()) {
     ProfileAttributesEntry* entry =
@@ -442,7 +434,7 @@ std::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
     return std::nullopt;
 
   const std::optional<std::string> managed_by =
-      policy::GetManagedBy(GetUserCloudPolicyManager(profile));
+      policy::GetManagedBy(profile->GetCloudPolicyManager());
   if (managed_by)
     return *managed_by;
 

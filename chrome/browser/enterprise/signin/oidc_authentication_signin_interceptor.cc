@@ -277,10 +277,11 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
   profile_creator_ = std::make_unique<ManagedProfileCreator>(
       profile_, subject_id_,
       (user_display_name_.empty())
-          ? base::UTF8ToUTF16(user_display_name_)
-          : profiles::GetDefaultNameForNewEnterpriseProfile(),
+          ? profiles::GetDefaultNameForNewEnterpriseProfile()
+          : base::UTF8ToUTF16(user_display_name_),
       std::make_unique<OidcManagedProfileCreationDelegate>(
-          oidc_tokens_.auth_token, oidc_tokens_.id_token, dasher_based_),
+          oidc_tokens_.auth_token, oidc_tokens_.id_token, dasher_based_,
+          user_display_name_, user_email_),
       base::BindOnce(
           &OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated,
           base::Unretained(this)));

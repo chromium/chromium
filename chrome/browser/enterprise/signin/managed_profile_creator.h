@@ -21,11 +21,6 @@ using ProfileCreationCallback =
 // creates.
 class ManagedProfileCreationDelegate {
  public:
-  ManagedProfileCreationDelegate() = default;
-  ManagedProfileCreationDelegate(const ManagedProfileCreationDelegate&) =
-      delete;
-  ManagedProfileCreationDelegate& operator=(
-      const ManagedProfileCreationDelegate&) = delete;
   virtual ~ManagedProfileCreationDelegate() = default;
 
   // Sets profile attributes related to management.
