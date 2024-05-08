@@ -2451,6 +2451,9 @@ Style notes:
       <message name="IDS_ASH_MOD3_KEY" desc="Name of ISOLevel5 (mod3) key name. Shouldn't be translated in many languages actually. This name should be lower case.">
         mod3
       </message>
+      <message name="IDS_ASH_FN_KEY" desc="Name of [Fn] key name. Shouldn't be translated in many languages actually. This name should be lower case.">
+        fn
+      </message>
 
       <!-- Dictation -->
       <message name="IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME" desc="The accessible name for the Dictation button in the system tray.">

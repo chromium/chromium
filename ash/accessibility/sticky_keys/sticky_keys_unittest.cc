@@ -232,6 +232,49 @@ TEST_F(StickyKeysTest, BasicOneshotScenarioTest) {
   EXPECT_FALSE(mod_down_flags & ui::EF_SHIFT_DOWN);
 }
 
+TEST_F(StickyKeysTest, BasicOneshotScenarioFnTest) {
+  std::unique_ptr<ui::KeyEvent> ev;
+  StickyKeysHandler sticky_key(ui::EF_FUNCTION_DOWN);
+
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED, sticky_key.current_state());
+
+  // By typing Fn key, internal state become ENABLED.
+  SendActivateStickyKeyPattern(&sticky_key, ui::VKEY_FUNCTION);
+  EXPECT_EQ(STICKY_KEY_STATE_ENABLED, sticky_key.current_state());
+
+  ev.reset(GenerateKey(ui::ET_KEY_PRESSED, ui::VKEY_A));
+  bool released = false;
+  int mod_down_flags = 0;
+  HandleKeyEvent(*ev.get(), &sticky_key, &mod_down_flags, &released);
+  // Next keyboard event is fn modified.
+  EXPECT_TRUE(mod_down_flags & ui::EF_FUNCTION_DOWN);
+  // Modifier release notification happens.
+  EXPECT_TRUE(released);
+
+  ev.reset(GenerateKey(ui::ET_KEY_RELEASED, ui::VKEY_A));
+  released = false;
+  mod_down_flags = 0;
+  HandleKeyEvent(*ev.get(), &sticky_key, &mod_down_flags, &released);
+
+  EXPECT_EQ(STICKY_KEY_STATE_DISABLED, sticky_key.current_state());
+  // Making sure Function up keyboard event is available.
+  std::unique_ptr<ui::Event> up_event;
+  ASSERT_EQ(0, sticky_key.GetModifierUpEvent(&up_event));
+  EXPECT_TRUE(up_event.get());
+  EXPECT_EQ(ui::ET_KEY_RELEASED, up_event->type());
+  EXPECT_EQ(ui::VKEY_FUNCTION,
+            static_cast<const ui::KeyEvent*>(up_event.get())->key_code());
+
+  // Enabled state is one shot, so next key event should not be fn modified.
+  ev.reset(GenerateKey(ui::ET_KEY_PRESSED, ui::VKEY_A));
+  mod_down_flags = HandleKeyEventForDownFlags(*ev.get(), &sticky_key);
+  EXPECT_FALSE(mod_down_flags & ui::EF_FUNCTION_DOWN);
+
+  ev.reset(GenerateKey(ui::ET_KEY_RELEASED, ui::VKEY_A));
+  mod_down_flags = HandleKeyEventForDownFlags(*ev.get(), &sticky_key);
+  EXPECT_FALSE(mod_down_flags & ui::EF_FUNCTION_DOWN);
+}
+
 TEST_F(StickyKeysTest, AltGrKey) {
   std::unique_ptr<ui::KeyEvent> ev;
   StickyKeysHandler altgr_sticky_key(ui::EF_ALTGR_DOWN);

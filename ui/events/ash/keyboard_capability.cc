@@ -980,6 +980,16 @@ bool KeyboardCapability::HasFunctionKey(int device_id) const {
   return HasFunctionKey(*keyboard);
 }
 
+bool KeyboardCapability::HasFunctionKeyOnAnyKeyboard() const {
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasFunctionKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
   if (ash::features::IsSplitKeyboardRefactorEnabled()) {
     return true;

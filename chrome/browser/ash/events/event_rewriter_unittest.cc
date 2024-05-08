@@ -4532,29 +4532,36 @@ TEST_P(StickyKeysOverlayTest, ModifierVisibility) {
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_COMMAND_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
+  EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_FUNCTION_DOWN));
 
   // Turn all modifiers on.
   auto* sticky_keys_controller = Shell::Get()->sticky_keys_controller();
-  sticky_keys_controller->SetModifiersEnabled(true, true);
+  sticky_keys_controller->SetMod3AndAltGrModifiersEnabled(true, true);
+  sticky_keys_controller->SetFnModifierEnabled(true);
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_CONTROL_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_SHIFT_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_ALT_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_COMMAND_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
+  EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_FUNCTION_DOWN));
+
+  // Turn off Fn.
+  sticky_keys_controller->SetFnModifierEnabled(false);
+  EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_FUNCTION_DOWN));
 
   // Turn off Mod3.
-  sticky_keys_controller->SetModifiersEnabled(false, true);
+  sticky_keys_controller->SetMod3AndAltGrModifiersEnabled(false, true);
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn off AltGr.
-  sticky_keys_controller->SetModifiersEnabled(true, false);
+  sticky_keys_controller->SetMod3AndAltGrModifiersEnabled(true, false);
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_TRUE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 
   // Turn off AltGr and Mod3.
-  sticky_keys_controller->SetModifiersEnabled(false, false);
+  sticky_keys_controller->SetMod3AndAltGrModifiersEnabled(false, false);
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_ALTGR_DOWN));
   EXPECT_FALSE(overlay_->GetModifierVisible(ui::EF_MOD3_DOWN));
 }

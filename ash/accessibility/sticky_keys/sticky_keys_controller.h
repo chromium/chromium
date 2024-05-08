@@ -72,7 +72,9 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
   // Activate sticky keys to intercept and modify incoming events.
   void Enable(bool enabled);
 
-  void SetModifiersEnabled(bool mod3_enabled, bool altgr_enabled);
+  void SetMod3AndAltGrModifiersEnabled(bool mod3_enabled, bool altgr_enabled);
+
+  void SetFnModifierEnabled(bool fn_enabled);
 
   // Update StickyKeysOverlay bounds (e.g. if the workspace area changed).
   void UpdateStickyKeysOverlayBoundsIfNeeded();
@@ -119,6 +121,9 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
   // Whether the current layout has an altgr key.
   bool altgr_enabled_;
 
+  // Whether the current internal keyboard has an fn key.
+  bool fn_enabled_;
+
   // Sticky key handlers.
   std::unique_ptr<StickyKeysHandler> shift_sticky_key_;
   std::unique_ptr<StickyKeysHandler> alt_sticky_key_;
@@ -126,6 +131,7 @@ class ASH_EXPORT StickyKeysController : public ui::EventRewriter {
   std::unique_ptr<StickyKeysHandler> ctrl_sticky_key_;
   std::unique_ptr<StickyKeysHandler> mod3_sticky_key_;
   std::unique_ptr<StickyKeysHandler> search_sticky_key_;
+  std::unique_ptr<StickyKeysHandler> fn_sticky_key_;
 
   std::unique_ptr<StickyKeysOverlay> overlay_;
 };

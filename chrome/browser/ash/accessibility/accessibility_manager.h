@@ -42,6 +42,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace content {
@@ -129,7 +130,8 @@ class AccessibilityManager
       public input_method::InputMethodManager::Observer,
       public CrasAudioHandler::AudioObserver,
       public ProfileObserver,
-      public speech::SodaInstaller::Observer {
+      public speech::SodaInstaller::Observer,
+      public ui::InputDeviceEventObserver {
  public:
   AccessibilityManager(const AccessibilityManager&) = delete;
   AccessibilityManager& operator=(const AccessibilityManager&) = delete;
@@ -433,6 +435,10 @@ class AccessibilityManager
                           speech::SodaInstaller::ErrorCode error_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
                       int progress) override;
+
+  // ui::InputDeviceEventObserver
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_type) override;
+  void OnDeviceListsComplete() override;
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);

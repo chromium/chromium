@@ -108,6 +108,9 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
@@ -578,6 +581,8 @@ AccessibilityManager::AccessibilityManager() {
 
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
+
   dlc_installer_ = std::make_unique<AccessibilityDlcInstaller>();
 }
 
@@ -586,6 +591,7 @@ AccessibilityManager::~AccessibilityManager() {
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kManagerShutdown, false);
   NotifyAccessibilityStatusChanged(details);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   input_method::InputMethodManager::Get()->RemoveObserver(this);
@@ -1503,7 +1509,7 @@ void AccessibilityManager::InputMethodChanged(
     input_method::InputMethodManager* manager,
     Profile* /* profile */,
     bool show_message) {
-  Shell::Get()->sticky_keys_controller()->SetModifiersEnabled(
+  Shell::Get()->sticky_keys_controller()->SetMod3AndAltGrModifiersEnabled(
       manager->IsISOLevel5ShiftUsedByCurrentInputMethod(),
       manager->IsAltGrUsedByCurrentInputMethod());
   const input_method::InputMethodDescriptor descriptor =
@@ -3023,6 +3029,18 @@ void AccessibilityManager::SendSyntheticMouseEvent(
   if (!is_mouse_events_enabled) {
     cursor_client->DisableMouseEvents();
   }
+}
+
+void AccessibilityManager::OnInputDeviceConfigurationChanged(
+    uint8_t input_device_type) {
+  if (input_device_type & ui::InputDeviceEventObserver::kKeyboard) {
+    Shell::Get()->sticky_keys_controller()->SetFnModifierEnabled(
+        Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
+  }
+}
+void AccessibilityManager::OnDeviceListsComplete() {
+  Shell::Get()->sticky_keys_controller()->SetFnModifierEnabled(
+      Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
 }
 
 }  // namespace ash

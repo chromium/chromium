@@ -360,6 +360,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the Function key exists on the given keyboard.
   bool HasFunctionKey(const KeyboardDevice& keyboard) const;
   bool HasFunctionKey(int device_id) const;
+  bool HasFunctionKeyOnAnyKeyboard() const;
 
   // Check if the RightAlt key exists on the given keyboard.
   bool HasRightAltKey(const KeyboardDevice& keyboard) const;
