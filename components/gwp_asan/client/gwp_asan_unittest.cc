@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
@@ -22,10 +23,12 @@ namespace internal {
 
 std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     const base::Feature& feature,
-    bool boost_sampling);
+    bool boost_sampling,
+    std::string_view process_type);
 std::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
-    bool boost_sampling);
+    bool boost_sampling,
+    std::string_view process_type);
 
 namespace {
 
@@ -39,6 +42,9 @@ BASE_FEATURE(kTestFeature2,
 BASE_FEATURE(kTestFeature3,
              "GwpAsanTestFeature3",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+inline constexpr std::string_view kDummyProcessType =
+    "assuredly not a real process type";
 
 // Tries to enable hooking with the given process sampling parameters
 // kLoopIterations times and return the number of times hooking was enabled.
@@ -54,8 +60,8 @@ size_t processSamplingTest(const char* process_sampling,
 
   size_t enabled = 0;
   for (size_t i = 0; i < kLoopIterations; i++) {
-    if (GetAllocatorSettings(kTestFeature1,
-                             process_sampling_boost != nullptr)) {
+    if (GetAllocatorSettings(kTestFeature1, process_sampling_boost != nullptr,
+                             kDummyProcessType)) {
       enabled++;
     }
   }
@@ -79,7 +85,8 @@ std::set<size_t> allocationSamplingTest(
 
   std::set<size_t> frequencies;
   for (size_t i = 0; i < kLoopIterations; i++) {
-    if (auto settings = GetAllocatorSettings(kTestFeature2, false)) {
+    if (auto settings =
+            GetAllocatorSettings(kTestFeature2, false, kDummyProcessType)) {
       frequencies.insert(settings->sampling_frequency);
     }
   }
@@ -123,7 +130,8 @@ TEST(GwpAsanTest, GetDefaultAllocatorSettings) {
   scoped_feature.InitAndEnableFeatureWithParameters(kTestFeature3,
                                                     empty_parameters);
 
-  const auto settings = GetAllocatorSettingsImpl(kTestFeature3, false);
+  const auto settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, kDummyProcessType);
   EXPECT_TRUE(settings.has_value());
 }
 
@@ -135,8 +143,31 @@ TEST(GwpAsanTest, GetOutOfRangeAllocatorSettings) {
   scoped_feature.InitAndEnableFeatureWithParameters(kTestFeature3,
                                                     bad_parameters);
 
-  const auto settings = GetAllocatorSettingsImpl(kTestFeature3, false);
+  const auto settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, kDummyProcessType);
   EXPECT_FALSE(settings.has_value());
+}
+
+TEST(GwpAsanTest, GetProcessSpecificAllocatorSettings) {
+  std::map<std::string, std::string> process_specific_parameters;
+  // Set to weird and distinctive values.
+  process_specific_parameters["BrowserMaxAllocations"] = "21";
+  process_specific_parameters["RendererMaxAllocations"] = "22";
+
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(
+      kTestFeature3, process_specific_parameters);
+
+  // The empty `process_type` string denotes the browser process.
+  const auto browser_settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, "");
+  EXPECT_TRUE(browser_settings.has_value());
+  EXPECT_EQ(browser_settings->max_allocated_pages, 21ul);
+
+  const auto renderer_settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, "renderer");
+  EXPECT_TRUE(renderer_settings.has_value());
+  EXPECT_EQ(renderer_settings->max_allocated_pages, 22ul);
 }
 
 }  // namespace internal

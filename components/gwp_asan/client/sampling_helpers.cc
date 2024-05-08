@@ -31,19 +31,6 @@ constexpr auto kProcessMap =
          {"renderer", "Renderer"},
          {"utility", "Utility"}});
 
-// Turns the value passed to --type= into
-// *  a representation of the process type
-// *  or `nullopt` if we don't emit for said process.
-//
-// Used in the patterned histogram `Security.GwpAsan.AllocatorOom...`.
-std::optional<std::string_view> ProcessString(std::string_view process_type) {
-  const auto iter = kProcessMap.find(process_type);
-  if (iter == kProcessMap.cend()) {
-    return std::nullopt;
-  }
-  return std::make_optional(iter->second);
-}
-
 void ReportOomHistogram(base::HistogramBase* histogram,
                         size_t sampling_frequency,
                         size_t allocations) {
@@ -81,6 +68,19 @@ GuardedPageAllocator::OutOfMemoryCallback CreateOomCallback(
       /*flags=*/base::HistogramBase::Flags::kUmaTargetedHistogramFlag);
   CHECK(histogram);
   return base::BindOnce(&ReportOomHistogram, histogram, sampling_frequency);
+}
+
+// Turns the value passed to --type= into
+// *  a representation of the process type
+// *  or `nullopt` if we don't emit for said process.
+//
+// Used in the patterned histogram `Security.GwpAsan.AllocatorOom...`.
+std::optional<std::string_view> ProcessString(std::string_view process_type) {
+  const auto iter = kProcessMap.find(process_type);
+  if (iter == kProcessMap.cend()) {
+    return std::nullopt;
+  }
+  return std::make_optional(iter->second);
 }
 
 void ReportGwpAsanActivated(std::string_view allocator_name,

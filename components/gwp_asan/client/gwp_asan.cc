@@ -22,6 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
@@ -147,8 +148,22 @@ const base::FeatureParam<LightweightDetectorMode>
 std::optional<int> GetIntParam(const base::Feature& feature,
                                const std::string& param,
                                int fallback,
+                               std::string_view process_type,
                                base::FunctionRef<bool(int)> failure_condition) {
+  const std::optional<std::string_view> param_prefix =
+      ProcessString(process_type);
+
+  // Get the prefix-less parameter value first.
   int param_int = GetFieldTrialParamByFeatureAsInt(feature, param, fallback);
+  if (param_prefix.has_value()) {
+    // If a process-specific override parameter exists, prefer that
+    // instead.
+    const std::string prefixed_param =
+        base::StrCat({param_prefix.value(), param});
+    param_int =
+        GetFieldTrialParamByFeatureAsInt(feature, prefixed_param, param_int);
+  }
+
   if (param_int < 1 || failure_condition(param_int)) {
     DLOG(ERROR) << feature.name << " " << param
                 << " is out-of-range: " << param_int;
@@ -260,7 +275,8 @@ bool IsMutuallyExclusiveFeatureAllowed(const base::Feature& feature) {
 // be assigned to the `feature`.
 GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     const base::Feature& feature,
-    bool boost_sampling) {
+    bool boost_sampling,
+    std::string_view process_type) {
   static_assert(
       AllocatorState::kMaxRequestedSlots <= std::numeric_limits<int>::max(),
       "kMaxRequestedSlots out of range");
@@ -272,14 +288,14 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
   constexpr int kMaxMetadata = static_cast<int>(AllocatorState::kMaxMetadata);
 
   const auto total_pages =
-      GetIntParam(feature, "TotalPages", kDefaultTotalPages,
+      GetIntParam(feature, "TotalPages", kDefaultTotalPages, process_type,
                   [](int param_int) { return param_int > kMaxRequestedSlots; });
   if (!total_pages.has_value()) {
     return std::nullopt;
   }
 
   const auto max_metadata = GetIntParam(
-      feature, "MaxMetadata", kDefaultMaxMetadata,
+      feature, "MaxMetadata", kDefaultMaxMetadata, process_type,
       [total_pages, kMaxMetadata](int param_int) {
         return param_int > std::min(total_pages.value(), kMaxMetadata);
       });
@@ -288,7 +304,7 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
   }
 
   const auto max_allocations = GetIntParam(
-      feature, "MaxAllocations", kDefaultMaxAllocations,
+      feature, "MaxAllocations", kDefaultMaxAllocations, process_type,
       [max_metadata](int param_int) { return param_int > max_metadata; });
   if (!max_allocations.has_value()) {
     return std::nullopt;
@@ -307,7 +323,8 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
 // Exported for testing.
 GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
-    bool boost_sampling) {
+    bool boost_sampling,
+    std::string_view process_type) {
   if (!base::FeatureList::IsEnabled(feature)) {
     return std::nullopt;
   }
@@ -320,7 +337,7 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettings(
     return std::nullopt;
   }
 
-  return GetAllocatorSettingsImpl(feature, boost_sampling);
+  return GetAllocatorSettingsImpl(feature, boost_sampling, process_type);
 }
 
 bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
@@ -473,7 +490,7 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
-        internal::kGwpAsanMalloc, boost_sampling);
+        internal::kGwpAsanMalloc, boost_sampling, process_type);
     internal::ReportGwpAsanActivated("Malloc", process_type,
                                      settings.has_value());
     if (!settings)
@@ -497,7 +514,7 @@ void EnableForPartitionAlloc(bool boost_sampling,
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   static bool init_once = [&]() -> bool {
     const auto settings = internal::GetAllocatorSettings(
-        internal::kGwpAsanPartitionAlloc, boost_sampling);
+        internal::kGwpAsanPartitionAlloc, boost_sampling, process_type);
     internal::ReportGwpAsanActivated("PartitionAlloc", process_type,
                                      settings.has_value());
     if (!settings)
