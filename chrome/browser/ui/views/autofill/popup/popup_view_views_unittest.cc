@@ -1705,7 +1705,7 @@ TEST_F(PopupViewViewsTest, SearchBar_HidesPopupOnFocusLost) {
   views::View* focused_field = widget().GetFocusManager()->GetFocusedView();
   ASSERT_NE(focused_field, nullptr);
 
-  EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kFocusChanged));
+  EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kSearchBarFocusLost));
 
   widget().GetFocusManager()->SetFocusedView(nullptr);
 

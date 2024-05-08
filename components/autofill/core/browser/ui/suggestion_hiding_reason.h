@@ -78,7 +78,9 @@ enum class SuggestionHidingReason {
   // a few seconds on a timer then the popup is closed. Currently, this event
   // is only used for Compose.
   kFadeTimerExpired = 26,
-  kMaxValue = kFadeTimerExpired
+  // The popup search bar loses focus.
+  kSearchBarFocusLost = 27,
+  kMaxValue = kSearchBarFocusLost
 };
 
 }  // namespace autofill

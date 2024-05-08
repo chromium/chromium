@@ -706,12 +706,8 @@ void PopupViewViews::SearchBarOnInputChanged(const std::u16string& query) {
 }
 
 void PopupViewViews::SearchBarOnFocusLost() {
-  // Deactivate to ensure `HasFocus()` won't return `true`.
-  if (GetWidget()) {
-    GetWidget()->Deactivate();
-  }
   if (controller_) {
-    controller_->Hide(SuggestionHidingReason::kFocusChanged);
+    controller_->Hide(SuggestionHidingReason::kSearchBarFocusLost);
   }
 }
 
