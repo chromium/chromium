@@ -75,6 +75,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -4565,16 +4566,15 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     base::RunLoop run_loop;
     class WaitForDidStopLoading : public mojom::FrameHostInterceptorForTesting {
      public:
-      explicit WaitForDidStopLoading(RenderFrameHostImpl* impl) : impl_(impl) {
-        (void)impl_->frame_host_receiver_for_testing().SwapImplForTesting(this);
-      }
+      explicit WaitForDidStopLoading(RenderFrameHostImpl* render_frame_host)
+          : swapped_impl_(render_frame_host->frame_host_receiver_for_testing(),
+                          this) {}
 
-      ~WaitForDidStopLoading() override {
-        (void)impl_->frame_host_receiver_for_testing().SwapImplForTesting(
-            impl_);
-      }
+      ~WaitForDidStopLoading() override = default;
 
-      FrameHost* GetForwardingInterface() override { return impl_; }
+      FrameHost* GetForwardingInterface() override {
+        return swapped_impl_.old_impl();
+      }
 
       // mojom::FrameHost overrides:
       void DidStopLoading() override {
@@ -4588,7 +4588,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
      private:
       base::RunLoop loop_;
-      raw_ptr<RenderFrameHostImpl> impl_;
+      mojo::test::ScopedSwapImplForTesting<mojom::FrameHost> swapped_impl_;
     };
 
     WaitForDidStopLoading did_stop_loading_waiter(
