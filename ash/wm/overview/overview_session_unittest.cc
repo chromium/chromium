@@ -5736,7 +5736,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
 // Tests to see if windows are shifted if at least one window is
 // partially/completely positioned offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
-  auto windows = CreateAppWindows(7);
+  auto windows = CreateAppWindows(9);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -5927,7 +5927,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
 // Test that scrolling occurs if started on top of a window using the window's
 // center-point as a start.
 TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
-  auto windows = CreateAppWindows(8);
+  auto windows = CreateAppWindows(9);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -6364,7 +6364,7 @@ TEST_F(TabletModeOverviewSessionTest, VerticalScrollingOnOverviewItem) {
 
 // Test that scrolling occurs if we hit the associated keyboard shortcut.
 TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
-  auto windows = CreateAppWindows(8);
+  auto windows = CreateAppWindows(9);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -6403,7 +6403,7 @@ TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  auto windows = CreateAppWindows(7);
+  auto windows = CreateAppWindows(9);
 
   // Helper to determine whether a grid layout is valid. It is considered valid
   // if the left edge of the first item is close enough to the left edge of the
