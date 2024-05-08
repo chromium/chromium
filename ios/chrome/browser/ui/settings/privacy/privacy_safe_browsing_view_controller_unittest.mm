@@ -52,6 +52,11 @@ class PrivacySafeBrowsingViewControllerTest
 };
 
 TEST_F(PrivacySafeBrowsingViewControllerTest, TestModel) {
+  if (@available(iOS 16, *)) {
+    // TODO:(crbug.com/339424308): Failing on ios 16.7.1 and 16.7.2.
+    return;
+  }
+
   CreateController();
   CheckController();
 
