@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_NOTIFICATION_H_
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -25,7 +28,10 @@ class ExtendedUpdatesNotification : public message_center::NotificationObserver,
     kLearnMore = 1,
   };
 
-  static constexpr char kNotificationId[] = "ash.extended_updates.available";
+  static constexpr std::string_view kNotificationId =
+      "ash.extended_updates.available";
+  static constexpr NotificationHandler::Type kNotificationType =
+      NotificationHandler::Type::TRANSIENT;
 
   // Creates a new notification handler.
   static base::WeakPtr<ExtendedUpdatesNotification> Create(Profile* profile);

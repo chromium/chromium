@@ -79,8 +79,8 @@ void ExtendedUpdatesNotification::Show() {
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_factory_.GetWeakPtr()));
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT,
-      builder.Build(/*keep_timestamp=*/false), /*metadata=*/nullptr);
+      kNotificationType, builder.Build(/*keep_timestamp=*/false),
+      /*metadata=*/nullptr);
   RecordExtendedUpdatesEntryPointEvent(
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown);
 }
@@ -111,6 +111,11 @@ void ExtendedUpdatesNotification::Click(
     case IndexedButton::kLearnMore:
       OpenLearnMoreUrl();
       break;
+  }
+
+  if (Profile* profile = profile_observation_.GetSource()) {
+    NotificationDisplayService::GetForProfile(profile)->Close(
+        kNotificationType, std::string(kNotificationId));
   }
 }
 
