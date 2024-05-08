@@ -78,10 +78,6 @@ void CanvasRenderingContext::Dispose() {
   }
 }
 
-NoAllocDirectCallHost* CanvasRenderingContext::AsNoAllocDirectCallHost() {
-  return nullptr;
-}
-
 void CanvasRenderingContext::DidDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {

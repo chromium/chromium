@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
@@ -138,16 +137,13 @@ class ScopedRGBEmulationColorMask {
 };
 
 class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
-                                                 public DrawingBuffer::Client,
-                                                 public NoAllocDirectCallHost {
+                                                 public DrawingBuffer::Client {
  public:
   WebGLRenderingContextBase(const WebGLRenderingContextBase&) = delete;
   WebGLRenderingContextBase& operator=(const WebGLRenderingContextBase&) =
       delete;
 
   ~WebGLRenderingContextBase() override;
-
-  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
 
   HTMLCanvasElement* canvas() const {
     if (Host()->IsOffscreenCanvas())

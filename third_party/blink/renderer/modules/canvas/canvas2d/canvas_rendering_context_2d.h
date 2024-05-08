@@ -95,7 +95,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return static_cast<HTMLCanvasElement*>(Host());
   }
   V8RenderingContext* AsV8RenderingContext() final;
-  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
 
   bool isContextLost() const final {
     return context_lost_mode_ != kNotLostContext;

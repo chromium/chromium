@@ -998,11 +998,9 @@ void BaseRenderingContext2D::Draw(
 
   if (UNLIKELY(GetState().IsFilterUnresolved())) {
     // Resolving a filter requires allocating garbage-collected objects.
-    PostDeferrableAction(WTF::BindOnce(
-        &BaseRenderingContext2D::DrawInternal<CurrentOverdrawOp, DrawFunc,
-                                              DrawCoversClipBoundsFunc>,
-        WrapPersistent(this), nullptr, draw_func, draw_covers_clip_bounds,
-        bounds, paint_type, image_type, clip_bounds, draw_type));
+    DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
+        nullptr, draw_func, draw_covers_clip_bounds, bounds, paint_type,
+        image_type, clip_bounds, draw_type);
   } else {
     DrawInternal<CurrentOverdrawOp, DrawFunc, DrawCoversClipBoundsFunc>(
         paint_canvas, draw_func, draw_covers_clip_bounds, bounds, paint_type,
@@ -1126,7 +1124,6 @@ ALWAYS_INLINE bool BaseRenderingContext2D::IsFullCanvasCompositeMode(
 ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
   const CanvasRenderingContext2DState& state = GetState();
   if (UNLIKELY(state.IsFilterUnresolved())) {
-    DCHECK(!IsInFastMode());  // Should de-opt before reaching this point.
     return !!StateGetFilter();
   }
   // The fast path avoids the virtual call overhead of StateGetFilter

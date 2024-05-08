@@ -56,7 +56,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   // CanvasRenderingContext implementation
   ~OffscreenCanvasRenderingContext2D() override;
   bool IsComposited() const override { return false; }
-  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   void PageVisibilityChanged() override {}

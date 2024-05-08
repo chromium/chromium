@@ -334,10 +334,6 @@ void WebGLRenderingContextBase::ForciblyLoseOldestContext(
                               WebGLRenderingContextBase::kWhenAvailable);
 }
 
-NoAllocDirectCallHost* WebGLRenderingContextBase::AsNoAllocDirectCallHost() {
-  return this;
-}
-
 WebGLRenderingContextBase* WebGLRenderingContextBase::OldestContext() {
   if (ActiveContexts().empty())
     return nullptr;
@@ -8361,38 +8357,24 @@ void WebGLRenderingContextBase::PrintGLErrorToConsole(const String& message) {
 
 void WebGLRenderingContextBase::PrintWarningToConsole(const String& message) {
   blink::ExecutionContext* context = Host()->GetTopExecutionContext();
-  PostDeferrableAction(WTF::BindOnce(
-      [](blink::ExecutionContext* context, const String& message) {
-        if (context && !context->IsContextDestroyed()) {
-          context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kRendering,
-              mojom::blink::ConsoleMessageLevel::kWarning, message));
-        }
-      },
-      WrapPersistent(context), message));
+  if (context && !context->IsContextDestroyed()) {
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning, message));
+  }
 }
 
 void WebGLRenderingContextBase::NotifyWebGLErrorOrWarning(
     const String& message) {
-  PostDeferrableAction(WTF::BindOnce(
-      [](HTMLCanvasElement* canvas, const String& message) {
-        probe::DidFireWebGLErrorOrWarning(canvas, message);
-      },
-      WrapPersistent(canvas()), message));
+  probe::DidFireWebGLErrorOrWarning(canvas(), message);
 }
 
 void WebGLRenderingContextBase::NotifyWebGLError(const String& error_type) {
-  PostDeferrableAction(WTF::BindOnce(
-      [](HTMLCanvasElement* canvas, const String& error_type) {
-        probe::DidFireWebGLError(canvas, error_type);
-      },
-      WrapPersistent(canvas()), error_type));
+  probe::DidFireWebGLError(canvas(), error_type);
 }
 
 void WebGLRenderingContextBase::NotifyWebGLWarning() {
-  PostDeferrableAction(WTF::BindOnce(
-      [](HTMLCanvasElement* canvas) { probe::DidFireWebGLWarning(canvas); },
-      WrapPersistent(canvas())));
+  probe::DidFireWebGLWarning(canvas());
 }
 
 bool WebGLRenderingContextBase::ValidateFramebufferFuncParameters(

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -45,8 +44,7 @@ namespace blink {
 
 class ExceptionState;
 
-class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
-                                  public NoAllocDirectCallHost {
+class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   DISALLOW_NEW();
 
  public:

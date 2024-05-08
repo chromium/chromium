@@ -286,11 +286,6 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage(
   return image;
 }
 
-NoAllocDirectCallHost*
-OffscreenCanvasRenderingContext2D::AsNoAllocDirectCallHost() {
-  return this;
-}
-
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
   return nullptr;
 }
@@ -416,9 +411,7 @@ bool OffscreenCanvasRenderingContext2D::IsCanvas2DBufferValid() const {
 
 void OffscreenCanvasRenderingContext2D::DispatchContextLostEvent(
     TimerBase* time) {
-  PostDeferrableAction(WTF::BindOnce(
-      [](BaseRenderingContext2D* context) { context->ResetInternal(); },
-      WrapPersistent(this)));
+  ResetInternal();
   BaseRenderingContext2D::DispatchContextLostEvent(time);
 }
 
