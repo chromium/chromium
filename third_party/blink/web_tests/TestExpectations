@@ -7244,9 +7244,6 @@ crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.worker.html?
 crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeelement-after-child-lose-focus.sub.html [ Failure Pass ]
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
-# RubyLineBreakable
-crbug.com/324111880 fast/writing-mode/Kusa-Makura-background-canvas.html [ Crash Pass ]
-
 # secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented
 crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure ]
 crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]

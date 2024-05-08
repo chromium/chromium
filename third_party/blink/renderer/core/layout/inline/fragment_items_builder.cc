@@ -323,14 +323,16 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
       for (InlineCursor line = cursor.CursorForDescendants(); line;
            line.MoveToNext()) {
         const FragmentItem& line_child = *line.Current().Item();
-        if (end_item) {
-          // If |end_item| is given, the caller has computed the range safe to
-          // reuse by calling |EndOfReusableItems|. All children should be safe
-          // to reuse.
-          DCHECK(line_child.CanReuse());
-        } else if (!line_child.CanReuse()) {
-          // Abort and report the failure if any child is not reusable.
-          return AddPreviousItemsResult();
+        if (line_child.Type() != FragmentItem::kLine) {
+          if (end_item) {
+            // If |end_item| is given, the caller has computed the range safe
+            // to reuse by calling |EndOfReusableItems|. All children should
+            // be safe to reuse.
+            DCHECK(line_child.CanReuse());
+          } else if (!line_child.CanReuse()) {
+            // Abort and report the failure if any child is not reusable.
+            return AddPreviousItemsResult();
+          }
         }
 #if DCHECK_IS_ON()
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
