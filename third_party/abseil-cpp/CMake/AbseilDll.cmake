@@ -123,6 +123,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/internal/address_is_readable.h"
   "debugging/internal/demangle.cc"
   "debugging/internal/demangle.h"
+  "debugging/internal/demangle_rust.cc"
+  "debugging/internal/demangle_rust.h"
   "debugging/internal/elf_mem_image.cc"
   "debugging/internal/elf_mem_image.h"
   "debugging/internal/examine_stack.cc"
@@ -608,6 +610,9 @@ set(ABSL_INTERNAL_TEST_DLL_FILES
   "random/internal/mock_overload_set.h"
   "random/mocking_bit_gen.h"
   "random/mock_distributions.h"
+  "status/status_matchers.h"
+  "status/internal/status_matchers.cc"
+  "status/internal/status_matchers.h"
   "strings/cordz_test_helpers.h"
   "strings/cord_test_helpers.h"
 )
@@ -620,6 +625,7 @@ set(ABSL_INTERNAL_TEST_DLL_TARGETS
   "random_internal_distribution_test_util"
   "random_internal_mock_overload_set"
   "scoped_mock_log"
+  "status_matchers"
 )
 
 include(CheckCXXSourceCompiles)

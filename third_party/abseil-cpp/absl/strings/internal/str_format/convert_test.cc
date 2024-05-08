@@ -785,7 +785,7 @@ TEST_F(FormatConvertTest, Uint128) {
 }
 
 template <typename Floating>
-void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats) {
+void TestWithMultipleFormatsHelper(Floating tested_float) {
   const NativePrintfTraits &native_traits = VerifyNativeImplementation();
   // Reserve the space to ensure we don't allocate memory in the output itself.
   std::string str_format_result;
@@ -816,17 +816,17 @@ void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats) {
         continue;
       }
 
-      for (Floating d : floats) {
-        if (!native_traits.hex_float_prefers_denormal_repr &&
-            (f == 'a' || f == 'A') && std::fpclassify(d) == FP_SUBNORMAL) {
-          continue;
-        }
+      if (!native_traits.hex_float_prefers_denormal_repr &&
+          (f == 'a' || f == 'A') &&
+          std::fpclassify(tested_float) == FP_SUBNORMAL) {
+        continue;
+      }
         int i = -10;
-        FormatArgImpl args[2] = {FormatArgImpl(d), FormatArgImpl(i)};
+        FormatArgImpl args[2] = {FormatArgImpl(tested_float), FormatArgImpl(i)};
         UntypedFormatSpecImpl format(fmt_str);
 
         string_printf_result.clear();
-        StrAppend(&string_printf_result, fmt_str.c_str(), d, i);
+        StrAppend(&string_printf_result, fmt_str.c_str(), tested_float, i);
         str_format_result.clear();
 
         {
@@ -842,17 +842,17 @@ void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats) {
         continue;
 #elif defined(__APPLE__)
         // Apple formats NaN differently (+nan) vs. (nan)
-        if (std::isnan(d)) continue;
+        if (std::isnan(tested_float)) continue;
 #endif
         if (string_printf_result != str_format_result) {
           // We use ASSERT_EQ here because failures are usually correlated and a
           // bug would print way too many failed expectations causing the test
           // to time out.
           ASSERT_EQ(string_printf_result, str_format_result)
-              << fmt_str << " " << StrPrint("%.18g", d) << " "
-              << StrPrint("%a", d) << " " << StrPrint("%.50f", d);
+              << fmt_str << " " << StrPrint("%.18g", tested_float) << " "
+              << StrPrint("%a", tested_float) << " "
+              << StrPrint("%.50f", tested_float);
         }
-      }
     }
   }
 }
@@ -905,7 +905,9 @@ TEST_F(FormatConvertTest, Float) {
   });
   floats.erase(std::unique(floats.begin(), floats.end()), floats.end());
 
-  TestWithMultipleFormatsHelper(floats);
+  for (float f : floats) {
+    TestWithMultipleFormatsHelper(f);
+  }
 }
 
 TEST_F(FormatConvertTest, Double) {
@@ -956,7 +958,9 @@ TEST_F(FormatConvertTest, Double) {
   });
   doubles.erase(std::unique(doubles.begin(), doubles.end()), doubles.end());
 
-  TestWithMultipleFormatsHelper(doubles);
+  for (double d : doubles) {
+    TestWithMultipleFormatsHelper(d);
+  }
 }
 
 TEST_F(FormatConvertTest, DoubleRound) {

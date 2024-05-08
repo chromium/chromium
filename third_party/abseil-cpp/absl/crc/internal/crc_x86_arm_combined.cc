@@ -101,13 +101,17 @@ constexpr size_t kMediumCutoff = 2048;
 namespace {
 
 uint32_t multiply(uint32_t a, uint32_t b) {
-  V128 shifts = V128_From64WithZeroFill(1);
   V128 power = V128_From64WithZeroFill(a);
   V128 crc = V128_From64WithZeroFill(b);
   V128 res = V128_PMulLow(power, crc);
 
-  // Combine crc values
-  res = V128_ShiftLeft64(res, shifts);
+  // Combine crc values.
+  //
+  // Adding res to itself is equivalent to multiplying by 2,
+  // or shifting left by 1. Addition is used as not all compilers
+  // are able to generate optimal code without this hint.
+  // https://godbolt.org/z/rr3fMnf39
+  res = V128_Add64(res, res);
   return static_cast<uint32_t>(V128_Extract32<1>(res)) ^
          CRC32_u32(0, static_cast<uint32_t>(V128_Low64(res)));
 }

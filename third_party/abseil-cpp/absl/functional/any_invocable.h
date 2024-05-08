@@ -151,6 +151,12 @@ ABSL_NAMESPACE_BEGIN
 //
 // Attempting to call `absl::AnyInvocable` multiple times in such a case
 // results in undefined behavior.
+//
+// Invoking an empty `absl::AnyInvocable` results in undefined behavior:
+//
+//   // Create an empty instance using the default constructor.
+//   AnyInvocable<void()> empty;
+//   empty();  // WARNING: Undefined behavior!
 template <class Sig>
 class AnyInvocable : private internal_any_invocable::Impl<Sig> {
  private:
@@ -167,6 +173,7 @@ class AnyInvocable : private internal_any_invocable::Impl<Sig> {
   // Constructors
 
   // Constructs the `AnyInvocable` in an empty state.
+  // Invoking it results in undefined behavior.
   AnyInvocable() noexcept = default;
   AnyInvocable(std::nullptr_t) noexcept {}  // NOLINT
 
@@ -277,6 +284,8 @@ class AnyInvocable : private internal_any_invocable::Impl<Sig> {
   // In other words:
   //   std::function<void()> f;  // empty
   //   absl::AnyInvocable<void()> a = std::move(f);  // not empty
+  //
+  // Invoking an empty `AnyInvocable` results in undefined behavior.
   explicit operator bool() const noexcept { return this->HasValue(); }
 
   // Invokes the target object of `*this`. `*this` must not be empty.

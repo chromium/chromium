@@ -2990,6 +2990,7 @@ EXPORTS
     ?Delete@flags_internal@absl@@YAXP6APAXW4FlagOp@12@PBXPAX2@Z2@Z
     ?DeleteArena@LowLevelAlloc@base_internal@absl@@SA_NPAUArena@123@@Z
     ?Demangle@debugging_internal@absl@@YA_NPBDPADI@Z
+    ?DemangleRustSymbolEncoding@debugging_internal@absl@@YA_NPBDPADI@Z
     ?DemangleString@debugging_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PBD@Z
     ?Description@Impl@time_zone@cctz@time_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?Description@TimeZoneInfo@cctz@time_internal@absl@@UBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ

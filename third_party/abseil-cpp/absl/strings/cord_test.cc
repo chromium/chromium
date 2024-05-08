@@ -243,12 +243,14 @@ class CordTestPeer {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-// The CordTest fixture runs all tests with and without Cord Btree enabled,
-// and with our without expected CRCs being set on the subject Cords.
-class CordTest : public testing::TestWithParam<int> {
+
+
+// The CordTest fixture runs all tests with and without expected CRCs being set
+// on the subject Cords.
+class CordTest : public testing::TestWithParam<bool /*useCrc*/> {
  public:
-  // Returns true if test is running with btree enabled.
-  bool UseCrc() const { return GetParam() == 2 || GetParam() == 3; }
+  // Returns true if test is running with Crc enabled.
+  bool UseCrc() const { return GetParam(); }
   void MaybeHarden(absl::Cord& c) {
     if (UseCrc()) {
       c.SetExpectedChecksum(1);
@@ -260,20 +262,16 @@ class CordTest : public testing::TestWithParam<int> {
   }
 
   // Returns human readable string representation of the test parameter.
-  static std::string ToString(testing::TestParamInfo<int> param) {
-    switch (param.param) {
-      case 0:
-        return "Btree";
-      case 1:
-        return "BtreeHardened";
-      default:
-        assert(false);
-        return "???";
+  static std::string ToString(testing::TestParamInfo<bool> useCrc) {
+    if (useCrc.param) {
+      return "BtreeHardened";
+    } else {
+      return "Btree";
     }
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Values(0, 1),
+INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Bool(),
                          CordTest::ToString);
 
 TEST(CordRepFlat, AllFlatCapacities) {

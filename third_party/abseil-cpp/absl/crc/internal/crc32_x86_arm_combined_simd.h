@@ -123,8 +123,8 @@ uint64_t V128_Extract64(const V128 l);
 // Extracts the low 64 bits from V128.
 int64_t V128_Low64(const V128 l);
 
-// Left-shifts packed 64-bit integers in l by r.
-V128 V128_ShiftLeft64(const V128 l, const V128 r);
+// Add packed 64-bit integers in |l| and |r|.
+V128 V128_Add64(const V128 l, const V128 r);
 
 #endif
 
@@ -193,8 +193,8 @@ inline uint64_t V128_Extract64(const V128 l) {
 
 inline int64_t V128_Low64(const V128 l) { return _mm_cvtsi128_si64(l); }
 
-inline V128 V128_ShiftLeft64(const V128 l, const V128 r) {
-  return _mm_sll_epi64(l, r);
+inline V128 V128_Add64(const V128 l, const V128 r) {
+  return _mm_add_epi64(l, r);
 }
 
 #elif defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
@@ -289,9 +289,7 @@ inline int64_t V128_Low64(const V128 l) {
   return vgetq_lane_s64(vreinterpretq_s64_u64(l), 0);
 }
 
-inline V128 V128_ShiftLeft64(const V128 l, const V128 r) {
-  return vshlq_u64(l, vreinterpretq_s64_u64(r));
-}
+inline V128 V128_Add64(const V128 l, const V128 r) { return vaddq_u64(l, r); }
 
 #endif
 
