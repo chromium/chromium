@@ -612,9 +612,8 @@ void ImageLoader::DoUpdateFromElement(
     }
 
     recordreplay::Assert(
-        "[RUN-658-1381] ImageLoader::DoUpdateFromElement %d %s",
-        element_->RecordReplayId(),
-        image_source_url.IsNull() ? "(null)" : image_source_url.Utf8().c_str());
+        "[TT-418-1118] ImageLoader::DoUpdateFromElement A %d",
+        element_->RecordReplayId());
 
     new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());
 
@@ -635,6 +634,16 @@ void ImageLoader::DoUpdateFromElement(
   ImageResourceContent* old_image_content = image_content_.Get();
   if (old_image_content != new_image_content)
     RejectPendingDecodes(update_type);
+
+  recordreplay::Assert(
+      "[TT-418-1118] ImageLoader::DoUpdateFromElement B %d %d %d layout=%d %d",
+      update_behavior,
+      !!old_image_content,
+      new_image_content == old_image_content,
+
+      !!element_->GetLayoutObject(),
+      element_->GetLayoutObject() && element_->GetLayoutObject()->IsImage()
+  );
 
   if (update_behavior == kUpdateSizeChanged && element_->GetLayoutObject() &&
       element_->GetLayoutObject()->IsImage() &&
@@ -676,6 +685,8 @@ void ImageLoader::DoUpdateFromElement(
       old_image_content->RemoveObserver(this);
     }
   }
+
+  recordreplay::Assert("[TT-418-1118] ImageLoader::DoUpdateFromElement C");
 
   if (LayoutImageResource* image_resource = GetLayoutImageResource())
     image_resource->ResetAnimation();
@@ -939,6 +950,15 @@ void ImageLoader::UpdateLayoutObject() {
   // is a complete image.  This prevents flickering in the case where a dynamic
   // change is happening between two images.
   ImageResourceContent* cached_image_content = image_resource->CachedImage();
+
+  recordreplay::Assert(
+      "[TT-418-1118] ImageLoader::UpdateLayoutObject %d %d %d %d",
+      !!cached_image_content,
+      !!image_complete_,
+      image_content_ == cached_image_content,
+      !!cached_image_content
+  );
+
   if (image_content_ != cached_image_content &&
       (image_complete_ || !cached_image_content))
     image_resource->SetImageResource(image_content_.Get());

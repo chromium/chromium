@@ -270,6 +270,8 @@ class CORE_EXPORT ImageResourceContent final
 
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
+  HeapHashCountedSet<Member<ImageResourceObserver>> replay_strong_observers_;
+  HeapHashCountedSet<Member<ImageResourceObserver>> replay_strong_finished_observers_;
 
 #if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;
