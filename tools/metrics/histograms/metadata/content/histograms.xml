@@ -1877,13 +1877,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
-    enum="FeedInfoCardType" expires_after="2024-01-23">
+    enum="FeedInfoCardType" expires_after="2025-05-07">
   <owner>jianli@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
+  <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: Reports when {Action} has occurred for an info card. The type of
-    the info card was reported.
+    Reports when {Action} has occurred for an info card. The type of the info
+    card was reported. Available in iOS as of M126.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
