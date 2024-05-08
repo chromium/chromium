@@ -342,14 +342,11 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     // toggle. view_->SetUsageMode() controls setting the value of the users
     // consent and controls whether the user is able to toggle the consent.
     //
-    // Demo devices are not enterprise enrolled until after the consolidated
-    // consent screen is shown, even though they're considered managed devices.
-    // If in demo mode enrollment, hide UMA opt in completely in ToS.
     // If the consent screen is shown during other managed device flows,
     // the ability of the users to toggle the usage opt-in will be disabled
     // while still showing the value set by the enterprise.
     // Unmanaged user flows enable the option for the user to toggle.
-    view_->SetUsageOptinHidden(is_demo);
+    view_->SetUsageOptinHidden(false);
   }
 
   const bool is_negotiation_needed =
@@ -388,6 +385,14 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     }
 
     UpdateMetricsMode(is_enabled, is_managed);
+  }
+
+  // Demo devices are not enterprise enrolled until after the consolidated
+  // consent screen is shown, even though they're considered managed devices.
+  // If in demo mode enrollment, show the UMA opt in toggle, but disable the
+  // ability to toggle it since it's value is set by the enterprise policy.
+  if (is_demo) {
+    UpdateMetricsMode(/*enabled=*/true, /*managed=*/true);
   }
 }
 
