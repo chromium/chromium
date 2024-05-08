@@ -138,6 +138,7 @@ TEST_F(FollowManagementViewControllerTest, DidSelectRow) {
     NSIndexPath* first_row = [NSIndexPath indexPathForRow:0 inSection:0];
     [view_controller_ tableView:table_view didSelectRowAtIndexPath:first_row];
     EXPECT_OCMOCK_VERIFY(mock_interaction_menu);
+    [mock_interaction_menu stopMocking];
   }
 }
 
