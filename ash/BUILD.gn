@@ -705,6 +705,8 @@ component("ash") {
     "glanceables/common/glanceables_list_footer_view.h",
     "glanceables/common/glanceables_progress_bar_view.cc",
     "glanceables/common/glanceables_progress_bar_view.h",
+    "glanceables/common/glanceables_time_management_bubble_view.cc",
+    "glanceables/common/glanceables_time_management_bubble_view.h",
     "glanceables/common/glanceables_util.cc",
     "glanceables/common/glanceables_util.h",
     "glanceables/common/glanceables_view_id.h",

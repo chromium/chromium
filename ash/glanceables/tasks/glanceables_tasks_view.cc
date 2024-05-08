@@ -174,17 +174,13 @@ END_METADATA
 // false here.
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/false),
-      shown_time_(base::Time::Now()) {
+    : shown_time_(base::Time::Now()) {
   SetAccessibleRole(ax::mojom::Role::kGroup);
 
-  auto* layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager
-      ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
-                                            kInteriorGlanceableBubbleMargin, 0,
-                                            kInteriorGlanceableBubbleMargin))
-      .SetOrientation(views::LayoutOrientation::kVertical);
+  SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                      kInteriorGlanceableBubbleMargin, 0,
+                                      kInteriorGlanceableBubbleMargin));
+  SetOrientation(views::LayoutOrientation::kVertical);
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetInteriorMargin(gfx::Insets::TLBR(1, 1, 0, 1));
@@ -281,10 +277,6 @@ GlanceablesTasksView::~GlanceablesTasksView() {
     RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
                              user_with_no_tasks_);
   }
-}
-
-void GlanceablesTasksView::ChildPreferredSizeChanged(View* child) {
-  PreferredSizeChanged();
 }
 
 void GlanceablesTasksView::OnViewFocused(views::View* view) {

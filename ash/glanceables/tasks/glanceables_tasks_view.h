@@ -10,9 +10,9 @@
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
+#include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
-#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -37,18 +37,16 @@ class GlanceablesTasksComboboxModel;
 class GlanceablesTaskView;
 
 // Glanceables view responsible for interacting with Google Tasks.
-class ASH_EXPORT GlanceablesTasksView : public GlanceableTrayChildBubble,
-                                        public views::ViewObserver {
-  METADATA_HEADER(GlanceablesTasksView, GlanceableTrayChildBubble)
+class ASH_EXPORT GlanceablesTasksView
+    : public GlanceablesTimeManagementBubbleView,
+      public views::ViewObserver {
+  METADATA_HEADER(GlanceablesTasksView, GlanceablesTimeManagementBubbleView)
 
  public:
   explicit GlanceablesTasksView(const ui::ListModel<api::TaskList>* task_lists);
   GlanceablesTasksView(const GlanceablesTasksView&) = delete;
   GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
   ~GlanceablesTasksView() override;
-
-  // views::View:
-  void ChildPreferredSizeChanged(View* child) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
@@ -165,7 +163,6 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceableTrayChildBubble,
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> tasks_header_view_ = nullptr;
   raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView> button_container_ = nullptr;
   raw_ptr<views::View> task_items_container_view_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/system/unified/glanceable_tray_child_bubble.h"
+#include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -54,9 +54,10 @@ enum class StudentAssignmentsListType {
 };
 
 class ASH_EXPORT GlanceablesClassroomStudentView
-    : public GlanceableTrayChildBubble,
+    : public GlanceablesTimeManagementBubbleView,
       public views::ViewObserver {
-  METADATA_HEADER(GlanceablesClassroomStudentView, GlanceableTrayChildBubble)
+  METADATA_HEADER(GlanceablesClassroomStudentView,
+                  GlanceablesTimeManagementBubbleView)
 
  public:
   GlanceablesClassroomStudentView();

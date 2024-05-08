@@ -140,11 +140,9 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 }  // namespace
 
 GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
-    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/false),
-      shown_time_(base::Time::Now()) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(kViewInteriorMargins)
-      .SetOrientation(views::LayoutOrientation::kVertical);
+    : shown_time_(base::Time::Now()) {
+  SetInteriorMargin(kViewInteriorMargins);
+  SetOrientation(views::LayoutOrientation::kVertical);
 
   header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);

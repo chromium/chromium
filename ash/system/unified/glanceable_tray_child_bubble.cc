@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "ash/glanceables/common/glanceables_error_message_view.h"
-#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -49,32 +47,6 @@ GlanceableTrayChildBubble::GlanceableTrayChildBubble(
             ? views::HighlightBorder::Type::kHighlightBorderOnShadow
             : views::HighlightBorder::Type::kHighlightBorder1));
   }
-}
-
-void GlanceableTrayChildBubble::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
-  if (error_message_) {
-    error_message_->UpdateBoundsToContainer(GetLocalBounds());
-  }
-}
-
-void GlanceableTrayChildBubble::ShowErrorMessage(
-    const std::u16string& error_message,
-    views::Button::PressedCallback callback,
-    GlanceablesErrorMessageView::ButtonActionType type) {
-  MaybeDismissErrorMessage();
-
-  error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
-      std::move(callback), error_message, type));
-  error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-}
-
-void GlanceableTrayChildBubble::MaybeDismissErrorMessage() {
-  if (!error_message_.get()) {
-    return;
-  }
-
-  RemoveChildViewT(std::exchange(error_message_, nullptr));
 }
 
 BEGIN_METADATA(GlanceableTrayChildBubble)
