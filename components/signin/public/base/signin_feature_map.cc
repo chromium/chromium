@@ -19,6 +19,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSeedAccountsRevamp,
     &switches::kEnterprisePolicyOnSignin,
+    &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
     &switches::kMinorModeRestrictionsForHistorySyncOptIn,
     &switches::kHideSettingsSignInPromo,

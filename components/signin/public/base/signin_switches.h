@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kSeedAccountsRevamp);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnterprisePolicyOnSignin);
 
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
+
 // Feature flag to hide signin promo in settings page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHideSettingsSignInPromo);

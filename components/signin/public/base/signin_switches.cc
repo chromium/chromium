@@ -23,6 +23,15 @@ BASE_FEATURE(kEnterprisePolicyOnSignin,
              "EnterprisePolicyOnSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to bypass double-checking that signin callers have correctly gotten
+// the user to accept account management. This check is slow and not strictly
+// necessary, so disable it while we work on adding caching.
+// TODO(https://crbug.com/339457762): Restore the check when we implement
+// caching.
+BASE_FEATURE(kSkipCheckForAccountManagementOnSignin,
+             "SkipCheckForAccountManagementOnSignin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHideSettingsSignInPromo,
              "HideSettingsSignInPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
