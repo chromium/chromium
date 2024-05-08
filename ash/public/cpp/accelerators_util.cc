@@ -13,7 +13,11 @@
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -26,6 +30,10 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -74,51 +82,57 @@ std::u16string GetStringForDeadKey(ui::DomKey dom_key) {
 // based on the VKEY enum name.
 const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
   static auto key_display_map =
-      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>(
-          {{ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
-            u"MicrophoneMuteToggle"},
-           {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
-            u"KeyboardBacklightToggle"},
-           {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
-           {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
-            u"KeyboardBrightnessDown"},
-           {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
-           {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
-           {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
-            u"PrivacyScreenToggle"},
-           {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"ViewAllApps"},
-           {ui::KeyboardCode::VKEY_DICTATE, u"EnableOrToggleDictation"},
-           {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
-           {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
-           {ui::KeyboardCode::VKEY_MENU, u"alt"},
-           {ui::KeyboardCode::VKEY_HOME, u"home"},
-           {ui::KeyboardCode::VKEY_END, u"end"},
-           {ui::KeyboardCode::VKEY_DELETE, u"delete"},
-           {ui::KeyboardCode::VKEY_INSERT, u"insert"},
-           {ui::KeyboardCode::VKEY_PRIOR, u"page up"},
-           {ui::KeyboardCode::VKEY_NEXT, u"page down"},
-           {ui::KeyboardCode::VKEY_SPACE, u"space"},
-           {ui::KeyboardCode::VKEY_TAB, u"tab"},
-           {ui::KeyboardCode::VKEY_ESCAPE, u"esc"},
-           {ui::KeyboardCode::VKEY_RETURN, u"enter"},
-           {ui::KeyboardCode::VKEY_BACK, u"backspace"},
-           {ui::KeyboardCode::VKEY_MEDIA_PLAY, u"MediaPlay"},
-           {ui::KeyboardCode::VKEY_NUMPAD0, u"numpad 0"},
-           {ui::KeyboardCode::VKEY_NUMPAD1, u"numpad 1"},
-           {ui::KeyboardCode::VKEY_NUMPAD2, u"numpad 2"},
-           {ui::KeyboardCode::VKEY_NUMPAD3, u"numpad 3"},
-           {ui::KeyboardCode::VKEY_NUMPAD4, u"numpad 4"},
-           {ui::KeyboardCode::VKEY_NUMPAD5, u"numpad 5"},
-           {ui::KeyboardCode::VKEY_NUMPAD6, u"numpad 6"},
-           {ui::KeyboardCode::VKEY_NUMPAD7, u"numpad 7"},
-           {ui::KeyboardCode::VKEY_NUMPAD8, u"numpad 8"},
-           {ui::KeyboardCode::VKEY_NUMPAD9, u"numpad 9"},
-           {ui::KeyboardCode::VKEY_ADD, u"numpad +"},
-           {ui::KeyboardCode::VKEY_DECIMAL, u"numpad ."},
-           {ui::KeyboardCode::VKEY_DIVIDE, u"numpad /"},
-           {ui::KeyboardCode::VKEY_MULTIPLY, u"numpad *"},
-           {ui::KeyboardCode::VKEY_SUBTRACT, u"numpad -"},
-           {ui::KeyboardCode::VKEY_RIGHT_ALT, u"right alt"}}));
+      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
+          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
+           u"MicrophoneMuteToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
+           u"KeyboardBacklightToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+           u"KeyboardBrightnessDown"},
+          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
+          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
+          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+           u"PrivacyScreenToggle"},
+          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"ViewAllApps"},
+          {ui::KeyboardCode::VKEY_DICTATE, u"EnableOrToggleDictation"},
+          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
+          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_MENU, u"alt"},
+          {ui::KeyboardCode::VKEY_HOME, u"home"},
+          {ui::KeyboardCode::VKEY_END, u"end"},
+          {ui::KeyboardCode::VKEY_DELETE, u"delete"},
+          {ui::KeyboardCode::VKEY_INSERT, u"insert"},
+          {ui::KeyboardCode::VKEY_PRIOR, u"page up"},
+          {ui::KeyboardCode::VKEY_NEXT, u"page down"},
+          {ui::KeyboardCode::VKEY_SPACE, u"space"},
+          {ui::KeyboardCode::VKEY_TAB, u"tab"},
+          {ui::KeyboardCode::VKEY_ESCAPE, u"esc"},
+          {ui::KeyboardCode::VKEY_RETURN, u"enter"},
+          {ui::KeyboardCode::VKEY_BACK, u"backspace"},
+          {ui::KeyboardCode::VKEY_MEDIA_PLAY, u"MediaPlay"},
+          {ui::KeyboardCode::VKEY_NUMPAD0, u"numpad 0"},
+          {ui::KeyboardCode::VKEY_NUMPAD1, u"numpad 1"},
+          {ui::KeyboardCode::VKEY_NUMPAD2, u"numpad 2"},
+          {ui::KeyboardCode::VKEY_NUMPAD3, u"numpad 3"},
+          {ui::KeyboardCode::VKEY_NUMPAD4, u"numpad 4"},
+          {ui::KeyboardCode::VKEY_NUMPAD5, u"numpad 5"},
+          {ui::KeyboardCode::VKEY_NUMPAD6, u"numpad 6"},
+          {ui::KeyboardCode::VKEY_NUMPAD7, u"numpad 7"},
+          {ui::KeyboardCode::VKEY_NUMPAD8, u"numpad 8"},
+          {ui::KeyboardCode::VKEY_NUMPAD9, u"numpad 9"},
+          {ui::KeyboardCode::VKEY_ADD, u"numpad +"},
+          {ui::KeyboardCode::VKEY_DECIMAL, u"numpad ."},
+          {ui::KeyboardCode::VKEY_DIVIDE, u"numpad /"},
+          {ui::KeyboardCode::VKEY_MULTIPLY, u"numpad *"},
+          {ui::KeyboardCode::VKEY_SUBTRACT, u"numpad -"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          {ui::KeyboardCode::VKEY_RIGHT_ALT,
+           l10n_util::GetStringUTF16(IDS_KEYBOARD_RIGHT_ALT_LABEL)},
+#else
+          {ui::KeyboardCode::VKEY_RIGHT_ALT, u"right alt"},
+#endif
+      }));
   return *key_display_map;
 }
 

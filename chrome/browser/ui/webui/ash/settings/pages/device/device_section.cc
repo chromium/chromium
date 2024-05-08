@@ -42,6 +42,10 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace ash::settings {
 
 namespace mojom {
@@ -841,8 +845,12 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"perDeviceKeyboardKeyEscape",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
       {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"perDeviceKeyboardKeyRightAlt", IDS_KEYBOARD_RIGHT_ALT_LABEL},
+#else
       {"perDeviceKeyboardKeyRightAlt",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT},
+#endif
       {"perDeviceKeyboardKeyFunction",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION},
   };

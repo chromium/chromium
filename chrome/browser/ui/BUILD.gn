@@ -4063,6 +4063,7 @@ static_library("ui") {
       deps += [
         "//chrome/browser/nearby_sharing/internal/icons",
         "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings",
+        "//chromeos/ash/resources/internal/strings",
       ]
     }
 

@@ -417,6 +417,7 @@ component("cpp") {
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
+    "//build:branding_buildflags",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/audio:in_process_audio_config",
     "//chromeos/ash/components/auth_panel/public",
@@ -491,6 +492,10 @@ component("cpp") {
     "//ui/chromeos/resources:resources_grit",
     "//ui/gfx",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 
   output_name = "ash_public_cpp"
 }
