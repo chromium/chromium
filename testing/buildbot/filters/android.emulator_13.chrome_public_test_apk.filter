@@ -86,3 +86,18 @@
 
 # crbug.com/339034032
 -org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarBackgroundChangedWhenSearchEngineHasNoLogo
+
+# crbug.com/339493123
+-org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testPreferenceInTab
+
+# crbug.com/339496718
+-org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync
+
+# crbug.com/339500648
+-org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testSendAndOnMessage
+
+# crbug.com/339501283
+-org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testEnterPip
+
+# crbug.com/339502391
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
