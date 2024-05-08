@@ -1178,6 +1178,13 @@ BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
 BLINK_COMMON_EXPORT extern const char
     kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[];
 
+// Enables the prerendering page to perform prepaint document lifecycle updates
+// before activation. See https://crbug.com/336963892.
+// TODO( https://crbug.com/336963892): Make the expected DocumentLifecycle
+// status a feature parameter.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPrerender2EarlyDocumentLifecycleUpdate);
+
 // Enables to run prerendering for new tabs (e.g., target="_blank").
 // See https://crbug.com/1350676.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrerender2InNewTab);
