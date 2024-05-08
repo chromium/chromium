@@ -76,7 +76,6 @@ bool IsUserSignedIn(Profile* profile) {
 content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistoryHost);
-  webui::SetupChromeRefresh2023(source);
 
   static constexpr webui::LocalizedString kStrings[] = {
       // Localized strings (alphabetical order).

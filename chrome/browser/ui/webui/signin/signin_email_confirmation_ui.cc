@@ -65,7 +65,6 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);
-  webui::SetupChromeRefresh2023(source);
 }
 
 SigninEmailConfirmationUI::~SigninEmailConfirmationUI() {}

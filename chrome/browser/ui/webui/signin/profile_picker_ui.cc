@@ -220,8 +220,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
 
-  webui::SetupChromeRefresh2023(html_source);
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::string remove_warning_profile = l10n_util::GetStringFUTF8(
       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS,

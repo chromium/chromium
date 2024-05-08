@@ -114,8 +114,6 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
 
-  webui::SetupChromeRefresh2023(source);
-
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSearchEngineChoiceResources,

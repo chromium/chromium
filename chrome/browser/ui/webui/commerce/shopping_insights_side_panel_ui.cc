@@ -74,8 +74,6 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("shouldShowFeedback",
                      commerce::kPriceInsightsShowFeedback.Get());
 
-  webui::SetupChromeRefresh2023(source);
-
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelCommerceResources,
                                               kSidePanelCommerceResourcesSize),

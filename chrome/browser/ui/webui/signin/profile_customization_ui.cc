@@ -113,7 +113,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
-  webui::SetupChromeRefresh2023(source);
 
   if (url.query() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

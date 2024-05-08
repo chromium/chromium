@@ -69,8 +69,6 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
 
-  webui::SetupChromeRefresh2023(source);
-
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

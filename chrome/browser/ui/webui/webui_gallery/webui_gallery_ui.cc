@@ -37,8 +37,6 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors 'self';");
 
-  webui::SetupChromeRefresh2023(source);
-
   // TODO(colehorvitz): Promote to a place where it can be easily registered
   // by many WebUIs.
   source->AddString("opensInNewTab", "Opens in new tab");

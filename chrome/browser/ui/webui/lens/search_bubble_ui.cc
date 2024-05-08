@@ -32,7 +32,6 @@ SearchBubbleUI::SearchBubbleUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
   }
-  webui::SetupChromeRefresh2023(source);
   webui::SetupWebUIDataSource(source,
                               base::make_span(kLensSearchBubbleResources,
                                               kLensSearchBubbleResourcesSize),

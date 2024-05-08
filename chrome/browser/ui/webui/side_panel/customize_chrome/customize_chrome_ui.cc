@@ -259,8 +259,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   source->AddBoolean("toolbarCustomizationEnabled",
                      base::FeatureList::IsEnabled(features::kToolbarPinning));
 
-  webui::SetupChromeRefresh2023(source);
-
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kSidePanelCustomizeChromeResources,

@@ -40,7 +40,6 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
 webui::SetupWebUIDataSource(
       source, base::make_span(kComposeResources, kComposeResourcesSize),
       IDR_COMPOSE_COMPOSE_HTML);
-  webui::SetupChromeRefresh2023(source);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {

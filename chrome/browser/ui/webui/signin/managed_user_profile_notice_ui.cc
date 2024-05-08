@@ -94,7 +94,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
                          features::kEnterpriseUpdatedProfileCreationScreen));
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
-  webui::SetupChromeRefresh2023(source);
 }
 
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;

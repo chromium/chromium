@@ -134,13 +134,6 @@ void AddLocalizedString(content::WebUIDataSource* source,
   std::erase(str, '&');
   source->AddString(message, str);
 }
-
-void SetupChromeRefresh2023(content::WebUIDataSource* source) {
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
-}
-
 #if defined(TOOLKIT_VIEWS)
 
 namespace {

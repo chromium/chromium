@@ -49,7 +49,6 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       "isHistoryClustersImagesEnabled",
       history_clusters::GetConfig().images &&
           base::FeatureList::IsEnabled(page_image_service::kImageService));
-  webui::SetupChromeRefresh2023(source);
 
   source->AddBoolean("isHistoryClustersImageCover",
                      history_clusters::GetConfig().images_cover);

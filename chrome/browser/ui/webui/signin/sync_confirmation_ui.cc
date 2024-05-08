@@ -172,7 +172,6 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
 
   AddStringResource(source, "syncLoadingConfirmationTitle",
                     IDS_SYNC_LOADING_CONFIRMATION_TITLE);
-  webui::SetupChromeRefresh2023(source);
 
   if (is_sync_allowed) {
     InitializeForSyncConfirmation(source, GetSyncConfirmationStyle(url));

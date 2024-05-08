@@ -62,8 +62,6 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
   source->AddBoolean("qrScannerEnabled", false);
   source->AddString("learnMoreUrl", chrome::kAccessCodeCastLearnMoreURL);
 
-  webui::SetupChromeRefresh2023(source);
-
   Profile* const profile = Profile::FromWebUI(web_ui);
   source->AddInteger("rememberedDeviceDuration",
                      GetAccessCodeDeviceDurationPref(profile).InSeconds());
