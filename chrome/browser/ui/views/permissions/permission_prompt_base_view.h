@@ -64,6 +64,11 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
 
   ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
   bool occluded_by_picture_in_picture_ = false;
+
+  // True if this permission prompt is for a picture-in-picture window. This
+  // means it will be in an always-on-top window, and needs to be tracked by the
+  // PictureInPictureOcclusionTracker.
+  const bool is_for_picture_in_picture_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,7 +28,9 @@ constexpr UrlIdentity::FormatOptions options = {
 PermissionPromptBaseView::PermissionPromptBaseView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
-    : url_identity_(GetUrlIdentity(browser, *delegate)) {
+    : url_identity_(GetUrlIdentity(browser, *delegate)),
+      is_for_picture_in_picture_window_(browser &&
+                                        browser->is_type_picture_in_picture()) {
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
@@ -40,6 +44,19 @@ void PermissionPromptBaseView::AddedToWidget() {
     GetBubbleFrameView()->SetTitleView(
         CreateTitleOriginLabel(GetWindowTitle()));
   }
+
+  // If we're for a picture-in-picture window, then we are in an always-on-top
+  // widget that should be tracked by the PictureInPictureOcclusionTracker.
+  if (is_for_picture_in_picture_window_) {
+    PictureInPictureOcclusionTracker* tracker =
+        PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+    if (tracker) {
+      tracker->OnPictureInPictureWidgetOpened(GetWidget());
+    }
+  }
+
+  // Either way, we want to know if we're ever occluded by an always-on-top
+  // window.
   occlusion_observation_.Observe(GetWidget());
 }
 

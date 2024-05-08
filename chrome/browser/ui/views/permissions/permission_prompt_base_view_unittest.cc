@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "media/base/media_switches.h"
@@ -101,6 +105,44 @@ TEST_F(PermissionPromptBaseViewTest,
   // Button presses should no longer be ignored.
   EXPECT_FALSE(prompt->ShouldIgnoreButtonPressedEventHandling(
       /*button=*/nullptr, ui::test::TestEvent()));
+}
+
+TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
+  // Set up a permission delegate with a request.
+  permissions::MockPermissionRequest request(
+      permissions::RequestType::kGeolocation);
+  TestPermissionBubbleViewDelegate delegate;
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      raw_requests;
+  raw_requests.push_back(&request);
+  delegate.set_requests(raw_requests);
+
+  // Create a widget to parent the bubble.
+  std::unique_ptr<views::Widget> parent = CreateTestWidget();
+  parent->Show();
+
+  // Create a picture-in-picture browser window to request the permission.
+  TestingProfile profile;
+  TestBrowserWindow browser_window;
+  std::unique_ptr<Browser> browser;
+  Browser::CreateParams params(&profile, /*user_gesture=*/true);
+  params.type = Browser::TYPE_PICTURE_IN_PICTURE;
+  params.window = &browser_window;
+  browser.reset(Browser::Create(params));
+
+  // Create the bubble for a picture-in-picture-window.
+  auto prompt_unique = std::make_unique<TestPermissionPromptBaseView>(
+      parent.get(), /*browser=*/browser.get(), delegate.GetWeakPtr());
+  views::Widget* bubble =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(prompt_unique));
+  bubble->Show();
+
+  // The PictureInPictureOcclusionTracker should be tracking the bubble as an
+  // always-on-top window that can occlude UI.
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  EXPECT_TRUE(
+      base::Contains(tracker->GetPictureInPictureWidgetsForTesting(), bubble));
 }
 
 }  // namespace
