@@ -236,6 +236,7 @@ export function createExtensionInfo(
         showSafeBrowsingAllowlistWarning: false,
         showAccessRequestsInToolbar: false,
         acknowledgeSafetyCheckWarning: false,
+        isAffectedByMV2Deprecation: false,
       },
       properties || {});
 }

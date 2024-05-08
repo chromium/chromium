@@ -19,6 +19,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extensions_hats_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -332,6 +334,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       {"noSitesAdded", IDS_EXTENSIONS_NO_SITES_ADDED},
       {"editShortcutInputLabel", IDS_EXTENSIONS_EDIT_SHORTCUT_INPUT_LABEL},
       {"editShortcutButtonLabel", IDS_EXTENSIONS_EDIT_SHORTCUT_BUTTON_LABEL},
+      {"mv2DeprecationPanelWarningHeader",
+       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_TITLE},
       {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
       {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
       {"shortcutScopeLabel", IDS_EXTENSIONS_SHORTCUT_SCOPE_LABEL},
@@ -442,6 +446,11 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
+
+  MV2ExperimentStage mv2_exp_stage =
+      ManifestV2ExperimentManager::Get(profile)->GetCurrentExperimentStage();
+  source->AddBoolean("MV2DeprecationPanelEnabled",
+                     mv2_exp_stage == MV2ExperimentStage::kWarning);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(

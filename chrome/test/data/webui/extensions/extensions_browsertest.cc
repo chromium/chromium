@@ -328,6 +328,16 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, SafetyCheckPanel) {
   RunTestCase("SafetyCheckPanel");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       ManifestV2DeprecationPanel_Disabled) {
+  RunTestCase("ManifestV2DeprecationPanel_Disabled");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
+                       ManifestV2DeprecationPanel_Enabled) {
+  RunTestCase("ManifestV2DeprecationPanel_Enabled");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Load Error Tests
 

@@ -29,6 +29,7 @@ export {ExtensionsKioskDialogElement} from './kiosk_dialog.js';
 // </if>
 export {ExtensionsLoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
+export {ExtensionsMv2DeprecationPanelElement} from './mv2_deprecation_panel.js';
 export {Dialog, navigation, NavigationHelper, Page, PageState} from './navigation_helper.js';
 export {ExtensionsOptionsDialogElement, OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';
 export {ExtensionsPackDialogElement, PackDialogDelegate} from './pack_dialog.js';

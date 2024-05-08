@@ -4,14 +4,6 @@
     margin-inline-start: 15px;
   }
 
-  .card-background {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-    padding: 12px 20px;
-    container-type: inline-size;
-  }
-
   .header-with-icon {
     align-items: center;
     display: flex;
@@ -128,7 +120,7 @@
     hidden$="[[!shouldShowSafetyHubHeader_]]">
   $i18n{safetyHubHeader}
 </h2>
-<div class="card-background"  hidden$="[[shouldHideUnsafePanel_]]">
+<div class="panel-background" hidden$="[[shouldHideUnsafePanel_]]">
   <cr-expand-button class="cr-row first" no-hover
       id="expandButton"
       expanded="{{unsafeExtensionsReviewListExpanded_}}"

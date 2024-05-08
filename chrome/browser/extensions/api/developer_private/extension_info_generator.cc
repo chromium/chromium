@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -798,6 +799,13 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
     info->pinned_to_toolbar =
         toolbar_actions_model->IsActionPinned(extension.id());
   }
+
+  // MV2 deprecation.
+  ManifestV2ExperimentManager* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(profile);
+  CHECK(mv2_experiment_manager);
+  info->is_affected_by_mv2_deprecation =
+      mv2_experiment_manager->IsExtensionAffected(extension);
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

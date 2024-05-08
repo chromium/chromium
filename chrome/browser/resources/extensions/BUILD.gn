@@ -31,6 +31,7 @@ build_webui("build") {
     "keyboard_shortcuts.ts",
     "load_error.ts",
     "manager.ts",
+    "mv2_deprecation_panel.ts",
     "options_dialog.ts",
     "pack_dialog.ts",
     "pack_dialog_alert.ts",

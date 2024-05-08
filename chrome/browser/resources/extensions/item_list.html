@@ -14,7 +14,8 @@
     padding: 24px 60px 64px;
   }
 
-  #content-wrapper:has(extensions-review-panel) {
+  #content-wrapper:has(extensions-review-panel),
+  #content-wrapper:has(extensions-mv2-deprecation-panel) {
     padding-top: 14px;
   }
 
@@ -44,12 +45,13 @@
         var(--grid-gutter) * var(--max-columns));
   }
 
-  .items-container.review-panel-container :first-child {
+  .items-container.panel :first-child {
     max-width: calc(var(--extensions-card-width) * 2 + var(--grid-gutter) * 2);
     grid-column: 1 / -1;
   }
 
-  extensions-review-panel {
+  extensions-review-panel,
+  extensions-mv2-deprecation-panel {
     margin: 15px auto;
     width: 100%;
   }
@@ -96,12 +98,20 @@
     <!-- TODO(crbug.com/338528606): Safety Hub Panel adds an empty space when
          extensions-review-panel can be shown but it's contents are not visible,
          due to the styling of items-container-->
-    <div class="items-container review-panel-container">
+    <div class="items-container panel">
       <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]" restamp>
         <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
         </extensions-review-panel>
       </template>
     </div>
+
+    <template is="dom-if" if="[[showMv2DeprecationPanel_]]" restamp>
+      <div class="items-container panel">
+        <extensions-mv2-deprecation-panel>
+        </extensions-mv2-deprecation-panel>
+      </div>
+    </template>
+
     <div id="no-items" class="empty-list-message"
         hidden$="[[!shouldShowEmptyItemsMessage_(
             apps.length, extensions.length)]]">
@@ -114,6 +124,7 @@
             shownAppsCount_, shownExtensionsCount_, apps, extensions)]]">
       <span>$i18n{noSearchResults}</span>
     </div>
+
     <div id="extensions-section" hidden="[[!shownExtensionsCount_]]">
       <!-- section-header needs to left-align with the grid content below, and
            the easiest way to achieve this is to make it a grid as well. -->
@@ -135,6 +146,7 @@
           </template>
       </div>
     </div>
+
     <div id="chrome-apps-section" hidden="[[!shownAppsCount_]]">
       <!-- section-header needs to left-align with the grid content below, and
            the easiest way to achieve this is to make it a grid as well. -->

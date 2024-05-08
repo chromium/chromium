@@ -196,4 +196,29 @@ suite('ExtensionItemListTest', function() {
     flush();
     boundTestVisible('extensions-review-panel', true);
   });
+
+  test('ManifestV2DeprecationPanel_Disabled', async function() {
+    // Panel is hidden if panel is disabled.
+    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': false});
+    setupElement();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+  });
+
+  test('ManifestV2DeprecationPanel_Enabled', async function() {
+    // Panel is hidden if panel is enabled and has no extensions affected
+    // by the MV2 deprecation.
+    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': true});
+    setupElement();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+
+    // Panel is visible if panel is enabled and has at least one extension
+    // affected by the MV2 deprecation.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'Extension',
+                    id: 'd'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+  });
 });

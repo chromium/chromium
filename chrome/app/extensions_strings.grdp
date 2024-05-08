@@ -598,6 +598,10 @@
   <message name="IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL" desc="The (accessibility) label for the three dots option menu.">
     More actions for <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
   </message>
+  <!-- Extensions Manifest V2 Deprecation Panel strings -->
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_TITLE" desc="The label in the manifest v2 deprecation panel.">
+    These extensions may soon no longer be supported
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘

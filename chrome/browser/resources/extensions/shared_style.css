@@ -109,3 +109,11 @@ a[href] {
   height: var(--cr-icon-size);
   min-width: var(--cr-icon-size);
 }
+
+.panel-background {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  padding: 12px 20px;
+  container-type: inline-size;
+}

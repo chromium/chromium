@@ -270,6 +270,7 @@ namespace developerPrivate {
     boolean showAccessRequestsInToolbar;
     boolean acknowledgeSafetyCheckWarning;
     boolean? pinnedToToolbar;
+    boolean isAffectedByMV2Deprecation;
   };
 
   dictionary ProfileInfo {

@@ -255,6 +255,7 @@ declare global {
         showAccessRequestsInToolbar: boolean;
         acknowledgeSafetyCheckWarning: boolean;
         pinnedToToolbar?: boolean;
+        isAffectedByMV2Deprecation: boolean;
       }
 
       export interface ProfileInfo {
