@@ -152,9 +152,15 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
       std::unique_ptr<StubAuthenticatorBuilder> authenticator_builder);
 
   // Starts login attempt for a user, using actual authenticator backed by
-  // FakeUserDataAuthClient.
-  // Note that this will not wait for the login attempt to finish.
+  // FakeUserDataAuthClient. It is assumed that user already exists on the
+  // device. Note that this will not wait for the login attempt to finish.
   void AttemptLoginUsingFakeDataAuthClient(const UserContext& user_context);
+
+  // Starts login attempt for a user, assuming that user is a new user that have
+  // just completed GAIA authentication.
+  // Note that this will not wait for the login attempt to finish.
+  void AttemptNewUserLoginUsingFakeDataAuthClient(
+      const UserContext& user_context);
 
   // Waits for the session state to change to ACTIVE. Returns immediately if the
   // session is already active.
@@ -181,7 +187,11 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   void LoginAsNewRegularUser(
       std::optional<UserContext> user_context = std::nullopt);
 
-  // Logs in as a child user with default user context.Should be used for
+  // Logs in as an enterprise user with default user context. Should be used
+  // for proceeding into the session from the login screen.
+  void LoginAsNewEnterpriseUser();
+
+  // Logs in as a child user with default user context. Should be used for
   // proceeding into the session from the login screen.
   void LoginAsNewChildUser();
 
