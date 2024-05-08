@@ -258,15 +258,16 @@ SharedImageFactory::SharedImageFactory(
                              use_passthrough, gles2::DisallowedFeatures());
   }
 
-  {
+  // Skia specific factories can't be used without a Skia context.
+  if (gr_context_type_ != GrContextType::kNone) {
     auto wrapped_sk_image_factory =
         std::make_unique<WrappedSkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(wrapped_sk_image_factory));
-  }
 
-  if (features::IsUsingRawDraw()) {
-    auto factory = std::make_unique<RawDrawImageBackingFactory>();
-    factories_.push_back(std::move(factory));
+    if (features::IsUsingRawDraw()) {
+      auto factory = std::make_unique<RawDrawImageBackingFactory>();
+      factories_.push_back(std::move(factory));
+    }
   }
 
   bool use_gl =
