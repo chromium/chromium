@@ -77,6 +77,7 @@ proto::InternalOnDeviceModelExecutionInfo MakeTextSafetyExecutionLog(
   ts_resp->set_is_unsafe(is_unsafe);
   if (safety_info->language) {
     ts_resp->set_language_code(safety_info->language->code);
+    ts_resp->set_language_confidence(safety_info->language->reliability);
   }
   return ts_execution_info;
 }

@@ -1538,6 +1538,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   const auto& response_log = check_log.response().text_safety_model_response();
   EXPECT_FALSE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "");
+  EXPECT_EQ(response_log.language_confidence(), 0.0);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1593,6 +1594,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
   EXPECT_FALSE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "eo");
+  EXPECT_EQ(response_log.language_confidence(), 1.0);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
@@ -1647,6 +1649,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
   EXPECT_THAT(response_log.scores(), ElementsAre(0.8, 0.2));
   EXPECT_TRUE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "eo");
+  EXPECT_EQ(response_log.language_confidence(), 1.0);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -1700,6 +1703,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(response_log.scores(), ElementsAre(0.2, 0.2));
   EXPECT_FALSE(response_log.is_unsafe());
   EXPECT_EQ(response_log.language_code(), "");
+  EXPECT_EQ(response_log.language_confidence(), 0.0);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
