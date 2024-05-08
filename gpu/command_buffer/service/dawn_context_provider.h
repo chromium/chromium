@@ -47,6 +47,11 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
           GpuDriverBugWorkarounds());
 
+  // Creates a new context provider for use on a different thread that shares
+  // the wgpu::Device/Adapter/Instance with `existing`.
+  static std::unique_ptr<DawnContextProvider> CreateWithSharedDevice(
+      const DawnContextProvider* existing);
+
   static wgpu::BackendType GetDefaultBackendType();
   static bool DefaultForceFallbackAdapter();
 
@@ -60,6 +65,8 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   wgpu::Adapter GetAdapter() const;
   wgpu::Instance GetInstance() const;
 
+  // Sets the caching interface. This must be called before graphite context
+  // is created and before device is shared with any other threads.
   void SetCachingInterface(
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 

@@ -38,16 +38,12 @@
 namespace viz {
 
 // static
-std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
-    gpu::GpuChannelManager* gpu_channel_manager,
-    gpu::VulkanImplementation* vulkan_implementation,
-    gpu::VulkanDeviceQueue* device_queue,
-    gl::GLDisplay* display,
-    bool enable_watchdog) {
-  DCHECK(gpu_channel_manager);
+std::unique_ptr<CompositorGpuThread> CompositorGpuThread::MaybeCreate(
+    const CreateParams& params) {
+  DCHECK(params.gpu_channel_manager);
 
   if (!features::IsDrDcEnabled() ||
-      gpu_channel_manager->gpu_driver_bug_workarounds().disable_drdc) {
+      params.gpu_channel_manager->gpu_driver_bug_workarounds().disable_drdc) {
     return nullptr;
   }
 
@@ -60,16 +56,19 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
   // extension.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGLES) {
-    gl::GLDisplayEGL* display_egl = display->GetAs<gl::GLDisplayEGL>();
+    gl::GLDisplayEGL* display_egl = params.display->GetAs<gl::GLDisplayEGL>();
     DCHECK(display_egl->ext->b_EGL_ANGLE_context_virtualization);
   }
 #endif
 #endif  // DCHECK_IS_ON()
 
-  scoped_refptr<VulkanContextProvider> vulkan_context_provider;
+  auto compositor_gpu_thread = base::WrapUnique(new CompositorGpuThread(
+      params.gpu_channel_manager, params.display, params.enable_watchdog));
+
 #if BUILDFLAG(ENABLE_VULKAN)
   // Create a VulkanContextProvider.
-  if (vulkan_implementation && device_queue) {
+  if (params.vulkan_implementation && params.device_queue) {
+    auto* device_queue = params.device_queue.get();
     auto compositor_thread_device_queue =
         std::make_unique<gpu::VulkanDeviceQueue>(
             device_queue->GetVulkanInstance());
@@ -79,32 +78,37 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
         device_queue->GetVulkanQueueIndex(), device_queue->enabled_extensions(),
         device_queue->enabled_device_features_2(),
         device_queue->vma_allocator());
-    vulkan_context_provider =
+    compositor_gpu_thread->vulkan_context_provider_ =
         VulkanInProcessContextProvider::CreateForCompositorGpuThread(
-            vulkan_implementation, std::move(compositor_thread_device_queue),
-            gpu_channel_manager->gpu_preferences()
+            params.vulkan_implementation,
+            std::move(compositor_thread_device_queue),
+            params.gpu_channel_manager->gpu_preferences()
                 .vulkan_sync_cpu_memory_limit);
   }
 #endif
 
-  auto compositor_gpu_thread = base::WrapUnique(new CompositorGpuThread(
-      gpu_channel_manager, std::move(vulkan_context_provider), display,
-      enable_watchdog));
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (params.gpu_channel_manager->gpu_preferences().gr_context_type ==
+      gpu::GrContextType::kGraphiteDawn) {
+    compositor_gpu_thread->dawn_context_provider_ =
+        gpu::DawnContextProvider::CreateWithSharedDevice(
+            params.dawn_context_provider);
+  }
+#endif
 
-  if (!compositor_gpu_thread->Initialize())
+  if (!compositor_gpu_thread->Initialize()) {
     return nullptr;
+  }
   return compositor_gpu_thread;
 }
 
 CompositorGpuThread::CompositorGpuThread(
     gpu::GpuChannelManager* gpu_channel_manager,
-    scoped_refptr<VulkanContextProvider> vulkan_context_provider,
     gl::GLDisplay* display,
     bool enable_watchdog)
     : base::Thread("CompositorGpuThread"),
       gpu_channel_manager_(gpu_channel_manager),
       enable_watchdog_(enable_watchdog),
-      vulkan_context_provider_(std::move(vulkan_context_provider)),
       display_(display),
       weak_ptr_factory_(this) {}
 
@@ -179,18 +183,6 @@ CompositorGpuThread::GetSharedContextState() {
   }
 
   const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
-
-#if BUILDFLAG(SKIA_USE_DAWN)
-  if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
-    // TODO(crbug.com/40945084): Determine if we need to set up a
-    // DawnCachingInterfaceFactory and/or a cache blob callback.
-    dawn_context_provider_ =
-        gpu::DawnContextProvider::Create(gpu_preferences, workarounds);
-    if (!dawn_context_provider_) {
-      DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
-    }
-  }
-#endif
 
   // Create a SharedContextState.
   auto shared_context_state = base::MakeRefCounted<gpu::SharedContextState>(

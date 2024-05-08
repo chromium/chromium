@@ -629,19 +629,26 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_channel_manager_.get());
 
   // Create and Initialize compositor gpu thread.
-  compositor_gpu_thread_ = CompositorGpuThread::Create(
-      gpu_channel_manager_.get(),
+  {
+    CompositorGpuThread::CreateParams params;
+    params.gpu_channel_manager = gpu_channel_manager_.get();
+    params.display =
+        gpu_channel_manager_->default_offscreen_surface()
+            ? gpu_channel_manager_->default_offscreen_surface()->GetGLDisplay()
+            : nullptr;
+    params.enable_watchdog = !!watchdog_thread_;
+
 #if BUILDFLAG(ENABLE_VULKAN)
-      vulkan_implementation_,
-      vulkan_context_provider_ ? vulkan_context_provider_->GetDeviceQueue()
-                               : nullptr,
-#else
-      nullptr, nullptr,
+    params.vulkan_implementation = vulkan_implementation_;
+    params.device_queue = vulkan_context_provider_
+                              ? vulkan_context_provider_->GetDeviceQueue()
+                              : nullptr;
 #endif
-      gpu_channel_manager_->default_offscreen_surface()
-          ? gpu_channel_manager_->default_offscreen_surface()->GetGLDisplay()
-          : nullptr,
-      !!watchdog_thread_);
+#if BUILDFLAG(SKIA_USE_DAWN)
+    params.dawn_context_provider = dawn_context_provider_.get();
+#endif
+    compositor_gpu_thread_ = CompositorGpuThread::MaybeCreate(params);
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for

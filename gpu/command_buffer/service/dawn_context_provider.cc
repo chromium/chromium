@@ -718,6 +718,15 @@ std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
       new DawnContextProvider(std::move(dawn_shared_state)));
 }
 
+std::unique_ptr<DawnContextProvider>
+DawnContextProvider::CreateWithSharedDevice(
+    const DawnContextProvider* existing) {
+  CHECK(existing);
+  CHECK(existing->dawn_shared_state_);
+  return base::WrapUnique(
+      new DawnContextProvider(existing->dawn_shared_state_));
+}
+
 DawnContextProvider::DawnContextProvider(
     scoped_refptr<DawnSharedState> dawn_shared_state)
     : dawn_shared_state_(std::move(dawn_shared_state)) {
@@ -764,6 +773,8 @@ bool DawnContextProvider::InitializeGraphiteContext(
 
 void DawnContextProvider::SetCachingInterface(
     std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
+  CHECK(dawn_shared_state_->HasOneRef());
+  CHECK(!graphite_context_);
   dawn_shared_state_->SetCachingInterface(std::move(caching_interface));
 }
 
