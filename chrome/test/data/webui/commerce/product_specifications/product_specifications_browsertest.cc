@@ -25,6 +25,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Header) {
+  RunTest("commerce/product_specifications/header_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
   RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }
