@@ -5,10 +5,22 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_VISIT_UTIL_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_VISIT_UTIL_H_
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
+
+// TODO(crbug.com/330580421): Remove/replace the category blocklist array
+// specified in `modules_util.h` with the one below.
+inline constexpr auto kBlocklistedCategories =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"/g/11b76fyj2r", "/m/09lkz", "/m/012mj", "/m/01rbb", "/m/02px0wr",
+         "/m/028hh", "/m/034qg", "/m/034dj", "/m/0jxxt", "/m/015fwp",
+         "/m/04shl0", "/m/01h6rj", "/m/05qt0", "/m/06gqm", "/m/09l0j_",
+         "/m/01pxgq", "/m/0chbx", "/m/02c66t"});
 
 // Generates an identifier for the given URL leveraged for merging and
 // deduplication of similar URLs.

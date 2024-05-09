@@ -16,6 +16,9 @@
 
 namespace visited_url_ranking {
 
+inline constexpr char kSampleSearchUrl[] =
+    "https://www.google.com/search?q=sample";
+
 class URLVisitAggregatesTransformerTest : public testing::Test {
  public:
   URLVisitAggregatesTransformerTest();

@@ -17,10 +17,14 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history_clusters/core/config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
+#include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
+#include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
+#include "components/visited_url_ranking/internal/url_visit_util.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
@@ -91,6 +95,15 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
     transformers.emplace(URLVisitAggregatesTransformType::kBookmarkData,
                          std::move(bookmarks_transformer));
   }
+  transformers.emplace(
+      URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
+      std::make_unique<HistoryURLVisitAggregatesVisibilityScoreTransformer>(
+          history_clusters::Config().content_visibility_threshold));
+  transformers.emplace(
+      URLVisitAggregatesTransformType::kHistoryCategoriesFilter,
+      std::make_unique<HistoryURLVisitAggregatesCategoriesTransformer>(
+          base::flat_set<std::string>(kBlocklistedCategories.begin(),
+                                      kBlocklistedCategories.end())));
 
   return std::make_unique<VisitedURLRankingServiceImpl>(
       std::move(data_fetchers), std::move(transformers));

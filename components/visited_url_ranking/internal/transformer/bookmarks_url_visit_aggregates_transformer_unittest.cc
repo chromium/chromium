@@ -54,8 +54,6 @@ class MockCoreBookmarkModel : public CoreBookmarkModel {
 
 namespace visited_url_ranking {
 
-constexpr char kSampleSearchUrl[] = "https://www.google.com/search?q=sample";
-
 class BookmarksURLVisitAggregatesTransformerTest
     : public URLVisitAggregatesTransformerTest {
  public:

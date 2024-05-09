@@ -38,8 +38,11 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
           {Fetcher::kSession, FetchOptions::kOriginSources},
       },
       base::Time::Now() - base::Days(1),
-      {URLVisitAggregatesTransformType::kBookmarkData,
-       URLVisitAggregatesTransformType::kShoppingData});
+      {
+          URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
+          URLVisitAggregatesTransformType::kBookmarkData,
+          URLVisitAggregatesTransformType::kShoppingData,
+      });
 }
 
 }  // namespace visited_url_ranking

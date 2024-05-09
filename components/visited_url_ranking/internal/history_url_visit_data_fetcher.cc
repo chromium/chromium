@@ -71,17 +71,15 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
       // `GetAnnotatedVisits` returns a reverse-chronological sorted list of
       // annotated visits, thus, the first visit in the vector is the most
       // recent visit for a given URL.
-      auto history = URLVisitAggregate::HistoryData(std::move(annotated_visit));
-      url_annotations.emplace(url_key, std::move(history));
-      continue;
+      url_annotations.emplace(url_key, std::move(annotated_visit));
+    } else {
+      auto& history = url_annotations.at(url_key);
+      history.visit_count += 1;
+      history.total_foreground_duration +=
+          annotated_visit.context_annotations.total_foreground_duration;
+      // TODO(crbug.com/330580109): Add `in_cluster`, dismiss/done `status`
+      // signals.
     }
-
-    auto& history = url_annotations.at(url_key);
-    history.visit_count += 1;
-    history.total_foreground_duration +=
-        annotated_visit.context_annotations.total_foreground_duration;
-    // TODO(crbug.com/330580109): Add `in_cluster`, dismiss/done `status`
-    // signals.
   }
 
   std::map<URLMergeKey, URLVisitVariant> url_visit_variant_map;
