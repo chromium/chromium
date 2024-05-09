@@ -1092,11 +1092,13 @@
       type: "bool",
     },
 
-    // Preferred color scheme from the browser settings passed to the renderer
-    // for evaluating the used color scheme. Currently, only used for the
-    // scrollbars' used color scheme.
+    // The preferred color scheme set by the user's browser settings. The
+    // variable follows the browser's color mode setting unless a browser theme
+    // (custom or not) is defined, in which case the color scheme is set to the
+    // default value. This value is used to evaluate the used color scheme in
+    // non overlay root scrollbars.
     {
-      name: "browserPreferredColorScheme",
+      name: "preferredRootScrollbarColorScheme",
       initial: "mojom::blink::PreferredColorScheme::kLight",
       invalidate: ["ColorScheme"],
       type: "mojom::blink::PreferredColorScheme",

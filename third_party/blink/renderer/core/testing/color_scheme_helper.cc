@@ -12,8 +12,8 @@ namespace blink {
 
 ColorSchemeHelper::ColorSchemeHelper(Document& document)
     : settings_(*document.GetSettings()) {
-  default_browser_preferred_color_scheme_ =
-      settings_.GetBrowserPreferredColorScheme();
+  default_preferred_root_scrollbar_color_scheme_ =
+      settings_.GetPreferredRootScrollbarColorScheme();
   default_preferred_color_scheme_ = settings_.GetPreferredColorScheme();
   default_preferred_contrast_ = settings_.GetPreferredContrast();
   default_in_forced_colors_ = settings_.GetInForcedColors();
@@ -21,8 +21,8 @@ ColorSchemeHelper::ColorSchemeHelper(Document& document)
 
 ColorSchemeHelper::ColorSchemeHelper(Page& page)
     : settings_(page.GetSettings()) {
-  default_browser_preferred_color_scheme_ =
-      settings_.GetBrowserPreferredColorScheme();
+  default_preferred_root_scrollbar_color_scheme_ =
+      settings_.GetPreferredRootScrollbarColorScheme();
   default_preferred_color_scheme_ = settings_.GetPreferredColorScheme();
   default_preferred_contrast_ = settings_.GetPreferredContrast();
   default_in_forced_colors_ = settings_.GetInForcedColors();
@@ -31,16 +31,17 @@ ColorSchemeHelper::ColorSchemeHelper(Page& page)
 ColorSchemeHelper::~ColorSchemeHelper() {
   // Reset preferred color scheme, preferred contrast and forced colors to their
   // original values.
-  settings_.SetBrowserPreferredColorScheme(
-      default_browser_preferred_color_scheme_);
+  settings_.SetPreferredRootScrollbarColorScheme(
+      default_preferred_root_scrollbar_color_scheme_);
   settings_.SetPreferredColorScheme(default_preferred_color_scheme_);
   settings_.SetPreferredContrast(default_preferred_contrast_);
   settings_.SetInForcedColors(default_in_forced_colors_);
 }
 
-void ColorSchemeHelper::SetBrowserPreferredColorScheme(
-    blink::mojom::PreferredColorScheme browser_preferred_color_scheme) {
-  settings_.SetBrowserPreferredColorScheme(browser_preferred_color_scheme);
+void ColorSchemeHelper::SetPreferredRootScrollbarColorScheme(
+    blink::mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme) {
+  settings_.SetPreferredRootScrollbarColorScheme(
+      preferred_root_scrollbar_color_scheme);
 }
 
 void ColorSchemeHelper::SetPreferredColorScheme(

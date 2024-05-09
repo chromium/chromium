@@ -164,6 +164,8 @@
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
@@ -3701,7 +3703,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
         delegate->IsNightModeEnabled()
             ? blink::mojom::PreferredColorScheme::kDark
             : blink::mojom::PreferredColorScheme::kLight;
-    web_prefs->browser_preferred_color_scheme =
+    web_prefs->preferred_root_scrollbar_color_scheme =
         web_prefs->preferred_color_scheme;
   }
 #else
@@ -3709,10 +3711,22 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
   web_prefs->preferred_color_scheme =
       ToBlinkPreferredColorScheme(native_theme->GetPreferredColorScheme());
 
+  bool using_different_colored_frame = false;
+  if (Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
+    if (ThemeService* theme_service =
+            ThemeServiceFactory::GetForProfile(profile)) {
+      using_different_colored_frame = !theme_service->UsingDefaultTheme() ||
+                                      theme_service->GetUserColor().has_value();
+    }
+  }
+
   // Update based on the ColorProvider associated with `web_contents`. Depends
-  // on the browser color mode settings.
-  web_prefs->browser_preferred_color_scheme =
-      web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
+  // on the browser color mode settings and whether the user profile has set a
+  // custom coloring for the browser ui.
+  web_prefs->preferred_root_scrollbar_color_scheme =
+      web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight ||
+              using_different_colored_frame
           ? blink::mojom::PreferredColorScheme::kLight
           : blink::mojom::PreferredColorScheme::kDark;
 #endif  // BUILDFLAG(IS_ANDROID)

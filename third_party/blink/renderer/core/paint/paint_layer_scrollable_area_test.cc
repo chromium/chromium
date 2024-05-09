@@ -81,7 +81,7 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
   // Default browser preferred color scheme is light. The method sets both
   // browser-based and the OS-based preferred color schemes to dark.
   void SetPreferredColorSchemesToDark(ColorSchemeHelper& color_scheme_helper) {
-    color_scheme_helper.SetBrowserPreferredColorScheme(
+    color_scheme_helper.SetPreferredRootScrollbarColorScheme(
         mojom::blink::PreferredColorScheme::kDark);
     color_scheme_helper.SetPreferredColorScheme(
         mojom::blink::PreferredColorScheme::kDark);
@@ -90,8 +90,9 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
   void AssertDefaultPreferredColorSchemes() const {
     ASSERT_EQ(GetDocument().GetPreferredColorScheme(),
               mojom::blink::PreferredColorScheme::kLight);
-    ASSERT_EQ(GetDocument().GetSettings()->GetBrowserPreferredColorScheme(),
-              mojom::blink::PreferredColorScheme::kLight);
+    ASSERT_EQ(
+        GetDocument().GetSettings()->GetPreferredRootScrollbarColorScheme(),
+        mojom::blink::PreferredColorScheme::kLight);
   }
 
   void ExpectEqAllScrollControlsNeedPaintInvalidation(
@@ -1640,7 +1641,7 @@ TEST_P(PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
             mojom::blink::ColorScheme::kLight);
 
   // Change browser preferred color scheme to dark.
-  color_scheme_helper.SetBrowserPreferredColorScheme(
+  color_scheme_helper.SetPreferredRootScrollbarColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
 

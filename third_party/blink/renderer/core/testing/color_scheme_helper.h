@@ -17,7 +17,7 @@ class Settings;
 // ColorSchemeHelper is used to update the following values and eventually reset
 // the values back to their default upon deconstruction for testing.
 // Values include:
-//   - BrowserPreferredColorScheme,
+//   - PreferredRootScrollbarColorScheme,
 //   - PreferredColorScheme,
 //   - PreferredContrast,
 //   - ForcedColors.
@@ -27,8 +27,8 @@ class ColorSchemeHelper {
   ColorSchemeHelper(Page& page);
   ~ColorSchemeHelper();
 
-  void SetBrowserPreferredColorScheme(
-      mojom::PreferredColorScheme browser_preferred_color_scheme);
+  void SetPreferredRootScrollbarColorScheme(
+      mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme);
   void SetPreferredColorScheme(
       mojom::PreferredColorScheme preferred_color_scheme);
   void SetPreferredContrast(mojom::PreferredContrast preferred_contrast);
@@ -37,7 +37,7 @@ class ColorSchemeHelper {
 
  private:
   Settings& settings_;
-  mojom::PreferredColorScheme default_browser_preferred_color_scheme_ =
+  mojom::PreferredColorScheme default_preferred_root_scrollbar_color_scheme_ =
       mojom::PreferredColorScheme::kLight;
   mojom::PreferredColorScheme default_preferred_color_scheme_ =
       mojom::PreferredColorScheme::kLight;
