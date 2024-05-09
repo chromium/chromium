@@ -44,6 +44,7 @@
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_group_item.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_session.h"
@@ -6299,6 +6300,55 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
 
     EXPECT_TRUE(divider_widget->IsVisible());
   }
+}
+
+// Verifies that when an `OverviewGroupItem` is dragged between displays in
+// Overview mode, both the item's widget and the windows are mirrored properly.
+// See http://b/335463631 for more details.
+TEST_F(SnapGroupMultiDisplayTest,
+       MirrorSnapGroupWhenMovingAcrossDisplaysInOverview) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  const gfx::Point point_in_display2(1000, 100);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  // Create Snap Group on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  VerifySnapGroupOnDisplay(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
+      displays[0].id());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Move Snap Group to display #2.
+  auto* event_generator = GetEventGenerator();
+  OverviewGroupItem* group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+  DragGroupItemToPoint(group_item, point_in_display2, event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/false);
+
+  // Verify that the item widget and window are mirrored for the individual
+  // items.
+  for (const auto& item : group_item->overview_items_for_testing()) {
+    EXPECT_TRUE(item->item_mirror_for_dragging_for_testing());
+    EXPECT_TRUE(item->window_mirror_for_dragging_for_testing());
+  }
+
+  event_generator->ReleaseLeftButton();
+
+  // Verify that the windows are moved to the destination display properly.
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 }
 
 // Tests that when moving snap group to another display with snap group, the

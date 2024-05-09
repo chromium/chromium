@@ -263,6 +263,22 @@ OverviewAnimationType OverviewItem::GetExitTransformAnimationType() const {
                                       : OVERVIEW_ANIMATION_RESTORE_WINDOW_ZERO;
 }
 
+void OverviewItem::SetOpacity(float opacity) {
+  OverviewItemBase::SetOpacity(opacity);
+  transform_window_.SetOpacity(opacity);
+}
+
+aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
+  aura::Window::Windows windows = OverviewItemBase::GetWindowsForHomeGesture();
+  if (!transform_window_.IsMinimizedOrTucked()) {
+    for (auto* window : GetTransientTreeIterator(GetWindow())) {
+      windows.push_back(window);
+    }
+  }
+
+  return windows;
+}
+
 void OverviewItem::HideForSavedDeskLibrary(bool animate) {
   OverviewItemBase::HideForSavedDeskLibrary(animate);
 
@@ -288,11 +304,36 @@ void OverviewItem::HideForSavedDeskLibrary(bool animate) {
 }
 
 void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
+  // TODO(http://b/339121787): Decide if we should reset
+  // `kForceVisibleInMiniViewKey` on the window and its transient children back
+  // to false.
   OverviewItemBase::RevertHideForSavedDeskLibrary(animate);
 
   for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
     PerformFadeInLayer(transient_child->layer(), animate);
   }
+}
+
+void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
+  OverviewItemBase::UpdateMirrorsForDragging(is_touch_dragging);
+
+  // Minimized or tucked windows don't need to mirror the source as its already
+  // in `item_widget_`.
+  if (transform_window_.IsMinimizedOrTucked()) {
+    return;
+  }
+
+  if (!window_mirror_for_dragging_) {
+    window_mirror_for_dragging_ =
+        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
+  }
+  window_mirror_for_dragging_->Update();
+}
+
+void OverviewItem::DestroyMirrorsForDragging() {
+  OverviewItemBase::DestroyMirrorsForDragging();
+
+  window_mirror_for_dragging_.reset();
 }
 
 aura::Window* OverviewItem::GetWindow() {
@@ -643,14 +684,6 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   RefreshShadowVisuals(shadow_visible);
 }
 
-void OverviewItem::SetOpacity(float opacity) {
-  item_widget_->SetOpacity(opacity);
-  transform_window_.SetOpacity(opacity);
-  if (cannot_snap_widget_) {
-    cannot_snap_widget_->SetOpacity(opacity);
-  }
-}
-
 float OverviewItem::GetOpacity() const {
   return item_widget_->GetNativeWindow()->layer()->GetTargetOpacity();
 }
@@ -800,11 +833,6 @@ void OverviewItem::OnOverviewItemContinuousScroll(
   }
 }
 
-void OverviewItem::SetVisibleDuringItemDragging(bool visible, bool animate) {
-  SetWindowsVisibleDuringItemDragging(GetWindowsForHomeGesture(), visible,
-                                      animate);
-}
-
 void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   // Windows which can snap will never show this warning.
   bool visible = true;
@@ -865,33 +893,6 @@ void OverviewItem::OnMovingItemToAnotherDesk() {
   // Restore the dragged item window, so that its transform is reset to
   // identity.
   RestoreWindow(/*reset_transform=*/true, /*animate=*/true);
-}
-
-void OverviewItem::UpdateMirrorsForDragging(bool is_touch_dragging) {
-  CHECK_GT(Shell::GetAllRootWindows().size(), 1u);
-
-  if (!item_mirror_for_dragging_) {
-    item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
-        item_widget_->GetNativeWindow(), is_touch_dragging);
-  }
-  item_mirror_for_dragging_->Update();
-
-  // Minimized or tucked windows don't need to mirror the source as its already
-  // in `item_widget_`.
-  if (transform_window_.IsMinimizedOrTucked()) {
-    return;
-  }
-
-  if (!window_mirror_for_dragging_) {
-    window_mirror_for_dragging_ =
-        std::make_unique<DragWindowController>(GetWindow(), is_touch_dragging);
-  }
-  window_mirror_for_dragging_->Update();
-}
-
-void OverviewItem::DestroyMirrorsForDragging() {
-  item_mirror_for_dragging_.reset();
-  window_mirror_for_dragging_.reset();
 }
 
 void OverviewItem::Shutdown() {
@@ -1412,17 +1413,6 @@ void OverviewItem::CloseButtonPressed() {
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }
   CloseWindows();
-}
-
-aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
-  aura::Window::Windows windows = {item_widget_->GetNativeWindow()};
-  if (!transform_window_.IsMinimizedOrTucked()) {
-    for (auto* window : GetTransientTreeIterator(GetWindow()))
-      windows.push_back(window);
-  }
-  if (cannot_snap_widget_)
-    windows.push_back(cannot_snap_widget_->GetNativeWindow());
-  return windows;
 }
 
 }  // namespace ash

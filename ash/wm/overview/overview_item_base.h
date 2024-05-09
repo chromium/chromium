@@ -35,6 +35,7 @@ class View;
 
 namespace ash {
 
+class DragWindowController;
 class OverviewFocusableView;
 class OverviewGrid;
 class OverviewItem;
@@ -115,6 +116,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Returns true if `this` is currently being dragged.
   bool IsDragItem() const;
 
+  // Shows/Hides window item during window dragging. Used when swiping up a
+  // window from shelf.
+  void SetVisibleDuringItemDragging(bool visible, bool animate);
+
   // Refreshes visuals of the `shadow_` by setting the visibility and updating
   // the bounds.
   void RefreshShadowVisuals(bool shadow_visible);
@@ -129,6 +134,14 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
       ui::GestureEvent* event,
       OverviewItemBase* event_source_item);
 
+  // Updates the opacity of `item_widget_`, all the window(s) owned by `this`
+  // and `cannot_snap_widget_`.
+  virtual void SetOpacity(float opacity);
+
+  // Returns the list of windows that we want to slide up or down when swiping
+  // on the shelf in tablet mode.
+  virtual aura::Window::Windows GetWindowsForHomeGesture();
+
   // Hides the overview item. This is used to hide any overview items that may
   // be present when entering the saved desk library. Animates `item_widget_`
   // and the windows in the transient tree to 0 opacity if `animate` is true,
@@ -140,6 +153,12 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Fades the overview items in if `animate` is true, otherwise shows them
   // immediately.
   virtual void RevertHideForSavedDeskLibrary(bool animate);
+
+  // Updates and maybe creates the mirrors needed for multi-display dragging.
+  virtual void UpdateMirrorsForDragging(bool is_touch_dragging);
+
+  // Resets the mirrors needed for multi display dragging.
+  virtual void DestroyMirrorsForDragging();
 
   // Returns the window associated with this, which can be a single window or
   // a list of windows.
@@ -219,8 +238,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // Updates the rounded corners and shadow on `this`.
   virtual void UpdateRoundedCornersAndShadow() = 0;
 
-  // Updates the opacity of all the window(s) owned by `this`.
-  virtual void SetOpacity(float opacity) = 0;
   virtual float GetOpacity() const = 0;
 
   // Dispatched before entering overview.
@@ -253,10 +270,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
       const gfx::Transform& target_transform,
       float scroll_ratio) = 0;
 
-  // Shows/Hides window item during window dragging. Used when swiping up a
-  // window from shelf.
-  virtual void SetVisibleDuringItemDragging(bool visible, bool animate) = 0;
-
   // Shows the cannot snap warning if currently in splitview, and the associated
   // item cannot be snapped.
   virtual void UpdateCannotSnapWarningVisibility(bool animate) = 0;
@@ -269,12 +282,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // desk, which prepares `this` for being removed from the grid, and the
   // window(s) to restore its transform.
   virtual void OnMovingItemToAnotherDesk() = 0;
-
-  // Updates and maybe creates the mirrors needed for multi-display dragging.
-  virtual void UpdateMirrorsForDragging(bool is_touch_dragging) = 0;
-
-  // Resets the mirrors needed for multi display dragging.
-  virtual void DestroyMirrorsForDragging() = 0;
 
   // Called when the `OverviewGrid` shuts down to reset the `item_widget_` and
   // remove window(s) from `ScopedOverviewHideWindows`.
@@ -313,6 +320,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   gfx::Rect get_shadow_content_bounds_for_testing() const {
     return shadow_ ? shadow_.get()->GetContentBounds() : gfx::Rect();
+  }
+
+  DragWindowController* item_mirror_for_dragging_for_testing() {
+    return item_mirror_for_dragging_.get();
   }
 
   RoundedLabelWidget* get_cannot_snap_widget_for_testing() {
@@ -436,6 +447,10 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // has been hidden.
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
       item_widget_event_blocker_;
+
+  // Responsible for mirrors that look like the `item_widget_` on all displays
+  // during dragging.
+  std::unique_ptr<DragWindowController> item_mirror_for_dragging_;
 
   base::WeakPtrFactory<OverviewItemBase> weak_ptr_factory_{this};
 };

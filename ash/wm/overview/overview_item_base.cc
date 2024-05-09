@@ -11,6 +11,7 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
+#include "ash/wm/drag_window_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -66,6 +67,12 @@ bool OverviewItemBase::IsDragItem() const {
   // tests.
   return overview_session_ &&
          overview_session_->GetCurrentDraggedOverviewItem() == this;
+}
+
+void OverviewItemBase::SetVisibleDuringItemDragging(bool visible,
+                                                    bool animate) {
+  SetWindowsVisibleDuringItemDragging(GetWindowsForHomeGesture(), visible,
+                                      animate);
 }
 
 void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
@@ -238,6 +245,23 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event,
   }
 }
 
+void OverviewItemBase::SetOpacity(float opacity) {
+  item_widget_->SetOpacity(opacity);
+  if (cannot_snap_widget_) {
+    cannot_snap_widget_->SetOpacity(opacity);
+  }
+}
+
+aura::Window::Windows OverviewItemBase::GetWindowsForHomeGesture() {
+  aura::Window::Windows windows = {item_widget_->GetNativeWindow()};
+
+  if (cannot_snap_widget_) {
+    windows.push_back(cannot_snap_widget_->GetNativeWindow());
+  }
+
+  return windows;
+}
+
 void OverviewItemBase::HideForSavedDeskLibrary(bool animate) {
   // Temporarily hide this window in overview, so that dark/light theme change
   // does not reset the layer visible. If `animate` is false, the callback will
@@ -281,6 +305,22 @@ void OverviewItemBase::RevertHideForSavedDeskLibrary(bool animate) {
   // TODO(http://b/339108996): Determine how to inform users when a group item
   // cannot be snapped.
   UpdateCannotSnapWarningVisibility(animate);
+}
+
+void OverviewItemBase::UpdateMirrorsForDragging(bool is_touch_dragging) {
+  CHECK_GT(Shell::GetAllRootWindows().size(), 1u);
+
+  if (!item_mirror_for_dragging_) {
+    item_mirror_for_dragging_ = std::make_unique<DragWindowController>(
+        item_widget_->GetNativeWindow(), is_touch_dragging);
+  }
+
+  item_mirror_for_dragging_->Update();
+}
+
+// Resets the mirrors needed for multi display dragging.
+void OverviewItemBase::DestroyMirrorsForDragging() {
+  item_mirror_for_dragging_.reset();
 }
 
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(

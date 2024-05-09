@@ -79,6 +79,12 @@ void OverviewDropTarget::UpdateBackgroundVisibility(
       item_widget_->GetWindowBoundsInScreen().Contains(location_in_screen));
 }
 
+aura::Window::Windows OverviewDropTarget::GetWindowsForHomeGesture() {
+  return {item_widget_->GetNativeWindow()};
+}
+
+void OverviewDropTarget::SetOpacity(float opacity) {}
+
 void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
 
 void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
@@ -153,8 +159,6 @@ bool OverviewDropTarget::ShouldHaveShadow() const {
 
 void OverviewDropTarget::UpdateRoundedCornersAndShadow() {}
 
-void OverviewDropTarget::SetOpacity(float opacity) {}
-
 float OverviewDropTarget::GetOpacity() const {
   return 1.f;
 }
@@ -178,12 +182,6 @@ void OverviewDropTarget::OnOverviewItemDragEnded(bool snap) {}
 void OverviewDropTarget::OnOverviewItemContinuousScroll(
     const gfx::Transform& target_transform,
     float scroll_ratio) {}
-
-void OverviewDropTarget::SetVisibleDuringItemDragging(bool visible,
-                                                      bool animate) {
-  SetWindowsVisibleDuringItemDragging({item_widget_->GetNativeWindow()},
-                                      visible, animate);
-}
 
 void OverviewDropTarget::UpdateCannotSnapWarningVisibility(bool animate) {}
 

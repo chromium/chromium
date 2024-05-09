@@ -895,10 +895,10 @@ TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
       gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   generator->MoveMouseBy(20, 20);
-  EXPECT_TRUE(normal_item->item_mirror_for_dragging_);
-  EXPECT_TRUE(normal_item->window_mirror_for_dragging_);
-  EXPECT_FALSE(minimized_item->item_mirror_for_dragging_);
-  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_);
+  EXPECT_TRUE(normal_item->item_mirror_for_dragging_for_testing());
+  EXPECT_TRUE(normal_item->window_mirror_for_dragging_for_testing());
+  EXPECT_FALSE(minimized_item->item_mirror_for_dragging_for_testing());
+  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_for_testing());
 
   // Start dragging the minimzed window. We don't mirror the original window,
   // since the overview item widget already contains a mirror.
@@ -907,10 +907,10 @@ TEST_P(OverviewSessionTest, DraggingOnMultipleDisplay) {
       gfx::ToRoundedPoint(minimized_item->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   generator->MoveMouseBy(20, 20);
-  EXPECT_FALSE(normal_item->item_mirror_for_dragging_);
-  EXPECT_FALSE(normal_item->window_mirror_for_dragging_);
-  EXPECT_TRUE(minimized_item->item_mirror_for_dragging_);
-  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_);
+  EXPECT_FALSE(normal_item->item_mirror_for_dragging_for_testing());
+  EXPECT_FALSE(normal_item->window_mirror_for_dragging_for_testing());
+  EXPECT_TRUE(minimized_item->item_mirror_for_dragging_for_testing());
+  EXPECT_FALSE(minimized_item->window_mirror_for_dragging_for_testing());
 }
 
 // Tests that dragging an overview item with multiple displays and then exiting
