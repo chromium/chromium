@@ -266,6 +266,19 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                   prefs->GetDouble(
                       prefs::kAccessibilityReadAnythingHighlightGranularity))
             : read_anything::mojom::HighlightGranularity::kDefaultValue;
+    base::Value::Dict voices = base::Value::Dict();
+    if (features::IsReadAnythingReadAloudEnabled()) {
+      if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
+        voices =
+            prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
+      } else {
+        std::string voice_name =
+            prefs->GetString(prefs::kAccessibilityReadAnythingVoiceName);
+        if (!voice_name.empty()) {
+          voices.Set("", voice_name);
+        }
+      }
+    }
     page_->OnSettingsRestoredFromPrefs(
         static_cast<read_anything::mojom::LineSpacing>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
@@ -276,10 +289,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-        speechRate,
-        features::IsReadAnythingReadAloudEnabled()
-            ? prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone()
-            : base::Value::Dict(),
+        speechRate, std::move(voices),
         features::IsReadAnythingReadAloudEnabled()
             ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
                   .Clone()
@@ -456,9 +466,13 @@ void ReadAnythingUntrustedPageHandler::OnVoiceChange(const std::string& voice,
                                                      const std::string& lang) {
   if (browser_) {
     PrefService* prefs = browser_->profile()->GetPrefs();
-    ScopedDictPrefUpdate update(prefs,
-                                prefs::kAccessibilityReadAnythingVoiceName);
-    update->Set(lang, voice);
+    if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
+      ScopedDictPrefUpdate update(prefs,
+                                  prefs::kAccessibilityReadAnythingVoiceName);
+      update->Set(lang, voice);
+    } else {
+      prefs->SetString(prefs::kAccessibilityReadAnythingVoiceName, voice);
+    }
   }
 }
 

@@ -442,12 +442,49 @@ TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
   ASSERT_EQ(FontName(), expected_font);
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       GetStoredVoice_NoAutoSwitching_ReturnsLatestVoice) {
+  std::string current_lang = "it-IT";
+  std::string current_voice = "Italian voice 3";
+  std::string previous_voice = "Dutch voice 1";
+
+  SetLanguageCode(current_lang);
+  OnVoiceChange(previous_voice, current_lang);
+  OnVoiceChange(current_voice, current_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(2);
+  ASSERT_EQ(GetStoredVoice(), current_voice);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetStoredVoice_NoAutoSwitching_ReturnsLatestVoiceRegardlessOfLang) {
+  std::string current_lang = "it-IT";
+  std::string other_lang = "de-DE";
+  std::string current_voice = "Italian voice 3";
+  std::string previous_voice = "Dutch voice 1";
+
+  SetLanguageCode(current_lang);
+  OnVoiceChange(previous_voice, current_lang);
+  OnVoiceChange(current_voice, other_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(2);
+  ASSERT_EQ(GetStoredVoice(), current_voice);
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAloudAutoVoiceSwitching},
+      {});
   ASSERT_EQ(GetStoredVoice(), "");
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentBaseLangStored_ReturnsExpectedVoice) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAloudAutoVoiceSwitching},
+      {});
   std::string base_lang = "fr";
   std::string expected_voice_name = "French voice 1";
 
@@ -460,6 +497,10 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentFullLangStored_ReturnsExpectedVoice) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAloudAutoVoiceSwitching},
+      {});
   std::string full_lang = "en-UK";
   std::string expected_voice_name = "British voice 45";
 
@@ -473,6 +514,10 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(
     ReadAnythingAppControllerTest,
     GetStoredVoice_BaseLangStoredButCurrentLangIsFull_ReturnsStoredBaseLang) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAloudAutoVoiceSwitching},
+      {});
   std::string base_lang = "zh";
   std::string full_lang = "zh-TW";
   std::string expected_voice_name = "Chinese voice";
@@ -486,6 +531,10 @@ TEST_F(
 
 TEST_F(ReadAnythingAppControllerTest,
        GetStoredVoice_CurrentLangNotStored_ReturnsEmpty) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kReadAnythingReadAloud,
+       features::kReadAloudAutoVoiceSwitching},
+      {});
   std::string current_lang = "de-DE";
   std::string stored_lang = "it-IT";
 

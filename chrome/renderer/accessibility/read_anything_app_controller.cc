@@ -897,9 +897,15 @@ float ReadAnythingAppController::SpeechRate() const {
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
-  std::string lang = model_.base_language_code();
-  if (model_.voices().contains(lang)) {
-    return *model_.voices().FindString(lang);
+  if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
+    std::string lang = model_.base_language_code();
+    if (model_.voices().contains(lang)) {
+      return *model_.voices().FindString(lang);
+    }
+  } else {
+    if (!model_.voices().empty()) {
+      return model_.voices().begin()->second.GetString();
+    }
   }
 
   return string_constants::kReadAnythingPlaceholderVoiceName;
