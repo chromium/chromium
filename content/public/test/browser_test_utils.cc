@@ -1372,6 +1372,27 @@ void SimulateKeyPressWithoutChar(WebContents* web_contents,
                        command, /*send_char=*/false);
 }
 
+void SimulateProxyHostPostMessage(RenderFrameHost* source_render_frame_host,
+                                  RenderFrameHost* target_render_frame_host,
+                                  blink::TransferableMessage message) {
+  RenderFrameProxyHost* proxy_host =
+      static_cast<RenderFrameHostImpl*>(target_render_frame_host)
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(
+                  source_render_frame_host->GetSiteInstance())
+                  ->group());
+  CHECK(proxy_host);
+
+  proxy_host->RouteMessageEvent(
+      source_render_frame_host->GetFrameToken(),
+      base::UTF8ToUTF16(
+          source_render_frame_host->GetLastCommittedOrigin().Serialize()),
+      base::UTF8ToUTF16(
+          target_render_frame_host->GetLastCommittedOrigin().Serialize()),
+      std::move(message));
+}
+
 ScopedSimulateModifierKeyPress::ScopedSimulateModifierKeyPress(
     WebContents* web_contents,
     bool control,

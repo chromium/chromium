@@ -32,6 +32,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -109,6 +110,7 @@
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -3860,6 +3862,38 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   // Verify the extension loaded.
   EXPECT_EQ(extension_url, extension_host2->GetLastCommittedURL());
   EXPECT_EQ(main_url, embedder_host2->GetLastCommittedURL());
+}
+
+// Test that the PDF embedder frame can't postMessage() to the PDF content
+// frame. OOPIF PDF only, since GuestView PDF's embedder frame doesn't have a
+// proxy host to the content frame.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
+                       BlockPdfEmbedderFramePostMessageToContentFrame) {
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  auto* web_contents = GetActiveWebContents();
+  content::RenderFrameHost* embedder_host = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* content_host =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(content_host);
+
+  // The `content::RenderFrameProxyHost` is normally hidden by shadow DOM, but a
+  // compromised PDF embedder renderer could try to send a message event to the
+  // proxy host. If that occurs, the process hosting the compromised PDF
+  // embedder renderer should crash.
+  base::HistogramTester histograms;
+  content::RenderProcessHostWatcher crash_observer(
+      embedder_host->GetProcess(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  blink::TransferableMessage message;
+  message.sender_agent_cluster_id = base::UnguessableToken::Create();
+  content::SimulateProxyHostPostMessage(embedder_host, content_host,
+                                        blink::TransferableMessage());
+
+  crash_observer.Wait();
+  histograms.ExpectUniqueSample("Stability.BadMessageTerminated.Content", 319,
+                                1);
 }
 
 class PDFExtensionOopifBlockNonPdfNavigationTest

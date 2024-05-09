@@ -486,6 +486,7 @@ Called by update_bad_message_reasons.py.-->
       label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_OPAQUE_ORIGIN"/>
   <int value="318"
       label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_WITH_PERMISSION_DISABLED"/>
+  <int value="319" label="RFPH_POST_MESSAGE_PDF_CONTENT_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

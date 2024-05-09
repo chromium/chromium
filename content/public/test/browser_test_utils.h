@@ -117,6 +117,7 @@ typedef int PROPERTYID;
 
 namespace blink {
 class StorageKey;
+struct TransferableMessage;
 
 namespace mojom {
 class FrameWidget;
@@ -519,6 +520,15 @@ void SimulateKeyPressWithoutChar(WebContents* web_contents,
                                  bool shift,
                                  bool alt,
                                  bool command);
+
+// Simulates `source_render_frame_host` sending `message` to
+// `target_render_frame_host` through a `RenderFrameProxyHost`. This allows
+// testing corner cases where postMessage() should not be allowed, even from a
+// compromised renderer. `target_render_frame_host`'s frame must have a
+// `RenderFrameProxyHost` in `source_render_frame_host`'s `SiteInstanceGroup`.
+void SimulateProxyHostPostMessage(RenderFrameHost* source_render_frame_host,
+                                  RenderFrameHost* target_render_frame_host,
+                                  blink::TransferableMessage message);
 
 // Reset touch action for the embedder of a BrowserPluginGuest.
 void ResetTouchAction(RenderWidgetHost* host);

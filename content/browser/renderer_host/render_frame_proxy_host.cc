@@ -567,6 +567,13 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
+  // Don't deliver any messages to PDF content frames.
+  if (target_rfh->GetSiteInstance()->GetSiteInfo().is_pdf()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFPH_POST_MESSAGE_PDF_CONTENT_FRAME);
+    return;
+  }
+
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   std::optional<blink::RemoteFrameToken> translated_source_token;
