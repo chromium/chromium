@@ -15327,10 +15327,13 @@ navigator.runAdAuction({
 // functionality.
 
 // The server JSON updates a number of updatable fields.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
+//
+// The join and update events should be reported to devtools.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAndReportToDevtools) {
   GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin test_origin = url::Origin::Create(test_url);
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
 
   // The server JSON updates all fields that can be updated.
   constexpr char kUpdateUrlPath[] = "/interest_group/update_partial.json";
@@ -15370,6 +15373,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
               .Build()));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
+
+  WaitForAccessObserved({
+      {"global", TestInterestGroupObserver::kJoin, test_origin, "cars"},
+      {"global", TestInterestGroupObserver::kUpdate, test_origin, "cars"},
+  });
 
   WaitForInterestGroupsSatisfying(
       test_origin,
