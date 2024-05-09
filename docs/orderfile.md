@@ -22,6 +22,8 @@ use `--use-remoteexec` (Googlers only). There are several other options you can
 use to configure/debug the orderfile generation. Use the `-h` option to view the
 various options.
 
+NB: If your checkout is non-internal you must use the `--public` option.
+
 To build Chrome with a locally generated orderfile, use the
 `chrome_orderfile_path=<path_to_orderfile>` GN arg.
 
