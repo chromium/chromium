@@ -6,9 +6,11 @@ package org.chromium.content_public.browser.test.transit;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ElementInState;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.DisplayedCondition;
 import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDisplayedCondition;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -22,12 +24,11 @@ import java.util.concurrent.TimeoutException;
  */
 public class HtmlElementInState implements ElementInState {
     protected final HtmlElement mHtmlElement;
-    protected final WebContentsElementInState mWebContentsElementInState;
+    protected final Supplier<WebContents> mWebContentsSupplier;
 
-    public HtmlElementInState(
-            HtmlElement htmlElement, WebContentsElementInState webContentsElementInState) {
+    public HtmlElementInState(HtmlElement htmlElement, Supplier<WebContents> webContentsSupplier) {
         mHtmlElement = htmlElement;
-        mWebContentsElementInState = webContentsElementInState;
+        mWebContentsSupplier = webContentsSupplier;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class HtmlElementInState implements ElementInState {
     @Nullable
     @Override
     public Condition getEnterCondition() {
-        return new DisplayedCondition(mWebContentsElementInState, mHtmlElement.getHtmlId());
+        return new DisplayedCondition(mWebContentsSupplier, mHtmlElement.getHtmlId());
     }
 
     @Nullable
@@ -47,14 +48,14 @@ public class HtmlElementInState implements ElementInState {
         if (destinationElementIds.contains(getId())) {
             return null;
         } else {
-            return new NotDisplayedCondition(mWebContentsElementInState, mHtmlElement.getHtmlId());
+            return new NotDisplayedCondition(mWebContentsSupplier, mHtmlElement.getHtmlId());
         }
     }
 
     /** Click the HTML element to trigger a Transition. */
     public void click() {
         try {
-            DOMUtils.clickNode(mWebContentsElementInState.get(), mHtmlElement.getHtmlId());
+            DOMUtils.clickNode(mWebContentsSupplier.get(), mHtmlElement.getHtmlId());
         } catch (TimeoutException e) {
             throw TravelException.newTravelException("Timed out trying to click DOM element", e);
         }

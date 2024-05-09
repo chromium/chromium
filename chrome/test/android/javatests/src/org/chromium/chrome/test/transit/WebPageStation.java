@@ -8,12 +8,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.test.transit.WebContentsElementInState;
+import org.chromium.content_public.browser.WebContents;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
@@ -22,7 +24,7 @@ public class WebPageStation extends PageStation {
     // tab switcher and it is not completely occluded.
     public static final ViewElement URL_BAR = unscopedViewElement(withId(R.id.url_bar));
 
-    protected WebContentsElementInState mWebContents;
+    protected Supplier<WebContents> mWebContentsSupplier;
 
     protected <T extends WebPageStation> WebPageStation(Builder<T> builder) {
         super(builder);
@@ -36,20 +38,43 @@ public class WebPageStation extends PageStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
+        mWebContentsSupplier =
+                elements.declareEnterCondition(
+                        new WebContentsPresentCondition(mPageLoadedCondition));
+
         elements.declareView(URL_BAR);
-        mWebContents =
-                elements.declareElementInState(
-                        new WebContentsElementInState(
-                                () -> {
-                                    ChromeTabbedActivity activity = mActivityElement.get();
-                                    if (activity == null) {
-                                        return null;
-                                    }
-                                    Tab activityTab = activity.getActivityTab();
-                                    if (activityTab == null) {
-                                        return null;
-                                    }
-                                    return activityTab.getWebContents();
-                                }));
+    }
+
+    private static class WebContentsPresentCondition extends InstrumentationThreadCondition
+            implements Supplier<WebContents> {
+        private final Supplier<Tab> mLoadedTabSupplier;
+
+        public WebContentsPresentCondition(Supplier<Tab> loadedTabSupplier) {
+            mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            return whether(hasValue());
+        }
+
+        @Override
+        public String buildDescription() {
+            return "WebContents present";
+        }
+
+        @Override
+        public WebContents get() {
+            Tab loadedTab = mLoadedTabSupplier.get();
+            if (loadedTab == null) {
+                return null;
+            }
+            return loadedTab.getWebContents();
+        }
+
+        @Override
+        public boolean hasValue() {
+            return get() != null;
+        }
     }
 }

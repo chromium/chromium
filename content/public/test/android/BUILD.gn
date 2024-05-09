@@ -95,7 +95,6 @@ android_library("content_transit_java") {
     "javatests/src/org/chromium/content_public/browser/test/transit/HtmlConditions.java",
     "javatests/src/org/chromium/content_public/browser/test/transit/HtmlElement.java",
     "javatests/src/org/chromium/content_public/browser/test/transit/HtmlElementInState.java",
-    "javatests/src/org/chromium/content_public/browser/test/transit/WebContentsElementInState.java",
   ]
 }
 

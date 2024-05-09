@@ -40,7 +40,8 @@ public class PopupOnClickPageStation extends WebPageStation {
         super.declareElements(elements);
 
         mLinkToPopup =
-                elements.declareElementInState(new HtmlElementInState(LINK_TO_POPUP, mWebContents));
+                elements.declareElementInState(
+                        new HtmlElementInState(LINK_TO_POPUP, mWebContentsSupplier));
     }
 
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
