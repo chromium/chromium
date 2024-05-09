@@ -669,6 +669,10 @@ bool CanWindowSnap() {
   return window_state && window_state->IsUserPositionable();
 }
 
+void AccessibilityAction() {
+  Shell::Get()->accessibility_controller()->PerformAccessibilityAction();
+}
+
 void ActivateDesk(bool activate_left) {
   auto* desks_controller = DesksController::Get();
   const bool success = desks_controller->ActivateAdjacentDesk(

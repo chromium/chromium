@@ -115,6 +115,9 @@ ASH_EXPORT bool CanWindowSnap();
 // Accelerator commands.
 // Note: These functions should be independent and not depend on ui::Accelerator
 
+// Runs the assigned accessibility action.
+ASH_EXPORT void AccessibilityAction();
+
 // Activates desk on the left/right.
 ASH_EXPORT void ActivateDesk(bool activate_left);
 

@@ -54,6 +54,8 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2964,6 +2966,31 @@ void AccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {
   } else {
     Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
   }
+}
+
+void AccessibilityController::PerformAccessibilityAction() {
+  // TODO(b/335456364): Add UMA.
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  StatusAreaWidget* status_area_widget =
+      RootWindowController::ForWindow(target_root)->GetStatusAreaWidget();
+  if (!status_area_widget) {
+    // TODO(b/335456364): Support Kiosk mode.
+  }
+
+  UnifiedSystemTray* tray = status_area_widget->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    if (tray->bubble()
+            ->unified_system_tray_controller()
+            ->showing_accessibility_detailed_view()) {
+      tray->CloseBubble();
+      return;
+    }
+  } else {
+    tray->ShowBubble();
+  }
+  tray->bubble()
+      ->unified_system_tray_controller()
+      ->ShowAccessibilityDetailedView();
 }
 
 void AccessibilityController::PerformAcceleratorAction(

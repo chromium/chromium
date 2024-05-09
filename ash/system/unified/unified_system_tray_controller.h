@@ -160,6 +160,10 @@ class ASH_EXPORT UnifiedSystemTrayController
     return media_view_controller_.get();
   }
 
+  bool showing_accessibility_detailed_view() const {
+    return showing_accessibility_detailed_view_;
+  }
+
   bool showing_audio_detailed_view() const {
     return showing_audio_detailed_view_;
   }
@@ -226,6 +230,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
   raw_ptr<views::View, DanglingUntriaged> unified_brightness_view_ = nullptr;
+
+  bool showing_accessibility_detailed_view_ = false;
 
   bool showing_audio_detailed_view_ = false;
 

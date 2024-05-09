@@ -1088,6 +1088,11 @@ const char kEnableTLS13KyberName[] = "TLS 1.3 hybridized Kyber support";
 const char kEnableTLS13KyberDescription[] =
     "This option enables a combination of X25519 and Kyber in TLS 1.3.";
 
+const char kAccessibilityAcceleratorName[] =
+    "Experimental Accessibility accelerator";
+const char kAccessibilityAcceleratorDescription[] =
+    "This option enables the Accessibility accelerator.";
+
 const char kAccessibilityCaretBlinkIntervalSettingName[] =
     "Adds text caret blink rate setting";
 const char kAccessibilityCaretBlinkIntervalSettingDescription[] =

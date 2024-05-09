@@ -258,6 +258,7 @@ void UnifiedSystemTrayController::ShowAccessibilityDetailedView() {
       base::UserMetricsAction("StatusArea_Accessability_DetailedView"));
   ShowDetailedView(
       std::make_unique<UnifiedAccessibilityDetailedViewController>(this));
+  showing_accessibility_detailed_view_ = true;
 }
 
 void UnifiedSystemTrayController::ShowFocusModeDetailedView() {
@@ -296,6 +297,7 @@ void UnifiedSystemTrayController::ShowCalendarView(
   ShowDetailedView(std::make_unique<UnifiedCalendarViewController>());
 
   showing_calendar_view_ = true;
+  showing_accessibility_detailed_view_ = false;
   showing_audio_detailed_view_ = false;
   showing_display_detailed_view_ = false;
 
@@ -323,6 +325,7 @@ void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
     }
   }
 
+  showing_accessibility_detailed_view_ = false;
   showing_audio_detailed_view_ = false;
   showing_display_detailed_view_ = false;
 
@@ -444,6 +447,7 @@ void UnifiedSystemTrayController::ShowDetailedView(
     manager->ClearFocus();
   }
 
+  showing_accessibility_detailed_view_ = false;
   showing_audio_detailed_view_ = false;
   showing_display_detailed_view_ = false;
   bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/true);

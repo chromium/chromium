@@ -40,6 +40,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -759,6 +760,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
   // false should be returned to give the web contents a chance at handling the
   // accelerator.
   switch (action) {
+    case AcceleratorAction::kAccessibilityAction:
+      return ::features::IsAccessibilityAcceleratorEnabled();
     case AcceleratorAction::kCycleBackwardMru:
     case AcceleratorAction::kCycleForwardMru:
       return accelerators::CanCycleMru();
@@ -1009,6 +1012,11 @@ void AcceleratorControllerImpl::PerformAction(
   // implement it in your module's controller code or pull it into a HandleFoo()
   // function above.
   switch (action) {
+    case AcceleratorAction::kAccessibilityAction:
+      if (::features::IsAccessibilityAcceleratorEnabled()) {
+        accelerators::AccessibilityAction();
+      }
+      break;
     case AcceleratorAction::kBrightnessDown: {
       base::RecordAction(UserMetricsAction("Accel_BrightnessDown_F6"));
       accelerators::BrightnessDown();

@@ -16,6 +16,8 @@ mojom_accelerator_action
 EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
     ash::AcceleratorAction accelerator_action) {
   switch (accelerator_action) {
+    case ash::AcceleratorAction::kAccessibilityAction:
+      return mojom_accelerator_action::kAccessibilityAction;
     case ash::AcceleratorAction::kBrightnessDown:
       return mojom_accelerator_action::kBrightnessDown;
     case ash::AcceleratorAction::kBrightnessUp:
@@ -343,6 +345,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     ash::mojom::AcceleratorAction input,
     ash::AcceleratorAction* out) {
   switch (input) {
+    case mojom_accelerator_action::kAccessibilityAction:
+      *out = ash::AcceleratorAction::kAccessibilityAction;
+      return true;
     case mojom_accelerator_action::kBrightnessDown:
       *out = ash::AcceleratorAction::kBrightnessDown;
       return true;

@@ -130,6 +130,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
 // TODO(accessibility): Should this be moved to ash_features.cc?
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
+// Adds option to enable Accessibility accelerator.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAccelerator);
+AX_BASE_EXPORT bool IsAccessibilityAcceleratorEnabled();
+
 // Adds option to limit the movement on the screen.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimations);
 AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();

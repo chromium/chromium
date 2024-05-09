@@ -313,6 +313,10 @@ const AcceleratorData kAcceleratorData[] = {
     // Projector shortcuts.
     {true, ui::VKEY_OEM_3, ui::EF_COMMAND_DOWN,
      AcceleratorAction::kToggleProjectorMarker},
+
+    // Accessibility key.
+    {true, ui::VKEY_ACCESSIBILITY, ui::EF_NONE,
+     AcceleratorAction::kAccessibilityAction},
 };
 
 const size_t kAcceleratorDataLength = std::size(kAcceleratorData);

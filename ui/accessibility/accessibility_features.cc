@@ -152,6 +152,13 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
+BASE_FEATURE(kAccessibilityAccelerator,
+             "AccessibilityAccelerator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityAcceleratorEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityAccelerator);
+}
+
 BASE_FEATURE(kAccessibilityReducedAnimations,
              "AccessibilityReducedAnimations",
              base::FEATURE_ENABLED_BY_DEFAULT);

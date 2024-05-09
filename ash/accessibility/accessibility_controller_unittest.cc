@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -18,10 +19,13 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -112,6 +116,7 @@ class AccessibilityControllerTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{media::kLiveCaption,
                               ash::features::kOnDeviceSpeechRecognition,
+                              ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
                               ::features::
@@ -1257,6 +1262,25 @@ TEST_F(AccessibilityControllerTest, StickyKeysTrayMenuVisibility) {
       prefs->IsManagedPreference(prefs::kAccessibilityStickyKeysEnabled));
   EXPECT_FALSE(controller->sticky_keys().enabled());
   EXPECT_FALSE(controller->IsStickyKeysSettingVisibleInTray());
+}
+
+TEST_F(AccessibilityControllerTest, AccessibilityAcceleratorShowHide) {
+  auto* accelerator_controller = Shell::Get()->accelerator_controller();
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  StatusAreaWidget* status_area_widget =
+      RootWindowController::ForWindow(target_root)->GetStatusAreaWidget();
+  UnifiedSystemTray* tray = status_area_widget->unified_system_tray();
+
+  ASSERT_FALSE(tray->IsBubbleShown());
+  accelerator_controller->PerformActionIfEnabled(
+      AcceleratorAction::kAccessibilityAction, {});
+  ASSERT_TRUE(tray->IsBubbleShown());
+  ASSERT_TRUE(tray->bubble()
+                  ->unified_system_tray_controller()
+                  ->showing_accessibility_detailed_view());
+  accelerator_controller->PerformActionIfEnabled(
+      AcceleratorAction::kAccessibilityAction, {});
+  ASSERT_FALSE(tray->IsBubbleShown());
 }
 
 TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
