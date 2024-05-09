@@ -682,13 +682,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, Controls) {
           "runMochaSuite('PerformancePage')");
 }
 
-// TODO(crbug.com/337336425): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExceptionList DISABLED_ExceptionList
-#else
-#define MAYBE_ExceptionList ExceptionList
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, MAYBE_ExceptionList) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
   RunTest("settings/performance_page_test.js",
           "runMochaSuite('TabDiscardExceptionList')");
 }
