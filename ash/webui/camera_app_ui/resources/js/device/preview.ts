@@ -36,7 +36,10 @@ import {
   MojoEndpoint,
 } from '../mojo/util.js';
 import * as nav from '../nav.js';
-import {PhotoModeAutoScanner} from '../photo_mode_auto_scanner.js';
+import {
+  createInstance as createPhotoModeAutoScanner,
+  PhotoModeAutoScanner,
+} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {
   ErrorLevel,
@@ -453,7 +456,7 @@ export class Preview {
       state.set(state.State.STREAMING, true);
 
       if (state.get(Mode.PHOTO)) {
-        this.photoModeAutoScanner = new PhotoModeAutoScanner(this.video);
+        this.photoModeAutoScanner = createPhotoModeAutoScanner(this.video);
         this.photoModeAutoScanner.start();
       }
     } catch (e) {

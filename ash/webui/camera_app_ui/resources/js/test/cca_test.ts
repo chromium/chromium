@@ -25,10 +25,16 @@ import {
 } from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
+import {
+  getInstanceForTest as getPhotoModeAutoScanner,
+} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
 import * as untrustedScripts from '../untrusted_scripts.js';
 import {FpsObserver, sleep} from '../util.js';
+import {
+  getInstanceForTest as getDocumentReview,
+} from '../views/document_review.js';
 import {windowController} from '../window_controller.js';
 
 import {
@@ -646,5 +652,20 @@ export class CCATest {
     const deviceOperator = assertExists(
         DeviceOperator.getInstance(), 'Failed to get deviceOperator instance.');
     return (await deviceOperator.getVidPid(CCATest.getDeviceId())) ?? '';
+  }
+
+  /**
+   * Returns average time performance of preview OCR in milliseconds.
+   */
+  static getAverageOcrScanTime(): number {
+    return getPhotoModeAutoScanner().getAverageOcrScanTime();
+  }
+
+  /**
+   * Returns the processing time of last saved file from document scanning
+   * review dialog in milliseconds.
+   */
+  static getDocumentReviewLastFileProcessingTime(): number {
+    return getDocumentReview().getLastFileProcessingTime();
   }
 }

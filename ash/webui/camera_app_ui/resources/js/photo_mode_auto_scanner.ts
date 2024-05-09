@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertExists} from './assert.js';
 import * as barcodeChip from './barcode_chip.js';
 import {Flag} from './flag.js';
 import {AsyncIntervalRunner} from './models/async_interval.js';
@@ -20,12 +21,41 @@ export const SLOWDOWN_DELAY = 3 * 60 * 1000;
 // The delay interval after `SLOWDOWN_DELAY` of idle in milliseconds.
 export const SCAN_INTERVAL_SLOW = 1000;
 
+// The last created `PhotoModeAutoScanner` instance.
+let instance: PhotoModeAutoScanner|null = null;
+
+/**
+ * Creates a `PhotoModeAutoScanner` instance.
+ */
+export function createInstance(video: HTMLVideoElement): PhotoModeAutoScanner {
+  instance = new PhotoModeAutoScanner(video);
+  return instance;
+}
+
+/**
+ * Get the `PhotoModeAutoScanner` instance for testing purpose.
+ */
+export function getInstanceForTest(): PhotoModeAutoScanner {
+  return assertExists(instance);
+}
+
 export class PhotoModeAutoScanner {
   private slowdownTimer: OneShotTimer|null = null;
 
   private barcodeRunner: AsyncIntervalRunner|null = null;
 
   private ocrRunner: AsyncIntervalRunner|null = null;
+
+  /**
+   * The number of OCR scans, only used in tests. Reset when calling `stop()`.
+   */
+  private ocrScanCount = 0;
+
+  /**
+   * The accumulated time of OCR scans, only used in tests. Reset when calling
+   * `stop()`.
+   */
+  private ocrScanTime = 0;
 
   constructor(private readonly video: HTMLVideoElement) {}
 
@@ -57,6 +87,12 @@ export class PhotoModeAutoScanner {
     this.barcodeRunner = null;
     this.ocrRunner?.stop();
     this.ocrRunner = null;
+    this.ocrScanCount = 0;
+    this.ocrScanTime = 0;
+  }
+
+  getAverageOcrScanTime(): number {
+    return this.ocrScanTime / this.ocrScanCount;
   }
 
   private slowdown() {
@@ -84,8 +120,14 @@ export class PhotoModeAutoScanner {
   private createOcrRunner(interval: number) {
     const ocrScanner = new Ocr(this.video);
     return new AsyncIntervalRunner(async (stopped) => {
+      const startTime = performance.now();
       const result = await ocrScanner.performOcr();
-      if (stopped.isSignaled() || result.lines.length === 0) {
+      if (stopped.isSignaled()) {
+        return;
+      }
+      this.ocrScanCount += 1;
+      this.ocrScanTime += performance.now() - startTime;
+      if (result.lines.length === 0) {
         return;
       }
       const text = result.lines.map((line) => line.text).join('\n');

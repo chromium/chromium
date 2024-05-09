@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof, assertNotReached} from '../assert.js';
+import {
+  assert,
+  assertExists,
+  assertInstanceof,
+  assertNotReached,
+} from '../assert.js';
 import * as dom from '../dom.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
@@ -58,6 +63,25 @@ export enum Mode {
 const ACTIVE_PAGE_CLASS = 'active';
 const DELETE_PAGE_BUTTON_SELECTOR = '.delete';
 
+// The initialized `DocumentReview` instance.
+let instance: DocumentReview|null = null;
+
+/**
+ * Initialize the `DocumentReview` instance. It should only be initialize once.
+ */
+export function initializeInstance(resultSaver: ResultSaver): DocumentReview {
+  assert(instance === null);
+  instance = new DocumentReview(resultSaver);
+  return instance;
+}
+
+/**
+ * Get the `DocumentReview` instance for testing purpose.
+ */
+export function getInstanceForTest(): DocumentReview {
+  return assertExists(instance);
+}
+
 /**
  * View controller for reviewing document scanning.
  */
@@ -110,6 +134,11 @@ export class DocumentReview extends View {
    * sending events.
    */
   private fixCount = 0;
+
+  /**
+   * The processing time of last saved file.
+   */
+  private lastFileProcessingTime: number|null = null;
 
   constructor(protected readonly resultSaver: ResultSaver) {
     super(ViewName.DOCUMENT_REVIEW, {
@@ -249,6 +278,7 @@ export class DocumentReview extends View {
    * is JPEG, only saves the first page.
    */
   private async save(mimeType: MimeType.JPEG|MimeType.PDF): Promise<void> {
+    const startTime = performance.now();
     const blobs = this.pages.map((page) => page.croppedBlob);
     const name = (new Filenamer()).newDocumentName(mimeType);
     if (mimeType === MimeType.JPEG) {
@@ -259,6 +289,11 @@ export class DocumentReview extends View {
       await this.resultSaver.savePhoto(
           pdfBlob, ToteMetricFormat.kScanPdf, name, null);
     }
+    this.lastFileProcessingTime = performance.now() - startTime;
+  }
+
+  getLastFileProcessingTime(): number {
+    return assertExists(this.lastFileProcessingTime);
   }
 
   /**

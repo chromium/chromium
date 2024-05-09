@@ -70,7 +70,10 @@ import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {Dialog} from './dialog.js';
-import {DocumentReview} from './document_review.js';
+import {
+  DocumentReview,
+  initializeInstance as initializeDocumentReview,
+} from './document_review.js';
 import {Flash} from './flash.js';
 import {OptionPanel} from './option_panel.js';
 import {PTZPanel} from './ptz_panel.js';
@@ -157,7 +160,7 @@ export class Camera extends View implements CameraViewUI {
       readonly perfLogger: PerfLogger,
   ) {
     super(ViewName.CAMERA);
-    this.documentReview = new DocumentReview(resultSaver);
+    this.documentReview = initializeDocumentReview(resultSaver);
     this.lowStorageDialogView = new Dialog(ViewName.LOW_STORAGE_DIALOG, {
       onNegativeButtonClicked: () => this.openStorageManagement(),
     });
