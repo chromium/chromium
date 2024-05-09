@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
 #define PNG_INTERNAL
 #include "third_party/libpng/png.h"
 
@@ -63,8 +63,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_infop info_ptr = png_create_info_struct(png_ptr);
   assert(info_ptr);
 
-  base::ScopedClosureRunner struct_deleter(
-      base::BindOnce(&png_destroy_read_struct, &png_ptr, &info_ptr, nullptr));
+  absl::Cleanup struct_deleter = [&png_ptr, &info_ptr] {
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
+  };
 
   if (setjmp(png_jmpbuf(png_ptr))) {
     return 0;
