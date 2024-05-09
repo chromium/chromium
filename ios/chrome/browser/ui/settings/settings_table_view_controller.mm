@@ -28,6 +28,7 @@
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/util.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -66,6 +67,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -105,6 +107,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
+#import "ios/chrome/browser/ui/settings/cells/enhanced_safe_browsing_inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
@@ -124,6 +127,7 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/enhanced_safe_browsing_inline_promo_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
@@ -177,6 +181,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     BooleanObserver,
     ChromeAccountManagerServiceObserver,
     DownloadsSettingsCoordinatorDelegate,
+    EnhancedSafeBrowsingInlinePromoDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -617,6 +622,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // index 0.
   [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn atIndex:0];
   [self addPromoToSigninSection];
+  [self addPromoToEnhancedSafeBrowsingSection];
 }
 
 // Adds the identity promo to promote the sign-in or sync state.
@@ -679,6 +685,53 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Google Services item.
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAccount];
+}
+
+// Adds the Enhanced Safe Browsing inline promo to promote ESB.
+- (void)addPromoToEnhancedSafeBrowsingSection {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
+    return;
+  }
+
+  // The user must be:
+  //   1.) Signed-in
+  //   2.) Have Chrome set to default browser.
+  //   3.) Have Safe Browsing standard protection enabled.
+  //   4.) One of the trigerring criteria has been met.
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  bool isSignedInAndSynced =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  bool isDefaultBrowser = IsChromeLikelyDefaultBrowser();
+  bool isStandardProtectionEnabled =
+      safe_browsing::GetSafeBrowsingState(*_browserState->GetPrefs()) ==
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
+  bool triggerCriteriaMet = tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+
+  if (!isSignedInAndSynced || !isDefaultBrowser ||
+      !isStandardProtectionEnabled || !triggerCriteriaMet) {
+    return;
+  }
+
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SettingsSectionIdentifierESBPromo]) {
+    [self.tableViewModel
+        removeSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
+  }
+  [self.tableViewModel
+      insertSectionWithIdentifier:SettingsSectionIdentifierESBPromo
+                          atIndex:0];
+
+  if (![self.tableViewModel
+          hasItemForItemType:SettingsItemTypeESBPromo
+           sectionIdentifier:SettingsSectionIdentifierESBPromo]) {
+    [self.tableViewModel addItem:[self enhancedSafeBrowsingInlinePromoItem]
+         toSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
+  }
 }
 
 #pragma mark - Model Items
@@ -1083,6 +1136,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                        symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
         symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
       accessibilityIdentifier:nil];
+}
+
+- (TableViewItem*)enhancedSafeBrowsingInlinePromoItem {
+  EnhancedSafeBrowsingInlinePromoItem* item =
+      [[EnhancedSafeBrowsingInlinePromoItem alloc]
+          initWithType:SettingsItemTypeESBPromo];
+  item.delegate = self;
+  return item;
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -2525,6 +2586,34 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     (DownloadsSettingsCoordinator*)coordinator {
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
+}
+
+#pragma mark - EnhancedSafeBrowsingInlinePromoDelegate
+
+- (void)dismissEnhancedSafeBrowsingInlinePromo {
+  SettingsSectionIdentifier sectionID = SettingsSectionIdentifierESBPromo;
+  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionID]) {
+    return;
+  }
+
+  NSUInteger index =
+      [self.tableViewModel sectionForSectionIdentifier:sectionID];
+  [self.tableViewModel removeItemWithType:SettingsItemTypeESBPromo
+                fromSectionWithIdentifier:sectionID
+                                  atIndex:0];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationFade];
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+}
+
+- (void)showSafeBrowsingSettingsMenu {
+  id<SettingsCommands> handler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), SettingsCommands);
+  [handler showSafeBrowsingSettings];
 }
 
 @end
