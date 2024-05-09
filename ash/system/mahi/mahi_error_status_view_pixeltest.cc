@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/system/mahi/mahi_constants.h"
@@ -11,12 +12,17 @@
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -26,11 +32,19 @@ namespace {
 using chromeos::MahiResponseStatus;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::Values;
 
 }  // namespace
 
-class MahiErrorStatusViewPixelTest : public AshTestBase {
+class MahiErrorStatusViewPixelTestBase : public AshTestBase {
  protected:
+  void ShowMahiPanel() {
+    mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(
+        GetPrimaryDisplay().id(), ui_controller());
+    mahi_panel_widget_->Show();
+  }
+
+  views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
   MahiUiController* ui_controller() { return &ui_controller_; }
 
@@ -44,6 +58,7 @@ class MahiErrorStatusViewPixelTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
     AshTestBase::SetUp();
+
     ON_CALL(mock_mahi_manager_, GetContentTitle)
         .WillByDefault(Return(u"content title"));
   }
@@ -52,28 +67,72 @@ class MahiErrorStatusViewPixelTest : public AshTestBase {
   NiceMock<MockMahiManager> mock_mahi_manager_;
   MahiUiController ui_controller_;
   chromeos::ScopedMahiManagerSetter scoped_setter_{&mock_mahi_manager_};
+  views::UniqueWidgetPtr mahi_panel_widget_;
 };
 
-// Verifies the error status view when a summary update incurs an unknown error.
-// TODO(http://b/332410573): Add pixel tests to cover all error states.
-TEST_F(MahiErrorStatusViewPixelTest, Basics) {
-  // Config the mock mahi manager to return a summary with an unknown error.
+// MahiErrorStatusViewPixelTest ------------------------------------------------
+
+class MahiErrorStatusViewPixelTest
+    : public MahiErrorStatusViewPixelTestBase,
+      public testing::WithParamInterface<MahiResponseStatus> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiErrorStatusViewPixelTest,
+                         Values(MahiResponseStatus::kCantFindOutputData,
+                                MahiResponseStatus::kContentExtractionError,
+                                MahiResponseStatus::kInappropriate,
+                                MahiResponseStatus::kQuotaLimitHit,
+                                MahiResponseStatus::kResourceExhausted,
+                                MahiResponseStatus::kUnknownError));
+
+// Verifies the error status view when a summary update incurs an error
+// specified by the test param.
+TEST_P(MahiErrorStatusViewPixelTest, Basics) {
   ON_CALL(mock_mahi_manager(), GetSummary)
-      .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
-        std::move(callback).Run(u"fake summary",
-                                MahiResponseStatus::kUnknownError);
+      .WillByDefault([&](chromeos::MahiManager::MahiSummaryCallback callback) {
+        std::move(callback).Run(u"fake summary", GetParam());
       });
 
-  views::UniqueWidgetPtr mahi_panel_widget = MahiPanelWidget::CreatePanelWidget(
-      GetPrimaryDisplay().id(), ui_controller());
-  mahi_panel_widget->Show();
-
+  ShowMahiPanel();
   views::View* const error_status_view =
-      mahi_panel_widget->GetContentsView()->GetViewByID(
+      mahi_panel_widget()->GetContentsView()->GetViewByID(
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basics", /*revision_number=*/3, error_status_view));
+}
+
+// MahiInappropriateQuestionPixelTest ------------------------------------------
+
+using MahiInappropriateQuestionPixelTest = MahiErrorStatusViewPixelTestBase;
+
+// Verifies the Mahi panel scroll view when asking an inappropriate question.
+TEST_F(MahiInappropriateQuestionPixelTest, InappropriateError) {
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [](const std::u16string& question, bool current_panel_content,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"answer",
+                                    MahiResponseStatus::kInappropriate);
+          });
+
+  ShowMahiPanel();
+  views::View* const mahi_contents_view =
+      mahi_panel_widget()->GetContentsView();
+  auto* const question_textfield =
+      views::AsViewClass<views::Textfield>(mahi_contents_view->GetViewByID(
+          mahi_constants::ViewId::kQuestionTextfield));
+  ASSERT_TRUE(question_textfield);
+  question_textfield->SetText(u"fake inappropriate question");
+
+  auto* const send_button = mahi_contents_view->GetViewByID(
+      mahi_constants::ViewId::kAskQuestionSendButton);
+  ASSERT_TRUE(send_button);
+  LeftClickOn(send_button);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "basics", /*revision_number=*/0,
+      mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
 }  // namespace ash
