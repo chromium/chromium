@@ -57,14 +57,14 @@ struct Transaction : base::RefCounted<Transaction> {
       do {
         std::vector<uint8_t> plaintext;
         if (!crypter_->Decrypt(*data, &plaintext)) {
-          LOG(ERROR) << "Failed to decrypt enclave response";
+          FIDO_LOG(ERROR) << "Failed to decrypt enclave response";
           std::move(callback_).Run(std::nullopt);
           break;
         }
 
         std::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
         if (!response) {
-          LOG(ERROR) << "Failed to parse enclave response";
+          FIDO_LOG(ERROR) << "Failed to parse enclave response";
           std::move(callback_).Run(std::nullopt);
           break;
         }
@@ -96,7 +96,7 @@ struct Transaction : base::RefCounted<Transaction> {
 
   void RequestReady(std::vector<uint8_t> request) {
     if (!crypter_->Encrypt(&request)) {
-      LOG(ERROR) << "Failed to encrypt message to enclave";
+      FIDO_LOG(ERROR) << "Failed to encrypt message to enclave";
       std::move(callback_).Run(std::nullopt);
       client_.reset();
       return;
@@ -108,13 +108,13 @@ struct Transaction : base::RefCounted<Transaction> {
       device::enclave::EnclaveWebSocketClient::SocketStatus status,
       const std::optional<std::vector<uint8_t>>& data) {
     if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
-      LOG(ERROR) << "Enclave WebSocket connection failed";
+      FIDO_LOG(ERROR) << "Enclave WebSocket connection failed";
       return false;
     }
 
     base::span<const uint8_t> response(*data);
     if (response.size() < cablev2::HandshakeInitiator::kResponseSize) {
-      LOG(ERROR) << "Enclave handshake response too short";
+      FIDO_LOG(ERROR) << "Enclave handshake response too short";
       return false;
     }
 
@@ -124,7 +124,7 @@ struct Transaction : base::RefCounted<Transaction> {
 
     cablev2::HandshakeResult result = handshake_.ProcessResponse(response);
     if (!result) {
-      LOG(ERROR) << "Enclave handshake failed";
+      FIDO_LOG(ERROR) << "Enclave handshake failed";
       return false;
     }
 
