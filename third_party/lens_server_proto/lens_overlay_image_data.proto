@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_geometry.proto";
+
 // Data representing image. Contains image bytes or image retrieval identifier.
 message ImageData {
   // Image payload to process. This contains image bytes.
@@ -15,6 +17,9 @@ message ImageData {
 
   // Required. Context of the given image.
   ImageMetadata image_metadata = 3;
+
+  // The bounds of significant regions in the image.
+  repeated Geometry significant_regions = 4;
 
   reserved 2;
 }

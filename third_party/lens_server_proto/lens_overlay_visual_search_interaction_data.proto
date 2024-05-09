@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_visual_search_interaction_log_data.proto";
+
+// Metadata associated with a Lens Visual Search request.
+message LensOverlayVisualSearchInteractionData {
+  // Logging-specific data.
+  LensOverlayVisualSearchInteractionLogData log_data = 5;
+
+  reserved 1, 2, 3, 4, 6;
+}

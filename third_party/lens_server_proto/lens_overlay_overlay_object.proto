@@ -36,5 +36,9 @@ message OverlayObject {
   }
   InteractionProperties interaction_properties = 4;
 
+  // Indicates to the client that this object is eligible to be an object
+  // fulfillment request.
+  bool is_fulfilled = 9;
+
   reserved 3, 5, 6, 7;
 }
