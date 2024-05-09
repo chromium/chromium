@@ -181,6 +181,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::JavaScriptInterfaceAdded;
     case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
       return Preload::PrerenderFinalStatusEnum::JavaScriptInterfaceRemoved;
+    case PrerenderFinalStatus::kAllPrerenderingCanceled:
+      return Preload::PrerenderFinalStatusEnum::AllPrerenderingCanceled;
   }
 }
 

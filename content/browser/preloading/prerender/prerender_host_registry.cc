@@ -319,6 +319,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kHasEffectiveUrl;
     case PrerenderFinalStatus::kJavaScriptInterfaceAdded:
     case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
+    case PrerenderFinalStatus::kAllPrerenderingCanceled:
       NOTREACHED_NORETURN();
   }
 

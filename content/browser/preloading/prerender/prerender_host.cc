@@ -1133,6 +1133,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kJavaScriptInterfaceAdded:
     case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
+    case PrerenderFinalStatus::kAllPrerenderingCanceled:
       if (attempt_) {
         attempt_->SetFailureReason(
             ToPreloadingFailureReason(reason.final_status()));

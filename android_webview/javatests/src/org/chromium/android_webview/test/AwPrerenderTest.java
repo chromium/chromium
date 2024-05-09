@@ -666,4 +666,30 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // Wait until prerendering is canceled for the interface removal.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
+
+    // Tests that WebViewCompat.addWebMessageListener() cancels prerendered pages.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingCanceledWhenAddingWebMessageListener() throws Throwable {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kAllPrerenderingCanceled*/ 81)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Add a WebMessageListener. This should cancel prerendering.
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents, "awMessagePort", new String[] {"*"}, listener);
+
+        // Wait until prerendering is canceled for the listener addition.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
 }

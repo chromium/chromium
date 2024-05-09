@@ -931,6 +931,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&)>,
       base::RepeatingCallback<void(NavigationHandle&)>) override;
+  void CancelAllPrerendering() override;
   void BackNavigationLikely(PreloadingPredictor predictor,
                             WindowOpenDisposition disposition) override;
   void SetOwnerLocationForDebug(

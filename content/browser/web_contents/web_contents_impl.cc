@@ -10781,6 +10781,11 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   return nullptr;
 }
 
+void WebContentsImpl::CancelAllPrerendering() {
+  GetPrerenderHostRegistry()->CancelAllHosts(
+      PrerenderFinalStatus::kAllPrerenderingCanceled);
+}
+
 void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
                                            WindowOpenDisposition disposition) {
   CHECK(!IsBeingDestroyed());

@@ -1493,6 +1493,9 @@ class WebContents : public PageNavigator,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback) = 0;
 
+  // Cancels all prerendering hosted on this WebContents.
+  virtual void CancelAllPrerendering() = 0;
+
   // May be called when the embedder believes that it is likely that the user
   // will perform a back navigation due to the trigger indicated by `predictor`
   // (e.g. they're hovering over a back button). `disposition` indicates where

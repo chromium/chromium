@@ -30289,6 +30289,7 @@ Called by update_net_error_codes.py.-->
   <int value="78" label="kActivationUrlHasEffectiveUrl"/>
   <int value="79" label="kJavaScriptInterfaceAdded"/>
   <int value="80" label="kJavaScriptInterfaceRemoved"/>
+  <int value="81" label="kCancelAllHosts"/>
 </enum>
 
 <enum name="PreviewsCoinFlipResult">

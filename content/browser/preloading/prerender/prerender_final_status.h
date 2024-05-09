@@ -158,7 +158,9 @@ enum class PrerenderFinalStatus {
   kJavaScriptInterfaceAdded = 79,
   kJavaScriptInterfaceRemoved = 80,
 
-  kMaxValue = kJavaScriptInterfaceRemoved,
+  kAllPrerenderingCanceled = 81,
+
+  kMaxValue = kAllPrerenderingCanceled,
 };
 // LINT.ThenChange()
 

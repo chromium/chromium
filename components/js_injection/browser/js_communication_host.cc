@@ -141,9 +141,6 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
     const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules) {
-  // TODO(crbug.com/331250164): Cancel all prerendered pages when
-  // addWebMessageListener() is called.
-
   OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
@@ -174,12 +171,14 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
   js_objects_.push_back(std::make_unique<JsObject>(
       js_object_name, origin_matcher, std::move(factory)));
 
-  // If a new message listener is added when a page is in BFCache, the
-  // listener won't be available when be page is restored since it is
-  // not injected for the page. To avoid this behavior difference when
-  // BFCache is involved vs not, evict all BFCached pages so that we won't
-  // restore any pages that don't have this object injected.
+  // If a new message listener is added when a page is in BFCache or
+  // prerendered, the listener won't be available when be page is activated
+  // since it is not injected for the page. To avoid this behavior difference
+  // when these features are involved vs not, evict all BFCached and prerendered
+  // pages so that we won't activate any pages that don't have this object
+  // injected.
   web_contents()->GetController().GetBackForwardCache().Flush();
+  web_contents()->CancelAllPrerendering();
 
   ForEachRenderFrameHostWithinSameWebContents(
       web_contents()->GetPrimaryMainFrame(),
