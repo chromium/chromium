@@ -145,7 +145,7 @@ class Traversal {
   }
   template <class MatchFunc>
   static ElementType* LastWithin(const ContainerNode&, MatchFunc);
-  static ElementType* LastWithinOrSelf(ElementType&);
+  static const ElementType* LastWithinOrSelf(const ElementType&);
 
   // Pre-order traversal skipping non-element nodes.
   static ElementType* Next(const ContainerNode& current) {
@@ -403,10 +403,11 @@ inline ElementType* Traversal<ElementType>::LastWithin(
 }
 
 template <class ElementType>
-inline ElementType* Traversal<ElementType>::LastWithinOrSelf(
-    ElementType& current) {
-  if (ElementType* last_descendant = LastWithin(current))
+inline const ElementType* Traversal<ElementType>::LastWithinOrSelf(
+    const ElementType& current) {
+  if (auto* last_descendant = LastWithin(current)) {
     return last_descendant;
+  }
   return &current;
 }
 

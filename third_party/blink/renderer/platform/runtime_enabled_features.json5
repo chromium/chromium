@@ -959,7 +959,7 @@
       // for CSS reading of grid and flex layout.
       // https://drafts.csswg.org/css-display-4/#reading-order-items
       name: "CSSReadingOrderItems",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://drafts.csswg.org/css-color-5/#relative-colors

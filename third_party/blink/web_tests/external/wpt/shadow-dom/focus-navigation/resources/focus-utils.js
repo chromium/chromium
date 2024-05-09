@@ -183,7 +183,7 @@ async function runFocusTestCases() {
   for (let testCase of testCases) {
     promise_test(async () => {
       const expected = testCase.dataset.expect.split(',');
-      await assert_focus_navigation_forward(expected);
+      await assert_focus_navigation_bidirectional(expected);
     }, testCase.dataset.description);
   }
 }
