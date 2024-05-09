@@ -301,10 +301,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Begins request execution (leads to OnResponse/OnComplete).
   void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);
 
-  // Evaluates raw output safety if there is sufficient new text, or an extra
-  // evaluation is required on response completion.
+  // Evaluates raw output safety.
   // Will invoke SendResponse if evaluations are successful.
-  void MaybeRunRawOutputSafetyCheck();
+  void RunRawOutputSafetyCheck();
 
   // Called when output safety check completes.
   void OnRawOutputSafetyResult(

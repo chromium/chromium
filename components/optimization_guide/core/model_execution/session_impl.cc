@@ -501,6 +501,10 @@ void SessionImpl::BeginRequestExecution(
 // on_device_model::mojom::StreamingResponder:
 void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
   on_device_state_->timer_for_first_response.Stop();
+
+  proto::OnDeviceModelServiceResponse* logged_response =
+      on_device_state_->MutableLoggedResponse();
+
   if (on_device_state_->current_response.empty()) {
     base::TimeDelta time_to_first_response =
         base::TimeTicks::Now() - on_device_state_->start;
@@ -509,29 +513,40 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
             {"OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.",
              GetStringNameForModelExecutionFeature(feature_)}),
         time_to_first_response);
-    on_device_state_->MutableLoggedResponse()
-        ->set_time_to_first_response_millis(
-            time_to_first_response.InMilliseconds());
+    logged_response->set_time_to_first_response_millis(
+        time_to_first_response.InMilliseconds());
   }
 
-  if (!on_device_state_->MutableLoggedResponse()->has_repeats()) {
-    // Only continue updating the response if repeats have not been detected.
-    on_device_state_->current_response += chunk->text;
-    on_device_state_->num_unchecked_response_tokens++;
+  on_device_state_->current_response += chunk->text;
+  on_device_state_->num_unchecked_response_tokens++;
 
-    // Check for repeats here instead of SendResponse since we see each new
-    // token as it comes in here, and SendResponse will only see tokens if
-    // safety info is available.
-    int num_repeats = features::GetOnDeviceModelNumRepeats();
-    if (num_repeats > 1 &&
-        HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
-                           num_repeats, on_device_state_->current_response)) {
-      on_device_state_->MutableLoggedResponse()->set_has_repeats(true);
-      LogResponseHasRepeats(feature_, true);
+  if (HasRepeatingSuffix(on_device_state_->current_response)) {
+    // If a repeat is detected, halt the response, and cancel/finish early.
+    on_device_state_->receiver.reset();
+    logged_response->set_has_repeats(true);
+    LogResponseHasRepeats(feature_, true);
+
+    if (features::GetOnDeviceModelRetractRepeats()) {
+      logged_response->set_status(
+          proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+      CancelPendingResponse(ExecuteModelResult::kResponseHadRepeats,
+                            ModelExecutionError::kFiltered);
+      return;
     }
+
+    // Artificially send the OnComplete event to finish processing.
+    OnComplete(on_device_model::mojom::ResponseSummary::New());
+    return;
   }
 
-  MaybeRunRawOutputSafetyCheck();
+  uint32_t interval = on_device_state_->opts.safety_cfg.TokenInterval();
+  if (interval == 0 ||
+      on_device_state_->num_unchecked_response_tokens < interval) {
+    // Not enough new data to be worth re-evaluating yet.
+    return;
+  }
+
+  RunRawOutputSafetyCheck();
 }
 
 void SessionImpl::OnComplete(
@@ -552,24 +567,15 @@ void SessionImpl::OnComplete(
 
   on_device_state_->model_response_complete = true;
 
-  MaybeRunRawOutputSafetyCheck();
-}
-
-void SessionImpl::MaybeRunRawOutputSafetyCheck() {
   if (on_device_state_->num_unchecked_response_tokens == 0) {
     // We've already requested the evaluation. Check if it finished.
     MaybeSendCompleteResponse();
     return;
   }
-  if (!on_device_state_->model_response_complete) {
-    uint32_t interval = on_device_state_->opts.safety_cfg.TokenInterval();
-    if (interval == 0 ||
-        on_device_state_->num_unchecked_response_tokens < interval) {
-      // Not enough new data to be worth re-evaluating.
-      return;
-    }
-  }
+  RunRawOutputSafetyCheck();
+}
 
+void SessionImpl::RunRawOutputSafetyCheck() {
   on_device_state_->num_unchecked_response_tokens = 0;
 
   if (!on_device_state_->opts.safety_cfg.HasRawOutputCheck()) {
@@ -737,37 +743,16 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     return;
   }
 
-  if (!is_complete &&
-      on_device_state_->MutableLoggedResponse()->has_repeats()) {
-    if (features::GetOnDeviceModelRetractRepeats()) {
-      logged_response->set_status(
-          proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-      CancelPendingResponse(ExecuteModelResult::kResponseHadRepeats,
-                            ModelExecutionError::kFiltered);
-      return;
-    }
-
-    // If a repeat is detected, halt the response, and artificially send the
-    // OnComplete event.
-    on_device_state_->receiver.reset();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SessionImpl::OnComplete,
-                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                       on_device_model::mojom::ResponseSummary::New()));
-  } else if (is_complete &&
-             !on_device_state_->MutableLoggedResponse()->has_repeats()) {
-    // Log completed responses with no repeats to calculate percentage of
-    // responses that have repeats.
-    LogResponseHasRepeats(feature_, false);
-  }
-
   if (!is_complete) {
     SendPartialResponseCallback(*output);
     return;
   }
 
-  on_device_state_->model_response_complete = true;
+  if (!on_device_state_->MutableLoggedResponse()->has_repeats()) {
+    // Log completed responses with no repeats to calculate percentage of
+    // responses that have repeats.
+    LogResponseHasRepeats(feature_, false);
+  }
 
   if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
     RunTextSafetyRemoteFallbackAndCompletionCallback(std::move(*output));
