@@ -25,20 +25,16 @@ class SyncService;
 // `localState` is used to store each SetUpListItem's state.
 // `authenticationService` is used to determine signed-in status. Returns `nil`
 // if the Set Up List has been disabled in local state prefs.
-// `contentNotificationEnabled` is `YES` if the user is enabled to content
-// notifications.
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
                    syncService:(syncer::SyncService*)syncService
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled;
+         authenticationService:(AuthenticationService*)authService;
 
 // Initializes a SetUpList with the given `items`. `localState` is used to
 // store the state of each item and to observe changes to that state.
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
-                    localState:(PrefService*)localState
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled
+                   localState:(PrefService*)localState
+        authenticationService:(AuthenticationService*)authService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

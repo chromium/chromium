@@ -16,10 +16,6 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/prepopulated_engines.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_prepopulate_data.h"
-#import "components/search_engines/template_url_service.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -44,7 +40,6 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -299,14 +294,6 @@
     _setUpListMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
     _setUpListMediator.delegate = self.delegate;
-    const TemplateURL* defaultSearchURLTemplate =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState())
-            ->GetDefaultSearchProvider();
-    BOOL isDefaultSearchEngine = defaultSearchURLTemplate &&
-                                 defaultSearchURLTemplate->prepopulate_id() ==
-                                     TemplateURLPrepopulateData::google.id;
-    _setUpListMediator.isDefaultSearchEngine = isDefaultSearchEngine;
     self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
     [moduleMediators addObject:_setUpListMediator];
   }
