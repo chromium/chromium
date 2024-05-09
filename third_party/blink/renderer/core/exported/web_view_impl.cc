@@ -2577,8 +2577,12 @@ void WebViewImpl::SetPageLifecycleStateInternal(
 
   if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
     if (restoring_from_bfcache) {
-      if (auto* main_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
-        main_frame->GetDocument()->EnqueuePageRevealEvent();
+      for (Frame* frame = GetPage()->MainFrame(); frame;
+           frame = frame->Tree().TraverseNext()) {
+        if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+          CHECK(local_frame->GetDocument());
+          local_frame->GetDocument()->EnqueuePageRevealEvent();
+        }
       }
     }
   }
