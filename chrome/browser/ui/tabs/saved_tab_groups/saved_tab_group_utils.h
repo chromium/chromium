@@ -39,6 +39,14 @@ class SavedTabGroupUtils {
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
 
+  static void RemoveGroupFromTabstrip(
+      const Browser* browser,
+      const tab_groups::TabGroupId& local_group);
+  static void UngroupSavedGroup(const Browser* browser,
+                                const base::Uuid& saved_group_guid);
+  static void DeleteSavedGroup(const Browser* browser,
+                               const base::Uuid& saved_group_guid);
+
   // Open the `url` to the end of `browser` tab strip.
   static void OpenUrlToBrowser(Browser* browser,
                                const GURL& url,

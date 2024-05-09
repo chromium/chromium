@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -550,10 +551,21 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UngroupPressed() {
-  if (tab_groups::IsTabGroupsSaveV2Enabled() && save_group_toggle_->GetIsOn()) {
-    browser_->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        tab_groups::DeletionDialogController::DialogType::UngroupSingle,
-        base::BindOnce(&TabGroupEditorBubbleView::Ungroup, browser_, group_));
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (saved_tab_group_service) {
+    const tab_groups::SavedTabGroup* saved_group =
+        saved_tab_group_service->model()->Get(group_);
+    if (tab_groups::IsTabGroupsSaveV2Enabled() && saved_group) {
+      tab_groups::SavedTabGroupUtils::UngroupSavedGroup(
+          browser_, saved_group->saved_guid());
+    } else {
+      Ungroup(browser_, group_);
+    }
   } else {
     Ungroup(browser_, group_);
   }
@@ -563,9 +575,6 @@ void TabGroupEditorBubbleView::UngroupPressed() {
 // static
 void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
                                        tab_groups::TabGroupId group) {
-  base::RecordAction(
-      base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
-
   TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =
       model->group_model()->GetTabGroup(group)->ListTabs();
@@ -582,31 +591,31 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
 void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
-
   DeleteGroupFromTabstrip();
-
   GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::DeleteGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_DeleteGroup"));
-
-  // Store the saved ID in order to delete the group after closing it in the
-  // tab strip.
-  const tab_groups::SavedTabGroup* saved_group;
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser_->profile());
+  const tab_groups::SavedTabGroup* saved_group;
   if (saved_tab_group_service) {
     saved_group = saved_tab_group_service->model()->Get(group_);
   }
 
-  DeleteGroupFromTabstrip();
+  if (tab_groups::IsTabGroupsSaveV2Enabled() && saved_group) {
+    tab_groups::SavedTabGroupUtils::DeleteSavedGroup(browser_,
+                                                     saved_group->saved_guid());
+  } else {
+    DeleteGroupFromTabstrip();
 
-  // Delete the group from the saved model.
-  if (saved_tab_group_service && saved_group) {
-    saved_tab_group_service->model()->Remove(saved_group->saved_guid());
+    // Delete the group from the saved model.
+    if (saved_tab_group_service && saved_group) {
+      saved_tab_group_service->model()->Remove(saved_group->saved_guid());
+    }
   }
 
   GetWidget()->Close();
