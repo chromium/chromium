@@ -7,9 +7,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/test/base/chrome_render_view_test.h"
-#include "read_anything_app_model.h"
+#include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/base/l10n/l10n_util.h"
 
 class ReadAnythingAppModelTest : public ChromeRenderViewTest {
  public:
@@ -387,7 +388,8 @@ TEST_F(ReadAnythingAppModelTest,
   ui::AXNodeData static_text_start_node;
   static_text_start_node.id = 3;
   static_text_start_node.role = ax::mojom::Role::kStaticText;
-  static_text_start_node.SetNameChecked(string_constants::kPDFPageStart);
+  static_text_start_node.SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN));
   banner_node.child_ids = {static_text_start_node.id};
 
   ui::AXNodeData content_info_node;
@@ -397,7 +399,8 @@ TEST_F(ReadAnythingAppModelTest,
   ui::AXNodeData static_text_end_node;
   static_text_end_node.id = 5;
   static_text_end_node.role = ax::mojom::Role::kStaticText;
-  static_text_end_node.SetNameChecked(string_constants::kPDFPageEnd);
+  static_text_end_node.SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
   content_info_node.child_ids = {static_text_end_node.id};
 
   ui::AXNodeData root;

@@ -441,6 +441,7 @@ static_library("renderer") {
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",
       "//services/screen_ai/public/mojom",
+      "//services/strings",
       "//third_party/re2:re2",
     ]
   }

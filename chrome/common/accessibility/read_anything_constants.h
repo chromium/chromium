@@ -21,8 +21,6 @@ extern const char kSettingsChangeHistogramName[];
 extern const char kScrollEventHistogramName[];
 extern const char kEmptyStateHistogramName[];
 extern const char kLanguageHistogramName[];
-extern const char kPDFPageStart[];
-extern const char kPDFPageEnd[];
 extern const char kReadAnythingSpeechErrorHistogramName[];
 
 }  // namespace string_constants

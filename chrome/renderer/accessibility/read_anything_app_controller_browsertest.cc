@@ -14,11 +14,13 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "read_anything_app_controller.h"
+#include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 class MockAXTreeDistiller : public AXTreeDistiller {
@@ -892,7 +894,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
   ui::AXNodeData node;
   node.id = 2;
   node.role = ax::mojom::Role::kContentInfo;
-  node.SetNameChecked(string_constants::kPDFPageEnd);
+  node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
   node.SetNameFrom(ax::mojom::NameFrom::kContents);
 
   ui::AXNodeData root;

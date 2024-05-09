@@ -12,7 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_thread.h"
-#include "read_anything_app_model.h"
+#include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_update_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -661,13 +662,17 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
     std::string text = ax_node->GetTextContentUTF8();
     ui::AXNode* parent = ax_node->GetParent();
 
+    std::string pdf_begin_message =
+        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN);
+    std::string pdf_end_message =
+        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END);
+
     bool is_start_or_end_static_text_node =
         parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
-                    text == string_constants::kPDFPageStart) ||
+                    text == pdf_begin_message) ||
                    (parent->GetRole() == ax::mojom::Role::kContentInfo &&
-                    text == string_constants::kPDFPageEnd));
-    if ((role == ax::mojom::Role::kBanner &&
-         text == string_constants::kPDFPageStart) ||
+                    text == pdf_end_message));
+    if ((role == ax::mojom::Role::kBanner && text == pdf_begin_message) ||
         is_start_or_end_static_text_node) {
       return true;
     }
@@ -1117,12 +1122,13 @@ std::string ReadAnythingAppModel::GetHtmlTagForPDF(
     // Add a line break after each page of an inaccessible PDF for readability
     // since there is no other formatting included in the OCR output.
     case ax::mojom::Role::kContentInfo:
-      if (ax_node->GetTextContentUTF8() == string_constants::kPDFPageEnd) {
+      if (ax_node->GetTextContentUTF8() ==
+          l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END)) {
         return "br";
       }
       ABSL_FALLTHROUGH_INTENDED;
     default:
-      return html_tag;
+      return html_tag.empty() ? "span" : html_tag;
   }
 }
 
