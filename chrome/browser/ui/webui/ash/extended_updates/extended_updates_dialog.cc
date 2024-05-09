@@ -10,6 +10,8 @@
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/aura/window.h"
+#include "ui/base/ui_base_types.h"
 #include "url/gurl.h"
 
 namespace {
@@ -25,7 +27,7 @@ ExtendedUpdatesDialog::~ExtendedUpdatesDialog() = default;
 void ExtendedUpdatesDialog::Show() {
   ExtendedUpdatesDialog* dialog = ExtendedUpdatesDialog::Get();
   if (dialog) {
-    dialog->Focus();
+    dialog->dialog_window()->Focus();
     return;
   }
   dialog = new ExtendedUpdatesDialog();
@@ -48,6 +50,8 @@ bool ExtendedUpdatesDialog::ShouldShowCloseButton() const {
 }
 
 ExtendedUpdatesDialog::ExtendedUpdatesDialog()
-    : SystemWebDialogDelegate(GetUrl(), std::u16string()) {}
+    : SystemWebDialogDelegate(GetUrl(), std::u16string()) {
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+}
 
 }  // namespace ash::extended_updates
