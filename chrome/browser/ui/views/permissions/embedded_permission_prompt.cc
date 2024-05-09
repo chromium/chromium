@@ -480,19 +480,23 @@ void EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse(
 
   switch (permission) {
     case system_media_permissions::SystemPermission::kRestricted:
-    case system_media_permissions::SystemPermission::kDenied:
-    case system_media_permissions::SystemPermission::kAllowed:
-      // Do not finalize request until all the necessary system permissions are
-      // granted.
-      if (!grouped_permissions ||
-          other_permission !=
-              system_media_permissions::SystemPermission::kNotDetermined) {
-        CloseView();
-        delegate_->FinalizeCurrentRequests();
-      }
       break;
-    default:
+    case system_media_permissions::SystemPermission::kDenied:
+      RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_DENIED);
+      break;
+    case system_media_permissions::SystemPermission::kAllowed:
+      RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
+      break;
+    case system_media_permissions::SystemPermission::kNotDetermined:
       NOTREACHED();
+  }
+  // Do not finalize request until all the necessary system permissions are
+  // granted.
+  if (!grouped_permissions ||
+      other_permission !=
+          system_media_permissions::SystemPermission::kNotDetermined) {
+    CloseView();
+    delegate_->FinalizeCurrentRequests();
   }
 }
 

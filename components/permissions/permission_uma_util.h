@@ -43,7 +43,7 @@ enum class ActivityIndicatorState {
   kBlockedOnSystemLevel = 2,
 
   // Always keep at the end.
-  kMaxValue = kBlockedOnSystemLevel
+  kMaxValue = kBlockedOnSystemLevel,
 };
 
 // Used for UMA to record the types of permission prompts shown.
@@ -101,7 +101,7 @@ enum class RequestTypeForUma {
   PERMISSION_POINTER_LOCK = 38,
   MULTIPLE_KEYBOARD_AND_POINTER_LOCK = 39,
   // NUM must be the last value in the enum.
-  NUM
+  NUM,
 };
 
 // Any new values should be inserted immediately prior to kMaxValue.
@@ -296,7 +296,7 @@ enum class DismissedReason {
   // around the prompt).
   DISMISSED_SCRIM = 1,
 
-  kMaxValue = DISMISSED_SCRIM
+  kMaxValue = DISMISSED_SCRIM,
 };
 
 enum class OsScreen {
@@ -306,7 +306,7 @@ enum class OsScreen {
   // Informs the user that they need to go to OS system settings.
   OS_SYSTEM_SETTINGS = 1,
 
-  kMaxValue = OS_SYSTEM_SETTINGS
+  kMaxValue = OS_SYSTEM_SETTINGS,
 };
 
 enum class OsScreenAction {
@@ -320,7 +320,13 @@ enum class OsScreenAction {
   // around the prompt).
   DISMISSED_SCRIM = 2,
 
-  kMaxValue = DISMISSED_SCRIM
+  // Os prompt denied.
+  OS_PROMPT_DENIED = 3,
+
+  // Os prompt allowed.
+  OS_PROMPT_ALLOWED = 4,
+
+  kMaxValue = OS_PROMPT_ALLOWED,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -348,7 +354,7 @@ enum class OneTimePermissionEvent {
   // Recorded when a one time grant expires because the device was suspended.
   EXPIRED_ON_SUSPEND = 5,
 
-  kMaxValue = EXPIRED_ON_SUSPEND
+  kMaxValue = EXPIRED_ON_SUSPEND,
 };
 
 // Prompt views shown after the user clicks on the embedded permission prompt.
@@ -379,7 +385,7 @@ enum class ElementAnchoredBubbleVariant {
   // Informs the user that the permission was denied by their administrator.
   ADMINISTRATOR_DENIED = 7,
 
-  kMaxValue = ADMINISTRATOR_DENIED
+  kMaxValue = ADMINISTRATOR_DENIED,
 };
 
 enum class PermissionAutoRevocationHistory {
@@ -453,7 +459,7 @@ enum class PageInfoDialogAccessType {
   LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP = 3,
 
   // Always keep at the end.
-  kMaxValue = LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP
+  kMaxValue = LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP,
 };
 
 constexpr auto kConfirmationConsiderationDurationForUma = base::Seconds(20);
@@ -487,7 +493,7 @@ enum class PermissionChangeAction {
   REMEMBER_CHECKBOX_TOGGLED = 4,
 
   // Always keep at the end.
-  kMaxValue = REMEMBER_CHECKBOX_TOGGLED
+  kMaxValue = REMEMBER_CHECKBOX_TOGGLED,
 };
 
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
@@ -505,7 +511,7 @@ enum class PermissionIgnoredReason {
   UNKNOWN = 3,
 
   // Always keep at the end
-  NUM
+  NUM,
 };
 
 // This enum backs up the
@@ -534,7 +540,7 @@ enum class PermissionChangeInfo {
   kInfobarNotShownNoPageReloadPermissionNotUsed = 7,
 
   // Always keep at the end.
-  kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed
+  kMaxValue = kInfobarNotShownNoPageReloadPermissionNotUsed,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
