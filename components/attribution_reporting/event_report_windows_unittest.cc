@@ -498,6 +498,10 @@ TEST(EventReportWindowsTest, ComputeReportTime) {
           .expected = kSourceTime + base::Hours(2),
       },
       {
+          .trigger_time = kSourceTime - base::Seconds(1),
+          .expected = kSourceTime + base::Hours(2),
+      },
+      {
           .trigger_time = kSourceTime + base::Hours(2) - base::Milliseconds(1),
           .expected = kSourceTime + base::Hours(2),
       },

@@ -130,17 +130,25 @@ EventReportWindows::EventReportWindows(EventReportWindows&&) = default;
 EventReportWindows& EventReportWindows::operator=(EventReportWindows&&) =
     default;
 
+// Follows the steps detailed in
+// https://wicg.github.io/attribution-reporting-api/#obtain-an-event-level-report-delivery-time
+// Starting from step 2.
 base::Time EventReportWindows::ComputeReportTime(
     base::Time source_time,
     base::Time trigger_time) const {
-  // Follows the steps detailed in
-  // https://wicg.github.io/attribution-reporting-api/#obtain-an-event-level-report-delivery-time
-  // Starting from step 2.
-  CHECK_LE(source_time, trigger_time, base::NotFatalUntil::M128);
+  // It is possible for a source to have an assigned time of T and a trigger
+  // that is attributed to it to have a time of T-X e.g. due to user-initiated
+  // clock changes.
+  //
+  // TODO(crbug.com/40282914): Assume `source_time` is smaller than
+  // `trigger_time` once attribution time resolution is implemented in storage.
+  const base::Time trigger_time_floored =
+      source_time < trigger_time ? trigger_time
+                                 : source_time + base::Microseconds(1);
   base::TimeDelta reporting_window_to_use = *end_times_.rbegin();
 
   for (base::TimeDelta reporting_window : end_times_) {
-    if (source_time + reporting_window <= trigger_time) {
+    if (source_time + reporting_window <= trigger_time_floored) {
       continue;
     }
     reporting_window_to_use = reporting_window;

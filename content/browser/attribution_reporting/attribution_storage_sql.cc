@@ -1113,6 +1113,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   AggregatableResult::kInternalError);
   }
 
+  base::UmaHistogramBoolean(
+      "Conversions.TriggerTimeLessThanSourceTime",
+      trigger_time < source_to_attribute->source.source_time());
+
   const bool top_level_filters_match =
       source_to_attribute->source.filter_data().Matches(
           source_to_attribute->source.common_info().source_type(),

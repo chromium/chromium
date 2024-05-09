@@ -1375,6 +1375,39 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableAttributionReport) {
   CloseDatabase();
 }
 
+TEST_F(AttributionStorageSqlTest, NegativeTriggerMoment_HistogramRecorded) {
+  const char* sql = "UPDATE sources SET source_time=?";
+  base::HistogramTester histograms;
+
+  OpenDatabase();
+
+  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+
+  CloseDatabase();
+
+  {
+    sql::Database raw_db;
+    ASSERT_TRUE(raw_db.Open(db_path()));
+
+    sql::Statement statement(raw_db.GetUniqueStatement(sql));
+    statement.BindTime(0, base::Time::Now() + base::Hours(1));
+    ASSERT_TRUE(statement.Run());
+  }
+
+  OpenDatabase();
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder().Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
+  histograms.ExpectUniqueSample("Conversions.TriggerTimeLessThanSourceTime", 1,
+                                1);
+
+  CloseDatabase();
+}
+
 TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithPendingAggregatableAttribution_NotDeleted) {
   OpenDatabase();

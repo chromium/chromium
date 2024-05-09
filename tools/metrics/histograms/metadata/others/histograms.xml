@@ -4283,6 +4283,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.TriggerTimeLessThanSourceTime" enum="Boolean"
+    expires_after="2024-09-29">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often a trigger time is found to be less than the attributed
+    source's source time. This will help us determine how often clock changes
+    affect attribution and the urgency to which it needs be addressed. Recorded
+    when a source is chosen for attribution.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ValidReportsInDatabase" units="Reports"
     expires_after="2024-11-03">
   <owner>tquintanilla@chromium.org</owner>
