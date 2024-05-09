@@ -151,6 +151,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-15-x64-fyi-rel",
+    description_html = "Run chromium tests on Android 15 emulators.",
+    mirrors = [
+        "ci/android-15-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-15-x64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-arm-compile-dbg",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = ["ci/Android arm Builder (dbg)"],

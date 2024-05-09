@@ -543,6 +543,7 @@
     "android-12l-x64-dbg": "try/android-12l-x64-dbg/gn-args.json",
     "android-13-x64-rel": "try/android-13-x64-rel/gn-args.json",
     "android-14-x64-rel": "try/android-14-x64-rel/gn-args.json",
+    "android-15-x64-fyi-rel": "try/android-15-x64-fyi-rel/gn-args.json",
     "android-15-x64-rel": "try/android-15-x64-rel/gn-args.json",
     "android-arm-compile-dbg": "try/android-arm-compile-dbg/gn-args.json",
     "android-arm64-all-targets-dbg": "try/android-arm64-all-targets-dbg/gn-args.json",
