@@ -22,22 +22,6 @@ each histogram.
   <variant name="Immediate" summary="when the CPU threshold is reached"/>
 </variants>
 
-<variants name="ResourceContextState">
-  <variant name="Dead"
-      summary="no longer in the PM graph but not yet reported"/>
-  <variant name="Live" summary="live in the PM graph"/>
-  <variant name="Total" summary="in any state"/>
-</variants>
-
-<variants name="ResourceContextType">
-  <variant name="AllContexts" summary="all context types"/>
-  <variant name="FrameContexts"/>
-  <variant name="OriginInBrowsingInstanceContext"/>
-  <variant name="PageContexts"/>
-  <variant name="ProcessContexts"/>
-  <variant name="WorkerContexts"/>
-</variants>
-
 <variants name="SiteDBWriteTrigger">
   <variant name="ClearAllSiteData"/>
   <variant name="ClearSiteDataForOrigins"/>
@@ -83,9 +67,7 @@ each histogram.
   <token key="ResourceContextType">
     <variant name="AllContexts" summary="all ResourceContexts"/>
     <variant name="FrameContexts"/>
-    <variant name="OpaqueOriginContexts"
-        summary="OriginInPageContexts with opaque origins"/>
-    <variant name="OriginInPageContexts"/>
+    <variant name="OriginInBrowsingInstanceContext"/>
     <variant name="PageContexts"/>
     <variant name="ProcessContexts"/>
     <variant name="WorkerContexts"/>
@@ -376,6 +358,7 @@ each histogram.
     should match PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger},
     otherwise writes are being lost.
   </summary>
+  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
@@ -388,6 +371,7 @@ each histogram.
     PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}, otherwise
     writes are being lost.
   </summary>
+  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
