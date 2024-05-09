@@ -1123,7 +1123,7 @@
     ],
     "args": ["--disable-blink-features=DetailsStyling",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Apr 1, 2024"
+    "expires": "Aug 1, 2024"
   },
   {
     "prefix": "css-sizing-keyword-animation",
