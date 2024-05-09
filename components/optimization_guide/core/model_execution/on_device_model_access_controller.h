@@ -6,11 +6,12 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_ACCESS_CONTROLLER_H_
 
 #include "base/memory/raw_ref.h"
-#include "components/optimization_guide/core/optimization_guide_enums.h"
 
 class PrefService;
 
 namespace optimization_guide {
+
+enum class OnDeviceModelEligibilityReason;
 
 // OnDeviceModelAccessController determines when the model may be used.
 // If the model repeatedly crashes, or the gpu is blocked, then

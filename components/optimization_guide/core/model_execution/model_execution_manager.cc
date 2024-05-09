@@ -242,12 +242,21 @@ void ModelExecutionManager::ExecuteModel(
 }
 
 bool ModelExecutionManager::CanCreateOnDeviceSession(
-    ModelBasedCapabilityKey feature) {
+    ModelBasedCapabilityKey feature,
+    raw_ptr<OnDeviceModelEligibilityReason> debug_reason) {
   if (!on_device_model_service_controller_) {
+    if (debug_reason) {
+      *debug_reason = OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+    }
     return false;
   }
-  return on_device_model_service_controller_->CanCreateSession(feature) ==
-         OnDeviceModelEligibilityReason::kSuccess;
+
+  OnDeviceModelEligibilityReason reason =
+      on_device_model_service_controller_->CanCreateSession(feature);
+  if (debug_reason) {
+    *debug_reason = reason;
+  }
+  return reason == OnDeviceModelEligibilityReason::kSuccess;
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>

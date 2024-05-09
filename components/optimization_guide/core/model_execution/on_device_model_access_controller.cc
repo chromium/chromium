@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"

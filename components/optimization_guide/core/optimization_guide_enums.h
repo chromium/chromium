@@ -230,46 +230,6 @@ enum class FetcherRequestStatus {
   kMaxValue = kUserNotSignedIn
 };
 
-// Reasons for whether the on-device model was eligible for use.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelEligibilityReason {
-  kUnknown = 0,
-  // Success.
-  kSuccess = 1,
-  // The feature flag gating on-device model execution was disabled.
-  kFeatureNotEnabled = 2,
-  // There was no on-device model available.
-  kModelNotAvailable = 3,
-  // The on-device model was available but there was not an execution config
-  // available for the feature.
-  kConfigNotAvailableForFeature = 4,
-  // The GPU is blocked.
-  kGpuBlocked = 5,
-  // The on-device model process crashed too many times for this version.
-  kTooManyRecentCrashes = 6,
-  // The on-device model took too long too many times for this version.
-  kTooManyRecentTimeouts = 7,
-  // The on-device safety model was required but not available.
-  kSafetyModelNotAvailable = 8,
-  // The on-device safety model was available but there was not a safety config
-  // available for the feature.
-  kSafetyConfigNotAvailableForFeature = 9,
-  // The on-device language detection model was required but not available.
-  kLanguageDetectionModelNotAvailable = 10,
-  // On-device model execution for this feature was not enabled.
-  kFeatureExecutionNotEnabled = 11,
-  // On-device model adaptation was required but not available.
-  kModelAdaptationNotAvailable = 12,
-
-  // This must be kept in sync with
-  // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
-
-  // Insert new values before this line.
-  kMaxValue = kModelAdaptationNotAvailable,
-};
-
 // Status of the on-device model.
 //
 // These values are persisted to logs. Entries should not be renumbered and

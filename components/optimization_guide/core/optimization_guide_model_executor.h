@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_MODEL_EXECUTOR_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -80,6 +81,46 @@ struct SessionConfigParams {
   bool disable_server_fallback = false;
 };
 
+// Reasons why the on-device model was not available for use.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelEligibilityReason {
+  kUnknown = 0,
+  // Success.
+  kSuccess = 1,
+  // The feature flag gating on-device model execution was disabled.
+  kFeatureNotEnabled = 2,
+  // There was no on-device model available.
+  kModelNotAvailable = 3,
+  // The on-device model was available but there was not an execution config
+  // available for the feature.
+  kConfigNotAvailableForFeature = 4,
+  // The GPU is blocked.
+  kGpuBlocked = 5,
+  // The on-device model process crashed too many times for this version.
+  kTooManyRecentCrashes = 6,
+  // The on-device model took too long too many times for this version.
+  kTooManyRecentTimeouts = 7,
+  // The on-device safety model was required but not available.
+  kSafetyModelNotAvailable = 8,
+  // The on-device safety model was available but there was not a safety config
+  // available for the feature.
+  kSafetyConfigNotAvailableForFeature = 9,
+  // The on-device language detection model was required but not available.
+  kLanguageDetectionModelNotAvailable = 10,
+  // On-device model execution for this feature was not enabled.
+  kFeatureExecutionNotEnabled = 11,
+  // On-device model adaptation was required but not available.
+  kModelAdaptationNotAvailable = 12,
+
+  // This must be kept in sync with
+  // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kModelAdaptationNotAvailable,
+};
+
 // Interface for model execution.
 class OptimizationGuideModelExecutor {
  public:
@@ -109,21 +150,24 @@ class OptimizationGuideModelExecutor {
         OptimizationGuideModelExecutionResultStreamingCallback callback) = 0;
   };
 
-  // Whether an on-device session can be created for `feature`.
+  // Whether an on-device session can be created for `feature`. An optional
+  // `debug_reason` parameter can be provided for more detailed reasons for why
+  // an on-device session could not be created.
   virtual bool CanCreateOnDeviceSession(
-      optimization_guide::ModelBasedCapabilityKey feature) = 0;
+      ModelBasedCapabilityKey feature,
+      raw_ptr<OnDeviceModelEligibilityReason> debug_reason) = 0;
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should
   // not outlive OptimizationGuideModelExecutor.
   virtual std::unique_ptr<Session> StartSession(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      ModelBasedCapabilityKey feature,
       const std::optional<SessionConfigParams>& config_params) = 0;
 
   // Executes the model for `feature` with `request_metadata` and invokes the
   // `callback` with the result.
   virtual void ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey feature,
+      ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelExecutionResultCallback callback) = 0;
 };

@@ -83,7 +83,9 @@ class MockModelExecutor
  public:
   MOCK_METHOD(bool,
               CanCreateOnDeviceSession,
-              (optimization_guide::ModelBasedCapabilityKey feature));
+              (optimization_guide::ModelBasedCapabilityKey feature,
+               raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
+                   debug_reason));
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (optimization_guide::ModelBasedCapabilityKey feature,
