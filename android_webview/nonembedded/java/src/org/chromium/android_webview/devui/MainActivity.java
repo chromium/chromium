@@ -64,6 +64,7 @@ public class MainActivity extends FragmentActivity {
     public static final int FRAGMENT_ID_FLAGS = 2;
     public static final int FRAGMENT_ID_COMPONENTS = 3;
     public static final int FRAGMENT_ID_SAFEMODE = 4;
+    public static final int FRAGMENT_ID_NETLOGS = 5;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -101,7 +102,8 @@ public class MainActivity extends FragmentActivity {
         FragmentNavigation.CRASHES_LIST_FRAGMENT,
         FragmentNavigation.FLAGS_FRAGMENT,
         FragmentNavigation.COMPONENTS_LIST_FRAGMENT,
-        FragmentNavigation.SAFEMODE_FRAGMENT
+        FragmentNavigation.SAFEMODE_FRAGMENT,
+        FragmentNavigation.NETLOGS_FRAGMENT
     })
     private @interface FragmentNavigation {
         int HOME_FRAGMENT = 0;
@@ -109,7 +111,8 @@ public class MainActivity extends FragmentActivity {
         int FLAGS_FRAGMENT = 2;
         int COMPONENTS_LIST_FRAGMENT = 3;
         int SAFEMODE_FRAGMENT = 4;
-        int COUNT = 5;
+        int NETLOGS_FRAGMENT = 5;
+        int COUNT = 6;
     }
 
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 0;
@@ -128,7 +131,8 @@ public class MainActivity extends FragmentActivity {
      * "FromIntent", or "NavBar") to determine which histogram to log.
      *
      * @param histogramSuffix one of the suffixes listed in histograms.xml
-     * @param selectedFragmentId one of FRAGMENT_ID_HOME, FRAGMENT_ID_CRASHES, or FRAGMENT_ID_FLAGS
+     * @param selectedFragmentId one of FRAGMENT_ID_HOME, FRAGMENT_ID_CRASHES, FRAGMENT_ID_FLAGS or
+     *     FRAGMENT_ID_NETLOGS
      */
     private static void logFragmentNavigation(String histogramSuffix, int selectedFragmentId) {
         // Map FRAGMENT_ID_* to FragmentNavigation value (so FRAGMENT_ID_* values are permitted to
@@ -149,6 +153,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_SAFEMODE:
                 sample = FragmentNavigation.SAFEMODE_FRAGMENT;
+                break;
+            case FRAGMENT_ID_NETLOGS:
+                sample = FragmentNavigation.NETLOGS_FRAGMENT;
                 break;
             default:
                 sample = FragmentNavigation.HOME_FRAGMENT;
@@ -241,6 +248,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_SAFEMODE:
                 fragment = new SafeModeFragment();
+                break;
+            case FRAGMENT_ID_NETLOGS:
+                fragment = new NetLogsFragment();
                 break;
             default:
                 chosenFragmentId = FRAGMENT_ID_HOME;
