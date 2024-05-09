@@ -8,8 +8,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -215,17 +217,18 @@ TEST_F(ShortcutInfoTest, GetAllWebApkIcons) {
   info_.best_primary_icon_url = best_primary_icon_url;
   info_.splash_image_url = splash_image_url;
 
-  std::vector<WebappIcon> result_icons = info_.GetWebApkIcons();
+  auto result_icons = info_.GetWebApkIcons();
   ASSERT_EQ(4u, result_icons.size());
 
   std::vector<GURL> result_urls;
-  for (auto icon : result_icons) {
-    result_urls.push_back(icon.url());
+  for (const auto& [url, icon] : result_icons) {
+    ASSERT_EQ(url, icon->url());
+    result_urls.push_back(icon->url());
   }
   std::vector<GURL> expected_urls{best_primary_icon_url, splash_image_url,
                                   best_shortcut_icon_url_1,
                                   best_shortcut_icon_url_2};
-  ASSERT_EQ(expected_urls, result_urls);
+  EXPECT_THAT(result_urls, testing::UnorderedElementsAreArray(expected_urls));
 }
 
 TEST_F(ShortcutInfoTest, NotContainEmptyOrDuplicateWebApkIcons) {
@@ -236,16 +239,17 @@ TEST_F(ShortcutInfoTest, NotContainEmptyOrDuplicateWebApkIcons) {
   info_.best_shortcut_icon_urls.push_back(best_primary_icon_url);
   info_.best_primary_icon_url = best_primary_icon_url;
 
-  std::vector<WebappIcon> result_icons = info_.GetWebApkIcons();
+  auto result_icons = info_.GetWebApkIcons();
   std::vector<GURL> result_urls;
-  for (auto icon : result_icons) {
-    result_urls.push_back(icon.url());
+  for (const auto& [url, icon] : result_icons) {
+    ASSERT_EQ(url, icon->url());
+    result_urls.push_back(icon->url());
   }
 
   std::vector<GURL> expected{best_primary_icon_url, best_shortcut_icon_url};
 
   ASSERT_EQ(2u, result_icons.size());
-  ASSERT_EQ(expected, result_urls);
+  EXPECT_THAT(result_urls, testing::UnorderedElementsAreArray(expected));
 }
 
 TEST_F(ShortcutInfoTest, NameFallsBackToShortName) {

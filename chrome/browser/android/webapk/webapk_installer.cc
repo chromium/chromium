@@ -187,20 +187,18 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, webapps::WebApkIconHasher::Icon>
-        icon_url_to_murmur2_hash,
+    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     std::vector<webapps::WebApkUpdateReason> update_reasons,
     base::OnceCallback<void(bool)> callback) {
   GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&webapps::StoreUpdateRequestToFileInBackground,
-                     update_request_path, shortcut_info, app_key,
-                     primary_icon_data, splash_icon_data, package_name, version,
-                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
-                     is_app_identity_update_supported,
-                     std::move(update_reasons)),
+      base::BindOnce(
+          &webapps::StoreUpdateRequestToFileInBackground, update_request_path,
+          shortcut_info, app_key, primary_icon_data, splash_icon_data,
+          package_name, version, std::move(icons), is_manifest_stale,
+          is_app_identity_update_supported, std::move(update_reasons)),
       std::move(callback));
 }
 
@@ -443,19 +441,18 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   // We redownload the icon in order to take the Murmur2 hash. The redownload
   // should be fast because the icon should be in the HTTP cache.
 
-  std::vector<webapps::WebappIcon> icons =
-      install_shortcut_info_->GetWebApkIcons();
-  webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
+  icon_hasher_ = std::make_unique<webapps::WebApkIconsHasher>();
+  icon_hasher_->DownloadAndComputeMurmur2Hash(
       GetURLLoaderFactory(browser_context_), web_contents_,
-      url::Origin::Create(install_shortcut_info_->url), icons,
+      url::Origin::Create(install_shortcut_info_->url),
+      install_shortcut_info_->GetWebApkIcons(),
       base::BindOnce(&WebApkInstaller::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebApkInstaller::OnGotIconMurmur2Hashes(
-    std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
-        hashes) {
-  if (!hashes) {
+    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons) {
+  if (icons.empty()) {
     OnResult(webapps::WebApkInstallResult::ICON_HASHER_ERROR);
     return;
   }
@@ -468,7 +465,7 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
       *install_shortcut_info_, install_shortcut_info_->manifest_id,
       std::string() /* primary_icon_data */,
       std::string() /* splash_icon_data */, "" /* package_name */,
-      "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
+      "" /* version */, std::move(icons), false /* is_manifest_stale */,
       false /* is_app_identity_update_supported */,
       base::BindOnce(&WebApkInstaller::OnInstallProtoBuilt,
                      weak_ptr_factory_.GetWeakPtr()));

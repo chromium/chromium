@@ -16,8 +16,9 @@
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/browser/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -101,21 +102,25 @@ std::string getCurrentAbi() {
 
 void AddIcon(webapk::WebAppManifest* web_app_manifest,
              GURL icon_url,
-             std::string icon_data,
-             std::map<std::string, WebApkIconHasher::Icon> hashes,
+             const std::string& icon_data,
+             std::map<GURL, std::unique_ptr<WebappIcon>>& icons,
              webapk::Image::Usage icon_usage,
              bool is_maskable) {
-  if (icon_url.is_empty() && icon_data.empty()) {
+  if (!icon_url.is_valid() && icon_data.empty()) {
     return;
   }
 
   webapk::Image* icon_image = web_app_manifest->add_icons();
-  if (!icon_url.is_empty()) {
+  if (icon_url.is_valid()) {
     icon_image->set_src(icon_url.spec());
-    auto it = hashes.find(icon_url.spec());
-    if (it != hashes.end()) {
-      icon_image->set_hash(it->second.hash);
-      icon_image->set_image_data(it->second.unsafe_data);
+
+    auto it = icons.find(icon_url);
+    if (it != icons.end()) {
+      icon_image->set_hash(it->second->hash());
+      icon_image->set_image_data(it->second->unsafe_data());
+      for (auto usage : it->second->usages()) {
+        icon_image->add_usages(usage);
+      }
     }
   }
   if (!icon_data.empty()) {
@@ -129,16 +134,49 @@ void AddIcon(webapk::WebAppManifest* web_app_manifest,
   }
 }
 
+void AddShortcutIcon(webapk::Image* icon_image,
+                     const GURL& icon_url,
+                     std::map<GURL, std::unique_ptr<WebappIcon>>& icons) {
+  icon_image->set_src(icon_url.spec());
+
+  auto it = icons.find(icon_url);
+  if (it != icons.end()) {
+    icon_image->set_hash(it->second->hash());
+    if (it->second->unsafe_data().size() <= kMaxIconSizeInBytes) {
+      icon_image->set_image_data(it->second->ExtractData());
+    }
+    for (auto usage : it->second->usages()) {
+      icon_image->add_usages(usage);
+    }
+    icon_image->add_purposes(it->second->purpose());
+  }
+}
+
+// Add other WebAPK images that are not used in primary, splash or shortcuts.
+// We include only the url and hash for them.
+// TODO(eirage): we had these icons in the request proto to compare with harpoon
+// result, they are not needed now and should be removed.
+void AddOtherWebApkImage(webapk::WebAppManifest* web_app_manifest,
+                         const GURL& icon_url,
+                         std::map<GURL, std::unique_ptr<WebappIcon>>& icons) {
+  webapk::Image* icon_image = web_app_manifest->add_icons();
+  icon_image->set_src(icon_url.spec());
+  auto it = icons.find(icon_url);
+  if (it != icons.end()) {
+    icon_image->set_hash(it->second->hash());
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<std::string> BuildProtoInBackground(
-    const webapps::ShortcutInfo& shortcut_info,
+    const ShortcutInfo& shortcut_info,
     const GURL& app_key,
     const std::string& primary_icon_data,
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
+    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons) {
@@ -223,13 +261,13 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   }
 
   AddIcon(web_app_manifest, shortcut_info.best_primary_icon_url,
-          primary_icon_data, icon_url_to_murmur2_hash,
-          webapk::Image::PRIMARY_ICON, shortcut_info.is_primary_icon_maskable);
+          primary_icon_data, icons, webapk::Image::PRIMARY_ICON,
+          shortcut_info.is_primary_icon_maskable);
 
   if (shortcut_info.splash_image_url.is_empty() ||
       shortcut_info.splash_image_url != shortcut_info.best_primary_icon_url) {
     AddIcon(web_app_manifest, shortcut_info.splash_image_url, splash_icon_data,
-            icon_url_to_murmur2_hash, webapk::Image::SPLASH_ICON,
+            icons, webapk::Image::SPLASH_ICON,
             shortcut_info.is_splash_image_maskable);
   }
 
@@ -240,12 +278,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       continue;
     }
 
-    webapk::Image* image = web_app_manifest->add_icons();
-    auto it = icon_url_to_murmur2_hash.find(icon_url);
-    image->set_src(icon_url);
-    if (it != icon_url_to_murmur2_hash.end()) {
-      image->set_hash(it->second.hash);
-    }
+    AddOtherWebApkImage(web_app_manifest, GURL(icon_url), icons);
   }
 
   for (const auto& manifest_shortcut_item : shortcut_info.shortcut_items) {
@@ -256,21 +289,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     shortcut_item->set_url(manifest_shortcut_item.url.spec());
 
     for (const auto& manifest_icon : manifest_shortcut_item.icons) {
-      auto* shortcut_icon = shortcut_item->add_icons();
-      shortcut_icon->set_src(manifest_icon.src.spec());
-      auto shortcut_hash_it =
-          icon_url_to_murmur2_hash.find(shortcut_icon->src());
-      if (shortcut_hash_it != icon_url_to_murmur2_hash.end()) {
-        // Don't move the hash to avoid clearing it in case of duplicates.
-        shortcut_icon->set_hash(shortcut_hash_it->second.hash);
-
-        if (shortcut_hash_it->second.unsafe_data.size() <=
-            kMaxIconSizeInBytes) {
-          // Duplicate icons will have an empty |image_data|.
-          shortcut_icon->set_image_data(shortcut_hash_it->second.unsafe_data);
-          shortcut_hash_it->second.unsafe_data.clear();
-        }
-      }
+      AddShortcutIcon(shortcut_item->add_icons(), manifest_icon.src, icons);
     }
   }
 
@@ -294,8 +313,7 @@ void BuildProto(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, webapps::WebApkIconHasher::Icon>
-        icon_url_to_murmur2_hash,
+    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
@@ -303,7 +321,7 @@ void BuildProto(
       FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info, app_key,
                      primary_icon_data, splash_icon_data, package_name, version,
-                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+                     std::move(icons), is_manifest_stale,
                      is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
@@ -320,7 +338,7 @@ bool StoreUpdateRequestToFileInBackground(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
+    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons) {
@@ -329,7 +347,7 @@ bool StoreUpdateRequestToFileInBackground(
 
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
       shortcut_info, app_key, primary_icon_data, splash_icon_data, package_name,
-      version, std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+      version, std::move(icons), is_manifest_stale,
       is_app_identity_update_supported, std::move(update_reasons));
 
   // Create directory if it does not exist.
