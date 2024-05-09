@@ -15,6 +15,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,6 +39,7 @@
 namespace ash {
 namespace {
 
+using ::testing::_;
 using ::testing::Contains;
 using ::testing::FieldsAre;
 using ::testing::NiceMock;
@@ -97,10 +99,34 @@ input_method::ImeKeyboard* GetImeKeyboard() {
                               : nullptr;
 }
 
+class MockNewWindowDelegate : public TestNewWindowDelegate {
+ public:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+  MOCK_METHOD(void, OpenFile, (const base::FilePath& file_path), (override));
+};
+
 class PickerControllerTest : public AshTestBase {
  public:
   PickerControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
+  }
+
+  MockNewWindowDelegate& mock_new_window_delegate() {
+    return *new_window_delegate_;
+  }
+
+ private:
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  // Holds a raw ptr to the `MockNewWindowDelegate` owned by
+  // `delegate_provider_`.
+  raw_ptr<MockNewWindowDelegate> new_window_delegate_;
 };
 
 // A PickerClient implementation used for testing.
@@ -305,6 +331,39 @@ TEST_F(PickerControllerTest,
   input_method->SetFocusedTextInputClient(&input_field);
 
   EXPECT_EQ(input_field.text(), u"http://foo.com/");
+}
+
+TEST_F(PickerControllerTest, OpenBrowsingHistoryResult) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
+      .Times(1);
+
+  controller.OpenResult(PickerSearchResult::BrowsingHistory(
+      GURL("http://foo.com"), u"Foo", ui::ImageModel{}));
+}
+
+TEST_F(PickerControllerTest, OpenDriveFileResult) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(mock_new_window_delegate(), OpenUrl(GURL("http://foo.com"), _, _))
+      .Times(1);
+
+  controller.OpenResult(PickerSearchResult::DriveFile(
+      u"title", GURL("http://foo.com"), ui::ImageModel{}));
+}
+
+TEST_F(PickerControllerTest, OpenLocalFileResult) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(mock_new_window_delegate(), OpenFile(base::FilePath("abc.png")))
+      .Times(1);
+
+  controller.OpenResult(
+      PickerSearchResult::LocalFile(u"title", base::FilePath("abc.png")));
 }
 
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {

@@ -30,6 +30,7 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/wm/window_util.h"
@@ -256,6 +257,16 @@ std::u16string TransformText(std::u16string_view text,
   NOTREACHED_NORETURN();
 }
 
+void OpenLink(const GURL& url) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewWindow);
+}
+
+void OpenFile(const base::FilePath& path) {
+  ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
+}
+
 }  // namespace
 
 PickerController::PickerController() {
@@ -454,6 +465,49 @@ void PickerController::InsertResultOnNextFocus(
 
   session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+}
+
+void PickerController::OpenResult(const PickerSearchResult& result) {
+  return std::visit(
+      base::Overloaded{
+          [](const PickerSearchResult::TextData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::EmojiData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::SymbolData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::EmoticonData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::ClipboardData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::GifData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::BrowsingHistoryData& data) {
+            OpenLink(data.url);
+          },
+          [](const PickerSearchResult::LocalFileData& data) {
+            OpenFile(data.file_path);
+          },
+          [](const PickerSearchResult::DriveFileData& data) {
+            OpenLink(data.url);
+          },
+          [](const PickerSearchResult::CategoryData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::SearchRequestData& data) {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::EditorData& data) {
+            NOTREACHED_NORETURN();
+          },
+      },
+      result.data());
 }
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category,

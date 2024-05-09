@@ -56,6 +56,9 @@ class ASH_EXPORT PickerViewDelegate {
   // the result is dropped silently.
   virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
 
+  // Opens `result`. The exact behavior varies on the type of result.
+  virtual void OpenResult(const PickerSearchResult& result) = 0;
+
   // Shows the Emoji Picker with `category`.
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category,
                                std::u16string_view query) = 0;
