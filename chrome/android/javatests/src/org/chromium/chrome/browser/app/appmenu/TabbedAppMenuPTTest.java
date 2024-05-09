@@ -15,15 +15,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.transit.ScrollableFacility;
+import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.NewTabPageIncognitoAppMenuFacility;
+import org.chromium.chrome.test.transit.NewTabPageRegularAppMenuFacility;
 import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.SettingsStation;
+import org.chromium.chrome.test.transit.WebPageIncognitoAppMenuFacility;
+import org.chromium.chrome.test.transit.WebPageRegularAppMenuFacility;
+import org.chromium.chrome.test.transit.WebPageStation;
+import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 
 /** Public Transit tests for the app menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -38,34 +48,133 @@ public class TabbedAppMenuPTTest {
     public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
             new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
+    /** Tests that "New tab" opens a new tab with the NTP. */
     @Test
     @LargeTest
     public void testOpenNewTab() {
         NewTabPageStation newTabPage =
-                mInitialStateRule.startOnBlankPageBatched().openAppMenu().openNewTab();
+                mInitialStateRule.startOnBlankPageBatched().openRegularTabAppMenu().openNewTab();
 
         assertEquals(2, sActivityTestRule.tabsCount(/* incognito= */ false));
         assertEquals(0, sActivityTestRule.tabsCount(/* incognito= */ true));
         assertFinalDestination(newTabPage);
     }
 
+    /** Tests that "New Incognito tab" opens a new incognito tab with the incognito NTP. */
     @Test
     @LargeTest
     public void testOpenNewIncognitoTab() {
         IncognitoNewTabPageStation newIncognitoTabPage =
-                mInitialStateRule.startOnBlankPageBatched().openAppMenu().openNewIncognitoTab();
+                mInitialStateRule
+                        .startOnBlankPageBatched()
+                        .openRegularTabAppMenu()
+                        .openNewIncognitoTab();
 
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ true));
         assertFinalDestination(newIncognitoTabPage);
     }
 
+    /** Tests that "Settings" opens the SettingsActivity. */
     @Test
     @LargeTest
     public void testOpenSettings() {
-        SettingsStation settings =
-                mInitialStateRule.startOnBlankPageBatched().openAppMenu().openSettings();
+        WebPageStation pageStation = mInitialStateRule.startOnBlankPageBatched();
+        Tab tab = pageStation.getLoadedTab();
+        SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
         assertFinalDestination(settings);
+
+        // Exit settings for the initial state rule to be able to reset state.
+        settings.pressBack(
+                WebPageStation.newWebPageStationBuilder()
+                        .withActivityTestRule(sActivityTestRule)
+                        .withIncognito(false)
+                        .withIsOpeningTabs(0)
+                        .withTabAlreadySelected(tab)
+                        .build());
+    }
+
+    /**
+     * Tests that all expected items declared in NewTabPageRegularAppMenuFacility are present in the
+     * app menu opened from a regular NTP.
+     */
+    @Test
+    @LargeTest
+    public void testNewTabPageRegularAppMenuItems() {
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPageBatched();
+        NewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
+        NewTabPageRegularAppMenuFacility menu = newTabPage.openAppMenu();
+
+        verifyPresentItems(menu);
+        assertFinalDestination(newTabPage, menu);
+    }
+
+    /**
+     * Tests that all expected items declared in NewTabPageIncognitoAppMenuFacility are present in
+     * the app menu opened from an incognito NTP.
+     */
+    @Test
+    @LargeTest
+    public void testNewTabPageIncognitoAppMenuItems() {
+        IncognitoNewTabPageStation incognitoNewTabPage =
+                mInitialStateRule
+                        .startOnBlankPageBatched()
+                        .openRegularTabAppMenu()
+                        .openNewIncognitoTab();
+        NewTabPageIncognitoAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
+
+        verifyPresentItems(menu);
+        assertFinalDestination(incognitoNewTabPage, menu);
+    }
+
+    /**
+     * Tests that all expected items declared in WebPageRegularAppMenuFacility are present in the
+     * app menu opened from a regular Tab displaying a web page.
+     */
+    @Test
+    @LargeTest
+    @RequiresRestart
+    public void testWebPageRegularAppMenuItems() {
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPageBatched();
+        WebPageRegularAppMenuFacility menu = blankPage.openRegularTabAppMenu();
+
+        verifyPresentItems(menu);
+        assertFinalDestination(blankPage, menu);
+    }
+
+    /**
+     * Tests that all expected items declared in WebPageIncognitoAppMenuFacility are present in the
+     * app menu opened from an incognito Tab displaying a web page.
+     */
+    @Test
+    @LargeTest
+    public void testWebPageIncognitoAppMenuItems() {
+        IncognitoNewTabPageStation incognitoNtp =
+                mInitialStateRule
+                        .startOnBlankPageBatched()
+                        .openRegularTabAppMenu()
+                        .openNewIncognitoTab();
+
+        WebPageStation pageOne =
+                incognitoNtp.loadPageProgramatically(
+                        NavigatePageStations.newNavigateOnePageBuilder(),
+                        sActivityTestRule.getTestServer().getURL(NavigatePageStations.PATH_ONE));
+        WebPageIncognitoAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
+
+        verifyPresentItems(menu);
+        assertFinalDestination(pageOne, menu);
+    }
+
+    /**
+     * Scroll to each declared menu item and check they are there with the expected enabled state.
+     */
+    private static <T extends ScrollableFacility<?>> void verifyPresentItems(T menu) {
+        for (ScrollableFacility<?>.Item<?> item : menu.getItems()) {
+            if (item.getPresence() == Presence.PRESENT_AND_ENABLED
+                    || item.getPresence() == Presence.PRESENT_AND_DISABLED) {
+                item.scrollTo();
+            }
+        }
     }
 }

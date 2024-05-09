@@ -101,10 +101,10 @@ public class TabSwitcherActionMenuPTTest {
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         PageStation page = mTransitEntryPoints.startOnBlankPage();
 
-        PageAppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();
 
-        appMenu = page.openAppMenu();
+        appMenu = page.openGenericAppMenu();
         page = appMenu.openNewTab();
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);
@@ -148,10 +148,10 @@ public class TabSwitcherActionMenuPTTest {
     public void testClosingAllRegularTabs_DoNotFinishActivity_hubEnabled() {
         PageStation page = mTransitEntryPoints.startOnBlankPage();
 
-        PageAppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();
 
-        appMenu = page.openAppMenu();
+        appMenu = page.openGenericAppMenu();
         page = appMenu.openNewTab();
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);

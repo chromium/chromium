@@ -296,11 +296,10 @@ public class PageStation extends Station {
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
-    public PageAppMenuFacility openAppMenu() {
+    public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        PageAppMenuFacility menu = new PageAppMenuFacility(this);
-
+        PageAppMenuFacility<PageStation> menu = new PageAppMenuFacility<>(this);
         return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
     }
 

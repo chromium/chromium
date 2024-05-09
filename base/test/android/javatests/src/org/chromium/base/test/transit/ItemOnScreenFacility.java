@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
+
 /**
  * A facility representing an item inside a {@link ScrollableFacility} shown on the screen.
  *
@@ -23,15 +25,15 @@ public class ItemOnScreenFacility<HostStationT extends Station, SelectReturnT>
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mItem.declareViewElement(elements);
+        elements.declareView(mItem.getViewElement());
     }
 
     /** Select the item and trigger its |selectHandler|. */
     public SelectReturnT select() {
-        if (!mItem.isPresent()) {
+        if (mItem.getPresence() == Presence.ABSENT) {
             throw new IllegalStateException("Cannot click on an absent item");
         }
-        if (!mItem.isEnabled()) {
+        if (mItem.getPresence() == Presence.PRESENT_AND_DISABLED) {
             throw new IllegalStateException("Cannot click on a disabled item");
         }
 

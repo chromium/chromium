@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
@@ -11,6 +12,7 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
@@ -43,6 +45,22 @@ public class WebPageStation extends PageStation {
                         new WebContentsPresentCondition(mPageLoadedCondition));
 
         elements.declareView(URL_BAR);
+    }
+
+    /** Opens the web page app menu by pressing the toolbar "..." button */
+    public WebPageRegularAppMenuFacility openRegularTabAppMenu() {
+        assert !mIncognito;
+
+        WebPageRegularAppMenuFacility menu = new WebPageRegularAppMenuFacility(this);
+        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
+    }
+
+    /** Opens the web page app menu by pressing the toolbar "..." button */
+    public WebPageIncognitoAppMenuFacility openIncognitoTabAppMenu() {
+        assert mIncognito;
+
+        WebPageIncognitoAppMenuFacility menu = new WebPageIncognitoAppMenuFacility(this);
+        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     private static class WebContentsPresentCondition extends InstrumentationThreadCondition

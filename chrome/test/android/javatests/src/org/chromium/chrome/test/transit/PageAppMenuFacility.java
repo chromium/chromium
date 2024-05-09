@@ -4,22 +4,37 @@
 
 package org.chromium.chrome.test.transit;
 
+import androidx.annotation.CallSuper;
+
 import org.chromium.base.test.transit.Elements;
 
-import java.util.List;
+/**
+ * The app menu shown when pressing ("...") in a Tab.
+ *
+ * <p>Use subclasses to access menu items not shared between all PageStation types:
+ *
+ * <ul>
+ *   <li>{@link NewTabPageRegularAppMenuFacility}
+ *   <li>{@link NewTabPageIncognitoAppMenuFacility}
+ *   <li>{@link WebPageRegularAppMenuFacility}
+ *   <li>{@link WebPageIncognitoAppMenuFacility}
+ * </ul>
+ *
+ * @param <HostPageStationT> the type of host {@link PageStation} where this app menu is opened.
+ */
+public class PageAppMenuFacility<HostPageStationT extends PageStation>
+        extends AppMenuFacility<HostPageStationT> {
 
-/** The app menu shown when pressing ("...") in a Tab. */
-public class PageAppMenuFacility extends AppMenuFacility<PageStation> {
+    protected Item<NewTabPageStation> mNewTab;
+    protected Item<IncognitoNewTabPageStation> mNewIncognitoTab;
+    protected Item<SettingsStation> mSettings;
 
-    private Item<NewTabPageStation> mNewTab;
-    private Item<IncognitoNewTabPageStation> mNewIncognitoTab;
-    private Item<SettingsStation> mSettings;
-
-    public PageAppMenuFacility(PageStation station) {
+    public PageAppMenuFacility(HostPageStationT station) {
         super(station, station.mChromeTabbedActivityTestRule);
     }
 
     @Override
+    @CallSuper
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
@@ -27,17 +42,14 @@ public class PageAppMenuFacility extends AppMenuFacility<PageStation> {
     }
 
     @Override
-    protected void declareItems(List<Item<?>> items) {
-        // TODO: Declare more menu items
+    protected void declareItems(ItemsBuilder items) {
+        // TODO: Declare more common menu items
 
-        mNewTab = newMenuItemToStation(NEW_TAB_ID, this::createNewTabPageStation);
+        mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);
         mNewIncognitoTab =
-                newMenuItemToStation(NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
-        mSettings = newMenuItemToStation(SETTINGS_ID, this::createSettingsStation);
-
-        items.add(mNewTab);
-        items.add(mNewIncognitoTab);
-        items.add(mSettings);
+                declareMenuItemToStation(
+                        items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
     }
 
     /** Select "New tab" from the app menu. */

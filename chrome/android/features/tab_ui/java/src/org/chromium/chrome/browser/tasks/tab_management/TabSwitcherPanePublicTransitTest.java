@@ -66,11 +66,11 @@ public class TabSwitcherPanePublicTransitTest {
 
         PageAppMenuFacility appMenu = null;
         for (int i = 1; i < 10; i++) {
-            appMenu = page.openAppMenu();
+            appMenu = page.openGenericAppMenu();
             page = appMenu.openNewTab();
         }
         assertEquals(9, cta.getCurrentTabModel().index());
-        appMenu = page.openAppMenu();
+        appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 
@@ -97,7 +97,7 @@ public class TabSwitcherPanePublicTransitTest {
     @MediumTest
     public void testTabListEditor_EnterAndExit() {
         PageStation page = mInitialStateRule.startOnBlankPageBatched();
-        PageAppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewTab();
 
         HubTabSwitcherStation regularTabSwitcher = page.openHub(HubTabSwitcherStation.class);
@@ -116,7 +116,7 @@ public class TabSwitcherPanePublicTransitTest {
         PageStation page = mInitialStateRule.startOnBlankPageBatched();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
-        PageAppMenuFacility appMenu = page.openAppMenu();
+        PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();
         assertTrue(cta.getCurrentTabModel().isIncognito());
 

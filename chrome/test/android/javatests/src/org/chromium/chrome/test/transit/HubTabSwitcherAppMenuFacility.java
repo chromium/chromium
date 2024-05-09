@@ -6,14 +6,11 @@ package org.chromium.chrome.test.transit;
 
 import org.chromium.chrome.R;
 
-import java.util.List;
-
 /** The app menu shown when pressing ("...") in the Hub on a tab switcher pane. */
 public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitcherBaseStation> {
     public static final int CLOSE_ALL_TABS_ID = R.id.close_all_tabs_menu_id;
     public static final int CLOSE_INCOGNITO_TABS_ID = R.id.close_all_incognito_tabs_menu_id;
     public static final int SELECT_TABS_ID = R.id.menu_select_tabs;
-    public static final int CLEAR_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
 
     private final boolean mIsIncognito;
     private Item<NewTabPageStation> mNewTab;
@@ -30,55 +27,45 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
     }
 
     @Override
-    protected void declareItems(List<Item<?>> items) {
+    protected void declareItems(ItemsBuilder items) {
         boolean isTablet = mChromeTabbedActivityTestRule.getActivity().isTablet();
 
-        mNewTab = newMenuItemToStation(NEW_TAB_ID, this::createNewTabPageStation);
+        mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);
         mNewIncognitoTab =
-                newMenuItemToStation(NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
-        mSettings = newMenuItemToStation(SETTINGS_ID, this::createSettingsStation);
+                declareMenuItemToStation(
+                        items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
         if (!mIsIncognito) {
             // Regular Hub Tab Switcher
 
-            Item<?> selectTabs;
             if (mChromeTabbedActivityTestRule.tabsCount(/* regular= */ false) > 0) {
-                mCloseAllTabs = newStubMenuItem(CLOSE_ALL_TABS_ID);
-                mSelectTabs = newMenuItemToFacility(SELECT_TABS_ID, this::createListEditorFacility);
-                selectTabs = mSelectTabs;
+                mCloseAllTabs = declareStubMenuItem(items, CLOSE_ALL_TABS_ID);
+                mSelectTabs =
+                        declareMenuItemToFacility(
+                                items, SELECT_TABS_ID, this::createListEditorFacility);
             } else {
                 // Empty state. In tablets the following items are not displayed, while in phones
                 // they are disabled.
                 if (isTablet) {
-                    mCloseAllTabs = newAbsentMenuItem(CLOSE_ALL_TABS_ID);
-                    selectTabs = newAbsentMenuItem(SELECT_TABS_ID);
+                    mCloseAllTabs = declareAbsentMenuItem(items, CLOSE_ALL_TABS_ID);
+                    declareAbsentMenuItem(items, SELECT_TABS_ID);
                 } else {
-                    mCloseAllTabs = newDisabledMenuItem(CLOSE_ALL_TABS_ID);
-                    selectTabs = newDisabledMenuItem(SELECT_TABS_ID);
+                    mCloseAllTabs = declareDisabledMenuItem(items, CLOSE_ALL_TABS_ID);
+                    declareDisabledMenuItem(items, SELECT_TABS_ID);
                 }
             }
-            mClearBrowsingData = newStubMenuItem(CLEAR_BROWSING_DATA_ID);
-
-            items.add(mNewTab);
-            items.add(mNewIncognitoTab);
-            items.add(mCloseAllTabs);
-            items.add(selectTabs);
-            items.add(mClearBrowsingData);
-            items.add(mSettings);
+            mClearBrowsingData = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
         } else {
             // Incognito Hub Tab Switcher
 
             // If there are no incognito tabs, the incognito tab switcher pane disappears so
             // "Close Incognito Tabs" and "Select tabs" are always present and
             // enabled.
-            mCloseIncognitoTabs = newStubMenuItem(CLOSE_INCOGNITO_TABS_ID);
-            mSelectTabs = newMenuItemToFacility(SELECT_TABS_ID, this::createListEditorFacility);
-
-            items.add(mNewTab);
-            items.add(mNewIncognitoTab);
-            items.add(mCloseIncognitoTabs);
-            items.add(mSelectTabs);
-            items.add(mSettings);
+            mCloseIncognitoTabs = declareStubMenuItem(items, CLOSE_INCOGNITO_TABS_ID);
+            mSelectTabs =
+                    declareMenuItemToFacility(
+                            items, SELECT_TABS_ID, this::createListEditorFacility);
         }
+        mSettings = declareMenuItemToStation(items, SETTINGS_ID, this::createSettingsStation);
     }
 
     /** Select "New tab" from the app menu. */

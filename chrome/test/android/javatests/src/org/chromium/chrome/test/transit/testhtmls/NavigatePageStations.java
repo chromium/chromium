@@ -9,31 +9,28 @@ import org.chromium.chrome.test.transit.WebPageStation;
 
 /** PageStations for /chrome/test/data/android/navigate/*.html */
 public abstract class NavigatePageStations {
+    public static final String PATH_ONE = "/chrome/test/data/android/navigate/one.html";
+    public static final String PATH_TWO = "/chrome/test/data/android/navigate/two.html";
+    public static final String PATH_THREE = "/chrome/test/data/android/navigate/three.html";
+    public static final String PATH_SIMPLE = "/chrome/test/data/android/navigate/simple.html";
+
     /** Create a PageStation representing one.html. */
     public static Builder<WebPageStation> newNavigateOnePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder()
-                .withPath("/chrome/test/data/android/navigate/one.html")
-                .withTitle("One");
+        return WebPageStation.newWebPageStationBuilder().withPath(PATH_ONE).withTitle("One");
     }
 
     /** Create a PageStation representing two.html. */
     public static Builder<WebPageStation> newNavigateTwoPageBuilder() {
-        return WebPageStation.newWebPageStationBuilder()
-                .withPath("/chrome/test/data/android/navigate/two.html")
-                .withTitle("Two");
+        return WebPageStation.newWebPageStationBuilder().withPath(PATH_TWO).withTitle("Two");
     }
 
     /** Create a PageStation representing three.html. */
     public static Builder<WebPageStation> newNavigateThreePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder()
-                .withPath("/chrome/test/data/android/navigate/three.html")
-                .withTitle("Three");
+        return WebPageStation.newWebPageStationBuilder().withPath(PATH_THREE).withTitle("Three");
     }
 
     /** Create a PageStation representing simple.html. */
     public static Builder<WebPageStation> newNavigateSimplePageBuilder() {
-        return WebPageStation.newWebPageStationBuilder()
-                .withPath("/chrome/test/data/android/navigate/simple.html")
-                .withTitle("Simple");
+        return WebPageStation.newWebPageStationBuilder().withPath(PATH_SIMPLE).withTitle("Simple");
     }
 }
