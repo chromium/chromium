@@ -1387,6 +1387,35 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InputMethod.Manta.Orca.{Language}.States.{Mode}"
+    enum="IMEEditorStates" expires_after="2024-11-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram captures user interactions with the editor segmented by
+    &quot;input language&quot;. To complete this segmentation we rely on the
+    currently enabled input method as a heuristic. These user interactions are
+    focusing on key actions providing a high level funnel of interaction. These
+    actions include the initiation of a new request, content insertion, display
+    of the native UI, dismissal of the editor, a refining request, errors from
+    the backend, receiving a successful responses from the backend or a user
+    toggling the thumbs up and down buttons.
+  </summary>
+  <token key="Mode">
+    <variant name="Rewrite"
+        summary="There is selected text and the user is rewriting it with the
+                 editor"/>
+    <variant name="Write" summary="The editor is in freeform write mode"/>
+  </token>
+  <token key="Language">
+    <variant name="English" summary="English input method enabled"/>
+    <variant name="French" summary="French input method enabled"/>
+    <variant name="German" summary="German input method enabled"/>
+    <variant name="Japanese" summary="Japanese input method enabled"/>
+    <variant name="Other" summary="Other input method enabled"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.NextWordPrediction" enum="BooleanEnabled"
     expires_after="2021-12-19">
   <owner>myy@chromium.org</owner>
