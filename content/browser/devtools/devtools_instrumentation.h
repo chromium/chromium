@@ -246,6 +246,7 @@ void OnInterestGroupAuctionNetworkRequestCreated(
     const std::vector<std::string>& devtools_auction_ids);
 
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
+bool ShouldBypassCertificateErrors();
 
 void ApplyNetworkOverridesForDownload(
     RenderFrameHostImpl* rfh,

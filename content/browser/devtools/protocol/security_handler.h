@@ -55,6 +55,8 @@ class SecurityHandler : public DevToolsDomainHandler,
                               const GURL& request_url,
                               CertErrorCallback callback);
 
+  bool IsIgnoreCertificateErrorsSet() const;
+
  private:
   using CertErrorCallbackMap = base::flat_map<int, CertErrorCallback>;
 

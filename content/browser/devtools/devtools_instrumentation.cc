@@ -882,6 +882,31 @@ bool ShouldBypassCSP(const NavigationRequest& nav_request) {
   return false;
 }
 
+bool ShouldBypassCertificateErrors(DevToolsAgentHost* agent_host) {
+  if (!agent_host) {
+    return false;
+  }
+
+  DevToolsAgentHostImpl* host_impl =
+      static_cast<DevToolsAgentHostImpl*>(agent_host);
+  for (auto* security_handler :
+       protocol::SecurityHandler::ForAgentHost(host_impl)) {
+    if (security_handler->IsIgnoreCertificateErrorsSet()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ShouldBypassCertificateErrors() {
+  for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {
+    if (ShouldBypassCertificateErrors(browser_agent_host)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ApplyNetworkOverridesForDownload(
     RenderFrameHostImpl* rfh,
     download::DownloadUrlParameters* parameters) {

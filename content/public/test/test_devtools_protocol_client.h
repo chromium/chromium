@@ -27,7 +27,10 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
   TestDevToolsProtocolClient();
   ~TestDevToolsProtocolClient() override;
 
- protected:
+  void AttachToWebContents(WebContents* web_contents);
+  void AttachToTabTarget(WebContents* web_contents);
+  void AttachToBrowserTarget();
+
   const base::Value::Dict* SendCommand(std::string method,
                                        base::Value::Dict params,
                                        bool wait = true) {
@@ -54,10 +57,6 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
                                               const std::string session_id,
                                               bool wait);
 
-  void AttachToWebContents(WebContents* web_contents);
-  void AttachToTabTarget(WebContents* web_contents);
-  void AttachToBrowserTarget();
-
   void DetachProtocolClient() {
     if (agent_host_) {
       agent_host_->DetachClient(this);
@@ -65,6 +64,7 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
     }
   }
 
+ protected:
   bool HasExistingNotification() const { return !notifications_.empty(); }
   bool HasExistingNotification(const std::string& notification) const;
   bool HasExistingNotificationMatching(

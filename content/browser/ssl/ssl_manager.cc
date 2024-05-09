@@ -133,6 +133,11 @@ void SSLManager::OnSSLCertificateError(
                           url, net_error, ssl_info, fatal));
 
   if (!web_contents || !frame_tree_node) {
+    // Check if the DevTools Browser target is set to ignore certificate errors.
+    if (devtools_instrumentation::ShouldBypassCertificateErrors()) {
+      handler->ContinueRequest();
+      return;
+    }
     // Requests can fail to dispatch because they don't have a WebContents. See
     // https://crbug.com/86537. In this case we have to make a decision in this
     // function. Also, if the navigation or document which have been responsible

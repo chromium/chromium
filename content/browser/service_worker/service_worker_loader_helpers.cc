@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/common/features.h"
@@ -115,7 +116,8 @@ bool CheckResponseHead(
     return false;
   }
 
-  if (net::IsCertStatusError(response_head.cert_status) &&
+  if (!devtools_instrumentation::ShouldBypassCertificateErrors() &&
+      net::IsCertStatusError(response_head.cert_status) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kIgnoreCertificateErrors)) {
     *out_completion_status = network::URLLoaderCompletionStatus(

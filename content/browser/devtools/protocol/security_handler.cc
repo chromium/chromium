@@ -78,6 +78,10 @@ void SecurityHandler::FlushPendingCertificateErrorNotifications() {
   cert_error_callbacks_.clear();
 }
 
+bool SecurityHandler::IsIgnoreCertificateErrorsSet() const {
+  return cert_error_override_mode_ == CertErrorOverrideMode::kIgnoreAll;
+}
+
 bool SecurityHandler::NotifyCertificateError(int cert_error,
                                              const GURL& request_url,
                                              CertErrorCallback handler) {
@@ -150,9 +154,10 @@ Response SecurityHandler::SetOverrideCertificateErrors(bool override) {
   if (override) {
     if (!enabled_)
       return Response::ServerError("Security domain not enabled");
-    if (cert_error_override_mode_ == CertErrorOverrideMode::kIgnoreAll)
+    if (cert_error_override_mode_ == CertErrorOverrideMode::kIgnoreAll) {
       return Response::ServerError(
           "Certificate errors are already being ignored.");
+    }
     cert_error_override_mode_ = CertErrorOverrideMode::kHandleEvents;
   } else {
     cert_error_override_mode_ = CertErrorOverrideMode::kDisabled;

@@ -2315,6 +2315,217 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateErrorBrowserTarget) {
                           ->GetURL());
 }
 
+class CertificateErrorIgnoredBrowserTargetTest : public DevToolsProtocolTest {
+ public:
+  CertificateErrorIgnoredBrowserTargetTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    net::SSLServerConfig ssl_config;
+    // ssl_config.client_cert_type =
+    //     net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    // https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.Start());
+    GURL test_url = https_server_.GetURL("/devtools/navigation.html");
+
+    shell()->LoadURL(GURL("about:blank"));
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+    // Create a second client to concurrently connect to browser target,
+    // as the DevToolsProtocolTest class only has one client available to
+    // connect.
+    browser_client.AttachToBrowserTarget();
+    base::Value::Dict command_params;
+    command_params = base::Value::Dict();
+    command_params.Set("ignore", true);
+    browser_client.SendCommandSync("Security.setIgnoreCertificateErrors",
+                                   std::move(command_params));
+
+    // Connect the default client to the page.
+    Attach();
+    SendCommandSync("Debugger.enable");
+    // Clear cookies and cache to avoid interference with cert error events.
+    SendCommandSync("Network.enable");
+    SendCommandSync("Network.clearBrowserCache");
+    SendCommandSync("Network.clearBrowserCookies");
+
+    TestNavigationObserver continue_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    continue_observer.Wait();
+
+    EXPECT_EQ(test_url, shell()
+                            ->web_contents()
+                            ->GetController()
+                            .GetLastCommittedEntry()
+                            ->GetURL());
+  }
+
+  void TearDownOnMainThread() override {
+    // Detach the additional client
+    browser_client.DetachProtocolClient();
+    DevToolsProtocolTest::TearDownOnMainThread();
+  }
+
+  ~CertificateErrorIgnoredBrowserTargetTest() override = default;
+
+ protected:
+  TestDevToolsProtocolClient browser_client;
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetServiceWorkerFetch) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/service_worker.js');"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ("intercepted",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetServiceWorkerImportScripts) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/"
+      "service_worker_import_classic.js');"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+
+  SendCommandSync("Debugger.resume");
+
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ("imported",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetServiceWorkerModuleImport) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/"
+      "service_worker_import_module.js', {type: 'module'});"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+
+  SendCommandSync("Debugger.resume");
+
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ("imported",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetDedicatedWorker) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new Worker('/devtools/dedicated_worker.js');"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetDedicatedWorkerImportClassic) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new "
+      "Worker('/devtools/dedicated_worker_import_classic.js');"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply imported test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetDedicatedWorkerImportModule) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new "
+      "Worker('/devtools/dedicated_worker_import_module.js', {type: 'module'});"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply imported test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+// SharedWorkers are not enabled on Android. https://crbug.com/154571
+#if BUILDFLAG(IS_ANDROID)
+constexpr bool kIsSharedWorkerEnabled = false;
+#else
+constexpr bool kIsSharedWorkerEnabled = true;
+#endif
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetSharedWorker) {
+  if (!kIsSharedWorkerEnabled) {
+    return;
+  }
+  // Install a shared worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new SharedWorker('/devtools/shared_worker.js');"
+      "myWorker.port.start();"
+      "myWorker.port.onmessage = (msg) => {document.body.textContent = "
+      "msg.data; debugger;};"
+      "myWorker.port.postMessage('test');"));
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
