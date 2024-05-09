@@ -343,30 +343,6 @@
       'mac_retina_nvidia_gpu_stable',
     ],
   },
-  'MODEL_VALIDATION_BASE': {
-    'identifier': 'MODEL_VALIDATION_BASE',
-  },
-  'MODEL_VALIDATION_TRUNK': {
-    'identifier': 'MODEL_VALIDATION_TRUNK',
-    'linux_args': [
-      '--chromedriver',
-      'chromedriver',
-      '--binary',
-      'chrome',
-    ],
-    'mac_args': [
-      '--chromedriver',
-      'chromedriver',
-      '--binary',
-      'Google Chrome.app/Contents/MacOS/Google Chrome',
-    ],
-    'win_args': [
-      '--chromedriver',
-      'chromedriver.exe',
-      '--binary',
-      'Chrome.exe',
-    ],
-  },
   'NVIDIA_GEFORCE_GTX_1660': {
     'identifier': 'NVIDIA GeForce GTX 1660',
     'mixins': [

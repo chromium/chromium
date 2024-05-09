@@ -4192,6 +4192,24 @@ targets.legacy_basic_suite(
             args = [
                 "--out_dir=.",
             ],
+            linux_args = [
+                "--chromedriver",
+                "chromedriver",
+                "--binary",
+                "chrome",
+            ],
+            mac_args = [
+                "--chromedriver",
+                "chromedriver",
+                "--binary",
+                "Google Chrome.app/Contents/MacOS/Google Chrome",
+            ],
+            win_args = [
+                "--chromedriver",
+                "chromedriver.exe",
+                "--binary",
+                "Chrome.exe",
+            ],
         ),
     },
 )

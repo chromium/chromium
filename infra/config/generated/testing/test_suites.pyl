@@ -4316,6 +4316,24 @@
         'args': [
           '--out_dir=.',
         ],
+        'linux_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'chrome',
+        ],
+        'mac_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'Google Chrome.app/Contents/MacOS/Google Chrome',
+        ],
+        'win_args': [
+          '--chromedriver',
+          'chromedriver.exe',
+          '--binary',
+          'Chrome.exe',
+        ],
       },
     },
 
@@ -7659,12 +7677,7 @@
 
     'optimization_guide_desktop_script_tests': {
       'model_validation_tests_light_suite': {},
-      'model_validation_tests_suite': {
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
-        ],
-      },
+      'model_validation_tests_suite': {},
       'ondevice_quality_tests_suite': {},
       'ondevice_stability_tests_suite': {},
     },
@@ -7692,10 +7705,6 @@
       'model_validation_tests_suite': {
         'mixins': [
           'gce',
-        ],
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
         ],
       },
       'ondevice_quality_tests_suite': {
@@ -7736,10 +7745,6 @@
       'model_validation_tests_suite': {
         'mixins': [
           'gce',
-        ],
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
         ],
       },
       'ondevice_quality_tests_suite': {

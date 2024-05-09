@@ -502,32 +502,3 @@ targets.variant(
         "win10_nvidia_gtx_1660_stable",
     ],
 )
-
-# Model validation tests with no args as they are passed in from Google3.
-targets.variant(
-    name = "MODEL_VALIDATION_BASE",
-    identifier = "MODEL_VALIDATION_BASE",
-)
-
-targets.variant(
-    name = "MODEL_VALIDATION_TRUNK",
-    identifier = "MODEL_VALIDATION_TRUNK",
-    linux_args = [
-        "--chromedriver",
-        "chromedriver",
-        "--binary",
-        "chrome",
-    ],
-    mac_args = [
-        "--chromedriver",
-        "chromedriver",
-        "--binary",
-        "Google Chrome.app/Contents/MacOS/Google Chrome",
-    ],
-    win_args = [
-        "--chromedriver",
-        "chromedriver.exe",
-        "--binary",
-        "Chrome.exe",
-    ],
-)
