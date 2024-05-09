@@ -146,6 +146,7 @@ export class ScanOptions implements CameraUI {
       await video.onExpired.wait();
       this.detachPreview();
     })();
+    // TODO(b/338331511): Only call this when in Scan mode.
     await this.switchToScanType(scanType);
     if (!this.documentModeEnabled()) {
       this.updateDocumentModeStatus();

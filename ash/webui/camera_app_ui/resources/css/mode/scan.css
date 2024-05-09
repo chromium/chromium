@@ -173,8 +173,9 @@ body.enable-scan-barcode .barcode-scan-box {
 .expanded #barcode-chip-text-content {
   /* TODO(b/172879638): Make this responsive */
   max-height: calc(var(--text-line-height) * 10);
+  overflow: auto;
   overflow-wrap: break-word;
-  white-space: normal;
+  white-space: pre-wrap;
   /* Keep the same width as before to avoid text jumping. */
   width: var(--chip-max-width);
 }
