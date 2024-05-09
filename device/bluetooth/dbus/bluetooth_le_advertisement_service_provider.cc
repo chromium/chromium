@@ -178,6 +178,12 @@ class BluetoothAdvertisementServiceProviderImpl
                scan_response_data_) {
       writer.OpenVariant("o", &variant_writer);
       AppendScanResponseDataVariant(&variant_writer);
+    } else if ((property_name ==
+                bluetooth_advertisement::kSecondaryChannelProperty)) {
+      if (UseSecondaryChannel()) {
+        writer.OpenVariant("s", &variant_writer);
+        variant_writer.AppendString(bluetooth_advertisement::kPhy1M);
+      }
     } else {
       std::unique_ptr<dbus::ErrorResponse> error_response =
           dbus::ErrorResponse::FromMethodCall(
@@ -247,6 +253,7 @@ class BluetoothAdvertisementServiceProviderImpl
     writer.OpenArray("{sv}", &array_writer);
 
     AppendType(&array_writer);
+    AppendSecondaryChannel(&array_writer);
     AppendServiceUUIDs(&array_writer);
     AppendManufacturerData(&array_writer);
     AppendSolicitUUIDs(&array_writer);
@@ -292,6 +299,19 @@ class BluetoothAdvertisementServiceProviderImpl
     } else {
       dict_entry_writer.AppendVariantOfString("peripheral");
     }
+    array_writer->CloseContainer(&dict_entry_writer);
+  }
+
+  void AppendSecondaryChannel(dbus::MessageWriter* array_writer) {
+    if (!UseSecondaryChannel()) {
+      return;
+    }
+
+    dbus::MessageWriter dict_entry_writer(nullptr);
+    array_writer->OpenDictEntry(&dict_entry_writer);
+    dict_entry_writer.AppendString(
+        bluetooth_advertisement::kSecondaryChannelProperty);
+    dict_entry_writer.AppendVariantOfString(bluetooth_advertisement::kPhy1M);
     array_writer->CloseContainer(&dict_entry_writer);
   }
 
@@ -417,6 +437,15 @@ class BluetoothAdvertisementServiceProviderImpl
       array_writer.CloseContainer(&entry_writer);
     }
     writer->CloseContainer(&array_writer);
+  }
+
+  bool UseSecondaryChannel() {
+    // Don't use secondary channel if we are scannable and have advertising data.
+    // This is because according to the spec, if Adv mode is Scannable in the
+    // ADV_EXT_IND the Adv data field is reserved for future use.
+    return !((service_uuids_ || solicit_uuids_ || manufacturer_data_ ||
+              service_data_) &&
+             type_ == ADVERTISEMENT_TYPE_BROADCAST);
   }
 
   // Origin thread (i.e. the UI thread in production).
