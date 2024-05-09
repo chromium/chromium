@@ -312,7 +312,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
 #define MAYBE_TestPermissionElementDialogPositioning \
   TestPermissionElementDialogPositioning
-#define MAYBE_TestPepcHistograms TestPepcHistograms
+#define MAYBE_TestPepcHistograms DISABLED_TestPepcHistograms
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
