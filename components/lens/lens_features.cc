@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/system/sys_info.h"
 
 namespace lens::features {
 
@@ -73,6 +72,9 @@ const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
 const base::FeatureParam<bool> kLensOverlaySelectionDraggingEnabled{
     &kLensOverlay, "enable-selection-dragging", false};
+
+const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
+    &kLensOverlay, "google-dse-required", true};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -216,11 +218,11 @@ bool GetShouldIssueProcessPrewarmingForLens() {
 }
 
 bool IsLensOverlayEnabled() {
-  if (!base::FeatureList::IsEnabled(kLensOverlay)) {
-    return false;
-  }
-  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
-  return phys_mem_mb > kLensOverlayMinRamMb.Get();
+  return base::FeatureList::IsEnabled(kLensOverlay);
+}
+
+int GetLensOverlayMinRamMb() {
+  return kLensOverlayMinRamMb.Get();
 }
 
 std::string GetLensOverlayResultsSearchURL() {
@@ -285,6 +287,10 @@ bool IsLensOverlayShimmerEnabled() {
 
 bool IsLensOverlaySelectionDraggingEnabled() {
   return kLensOverlaySelectionDraggingEnabled.Get();
+}
+
+bool IsLensOverlayGoogleDseRequired() {
+  return kLensOverlayGoogleDseRequired.Get();
 }
 
 }  // namespace lens::features

@@ -51,6 +51,7 @@ class VariationsClient;
 }  // namespace variations
 
 class PrefService;
+class Profile;
 
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
@@ -121,9 +122,8 @@ class LensOverlayController : public LensSearchboxClient,
     GURL search_query_url_;
   };
 
-  // Returns whether the lens overlay feature is enabled. This value is
-  // guaranteed not to change over the lifetime of a LensOverlayController.
-  bool Enabled();
+  // Returns whether the lens overlay feature is enabled.
+  static bool IsEnabled(Profile* profile);
 
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the

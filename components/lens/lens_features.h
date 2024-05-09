@@ -196,9 +196,14 @@ extern std::string GetPreconnectKeyForLens();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetShouldIssueProcessPrewarmingForLens();
 
-// Returns whether the Lens overlay is enabled
+// Returns whether the kLensOverlay Feature is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEnabled();
+
+// Returns the minimum amount of physical memory required to enable the Lens
+// overlay feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayMinRamMb();
 
 // Returns the finch configured results search URL to use as base for queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -270,6 +275,14 @@ extern bool IsLensOverlayShimmerEnabled();
 // Returns whether to allow dragging the Lens overlay selection box.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySelectionDraggingEnabled();
-}  // namespace lens::features
 
+// Returns whether to require that Google is the user's DSE (default search
+// engine) for the Lens overlay feature to be enabled.
+//
+// NOTE: This should only be used for internal testing.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayGoogleDseRequired();
+
+}  // namespace lens::features
+   //
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

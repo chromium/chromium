@@ -7,10 +7,12 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -209,8 +211,19 @@ LensOverlayController::SearchQuery::operator=(
 
 LensOverlayController::SearchQuery::~SearchQuery() = default;
 
-bool LensOverlayController::Enabled() {
-  return lens::features::IsLensOverlayEnabled();
+// static
+bool LensOverlayController::IsEnabled(Profile* profile) {
+  if (!lens::features::IsLensOverlayEnabled()) {
+    return false;
+  }
+
+  if (lens::features::IsLensOverlayGoogleDseRequired() &&
+      !search::DefaultSearchProviderIsGoogle(profile)) {
+    return false;
+  }
+
+  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
 void LensOverlayController::ShowUI(InvocationSource invocation_source) {

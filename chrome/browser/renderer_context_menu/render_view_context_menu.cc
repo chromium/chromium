@@ -2172,19 +2172,8 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
-  LensOverlayController* const controller =
-      LensOverlayController::GetController(source_web_contents_);
-
-  // TODO(https://crbug.com/330808104): Delete the code in the else statement
-  // once overlay is launched.
-  if (controller && controller->Enabled()) {
-    AppendRegionSearchItem();
-  } else {
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
-  }
-#endif
   }
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
@@ -2670,36 +2659,41 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  // GetDefaultSearchProvider can return null in unit tests or when the
-  // default search provider is disabled by policy. In these cases, we align
-  // with the search web for image menu item by not adding the region search
-  // menu item.
+  if (LensOverlayController::IsEnabled(GetProfile())) {
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchIcon;
+#endif
+    menu_model_.AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
+        IDS_CONTENT_CONTEXT_LENS_OVERLAY, ui::ImageModel::FromVectorIcon(icon));
+
+    menu_model_.SetElementIdentifierAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
+            .value(),
+        kRegionSearchItem);
+
+    return;
+  }
+
+  // GetImageSearchProvider can return null in unit tests or when the default
+  // search provider is disabled by policy. In these cases, we align with the
+  // search web for image menu item by not adding the region search menu item.
   const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
-    if (lens::features::IsLensOverlayEnabled()) {
-      const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-          vector_icons::kSearchIcon;
-#endif
-      menu_model_.AddItemWithStringIdAndIcon(
-          region_search_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
-          ui::ImageModel::FromVectorIcon(icon));
-    } else {
-      int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-      if (lens::features::IsLensFullscreenSearchEnabled()) {
-        // Default text for fullscreen search when enabled.
-        resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-      }
-      menu_model_.AddItem(
-          region_search_idc,
-          l10n_util::GetStringFUTF16(resource_id,
-                                     GetImageSearchProviderName(provider)));
-      if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
-      }
+    int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
+    if (lens::features::IsLensFullscreenSearchEnabled()) {
+      // Default text for fullscreen search when enabled.
+      resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
+    }
+    menu_model_.AddItem(region_search_idc,
+                        l10n_util::GetStringFUTF16(
+                            resource_id, GetImageSearchProviderName(provider)));
+    if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
+      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     }
 
     menu_model_.SetElementIdentifierAt(
@@ -3828,6 +3822,10 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 }
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
+  if (LensOverlayController::IsEnabled(GetProfile())) {
+    return GetBrowser()->is_type_normal();
+  }
+
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #if BUILDFLAG(IS_MAC)
   // Region selection is broken in PWAs on Mac b/250074889
@@ -4253,15 +4251,12 @@ void RenderViewContextMenu::ExecAddANote() {
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-  if (is_google_default_search_provider) {
-    // TODO(https://crbug.com/330808104): This should become a CHECK. If the
-    // menu item is clickable, then the controller must be enabled.
+  if (LensOverlayController::IsEnabled(GetProfile())) {
     LensOverlayController* const controller =
         LensOverlayController::GetController(source_web_contents_);
-    if (controller && controller->Enabled()) {
-      controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
-      return;
-    }
+    CHECK(controller);
+    controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
+    return;
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

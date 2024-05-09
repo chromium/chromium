@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -184,7 +185,7 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (lens::features::IsLensOverlayEnabled()) {
+  if (LensOverlayController::IsEnabled(profile)) {
     actions::ActionItem::InvokeActionCallback callback =
         lens::LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
             &(browser_.get()));

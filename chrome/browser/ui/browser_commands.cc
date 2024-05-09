@@ -2229,13 +2229,10 @@ void ExecLensOverlay(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);
 
-  // TODO(https://crbug.com/330808104): This should become a CHECK. If the
-  // menu item is clickable, then the controller must be enabled.
   LensOverlayController* const controller =
       LensOverlayController::GetController(web_contents);
-  if (controller && controller->Enabled()) {
-    controller->ShowUI(LensOverlayController::kAppMenu);
-  }
+  CHECK(controller);
+  controller->ShowUI(LensOverlayController::kAppMenu);
 }
 
 void ExecLensRegionSearch(Browser* browser) {

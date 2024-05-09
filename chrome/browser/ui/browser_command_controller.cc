@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -1429,10 +1430,9 @@ void BrowserCommandController::InitCommandState() {
                                           true);
   }
 
-  if (lens::features::IsLensOverlayEnabled()) {
-    command_updater_.UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
-                                          true);
-  }
+  command_updater_.UpdateCommandEnabled(
+      IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+      LensOverlayController::IsEnabled(browser_->profile()));
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (base::FeatureList::IsEnabled(
