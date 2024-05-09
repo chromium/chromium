@@ -31,6 +31,8 @@ class MlEmbedder : public Embedder,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
+  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+
  private:
   // OptimizationTargetModelObserver:
   void OnModelUpdated(
@@ -45,6 +47,9 @@ class MlEmbedder : public Embedder,
 
   // The controller used to interact with the PassageEmbeddingsService.
   raw_ptr<PassageEmbeddingsServiceController> service_controller_;
+
+  // Called once the embedder is ready.
+  OnEmbedderReadyCallback on_embedder_ready_;
 };
 
 }  // namespace history_embeddings

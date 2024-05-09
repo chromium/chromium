@@ -24,7 +24,7 @@ class PassageEmbeddingsService : public mojom::PassageEmbeddingsService {
 
  private:
   // mojom::PassageEmbeddingsService:
-  void LoadModels(mojom::PassageEmbeddingsModelAssetsPtr assets,
+  void LoadModels(mojom::PassageEmbeddingsLoadModelsParamsPtr params,
                   mojo::PendingReceiver<mojom::PassageEmbedder> model,
                   LoadModelsCallback callback) override;
 

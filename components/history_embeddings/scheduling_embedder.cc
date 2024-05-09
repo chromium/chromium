@@ -57,6 +57,10 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
   }
 }
 
+void SchedulingEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
+  embedder_->SetOnEmbedderReady(std::move(callback));
+}
+
 void SchedulingEmbedder::OnQueryEmbeddingComputed(
     ComputePassagesEmbeddingsCallback callback,
     std::vector<std::string> query_passages,

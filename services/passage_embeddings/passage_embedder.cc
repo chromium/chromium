@@ -15,8 +15,6 @@ namespace {
 // Number for threads to use for TFLite execution. -1 lets TFLite use the
 // default number of threads.
 constexpr int kNumThreads = -1;
-// TODO(b/337924566): switch to model metadata instead of relying on constant.
-constexpr size_t kEmbeddingsInputWindowSize = 256;
 }  // namespace
 
 namespace passage_embeddings {
@@ -56,6 +54,10 @@ bool PassageEmbedder::LoadModels(base::File* embeddings_model_file,
       sp_timer.Elapsed());
 
   return true;
+}
+
+void PassageEmbedder::SetEmbeddingsModelInputWindowSize(uint32_t size) {
+  embeddings_input_window_size_ = size;
 }
 
 bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
@@ -142,10 +144,10 @@ void PassageEmbedder::GenerateEmbeddings(
       std::move(callback).Run({});
       return;
     }
-    if (tokenized.size() < kEmbeddingsInputWindowSize) {
+    if (tokenized.size() < embeddings_input_window_size_) {
       tokenized.push_back(sp_processor_->eos_id());
     }
-    tokenized.resize(kEmbeddingsInputWindowSize);
+    tokenized.resize(embeddings_input_window_size_);
     base::UmaHistogramMediumTimes(
         "History.Embeddings.Embedder.TokenizationDuration",
         tokenize_timer.Elapsed());

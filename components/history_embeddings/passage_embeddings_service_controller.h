@@ -6,6 +6,7 @@
 
 #include "base/types/optional_ref.h"
 #include "components/history_embeddings/embedder.h"
+#include "components/history_embeddings/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
@@ -21,8 +22,10 @@ class PassageEmbeddingsServiceController {
   virtual void LaunchService() = 0;
 
   // Updates the paths needed for executing the passage embeddings model if the
-  // paths provided by `model_info` differ from what is already loaded.
-  void MaybeUpdateModelPaths(
+  // paths provided are valid. The original paths will be erased regardless of
+  // the validity of the new model paths. Returns true if the given model_info
+  // is valid.
+  bool MaybeUpdateModelPaths(
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
   // Starts the service and calls `callback` with the embeddings. It is
@@ -32,6 +35,9 @@ class PassageEmbeddingsServiceController {
   using GetEmbeddingsCallback = ComputePassagesEmbeddingsCallback;
   void GetEmbeddings(std::vector<std::string> passages,
                      GetEmbeddingsCallback callback);
+
+  // Returns the embeddings model version;
+  EmbedderMetadata GetEmbedderMetadata();
 
  protected:
   // Reset both service_remote_ and embedder_remote_.
@@ -46,13 +52,20 @@ class PassageEmbeddingsServiceController {
   // the service.
   void LoadModelsToService(
       mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder> model,
-      passage_embeddings::mojom::PassageEmbeddingsModelAssetsPtr assets);
+      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params);
 
   // Called when an attempt to load models to service finishes.
   void OnLoadModelsResult(bool success);
 
   // Called when the embedder_remote_ disconnects.
   void OnDisconnected();
+
+  // Version of the embeddings model.
+  int64_t model_version_;
+
+  // Metadata of the embeddings model.
+  std::optional<history_embeddings::proto::PassageEmbeddingsModelMetadata>
+      model_metadata_;
 
   base::FilePath embeddings_model_path_;
   base::FilePath sp_model_path_;

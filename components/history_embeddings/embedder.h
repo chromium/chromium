@@ -31,10 +31,20 @@ enum class PassageKind {
   REBUILD_PASSAGE,
 };
 
+struct EmbedderMetadata {
+  EmbedderMetadata(int64_t model_version, size_t output_size)
+      : model_version(model_version), output_size(output_size) {}
+
+  int64_t model_version;
+  size_t output_size;
+};
+
 // TODO(b/332394465): Use a different signature to include an error state.
 using ComputePassagesEmbeddingsCallback =
     base::OnceCallback<void(std::vector<std::string> passages,
                             std::vector<Embedding> embeddings)>;
+using OnEmbedderReadyCallback =
+    base::OnceCallback<void(EmbedderMetadata metadata)>;
 
 // Base class that hides implementation details for how text is embedded.
 class Embedder {
@@ -50,6 +60,9 @@ class Embedder {
       PassageKind kind,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) = 0;
+
+  // Set the callback to run when the embedder is ready to process requests.
+  virtual void SetOnEmbedderReady(OnEmbedderReadyCallback callback) = 0;
 
  protected:
   Embedder() = default;

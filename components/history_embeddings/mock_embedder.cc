@@ -11,8 +11,11 @@ namespace history_embeddings {
 
 namespace {
 
+constexpr int64_t kModelVersion = 1;
+constexpr size_t kOutputSize = 768ul;
+
 Embedding ComputeEmbeddingForPassage(const std::string& passage) {
-  Embedding embedding(std::vector<float>(768, 1.0f));
+  Embedding embedding(std::vector<float>(kOutputSize, 1.0f));
   embedding.Normalize();
   return embedding;
 }
@@ -35,6 +38,11 @@ void MockEmbedder::ComputePassagesEmbeddings(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(passages),
                                 ComputeEmbeddingsForPassages(passages)));
+}
+
+void MockEmbedder::SetOnEmbedderReady(OnEmbedderReadyCallback callback) {
+  // The mock embedder is always ready, so we invoke the callback directly.
+  std::move(callback).Run({kModelVersion, kOutputSize});
 }
 
 }  // namespace history_embeddings

@@ -105,6 +105,10 @@ class HistoryEmbeddingsService : public KeyedService,
   struct Storage {
     explicit Storage(const base::FilePath& storage_dir);
 
+    // Associate the given metadata with this Storage instance. The storage is
+    // not considered initialized until this metadata is supplied.
+    void SetEmbedderMetadata(EmbedderMetadata metadata);
+
     // Called on the worker sequence to persist passages and embeddings.
     void ProcessAndStorePassages(UrlPassages url_passages,
                                  std::vector<Embedding> passages_embeddings);
@@ -128,6 +132,10 @@ class HistoryEmbeddingsService : public KeyedService,
     // The underlying SQL database for persistent storage.
     SqlDatabase sql_database;
   };
+
+  // Called when the embedder metadata is available. Passes the metadata to
+  // the internal storage.
+  void OnEmbedderMetadataReady(EmbedderMetadata metadata);
 
   // Called indirectly via RetrievePassages when passage extraction completes.
   void OnPassagesRetrieved(UrlPassages url_passages,
@@ -186,6 +194,9 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // The embedder used to compute embeddings.
   std::unique_ptr<Embedder> embedder_;
+
+  // Metadata about the embedder.
+  std::optional<EmbedderMetadata> embedder_metadata_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

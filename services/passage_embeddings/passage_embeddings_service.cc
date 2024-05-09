@@ -16,19 +16,22 @@ PassageEmbeddingsService::PassageEmbeddingsService(
 
 PassageEmbeddingsService::~PassageEmbeddingsService() = default;
 
+// TODO(b/338650221): Add histogram for whether model load succeeds or not.
 void PassageEmbeddingsService::LoadModels(
-    mojom::PassageEmbeddingsModelAssetsPtr assets,
+    mojom::PassageEmbeddingsLoadModelsParamsPtr params,
     mojo::PendingReceiver<mojom::PassageEmbedder> model,
     LoadModelsCallback callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   embedder_ = std::make_unique<PassageEmbedder>(std::move(model));
 
   // Load the model files.
-  if (!embedder_->LoadModels(&assets->embeddings_model, &assets->sp_model)) {
+  if (params->input_window_size == 0 ||
+      !embedder_->LoadModels(&params->embeddings_model, &params->sp_model)) {
     embedder_.reset();
     std::move(callback).Run(false);
     return;
   }
+  embedder_->SetEmbeddingsModelInputWindowSize(params->input_window_size);
 
   std::move(callback).Run(true);
 #else

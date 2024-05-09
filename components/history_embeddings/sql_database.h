@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/history_embeddings/vector_database.h"
 #include "sql/database.h"
@@ -34,6 +35,10 @@ class SqlDatabase : public VectorDatabase {
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
   ~SqlDatabase() override;
+
+  // Provides embedder metadata to the database. The database cannot be
+  // initialized until valid metadata is provided.
+  void SetEmbedderMetadata(EmbedderMetadata embedder_metadata);
 
   // Inserts or replaces `passages` keyed by `url_id`. `visit_id` and
   // `visit_time` are needed too, to respect History deletions and expirations.
@@ -69,6 +74,9 @@ class SqlDatabase : public VectorDatabase {
 
   // The directory storing the database.
   const base::FilePath storage_dir_;
+
+  // Metadata of the embeddings model.
+  std::optional<EmbedderMetadata> embedder_metadata_;
 
   // The underlying SQL database.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -139,9 +139,21 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
       history_service_->history_dir());
+
+  // OnEmbedderReady callback needs to be set after the storage_ construction,
+  // since the callback could be invoked immediately.
+  embedder_->SetOnEmbedderReady(
+      base::BindOnce(&HistoryEmbeddingsService::OnEmbedderMetadataReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;
+
+void HistoryEmbeddingsService::OnEmbedderMetadataReady(
+    EmbedderMetadata metadata) {
+  embedder_metadata_ = metadata;
+  storage_.AsyncCall(&Storage::SetEmbedderMetadata).WithArgs(metadata);
+}
 
 void HistoryEmbeddingsService::RetrievePassages(
     const history::VisitRow& visit_row,
@@ -239,6 +251,11 @@ void HistoryEmbeddingsService::OnHistoryDeletions(
 
 HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)
     : sql_database(storage_dir) {}
+
+void HistoryEmbeddingsService::Storage::SetEmbedderMetadata(
+    EmbedderMetadata metadata) {
+  sql_database.SetEmbedderMetadata(metadata);
+}
 
 void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
     UrlPassages url_passages,

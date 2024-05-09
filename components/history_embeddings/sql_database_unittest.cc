@@ -15,8 +15,11 @@ namespace history_embeddings {
 
 namespace {
 
+constexpr int64_t kEmbeddingsVersion = 1;
+constexpr size_t kEmbeddingsSize = 768ul;
+
 Embedding FakeEmbedding() {
-  Embedding embedding(std::vector<float>(768, 1.0f));
+  Embedding embedding(std::vector<float>(kEmbeddingsSize, 1.0f));
   embedding.Normalize();
   return embedding;
 }
@@ -45,7 +48,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_1));
 
       UrlEmbeddings embeddings_1(1, 10, base::Time::Now());
-      embeddings_1.embeddings.emplace_back(std::vector<float>(768, 1.0f));
+      embeddings_1.embeddings.emplace_back(
+          std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_1));
     }
 
@@ -56,7 +60,8 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_2));
 
       UrlEmbeddings embeddings_2(2, 11, base::Time::Now());
-      embeddings_2.embeddings.emplace_back(std::vector<float>(768, 1.0f));
+      embeddings_2.embeddings.emplace_back(
+          std::vector<float>(kEmbeddingsSize, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_2));
     }
 
@@ -81,6 +86,7 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   // Write passages
   UrlPassages url_passages(1, 1, base::Time::Now());
@@ -92,6 +98,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
   // Reset and reload.
   sql_database.reset();
   sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   // Read passages
   auto read_proto = sql_database->GetPassages(1);
@@ -108,6 +115,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadEmbeddings) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   // Write embeddings.
   constexpr size_t kCount = 2;
@@ -124,6 +132,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadEmbeddings) {
   // Reset and reload.
   sql_database.reset();
   sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   // Read embeddings.
   {
@@ -152,6 +161,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadEmbeddings) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   // Write embeddings.
   const base::Time now = base::Time::Now();
@@ -219,6 +229,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, TimeRangeNarrowsSearchResult) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
 
   UrlPassages url_passages(1, 1, base::Time::Now());
   url_passages.passages.add_passages("fake passage 1");
@@ -241,6 +252,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
   AddBasicMockData(sql_database.get());
 
   // Without database reset, iteration reads data.
@@ -267,6 +279,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForUrlId) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
   AddBasicMockData(sql_database.get());
 
   EXPECT_TRUE(sql_database->DeleteDataForUrlId(3))
@@ -285,6 +298,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForUrlId) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForVisitId) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
   AddBasicMockData(sql_database.get());
 
   EXPECT_TRUE(sql_database->DeleteDataForVisitId(40))
@@ -303,6 +317,7 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteDataForVisitId) {
 
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, DeleteAllData) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize});
   AddBasicMockData(sql_database.get());
 
   EXPECT_TRUE(sql_database->DeleteAllData());

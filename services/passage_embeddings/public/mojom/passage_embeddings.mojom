@@ -8,13 +8,15 @@ import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
-// Model files needed to run the passage embeddings service.
-struct PassageEmbeddingsModelAssets {
+// Model parameters needed to run the passage embedder.
+struct PassageEmbeddingsLoadModelsParams {
   // The tflite model for generating text embeddings.
   mojo_base.mojom.ReadOnlyFile embeddings_model;
   // The sentencepiece model to tokenize string input before embeddings
   // generation.
   mojo_base.mojom.ReadOnlyFile sp_model;
+  // The input window size expected by the embeddings model.
+  uint32 input_window_size;
 };
 
 // The embeddings generated with a single input passage, contains both the raw
@@ -45,6 +47,6 @@ interface PassageEmbeddingsService {
   // Load the given models for generating embeddings.
   [AllowedContext=sandbox.mojom.Context.kBrowser]
   LoadModels(
-      PassageEmbeddingsModelAssets assets,
+      PassageEmbeddingsLoadModelsParams params,
       pending_receiver<PassageEmbedder> model) => (bool success);
 };

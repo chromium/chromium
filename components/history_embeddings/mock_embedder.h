@@ -19,6 +19,8 @@ class MockEmbedder : public Embedder {
       PassageKind kind,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
+
+  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
 };
 
 }  // namespace history_embeddings

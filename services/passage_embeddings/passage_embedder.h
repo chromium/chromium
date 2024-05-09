@@ -28,6 +28,10 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   // embedding generation. Return true if successful.
   bool LoadModels(base::File* embeddings_model_file, base::File* sp_file);
 
+  // Sets the input window size that the loaded embeddings model expects. Needs
+  // to be called before the model can be executed.
+  void SetEmbeddingsModelInputWindowSize(uint32_t size);
+
  private:
   // Loads the text embeddings tflite model from the bytes in the given file.
   // Return true if successful.
@@ -55,6 +59,9 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // Holds the bytes of the loaded text embedding model.
   base::HeapArray<uint8_t> embeddings_model_buffer_;
+
+  // The input window size that the embeddings model expects.
+  uint32_t embeddings_input_window_size_;
 };
 
 }  // namespace passage_embeddings

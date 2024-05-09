@@ -18,12 +18,6 @@ namespace history_embeddings {
 constexpr int kLowestSupportedDatabaseVersion = 1;
 constexpr int kCurrentDatabaseVersion = 1;
 
-// TODO(b/337924566): Use model metadata when available.
-// Dimensions can't change without also changing model version since a model
-// works with a fixed number of dimensions.
-constexpr int kModelVersion = 1;
-constexpr int kModelDimensions = 768;
-
 namespace {
 
 [[nodiscard]] bool InitSchema(sql::Database& db) {
@@ -88,6 +82,10 @@ SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
 
 SqlDatabase::~SqlDatabase() = default;
 
+void SqlDatabase::SetEmbedderMetadata(EmbedderMetadata embedder_metadata) {
+  embedder_metadata_ = embedder_metadata;
+}
+
 bool SqlDatabase::LazyInit() {
   // TODO(b/325524013): Decide on a number of retries for initialization.
   // TODO(b/325524013): Add metrics around lazy initialization success rate.
@@ -108,7 +106,7 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
 
   base::FilePath db_file_path = storage_dir.Append(kHistoryEmbeddingsName);
 
-  if (!db_.Open(db_file_path)) {
+  if (!db_.Open(db_file_path) || !embedder_metadata_) {
     return sql::InitStatus::INIT_FAILURE;
   }
 
@@ -148,12 +146,13 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
   constexpr char kKeyModelVersion[] = "model_version";
   int model_version = 0;
   meta_table.GetValue(kKeyModelVersion, &model_version);
-  if (model_version != kModelVersion) {
+  if (model_version != embedder_metadata_->model_version) {
     // Old version embeddings can't be used with new model. Simply delete them
     // all and set new version. Passages can be used for reconstruction later.
     constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
     if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
-        !meta_table.SetValue(kKeyModelVersion, kModelVersion)) {
+        !meta_table.SetValue(kKeyModelVersion,
+                             embedder_metadata_->model_version)) {
       return sql::InitStatus::INIT_FAILURE;
     }
   }
@@ -212,7 +211,7 @@ std::optional<proto::PassagesValue> SqlDatabase::GetPassages(
 }
 
 size_t SqlDatabase::GetEmbeddingDimensions() const {
-  return kModelDimensions;
+  return embedder_metadata_->output_size;
 }
 
 bool SqlDatabase::AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) {

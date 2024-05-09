@@ -6,21 +6,25 @@
 
 #include "base/task/thread_pool.h"
 #include "components/history_embeddings/vector_database.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace {
 
 // Time it takes before the remote idles.
 constexpr int kRemoteTimeoutSeconds = 60;
 
-passage_embeddings::mojom::PassageEmbeddingsModelAssetsPtr MakeModelAssets(
+passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr MakeModelParams(
     const base::FilePath& embeddings_path,
-    const base::FilePath& sp_path) {
-  auto assets = passage_embeddings::mojom::PassageEmbeddingsModelAssets::New();
-  assets->embeddings_model = base::File(
+    const base::FilePath& sp_path,
+    uint32_t input_window_size) {
+  auto params =
+      passage_embeddings::mojom::PassageEmbeddingsLoadModelsParams::New();
+  params->embeddings_model = base::File(
       embeddings_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  assets->sp_model =
+  params->sp_model =
       base::File(sp_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  return assets;
+  params->input_window_size = input_window_size;
+  return params;
 }
 
 }  // namespace
@@ -32,42 +36,59 @@ PassageEmbeddingsServiceController::PassageEmbeddingsServiceController() =
 PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
     default;
 
-void PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
+// TODO(b/338650221): Add histograms for bad model info.
+bool PassageEmbeddingsServiceController::MaybeUpdateModelPaths(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  // Reset everything, so if the model info is invalid, the service controller
+  // would stop accepting requests.
   embeddings_model_path_.clear();
   sp_model_path_.clear();
+  model_metadata_ = std::nullopt;
   ResetRemotes();
 
-  if (!model_info.has_value()) {
-    return;
+  if (!model_info.has_value() || !model_info->GetModelMetadata()) {
+    return false;
   }
 
   // The only additional file should be the sentencepiece model.
   base::flat_set<base::FilePath> additional_files =
       model_info->GetAdditionalFiles();
   if (additional_files.size() != 1u) {
-    return;
+    return false;
   }
 
+  // Check validity of model metadata.
+  const std::optional<optimization_guide::proto::Any>& metadata =
+      model_info->GetModelMetadata();
+  std::optional<history_embeddings::proto::PassageEmbeddingsModelMetadata>
+      embeddings_metadata = optimization_guide::ParsedAnyMetadata<
+          history_embeddings::proto::PassageEmbeddingsModelMetadata>(*metadata);
+  if (!embeddings_metadata) {
+    return false;
+  }
+
+  model_version_ = model_info->GetVersion();
+  model_metadata_ = embeddings_metadata;
   embeddings_model_path_ = model_info->GetModelFilePath();
   sp_model_path_ = *(additional_files.begin());
 
   CHECK(!embeddings_model_path_.empty());
   CHECK(!sp_model_path_.empty());
+  return true;
 }
 
 void PassageEmbeddingsServiceController::LoadModelsToService(
     mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbedder> model,
-    passage_embeddings::mojom::PassageEmbeddingsModelAssetsPtr assets) {
+    passage_embeddings::mojom::PassageEmbeddingsLoadModelsParamsPtr params) {
   if (!service_remote_) {
     // Close the model files in a background thread.
     base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::DoNothingWithBoundArgs(std::move(assets)));
+                               base::DoNothingWithBoundArgs(std::move(params)));
     return;
   }
 
   service_remote_->LoadModels(
-      std::move(assets), std::move(model),
+      std::move(params), std::move(model),
       base::BindOnce(&PassageEmbeddingsServiceController::OnLoadModelsResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -76,6 +97,10 @@ void PassageEmbeddingsServiceController::OnLoadModelsResult(bool success) {
   if (!success) {
     ResetRemotes();
   }
+}
+
+EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
+  return EmbedderMetadata(model_version_, model_metadata_->output_size());
 }
 
 void PassageEmbeddingsServiceController::GetEmbeddings(
@@ -92,8 +117,8 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&MakeModelAssets, embeddings_model_path_,
-                       sp_model_path_),
+        base::BindOnce(&MakeModelParams, embeddings_model_path_, sp_model_path_,
+                       model_metadata_->input_window_size()),
         base::BindOnce(&PassageEmbeddingsServiceController::LoadModelsToService,
                        weak_ptr_factory_.GetWeakPtr(),
                        embedder_remote_.BindNewPipeAndPassReceiver()));

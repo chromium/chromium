@@ -36,6 +36,8 @@ class SchedulingEmbedder : public Embedder {
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override;
 
+  void SetOnEmbedderReady(OnEmbedderReadyCallback callback) override;
+
  private:
   // Invoked after the embedding for the original search query has been
   // computed. Continues processing next query if one is pending.
