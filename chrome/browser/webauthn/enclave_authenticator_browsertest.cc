@@ -142,22 +142,6 @@ static constexpr char kMakeCredentialUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
-static constexpr char kMakeCredentialAttachmentPlatform[] = R"((() => {
-  return navigator.credentials.create({ publicKey: {
-    rp: { name: "www.example.com" },
-    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
-    pubKeyCredParams: [{type: "public-key", alg: -7}],
-    challenge: new Uint8Array([0]),
-    timeout: 10000,
-    authenticatorSelection: {
-      authenticatorAttachment: 'platform',
-      userVerification: 'discouraged',
-      requireResidentKey: true,
-    },
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
-})())";
-
 static constexpr char kMakeCredentialUvRequired[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
@@ -2053,75 +2037,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
 
   dialog_model()->CancelAuthenticatorRequest();
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  delegate_observer()->WaitForDelegateDestruction();
-}
-
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       MakeCredentialDeclineGPM) {
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      registration_state_result;
-  registration_state_result.state = trusted_vault::
-      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
-  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
-  delegate_observer()->WaitForUI();
-
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-  EXPECT_EQ(request_delegate()
-                ->enclave_controller_for_testing()
-                ->account_state_for_testing(),
-            GPMEnclaveController::AccountState::kEmpty);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
-  SimulateEnclaveMechanismSelection();
-  model_observer()->WaitForStep();
-
-  dialog_model()->OnGPMOnboardingAccepted();
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
-  dialog_model()->OnGPMPinEntered(u"123456");
-
-  std::string script_result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
-  EXPECT_EQ(script_result, "\"webauthn: OK\"");
-  delegate_observer()->WaitForDelegateDestruction();
-
-  // With the enclave configured, the next request should offer GPM as a
-  // priority mechanism.
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
-  delegate_observer()->WaitForUI();
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
-  dialog_model()->StartOver();
-  model_observer()->WaitForStep();
-  dialog_model()->CancelAuthenticatorRequest();
-  delegate_observer()->WaitForDelegateDestruction();
-
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
-  delegate_observer()->WaitForUI();
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
-  dialog_model()->StartOver();
-  model_observer()->WaitForStep();
-  dialog_model()->CancelAuthenticatorRequest();
-  delegate_observer()->WaitForDelegateDestruction();
-
-  // After backing out of GPM twice, the next attempts should default to
-  // mechanism selection
-  content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
-  delegate_observer()->WaitForUI();
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-  dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
 }
 

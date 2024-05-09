@@ -19,10 +19,8 @@ enum class Event {
   kRecoverySuccessful = 4,
   kGetAssertion = 5,
   kMakeCredential = 6,
-  kMakeCredentialPriorityShown = 7,
-  kMakeCredentialPriorityDeclined = 8,
 
-  kMaxValue = 8,
+  kMaxValue = 6,
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO) void RecordEvent(Event event);
