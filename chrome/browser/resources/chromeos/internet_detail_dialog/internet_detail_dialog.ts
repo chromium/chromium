@@ -765,6 +765,19 @@ export class InternetDetailDialogElement extends
     return !!customApnList && customApnList.length >= MAX_NUM_CUSTOM_APNS;
   }
 
+  private shouldDisableApnButtons_(): boolean {
+    if (!this.isApnRevampEnabled_) {
+      return true;
+    }
+
+    if (!this.isApnRevampAndPoliciesEnabled_) {
+      return this.isNumCustomApnsLimitReached_;
+    }
+
+    return this.isNumCustomApnsLimitReached_ ||
+        this.isApnManaged_(this.globalPolicy_);
+  }
+
   private onShowErrorToast_(event: CustomEvent<string>) {
     if (!this.isApnRevampEnabled_) {
       return;

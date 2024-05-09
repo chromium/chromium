@@ -488,7 +488,7 @@ suite('internet-detail-dialog', () => {
 
   [true, false].forEach(isApnRevampAndPoliciesEnabled => {
     test(
-        `Managed APN icon visibility when isApnRevampAndPoliciesEnabled is ${
+        `Managed APN UI states when isApnRevampAndPoliciesEnabled is ${
             isApnRevampAndPoliciesEnabled}`,
         async () => {
           loadTimeData.overrideValues({
@@ -506,6 +506,14 @@ suite('internet-detail-dialog', () => {
           const getApnManagedIcon = () =>
               internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
           assertFalse(!!getApnManagedIcon());
+          const createCustomApnButton = () =>
+              getElement<CrButtonElement>('#createCustomApnButton');
+          const discoverMoreApnsButton = () =>
+              getElement<CrButtonElement>('#discoverMoreApnsButton');
+          assertTrue(!!createCustomApnButton());
+          assertFalse(createCustomApnButton().disabled);
+          assertTrue(!!discoverMoreApnsButton());
+          assertFalse(discoverMoreApnsButton().disabled);
 
           let globalPolicy = {
             allowApnModification: true,
@@ -513,6 +521,8 @@ suite('internet-detail-dialog', () => {
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushAsync();
           assertFalse(!!getApnManagedIcon());
+          assertFalse(createCustomApnButton().disabled);
+          assertFalse(discoverMoreApnsButton().disabled);
 
           globalPolicy = {
             allowApnModification: false,
@@ -520,6 +530,10 @@ suite('internet-detail-dialog', () => {
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushAsync();
           assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
+          assertEquals(
+              isApnRevampAndPoliciesEnabled, createCustomApnButton().disabled);
+          assertEquals(
+              isApnRevampAndPoliciesEnabled, discoverMoreApnsButton().disabled);
         });
   });
 

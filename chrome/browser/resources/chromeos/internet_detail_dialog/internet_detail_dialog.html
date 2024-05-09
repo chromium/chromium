@@ -169,13 +169,15 @@
         <cr-button id="discoverMoreApnsButton"
             on-click="onDiscoverMoreApnsClicked_"
             class="add-apn-operation cancel-button"
-            disabled="[[isNumCustomApnsLimitReached_]]">
+            disabled="[[shouldDisableApnButtons_(isNumCustomApnsLimitReached_,
+                globalPolicy_)]]">
           $i18n{apnPageDiscoverMoreApns}
         </cr-button>
         <cr-button id="createCustomApnButton"
             on-click="onCreateCustomApnClicked_"
             class="add-apn-operation cancel-button"
-            disabled="[[isNumCustomApnsLimitReached_]]">
+            disabled="[[shouldDisableApnButtons_(isNumCustomApnsLimitReached_,
+                globalPolicy_)]]">
           $i18n{apnPageCreateNewApn}
         </cr-button>
       </div>
