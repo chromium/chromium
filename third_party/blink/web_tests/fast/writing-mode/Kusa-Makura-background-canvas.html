@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
     "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!--
+  This is a rendering test for background painting in vertical-rl.
+  Also, this tests justification for vertical Japanese text and <ruby>.
+-->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" >
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -9,15 +13,19 @@
 	<meta name="DC.Creator" content="夏目漱石" />
 	<meta name="DC.Publisher" content="青空文庫" />
 	<style type="text/css">
-html { -webkit-writing-mode: vertical-rl } /* to make the document vertical */
-body { overflow: hidden }
+html { writing-mode: vertical-rl } /* to make the document vertical */
+body {
+  overflow: hidden;
+  columns: 2;
+  margin: 0.5em;
+  text-align: justify;
+}
 /*body { font-family: HiraMinProN-W3;}		 to test the font vs fallback. */
-#div, h1, h2 { line-height: 150%; }			/* this line should make no difference for the line height as the default is 150 for the Japanese fonts. */
+/* this line should make no difference for the line height as the default
+   is 150 for the Japanese fonts. */
+.main_text, h1, h2 { line-height: 150%; }
 
 .jisage_2 { margin-inline-start: 2em;}
-body { margin: 8% 10%;}
-#ruby { line-height: 100%; }				/* hack to keep lines in conssitent positions. Should not be necessary. */
-#rt { line-height: 50%; }					/* hack to keep lines in conssitent positions. Should not be necessary. */
 span.notes {font-size: smaller}
 	</style>
 </head>
