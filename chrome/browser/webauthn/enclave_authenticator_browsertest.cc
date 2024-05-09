@@ -189,6 +189,22 @@ static constexpr char kMakeCredentialWithExcludedCredential[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kMakeCredentialCrossPlatform[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "www.example.com" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    authenticatorSelection: {
+      userVerification: 'discouraged',
+      requireResidentKey: true,
+      authenticatorAttachment: "cross-platform",
+    },
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 static constexpr char kMakeCredentialUvRequired[] = R"((() => {
   return navigator.credentials.create({ publicKey: {
     rp: { name: "" },
@@ -1693,6 +1709,36 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_FALSE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NoGpmForCrossPlatformAttachment \
+  DISABLED_NoGpmForCrossPlatformAttachment
+#else
+#define MAYBE_NoGpmForCrossPlatformAttachment NoGpmForCrossPlatformAttachment
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       MAYBE_NoGpmForCrossPlatformAttachment) {
+  EnableUVKeySupport();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialCrossPlatform);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_TRUE(
       request_delegate()->enclave_controller_for_testing()->is_active());
 }
 

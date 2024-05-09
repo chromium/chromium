@@ -2190,7 +2190,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-      enclave_enabled_ && !is_get_assertion) {
+      enclave_enabled_ && !is_get_assertion &&
+      *transport_availability_.make_credential_attachment !=
+          device::AuthenticatorAttachment::kCrossPlatform) {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
     model_->mechanisms.emplace_back(
