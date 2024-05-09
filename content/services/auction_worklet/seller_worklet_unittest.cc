@@ -6424,38 +6424,53 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
     throw actual + "!" + expected;
   )";
 
-  base::RunLoop run_loop;
-  auto seller_worklet = CreateWorklet();
-  RunScoreAdOnWorkletAsync(
-      seller_worklet.get(),
-      /*expected_score=*/7,
-      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/5,
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/std::nullopt,
-      mojom::RejectReason::kNotAvailable,
-      /*expected_pa_requests=*/{},
-      /*expected_real_time_contributions=*/{},
-      /*expected_bid_in_seller_currency=*/std::nullopt,
-      /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/std::nullopt,
-      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+  for (base::TimeDelta delay :
+       {base::Seconds(0), TrustedSignalsRequestManager::kAutoSendDelay}) {
+    base::RunLoop run_loop;
+    auto seller_worklet = CreateWorklet();
+    RunScoreAdOnWorkletAsync(
+        seller_worklet.get(),
+        /*expected_score=*/7,
+        /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/5,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        mojom::RejectReason::kNotAvailable,
+        /*expected_pa_requests=*/{},
+        /*expected_real_time_contributions=*/{},
+        /*expected_bid_in_seller_currency=*/std::nullopt,
+        /*expected_score_ad_timeout=*/false,
+        /*expected_signals_fetch_latency=*/std::nullopt,
+        /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
-  // Only the script fetch must have started now... and after auto-send delay.
-  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
-  EXPECT_EQ(1, url_loader_factory_.NumPending());
-  EXPECT_TRUE(url_loader_factory_.IsPending(decision_logic_url_.spec()));
+    // Only the script fetch must have started now... and after any (or no)
+    // delay.
+    if (delay != base::TimeDelta()) {
+      task_environment_.FastForwardBy(delay);
+    } else {
+      // RunUntilIdle() does not advance the mock clock.
+      task_environment_.RunUntilIdle();
+    }
+    EXPECT_EQ(1, url_loader_factory_.NumPending());
+    EXPECT_TRUE(url_loader_factory_.IsPending(decision_logic_url_.spec()));
 
-  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
-                        CreateScoreAdScript("3", kValidate), extra_js_headers_);
-  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
+    AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                          CreateScoreAdScript("3", kValidate),
+                          extra_js_headers_);
+    // Run pending tasks without advancing time. The queued signals fetch should
+    // be requested immediately, regardless of whether "kAutoSendDelay" has
+    // passed or not.
+    task_environment_.RunUntilIdle();
 
-  // Now the trusted signals fetch must be pending, too.
-  EXPECT_EQ(1, url_loader_factory_.NumPending());
-  EXPECT_TRUE(url_loader_factory_.IsPending(kNoComponentSignalsUrl.spec()));
-  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
-                           kTrustedScoringSignalsResponse, /*data_version=*/5);
-  run_loop.Run();
+    // Now the trusted signals fetch must be pending, too.
+    EXPECT_EQ(1, url_loader_factory_.NumPending());
+    EXPECT_TRUE(url_loader_factory_.IsPending(kNoComponentSignalsUrl.spec()));
+    AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                             kTrustedScoringSignalsResponse,
+                             /*data_version=*/5);
+    run_loop.Run();
+    url_loader_factory_.ClearResponses();
+  }
 }
 
 // Handling of errors in trusted signals other than the cross-origin permission;

@@ -442,14 +442,6 @@ SellerWorklet::SellerWorklet(
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
       script_source_url_, trusted_scoring_signals_origin_);
-  // If trusted seller signals are cross-origin, we cannot start fetching them
-  // until we have confirmation they are authorized by guaranteed-same-origin
-  // script, as otherwise we may end up sending sensitive IG information to an
-  // unrelated this party.
-  if (trusted_signals_relation_ ==
-      SignalsOriginRelation::kUnknownPermissionCrossOriginSignals) {
-    trusted_signals_request_manager_->Pause();
-  }
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, std::move(shared_storage_host_remote),
@@ -580,14 +572,14 @@ void SellerWorklet::ScoreAd(
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
-    score_ad_task->trusted_scoring_signals_request =
-        trusted_signals_request_manager_->RequestScoringSignals(
-            browser_signal_render_url,
-            score_ad_task->browser_signal_ad_components,
-            score_ad_task->auction_ad_config_non_shared_params
-                .max_trusted_scoring_signals_url_length,
-            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
-                           base::Unretained(this), score_ad_task));
+    // Can only start fetching trusted seller signals if they're same-origin or
+    // we have confirmation they are authorized by guaranteed-same-origin
+    // script, as otherwise we may end up sending sensitive IG information to an
+    // unrelated third party.
+    if (trusted_signals_relation_ !=
+        SignalsOriginRelation::kUnknownPermissionCrossOriginSignals) {
+      StartFetchingSignalsForTask(score_ad_task);
+    }
     return;
   }
 
@@ -1784,32 +1776,54 @@ void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
   DCHECK_EQ(trusted_signals_relation_,
             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
 
-  for (const auto& permitted_origin : permit_origins) {
-    if (trusted_scoring_signals_origin_->IsSameOriginWith(permitted_origin)) {
-      // Cross-origin trusted signals fetch authorized, so let it start.
-      trusted_signals_relation_ =
-          SignalsOriginRelation::kPermittedCrossOriginSignals;
-      trusted_signals_request_manager_->Resume();
-      return;
+  if (std::any_of(permit_origins.begin(), permit_origins.end(),
+                  [&](const auto& permitted_origin) {
+                    return trusted_scoring_signals_origin_->IsSameOriginWith(
+                        permitted_origin);
+                  })) {
+    // Cross-origin trusted signals fetch authorized. Update
+    // `trusted_signals_relation_` accordingly and start fetches.
+    trusted_signals_relation_ =
+        SignalsOriginRelation::kPermittedCrossOriginSignals;
+    for (auto it = score_ad_tasks_.begin(); it != score_ad_tasks_.end(); ++it) {
+      StartFetchingSignalsForTask(it);
     }
+    // Rather than keep track of whether there was a
+    // SendPendingSignalsRequests() call while waiting to check the cross-origin
+    // trusted signals permissions, unconditionally flush pending signals
+    // requests, to keep things simple.
+    SendPendingSignalsRequests();
+    return;
   }
 
-  // Trusted scoring signals fetch disallowed; remove them from the queue and
-  // proceed without them.
+  // Trusted scoring signals fetch disallowed.
   trusted_signals_relation_ =
       SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals;
-  for (auto& task : score_ad_tasks_) {
-    task.trusted_scoring_signals_request.reset();
-  }
 
-  // Also remove the `trusted_signals_request_manager_` so we don't try to
-  // fetch any more.
+  // Remove the `trusted_signals_request_manager_` so we don't try to fetch any
+  // more.
   trusted_signals_request_manager_.reset();
 
   // If we're here, we don't actually have to worry about kicking off scoreAd()
   // execution since we only got the headers for the script; the body hasn't
   // been handed to us yet.
   DCHECK(!IsCodeReady());
+}
+
+void SellerWorklet::StartFetchingSignalsForTask(
+    ScoreAdTaskList::iterator score_ad_task) {
+  CHECK(trusted_signals_relation_ ==
+            SignalsOriginRelation::kSameOriginSignals ||
+        trusted_signals_relation_ ==
+            SignalsOriginRelation::kPermittedCrossOriginSignals);
+  score_ad_task->trusted_scoring_signals_request =
+      trusted_signals_request_manager_->RequestScoringSignals(
+          score_ad_task->browser_signal_render_url,
+          score_ad_task->browser_signal_ad_components,
+          score_ad_task->auction_ad_config_non_shared_params
+              .max_trusted_scoring_signals_url_length,
+          base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                         base::Unretained(this), score_ad_task));
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
@@ -1876,7 +1890,10 @@ void SellerWorklet::OnDirectFromSellerAuctionSignalsDownloadedScoreAd(
 }
 
 bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
-  return !task.trusted_scoring_signals_request &&
+  // The first check should be implied by IsCodeReady(), but best to be safe.
+  return trusted_signals_relation_ !=
+             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals &&
+         !task.trusted_scoring_signals_request &&
          !task.direct_from_seller_request_seller_signals &&
          !task.direct_from_seller_request_auction_signals && IsCodeReady();
 }

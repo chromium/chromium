@@ -480,6 +480,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void OnGotCrossOriginTrustedSignalsPermissions(
       std::vector<url::Origin> permit_origins);
 
+  // Starts fetching signals for `score_ad_task`.
+  void StartFetchingSignalsForTask(ScoreAdTaskList::iterator score_ad_task);
+
   // Called when trusted scoring signals have finished downloading, or when
   // there are no scoring signals to download. Starts running scoreAd() on the
   // V8 thread.
