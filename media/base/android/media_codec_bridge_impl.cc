@@ -74,15 +74,16 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
   const int64_t seek_preroll_ns = config.seek_preroll().InMicroseconds() *
                                   base::Time::kNanosecondsPerMicrosecond;
 
-  const uint8_t* extra_data = config.extra_data().data();
-  const size_t extra_data_size = config.extra_data().size();
-
   *output_frame_has_adts_header = false;
-  if (extra_data_size == 0 && config.codec() != AudioCodec::kOpus)
-    return true;
 
   switch (config.codec()) {
     case AudioCodec::kVorbis: {
+      if (config.extra_data().empty()) {
+        return true;
+      }
+      const uint8_t* extra_data = config.extra_data().data();
+      const size_t extra_data_size = config.extra_data().size();
+
       if (extra_data[0] != 2) {
         LOG(ERROR) << "Invalid number of vorbis headers before the codec "
                    << "header: " << extra_data[0];
@@ -124,6 +125,10 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       break;
     }
     case AudioCodec::kFLAC: {
+      if (config.extra_data().empty()) {
+        return true;
+      }
+
       // According to MediaCodec spec, CSB buffer #0 for FLAC should be:
       // "fLaC", the FLAC stream marker in ASCII, followed by the STREAMINFO
       // block (the mandatory metadata block), optionally followed by any number
@@ -137,30 +142,34 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       // <7> block type: STREAMINFO (0)
       output_csd0->emplace_back(0x80);
       // <24> length of metadata to follow.
+      const size_t extra_data_size = config.extra_data().size();
       DCHECK_LE(extra_data_size, static_cast<size_t>(0xffffff));
       output_csd0->emplace_back((extra_data_size & 0xff0000) >> 16);
       output_csd0->emplace_back((extra_data_size & 0x00ff00) >> 8);
       output_csd0->emplace_back(extra_data_size & 0x0000ff);
       // STREAMINFO bytes.
-      output_csd0->insert(output_csd0->end(), extra_data,
-                          extra_data + extra_data_size);
+      output_csd0->insert(output_csd0->end(), config.extra_data().begin(),
+                          config.extra_data().end());
       break;
     }
     case AudioCodec::kAAC: {
-      output_csd0->assign(extra_data, extra_data + extra_data_size);
+      if (config.aac_extra_data().empty()) {
+        return false;
+      }
+      *output_csd0 = config.aac_extra_data();
       *output_frame_has_adts_header =
           config.profile() != AudioCodecProfile::kXHE_AAC;
       break;
     }
     case AudioCodec::kOpus: {
-      if (!extra_data || extra_data_size == 0 || codec_delay_ns < 0 ||
+      if (config.extra_data().empty() || codec_delay_ns < 0 ||
           seek_preroll_ns < 0) {
         LOG(ERROR) << "Invalid Opus Header";
         return false;
       }
 
       // csd0 - Opus Header
-      output_csd0->assign(extra_data, extra_data + extra_data_size);
+      *output_csd0 = config.extra_data();
 
       // csd1 - Codec Delay
       const uint8_t* codec_delay_ns_ptr =
@@ -176,6 +185,9 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       break;
     }
     default:
+      if (config.extra_data().empty()) {
+        return true;
+      }
       LOG(ERROR) << "Unsupported audio codec encountered: "
                  << GetCodecName(config.codec());
       return false;

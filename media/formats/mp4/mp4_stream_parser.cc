@@ -560,13 +560,10 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           profile = aac.GetProfile();
           channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
-          // Set `aac_extra_data` on all platforms but only set `extra_data` on
-          // Android. This is for backward compatibility until we have a better
-          // solution. See crbug.com/1245123 for details.
+          // Set `aac_extra_data` on all platforms. This is for backward
+          // compatibility until we have a better solution.
+          // See crbug.com/1245123 for details.
           aac_extra_data = aac.codec_specific_data();
-#if BUILDFLAG(IS_ANDROID)
-          extra_data = aac.codec_specific_data();
-#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
