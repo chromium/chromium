@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -414,21 +415,42 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
   auto local_state = fragment.LocalBorderBoxProperties().Unalias();
   CullRect cull_rect = parent_fragment.GetContentsCullRect();
   auto parent_state = parent_fragment.ContentsProperties().Unalias();
+  const LayoutObject& object = layer.GetLayoutObject();
+  const auto& parent_object = context.current.container->GetLayoutObject();
+  const LocalFrameView* frame_view = object.GetFrameView();
+  const LayoutView& layout_view = *object.View();
+  const PaginationState* pagination_state = frame_view->GetPaginationState();
+  if (parent_object.IsLayoutView() && pagination_state) {
+    parent_state = pagination_state->ContentAreaPropertyTreeStateForCurrentPage(
+        layout_view);
+  }
 
-  if (layer.GetLayoutObject().IsFixedPositioned()) {
-    const auto& view_fragment = layer.GetLayoutObject().View()->FirstFragment();
-    auto view_state = view_fragment.LocalBorderBoxProperties().Unalias();
+  if (object.IsFixedPositioned()) {
     if (const auto* properties = fragment.PaintProperties()) {
       if (const auto* translation = properties->PaintOffsetTranslation()) {
-        if (translation->Parent() == &view_state.Transform()) {
-          // Use the viewport clip and ignore additional clips (e.g. clip-paths)
-          // because they are applied on this fixed-position layer by
-          // non-containers which may change location relative to this layer on
-          // viewport scroll for which we don't want to change fixed-position
-          // cull rects for performance.
-          local_state.SetClip(
-              view_fragment.ContentsProperties().Clip().Unalias());
-          parent_state = view_state;
+        const auto& view_fragment = object.View()->FirstFragment();
+        auto root_contents_state =
+            view_fragment.LocalBorderBoxProperties().Unalias();
+        if (pagination_state) {
+          // Document contents are parented under the pagination properties,
+          // which in turn are parented under the LayoutView.
+          root_contents_state =
+              pagination_state->ContentAreaPropertyTreeStateForCurrentPage(
+                  layout_view);
+        }
+        if (translation->Parent() == &root_contents_state.Transform()) {
+          // Use the viewport / page area clip and ignore additional clips
+          // (e.g. clip-paths) because they are applied on this fixed-position
+          // layer by non-containers which may change location relative to this
+          // layer on viewport scroll for which we don't want to change
+          // fixed-position cull rects for performance.
+          if (pagination_state) {
+            local_state.SetClip(root_contents_state.Clip());
+          } else {
+            local_state.SetClip(
+                view_fragment.ContentsProperties().Clip().Unalias());
+          }
+          parent_state = root_contents_state;
           cull_rect = view_fragment.GetCullRect();
         }
       }

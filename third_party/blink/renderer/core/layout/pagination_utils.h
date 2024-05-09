@@ -14,6 +14,14 @@ class LayoutView;
 class PhysicalBoxFragment;
 struct PhysicalRect;
 
+// Return the scale factor to use when scaling paginated content (and the page
+// border box) from layout to target to the target output. Layout may use a
+// different viewport size than the requested page size because of a scale
+// factor in the print parameters, or in order to fit more unbreakable content
+// in the inline direction. Additionally, if the target is actual paper, it may
+// be necessary to scale everything down to fit within the given paper size.
+float TargetScaleForPage(const PhysicalBoxFragment& page_container);
+
 // Return the total number of pages. Only to be called on a document that has
 // been laid out for pagination.
 wtf_size_t PageCount(const LayoutView& view);

@@ -26,6 +26,16 @@ wtf_size_t PageNumberFromPageArea(const PhysicalBoxFragment& page_area) {
 
 }  // anonymous namespace
 
+float TargetScaleForPage(const PhysicalBoxFragment& page_container) {
+  DCHECK_EQ(page_container.GetBoxType(), PhysicalFragment::kPageContainer);
+  const Document& document = page_container.GetDocument();
+  const LayoutView& layout_view = *document.GetLayoutView();
+  // Print parameters may set a scale factor, and layout may also use a larger
+  // viewport size in order to fit more unbreakable content in the inline
+  // direction.
+  return 1.f / layout_view.PaginationScaleFactor();
+}
+
 wtf_size_t PageCount(const LayoutView& view) {
   DCHECK(view.ShouldUsePrintingLayout());
   const auto& fragments = view.GetPhysicalFragment(0)->Children();

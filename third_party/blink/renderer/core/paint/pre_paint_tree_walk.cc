@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
@@ -899,19 +900,15 @@ void PrePaintTreeWalk::WalkPageContainer(
     PrePaintTreeWalkContext page_border_box_context(
         page_container_context,
         page_container_context.NeedsTreeBuilderContext());
-    PrePaintInfo border_pre_paint_info =
-        CreatePrePaintInfo(grandchild, page_border_box_context);
-    WalkInternal(*grandchild->GetLayoutObject(), page_border_box_context,
-                 &border_pre_paint_info);
 
     if (page_border_box_context.tree_builder_context) {
       // Create paint properties for the page border box fragment. This fragment
       // is responsible for @page borders and other decorations, in addition to
       // the document background. So this needs to be in the coordinate system
       // of paginated layout.
+      float scale = TargetScaleForPage(page_container);
       gfx::Transform matrix;
-      matrix.Translate(float(pagination_adjustment.left),
-                       float(pagination_adjustment.top));
+      matrix.Scale(scale);
       TransformPaintPropertyNode::State transform_state;
       transform_state.transform_and_origin = {matrix, gfx::Point3F()};
 
@@ -941,6 +938,20 @@ void PrePaintTreeWalk::WalkPageContainer(
           page_area_context.tree_builder_context->fragment_context;
       containing_block_context = &fragment_context.current;
       containing_block_context->paint_offset += pagination_adjustment;
+
+      PaginationState* pagination_state =
+          parent_object.GetFrameView()->GetPaginationState();
+      ObjectPaintProperties& pagination_paint_properties =
+          pagination_state->EnsureContentAreaProperties(
+              *containing_block_context->transform,
+              *containing_block_context->clip);
+      // Insert transform and clipping nodes between the paint properties of the
+      // LayoutView and the document contents. They will be updated as each page
+      // is painted.
+      containing_block_context->transform =
+          pagination_paint_properties.Transform();
+      containing_block_context->clip =
+          pagination_paint_properties.OverflowClip();
     }
 
     WalkFragmentainer(parent_object, page_area, page_area_context,
