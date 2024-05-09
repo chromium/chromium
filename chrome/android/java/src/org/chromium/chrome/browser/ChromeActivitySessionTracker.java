@@ -19,6 +19,7 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -32,8 +33,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFetchService;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.accessibility.DeviceAccessibilitySettingsHandler;
@@ -54,6 +56,11 @@ public class ChromeActivitySessionTracker {
 
     // Used to trigger variation changes (such as seed fetches) upon application foregrounding.
     private final VariationsSession mVariationsSession;
+
+    private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
+            new ProfileKeyedMap<>(
+                    ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                    ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
     private boolean mIsInitialized;
     private boolean mIsStarted;
@@ -106,39 +113,48 @@ public class ChromeActivitySessionTracker {
     }
 
     /**
-     * Each top-level activity (those extending {@link ChromeActivity}) should call this during
-     * its onStart phase. When called for the first time, this marks the beginning of a foreground
-     * session and calls onForegroundSessionStart(). Subsequent calls are noops until
-     * onForegroundSessionEnd() is called, to handle changing top-level Chrome activities in one
-     * foreground session.
+     * Each top-level activity (those extending {@link ChromeActivity}) should call this during its
+     * onStart phase. When called for the first time, this marks the beginning of a foreground
+     * session and initializes the appropriate app-level and profile-level tasks.
+     *
+     * <p>The app-level tasks will only be completed once per foreground session (e.g. until {@link
+     * #onForegroundSessionEnd()} is called).
+     *
+     * <p>The profile-level tasks will be completed once per profile per foreground session. Within
+     * a single foreground session, subsequent calls to this method with the same profile will be
+     * no-ops.
      */
-    public void onStartWithNative() {
+    public void onStartWithNative(OneshotSupplier<ProfileProvider> profileProviderSupplier) {
         ThreadUtils.assertOnUiThread();
 
-        if (mIsStarted) return;
-        mIsStarted = true;
+        if (!mIsStarted) {
+            mIsStarted = true;
 
-        assert mIsInitialized;
+            assert mIsInitialized;
+            handlePerAppForegroundSessionStart();
+        }
 
-        onForegroundSessionStart();
+        profileProviderSupplier.runSyncOrOnAvailable(
+                (profileProvider) -> {
+                    if (!mIsStarted) return;
+
+                    mStartupProfileTasksCompleted.getForProfile(
+                            profileProvider.getOriginalProfile(),
+                            this::handlePerProfileForegroundSessionStart);
+                });
     }
 
     /**
-     * Called when a top-level Chrome activity (ChromeTabbedActivity, CustomTabActivity) is
-     * started in foreground. It will not be called again when other Chrome activities take over
-     * (see onStart()), that is, when correct activity calls startActivity() for another Chrome
-     * activity.
+     * Called when a top-level Chrome activity (ChromeTabbedActivity, CustomTabActivity) is started
+     * in foreground. It will not be called again when other Chrome activities take over (see
+     * onStart()), that is, when correct activity calls startActivity() for another Chrome activity.
      */
-    private void onForegroundSessionStart() {
+    private void handlePerAppForegroundSessionStart() {
         try (TraceEvent te =
-                TraceEvent.scoped("ChromeActivitySessionTracker.onForegroundSessionStart")) {
+                TraceEvent.scoped(
+                        "ChromeActivitySessionTracker.handlePerAppForegroundSessionStart")) {
             UmaUtils.recordForegroundStartTimeWithNative();
-            updatePasswordEchoState();
-            Profile profile = ProfileManager.getLastUsedRegularProfile();
-            FontSizePrefs.getInstance(profile).onSystemFontScaleChanged();
-            DeviceAccessibilitySettingsHandler.getInstance(profile).updateFontWeightAdjustment();
             ChromeLocalizationUtils.recordUiLanguageStatus();
-            updateAcceptLanguages(profile);
             mVariationsSession.start();
             mOmahaServiceStartDelayer.onForegroundSessionStart();
             AppHooks.get().getChimeDelegate().startSession();
@@ -151,6 +167,22 @@ public class ChromeActivitySessionTracker {
                     "Startup.BringToForegroundReason",
                     NotificationPlatformBridge.wasNotificationRecentlyClicked());
         }
+    }
+
+    /**
+     * Handles per-profile per-foreground session startup tasks. For the lifetime of a foreground
+     * session, this will be called at most once per profile.
+     */
+    private boolean handlePerProfileForegroundSessionStart(Profile profile) {
+        try (TraceEvent te =
+                TraceEvent.scoped(
+                        "ChromeActivitySessionTracker.handlePerProfileForegroundSessionStart")) {
+            updatePasswordEchoState(profile);
+            FontSizePrefs.getInstance(profile).onSystemFontScaleChanged();
+            DeviceAccessibilitySettingsHandler.getInstance(profile).updateFontWeightAdjustment();
+            updateAcceptLanguages(profile);
+        }
+        return true; // Return a non-null value to ensure ProfileKeyedMap tracks this was completed.
     }
 
     /**
@@ -169,9 +201,11 @@ public class ChromeActivitySessionTracker {
         IntentHandler.clearPendingReferrer();
         IntentHandler.clearPendingIncognitoUrl();
 
-        Tracker tracker =
-                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
-        tracker.notifyEvent(EventConstants.FOREGROUND_SESSION_DESTROYED);
+        for (Profile profile : mStartupProfileTasksCompleted.getTrackedProfiles()) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            tracker.notifyEvent(EventConstants.FOREGROUND_SESSION_DESTROYED);
+        }
+        mStartupProfileTasksCompleted.destroy();
     }
 
     private void onForegroundActivityDestroyed() {
@@ -224,21 +258,19 @@ public class ChromeActivitySessionTracker {
      * Honor the Android system setting about showing the last character of a password for a short
      * period of time.
      */
-    private void updatePasswordEchoState() {
+    private void updatePasswordEchoState(Profile profile) {
         boolean systemEnabled =
                 Settings.System.getInt(
                                 ContextUtils.getApplicationContext().getContentResolver(),
                                 Settings.System.TEXT_SHOW_PASSWORD,
                                 1)
                         == 1;
-        if (UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                        .getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED)
+        if (UserPrefs.get(profile).getBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED)
                 == systemEnabled) {
             return;
         }
 
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED, systemEnabled);
+        UserPrefs.get(profile).setBoolean(Pref.WEB_KIT_PASSWORD_ECHO_ENABLED, systemEnabled);
     }
 
     /**
