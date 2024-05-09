@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,6 +32,7 @@
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -452,12 +452,12 @@ void VideoFrameSubmitter::OnBeginFrame(
   frame_trackers_.NotifyBeginImplFrame(args);
   frame_sorter_.AddNewFrame(args);
 
-  base::ScopedClosureRunner end_frame(
-      base::BindOnce(&cc::FrameSequenceTrackerCollection::NotifyFrameEnd,
-                     base::Unretained(&frame_trackers_), args, args));
-  base::ScopedClosureRunner roughness_processing(
-      base::BindOnce(&cc::VideoPlaybackRoughnessReporter::ProcessFrameWindow,
-                     base::Unretained(roughness_reporter_.get())));
+  absl::Cleanup end_frame = [this, &args] {
+    frame_trackers_.NotifyFrameEnd(args, args);
+  };
+  absl::Cleanup roughness_processing = [this] {
+    roughness_reporter_->ProcessFrameWindow();
+  };
 
   // Don't call UpdateCurrentFrame() for MISSED BeginFrames. Also don't call it
   // after StopRendering() has been called (forbidden by API contract).
