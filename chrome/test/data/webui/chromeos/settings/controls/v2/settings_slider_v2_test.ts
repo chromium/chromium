@@ -7,7 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 import {CrSliderElement, SettingsSliderV2Element} from 'chrome://os-settings/os_settings.js';
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -132,6 +132,16 @@ suite(SettingsSliderV2Element.is, () => {
       slider.focus();
       assertEquals(
           internalSlider, slider.shadowRoot!.activeElement);
+    });
+
+    test('A11y role description includes minLabel and maxLabel', () => {
+      slider.minLabel = 'Low';
+      slider.maxLabel = 'High';
+      assertEquals('Slider: Low to High', internalSlider.ariaRoleDescription);
+    });
+
+    test('A11y role description is blank if no minLabel and maxLabel', () => {
+      assertNull(internalSlider.ariaRoleDescription);
     });
   });
 

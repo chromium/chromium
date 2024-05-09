@@ -80,21 +80,29 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       max: Number,
 
       /**
-       * whether or not to hide the min and max label below the slider. Defaults
-       * to false.
+       * Label for the min value of the slider that shows below the slider. Also
+       * used as the A11y label for the min value.
+       */
+      minLabel: String,
+
+      /**
+       * Label for the max value of the slider that shows below the slider. Also
+       * used as the A11y label for the max value.
+       */
+      maxLabel: String,
+
+      /**
+       * Whether or not to hide the min and max labels below the slider.
+       * Defaults to false.
        */
       hideLabel: {
         type: Boolean,
         value: false,
       },
 
-      /** Label under the min end of the slider. */
-      minLabel: String,
-
-      /** Label under the max end of the slider. */
-      maxLabel: String,
-
-      /** Accessibility label. */
+      /**
+       * A11y label for the slider.
+       */
       ariaLabel: String,
 
       /**
@@ -248,8 +256,12 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
   }
 
   private getRoleDescription_(): string {
-    return loadTimeData.getStringF(
-        'settingsSliderRoleDescription', this.minLabel, this.maxLabel);
+    if (this.minLabel && this.maxLabel) {
+      return loadTimeData.getStringF(
+          'settingsSliderRoleDescription', this.minLabel, this.maxLabel);
+    }
+
+    return '';
   }
 
   private getAriaDisabled_(): string {
