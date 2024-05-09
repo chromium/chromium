@@ -30,6 +30,8 @@ component("service") {
     "gpu_channel_manager.cc",
     "gpu_channel_manager.h",
     "gpu_channel_manager_delegate.h",
+    "gpu_channel_shared_image_interface.cc",
+    "gpu_channel_shared_image_interface.h",
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",

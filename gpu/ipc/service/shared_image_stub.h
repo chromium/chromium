@@ -107,6 +107,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
 
   void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_extra_info);
 
+  bool MakeContextCurrent(bool needs_gl = false);
+
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
 
@@ -144,7 +146,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                              gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
 
-  bool MakeContextCurrent(bool needs_gl = false);
   ContextResult MakeContextCurrentAndCreateFactory();
   void OnError();
 
