@@ -361,7 +361,7 @@ float GetSdrLumForScreenBrightness(float percent, float hdr_max_lum) {
   }
 
   DCHECK_LE(sdr_lum, hdr_max_lum);
-  DCHECK_GT(sdr_lum, sdr_min);
+  DCHECK_GE(sdr_lum, sdr_min);
   return sdr_lum;
 }
 
