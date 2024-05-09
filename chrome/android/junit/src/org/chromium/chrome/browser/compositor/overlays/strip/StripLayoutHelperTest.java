@@ -3419,6 +3419,10 @@ public class StripLayoutHelperTest {
         // Flush UI updated
     }
 
+    private void initializeTest(int tabIndex) {
+        initializeTest(false, false, tabIndex);
+    }
+
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {
         initializeTest(rtl, incognito, false, tabIndex, 5);
     }
@@ -4219,6 +4223,67 @@ public class StripLayoutHelperTest {
 
         // Verify: Ntp opened since there is no expanded tab on strip.
         verify(tabCreator).launchNtp();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testTabSelected_ExpandsGroup() {
+        // Group first two tabs and collapse.
+        int startIndex = 3;
+        int groupId = 0;
+        initializeTest(startIndex);
+        groupTabs(groupId, 2);
+        when(mTabGroupModelFilter.getTabGroupCollapsed(groupId)).thenReturn(true);
+
+        // Select the first tab.
+        mStripLayoutHelper.tabSelected(TIMESTAMP, groupId, startIndex, /* skipAutoScroll= */ false);
+
+        // Verify we auto-expand.
+        verify(mTabGroupModelFilter).deleteTabGroupCollapsed(groupId);
+    }
+
+    private void testTabCreated_InCollapsedGroup(boolean selected) {
+        // Group first two tabs and collapse.
+        int groupId = 0;
+        initializeTest(/* tabIndex= */ 3);
+        groupTabs(groupId, 2);
+        when(mTabGroupModelFilter.getTabGroupCollapsed(groupId)).thenReturn(true);
+
+        // Create a tab in the collapsed group.
+        int tabId = 5;
+        mModel.addTab("new tab");
+        mModel.getTabById(tabId).setRootId(groupId);
+        mStripLayoutHelper.tabCreated(
+                TIMESTAMP,
+                tabId,
+                tabId,
+                selected,
+                /* closureCancelled */ false,
+                /* onStartup= */ false);
+
+        // Verify we only auto-expand if selected.
+        verify(mTabGroupModelFilter, times(selected ? 1 : 0)).deleteTabGroupCollapsed(groupId);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testTabCreated_InCollapsedGroup_Selected() {
+        testTabCreated_InCollapsedGroup(/* selected= */ true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testTabCreated_InCollapsedGroup_NotSelected() {
+        testTabCreated_InCollapsedGroup(/* selected= */ false);
     }
 
     @Test

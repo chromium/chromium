@@ -239,6 +239,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         computeAndUpdateTabOrders(false, false);
                         mRenderHost.requestRender();
                     }
+
+                    if (mTabGroupModelFilter.getTabGroupCollapsed(movedTab.getRootId())) {
+                        StripLayoutTab tab = findTabById(movedTab.getId());
+                        if (tab != null) {
+                            updateTabCollapsed(tab, false, false);
+                            resizeTabStrip(true, false, false);
+                        }
+                    }
                 }
 
                 @Override
@@ -1054,6 +1062,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             updateVisualTabOrdering();
             updateCloseButtons();
 
+            Tab tab = getTabById(id);
+            if (tab != null && mTabGroupModelFilter.getTabGroupCollapsed(tab.getRootId())) {
+                mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getRootId());
+            }
+
             if (!skipAutoScroll && !mInReorderMode) {
                 // If the tab was selected through a method other than the user tapping on the
                 // strip, it may not be currently visible. Scroll if necessary.
@@ -1155,25 +1168,35 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             return;
         }
 
-        // Otherwise, 2. Build any tabs that are missing.
+        // Otherwise, 2. Build any tabs that are missing. Determine if it will be collapsed.
         finishAnimationsAndPushTabUpdates();
         List<Animator> animationList = computeAndUpdateTabOrders(false, !onStartup);
         Tab tab = getTabById(id);
+        boolean collapsed = false;
         if (tab != null) {
-            updateGroupAccessibilityDescription(tab.getRootId());
+            int rootId = tab.getRootId();
+            updateGroupAccessibilityDescription(rootId);
+            if (mTabGroupModelFilter.getTabGroupCollapsed(rootId)) {
+                if (selected) {
+                    mTabGroupModelFilter.deleteTabGroupCollapsed(rootId);
+                } else {
+                    collapsed = true;
+                }
+            }
         }
 
-        // 3. Start an animation for the newly created tab.
+        // 3. Start an animation for the newly created tab, unless it is collapsed.
         if (animationList == null) animationList = new ArrayList<>();
         StripLayoutTab stripTab = findTabById(id);
-        if (stripTab != null && !onStartup) {
-            runTabAddedAnimator(animationList, stripTab);
+        if (stripTab != null) {
+            updateTabCollapsed(stripTab, collapsed, false);
+            if (!onStartup && !collapsed) runTabAddedAnimator(animationList, stripTab);
         }
 
         // 4. If the new tab will be selected, scroll it to view. If the new tab will not be
         // selected, scroll the currently selected tab to view. Skip auto-scrolling if the tab is
         // being created due to a tab closure being undone.
-        if (stripTab != null && !closureCancelled) {
+        if (stripTab != null && !closureCancelled && !collapsed) {
             boolean animate = !onStartup && !mAnimationsDisabledForTesting;
             if (selected) {
                 float delta = calculateDeltaToMakeTabVisible(stripTab);
@@ -2510,6 +2533,30 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
     }
 
+    private Animator updateTabCollapsed(StripLayoutTab tab, boolean isCollapsed, boolean animate) {
+        tab.setCollapsed(isCollapsed);
+
+        // The tab expand will be handled when the tab strip resizes, since we'll need to first
+        // update mCachedTabWidth.
+        if (!isCollapsed) return null;
+
+        // Set to the tab overlap width so the tab effectively takes up no space. If we instead
+        // animate to 0, the following tabs will unexpectedly be shifted as this tab takes up
+        // "negative" space.
+        if (!animate) {
+            tab.setWidth(mTabOverlapWidth);
+            return null;
+        }
+
+        return CompositorAnimator.ofFloatProperty(
+                mUpdateHost.getAnimationHandler(),
+                tab,
+                StripLayoutTab.WIDTH,
+                tab.getWidth(),
+                mTabOverlapWidth,
+                ANIM_TAB_RESIZE_MS);
+    }
+
     private void updateTabGroupCollapsed(
             StripLayoutGroupTitle groupTitle, boolean isCollapsed, boolean animate) {
         if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
@@ -2521,26 +2568,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
         for (StripLayoutTab tab : getGroupedTabs(groupTitle.getRootId())) {
-            tab.setCollapsed(isCollapsed);
-            if (isCollapsed) {
-                // The expand animation will be handled by the resize call below, since we'll need
-                // to first update mCachedTabWidth.
-                if (collapseAnimationList != null) {
-                    // Animate to the tab overlap width so the tab effectively takes up no space. If
-                    // we instead animate to 0, the following tabs will unexpectedly be shifted as
-                    // this tab takes up "negative" space.
-                    CompositorAnimator animator =
-                            CompositorAnimator.ofFloatProperty(
-                                    mUpdateHost.getAnimationHandler(),
-                                    tab,
-                                    StripLayoutTab.WIDTH,
-                                    tab.getWidth(),
-                                    mTabOverlapWidth,
-                                    ANIM_TAB_RESIZE_MS);
-                    collapseAnimationList.add(animator);
-                } else {
-                    tab.setWidth(mTabOverlapWidth);
-                }
+            if (collapseAnimationList != null) {
+                Animator animator = updateTabCollapsed(tab, isCollapsed, true);
+                if (animator != null) collapseAnimationList.add(animator);
+            } else {
+                updateTabCollapsed(tab, isCollapsed, false);
             }
         }
 
