@@ -46,6 +46,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -1234,22 +1235,19 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
       TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)), "url",
       resource_request.Url());
-  base::ScopedClosureRunner timer(base::BindOnce(
-      [](base::TimeTicks start, bool is_data, bool is_preload_request) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - start;
-        base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
-                                            elapsed);
-        if (is_data) {
-          base::UmaHistogramMicrosecondsTimes(
-              "Blink.Fetch.RequestResourceTime2.Data", elapsed);
-        }
-        if (is_preload_request) {
-          base::UmaHistogramMicrosecondsTimes(
-              "Blink.Fetch.RequestResourceTime2.Preload", elapsed);
-        }
-      },
-      base::TimeTicks::Now(), params.Url().ProtocolIsData(),
-      params.IsSpeculativePreload() || params.IsLinkPreload()));
+  absl::Cleanup record_times = [start = base::TimeTicks::Now(), &params] {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start;
+    base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
+                                        elapsed);
+    if (params.Url().ProtocolIsData()) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Fetch.RequestResourceTime2.Data", elapsed);
+    }
+    if (params.IsSpeculativePreload() || params.IsLinkPreload()) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Fetch.RequestResourceTime2.Preload", elapsed);
+    }
+  };
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
                "url", params.Url().ElidedString().Utf8());
 
