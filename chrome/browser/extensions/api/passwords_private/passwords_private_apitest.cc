@@ -453,9 +453,4 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisconnectCloudAuthenticator) {
   EXPECT_TRUE(get_disconnect_cloud_authenticator_called());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       IsConnectedToCloudAuthenticator) {
-  EXPECT_TRUE(RunPasswordsSubtest("isConnectedToCloudAuthenticator"));
-}
-
 }  // namespace extensions

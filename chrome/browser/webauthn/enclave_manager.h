@@ -116,7 +116,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // else the loading failed and an empty state is being used.)
   bool is_loaded() const;
   // Returns true if the current user has been registered with the enclave.
-  bool is_registered() const override;
+  bool is_registered() const;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
   // or `AddDeviceAndPINToAccount` can be called.
   bool has_pending_keys() const;

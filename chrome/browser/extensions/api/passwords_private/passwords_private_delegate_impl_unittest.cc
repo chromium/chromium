@@ -256,7 +256,6 @@ class MockEnclaveManager : public EnclaveManagerInterface {
   MockEnclaveManager(const EnclaveManager&&) = delete;
 
   MOCK_METHOD(void, Unenroll, (Callback), (override));
-  MOCK_METHOD(bool, is_registered, (), (const override));
 };
 
 // static
@@ -1908,17 +1907,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, DisconnectCloudAuthenticator) {
   delegate->DisconnectCloudAuthenticator(
       web_contents.get(),
       base::BindLambdaForTesting([](bool success) { EXPECT_TRUE(success); }));
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, IsConnecetdToCloudAuthenticator) {
-  auto delegate = CreateDelegate();
-  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-
-  MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
-      EnclaveManagerFactory::GetForProfile(profile()));
-  EXPECT_CALL(*enclave_manager_mock, is_registered).Times(1);
-
-  delegate->IsConnectedToCloudAuthenticator(web_contents.get());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

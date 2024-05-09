@@ -27,7 +27,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     isPasswordManagerPinAvailable: boolean,
     changePasswordManagerPinSuccesful: boolean|null,
     disconnectCloudAuthenticatorSuccessful: boolean|null,
-    isConnectedToCloudAuthenticator: boolean,
   };
 
   listeners: {
@@ -73,7 +72,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getUrlCollection',
       'importPasswords',
       'isAccountStoreDefault',
-      'isConnectedToCloudAuthenticator',
       'isOptedInForAccountStorage',
       'isPasswordManagerPinAvailable',
       'movePasswordsToAccount',
@@ -110,7 +108,6 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       isPasswordManagerPinAvailable: false,
       changePasswordManagerPinSuccesful: null,
       disconnectCloudAuthenticatorSuccessful: null,
-      isConnectedToCloudAuthenticator: false,
     };
 
     // Holds listeners so they can be called when needed.
@@ -408,10 +405,5 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       return Promise.resolve(this.data.disconnectCloudAuthenticatorSuccessful);
     }
     return Promise.reject(new Error());
-  }
-
-  isConnectedToCloudAuthenticator(): Promise<boolean> {
-    this.methodCalled('isConnectedToCloudAuthenticator');
-    return Promise.resolve(this.data.isConnectedToCloudAuthenticator);
   }
 }

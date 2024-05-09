@@ -271,9 +271,6 @@ class PasswordsPrivateDelegate
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) = 0;
 
-  virtual bool IsConnectedToCloudAuthenticator(
-      content::WebContents* web_contents) = 0;
-
   virtual base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() = 0;
 
  protected:

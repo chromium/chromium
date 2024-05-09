@@ -452,11 +452,6 @@ void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(
   std::move(success_callback).Run(false);
 }
 
-bool TestPasswordsPrivateDelegate::IsConnectedToCloudAuthenticator(
-    content::WebContents* web_contents) {
-  return false;
-}
-
 base::WeakPtr<PasswordsPrivateDelegate>
 TestPasswordsPrivateDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

@@ -21,9 +21,6 @@ class EnclaveManagerInterface : public KeyedService {
   EnclaveManagerInterface& operator=(const EnclaveManagerInterface&) = delete;
   ~EnclaveManagerInterface() override = default;
 
-  // Returns true if the current user has been registered with the enclave.
-  virtual bool is_registered() const = 0;
-
   // Send a request to the enclave to delete the registration for the current
   // user, erase local keys, and erase local state for the user. Safe to call in
   // any state and is a no-op if no registration exists.

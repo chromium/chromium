@@ -761,15 +761,6 @@ var availableTests = [
       chrome.test.assertNoLastError();
       chrome.test.succeed();
     });
-  },
-
-  function isConnectedToCloudAuthenticator() {
-    var callback = function(connected) {
-      chrome.test.assertFalse(connected);
-      chrome.test.succeed();
-    };
-
-    chrome.passwordsPrivate.isConnectedToCloudAuthenticator(callback);
   }
 ];
 
