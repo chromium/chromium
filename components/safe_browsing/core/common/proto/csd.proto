@@ -2462,6 +2462,34 @@ message ExtensionTelemetryReportRequest {
     }
 
     optional TabsApiInfo tabs_api_info = 7;
+
+    // `declarativeNetRequest` action signal information. This signal is created
+    // whenever a web request from Chrome matches a pattern specified in a
+    // DeclarativeNetRequest rules configured for an extension.
+    message DeclarativeNetRequestActionInfo {
+      enum ActionType {
+        // Convenient default value, should not be used in real signal payload.
+        ACTION_TYPE_UNSPECIFIED = 0;
+        REDIRECT = 1;
+      }
+
+      // Details about the action applied to a web request.
+      message ActionDetails {
+        // The action type applied.
+        optional ActionType type = 1;
+        // The URL from the web request.
+        optional string request_url = 2;
+        // The URL to which the web request will be redirected. This field is
+        // only valid when the ActionType is REDIRECT.
+        optional string redirect_url = 3;
+        // Number of times this action was applied.
+        optional uint32 count = 4;
+      }
+      repeated ActionDetails action_details = 1;
+    }
+
+    optional DeclarativeNetRequestActionInfo
+        declarative_net_request_action_info = 8;
   }
 
   // Single report structure consists of all the signals observed for a
