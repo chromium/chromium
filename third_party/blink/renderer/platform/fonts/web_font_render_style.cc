@@ -65,7 +65,6 @@ void WebFontRenderStyle::SetSystemFontFamily(const WebString& name) {
 // static
 WebFontRenderStyle WebFontRenderStyle::GetDefault() {
   WebFontRenderStyle result;
-  result.use_anti_alias = g_use_skia_anti_alias;
   result.hint_style = static_cast<char>(g_skia_hinting);
   result.use_bitmaps = g_use_skia_bitmaps;
   result.use_auto_hint = g_use_skia_auto_hint;
