@@ -44,10 +44,6 @@
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/credential_store.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/fido/cros/credential_store.h"
 #endif
@@ -92,11 +88,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
     std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
-#if BUILDFLAG(IS_MAC)
-        std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
-            ChromeWebAuthenticationDelegate::
-                TouchIdAuthenticatorConfigForProfile(profile));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         std::make_unique<
             ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else

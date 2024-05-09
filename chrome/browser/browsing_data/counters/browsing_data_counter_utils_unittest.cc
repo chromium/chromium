@@ -218,12 +218,8 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
   // Sign-in data is referred to as passkeys on macOS only currently.
   auto signin_data_str = [](size_t n) {
     DCHECK(n > 0);
-#if BUILDFLAG(IS_MAC)
-    return n == 1 ? "1 passkey" : base::StringPrintf("%zu passkeys", n);
-#else
     return n == 1 ? "sign-in data for 1 account"
                   : base::StringPrintf("sign-in data for %zu accounts", n);
-#endif
   };
   const struct TestCase {
     TestInput input;

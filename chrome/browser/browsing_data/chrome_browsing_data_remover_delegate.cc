@@ -200,10 +200,6 @@
 #include "device/fido/cros/credential_store.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/credential_store.h"
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/cdm_document_service_impl.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -1645,11 +1641,7 @@ void ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys(
 std::unique_ptr<device::fido::PlatformCredentialStore>
 ChromeBrowsingDataRemoverDelegate::MakeCredentialStore() {
   return
-#if BUILDFLAG(IS_MAC)
-      std::make_unique<device::fido::mac::TouchIdCredentialStore>(
-          ChromeWebAuthenticationDelegate::TouchIdAuthenticatorConfigForProfile(
-              profile_));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       std::make_unique<
           device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
