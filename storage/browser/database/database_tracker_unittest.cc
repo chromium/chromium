@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,6 +27,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/database/database_identifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace storage {
@@ -197,8 +197,7 @@ class DatabaseTracker_TestHelper_Test {
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::ScopedClosureRunner quit_runner(
-              base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          absl::Cleanup quit_runner = [&] { run_loop.Quit(); };
 
           // Create and open three databases.
           int64_t database_size = 0;
@@ -301,8 +300,7 @@ class DatabaseTracker_TestHelper_Test {
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::ScopedClosureRunner quit_runner(
-              base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          absl::Cleanup quit_runner = [&] { run_loop.Quit(); };
 
           // Add two observers.
           TestObserver observer1;
@@ -452,8 +450,7 @@ class DatabaseTracker_TestHelper_Test {
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::ScopedClosureRunner quit_runner(
-              base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          absl::Cleanup quit_runner = [&] { run_loop.Quit(); };
 
           EXPECT_TRUE(test_quota_proxy->registered_client_);
 
@@ -583,8 +580,7 @@ class DatabaseTracker_TestHelper_Test {
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::ScopedClosureRunner quit_runner(
-              base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          absl::Cleanup quit_runner = [&] { run_loop.Quit(); };
 
           // Starts off with no databases.
           std::vector<OriginInfo> infos;
@@ -641,8 +637,7 @@ class DatabaseTracker_TestHelper_Test {
     base::RunLoop run_loop;
     tracker->task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::ScopedClosureRunner quit_runner(
-              base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+          absl::Cleanup quit_runner = [&] { run_loop.Quit(); };
 
           // Setup to observe OnScheduledForDelete notifications.
           TestObserver observer(false, true);
