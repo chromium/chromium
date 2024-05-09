@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
@@ -101,7 +100,7 @@ public class SigninUtilsTest {
         SigninUtils.checkAccountManagementAndSignIn(
                 mCoreAccountInfo, mSigninManager, accessPoint, null, mContext, mModalDialogManager);
 
-        verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), isNull());
+        verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), any());
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
@@ -223,7 +222,7 @@ public class SigninUtilsTest {
                 mCallback,
                 mContext,
                 mModalDialogManager);
-        verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), eq(mCallback));
+        verify(mSigninManager).signin(eq(mCoreAccountInfo), eq(accessPoint), notNull());
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }

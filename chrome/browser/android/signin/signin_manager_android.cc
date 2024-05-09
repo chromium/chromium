@@ -13,7 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -287,6 +289,7 @@ void SigninManagerAndroid::IsAccountManaged(
     const JavaParamRef<jobject>& j_account_tracker_service,
     const JavaParamRef<jobject>& j_account_info,
     const JavaParamRef<jobject>& j_callback) {
+  base::Time start_time = base::Time::Now();
   CoreAccountInfo account = ConvertFromJavaCoreAccountInfo(env, j_account_info);
   base::android::ScopedJavaGlobalRef<jobject> callback(env, j_callback);
 
@@ -305,11 +308,15 @@ void SigninManagerAndroid::IsAccountManaged(
   RegisterPolicyWithAccount(
       account, base::BindOnce(
                    [](base::android::ScopedJavaGlobalRef<jobject> callback,
+                      base::Time start_time,
                       const std::optional<ManagementCredentials>& credentials) {
+                     UMA_HISTOGRAM_MEDIUM_TIMES(
+                         "Signin.Android.IsAccountManagedDuration",
+                         (base::Time::Now() - start_time));
                      base::android::RunBooleanCallbackAndroid(
                          callback, credentials.has_value());
                    },
-                   callback));
+                   callback, start_time));
 }
 
 base::android::ScopedJavaLocalRef<jstring>

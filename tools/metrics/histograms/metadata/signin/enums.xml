@@ -201,6 +201,17 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Required credential field missing"/>
 </enum>
 
+<enum name="FRESigninEvents">
+  <int value="0" label="Checking managed status"/>
+  <int value="1" label="Signing in - unmanaged"/>
+  <int value="2" label="Signin complete - unmanaged"/>
+  <int value="3" label="Accepting management"/>
+  <int value="4" label="Signing in - managed"/>
+  <int value="5" label="Signin complete - managed"/>
+  <int value="6" label="Signin aborted - unmanaged"/>
+  <int value="7" label="Signin aborted - managed"/>
+</enum>
+
 <enum name="GaiaCookieStateOnSignedInNavigation">
   <int value="0" label="Gaia cookie is present"/>
   <int value="1" label="Gaia cookie is missing from Google-associated domain"/>
