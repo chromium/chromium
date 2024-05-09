@@ -23,6 +23,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -154,8 +155,6 @@ public class SearchActivity extends AsyncInitializationActivity
         /** Called when {@link SearchActivity#finishDeferredInitialization} is done. */
         void onFinishDeferredInitialization() {}
     }
-
-    private static final Object DELEGATE_LOCK = new Object();
 
     /** Notified about events happening for the SearchActivity. */
     private static SearchActivityDelegate sDelegate;
@@ -686,9 +685,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private static SearchActivityDelegate getActivityDelegate() {
-        synchronized (DELEGATE_LOCK) {
-            if (sDelegate == null) sDelegate = new SearchActivityDelegate();
-        }
+        ThreadUtils.checkUiThread();
+        if (sDelegate == null) sDelegate = new SearchActivityDelegate();
         return sDelegate;
     }
 
