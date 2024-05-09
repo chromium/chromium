@@ -67,23 +67,15 @@ static bool RecordMayGoToDestination(const std::string& record_data,
   return true;
 }
 
-// Calls |record_producer|, checks the result and in case of success, forwards
-// it to the storage. In production code should be invoked asynchronously, on
-// a thread pool (no synchronization expected).
-void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
-                        Priority priority,
-                        WrappedRateLimiter::AsyncAcquireCb acquire_cb,
-                        std::string dm_token,
-                        Destination destination,
-                        int64_t reserved_space,
-                        std::optional<SourceInfo> source_info,
-                        ReportQueue::RecordProducer record_producer,
-                        StorageModuleInterface::EnqueueCallback callback) {
+StatusOr<Record> ProduceRecord(std::string dm_token,
+                               Destination destination,
+                               int64_t reserved_space,
+                               std::optional<SourceInfo> source_info,
+                               ReportQueue::RecordProducer record_producer) {
   // Generate record data.
   const auto record_result = std::move(record_producer).Run();
   if (!record_result.has_value()) {
-    std::move(callback).Run(record_result.error());
-    return;
+    return base::unexpected(record_result.error());
   }
 
   CHECK(RecordMayGoToDestination(record_result.value(), destination));
@@ -134,20 +126,42 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
     // problem without leaving timestamp-related bugs in the ERP undiscovered
     // (should there be any).
     base::UmaHistogramBoolean("Browser.ERP.UnusualEnqueueTimestamp", true);
-    std::move(callback).Run(Status(
+    return base::unexpected(Status(
         error::FAILED_PRECONDITION,
         base::StrCat(
             {"Abnormal system timestamp obtained. Microseconds since epoch: ",
              base::NumberToString(time_since_epoch_us)})));
+  }
+  return std::move(record);
+}
+
+// Calls |record_producer|, checks the result and in case of success, forwards
+// it to the storage. In production code should be invoked asynchronously, on
+// a thread pool (no synchronization expected).
+void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
+                        Priority priority,
+                        WrappedRateLimiter::AsyncAcquireCb acquire_cb,
+                        std::string dm_token,
+                        Destination destination,
+                        int64_t reserved_space,
+                        std::optional<SourceInfo> source_info,
+                        ReportQueue::RecordProducer record_producer,
+                        StorageModuleInterface::EnqueueCallback callback) {
+  auto record_result =
+      ProduceRecord(dm_token, destination, reserved_space, source_info,
+                    std::move(record_producer));
+
+  if (!record_result.has_value()) {
+    std::move(callback).Run(record_result.error());
     return;
   }
-  record.set_timestamp_us(time_since_epoch_us);
 
-  const auto record_size = record.ByteSizeLong();
+  const auto record_size = record_result.value().ByteSizeLong();
 
   // Prepare `Storage::AddRecord` as a callback.
-  auto add_record_cb = base::BindOnce(&StorageModuleInterface::AddRecord,
-                                      storage, priority, std::move(record));
+  auto add_record_cb =
+      base::BindOnce(&StorageModuleInterface::AddRecord, storage, priority,
+                     std::move(record_result.value()));
 
   // Rate-limit event, if required.
   if (!acquire_cb) {
