@@ -468,7 +468,7 @@ source_set("analytics_event_logger") {
 }
 
 # src/internal/crypto
-# NOTE: This does not include any of the classes found in //cyrpto.
+# NOTE: This does not include any of the classes found in //crypto.
 # //third_party/nearby/internal/crypto_cros is a subset of //crypto whereas
 # //third_party/nearby/internal/crypto contains completely different classes.
 source_set("nearby_crypto") {
@@ -480,6 +480,7 @@ source_set("nearby_crypto") {
   public = [ "src/internal/crypto/ed25519.h" ]
   public_deps = [
     ":platform_base_logging",
+    ":platform_public_types",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
