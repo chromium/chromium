@@ -144,6 +144,8 @@ void PassageEmbedder::GenerateEmbeddings(
       std::move(callback).Run({});
       return;
     }
+    base::UmaHistogramCounts1000(
+        "History.Embeddings.Embedder.PassageTokenCount", tokenized.size());
     if (tokenized.size() < embeddings_input_window_size_) {
       tokenized.push_back(sp_processor_->eos_id());
     }

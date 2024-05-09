@@ -1792,6 +1792,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.PassageTokenCount" units="tokens"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    The length of the token array that each passage is encoded into. Logged each
+    time an input tokenization succeeds.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.SentencePieceModelLoadDuration"
     units="ms" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
