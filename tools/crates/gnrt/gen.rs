@@ -101,7 +101,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
         Some(vec![config.resolve.root.clone()]),
         None,
         &config,
-    )?;
+    );
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
@@ -245,7 +245,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
         Some(vec![config.resolve.root.clone()]),
         None,
         &config,
-    )?;
+    );
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
