@@ -105,7 +105,7 @@ void SendKeyPress(ui::KeyboardCode keyboard_code) {
 }
 
 void TogglePickerByAccelerator() {
-  ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_S,
+  ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_F,
                             /*control=*/false, /*shift=*/false,
                             /*alt=*/false, /*command=*/true);
 }
