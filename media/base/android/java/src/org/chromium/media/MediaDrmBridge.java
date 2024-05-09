@@ -1281,7 +1281,7 @@ public class MediaDrmBridge {
         // supported by Widevine.
         String version = getPropertyString(MediaDrm.PROPERTY_VERSION);
         Log.i(TAG, "Version: %s", version);
-        if (isWidevine()) {
+        if (isWidevine() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             Log.i(
                     TAG,
                     "oemCryptoBuildInformation: %s",
