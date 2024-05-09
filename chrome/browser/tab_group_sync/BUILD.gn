@@ -50,7 +50,6 @@ if (is_android) {
   }
 
   android_library("java") {
-    srcjar_deps = [ ":utils_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/LogUtils.java",
@@ -60,7 +59,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabCreationDelegateImpl.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncController.java",
-      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java",
@@ -68,6 +66,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":features_java",
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/flags:java",
@@ -85,6 +84,18 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:url_java",
+    ]
+  }
+
+  android_library("features_java") {
+    srcjar_deps = [ ":utils_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

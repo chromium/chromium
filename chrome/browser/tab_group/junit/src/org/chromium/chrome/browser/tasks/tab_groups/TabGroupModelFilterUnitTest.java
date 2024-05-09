@@ -63,20 +63,19 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
@@ -144,9 +143,9 @@ public class TabGroupModelFilterUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock SyncService mSyncService;
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
+    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock TabModel mTabModel;
     @Mock TabList mComprehensiveModel;
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
@@ -416,10 +415,9 @@ public class TabGroupModelFilterUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(TokenJni.TEST_HOOKS, mTokenJniMock);
+        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
 
         when(mProfile.isNativeInitialized()).thenReturn(true);
-        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(ModelType.SAVED_TAB_GROUP));
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         setUpTab();
         setUpTabModel();
@@ -2244,6 +2242,8 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Hiding_Undone() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
@@ -2269,6 +2269,8 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseGroup_Hiding_Committed() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
@@ -2298,6 +2300,8 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseMultipleTabs_Hiding_GroupInParts() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> listWithTab2AndTab4 = List.of(mTab2, mTab4);
@@ -2359,6 +2363,8 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseAllTabs_Hiding_Undone() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
@@ -2405,6 +2411,8 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testCloseAllTabs_Hiding_PartialCommit() {
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 

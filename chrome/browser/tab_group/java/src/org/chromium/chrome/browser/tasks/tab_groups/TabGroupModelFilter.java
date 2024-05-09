@@ -20,17 +20,15 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -1600,11 +1598,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         Profile profile = getTabModel().getProfile();
         if (profile == null || !profile.isNativeInitialized()) return false;
 
-        SyncService syncService = SyncServiceFactory.getForProfile(getTabModel().getProfile());
-        return !isIncognito()
-                && syncService != null
-                && syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID);
+        return !isIncognito() && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
     }
 
     /** Sets that the tab group is hiding rather than being deleted. */
