@@ -1095,10 +1095,15 @@ class OrderfileGenerator:
     if not self._options.buildbot:
       logging.error('Trying to commit when not running on the buildbot')
       return False
-    self._orderfile_updater._CommitStashedFiles([
+    paths = [
         filename + '.sha1'
         for filename in (self._GetUnpatchedOrderfileFilename(),
-                         self._GetPathToOrderfile())])
+                         self._GetPathToOrderfile())
+    ]
+    if self._options.arch == 'arm64':
+      # DEPS is updated as well in the new cloud flow.
+      paths.append('DEPS')
+    self._orderfile_updater._CommitStashedFiles(paths)
     return True
 
 
