@@ -37,6 +37,7 @@ namespace display {
 namespace {
 
 typedef std::vector<const DisplayMode*> DisplayModeList;
+using RefreshRateOverrideMap = DisplayConfigurator::RefreshRateOverrideMap;
 
 struct DisplayState {
   raw_ptr<DisplaySnapshot> display = nullptr;  // Not owned.
@@ -113,7 +114,6 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
       const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
-      RefreshRateThrottleState new_throttle_state,
       const base::flat_set<int64_t>& new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   DisplayStateList GetDisplayStates() const override;
@@ -248,13 +248,13 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
-    RefreshRateThrottleState new_throttle_state,
     const base::flat_set<int64_t>& new_vrr_enabled_state,
     std::vector<DisplayConfigureRequest>* requests) const {
   std::vector<DisplayState> states = ParseDisplays(displays);
   std::vector<bool> display_power;
   int num_on_displays =
       GetDisplayPower(displays, new_power_state, &display_power);
+  // TODO(aswolfers): Log vrr state.
   VLOG(1) << "EnterState: display="
           << MultipleDisplayStateToString(new_display_state)
           << " power=" << DisplayPowerStateToString(new_power_state);
@@ -381,30 +381,9 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
       break;
     }
   }
-
-  // DisplayConfigureRequest for internal displays should already be configured
-  // to request their native modes, which should be the highest refresh rate.
-  if (new_throttle_state == kRefreshRateThrottleEnabled) {
-    for (DisplayConfigureRequest& request : *requests) {
-      if (request.display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL)
-        continue;
-
-      if (request.mode == nullptr) {
-        continue;
-      }
-
-      std::vector<const DisplayMode*> modes =
-          GetSeamlessRefreshRateModes(*request.display, *request.mode);
-      if (modes.size() < 2)
-        break;
-
-      DCHECK_GT(request.mode->refresh_rate(), (*modes.begin())->refresh_rate());
-      request.mode = (*modes.begin());
-    }
-  }
-
   DCHECK(new_display_state == MULTIPLE_DISPLAY_STATE_HEADLESS ||
          !size.IsEmpty());
+
   return true;
 }
 
@@ -784,8 +763,9 @@ void DisplayConfigurator::ForceInitialConfigure() {
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
-      kSetDisplayPowerForceProbe, GetRequestedThrottleState(),
-      GetRequestedVrrState(), /*force_configure=*/true, kConfigurationTypeFull,
+      kSetDisplayPowerForceProbe, GetRequestedVrrState(),
+      GetRequestedRefreshRateOverrides(),
+      /*force_configure=*/true, kConfigurationTypeFull,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
   configuration_task_->Run();
@@ -963,32 +943,6 @@ bool DisplayConfigurator::HasObserverForTesting(Observer* observer) const {
   return observers_.HasObserver(observer);
 }
 
-void DisplayConfigurator::MaybeSetRefreshRateThrottleState(
-    int64_t display_id,
-    RefreshRateThrottleState state) {
-  DisplaySnapshot* display = nullptr;
-  for (DisplaySnapshot* cached_display : cached_displays_) {
-    if (cached_display->display_id() == display_id) {
-      display = cached_display;
-      break;
-    }
-  }
-  if (display == nullptr) {
-    LOG(ERROR) << "Did not find display with id: " << display_id;
-    return;
-  }
-  if (display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    LOG(ERROR) << "Can't throttle refresh rate for non-internal display: "
-               << display_id;
-    return;
-  }
-
-  if (GetRefreshRateThrottleStateForDisplay(*display) != state) {
-    pending_refresh_rate_throttle_state_ = state;
-    RunPendingConfiguration();
-  }
-}
-
 void DisplayConfigurator::SuspendDisplays(ConfigurationCallback callback) {
   if (configurator_disabled()) {
     std::move(callback).Run(false);
@@ -1067,8 +1021,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, pending_power_state_, pending_power_flags_,
-      GetRequestedThrottleState(), GetRequestedVrrState(), force_configure_,
-      configuration_type,
+      GetRequestedVrrState(), GetRequestedRefreshRateOverrides(),
+      force_configure_, configuration_type,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1078,7 +1032,7 @@ void DisplayConfigurator::RunPendingConfiguration() {
   pending_power_flags_ = kSetDisplayPowerNoFlags;
   has_pending_power_state_ = false;
   requested_display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
-  pending_refresh_rate_throttle_state_ = std::nullopt;
+  pending_refresh_rate_overrides_ = std::nullopt;
   pending_vrr_state_ = std::nullopt;
 
   DCHECK(in_progress_configuration_callbacks_.empty());
@@ -1147,8 +1101,9 @@ bool DisplayConfigurator::ShouldRunConfigurationTask() const {
 }
 
 bool DisplayConfigurator::HasPendingFullConfiguration() const {
-  if (force_configure_)
+  if (force_configure_) {
     return true;
+  }
 
   // Schedule if there is a request to change the display state.
   if (requested_display_state_ != current_display_state_ &&
@@ -1163,8 +1118,7 @@ bool DisplayConfigurator::HasPendingFullConfiguration() const {
 }
 
 bool DisplayConfigurator::HasPendingSeamlessConfiguration() const {
-  // Schedule if there is a pending request to change the refresh rate.
-  if (pending_refresh_rate_throttle_state_.has_value()) {
+  if (pending_refresh_rate_overrides_) {
     return true;
   }
 
@@ -1209,6 +1163,47 @@ void DisplayConfigurator::NotifyPowerStateObservers() {
 
 bool DisplayConfigurator::IsDisplayOn() const {
   return current_power_state_ != chromeos::DISPLAY_POWER_ALL_OFF;
+}
+
+void DisplayConfigurator::SetRefreshRateOverrides(
+    const RefreshRateOverrideMap& requested_overrides) {
+  if (HasPendingFullConfiguration()) {
+    // If there is a full config pending, skip the refresh override.
+    VLOG(3) << "Skip refresh rate overrides because a full configuration is "
+               "pending.";
+    return;
+  }
+
+  // Filter out requested overrides to ensure that they only target
+  // existing displays, and ensure that requests for the native refresh rate
+  // are represented by having no entry in the override map.
+  RefreshRateOverrideMap effective_overrides;
+  for (auto& snapshot : cached_displays_) {
+    auto it = requested_overrides.find(snapshot->display_id());
+    if (it != requested_overrides.end() &&
+        it->second != snapshot->native_mode()->refresh_rate()) {
+      effective_overrides[snapshot->display_id()] = it->second;
+    }
+  }
+
+  LOG_IF(WARNING, requested_overrides != effective_overrides)
+      << "Some requested overrides are invalid and have been removed.\n"
+      << "\tRequested: " << RefreshRateOverrideToString(requested_overrides)
+      << "\n"
+      << "\tActual: " << RefreshRateOverrideToString(effective_overrides);
+
+  const RefreshRateOverrideMap current_overrides =
+      GetCurrentRefreshRateOverrideState();
+  if (current_overrides == effective_overrides) {
+    VLOG(3) << "Skip refresh rate overrides because the requested overrides "
+               "are a no-op.";
+    return;
+  }
+
+  pending_refresh_rate_overrides_.emplace(effective_overrides);
+  if (!configure_timer_.IsRunning()) {
+    RunPendingConfiguration();
+  }
 }
 
 void DisplayConfigurator::SetVrrEnabled(
@@ -1259,55 +1254,53 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
   return pending_vrr_state_.has_value();
 }
 
-RefreshRateThrottleState DisplayConfigurator::GetRequestedThrottleState()
+RefreshRateOverrideMap DisplayConfigurator::GetRequestedRefreshRateOverrides()
     const {
-  // If there is a full configuration pending, disable throttle to avoid a
-  // theoretical scenario where the display hardware is configured in such a way
-  // that we can't unthrottle seamlessly.
+  // Do not request overrides for a full configuration.
   if (HasPendingFullConfiguration()) {
-    return kRefreshRateThrottleDisabled;
+    return {};
   }
 
-  if (pending_refresh_rate_throttle_state_.has_value()) {
-    return pending_refresh_rate_throttle_state_.value();
+  if (pending_refresh_rate_overrides_.has_value()) {
+    return pending_refresh_rate_overrides_.value();
   }
 
-  for (DisplaySnapshot* cached_display : cached_displays_) {
-    if (cached_display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-      return GetRefreshRateThrottleStateForDisplay(*cached_display);
-    }
-  }
-  return kRefreshRateThrottleDisabled;
+  return GetCurrentRefreshRateOverrideState();
 }
 
-// Determine whether |display|'s refresh rate is currently throttled or not
-// by comparing its current mode to its seamless refresh modes.
-RefreshRateThrottleState
-DisplayConfigurator::GetRefreshRateThrottleStateForDisplay(
-    const DisplaySnapshot& display) {
-  // The mode could be nullptr if the display is turned off (i.e. put to sleep
-  // after being idle). Consider throttling to be disabled in this case.
-  if (display.current_mode() == nullptr) {
-    VLOG(4) << "Mode not set for display.";
-    return kRefreshRateThrottleDisabled;
-  }
+RefreshRateOverrideMap DisplayConfigurator::GetCurrentRefreshRateOverrideState()
+    const {
+  RefreshRateOverrideMap overrides;
+  for (DisplaySnapshot* cached_display : cached_displays_) {
+    // TODO(b/334104991): Refresh rate override is only enabled for internal
+    // displays.
+    if (cached_display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL) {
+      continue;
+    }
 
-  // If there are less than two such modes, throttling is not supported.
-  std::vector<const DisplayMode*> matching_modes =
-      GetSeamlessRefreshRateModes(display, *display.current_mode());
-  if (matching_modes.size() < 2) {
-    VLOG(4) << "No mode candidates for seamless refresh rate change.";
-    return kRefreshRateThrottleDisabled;
-  }
+    // External displays may not be configured to their native modes.
+    const DisplayMode* native_mode = cached_display->native_mode();
+    const DisplayMode* current_mode = cached_display->current_mode();
 
-  // |matching_modes| is in order from low refresh rate to high. If the
-  // display's current mode is the lowest refresh rate, that means that it is
-  // throttled.
-  if (display.current_mode() == *matching_modes.begin()) {
-    return kRefreshRateThrottleEnabled;
-  }
+    // Display is not enabled, so there is no override.
+    if (!native_mode || !current_mode) {
+      continue;
+    }
 
-  return kRefreshRateThrottleDisabled;
+    if (native_mode->size() != current_mode->size()) {
+      // This should not happen for internal displays.
+      LOG(WARNING) << "Current mode size does not match native mode size.";
+      continue;
+    }
+
+    if (native_mode->refresh_rate() != current_mode->refresh_rate()) {
+      VLOG(3) << "Current override state for display with id ("
+              << cached_display->display_id()
+              << "): " << current_mode->refresh_rate();
+      overrides[cached_display->display_id()] = current_mode->refresh_rate();
+    }
+  }
+  return overrides;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

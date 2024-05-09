@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -41,8 +42,8 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       int power_flags,
-      RefreshRateThrottleState refresh_rate_throttle_state,
       const base::flat_set<int64_t>& new_vrr_state,
+      const DisplayConfigurator::RefreshRateOverrideMap& refresh_rate_overrides,
       bool force_configure,
       ConfigurationType configuration_type,
       ResponseCallback callback);
@@ -96,6 +97,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // variable refresh rate setting.
   bool ShouldConfigureVrr() const;
 
+  // Returns whether a display configuration is required to apply or remove
+  // the requested refresh rate overrides.
+  bool ShouldConfigureRefreshRate() const;
+
   raw_ptr<NativeDisplayDelegate> delegate_;       // Not owned.
   raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
 
@@ -109,13 +114,11 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // DisplayConfigurator.
   int power_flags_;
 
-  // Whether the configuration task should select a low refresh rate
-  // for the internal display.
-  RefreshRateThrottleState refresh_rate_throttle_state_;
-
   // The requested VRR state which lists the set of display ids that should have
   // VRR enabled, while all omitted displays should have VRR disabled.
   const base::flat_set<int64_t> new_vrr_state_;
+
+  const DisplayConfigurator::RefreshRateOverrideMap refresh_rate_overrides_;
 
   bool force_configure_;
 

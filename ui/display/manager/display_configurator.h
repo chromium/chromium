@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -55,6 +56,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   using DisplayStateList =
       std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;
+  // Map of display id to a refresh rate override.
+  using RefreshRateOverrideMap = std::unordered_map<int64_t, float>;
 
   class Observer {
    public:
@@ -248,12 +251,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // current set of connected displays).
   void SetDisplayMode(MultipleDisplayState new_state);
 
-  // Request the display's refresh rate to be throttled. Currently
-  // only supports internal displays. If the underlying panel/display driver
-  // do not support this, it is a no-op.
-  void MaybeSetRefreshRateThrottleState(int64_t display_id,
-                                        RefreshRateThrottleState state);
-
   // Request a description of the refresh rates to which the display can support
   // a configuration without a full modeset.
   // The supported refresh rates depend on the current configuration of the
@@ -337,8 +334,16 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   // Requests to enable variable refresh rates on the specified displays and to
   // disable variable refresh rates on all other displays, and schedules a
-  // configuration change as needed.
+  // seamless configuration change as needed.
   void SetVrrEnabled(const base::flat_set<int64_t>& display_ids);
+
+  // Requests to override the refresh rate of the specified displays and
+  // schedule a seamless configuration change if needed. If a display is not in
+  // |overrides| then then the display may be configured back to its native
+  // refresh rate, if the configuration can happen without a modeset. If the
+  // affected displays are already configured according to |overrides|, then no
+  // configuration will occur.
+  void SetRefreshRateOverrides(const RefreshRateOverrideMap& overrides);
 
  private:
   friend class test::DisplayManagerTestApi;
@@ -431,15 +436,16 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // request.
   bool ShouldConfigureVrr() const;
 
-  // Returns the throttle state that should be used for a configuration attempt.
-  // If no new state has been requested, this will default to the current state
-  // unless a full configuration is pending, in which case the requested state
-  // will be disabled.
-  RefreshRateThrottleState GetRequestedThrottleState() const;
+  // Returns the per-display refresh rate overrides which should be used for
+  // a configuration attempt. If there is a full configuration pending,
+  // there will be no overrides set. If no new overrides have been requested,
+  // this will return the current state.
+  RefreshRateOverrideMap GetRequestedRefreshRateOverrides() const;
 
-  // Returns the current throttle state for |display|.
-  static RefreshRateThrottleState GetRefreshRateThrottleStateForDisplay(
-      const DisplaySnapshot& display);
+  // Returns the current state of refresh rate overrides. This is determined
+  // by comparing the refresh rates of the currently configured mode and the
+  // display's native mode.
+  RefreshRateOverrideMap GetCurrentRefreshRateOverrideState() const;
 
   // Dangling in DemoIntegrationTest.NewTab on chromeos-amd64-generic-rel-gtest.
   raw_ptr<StateController, DanglingUntriaged> state_controller_;
@@ -478,8 +484,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Bitwise-or value of the |kSetDisplayPower*| flags defined above.
   int pending_power_flags_;
 
-  // Stores the requested refresh rate throttle state.
-  std::optional<RefreshRateThrottleState> pending_refresh_rate_throttle_state_;
+  // Per-display pending refresh rate override requests. Displays not included
+  // in this map will have their refresh rates set to their native refresh
+  // rates.
+  std::optional<RefreshRateOverrideMap> pending_refresh_rate_overrides_;
 
   // List of callbacks from callers waiting for the display configuration to
   // start/finish. Note these callbacks belong to the pending request, not a

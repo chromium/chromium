@@ -39,7 +39,6 @@ bool TestDisplayLayoutManager::GetDisplayLayout(
     const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
-    RefreshRateThrottleState new_throttle_state,
     const base::flat_set<int64_t>& new_vrr_enabled_state,
     std::vector<DisplayConfigureRequest>* requests) const {
   NOTREACHED();

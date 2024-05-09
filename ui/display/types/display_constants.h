@@ -129,12 +129,6 @@ enum PrivacyScreenState {
   kPrivacyScreenStateLast = kNotSupported,
 };
 
-// The requested state for refresh rate throttling.
-enum RefreshRateThrottleState {
-  kRefreshRateThrottleEnabled,
-  kRefreshRateThrottleDisabled,
-};
-
 // Whether a configuration should be seamless or full. Full configuration may
 // result in visible artifacts such as blanking to achieve the specified
 // configuration. Seamless configuration requests will fail if the system cannot

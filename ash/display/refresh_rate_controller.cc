@@ -4,21 +4,36 @@
 
 #include "ash/display/refresh_rate_controller.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
-#include "base/command_line.h"
-#include "ash/constants/ash_switches.h"
 
 namespace ash {
-
 namespace {
+
+const float kMinThrottledRefreshRate = 59.f;
+
 using DisplayStateList = display::DisplayConfigurator::DisplayStateList;
 using ModeState = DisplayPerformanceModeController::ModeState;
+using RefreshRateOverrideMap =
+    display::DisplayConfigurator::RefreshRateOverrideMap;
+
+std::string RefreshRatesToString(const std::vector<float>& refresh_rates) {
+  std::vector<std::string> entries;
+  for (auto refresh_rate : refresh_rates) {
+    entries.push_back(base::NumberToString(refresh_rate));
+  }
+  return "{" + base::JoinString(entries, ", ") + "}";
+}
 }  // namespace
 
 RefreshRateController::RefreshRateController(
@@ -37,6 +52,7 @@ RefreshRateController::RefreshRateController(
       display_performance_mode_controller_->AddObserver(this);
   // Ensure initial states are calculated.
   UpdateStates();
+  OnDisplayModeChanged(display_configurator->cached_displays());
 }
 
 RefreshRateController::~RefreshRateController() {
@@ -98,9 +114,35 @@ void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
 
 void RefreshRateController::OnSeamlessRefreshRangeReceived(
     int64_t display_id,
-    const std::optional<std::vector<float>>& refresh_ranges) {
-  // TODO(b/323362145): Stash the refresh rates and request a refresh rate
-  // explicitly when throttling.
+    const std::optional<std::vector<float>>& received_refresh_rates) {
+  VLOG(3) << "Received refresh rates for display " << display_id << ": "
+          << (received_refresh_rates
+                  ? RefreshRatesToString(*received_refresh_rates)
+                  : "empty");
+
+  if (!received_refresh_rates || received_refresh_rates->empty()) {
+    // These cases could occur if there is a race between requesting the refresh
+    // rates and some display topology change such as removing or disabling a
+    // display.
+    display_refresh_rates_.erase(display_id);
+    return;
+  }
+
+  // Sort in ascending order.
+  std::vector<float> refresh_rates = received_refresh_rates.value();
+  std::sort(refresh_rates.begin(), refresh_rates.end());
+
+  // If the received refresh rates are equal to the last received refresh rates,
+  // then we're done.
+  auto it = display_refresh_rates_.find(display_id);
+  if (it != display_refresh_rates_.end() && it->second == refresh_rates) {
+    return;
+  }
+
+  // Insert the new refresh rate range, possibly replacing the old one.
+  display_refresh_rates_[display_id] = std::move(refresh_rates);
+
+  RefreshThrottleState();
 }
 
 void RefreshRateController::OnDisplayMetricsChanged(
@@ -137,13 +179,39 @@ void RefreshRateController::RefreshThrottleState() {
     return;
   }
 
-  // Only internal displays utilize refresh rate throttling.
-  if (!display::HasInternalDisplay()) {
+  const ThrottleState throttle_state = GetDesiredThrottleState();
+  if (throttle_state == ThrottleState::kDisabled) {
+    display_configurator_->SetRefreshRateOverrides({});
     return;
   }
 
-  display_configurator_->MaybeSetRefreshRateThrottleState(
-      display::Display::InternalDisplayId(), GetDesiredThrottleState());
+  // Update the throttle state for each display.
+  RefreshRateOverrideMap refresh_rate_overrides;
+  for (const auto& it : display_refresh_rates_) {
+    // Only throttle the internal display.
+    if (!display::IsInternalDisplayId(it.first)) {
+      continue;
+    }
+
+    // Filter out refresh rates lower than the minimum.
+    std::vector<float> throttle_candidates;
+    for (auto refresh_rate : it.second) {
+      if (refresh_rate >= kMinThrottledRefreshRate) {
+        throttle_candidates.push_back(refresh_rate);
+      }
+    }
+
+    if (throttle_candidates.size() < 2) {
+      VLOG(3) << "Fewer than 2 throttle candidates for display " << it.first;
+      continue;
+    }
+
+    refresh_rate_overrides[it.first] = throttle_candidates.front();
+    VLOG(3) << "Request refresh rate for display " << it.first << ": "
+            << refresh_rate_overrides[it.first];
+  }
+
+  display_configurator_->SetRefreshRateOverrides(refresh_rate_overrides);
 }
 
 void RefreshRateController::RefreshVrrState() {
@@ -168,40 +236,40 @@ void RefreshRateController::RefreshVrrState() {
   }
 }
 
-display::RefreshRateThrottleState
+RefreshRateController::ThrottleState
 RefreshRateController::GetDesiredThrottleState() {
   if (force_throttle_) {
-    return display::kRefreshRateThrottleEnabled;
+    return ThrottleState::kEnabled;
   }
 
   switch (current_performance_mode_) {
     case ModeState::kPowerSaver:
-      return display::kRefreshRateThrottleEnabled;
+      return ThrottleState::kEnabled;
     case ModeState::kHighPerformance:
-      return display::kRefreshRateThrottleDisabled;
+      return ThrottleState::kDisabled;
     case ModeState::kIntelligent:
       return GetDynamicThrottleState();
     default:
       NOTREACHED();
-      return display::kRefreshRateThrottleEnabled;
+      return ThrottleState::kEnabled;
   }
 }
 
-display::RefreshRateThrottleState
+RefreshRateController::ThrottleState
 RefreshRateController::GetDynamicThrottleState() {
   // Do not throttle when Borealis is active on the internal display.
   if (game_window_observer_.IsObserving() &&
       display::Screen::GetScreen()
               ->GetDisplayNearestWindow(game_window_observer_.GetSource())
               .id() == display::Display::InternalDisplayId()) {
-    return display::kRefreshRateThrottleDisabled;
+    return ThrottleState::kDisabled;
   }
 
   if (power_status_->IsMainsChargerConnected()) {
-    return display::kRefreshRateThrottleDisabled;
+    return ThrottleState::kDisabled;
   }
 
-  return display::kRefreshRateThrottleEnabled;
+  return ThrottleState::kEnabled;
 }
 
 }  // namespace ash

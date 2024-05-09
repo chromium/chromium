@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
@@ -224,6 +225,17 @@ void UpdateFinalStatusUma(
   }
 }
 
+// After a successful configuration, the DisplaySnapshot associated with a
+// request needs to have its state updated to reflect the new configuration.
+void UpdateSnapshotAfterConfiguration(const DisplayConfigureRequest& request) {
+  request.display->set_current_mode(request.mode);
+  request.display->set_origin(request.origin);
+  if (request.display->IsVrrCapable()) {
+    request.display->set_variable_refresh_rate_state(
+        request.enable_vrr ? display::kVrrEnabled : display::kVrrDisabled);
+  }
+}
+
 }  // namespace
 
 DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
@@ -235,7 +247,10 @@ DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
 DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
                                                  const DisplayMode* mode,
                                                  const gfx::Point& origin)
-    : DisplayConfigureRequest(display, mode, origin, /*enable_vrr=*/false) {}
+    : DisplayConfigureRequest(display,
+                              mode,
+                              origin,
+                              /*enable_vrr=*/false) {}
 
 ConfigureDisplaysTask::ConfigureDisplaysTask(
     NativeDisplayDelegate* delegate,
@@ -410,12 +425,7 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
 void ConfigureDisplaysTask::OnConfigured(bool config_success) {
   if (config_success) {
     for (const DisplayConfigureRequest& request : requests_) {
-      request.display->set_current_mode(request.mode);
-      request.display->set_origin(request.origin);
-      if (request.display->IsVrrCapable()) {
-        request.display->set_variable_refresh_rate_state(
-            request.enable_vrr ? display::kVrrEnabled : display::kVrrDisabled);
-      }
+      UpdateSnapshotAfterConfiguration(request);
     }
   }
 
