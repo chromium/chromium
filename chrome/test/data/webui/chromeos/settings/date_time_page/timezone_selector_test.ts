@@ -34,9 +34,6 @@ suite('<timezone-selector>', function() {
     assertEquals(
         null,
         timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
-    assertEquals(
-        null,
-        timezoneSelector.shadowRoot!.querySelector('#systemTimezoneSelector'));
   });
 
   test('Per-user timezone enabled', async () => {
@@ -49,13 +46,18 @@ suite('<timezone-selector>', function() {
           },
         },
       },
+      generated: {
+        resolve_timezone_by_geolocation_on_off: {
+          key: 'generated.resolve_timezone_by_geolocation_on_off',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
     };
     document.body.appendChild(timezoneSelector);
 
     flush();
 
     assert(timezoneSelector.shadowRoot!.querySelector('#userTimeZoneSelector'));
-    assert(
-        timezoneSelector.shadowRoot!.querySelector('#systemTimezoneSelector'));
   });
 });

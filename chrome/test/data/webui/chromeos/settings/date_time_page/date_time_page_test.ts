@@ -270,9 +270,7 @@ suite('<settings-date-time-page>', () => {
   function verifyAutoDetectSetting(
       autoDetect: boolean, managed: boolean): void {
     const selector = getTimeZoneSelector('#userTimeZoneSelector');
-    const selectorHidden = selector ? selector.hidden : true;
-    const selectorDisabled = selector ? selector.disabled : true;
-    assertEquals(managed || autoDetect || selectorDisabled, selectorHidden);
+    assertEquals(autoDetect, selector.disabled);
 
     const checkButton = getAutodetectOnButton();
     const checkButtonChecked = checkButton ? checkButton.checked : false;
@@ -283,16 +281,12 @@ suite('<settings-date-time-page>', () => {
 
   function verifyTimeZonesPopulated(populated: boolean): void {
     const userTimezoneDropdown = getTimeZoneSelector('#userTimeZoneSelector');
-    const systemTimezoneDropdown =
-        getTimeZoneSelector('#systemTimezoneSelector');
-
-    const dropdown =
-        userTimezoneDropdown ? userTimezoneDropdown : systemTimezoneDropdown;
-    assertTrue(!!dropdown);
+    assertTrue(!!userTimezoneDropdown);
     if (populated) {
-      assertEquals(fakeTimeZones.length, dropdown.menuOptions.length);
+      assertEquals(
+          fakeTimeZones.length, userTimezoneDropdown.menuOptions.length);
     } else {
-      assertEquals(1, dropdown.menuOptions.length);
+      assertEquals(1, userTimezoneDropdown.menuOptions.length);
     }
   }
 
@@ -461,9 +455,8 @@ suite('<settings-date-time-page>', () => {
     assertFalse(timeZoneAutoDetectOn.disabled);
     assertFalse(timeZoneAutoDetectOff.disabled);
 
-    // |timezoneSelector| is hidden when auto detect on.
-    assertFalse(timezoneSelector.disabled);
-    assertTrue(timezoneSelector.hidden);
+    // |timezoneSelector| is disabled when auto detect on.
+    assertTrue(timezoneSelector.disabled);
   });
 
   test('auto-detect off supervised account', async () => {
