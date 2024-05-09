@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/safe_ref.h"
 #include "base/metrics/field_trial_params.h"
@@ -167,6 +166,7 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -1111,15 +1111,6 @@ bool IsFailedDownload(bool is_download,
   return is_download && headers &&
          !network::IsSuccessfulStatus(headers->response_code());
 }
-
-#define SCOPED_SET_NOW(name, time_field)                           \
-  base::ScopedClosureRunner name(base::BindOnce(                   \
-      [](base::WeakPtr<NavigationRequest> navigation_request) {    \
-        if (navigation_request) {                                  \
-          navigation_request->time_field = base::TimeTicks::Now(); \
-        }                                                          \
-      },                                                           \
-      weak_factory_.GetWeakPtr()))
 
 // Returns if the given `rfh` should be evicted from BackForwardCache due to
 // ongoing navigation.
@@ -5211,7 +5202,12 @@ void NavigationRequest::OnStartChecksComplete(
       base::StrCat({"Navigation.WillStartRequestToLoaderStart.",
                     IsInMainFrame() ? "MainFrame" : "Subframe"}),
       base::TimeTicks::Now() - will_start_request_time_);
-  SCOPED_SET_NOW(scoped_set_now, loader_start_time_);
+  absl::Cleanup scoped_set_now = [navigation_request =
+                                      weak_factory_.GetWeakPtr()] {
+    if (navigation_request) {
+      navigation_request->loader_start_time_ = base::TimeTicks::Now();
+    }
+  };
 
   loader_->Start();
   // DO NOT ADD CODE after this. The previous call to

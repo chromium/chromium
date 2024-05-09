@@ -5,7 +5,6 @@
 #include "content/browser/scheduler/responsiveness/jank_monitor_impl.h"
 
 #include "base/compiler_specific.h"
-#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"

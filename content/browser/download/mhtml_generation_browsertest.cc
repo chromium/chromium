@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -44,6 +45,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
@@ -540,10 +542,10 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLInNonTempDir) {
     EXPECT_TRUE(base::CreateTemporaryDirInDir(
         local_app_data, FILE_PATH_LITERAL("MHTMLGenerationTest"), &new_dir));
   }
-  base::ScopedClosureRunner delete_dir(base::BindLambdaForTesting([new_dir]() {
+  absl::Cleanup delete_dir = [new_dir] {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::DeletePathRecursively(new_dir);
-  }));
+  };
 
   base::FilePath path = new_dir.Append(FILE_PATH_LITERAL("test.mht"));
 

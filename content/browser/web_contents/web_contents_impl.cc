@@ -24,6 +24,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -162,6 +163,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -7236,9 +7238,9 @@ void WebContentsImpl::EnumerateDirectory(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::EnumerateDirectory",
                         "render_frame_host", render_frame_host,
                         "directory_path", directory_path);
-  base::ScopedClosureRunner cancel_chooser(base::BindOnce(
-      &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
-      listener));
+  absl::Cleanup cancel_chooser = [&listener] {
+    listener->FileSelectionCanceled();
+  };
   if (visibility_ == Visibility::HIDDEN) {
     // Do not allow background tab to open file chooser.
     return;
@@ -7256,7 +7258,7 @@ void WebContentsImpl::EnumerateDirectory(
   if (delegate_) {
     active_file_chooser_ = std::move(file_chooser);
     delegate_->EnumerateDirectory(this, std::move(listener), directory_path);
-    std::ignore = cancel_chooser.Release();
+    std::move(cancel_chooser).Cancel();
   }
 }
 
@@ -8022,9 +8024,9 @@ void WebContentsImpl::RunFileChooser(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunFileChooser",
                         "render_frame_host", render_frame_host);
 
-  base::ScopedClosureRunner cancel_chooser(base::BindOnce(
-      &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
-      listener));
+  absl::Cleanup cancel_chooser = [&listener] {
+    listener->FileSelectionCanceled();
+  };
   if (visibility_ == Visibility::HIDDEN) {
     // Do not allow background tab to open file chooser.
     return;
@@ -8042,7 +8044,7 @@ void WebContentsImpl::RunFileChooser(
   if (delegate_) {
     active_file_chooser_ = std::move(file_chooser);
     delegate_->RunFileChooser(render_frame_host, std::move(listener), params);
-    std::ignore = cancel_chooser.Release();
+    std::move(cancel_chooser).Cancel();
   }
 }
 

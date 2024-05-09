@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -43,6 +42,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -543,9 +543,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
                   attributes.initiator_frame_token.value());
 
     // Ensure observers are notified that a trigger occurred.
-    base::ScopedClosureRunner notify_trigger(
-        base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
-                       base::Unretained(this), attributes.prerendering_url));
+    absl::Cleanup notify_trigger = [this, &attributes] {
+      NotifyTrigger(attributes.prerendering_url);
+    };
 
     auto builder = PrerenderHostBuilder(attempt);
 
