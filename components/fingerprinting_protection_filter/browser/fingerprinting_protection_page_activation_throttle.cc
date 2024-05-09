@@ -12,10 +12,10 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_throttle.h"
 
-using subresource_filter::ActivationDecision;
-using subresource_filter::mojom::ActivationLevel;
-
 namespace fingerprinting_protection_filter {
+
+using ::subresource_filter::ActivationDecision;
+using ::subresource_filter::mojom::ActivationLevel;
 
 FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
@@ -49,7 +49,7 @@ FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
     return ActivationDecision::UNKNOWN;
   }
   if (fingerprinting_protection_filter::features::kActivationLevel.Get() ==
-      subresource_filter::mojom::ActivationLevel::kDisabled) {
+      ActivationLevel::kDisabled) {
     return ActivationDecision::ACTIVATION_DISABLED;
   }
   // Either enabled or dry_run
@@ -57,8 +57,12 @@ FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
 }
 
 void FingerprintingProtectionPageActivationThrottle::NotifyResult(
-    subresource_filter::ActivationDecision decision) {
-  // TODO(crbug/327005578): Notify UX of the activation decision made.
+    ActivationDecision decision) {
+  if (delegate_) {
+    delegate_->OnPageActivationComputed(
+        navigation_handle(), features::kActivationLevel.Get(), &decision);
+  }
+
   FingerprintingProtectionWebContentsHelper::FromWebContents(
       navigation_handle()->GetWebContents())
       ->NotifyPageActivationComputed(navigation_handle(), decision);

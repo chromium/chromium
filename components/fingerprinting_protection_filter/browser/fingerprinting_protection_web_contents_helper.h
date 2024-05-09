@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_WEB_CONTENTS_HELPER_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_WEB_CONTENTS_HELPER_H_
 
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -23,7 +24,9 @@ class FingerprintingProtectionWebContentsHelper
     : public content::WebContentsUserData<
           FingerprintingProtectionWebContentsHelper> {
  public:
-  static void CreateForWebContents(content::WebContents* web_contents);
+  static void CreateForWebContents(content::WebContents* web_contents,
+                                   privacy_sandbox::TrackingProtectionSettings*
+                                       tracking_protection_settings);
 
   FingerprintingProtectionWebContentsHelper(
       const FingerprintingProtectionWebContentsHelper&) = delete;
@@ -47,9 +50,13 @@ class FingerprintingProtectionWebContentsHelper
 
  private:
   explicit FingerprintingProtectionWebContentsHelper(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      privacy_sandbox::TrackingProtectionSettings*
+          tracking_protection_settings);
   friend class content::WebContentsUserData<
       FingerprintingProtectionWebContentsHelper>;
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

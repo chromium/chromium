@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/privacy_sandbox",
   "+components/subresource_filter/content/shared/browser",
+  "+components/subresource_filter/content/shared/common",
   "+components/subresource_filter/core",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
   "+content/public/browser",
   "+content/public/test",
 ]

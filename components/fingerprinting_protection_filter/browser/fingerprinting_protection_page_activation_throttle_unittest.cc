@@ -79,7 +79,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents());
+      navigation_handle()->GetWebContents(),
+      /*tracking_protection_settings=*/nullptr);
   auto throttle_under_test = MockFingerprintingProtectionPageActivationThrottle(
       navigation_handle(), nullptr);
 
@@ -99,7 +100,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents());
+      navigation_handle()->GetWebContents(),
+      /*tracking_protection_settings=*/nullptr);
   auto throttle_under_test = MockFingerprintingProtectionPageActivationThrottle(
       navigation_handle(), nullptr);
 
@@ -120,7 +122,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents());
+      navigation_handle()->GetWebContents(),
+      /*tracking_protection_settings=*/nullptr);
   auto throttle_under_test = MockFingerprintingProtectionPageActivationThrottle(
       navigation_handle(), nullptr);
 
@@ -141,7 +144,8 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
 
   // Initialize the WebContentsHelper and Throttle to be tested.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-      navigation_handle()->GetWebContents());
+      navigation_handle()->GetWebContents(),
+      /*tracking_protection_settings=*/nullptr);
   auto throttle_under_test = MockFingerprintingProtectionPageActivationThrottle(
       navigation_handle(), nullptr);
 
