@@ -8,6 +8,7 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
 
@@ -97,7 +98,7 @@
 //   DFAKE_MUTEX(shareable_section_);
 // };
 
-#if !defined(NDEBUG)
+#if DCHECK_IS_ON()
 
 // Defines a class member that acts like a mutex. It is used only as a
 // verification tool.
