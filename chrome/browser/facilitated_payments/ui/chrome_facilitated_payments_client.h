@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -40,8 +41,13 @@ class ChromeFacilitatedPaymentsClient
  private:
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
+  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
+                           GetFacilitatedPaymentsNetworkInterface);
+
   // FacilitatedPaymentsClient:
   autofill::PersonalDataManager* GetPersonalDataManager() override;
+  payments::facilitated::FacilitatedPaymentsNetworkInterface*
+  GetFacilitatedPaymentsNetworkInterface() override;
   bool ShowPixPaymentPrompt(
       base::span<autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
@@ -49,6 +55,9 @@ class ChromeFacilitatedPaymentsClient
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
+
+  std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
+      facilitated_payments_network_interface_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

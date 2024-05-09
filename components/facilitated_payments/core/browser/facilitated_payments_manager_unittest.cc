@@ -18,6 +18,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -110,11 +111,32 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetPersonalDataManager,
               (),
               (override));
+  MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
+              GetFacilitatedPaymentsNetworkInterface,
+              (),
+              (override));
   MOCK_METHOD(bool,
               ShowPixPaymentPrompt,
               (base::span<autofill::BankAccount> pix_account_suggestions,
                base::OnceCallback<void(bool, int64_t)>),
               (override));
+};
+
+class MockFacilitatedPaymentsNetworkInterface
+    : public FacilitatedPaymentsNetworkInterface {
+ public:
+  MockFacilitatedPaymentsNetworkInterface()
+      : FacilitatedPaymentsNetworkInterface(/*url_loader_factory=*/nullptr,
+                                            /*identity_manager=*/nullptr,
+                                            /*account_info_getter=*/nullptr) {}
+  ~MockFacilitatedPaymentsNetworkInterface() override = default;
+
+  MOCK_METHOD(
+      void,
+      InitiatePayment,
+      (std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>,
+       InitiatePaymentResponseCallback),
+      (override));
 };
 
 class FacilitatedPaymentsManagerTest : public testing::Test {
@@ -151,6 +173,9 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
     ON_CALL(*client_, GetPersonalDataManager)
         .WillByDefault(testing::Return(personal_data_manager_.get()));
+
+    ON_CALL(*client_, GetFacilitatedPaymentsNetworkInterface)
+        .WillByDefault(testing::Return(&payments_network_interface_));
   }
 
   void TearDown() override {
@@ -272,6 +297,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
   std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
+  MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
 
   // Owned by the `manager_`.
   raw_ptr<MockFacilitatedPaymentsApiClient> api_client_ = nullptr;
@@ -1192,6 +1218,16 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   // The DataDecoder (utility process) validates the PIX code string
   // asynchronously.
   task_environment_.RunUntilIdle();
+}
+
+// Test that SendInitiatePaymentRequest initiates payment using the
+// FacilitatedPaymentsNetworkInterface.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       SendInitiatePaymentRequest) {
+  EXPECT_CALL(payments_network_interface_,
+              InitiatePayment(testing::_, testing::_));
+
+  manager_->SendInitiatePaymentRequest();
 }
 
 // The `IsAvailable` async call is made after a valid Pix code has been

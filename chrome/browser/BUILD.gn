@@ -3543,6 +3543,7 @@ static_library("browser") {
       "//chrome/browser/content_extraction/android:jni_headers",
       "//chrome/browser/device_reauth/android:jni_headers",
       "//chrome/browser/download/internal/android",
+      "//chrome/browser/facilitated_payments",
       "//chrome/browser/facilitated_payments/ui/android",
       "//chrome/browser/feed/android:jni_headers",
       "//chrome/browser/feedback/android",
@@ -3712,6 +3713,10 @@ static_library("browser") {
       "//ui/accessibility",
       "//url",
     ]
+
+    # TODO(crbug.com/335257259): Resolve circular deps caused by including
+    # `IdentityManagerFactory` in facilitated payments.
+    allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
 
     if (safe_browsing_mode == 2) {
       sources += [

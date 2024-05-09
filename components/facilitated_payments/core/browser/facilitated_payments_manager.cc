@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -274,8 +275,22 @@ void FacilitatedPaymentsManager::OnGetClientToken(
 }
 
 void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
-  // TODO(b/300334562): Populate the request details and send the initiate
-  // payment request.
+  if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
+          client_->GetFacilitatedPaymentsNetworkInterface()) {
+    payments_network_interface->InitiatePayment(
+        std::move(initiate_payment_request_details_),
+        base::BindOnce(
+            &FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
+    autofill::AutofillClient::PaymentsRpcResult result,
+    std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
+        response_details) {
+  // TODO(b/300334855): Send the action token from the InitiatePayment response
+  // into the purchase manager.
 }
 
 void FacilitatedPaymentsManager::ResetForTesting() {

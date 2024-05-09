@@ -6,7 +6,10 @@
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "content/public/browser/web_contents.h"
 
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
@@ -34,6 +37,24 @@ ChromeFacilitatedPaymentsClient::GetPersonalDataManager() {
     return autofill::PersonalDataManagerFactory::GetForProfile(profile);
   }
   return nullptr;
+}
+
+payments::facilitated::FacilitatedPaymentsNetworkInterface*
+ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
+  if (!facilitated_payments_network_interface_) {
+    Profile* profile =
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+    if (!profile) {
+      return nullptr;
+    }
+    facilitated_payments_network_interface_ = std::make_unique<
+        payments::facilitated::FacilitatedPaymentsNetworkInterface>(
+        profile->GetURLLoaderFactory(),
+        IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
+        &GetPersonalDataManager()->payments_data_manager(),
+        profile->IsOffTheRecord());
+  }
+  return facilitated_payments_network_interface_.get();
 }
 
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(

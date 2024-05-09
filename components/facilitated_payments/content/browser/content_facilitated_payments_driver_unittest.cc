@@ -57,6 +57,10 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetPersonalDataManager,
               (),
               (override));
+  MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
+              GetFacilitatedPaymentsNetworkInterface,
+              (),
+              (override));
 };
 
 class ContentFacilitatedPaymentsDriverTest

@@ -15,8 +15,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -167,6 +169,8 @@ class FacilitatedPaymentsManager {
       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            PaymentNotOfferedReason_ApiNotAvailable);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           SendInitiatePaymentRequest);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -223,6 +227,13 @@ class FacilitatedPaymentsManager {
   // the account for making the payment.
   void SendInitiatePaymentRequest();
 
+  // Called after receiving the `result` of the initiate payment call. The
+  // `response_details` contains the action token used for payment.
+  void OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult result,
+      std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
+          response_details);
+
   // Calling `Reset` has no effect in tests. Adding this method to specifically
   // test `Resets` in tests.
   void ResetForTesting();
@@ -262,7 +273,10 @@ class FacilitatedPaymentsManager {
   base::TimeTicks get_client_token_loading_latency_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
-  // to the Payments server.
+  // to the Payments server. Its ownership is transferred to
+  // `FacilitatedPaymentsInitiatePaymentRequest` in
+  // `SendInitiatePaymentRequest`. `Reset` destroys the existing instance, and
+  // creates a new instance.
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
 

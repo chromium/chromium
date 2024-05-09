@@ -11,7 +11,20 @@ static_library("facilitated_payments") {
   deps = [
     "//chrome/browser/autofill",
     "//chrome/browser/profiles:profile",
+    "//components/autofill/core/browser",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ui/chrome_facilitated_payments_client_unittest.cc" ]
+
+  deps = [
+    ":facilitated_payments",
+    "//base",
+    "//chrome/test:test_support",
   ]
 }

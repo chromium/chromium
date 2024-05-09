@@ -32,7 +32,7 @@ class FacilitatedPaymentsNetworkInterface
  public:
   using InitiatePaymentResponseCallback = base::OnceCallback<void(
       autofill::AutofillClient::PaymentsRpcResult,
-      FacilitatedPaymentsInitiatePaymentResponseDetails*)>;
+      std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>)>;
 
   FacilitatedPaymentsNetworkInterface(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -48,7 +48,8 @@ class FacilitatedPaymentsNetworkInterface
   ~FacilitatedPaymentsNetworkInterface() override;
 
   // Makes a `FacilitatedPaymentsInitiatePaymentRequest` to the Payments server.
-  void InitiatePayment(
+  // This method is virtual so it can be overridden in tests.
+  virtual void InitiatePayment(
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
           request_details,
       InitiatePaymentResponseCallback response_callback);
