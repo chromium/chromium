@@ -31,7 +31,7 @@ enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not used by segmentation
   // to prevent accidental misuse.
   reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31, 33, 34, 35,
-      36, 39, 40, 42, 43;
+      36, 39, 40, 42, 43, 44;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Target for segmentation: New tab page user.
@@ -74,7 +74,7 @@ enum SegmentId {
   // Target for android home module ranker.
   OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER = 41;
   // Target to determine whether to show promotion for Compose.
-  OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 44;
+  OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION = 45;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
