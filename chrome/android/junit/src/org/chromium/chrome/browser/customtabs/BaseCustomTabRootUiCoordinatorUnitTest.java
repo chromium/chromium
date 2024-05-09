@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 
 /** JUnit tests for BaseCustomTabRootUiCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,6 +65,44 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         assertFalse(
                 "PageInsightsHub should be disabled",
                 BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled(null));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
+    @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
+    public void testGetPageInsightsConfig_cctPageInsightsShouldPeek() throws Exception {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
+        PageInsightsConfig pageInsightsConfig =
+                PageInsightsConfig.newBuilder().setShouldAutoTrigger(true).build();
+        when(connection.getPageInsightsConfig(any(), any(), any())).thenReturn(pageInsightsConfig);
+
+        PageInsightsConfig updateConfig =
+                BaseCustomTabRootUiCoordinator.getPageInsightsConfig(null, null, null);
+        assertTrue(updateConfig.getShouldAutoTrigger());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
+        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB
+    })
+    public void testGetPageInsightsConfig_cctPageInsightsShouldNotPeek() throws Exception {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.shouldEnableGoogleBottomBarForIntent(any())).thenReturn(true);
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
+        PageInsightsConfig pageInsightsConfig =
+                PageInsightsConfig.newBuilder().setShouldAutoTrigger(true).build();
+        when(connection.getPageInsightsConfig(any(), any(), any())).thenReturn(pageInsightsConfig);
+
+        PageInsightsConfig updateConfig =
+                BaseCustomTabRootUiCoordinator.getPageInsightsConfig(null, null, null);
+        assertFalse(updateConfig.getShouldAutoTrigger());
     }
 
     @Test

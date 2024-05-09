@@ -432,14 +432,30 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         .shouldEnablePageInsightsForIntent(intentDataProvider);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static PageInsightsConfig getPageInsightsConfig(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            ObservableSupplier<Profile> profileSupplier,
+            PageInsightsConfigRequest request) {
+        PageInsightsConfig pageInsightsConfig =
+                CustomTabsConnection.getInstance()
+                        .getPageInsightsConfig(request, intentDataProvider, profileSupplier);
+
+        // When GoogleBottomBar is enabled, Page Insights shouldn't peek
+        return isGoogleBottomBarEnabled(intentDataProvider)
+                ? PageInsightsConfig.newBuilder(pageInsightsConfig)
+                        .setShouldAutoTrigger(false)
+                        .build()
+                : pageInsightsConfig;
+    }
+
     private PageInsightsIntentParams getPageInsightsIntentParams() {
         return CustomTabsConnection.getInstance()
                 .getPageInsightsIntentParams(mIntentDataProvider.get());
     }
 
     private PageInsightsConfig getPageInsightsConfig(PageInsightsConfigRequest request) {
-        return CustomTabsConnection.getInstance()
-                .getPageInsightsConfig(request, mIntentDataProvider.get(), mProfileSupplier);
+        return getPageInsightsConfig(mIntentDataProvider.get(), mProfileSupplier, request);
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
