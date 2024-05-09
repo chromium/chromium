@@ -23,6 +23,20 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
+namespace {
+
+// Checks if the model path configured via command line is valid.
+bool IsModelPathValid(const std::string& model_path_str) {
+  std::optional<base::FilePath> model_path =
+      optimization_guide::StringToFilePath(model_path_str);
+  if (!model_path) {
+    return false;
+  }
+  return base::PathExists(*model_path);
+}
+
+}  // namespace
+
 DOCUMENT_USER_DATA_KEY_IMPL(ModelManagerImpl);
 
 ModelManagerImpl::ModelManagerImpl(content::RenderFrameHost* rfh)
@@ -39,15 +53,6 @@ void ModelManagerImpl::Create(
   ModelManagerImpl* model_manager =
       ModelManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
   model_manager->receiver_.Bind(std::move(receiver));
-}
-
-bool ModelManagerImpl::IsModelPathValid(const std::string& model_path_str) {
-  std::optional<base::FilePath> model_path =
-      optimization_guide::StringToFilePath(model_path_str);
-  if (!model_path) {
-    return false;
-  }
-  return base::PathExists(*model_path);
 }
 
 void ModelManagerImpl::CanCreateGenericSession(
@@ -81,23 +86,10 @@ void ModelManagerImpl::CanCreateGenericSession(
   // This needs to be done in a task runner with `MayBlock` trait.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ModelManagerImpl::IsModelPathValid,
-                     base::Unretained(this), model_path.value()),
-      base::BindOnce(
-          [](CanCreateGenericSessionCallback callback,
-             content::RenderFrameHost& rfh, const std::string& model_path,
-             bool is_valid_path) {
-            if (!is_valid_path) {
-              rfh.AddMessageToConsole(
-                  blink::mojom::ConsoleMessageLevel::kWarning,
-                  base::StringPrintf("Unable to create generic session because "
-                                     "the model path ('%s') is invalid.",
-                                     model_path.c_str()));
-            }
-            std::move(callback).Run(is_valid_path);
-          },
-          std::move(callback), std::ref(render_frame_host()),
-          model_path.value()));
+      base::BindOnce(IsModelPathValid, model_path.value()),
+      base::BindOnce(&ModelManagerImpl::OnModelPathValidationComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     model_path.value()));
 }
 
 void ModelManagerImpl::CreateGenericSession(
@@ -155,4 +147,18 @@ void ModelManagerImpl::GetDefaultGenericSessionSamplingParams(
   std::move(callback).Run(blink::mojom::ModelGenericSessionSamplingParams::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+}
+
+void ModelManagerImpl::OnModelPathValidationComplete(
+    CanCreateGenericSessionCallback callback,
+    const std::string& model_path,
+    bool is_valid_path) {
+  if (!is_valid_path) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf("Unable to create generic session because "
+                           "the model path ('%s') is invalid.",
+                           model_path.c_str()));
+  }
+  std::move(callback).Run(is_valid_path);
 }

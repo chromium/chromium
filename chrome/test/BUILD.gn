@@ -6345,6 +6345,7 @@ test("unit_tests") {
     "../browser/metrics/process_memory_metrics_emitter_unittest.cc",
     "../browser/metrics/tab_footprint_aggregator_unittest.cc",
     "../browser/metrics/variations/chrome_variations_service_client_unittest.cc",
+    "../browser/model_execution/model_manager_impl_unittest.cc",
     "../browser/navigation_predictor/navigation_predictor_unittest.cc",
     "../browser/net/chrome_network_delegate_unittest.cc",
     "../browser/net/chrome_report_sender_unittest.cc",

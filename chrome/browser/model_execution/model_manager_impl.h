@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MODEL_EXECUTION_MODEL_MANAGER_IMPL_H_
 #define CHROME_BROWSER_MODEL_EXECUTION_MODEL_MANAGER_IMPL_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
@@ -30,27 +31,30 @@ class ModelManagerImpl : public content::DocumentUserData<ModelManagerImpl>,
 
  private:
   friend class DocumentUserData<ModelManagerImpl>;
+  FRIEND_TEST_ALL_PREFIXES(ModelManagerImplTest,
+                           NoUAFWithInvalidOnDeviceModelPath);
   DOCUMENT_USER_DATA_KEY_DECL();
 
   explicit ModelManagerImpl(content::RenderFrameHost* rfh);
 
-  // Checks if the model path configured via command line is valid.
-  bool IsModelPathValid(const std::string& model_path);
-
   // `blink::mojom::ModelManager` implementation.
   void CanCreateGenericSession(
       CanCreateGenericSessionCallback callback) override;
-
   void CreateGenericSession(
       mojo::PendingReceiver<::blink::mojom::ModelGenericSession> receiver,
       blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
       CreateGenericSessionCallback callback) override;
-
   void GetDefaultGenericSessionSamplingParams(
       GetDefaultGenericSessionSamplingParamsCallback callback) override;
 
+  void OnModelPathValidationComplete(CanCreateGenericSessionCallback callback,
+                                     const std::string& model_path,
+                                     bool is_valid_path);
+
   base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::ModelManager> receiver_{this};
+
+  base::WeakPtrFactory<ModelManagerImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_MODEL_EXECUTION_MODEL_MANAGER_IMPL_H_
