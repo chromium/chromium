@@ -710,7 +710,7 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kFeedbackTool, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
-                    RedactionToolCaller::kBrowserSystemLogs, 0);
+                    RedactionToolCaller::kCrashTool, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kUndetermined, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
@@ -769,7 +769,7 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kFeedbackTool, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
-                    RedactionToolCaller::kBrowserSystemLogs, 0);
+                    RedactionToolCaller::kCrashTool, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kUndetermined, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,

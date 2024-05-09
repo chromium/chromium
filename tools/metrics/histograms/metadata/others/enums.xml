@@ -73,10 +73,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Support Tool"/>
   <int value="4" label="Error Reporting"/>
   <int value="5" label="Feedback Tool"/>
-  <int value="6" label="Browser System Logs"/>
+  <int value="6" label="(Obsolete) Browser System Logs. Removed on 5/2024"/>
   <int value="7" label="Unit Tests"/>
   <int value="8" label="Undetermined"/>
   <int value="9" label="Unknown"/>
+  <int value="10" label="Crash Tool"/>
 </enum>
 
 <enum name="SilentPushEvent">

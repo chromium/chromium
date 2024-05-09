@@ -1133,9 +1133,10 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
     return RedactionToolCaller::kSysLogUploader;
   } else if (fileName == "system_logs_fetcher.cc") {
     return RedactionToolCaller::kSysLogFetcher;
-  } else if (fileName == "log_source_access_manager.cc") {
-    return RedactionToolCaller::kBrowserSystemLogs;
-  } else if (fileName == "feedback_common.cc") {
+  } else if (fileName == "crash_collector.cc") {
+    return RedactionToolCaller::kCrashTool;
+  } else if (fileName == "feedback_common.cc" ||
+             fileName == "log_source_access_manager.cc") {
     return RedactionToolCaller::kFeedbackTool;
   }
   return RedactionToolCaller::kUnknown;

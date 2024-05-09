@@ -34,11 +34,14 @@ enum class RedactionToolCaller {
   kSupportTool = 3,
   kErrorReporting = 4,
   kFeedbackTool = 5,
-  kBrowserSystemLogs = 6,
+  // Browser system logs is deprecated since it's being called only
+  // by the feedback tool.
+  // kBrowserSystemLogs = 6,
   kUnitTest = 7,
   kUndetermined = 8,
   kUnknown = 9,
-  kMaxValue = kUnknown,
+  kCrashTool = 10,
+  kMaxValue = kCrashTool,
 };
 
 inline constexpr char kPIIRedactedHistogram[] = "Feedback.RedactionTool";
