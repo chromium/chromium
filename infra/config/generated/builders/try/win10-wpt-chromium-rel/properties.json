@@ -2,18 +2,17 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/linux-wpt-chromium-rel/gn-args.json"
+        "infra/config/generated/builders/try/win10-wpt-chromium-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-wpt-chromium-rel",
+              "builder": "win10-wpt-chromium-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -22,8 +21,9 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "intel",
                 "target_bits": 64,
-                "target_platform": "linux"
+                "target_platform": "win"
               },
               "legacy_gclient_config": {
                 "config": "chromium"
@@ -35,7 +35,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-wpt-chromium-rel",
+          "builder": "win10-wpt-chromium-rel",
           "project": "chromium"
         }
       ],

@@ -444,7 +444,6 @@ exempted_from_description_builders = {
         "linux-updater-tester-rel",
         "linux-upload-perfetto",
         "linux-v4l2-codec-rel",
-        "linux-wpt-chromium-rel",
         "mac-angle-chromium-amd",
         "mac-angle-chromium-builder",
         "mac-angle-chromium-intel",

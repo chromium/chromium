@@ -70,9 +70,6 @@ try_.builder(
     main_list_view = "try",
 )
 
-# TODO(crbug.com/40927590): Once `chrome_wpt_tests` is on CQ/CI (`linux-rel` and
-# `Linux Tests`), remove `ci/linux-wpt-fyi-rel` and move its definition here.
-#
 # `linux-wpt-chromium-rel` (tests chrome) is distinct from `linux-blink-rel`
 # (tests content shell) to avoid coupling their build configurations.
 try_.builder(
@@ -83,9 +80,25 @@ Chrome.\
 """,
     mirrors = ["ci/linux-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
-        retry_failed_shards = True,
+        retry_failed_shards = False,
     ),
     gn_args = "ci/linux-wpt-chromium-rel",
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-blink-engprod@google.com",
+    main_list_view = "try",
+)
+
+try_.builder(
+    name = "win10-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    mirrors = ["ci/win10-wpt-chromium-rel"],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = "ci/win10-wpt-chromium-rel",
     os = os.LINUX_DEFAULT,
     contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
@@ -376,6 +389,22 @@ blink_mac_builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
+)
+
+try_.builder(
+    name = "mac13-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    mirrors = ["ci/mac13-wpt-chromium-rel"],
+    builder_config_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
+    gn_args = "ci/mac13-wpt-chromium-rel",
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-blink-engprod@google.com",
+    main_list_view = "try",
 )
 
 blink_mac_builder(

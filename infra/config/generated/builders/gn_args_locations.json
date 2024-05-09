@@ -317,12 +317,14 @@
     "mac-osxbeta-rel": "ci/mac-osxbeta-rel/gn-args.json",
     "mac-perfetto-rel": "ci/mac-perfetto-rel/gn-args.json",
     "mac-upload-perfetto": "ci/mac-upload-perfetto/gn-args.json",
+    "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
     "win-perfetto-rel": "ci/win-perfetto-rel/gn-args.json",
     "win-upload-perfetto": "ci/win-upload-perfetto/gn-args.json",
     "win10-multiscreen-fyi-rel": "ci/win10-multiscreen-fyi-rel/gn-args.json",
     "win10-rel-no-external-ip": "ci/win10-rel-no-external-ip/gn-args.json",
+    "win10-wpt-chromium-rel": "ci/win10-wpt-chromium-rel/gn-args.json",
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },
   "chromium.gpu": {
@@ -516,10 +518,12 @@
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",
     "mac12.0.arm64-blink-rel": "try/mac12.0.arm64-blink-rel/gn-args.json",
     "mac13-blink-rel": "try/mac13-blink-rel/gn-args.json",
+    "mac13-wpt-chromium-rel": "try/mac13-wpt-chromium-rel/gn-args.json",
     "mac13.arm64-blink-rel": "try/mac13.arm64-blink-rel/gn-args.json",
     "mac13.arm64-skia-alt-blink-rel": "try/mac13.arm64-skia-alt-blink-rel/gn-args.json",
     "mac14-blink-rel": "try/mac14-blink-rel/gn-args.json",
     "mac14.arm64-blink-rel": "try/mac14.arm64-blink-rel/gn-args.json",
+    "win10-wpt-chromium-rel": "try/win10-wpt-chromium-rel/gn-args.json",
     "win10.20h2-blink-rel": "try/win10.20h2-blink-rel/gn-args.json",
     "win11-arm64-blink-rel": "try/win11-arm64-blink-rel/gn-args.json",
     "win11-blink-rel": "try/win11-blink-rel/gn-args.json"

@@ -717,8 +717,49 @@ ci.builder(
     contact_team_email = "chrome-browser-infra-team@google.com",
 )
 
+fyi_mac_builder(
+    name = "mac13-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "dcheck_always_on",
+        ],
+    ),
+    builderless = True,
+    cores = None,
+    os = os.MAC_ANY,
+    cpu = cpu.ARM64,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+    experimental = True,
+)
+
 ci.builder(
     name = "linux-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -742,6 +783,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
+    contact_team_email = "chrome-blink-engprod@google.com",
     experimental = True,
 )
 
@@ -2129,6 +2171,43 @@ ci.builder(
         category = "win10",
     ),
     contact_team_email = "web-windowing-team@google.com",
+    experimental = True,
+)
+
+ci.builder(
+    name = "win10-wpt-chromium-rel",
+    description_html = """\
+Runs <a href="https://web-platform-tests.org">web platform tests</a> against
+Chrome.\
+""",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
+    builderless = True,
+    os = os.WINDOWS_10,
+    console_view_entry = consoles.console_view_entry(
+        category = "win10",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
     experimental = True,
 )
 

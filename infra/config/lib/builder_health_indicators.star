@@ -447,7 +447,6 @@ _exempted_from_contact_builders = {
         "linux-updater-tester-rel",
         "linux-upload-perfetto",
         "linux-v4l2-codec-rel",
-        "linux-wpt-chromium-rel",
         "mac-angle-chromium-builder",
         "mac-angle-chromium-intel",
         "mac-archive-rel",

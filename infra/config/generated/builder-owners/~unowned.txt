@@ -111,7 +111,6 @@ ci/linux-updater-tester-dbg
 ci/linux-updater-tester-rel
 ci/linux-upload-perfetto
 ci/linux-v4l2-codec-rel
-ci/linux-wpt-chromium-rel
 ci/mac-code-coverage
 ci/mac-fieldtrial-tester
 ci/mac-intel-on-arm64-rel
