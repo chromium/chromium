@@ -218,6 +218,10 @@ void TasksClientImpl::GetTasks(const std::string& task_list_id,
                                TasksClient::GetTasksCallback callback) {
   CHECK(!task_list_id.empty());
 
+  // TODO(b/337281579): Creating a list model in `tasks_in_task_lists_` before
+  // the tasks are actually returned will have `GetCachedTasksInTaskList()`
+  // return an empty list model, which is wrong as it is not the actual result.
+  // Move this to `RunGetTasksCallbacks()` will make more sense.
   const auto [iter, inserted] = tasks_in_task_lists_.emplace(
       std::piecewise_construct, std::forward_as_tuple(task_list_id),
       std::forward_as_tuple());
