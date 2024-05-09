@@ -80,10 +80,11 @@ class SetUpListTest : public PlatformTest {
     [set_up_list_ disconnect];
     set_up_list_ =
         [SetUpList buildFromPrefs:prefs_
-                       localState:GetLocalState()
-                      syncService:SyncServiceFactory::GetForBrowserState(
-                                      GetBrowserState())
-            authenticationService:auth_service_];
+                            localState:GetLocalState()
+                           syncService:SyncServiceFactory::GetForBrowserState(
+                                           GetBrowserState())
+                 authenticationService:auth_service_
+            contentNotificationEnabled:content_notification_enabled_];
   }
 
   // Fakes a sign-in with a fake identity.
@@ -126,6 +127,7 @@ class SetUpListTest : public PlatformTest {
     ScopedDictPrefUpdate update(prefs_,
                                 prefs::kFeaturePushNotificationPermissions);
     update->Set(kContentNotificationKey, enable);
+    content_notification_enabled_ = enable;
   }
 
   // Returns the item with the given `type`. Returns nil if not found.
@@ -178,6 +180,7 @@ class SetUpListTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   raw_ptr<AuthenticationService> auth_service_;
   SetUpList* set_up_list_;
+  bool content_notification_enabled_;
 };
 
 // Tests the SignInSync item is hidden if sync is disabled by policy.
@@ -292,11 +295,10 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
   feature_list_.InitAndEnableFeatureWithParameters(
       kContentPushNotifications,
       {{kContentPushNotificationsExperimentType, "2"}});
-  SignInFakeIdentity();
 
   SetContentNotificationsEnabled(false);
   BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kNotifications, NO);
+  ExpectListToNotInclude(SetUpListItemType::kNotifications);
 
   SetContentNotificationsEnabled(true);
   BuildSetUpList();
