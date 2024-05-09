@@ -536,6 +536,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
       layer_title_cache->GetGroupTitleLayer(id, incognito);
   if (title_layer) {
     float title_y = (height - title_layer->size().height()) / 2.f;
+    title_layer->SetUIResourceIds();
     title_layer->setOpacity(1.0f);
     title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
     title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, title_y));
@@ -545,7 +546,6 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
       title_indicator_layer->ReplaceChild(
           title_indicator_layer->children()[0].get(), title_layer->layer());
     }
-    title_layer->SetUIResourceIds();
   } else {
     title_indicator_layer->RemoveAllChildren();
   }
