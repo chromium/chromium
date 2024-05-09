@@ -47,14 +47,9 @@ id<GREYMatcher> TargetUnitFieldMatcher() {
 
 // Taps on `item_button`.
 void TapOnButton(id<GREYMatcher> item_button) {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(item_button,
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:item_button]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(item_button,
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:item_button] performAction:grey_tap()];
 }
 
 // Taps on a context menu button.
@@ -202,17 +197,12 @@ id<GREYMatcher> TargetUnitMenuButton() {
 - (void)testTargetUnitChange {
   [UnitConversionAppInterface presentUnitConversionFeature];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
-  id<GREYMatcher> targetButton = TargetUnitMenuButton();
-  TapOnButton(targetButton);
+  TapOnButton(TargetUnitMenuButton());
   TapOnContextMenuButton(@"Kilograms (kg)");
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(TargetUnitFieldMatcher(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_textFieldValue(@"20")];
-
-  // Resets the target unit menu button back to pounds.
-  TapOnButton(targetButton);
-  TapOnContextMenuButton(@"Pounds (lb)");
 }
 
 @end
