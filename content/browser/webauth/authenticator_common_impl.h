@@ -150,7 +150,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
-  void ContinueMakeCredentialAfterEnclaveAvailabilityCheck(bool available);
+  void ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck(
+      bool available);
   void ContinueMakeCredentialAfterIsUvpaaOverrideCheck(
       std::optional<bool> is_uvpaa_override);
 
@@ -160,7 +161,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PaymentOptionsPtr payment_options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
-  void ContinueGetAssertionAfterEnclaveAvailabilityCheck(bool available);
+  void ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck(
+      bool available);
   void ContinueGetAssertionAfterIsUvpaaOverrideCheck(
       std::optional<bool> is_uvpaa_override);
 
@@ -297,7 +299,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   std::unique_ptr<RequestState> req_state_;
 
   // Cached values from the WebAuthenticationDelegate.
-  bool enclave_available_ = false;
+  bool browser_passkeys_available_ = false;
   std::optional<bool> is_uvpaa_override_;
 
   base::WeakPtrFactory<AuthenticatorCommonImpl> weak_factory_{this};

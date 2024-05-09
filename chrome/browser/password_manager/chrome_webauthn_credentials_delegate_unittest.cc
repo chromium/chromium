@@ -297,6 +297,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
                                         mock_callback.Get());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        OnStepTransitionCallbackEnclaveSource) {
   base::test::ScopedFeatureList enabled{device::kWebAuthnEnclaveAuthenticator};
@@ -334,7 +335,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   EXPECT_CALL(mock_callback, Run()).Times(1);
   task_environment()->FastForwardBy(base::Milliseconds(350));
 }
-
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

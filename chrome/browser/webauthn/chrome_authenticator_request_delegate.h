@@ -34,6 +34,10 @@ namespace base {
 class Clock;
 }
 
+namespace chromeos {
+class PasskeyDialogController;
+}
+
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -93,7 +97,7 @@ class ChromeWebAuthenticationDelegate
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
-  void IsEnclaveAuthenticatorAvailable(
+  void BrowserProvidedPasskeysAvailable(
       content::BrowserContext* browser_context,
       base::OnceCallback<void(bool)> callback) override;
 
@@ -368,6 +372,12 @@ class ChromeAuthenticatorRequestDelegate
   // available that can service requests for synced GPM passkeys.
   bool can_use_synced_phone_passkeys_ = false;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<chromeos::PasskeyDialogController>
+      chromeos_passkey_controller_;
+#endif
+
+  // TODO(crbug.com/40187814): Don't define this on ChromeOS.
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
 
   // Stores the TransportAvailabilityInfo while we're waiting for the enclave

@@ -99,7 +99,7 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
   return nullptr;
 }
 
-void WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+void WebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     BrowserContext* browser_context,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(false);

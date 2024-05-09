@@ -135,10 +135,10 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       BrowserContext* browser_context,
       const url::Origin& caller_origin);
 
-  // Invokes the callback with true when the cloud enclave authenticator is
+  // Invokes the callback with true when passkeys provided by browser sync are
   // available for use, and false otherwise. The callback can be invoked
   // synchronously or asynchronously.
-  virtual void IsEnclaveAuthenticatorAvailable(
+  virtual void BrowserProvidedPasskeysAvailable(
       BrowserContext* browser_context,
       base::OnceCallback<void(bool)> callback);
 

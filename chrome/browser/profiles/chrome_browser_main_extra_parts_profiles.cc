@@ -324,6 +324,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#include "chrome/browser/webauthn/chromeos/passkey_service_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -706,6 +707,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
     chromeos::cloud_upload::CloudUploadPrefsWatcherFactory::GetInstance();
   }
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  chromeos::PasskeyServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::RemoteAppsProxyLacrosFactory::GetInstance();

@@ -647,8 +647,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       req_state_->make_credential_options->resident_key,
       req_state_->make_credential_options->user_verification,
       req_state_->ctap_make_credential_request->user.name,
-      base::span<const device::CableDiscoveryData>(), enclave_available_,
-      discovery_factory());
+      base::span<const device::CableDiscoveryData>(),
+      browser_passkeys_available_, discovery_factory());
   SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   req_state_->make_credential_options->allow_skipping_pin_touch =
@@ -701,7 +701,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       req_state_->ctap_get_assertion_request->user_verification,
-      /*user_name=*/std::nullopt, cable_pairings, enclave_available_,
+      /*user_name=*/std::nullopt, cable_pairings, browser_passkeys_available_,
       discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
@@ -1061,16 +1061,18 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   req_state_->ctap_make_credential_request->attestation_preference =
       attestation;
 
-  GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
+  GetWebAuthenticationDelegate()->BrowserProvidedPasskeysAvailable(
       GetBrowserContext(),
-      base::BindOnce(&AuthenticatorCommonImpl::
-                         ContinueMakeCredentialAfterEnclaveAvailabilityCheck,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &AuthenticatorCommonImpl::
+              ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck,
+          weak_factory_.GetWeakPtr()));
 }
 
 void AuthenticatorCommonImpl::
-    ContinueMakeCredentialAfterEnclaveAvailabilityCheck(bool available) {
-  enclave_available_ = available;
+    ContinueMakeCredentialAfterBrowserPasskeysAvailabilityCheck(
+        bool available) {
+  browser_passkeys_available_ = available;
   GetWebAuthenticationDelegate()
       ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
           GetRenderFrameHost(),
@@ -1372,16 +1374,17 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       options->extensions->large_blob_read;
   req_state_->ctap_get_assertion_options->large_blob_write =
       options->extensions->large_blob_write;
-  GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
+  GetWebAuthenticationDelegate()->BrowserProvidedPasskeysAvailable(
       GetBrowserContext(),
-      base::BindOnce(&AuthenticatorCommonImpl::
-                         ContinueGetAssertionAfterEnclaveAvailabilityCheck,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &AuthenticatorCommonImpl::
+              ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck,
+          weak_factory_.GetWeakPtr()));
 }
 
-void AuthenticatorCommonImpl::ContinueGetAssertionAfterEnclaveAvailabilityCheck(
-    bool available) {
-  enclave_available_ = available;
+void AuthenticatorCommonImpl::
+    ContinueGetAssertionAfterBrowserPasskeysAvailabilityCheck(bool available) {
+  browser_passkeys_available_ = available;
   GetWebAuthenticationDelegate()
       ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
           GetRenderFrameHost(),
@@ -1764,6 +1767,7 @@ void AuthenticatorCommonImpl::OnSignResponse(
 
   switch (authenticator->GetType()) {
     case device::AuthenticatorType::kChromeOS:
+    case device::AuthenticatorType::kChromeOSPasskeys:
       req_state_->get_assertion_result =
           status_code == device::GetAssertionStatus::kSuccess
               ? GetAssertionResult::kChromeOSSuccess

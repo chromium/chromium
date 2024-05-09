@@ -179,6 +179,7 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
     case device::AuthenticatorType::kICloudKeychain:
       return password_manager::PasskeyCredential::Source::kICloudKeychain;
     case device::AuthenticatorType::kEnclave:
+    case device::AuthenticatorType::kChromeOSPasskeys:
       return password_manager::PasskeyCredential::Source::
           kGooglePasswordManager;
     case device::AuthenticatorType::kChromeOS:
@@ -383,6 +384,8 @@ bool IsChromeImplemented(device::AuthenticatorType type) {
     case device::AuthenticatorType::kICloudKeychain:
       return false;
     case device::AuthenticatorType::kEnclave:
+      return false;
+    case device::AuthenticatorType::kChromeOSPasskeys:
       return false;
     case device::AuthenticatorType::kOther:
       // For testing purposes.
@@ -1458,16 +1461,23 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
   model_->preselected_cred = *cred;
 
   if (source != device::AuthenticatorType::kPhone &&
-      source != device::AuthenticatorType::kEnclave) {
+      source != device::AuthenticatorType::kEnclave &&
+      source != device::AuthenticatorType::kChromeOSPasskeys) {
     HideDialogAndDispatchToPlatformAuthenticator(source);
     return source;
   }
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    ContactPriorityPhone();
-  } else {
-    model_->OnGPMPasskeySelected(std::move(credential_id));
+  const bool use_gpm =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(device::kChromeOsPasskeys) ||
+#endif
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+  if (use_gpm) {
+    model_->OnGPMPasskeySelected(credential_id);
+    return source;
   }
+
+  ContactPriorityPhone();
   return source;
 }
 
