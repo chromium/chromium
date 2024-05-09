@@ -10,10 +10,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,6 +88,7 @@ class ExtendedUpdatesNotificationTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingCrosSettings cros_settings_;
   TestingProfile profile_;
   NotificationDisplayServiceTester notification_display_service_tester_{
       &profile_};
@@ -169,6 +172,28 @@ TEST_F(ExtendedUpdatesNotificationTest, NonUserDismiss) {
   CloseNotification(/*by_user=*/false);
   EXPECT_THAT(ShowingNotificationCount(), Eq(0));
   EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
+}
+
+TEST_F(ExtendedUpdatesNotificationTest, DismissNotificationAfterOptIn) {
+  ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
+  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+
+  cros_settings_.device_settings()->SetBoolean(kDeviceExtendedAutoUpdateEnabled,
+                                               true);
+  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+}
+
+TEST_F(ExtendedUpdatesNotificationTest,
+       DismissNotificationAfterOptInWithNoNotificationShowing) {
+  ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
+  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+
+  CloseNotification(/*by_user=*/false);
+  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+
+  cros_settings_.device_settings()->SetBoolean(kDeviceExtendedAutoUpdateEnabled,
+                                               true);
+  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
 }
 
 }  // namespace ash

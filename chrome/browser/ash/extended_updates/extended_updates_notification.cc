@@ -14,6 +14,7 @@
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
@@ -57,6 +58,8 @@ void ExtendedUpdatesNotification::Show(
     return;
   }
   Profile* profile = delegate->profile();
+
+  delegate->SubscribeToDeviceSettingsChanges();
 
   message_center::RichNotificationData data;
   // Keep same order as |IndexedButton| enum.
@@ -124,6 +127,21 @@ void ExtendedUpdatesNotification::OpenLearnMoreUrl() {
       GURL(chrome::kDeviceExtendedUpdatesLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void ExtendedUpdatesNotification::SubscribeToDeviceSettingsChanges() {
+  settings_change_subscription_ =
+      ExtendedUpdatesController::SubscribeToDeviceSettingsChanges(
+          base::BindRepeating(
+              &ExtendedUpdatesNotification::OnDeviceSettingsChanged,
+              weak_factory_.GetWeakPtr()));
+}
+
+void ExtendedUpdatesNotification::OnDeviceSettingsChanged() {
+  if (profile_ && ExtendedUpdatesController::Get()->IsOptedIn()) {
+    NotificationDisplayService::GetForProfile(profile_.get())
+        ->Close(kNotificationType, std::string(kNotificationId));
+  }
 }
 
 }  // namespace ash

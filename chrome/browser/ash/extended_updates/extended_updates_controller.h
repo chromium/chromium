@@ -55,6 +55,9 @@ class ExtendedUpdatesController {
   static void RecordEntryPointEventForSettingsSetUpButtonShown();
   static void RecordEntryPointEventForSettingsSetUpButtonClicked();
 
+  static base::CallbackListSubscription SubscribeToDeviceSettingsChanges(
+      base::RepeatingClosure callback);
+
   // Whether the device is eligible to opt-in for extended updates.
   // This depends on multiple criteria, e.g. whether opt-in is required,
   // being within the allowed time window, the user type, whether the device

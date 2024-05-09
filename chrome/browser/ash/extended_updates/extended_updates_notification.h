@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,7 +58,14 @@ class ExtendedUpdatesNotification
  private:
   Profile* profile() { return profile_.get(); }
 
+  void SubscribeToDeviceSettingsChanges();
+  void OnDeviceSettingsChanged();
+
   base::WeakPtr<Profile> profile_;
+
+  base::CallbackListSubscription settings_change_subscription_;
+
+  base::WeakPtrFactory<ExtendedUpdatesNotification> weak_factory_{this};
 };
 
 }  // namespace ash

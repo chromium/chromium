@@ -11,7 +11,9 @@
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -99,6 +101,16 @@ void ExtendedUpdatesController::
     RecordEntryPointEventForSettingsSetUpButtonClicked() {
   RecordExtendedUpdatesEntryPointEvent(
       ExtendedUpdatesEntryPointEvent::kSettingsSetUpButtonClicked);
+}
+
+base::CallbackListSubscription
+ExtendedUpdatesController::SubscribeToDeviceSettingsChanges(
+    base::RepeatingClosure callback) {
+  if (CrosSettings::IsInitialized()) {
+    return CrosSettings::Get()->AddSettingsObserver(
+        kDeviceExtendedAutoUpdateEnabled, std::move(callback));
+  }
+  return base::CallbackListSubscription();
 }
 
 ExtendedUpdatesController::ExtendedUpdatesController()
@@ -216,9 +228,8 @@ void ExtendedUpdatesController::ShowNotification(
 }
 
 void ExtendedUpdatesController::SubscribeToDeviceSettingsChanges() {
-  if (!settings_change_subscription_ && CrosSettings::IsInitialized()) {
-    settings_change_subscription_ = CrosSettings::Get()->AddSettingsObserver(
-        kDeviceExtendedAutoUpdateEnabled,
+  if (!settings_change_subscription_) {
+    settings_change_subscription_ = SubscribeToDeviceSettingsChanges(
         base::BindRepeating(&ExtendedUpdatesController::OnDeviceSettingsChanged,
                             weak_factory_.GetWeakPtr()));
   }
