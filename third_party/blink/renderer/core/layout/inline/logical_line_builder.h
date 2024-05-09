@@ -29,6 +29,8 @@ class LogicalLineBuilder {
                      InlineLayoutStateStack* state_stack,
                      InlineChildLayoutContext* context);
 
+  void RebuildBoxStates(const LineInfo& line_info, wtf_size_t end_item_index);
+
   // `main_line_helper` can be nullptr if the line is for ruby annotations.
   void CreateLine(LineInfo* line_info,
                   LogicalLineItems* line_box,
@@ -46,17 +48,15 @@ class LogicalLineBuilder {
     return has_relative_positioned_items_;
   }
 
-  InlineBoxState* HandleOpenTag(const InlineItem&,
-                                const InlineItemResult&,
-                                LogicalLineItems*,
-                                InlineLayoutStateStack*) const;
-
  private:
   InlineBoxState* HandleItemResults(const LineInfo& line_info,
                                     InlineItemResults& line_items,
                                     LogicalLineItems* line_box,
                                     InlineLayoutAlgorithm* main_line_helper,
                                     InlineBoxState* box);
+  InlineBoxState* HandleOpenTag(const InlineItem&,
+                                const InlineItemResult&,
+                                LogicalLineItems*);
   InlineBoxState* HandleCloseTag(const InlineItem&,
                                  const InlineItemResult&,
                                  LogicalLineItems* line_box,

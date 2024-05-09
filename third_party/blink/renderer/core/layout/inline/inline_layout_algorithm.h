@@ -77,9 +77,6 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                                 ExclusionSpace*);
 
   void PrepareBoxStates(const LineInfo&, const InlineBreakToken*);
-  void RebuildBoxStates(const LineInfo&,
-                        const InlineBreakToken*,
-                        InlineLayoutStateStack*) const;
 
   void PlaceOutOfFlowObjects(const LineInfo&,
                              const FontHeight&,

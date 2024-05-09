@@ -296,7 +296,8 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
 
   // If not, rebuild the box states for the break token.
   box_states_ = context_->ResetBoxStates();
-  RebuildBoxStates(line_info, break_token, box_states_);
+  LogicalLineBuilder(Node(), GetConstraintSpace(), box_states_, context_)
+      .RebuildBoxStates(line_info, break_token->StartItemIndex());
 }
 
 static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info,
@@ -321,37 +322,14 @@ static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info,
   return -hang_width;
 }
 
-void InlineLayoutAlgorithm::RebuildBoxStates(
-    const LineInfo& line_info,
-    const InlineBreakToken* break_token,
-    InlineLayoutStateStack* box_states) const {
-  // Compute which tags are not closed at the beginning of this line.
-  InlineItemsData::OpenTagItems open_items;
-  line_info.ItemsData().GetOpenTagItems(break_token->StartItemIndex(),
-                                        &open_items);
-
-  // Create box states for tags that are not closed yet.
-  LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  box_states->OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
-                                quirks_mode_, &line_box);
-  LogicalLineBuilder line_builder(Node(), GetConstraintSpace(), box_states,
-                                  context_);
-  for (const InlineItem* item : open_items) {
-    InlineItemResult item_result;
-    LineBreaker::ComputeOpenTagResult(*item, GetConstraintSpace(),
-                                      Node().IsSvgText(), &item_result);
-    line_builder.HandleOpenTag(*item, item_result, &line_box, box_states);
-  }
-  context_->ReleaseTempLogicalLineItems(line_box);
-}
-
 #if EXPENSIVE_DCHECKS_ARE_ON()
 void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
   if (!is_box_states_from_context_) {
     return;
   }
   InlineLayoutStateStack rebuilt;
-  RebuildBoxStates(line_info, GetBreakToken(), &rebuilt);
+  LogicalLineBuilder(Node(), GetConstraintSpace(), &rebuilt, context_)
+      .RebuildBoxStates(line_info, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                             quirks_mode_, &line_box);
