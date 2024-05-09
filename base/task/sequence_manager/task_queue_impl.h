@@ -321,10 +321,9 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
   class TaskRunner final : public SingleThreadTaskRunner {
    public:
-    explicit TaskRunner(
-        scoped_refptr<GuardedTaskPoster> task_poster,
-        scoped_refptr<const AssociatedThreadId> associated_thread,
-        TaskType task_type);
+    explicit TaskRunner(scoped_refptr<GuardedTaskPoster> task_poster,
+                        scoped_refptr<AssociatedThreadId> associated_thread,
+                        TaskType task_type);
 
     bool PostDelayedTask(const Location& location,
                          OnceClosure callback,
@@ -357,7 +356,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     ~TaskRunner() final;
 
     const scoped_refptr<GuardedTaskPoster> task_poster_;
-    const scoped_refptr<const AssociatedThreadId> associated_thread_;
+    const scoped_refptr<AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
   };
 
@@ -557,7 +556,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   const raw_ptr<SequenceManagerImpl, AcrossTasksDanglingUntriaged>
       sequence_manager_;
 
-  const scoped_refptr<const AssociatedThreadId> associated_thread_;
+  const scoped_refptr<AssociatedThreadId> associated_thread_;
 
   const scoped_refptr<GuardedTaskPoster> task_poster_;
 
@@ -601,11 +600,11 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
 
   MainThreadOnly main_thread_only_;
   MainThreadOnly& main_thread_only() {
-    DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+    associated_thread_->AssertInSequenceWithCurrentThread();
     return main_thread_only_;
   }
   const MainThreadOnly& main_thread_only() const {
-    DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+    associated_thread_->AssertInSequenceWithCurrentThread();
     return main_thread_only_;
   }
 

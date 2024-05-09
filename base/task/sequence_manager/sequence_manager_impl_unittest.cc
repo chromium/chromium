@@ -5792,31 +5792,35 @@ TEST_F(SequenceManagerRunOrPostTaskTest,
 // task from starting on the bound thread.
 TEST_F(SequenceManagerRunOrPostTaskTest,
        MainThreadCantStartTaskDuringRunOrPostTask) {
-  SimulateInsideRunLoop();
-  WaitableEvent sync_task_started;
+  RunLoop run_loop;
+
   bool sync_task_done = true;
 
-  EXPECT_TRUE(other_thread_task_runner()->PostTask(
-      FROM_HERE, BindLambdaForTesting([&]() {
-        EXPECT_TRUE(task_runner()->RunOrPostTask(
-            subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
-            BindLambdaForTesting([&]() {
-              sync_task_started.Signal();
-              // Wait to increase chances that the main thread will attempt to
-              // schedule its task.
-              PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-              sync_task_done = true;
-            })));
-        EXPECT_TRUE(sync_task_done);
-      })));
+  task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_TRUE(other_thread_task_runner()->PostTask(
+            FROM_HERE, BindLambdaForTesting([&]() {
+              EXPECT_TRUE(task_runner()->RunOrPostTask(
+                  subtle::RunOrPostTaskPassKeyForTesting(), FROM_HERE,
+                  BindLambdaForTesting([&]() {
+                    task_runner()->PostTask(FROM_HERE,
+                                            BindLambdaForTesting([&]() {
+                                              // Must deterministically run
+                                              // after the sync task is
+                                              // complete.
+                                              EXPECT_TRUE(sync_task_done);
+                                              run_loop.Quit();
+                                            }));
 
-  sync_task_started.Wait();
-  RunLoop run_loop;
-  task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                            // Must deterministically run after the sync task.
-                            EXPECT_TRUE(sync_task_done);
-                            run_loop.Quit();
-                          }));
+                    // Wait to increase chances that the main thread will
+                    // attempt to schedule its task.
+                    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+                    sync_task_done = true;
+                  })));
+              EXPECT_TRUE(sync_task_done);
+            })));
+      }));
+
   run_loop.Run();
   FlushOtherThread();
 }

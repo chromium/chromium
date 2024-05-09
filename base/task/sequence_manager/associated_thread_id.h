@@ -62,11 +62,11 @@ class BASE_EXPORT AssociatedThreadId
   // By the time this returns false, the thread may have racily be bound.
   // However, a bound thread is never unbound.
   bool IsBound() const {
-    return !thread_ref_.load(std::memory_order_acquire).is_null();
+    return !bound_thread_ref_.load(std::memory_order_acquire).is_null();
   }
 
-  // Checks whether this object is bound to the current thread. Returns false if
-  // this object is not bound to any thread.
+  // Returns whether this object is bound to the current thread. Returns false
+  // if this object is not bound to any thread.
   //
   // Note that this method provides no memory ordering guarantees but those are
   // not really needed. If this method returns true we are on the same thread
@@ -74,10 +74,11 @@ class BASE_EXPORT AssociatedThreadId
   // could be unbound, so there is no possible ordering.
   //
   // Attention:: The result might be stale by the time this method returns.
-  bool IsBoundToCurrentThread() const {
-    return thread_ref_.load(std::memory_order_relaxed) ==
-           PlatformThread::CurrentRef();
-  }
+  bool IsBoundToCurrentThread() const;
+
+  // Asserts that the current thread runs in sequence with the thread to which
+  // this object is bound.
+  void AssertInSequenceWithCurrentThread() const;
 
   // Returns the `SequenceToken` associated with the bound thread. The caller
   // must ensure that this is sequenced after `BindToCurrentThread()`.
@@ -86,11 +87,20 @@ class BASE_EXPORT AssociatedThreadId
     return sequence_token_;
   }
 
+  // Indicates that the current thread starts/stops running in sequence with the
+  // bound thread. `IsBoundToCurrentThread()` and
+  // `AssertInSequenceWithCurrentThread()` fail if invoked on the bound thread
+  // when another thread runs in sequence with it (that indicates that mutual
+  // exclusion is not guaranteed).
+  void StartInSequenceWithCurrentThread();
+  void StopInSequenceWithCurrentThread();
+
  private:
   friend class base::RefCountedThreadSafe<AssociatedThreadId>;
   ~AssociatedThreadId();
 
-  std::atomic<PlatformThreadRef> thread_ref_{};
+  std::atomic<PlatformThreadRef> bound_thread_ref_;
+  std::atomic<PlatformThreadRef> in_sequence_thread_ref_;
   base::internal::SequenceToken sequence_token_;
 };
 

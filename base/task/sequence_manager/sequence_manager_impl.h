@@ -187,7 +187,7 @@ class BASE_EXPORT SequenceManagerImpl
   void UnregisterTaskQueueImpl(
       std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
-  scoped_refptr<const AssociatedThreadId> associated_thread() const {
+  scoped_refptr<AssociatedThreadId> associated_thread() const {
     return associated_thread_;
   }
 
