@@ -118,6 +118,13 @@ class TabImpl implements Tab {
     /** The current native page (e.g. chrome-native://newtab), or {@code null} if there is none. */
     private NativePage mNativePage;
 
+    /**
+     * True after a native page has been hidden, before a new background color has been explicitly
+     * set. This is useful when the implicit background color (previously set before showing the
+     * native page) is no longer necessarily relevant.
+     */
+    private boolean mWaitingOnBgColorAfterHidingNativePage;
+
     /** {@link WebContents} showing the current page, or {@code null} if the tab is frozen. */
     private WebContents mWebContents;
 
@@ -1462,6 +1469,16 @@ class TabImpl implements Tab {
     void changeWebContentBackgroundColor(int color) {
         mWebContentBackgroundColor = color;
         onBackgroundColorChanged();
+        mWaitingOnBgColorAfterHidingNativePage = false;
+    }
+
+    /** Called to notify when the page had painted something non-empty. */
+    void notifyDidFirstVisuallyNonEmptyPaint() {
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
+                && mWaitingOnBgColorAfterHidingNativePage) {
+            onBackgroundColorChanged();
+        }
+        mWaitingOnBgColorAfterHidingNativePage = false;
     }
 
     private void onBackgroundColorChanged() {
@@ -1704,9 +1721,7 @@ class TabImpl implements Tab {
                 mNativePage.getView().removeOnAttachStateChangeListener(mAttachStateChangeListener);
             }
             mNativePage = null;
-            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
-                onBackgroundColorChanged();
-            }
+            mWaitingOnBgColorAfterHidingNativePage = true;
         }
         if (postHideTask != null) postHideTask.run();
         if (notify) notifyContentChanged();

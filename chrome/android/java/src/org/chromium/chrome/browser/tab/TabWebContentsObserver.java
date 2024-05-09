@@ -331,6 +331,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            mTab.notifyDidFirstVisuallyNonEmptyPaint();
             while (observers.hasNext()) {
                 observers.next().didFirstVisuallyNonEmptyPaint(mTab);
             }
