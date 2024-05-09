@@ -64,7 +64,8 @@ OsSettingsManager::OsSettingsManager(
       app_permission_handler_(
           std::make_unique<AppPermissionHandler>(app_service_proxy)),
       app_parental_controls_handler_(
-          std::make_unique<AppParentalControlsHandler>(app_service_proxy)),
+          std::make_unique<AppParentalControlsHandler>(app_service_proxy,
+                                                       profile->GetPrefs())),
       input_device_settings_provider_(
           std::make_unique<InputDeviceSettingsProvider>()),
       display_settings_provider_(std::make_unique<DisplaySettingsProvider>()),

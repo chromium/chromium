@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -31,7 +32,17 @@ BlockedAppRegistry::AppDetails::AppDetails(base::TimeTicks block_timestamp)
 
 BlockedAppRegistry::AppDetails::~AppDetails() = default;
 
-BlockedAppRegistry::BlockedAppRegistry(Profile* profile) : profile_(profile) {
+// static
+void BlockedAppRegistry::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kOnDeviceAppControlsBlockedApps);
+}
+
+BlockedAppRegistry::BlockedAppRegistry(apps::AppServiceProxy* app_service,
+                                       PrefService* pref_service)
+    : app_service_(app_service), pref_service_(pref_service) {
+  CHECK(app_service_);
+  CHECK(pref_service_);
+
   app_registry_cache_observer_.Observe(&GetAppCache());
 }
 
@@ -105,8 +116,7 @@ void BlockedAppRegistry::OnAppRegistryCacheWillBeDestroyed(
 }
 
 apps::AppRegistryCache& BlockedAppRegistry::GetAppCache() {
-  return apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache();
+  return app_service_->AppRegistryCache();
 }
 
 void BlockedAppRegistry::OnAppReady(const std::string& app_id) {

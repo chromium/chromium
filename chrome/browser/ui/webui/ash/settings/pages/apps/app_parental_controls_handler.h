@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_APPS_APP_PARENTAL_CONTROLS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_APPS_APP_PARENTAL_CONTROLS_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -16,13 +17,26 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace ash::settings {
+class PrefService;
 
+namespace ash {
+
+namespace on_device_controls {
+class BlockedAppRegistry;
+}  // namespace on_device_controls
+
+namespace settings {
+
+// Handles communication with app parental controls UI.
+// Contains cached registry of the blocked apps that needs to exists for
+// the duration of the user session (guaranteed by implementation of
+// `OsSettingsManager`).
 class AppParentalControlsHandler
     : public app_parental_controls::mojom::AppParentalControlsHandler,
       public apps::AppRegistryCache::Observer {
  public:
-  explicit AppParentalControlsHandler(apps::AppServiceProxy* app_service_proxy);
+  AppParentalControlsHandler(apps::AppServiceProxy* app_service_proxy,
+                             PrefService* pref_service);
   ~AppParentalControlsHandler() override;
 
   // app_parental_controls::mojom::AppParentalControlsHandler:
@@ -45,10 +59,13 @@ class AppParentalControlsHandler
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
+  std::unique_ptr<on_device_controls::BlockedAppRegistry> blocked_app_registry_;
+
   mojo::Receiver<app_parental_controls::mojom::AppParentalControlsHandler>
       receiver_{this};
 };
 
-}  // namespace ash::settings
+}  // namespace settings
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_APPS_APP_PARENTAL_CONTROLS_HANDLER_H_

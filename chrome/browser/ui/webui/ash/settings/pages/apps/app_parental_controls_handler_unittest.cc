@@ -28,8 +28,8 @@ class AppParentalControlsHandlerTest : public testing::Test {
 
   void SetUp() override {
     app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(&profile_);
-    handler_ =
-        std::make_unique<AppParentalControlsHandler>(app_service_proxy_.get());
+    handler_ = std::make_unique<AppParentalControlsHandler>(
+        app_service_proxy_.get(), profile_.GetPrefs());
   }
 
   void TearDown() override { handler_.reset(); }

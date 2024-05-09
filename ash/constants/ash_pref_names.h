@@ -181,6 +181,10 @@ inline constexpr char kEduCoexistenceToSAcceptedVersion[] =
 inline constexpr char kOnDeviceAppControlsSetupCompleted[] =
     "on_device_app_controls.setup_completed";
 
+// A list pref containing details of the apps blocked by on device controls.
+inline constexpr char kOnDeviceAppControlsBlockedApps[] =
+    "on_device_app_controls.blocked_apps";
+
 // A boolean pref indicating whether welcome page should be skipped in
 // in-session 'Add account' flow.
 inline constexpr char kShouldSkipInlineLoginWelcomePage[] =

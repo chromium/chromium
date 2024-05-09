@@ -13,9 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
-class Profile;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace ash::on_device_controls {
 
@@ -35,7 +37,10 @@ enum class LocalAppState {
 // TODO(b/338247185): Persist blocked apps in a pref.
 class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
  public:
-  explicit BlockedAppRegistry(Profile* profile);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  BlockedAppRegistry(apps::AppServiceProxy* app_service,
+                     PrefService* pref_service);
   BlockedAppRegistry(const BlockedAppRegistry&) = delete;
   BlockedAppRegistry& operator=(const BlockedAppRegistry&) = delete;
   ~BlockedAppRegistry() override;
@@ -82,11 +87,13 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
   // Called when app is uninstalled.
   void OnAppUninstalled(const std::string& app_id);
 
-  const raw_ptr<Profile> profile_;
-
   // The in-memory registry of the locked apps.
   // Maps blocked app id to blocked ap metadata.
   std::map<std::string, AppDetails> registry_;
+
+  const raw_ptr<apps::AppServiceProxy> app_service_;
+
+  const raw_ptr<PrefService> pref_service_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
