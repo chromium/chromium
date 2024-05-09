@@ -229,6 +229,8 @@ class CORE_EXPORT InlineLayoutStateStack {
   // LogicalLineItems in the block direction before calling
   // CreateBoxFragments().
   void MoveBoxDataInBlockDirection(LayoutUnit diff);
+  // Same for the inline direction.
+  void MoveBoxDataInInlineDirection(LayoutUnit diff);
 
   void ApplyRelativePositioning(const ConstraintSpace&,
                                 LogicalLineItems*,

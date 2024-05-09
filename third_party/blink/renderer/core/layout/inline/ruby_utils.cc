@@ -989,6 +989,7 @@ void UpdateRubyColumnInlinePositions(
     }
     // TODO(crbug.com/324111880): Handle overhang.
     column->annotation_items->MoveInInlineDirection(inline_offset);
+    column->state_stack.MoveBoxDataInInlineDirection(inline_offset);
     UpdateRubyColumnInlinePositions(*column->annotation_items, inline_size,
                                     column->RubyColumnList());
   }

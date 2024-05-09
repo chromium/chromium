@@ -782,6 +782,12 @@ void InlineLayoutStateStack::MoveBoxDataInBlockDirection(LayoutUnit diff) {
   }
 }
 
+void InlineLayoutStateStack::MoveBoxDataInInlineDirection(LayoutUnit diff) {
+  for (BoxData& box_data : box_data_list_) {
+    box_data.rect.offset.inline_offset += diff;
+  }
+}
+
 void InlineLayoutStateStack::ApplyRelativePositioning(
     const ConstraintSpace& space,
     LogicalLineItems* line_box,
