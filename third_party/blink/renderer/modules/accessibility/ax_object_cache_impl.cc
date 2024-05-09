@@ -204,7 +204,8 @@ bool HasAriaCellRole(Element* elem) {
   if (role_str.empty())
     return false;
 
-  return ui::IsCellOrTableHeader(AXObject::AriaRoleStringToRoleEnum(role_str));
+  return ui::IsCellOrTableHeader(
+      AXObject::FirstValidRoleInRoleString(role_str));
 }
 
 // Can role="presentation" aka "none" propagate to descendants of this node?
@@ -5036,7 +5037,7 @@ Element* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
       const AtomicString& role_str = AccessibleNode::GetPropertyOrARIAAttribute(
           element, AOMStringProperty::kRole);
       if (!role_str.empty() &&
-          ui::IsDialog(AXObject::AriaRoleStringToRoleEnum(role_str))) {
+          ui::IsDialog(AXObject::FirstValidRoleInRoleString(role_str))) {
         bool is_null;
         if (AccessibleNode::GetPropertyOrARIAAttribute(
                 element, AOMBooleanProperty::kModal, is_null) == true) {

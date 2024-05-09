@@ -5254,7 +5254,7 @@ ax::mojom::blink::Role AXObject::DetermineRawAriaRole() const {
       GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
   if (aria_role.IsNull() || aria_role.empty())
     return ax::mojom::blink::Role::kUnknown;
-  return AriaRoleStringToRoleEnum(aria_role);
+  return FirstValidRoleInRoleString(aria_role);
 }
 
 ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
@@ -5264,13 +5264,19 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
        role == ax::mojom::blink::Role::kRegion) &&
       !IsNameFromAuthorAttribute() &&
       !HasAttribute(html_names::kAriaRoledescriptionAttr)) {
-    // Nameless ARIA form and region fall back on the native element's role.
-    // We only check aria-label/aria-labelledby because those are the only
-    // allowed ways to name an ARIA role.
+    // If form or region is nameless, use a valid fallback role (if present
+    // in the role attribute) or the native element's role (by returning
+    // kUnknown). We only check aria-label/aria-labelledby because those are the
+    // only allowed ways to name an ARIA role.
     // TODO(accessibility) The aria-roledescription logic is required, otherwise
     // ChromeVox will ignore the aria-roledescription. It only speaks the role
     // description on certain roles, and ignores it on the generic role.
     // See also https://github.com/w3c/aria/issues/1463.
+    if (const AtomicString& role_str =
+            GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+      return FirstValidRoleInRoleString(role_str,
+                                        /*ignore_form_and_region*/ true);
+    }
     return ax::mojom::blink::Role::kUnknown;
   }
 
@@ -7366,7 +7372,9 @@ bool AXObject::HasARIAOwns(Element* element) {
 }
 
 // static
-ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
+ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
+    const String& value,
+    bool ignore_form_and_region) {
   DCHECK(!value.empty());
 
   static const ARIARoleMap* role_map = CreateARIARoleMap();
@@ -7376,8 +7384,13 @@ ax::mojom::blink::Role AXObject::AriaRoleStringToRoleEnum(const String& value) {
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kUnknown;
   for (const auto& child : role_vector) {
     auto it = role_map->find(child);
-    if (it != role_map->end())
-      return it->value;
+    if (it == role_map->end() ||
+        (ignore_form_and_region &&
+         (it->value == ax::mojom::blink::Role::kForm ||
+          it->value == ax::mojom::blink::Role::kRegion))) {
+      continue;
+    }
+    return it->value;
   }
 
   return role;

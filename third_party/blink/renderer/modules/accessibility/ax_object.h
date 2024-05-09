@@ -868,7 +868,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Returns the cached role from DetermineRoleValue().
   ax::mojom::blink::Role RoleValue() const;
 
-  static ax::mojom::blink::Role AriaRoleStringToRoleEnum(const String&);
+  // The role attribute is a string consisting of an ordered list of one or more
+  // roles (aka tokens) separated by spaces. This method finds the first token
+  // in the string that matches an internal role enum and returns that enum.
+  //
+  // The roles listed after that first role are considered fallback roles. A
+  // fallback role can be used when the first role cannot be used (due to an
+  // authoring error). If a fallback role for a nameless form or region is
+  // needed, set ignore_form_and_region to true.
+  //
+  // https://w3c.github.io/aria/#document-handling_author-errors_roles
+  static ax::mojom::blink::Role FirstValidRoleInRoleString(
+      const String&,
+      bool ignore_form_and_region = false);
 
   // Return the equivalent ARIA name for an enumerated role, or g_null_atom.
   static const AtomicString& AriaRoleName(ax::mojom::blink::Role);
