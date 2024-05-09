@@ -32,23 +32,20 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // actual GraphOwned objects. This class wraps them to allow this.
 class GraphOwnedWrapper : public GraphOwned {
  public:
-  GraphOwnedWrapper() {
-    VotingChannel voting_channel = dummy_vote_observer_.BuildVotingChannel();
-    voter_id_ = voting_channel.voter_id();
-    inherit_client_priority_voter_.SetVotingChannel(std::move(voting_channel));
-  }
+  GraphOwnedWrapper()
+      : inherit_client_priority_voter_(
+            dummy_vote_observer_.BuildVotingChannel()),
+        voter_id_(inherit_client_priority_voter_.voter_id()) {}
 
   GraphOwnedWrapper(const GraphOwnedWrapper&) = delete;
   GraphOwnedWrapper& operator=(const GraphOwnedWrapper&) = delete;
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
-    graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
+    inherit_client_priority_voter_.InitializeOnGraph(graph);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
-    graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
+    inherit_client_priority_voter_.TearDownOnGraph(graph);
   }
 
   // Exposes the vote observer to validate expectations.

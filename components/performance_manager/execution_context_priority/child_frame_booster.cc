@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
 
 namespace performance_manager::execution_context_priority {
@@ -30,6 +31,14 @@ ChildFrameBooster::ChildFrameBooster(
     : boosting_vote_aggregator_(boosting_vote_aggregator) {}
 
 ChildFrameBooster::~ChildFrameBooster() = default;
+
+void ChildFrameBooster::InitializeOnGraph(Graph* graph) {
+  graph->AddInitializingFrameNodeObserver(this);
+}
+
+void ChildFrameBooster::TearDownOnGraph(Graph* graph) {
+  graph->RemoveInitializingFrameNodeObserver(this);
+}
 
 void ChildFrameBooster::OnFrameNodeInitializing(const FrameNode* frame_node) {
   if (frame_node->IsMainFrame()) {

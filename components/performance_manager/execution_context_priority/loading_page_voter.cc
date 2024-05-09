@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
 
@@ -30,12 +31,19 @@ bool IsLoading(PageNode::LoadingState loading_state) {
 // static
 const char LoadingPageVoter::kPageIsLoadingReason[] = "Page is loading.";
 
-LoadingPageVoter::LoadingPageVoter() = default;
+LoadingPageVoter::LoadingPageVoter(VotingChannel voting_channel)
+    : voting_channel_(std::move(voting_channel)) {}
 
 LoadingPageVoter::~LoadingPageVoter() = default;
 
-void LoadingPageVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_ = std::move(voting_channel);
+void LoadingPageVoter::InitializeOnGraph(Graph* graph) {
+  graph->AddPageNodeObserver(this);
+  graph->AddInitializingFrameNodeObserver(this);
+}
+
+void LoadingPageVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemovePageNodeObserver(this);
+  graph->RemoveInitializingFrameNodeObserver(this);
 }
 
 void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {

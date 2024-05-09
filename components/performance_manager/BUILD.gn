@@ -60,6 +60,7 @@ static_library("performance_manager") {
     "execution_context_priority/override_vote_aggregator.h",
     "execution_context_priority/root_vote_observer.cc",
     "execution_context_priority/root_vote_observer.h",
+    "execution_context_priority/voter_base.h",
     "features.cc",
     "freezing/cannot_freeze_reason.cc",
     "freezing/cannot_freeze_reason.h",

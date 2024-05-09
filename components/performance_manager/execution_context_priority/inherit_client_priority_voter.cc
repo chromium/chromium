@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/auto_reset.h"
+#include "base/check.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -38,14 +38,23 @@ const execution_context::ExecutionContext* GetExecutionContext(
 const char InheritClientPriorityVoter::kPriorityInheritedReason[] =
     "Priority inherited.";
 
-InheritClientPriorityVoter::InheritClientPriorityVoter() = default;
+InheritClientPriorityVoter::InheritClientPriorityVoter(
+    VotingChannel voting_channel) {
+  DCHECK(voting_channel.IsValid());
+  voter_id_ = voting_channel.voter_id();
+  max_vote_aggregator_.SetUpstreamVotingChannel(std::move(voting_channel));
+}
 
 InheritClientPriorityVoter::~InheritClientPriorityVoter() = default;
 
-void InheritClientPriorityVoter::SetVotingChannel(
-    VotingChannel voting_channel) {
-  DCHECK(voting_channel.IsValid());
-  max_vote_aggregator_.SetUpstreamVotingChannel(std::move(voting_channel));
+void InheritClientPriorityVoter::InitializeOnGraph(Graph* graph) {
+  graph->AddFrameNodeObserver(this);
+  graph->AddWorkerNodeObserver(this);
+}
+
+void InheritClientPriorityVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveFrameNodeObserver(this);
+  graph->RemoveWorkerNodeObserver(this);
 }
 
 void InheritClientPriorityVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

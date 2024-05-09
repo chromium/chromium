@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_AD_FRAME_VOTER_H_
 
+#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 
@@ -15,23 +16,26 @@ namespace execution_context_priority {
 // ad frame. No votes will be cast for non-ad frames.
 // Uses `InitializingFrameNodeObserver` because it can affect the initial
 // priority of a frame.
-class AdFrameVoter : public InitializingFrameNodeObserver {
+class AdFrameVoter : public VoterBase, public InitializingFrameNodeObserver {
  public:
   static const char kAdFrameReason[];
 
-  AdFrameVoter();
+  explicit AdFrameVoter(VotingChannel voting_channel);
   ~AdFrameVoter() override;
 
   AdFrameVoter(const AdFrameVoter&) = delete;
   AdFrameVoter& operator=(const AdFrameVoter&) = delete;
 
-  // Sets the voting channel where the votes will be cast.
-  void SetVotingChannel(VotingChannel voting_channel);
+  // VoterBase:
+  void InitializeOnGraph(Graph* graph) override;
+  void TearDownOnGraph(Graph* graph) override;
 
   // InitializingFrameNodeObserver:
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;
   void OnFrameNodeTearingDown(const FrameNode* frame_node) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
+
+  VoterId voter_id() const { return voting_channel_.voter_id(); }
 
  private:
   VotingChannel voting_channel_;

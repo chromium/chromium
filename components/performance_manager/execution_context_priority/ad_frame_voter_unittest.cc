@@ -27,11 +27,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // without being actual GraphOwned objects. This class wraps both to allow this.
 class GraphOwnedWrapper : public GraphOwned {
  public:
-  GraphOwnedWrapper() {
-    VotingChannel voting_channel = observer_.BuildVotingChannel();
-    voter_id_ = voting_channel.voter_id();
-    ad_frame_voter_.SetVotingChannel(std::move(voting_channel));
-  }
+  GraphOwnedWrapper()
+      : ad_frame_voter_(observer_.BuildVotingChannel()),
+        voter_id_(ad_frame_voter_.voter_id()) {}
 
   ~GraphOwnedWrapper() override = default;
 

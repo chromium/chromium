@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -44,12 +45,17 @@ Vote GetVote(FrameNode::Visibility visibility) {
 // static
 const char FrameVisibilityVoter::kFrameVisibilityReason[] = "Frame visibility.";
 
-FrameVisibilityVoter::FrameVisibilityVoter() = default;
+FrameVisibilityVoter::FrameVisibilityVoter(VotingChannel voting_channel)
+    : voting_channel_(std::move(voting_channel)) {}
 
 FrameVisibilityVoter::~FrameVisibilityVoter() = default;
 
-void FrameVisibilityVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_ = std::move(voting_channel);
+void FrameVisibilityVoter::InitializeOnGraph(Graph* graph) {
+  graph->AddInitializingFrameNodeObserver(this);
+}
+
+void FrameVisibilityVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveInitializingFrameNodeObserver(this);
 }
 
 void FrameVisibilityVoter::OnFrameNodeInitializing(

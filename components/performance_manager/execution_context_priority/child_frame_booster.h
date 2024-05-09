@@ -8,6 +8,7 @@
 #include <map>
 
 #include "components/performance_manager/execution_context_priority/boosting_vote_aggregator.h"
+#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -25,7 +26,8 @@ class BoostingVoteAggregator;
 //
 // This is only done for non-ad frames to reduce the amount of unnecessary
 // boosting.
-class ChildFrameBooster : public InitializingFrameNodeObserver {
+class ChildFrameBooster : public VoterBase,
+                          public InitializingFrameNodeObserver {
  public:
   static const char kChildFrameBoostReason[];
 
@@ -34,6 +36,10 @@ class ChildFrameBooster : public InitializingFrameNodeObserver {
 
   ChildFrameBooster(const ChildFrameBooster&) = delete;
   ChildFrameBooster& operator=(const ChildFrameBooster&) = delete;
+
+  // VoterBase:
+  void InitializeOnGraph(Graph* graph) override;
+  void TearDownOnGraph(Graph* graph) override;
 
   // FrameNodeObserver:
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;

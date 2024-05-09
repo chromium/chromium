@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
+#include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -33,12 +34,17 @@ Vote GetVote(bool is_audible) {
 // static
 const char FrameAudibleVoter::kFrameAudibleReason[] = "Frame audible.";
 
-FrameAudibleVoter::FrameAudibleVoter() = default;
+FrameAudibleVoter::FrameAudibleVoter(VotingChannel voting_channel)
+    : voting_channel_(std::move(voting_channel)) {}
 
 FrameAudibleVoter::~FrameAudibleVoter() = default;
 
-void FrameAudibleVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_ = std::move(voting_channel);
+void FrameAudibleVoter::InitializeOnGraph(Graph* graph) {
+  graph->AddInitializingFrameNodeObserver(this);
+}
+
+void FrameAudibleVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveInitializingFrameNodeObserver(this);
 }
 
 void FrameAudibleVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {

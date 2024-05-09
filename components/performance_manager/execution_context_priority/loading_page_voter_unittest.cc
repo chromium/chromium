@@ -27,11 +27,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // allow this.
 class GraphOwnedWrapper : public GraphOwned {
  public:
-  GraphOwnedWrapper() {
-    VotingChannel voting_channel = observer_.BuildVotingChannel();
-    voter_id_ = voting_channel.voter_id();
-    loading_page_voter_.SetVotingChannel(std::move(voting_channel));
-  }
+  GraphOwnedWrapper()
+      : loading_page_voter_(observer_.BuildVotingChannel()),
+        voter_id_(loading_page_voter_.voter_id()) {}
 
   ~GraphOwnedWrapper() override = default;
 
@@ -40,12 +38,10 @@ class GraphOwnedWrapper : public GraphOwned {
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddPageNodeObserver(&loading_page_voter_);
-    graph->AddInitializingFrameNodeObserver(&loading_page_voter_);
+    loading_page_voter_.InitializeOnGraph(graph);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveInitializingFrameNodeObserver(&loading_page_voter_);
-    graph->RemovePageNodeObserver(&loading_page_voter_);
+    loading_page_voter_.TearDownOnGraph(graph);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
