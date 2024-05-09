@@ -182,23 +182,17 @@ public class StatusBarColorController
                 ChromeColors.getSurfaceColor(
                         context, R.dimen.home_surface_background_color_elevation);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            // TODO(crbug.com/41494931): Share code with LocationBarCoordinator's constructor.
-            mActiveOmniboxDefaultColor =
-                    ChromeColors.getSurfaceColor(
-                            context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-            mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
-            // TODO(crbug.com/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
-            mStandardScrolledOmniboxColor =
-                    ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
-            mIncognitoScrolledOmniboxColor =
-                    context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
-        } else {
-            mActiveOmniboxDefaultColor = mStandardDefaultThemeColor;
-            mIncognitoActiveOmniboxColor = mIncognitoPrimaryBgColor;
-            mStandardScrolledOmniboxColor = mStandardDefaultThemeColor;
-            mIncognitoScrolledOmniboxColor = mIncognitoPrimaryBgColor;
-        }
+
+        // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
+        mActiveOmniboxDefaultColor =
+                ChromeColors.getSurfaceColor(
+                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        mIncognitoActiveOmniboxColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
+        // TODO(b/41494931): Share code with ToolbarPhone#getToolbarDefaultColor().
+        mStandardScrolledOmniboxColor =
+                ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
+        mIncognitoScrolledOmniboxColor =
+                context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
 
         mStatusBarColorTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(tabProvider) {
