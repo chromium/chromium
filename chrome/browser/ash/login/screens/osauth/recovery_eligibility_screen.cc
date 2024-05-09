@@ -62,10 +62,6 @@ RecoveryEligibilityScreen::RecoveryEligibilityScreen(
 RecoveryEligibilityScreen::~RecoveryEligibilityScreen() = default;
 
 bool RecoveryEligibilityScreen::MaybeSkip(WizardContext& wizard_context) {
-  if (wizard_context.skip_post_login_screens_for_tests) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
   return false;
 }
 
