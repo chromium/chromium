@@ -33,9 +33,7 @@ void FakeDevice::ReadValueForCharacteristic(
     const std::string& service_id,
     const std::string& characteristic_id,
     ReadValueForCharacteristicCallback callback) {
-  // TODO(b/311430390): Implement when `BleV2GattClient` calls
-  // `ReadValueForCharacteristic()` for testing.
-  NOTIMPLEMENTED();
+  std::move(callback).Run(read_value_gatt_result_, read_value_);
 }
 
 void FakeDevice::WriteValueForCharacteristic(

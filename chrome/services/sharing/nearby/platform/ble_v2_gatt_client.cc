@@ -90,6 +90,35 @@ NearbyProperty ConvertProperty(BluetoothProperties properties) {
   return NearbyProperty::kNone;
 }
 
+std::string_view GattResultToString(bluetooth::mojom::GattResult result) {
+  switch (result) {
+    case bluetooth::mojom::GattResult::SUCCESS:
+      return "Success";
+    case bluetooth::mojom::GattResult::UNKNOWN:
+      return "Unknown";
+    case bluetooth::mojom::GattResult::FAILED:
+      return "Failed";
+    case bluetooth::mojom::GattResult::IN_PROGRESS:
+      return "In Progress";
+    case bluetooth::mojom::GattResult::INVALID_LENGTH:
+      return "Invalid Length";
+    case bluetooth::mojom::GattResult::NOT_PERMITTED:
+      return "Not Permitted";
+    case bluetooth::mojom::GattResult::NOT_AUTHORIZED:
+      return "Not Authorized";
+    case bluetooth::mojom::GattResult::NOT_PAIRED:
+      return "Not Paired";
+    case bluetooth::mojom::GattResult::NOT_SUPPORTED:
+      return "Not Supported";
+    case bluetooth::mojom::GattResult::SERVICE_NOT_FOUND:
+      return "Service Not Found";
+    case bluetooth::mojom::GattResult::CHARACTERISTIC_NOT_FOUND:
+      return "Characteristic Not Found";
+    case bluetooth::mojom::GattResult::DESCRIPTOR_NOT_FOUND:
+      return "Descriptor Not Found";
+  }
+}
+
 }  // namespace
 
 namespace nearby::chrome {
@@ -186,34 +215,9 @@ BleV2GattClient::GetCharacteristic(const Uuid& service_uuid,
                                    const Uuid& characteristic_uuid) {
   VLOG(1) << __func__;
 
-  auto service_it =
-      uuid_to_discovered_gatt_service_map_.find(std::string(service_uuid));
-  if (service_it == uuid_to_discovered_gatt_service_map_.end()) {
-    LOG(WARNING) << __func__ << ": no match for service at UUID"
-                 << std::string(service_uuid) << " in "
-                 << uuid_to_discovered_gatt_service_map_.size()
-                 << " number of discovered services";
-    return std::nullopt;
-  }
-
-  const auto& characteristics = service_it->second->characteristics;
-  if (!characteristics.has_value()) {
-    LOG(WARNING) << __func__ << ": characteristics have no value";
-    return std::nullopt;
-  }
-
-  auto char_it = std::find_if(
-      characteristics.value().begin(), characteristics.value().end(),
-      [characteristic_uuid](
-          const bluetooth::mojom::CharacteristicInfoPtr& characteristic_info) {
-        return characteristic_uuid ==
-               BluetoothUuidToNearbyUuid(characteristic_info->uuid);
-      });
-  if (char_it == characteristics.value().end()) {
-    LOG(WARNING) << __func__ << ": no match for characteristic at UUID"
-                 << std::string(characteristic_uuid) << " in "
-                 << characteristics.value().size()
-                 << " number of discovered characteristics";
+  auto characteristic_info =
+      GetCharacteristicInfoMojom(service_uuid, characteristic_uuid);
+  if (!characteristic_info) {
     return std::nullopt;
   }
 
@@ -225,16 +229,40 @@ BleV2GattClient::GetCharacteristic(const Uuid& service_uuid,
   // nearby::api::ble_v2::GattCharacteristic::Property/Permission.
   api::ble_v2::GattCharacteristic gatt_characteristic = {
       characteristic_uuid, service_uuid,
-      ConvertPermission((*char_it)->permissions),
-      ConvertProperty((*char_it)->properties)};
+      ConvertPermission(characteristic_info->permissions),
+      ConvertProperty(characteristic_info->properties)};
   return gatt_characteristic;
 }
 
 std::optional<std::string> BleV2GattClient::ReadCharacteristic(
     const api::ble_v2::GattCharacteristic& characteristic) {
-  // TODO(b/311430390): Implement this function.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  auto characteristic_info = GetCharacteristicInfoMojom(
+      characteristic.service_uuid, characteristic.uuid);
+  if (!characteristic_info) {
+    LOG(WARNING) << __func__
+                 << ": no match for characteristic in the GATT client";
+    return std::nullopt;
+  }
+
+  VLOG(1) << __func__ << ": attempting to read from characteristic at UUID = "
+          << std::string(characteristic.uuid);
+
+  std::optional<std::string> read_characteristic_result;
+  base::WaitableEvent read_characteristic_waitable_event;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &BleV2GattClient::DoReadCharacteristic, base::Unretained(this),
+          /*service_id=*/
+          uuid_to_discovered_gatt_service_map_
+              .find(std::string(characteristic.service_uuid))
+              ->second->service_info->id,
+          /*characteristic_id=*/characteristic_info->id,
+          &read_characteristic_result, &read_characteristic_waitable_event));
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  read_characteristic_waitable_event.Wait();
+
+  return read_characteristic_result;
 }
 
 bool BleV2GattClient::WriteCharacteristic(
@@ -357,6 +385,96 @@ void BleV2GattClient::OnGetCharacteristics(
   }
 }
 
+void BleV2GattClient::DoReadCharacteristic(
+    const std::string& service_id,
+    const std::string& characteristic_id,
+    std::optional<std::string>* read_characteristic_result,
+    base::WaitableEvent* read_characteristic_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  pending_read_characteristic_waitable_events_.insert(
+      read_characteristic_waitable_event);
+  CHECK(remote_device_.is_bound());
+
+  remote_device_->ReadValueForCharacteristic(
+      service_id, characteristic_id,
+      base::BindOnce(&BleV2GattClient::OnReadCharacteristic,
+                     base::Unretained(this), read_characteristic_result,
+                     read_characteristic_waitable_event));
+}
+
+void BleV2GattClient::OnReadCharacteristic(
+    std::optional<std::string>* read_characteristic_result,
+    base::WaitableEvent* read_characteristic_waitable_event,
+    bluetooth::mojom::GattResult result,
+    const std::optional<std::vector<uint8_t>>& value) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!pending_read_characteristic_waitable_events_.contains(
+          read_characteristic_waitable_event)) {
+    // The event has already been signaled.
+    return;
+  }
+
+  VLOG(1) << __func__ << ": Result = " << GattResultToString(result);
+
+  if (result != bluetooth::mojom::GattResult::SUCCESS) {
+    CHECK(!value.has_value()) << __func__
+                              << ": expected no value read from characteristic "
+                                 "due to failure returned";
+    *read_characteristic_result = std::nullopt;
+  } else {
+    CHECK(value.has_value())
+        << __func__
+        << ": expected value read from characteristic due to success returned";
+    *read_characteristic_result =
+        std::string(value.value().begin(), value.value().end());
+  }
+
+  if (!read_characteristic_waitable_event->IsSignaled()) {
+    read_characteristic_waitable_event->Signal();
+    pending_read_characteristic_waitable_events_.erase(
+        read_characteristic_waitable_event);
+  }
+}
+
+bluetooth::mojom::CharacteristicInfoPtr
+BleV2GattClient::GetCharacteristicInfoMojom(const Uuid& service_uuid,
+                                            const Uuid& characteristic_uuid) {
+  VLOG(1) << __func__;
+
+  auto service_it =
+      uuid_to_discovered_gatt_service_map_.find(std::string(service_uuid));
+  if (service_it == uuid_to_discovered_gatt_service_map_.end()) {
+    LOG(WARNING) << __func__ << ": no match for service at UUID"
+                 << std::string(service_uuid) << " in "
+                 << uuid_to_discovered_gatt_service_map_.size()
+                 << " number of discovered services";
+    return nullptr;
+  }
+
+  const auto& characteristics = service_it->second->characteristics;
+  if (!characteristics.has_value()) {
+    LOG(WARNING) << __func__ << ": characteristics have no value";
+    return nullptr;
+  }
+
+  auto char_it = std::find_if(
+      characteristics.value().begin(), characteristics.value().end(),
+      [characteristic_uuid](
+          const bluetooth::mojom::CharacteristicInfoPtr& characteristic_info) {
+        return characteristic_uuid ==
+               BluetoothUuidToNearbyUuid(characteristic_info->uuid);
+      });
+  if (char_it == characteristics.value().end()) {
+    LOG(WARNING) << __func__ << ": no match for characteristic at UUID"
+                 << std::string(characteristic_uuid) << " in "
+                 << characteristics.value().size()
+                 << " number of discovered characteristics";
+    return nullptr;
+  }
+
+  return char_it->Clone();
+}
+
 void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -372,6 +490,7 @@ void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   // because elements will be removed from the sets during iteration.
   CancelPendingTasks(pending_discover_services_waitable_events_);
   CancelPendingTasks(pending_get_characteristics_waitable_events_);
+  CancelPendingTasks(pending_read_characteristic_waitable_events_);
 
   shutdown_waitable_event->Signal();
 }

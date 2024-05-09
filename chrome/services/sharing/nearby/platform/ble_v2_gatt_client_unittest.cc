@@ -22,6 +22,8 @@ const nearby::Uuid kServiceUuid1 = nearby::Uuid("0000");
 const nearby::Uuid kServiceUuid2 = nearby::Uuid("1111");
 const nearby::Uuid kCharacteristicUuid1 = nearby::Uuid("2222");
 const nearby::Uuid kCharacteristicUuid2 = nearby::Uuid("3333");
+const std::vector<uint8_t> kReadCharacteristicValue = {0x01, 0x02, 0x03, 0x04,
+                                                       0x05};
 
 std::vector<bluetooth::mojom::ServiceInfoPtr> GenerateServiceInfo(
     nearby::Uuid service_uuid) {
@@ -83,6 +85,40 @@ class BleV2GattClientTest : public testing::Test {
                   service_uuid, characteristic_uuids));
   }
 
+  void CallReadCharacteristic(bool expected_success,
+                              const Uuid& service_uuid,
+                              const Uuid& characteristic_uuid) {
+    api::ble_v2::GattCharacteristic gatt_characteristic = {
+        characteristic_uuid, service_uuid,
+        nearby::api::ble_v2::GattCharacteristic::Permission::kRead,
+        nearby::api::ble_v2::GattCharacteristic::Property::kRead};
+    EXPECT_EQ(expected_success,
+              ble_v2_gatt_client_->ReadCharacteristic(gatt_characteristic)
+                  .has_value());
+  }
+
+  void SuccessfullyDiscoverServiceAndCharacteristics(
+      const Uuid& service_uuid,
+      const Uuid& characteristic_uuid) {
+    fake_device_->set_services(GenerateServiceInfo(service_uuid));
+    fake_device_->set_characteristics(
+        GenerateCharacteristicInfo(characteristic_uuid));
+    std::vector<Uuid> characteristic_uuids = {characteristic_uuid};
+    base::RunLoop run_loop;
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTaskAndReply(
+            FROM_HERE,
+            base::BindOnce(
+                &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+                base::Unretained(this), /*expected_success=*/true, service_uuid,
+                /*characteristic_uuids=*/characteristic_uuids),
+            run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(ble_v2_gatt_client_
+                    ->GetCharacteristic(service_uuid, characteristic_uuid)
+                    .has_value());
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<BleV2GattClient> ble_v2_gatt_client_;
@@ -90,32 +126,8 @@ class BleV2GattClientTest : public testing::Test {
 };
 
 TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
-  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
-  fake_device_->set_characteristics(
-      GenerateCharacteristicInfo(kCharacteristicUuid1));
-
-  std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
-
-  base::RunLoop run_loop;
-  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-      ->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(
-              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
-              base::Unretained(this), /*expected_success=*/true, kServiceUuid1,
-              /*characteristic_uuids=*/characteristic_uuids),
-          run_loop.QuitClosure());
-  run_loop.Run();
-
-  auto characteristic = ble_v2_gatt_client_->GetCharacteristic(
-      kServiceUuid1, kCharacteristicUuid1);
-  EXPECT_TRUE(characteristic.has_value());
-  EXPECT_EQ(kServiceUuid1, characteristic->service_uuid);
-  EXPECT_EQ(kCharacteristicUuid1, characteristic->uuid);
-  EXPECT_EQ(nearby::api::ble_v2::GattCharacteristic::Permission::kNone,
-            characteristic->permission);
-  EXPECT_EQ(nearby::api::ble_v2::GattCharacteristic::Property::kNone,
-            characteristic->property);
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
 }
 
 TEST_F(BleV2GattClientTest,
@@ -133,6 +145,10 @@ TEST_F(BleV2GattClientTest,
               /*characteristic_uuids=*/characteristic_uuids),
           run_loop.QuitClosure());
   run_loop.Run();
+
+  EXPECT_FALSE(ble_v2_gatt_client_
+                   ->GetCharacteristic(kServiceUuid1, kCharacteristicUuid1)
+                   .has_value());
 }
 
 TEST_F(BleV2GattClientTest,
@@ -180,6 +196,73 @@ TEST_F(BleV2GattClientTest,
   EXPECT_FALSE(ble_v2_gatt_client_
                    ->GetCharacteristic(kServiceUuid1, kCharacteristicUuid1)
                    .has_value());
+}
+
+TEST_F(BleV2GattClientTest, ReadCharacteristic_Success) {
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
+  fake_device_->set_read_value_for_characteristic_response(
+      bluetooth::mojom::GattResult::SUCCESS, kReadCharacteristicValue);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2GattClientTest::CallReadCharacteristic,
+                         base::Unretained(this), /*expected_success=*/true,
+                         kServiceUuid1, kCharacteristicUuid1),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       ReadCharacteristic_FailureIfNoServiceUuidDiscovered) {
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2GattClientTest::CallReadCharacteristic,
+                         base::Unretained(this), /*expected_success=*/false,
+                         kServiceUuid2, kCharacteristicUuid1),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       ReadCharacteristic_FailureIfNoCharacteristicUuidDiscovered) {
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2GattClientTest::CallReadCharacteristic,
+                         base::Unretained(this), /*expected_success=*/false,
+                         kServiceUuid1, kCharacteristicUuid2),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       ReadCharacteristic_FailureIfReadValueForCharacteristicFails) {
+  SuccessfullyDiscoverServiceAndCharacteristics(kServiceUuid1,
+                                                kCharacteristicUuid1);
+  fake_device_->set_read_value_for_characteristic_response(
+      bluetooth::mojom::GattResult::NOT_PAIRED, std::nullopt);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2GattClientTest::CallReadCharacteristic,
+                         base::Unretained(this), /*expected_success=*/false,
+                         kServiceUuid1, kCharacteristicUuid1),
+          run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace nearby::chrome

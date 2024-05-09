@@ -56,10 +56,19 @@ class FakeDevice : public mojom::Device {
     characteristics_ = std::move(characteristics);
   }
 
+  void set_read_value_for_characteristic_response(
+      bluetooth::mojom::GattResult result,
+      const std::optional<std::vector<uint8_t>>& value) {
+    read_value_gatt_result_ = result;
+    read_value_ = value;
+  }
+
  private:
   std::vector<bluetooth::mojom::ServiceInfoPtr> services_;
   std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
       characteristics_;
+  bluetooth::mojom::GattResult read_value_gatt_result_;
+  std::optional<std::vector<uint8_t>> read_value_;
   mojo::Receiver<mojom::Device> device_{this};
 };
 
