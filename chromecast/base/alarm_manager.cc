@@ -34,6 +34,9 @@ void VerifyHandleCallback(base::OnceClosure task,
 }
 }  // namespace
 
+AlarmHandle::AlarmHandle() = default;
+AlarmHandle::~AlarmHandle() = default;
+
 AlarmManager::AlarmInfo::AlarmInfo(
     base::OnceClosure task,
     base::Time time,
