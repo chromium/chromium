@@ -741,23 +741,26 @@ void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(View*) {
 BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
     View* anchor_view,
-    BubbleBorder::Arrow arrow)
+    BubbleBorder::Arrow arrow,
+    bool autosize)
     : BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>(),
                             std::move(model),
                             anchor_view,
                             arrow,
-                            ui::ModalType::MODAL_TYPE_NONE) {}
+                            ui::ModalType::MODAL_TYPE_NONE,
+                            autosize) {}
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     base::PassKey<BubbleDialogModelHost>,
     std::unique_ptr<ui::DialogModel> model,
     View* anchor_view,
     BubbleBorder::Arrow arrow,
-    ui::ModalType modal_type)
+    ui::ModalType modal_type,
+    bool autosize)
     : BubbleDialogDelegate(anchor_view,
                            arrow,
                            views::BubbleBorder::DIALOG_SHADOW,
-                           true),
+                           autosize),
       model_(std::move(model)),
       // Make sure the modal type is set before calling InitContentsView which
       // uses IsModalDialog().
@@ -914,11 +917,12 @@ BubbleDialogModelHost::~BubbleDialogModelHost() {
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
     std::unique_ptr<ui::DialogModel> model,
-    ui::ModalType modal_type) {
+    ui::ModalType modal_type,
+    bool autosize) {
   DCHECK_NE(modal_type, ui::MODAL_TYPE_NONE);
   return std::make_unique<BubbleDialogModelHost>(
       base::PassKey<BubbleDialogModelHost>(), std::move(model), nullptr,
-      BubbleBorder::Arrow::NONE, modal_type);
+      BubbleBorder::Arrow::NONE, modal_type, autosize);
 }
 
 View* BubbleDialogModelHost::GetInitiallyFocusedView() {

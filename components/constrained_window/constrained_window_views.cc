@@ -295,11 +295,17 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 
 views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
                                 gfx::NativeWindow parent) {
+  // TODO(crbug.com/41493925): Remove will_use_custom_frame once native frame
+  // dialogs support autosize.
+  bool will_use_custom_frame = views::DialogDelegate::CanSupportCustomFrame(
+      parent ? CurrentClient()->GetDialogHostView(parent) : nullptr);
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+      std::move(dialog_model), ui::MODAL_TYPE_WINDOW, will_use_custom_frame);
   dialog->SetOwnedByWidget(true);
   auto* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog), parent);
+  CHECK_EQ(widget->widget_delegate()->AsDialogDelegate()->use_custom_frame(),
+           will_use_custom_frame);
   widget->Show();
   return widget;
 }

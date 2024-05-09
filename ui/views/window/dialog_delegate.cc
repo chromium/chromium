@@ -21,6 +21,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/layout/layout_provider.h"
@@ -149,6 +150,15 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   if (dialog && dialog->widget_owns_native_widget_) {
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   }
+
+  if (BubbleDialogDelegate* bubble = delegate->AsBubbleDialogDelegate()) {
+    // TODO(crbug.com/41493925): Remove this CHECK once native frame dialogs
+    // support autosize.
+    CHECK(!bubble->is_autosized() || bubble->use_custom_frame())
+        << "Autosizing native frame dialogs is not supported.";
+    params.autosize = bubble->is_autosized();
+  }
+
   return params;
 }
 

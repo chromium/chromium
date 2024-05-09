@@ -75,7 +75,8 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   // ownership of the bubble. Widget::Show() finally shows the bubble.
   BubbleDialogModelHost(std::unique_ptr<ui::DialogModel> model,
                         View* anchor_view,
-                        BubbleBorder::Arrow arrow);
+                        BubbleBorder::Arrow arrow,
+                        bool autosize = true);
 
   // "Private" constructor (uses base::PassKey), use another constructor or
   // ::CreateModal().
@@ -83,13 +84,15 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
                         std::unique_ptr<ui::DialogModel> model,
                         View* anchor_view,
                         BubbleBorder::Arrow arrow,
-                        ui::ModalType modal_type);
+                        ui::ModalType modal_type,
+                        bool autosize);
 
   ~BubbleDialogModelHost() override;
 
   static std::unique_ptr<BubbleDialogModelHost> CreateModal(
       std::unique_ptr<ui::DialogModel> model,
-      ui::ModalType modal_type);
+      ui::ModalType modal_type,
+      bool autosize = true);
 
   // BubbleDialogDelegate:
   // TODO(pbos): Populate initparams with initial view instead of overriding
