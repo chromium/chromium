@@ -422,7 +422,9 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   InitDiscoveries(
       fido_discovery_factory,
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
-          supported_transports, allowed_transports));
+          supported_transports, allowed_transports),
+      request.authenticator_attachment !=
+          AuthenticatorAttachment::kCrossPlatform);
   std::string json_string;
   if (!options_.json ||
       !base::JSONWriter::WriteWithOptions(

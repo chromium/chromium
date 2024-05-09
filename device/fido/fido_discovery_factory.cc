@@ -19,10 +19,11 @@
 #include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
+// clang-format off
 // rpc.h needs to be included before winuser.h.
 #include <rpc.h>
-
 #include <Winuser.h>
+//clang-format on
 
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
@@ -108,9 +109,6 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       discoveries = MaybeCreatePlatformDiscovery();
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
-      MaybeCreateEnclaveDiscovery(discoveries);
-#endif
       return discoveries;
     }
     case FidoTransportProtocol::kAndroidAccessory:
@@ -125,6 +123,20 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
   }
   NOTREACHED() << "Unhandled transport type";
   return {};
+}
+
+std::optional<std::unique_ptr<FidoDiscoveryBase>>
+FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
+      !enclave_ui_request_stream_ || !network_context_factory_) {
+    return std::nullopt;
+  }
+  return std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
+      std::move(enclave_ui_request_stream_), network_context_factory_);
+#else
+  return std::nullopt;
+#endif
 }
 
 bool FidoDiscoveryFactory::IsTestOverride() {
@@ -251,19 +263,6 @@ void FidoDiscoveryFactory::
     set_get_assertion_request_for_legacy_credential_check(
         CtapGetAssertionRequest request) {
   get_assertion_request_for_legacy_credential_check_ = std::move(request);
-}
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
-    std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
-  if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
-      !enclave_ui_request_stream_ || !network_context_factory_) {
-    return;
-  }
-  discoveries.emplace_back(
-      std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_ui_request_stream_), network_context_factory_));
 }
 #endif
 

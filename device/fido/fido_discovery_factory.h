@@ -53,6 +53,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport);
 
+  // Return a discovery for enclave authenticators, if enclave mode is enabled
+  // and configured.
+  virtual std::optional<std::unique_ptr<FidoDiscoveryBase>>
+  MaybeCreateEnclaveDiscovery();
+
   // Returns whether the current instance is an override injected by the
   // WebAuthn testing API.
   virtual bool IsTestOverride();
@@ -157,9 +162,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   std::vector<std::unique_ptr<FidoDiscoveryBase>> MaybeCreatePlatformDiscovery()
       const;
 #endif
-
-  void MaybeCreateEnclaveDiscovery(
-      std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries);
 
 #if BUILDFLAG(IS_MAC)
   std::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;

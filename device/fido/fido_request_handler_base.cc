@@ -21,6 +21,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/mac/icloud_keychain.h"
 
@@ -119,12 +120,14 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoDiscoveryFactory* fido_discovery_factory,
     const base::flat_set<FidoTransportProtocol>& available_transports)
     : FidoRequestHandlerBase() {
-  InitDiscoveries(fido_discovery_factory, available_transports);
+  InitDiscoveries(fido_discovery_factory, available_transports,
+                  /*consider_enclave=*/true);
 }
 
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
-    base::flat_set<FidoTransportProtocol> available_transports) {
+    base::flat_set<FidoTransportProtocol> available_transports,
+    bool consider_enclave) {
 #if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
@@ -175,6 +178,15 @@ void FidoRequestHandlerBase::InitDiscoveries(
     for (auto& discovery : discoveries) {
       discovery->set_observer(this);
       discoveries_.emplace_back(std::move(discovery));
+    }
+  }
+
+  if (consider_enclave) {
+    std::optional<std::unique_ptr<FidoDiscoveryBase>> enclave_discovery =
+        fido_discovery_factory->MaybeCreateEnclaveDiscovery();
+    if (enclave_discovery) {
+      enclave_discovery.value()->set_observer(this);
+      discoveries_.emplace_back(std::move(*enclave_discovery));
     }
   }
 
@@ -278,13 +290,15 @@ void FidoRequestHandlerBase::OnBluetoothAdapterPowerChanged(
     bool is_powered_on) {
   transport_availability_info_.is_ble_powered = is_powered_on;
 
-  if (observer_)
+  if (observer_) {
     observer_->BluetoothAdapterPowerChanged(is_powered_on);
+  }
 }
 
 void FidoRequestHandlerBase::PowerOnBluetoothAdapter() {
-  if (!bluetooth_adapter_manager_)
+  if (!bluetooth_adapter_manager_) {
     return;
+  }
 
   bluetooth_adapter_manager_->SetAdapterPower(true /* set_power_on */);
 }
@@ -302,8 +316,9 @@ void FidoRequestHandlerBase::set_observer(
 }
 
 void FidoRequestHandlerBase::Start() {
-  for (const auto& discovery : discoveries_)
+  for (const auto& discovery : discoveries_) {
     discovery->Start();
+  }
 }
 
 void FidoRequestHandlerBase::AuthenticatorRemoved(

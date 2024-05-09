@@ -344,7 +344,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   void InitDiscoveries(
       FidoDiscoveryFactory* fido_discovery_factory,
-      base::flat_set<FidoTransportProtocol> available_transports);
+      base::flat_set<FidoTransportProtocol> available_transports,
+      bool consider_enclave);
 
   void Start();
 
