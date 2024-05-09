@@ -45,6 +45,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1693,6 +1694,35 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
       }));
   EXPECT_FALSE(
       request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NoGpmCreationIfPasswordManagerDisabled \
+  DISABLED_NoGpmCreationIfPasswordManagerDisabled
+#else
+#define MAYBE_NoGpmCreationIfPasswordManagerDisabled \
+  NoGpmCreationIfPasswordManagerDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       MAYBE_NoGpmCreationIfPasswordManagerDisabled) {
+  EnableUVKeySupport();
+  CheckRegistrationStateNotRequested();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kCredentialsEnableService, false);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,

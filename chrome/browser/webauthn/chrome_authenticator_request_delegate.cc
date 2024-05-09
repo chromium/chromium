@@ -50,6 +50,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -856,6 +857,11 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled()) {
+    // Creating credentials in GPM can be disabled by policy, but get() is
+    // always allowed.
+    if (request_type == device::FidoRequestType::kGetAssertion ||
+        profile->GetPrefs()->GetBoolean(
+            password_manager::prefs::kCredentialsEnableService)) {
 #if BUILDFLAG(IS_CHROMEOS)
     chromeos::PasskeyService* passkey_service =
         chromeos::PasskeyServiceFactory::GetForProfile(profile);
@@ -886,6 +892,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       }
     }
 #endif
+    }
   }
 
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
