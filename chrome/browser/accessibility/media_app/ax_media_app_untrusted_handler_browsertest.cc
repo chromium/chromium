@@ -1350,6 +1350,46 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       RelativeBoundsWithOffsetAndScale) {
+  constexpr size_t kTestNumPages = 1u;
+  constexpr float kViewportWidth = 100.0f;
+  constexpr float kViewportHeight = 200.0f;
+  // Backlight sends the offset value in negative floating number.
+  constexpr float kViewportXOffset = -10.0f;
+  constexpr float kViewportYOffset = -5.0f;
+  constexpr float kViewportScale = 1.2f;
+  handler_->ViewportUpdated(gfx::RectF(kViewportXOffset, kViewportYOffset,
+                                       kViewportWidth, kViewportHeight),
+                            /*scale_factor=*/kViewportScale);
+
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  // `PageMetadataUpdated()` eventually calls `UpdateDocumentTree()` that
+  // applies a transform to the document root node.
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  const ui::AXNode* document_root = handler_->GetDocumentRootNodeForTesting();
+  // The page must have gone through OCR.
+  ASSERT_EQ(kTestNumPages, fake_media_app_.PageIdsWithBitmap().size());
+  EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+
+  const ui::AXNode* page_a_root =
+      handler_->GetPagesForTesting().at("PageA")->GetRoot();
+  ASSERT_NE(nullptr, page_a_root);
+  constexpr gfx::RectF kExpectRect =
+      gfx::RectF(0.0f, 0.0f, kTestPageWidth, kTestPageHeight);
+  const gfx::RectF page_a_rect = page_a_root->data().relative_bounds.bounds;
+
+  EXPECT_EQ(kExpectRect, page_a_rect);
+  EXPECT_EQ(
+      gfx::RectF(-kViewportXOffset, -kViewportYOffset,
+                 kTestPageWidth * kViewportScale,
+                 kTestPageHeight * kViewportScale),
+      document_root->data().relative_bounds.transform->MapRect(page_a_rect));
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace ash::test

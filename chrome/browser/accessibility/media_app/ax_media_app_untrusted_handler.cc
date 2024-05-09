@@ -39,7 +39,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 #if defined(USE_AURA)
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -547,43 +549,40 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
   CHECK(event_router);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
-  event_router->DispatchAccessibilityEvents(update.tree_data.tree_id, {update},
+  event_router->DispatchAccessibilityEvents(manager.GetTreeID(), {update},
                                             mouse_location, {});
 #endif  // defined(USE_AURA)
 }
 
 void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
                                                  float scale_factor) {
-  // TODO(nektar): Use scale factor to convert to device independent
-  // pixels.
   viewport_box_ = viewport_box;
+  scale_factor_ = scale_factor;
   if (!document_.GetRoot()) {
     return;
   }
   CHECK(document_.ax_tree());
   ui::AXNodeData document_root_data = document_.GetRoot()->data();
   document_root_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kScrollX,
-      base::checked_cast<int32_t>(viewport_box_.x()));
-  document_root_data.AddIntAttribute(
       ax::mojom::IntAttribute::kScrollXMax,
       base::checked_cast<int32_t>(
           document_root_data.relative_bounds.bounds.width() -
           viewport_box_.width()));
   document_root_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kScrollY,
-      base::checked_cast<int32_t>(viewport_box_.y()));
-  document_root_data.AddIntAttribute(
       ax::mojom::IntAttribute::kScrollYMax,
       base::checked_cast<int32_t>(
           document_root_data.relative_bounds.bounds.height() -
           viewport_box_.height()));
+  document_root_data.relative_bounds.transform =
+      MakeTransformFromOffsetAndScale();
+
   ui::AXTreeUpdate document_update;
   document_update.root_id = document_root_data.id;
   document_update.nodes = {document_root_data};
   if (!document_.ax_tree()->Unserialize(document_update)) {
     mojo::ReportBadMessage(document_.ax_tree()->error());
   }
+  SendAXTreeToAccessibilityService(document_, *document_serializer_);
 }
 
 void AXMediaAppUntrustedHandler::UpdatePageLocation(
@@ -660,6 +659,10 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
     document_location.Union(page.rect);
   }
   document_root_data.relative_bounds.bounds = document_location;
+  if (!viewport_box_.IsEmpty() && scale_factor_ > 0.0f) {
+    document_root_data.relative_bounds.transform =
+        MakeTransformFromOffsetAndScale();
+  }
   document_root_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollXMin,
                                      document_location.x());
   document_root_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollYMin,
@@ -899,6 +902,18 @@ bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
     return true;
   }
   return false;
+}
+
+std::unique_ptr<gfx::Transform>
+AXMediaAppUntrustedHandler::MakeTransformFromOffsetAndScale() const {
+  auto transform = std::make_unique<gfx::Transform>();
+  // `viewport_box_.origin()` represents the offset from which the viewport
+  // starts, based on the origin of PDF content; e.g. if it's (-100, -10), it
+  // indicates that PDF content starts at (100, 10) from the viewport's origin.
+  transform->Translate(-viewport_box_.origin().x(),
+                       -viewport_box_.origin().y());
+  transform->Scale(scale_factor_, scale_factor_);
+  return transform;
 }
 
 }  // namespace ash

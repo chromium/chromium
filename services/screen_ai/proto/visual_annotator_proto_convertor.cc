@@ -116,8 +116,7 @@ void SerializeBoundingBox(const chrome_screen_ai::Rect& bounding_box,
       gfx::RectF(bounding_box.x(), bounding_box.y(), bounding_box.width(),
                  bounding_box.height());
   DCHECK(!out_data.relative_bounds.bounds.IsEmpty());
-  if (container_id != ui::kInvalidAXNodeID)
-    out_data.relative_bounds.offset_container_id = container_id;
+
   if (bounding_box.angle()) {
     out_data.relative_bounds.transform = std::make_unique<gfx::Transform>();
     out_data.relative_bounds.transform->Rotate(bounding_box.angle());

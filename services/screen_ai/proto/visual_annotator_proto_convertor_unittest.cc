@@ -105,10 +105,10 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
 
     const std::string expected_update(
         "id=-2 dialog child_ids=-3,-4 (0, 0)-(800, 900)\n"
-        "  id=-3 button offset_container_id=-2 (0, 1)-(2, 3)"
+        "  id=-3 button (0, 1)-(2, 3)"
         " transform=[ 0 -1 0 0\n  1 0 0 0\n  0 0 1 0\n  0 0 0 1 ]\n"
         "\n"
-        "  id=-4 genericContainer offset_container_id=-2 (0, 0)-(5, 5) "
+        "  id=-4 genericContainer (0, 0)-(5, 5) "
         "role_description=Signature\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
@@ -175,8 +175,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
         "    id=-6 staticText name=Hello world child_ids=-7 "
-        "offset_container_id=-5 (100, 100)-(500, 20) text_direction=rtl "
-        "language=en\n"
+        "(100, 100)-(500, 20) text_direction=rtl language=en\n"
         "      id=-7 inlineTextBox name=Hello world (100, 100)-(500, 20) "
         "background_color=&FFFFFF00 color=&0 text_direction=rtl "
         "word_starts=0,6 word_ends=6,11\n  id=-8 contentInfo child_ids=-9 "
@@ -247,8 +246,7 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
         "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
         "    id=-6 staticText name=Bonjour world child_ids=-7,-8 "
-        "offset_container_id=-5 (100, 100)-(500, 20) text_direction=rtl "
-        "language=en\n"
+        "(100, 100)-(500, 20) text_direction=rtl language=en\n"
         "      id=-7 inlineTextBox name=Bonjour  (100, 100)-(250, 20) "
         "background_color=&FFFFFF00 color=&0 text_direction=rtl language=fr "
         "word_starts=0 word_ends=8\n"

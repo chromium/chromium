@@ -25,6 +25,7 @@ class BrowserContext;
 namespace ui {
 
 class AXTreeID;
+class AXNode;
 
 }  // namespace ui
 
@@ -44,6 +45,10 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
   void SetMediaAppForTesting(AXMediaApp* media_app) { media_app_ = media_app; }
   std::string GetDocumentTreeToStringForTesting() const;
   void EnablePendingSerializedUpdatesForTesting();
+
+  const ui::AXNode* GetDocumentRootNodeForTesting() const {
+    return document_.GetRoot();
+  }
 
   const ui::AXTreeID& GetDocumentTreeIDForTesting() const {
     return document_.GetTreeID();
