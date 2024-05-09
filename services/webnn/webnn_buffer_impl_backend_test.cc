@@ -72,15 +72,16 @@ class WebNNBufferImplBackendTest : public dml::TestBase {
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
   void SetUp() override;
+  void TearDown() override;
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContextProvider>& webnn_provider_remote,
       mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<dml::Adapter> adapter_;
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
 void WebNNBufferImplBackendTest::SetUp() {
@@ -96,6 +97,9 @@ void WebNNBufferImplBackendTest::SetUp() {
   // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
   // DirectML version doesn't support this feature.
   SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
+
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
 }
 #elif BUILDFLAG(IS_MAC)
 class WebNNBufferImplBackendTest : public testing::Test {
@@ -105,14 +109,15 @@ class WebNNBufferImplBackendTest : public testing::Test {
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
   void SetUp() override;
+  void TearDown() override;
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContextProvider>& webnn_provider_remote,
       mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
 void WebNNBufferImplBackendTest::SetUp() {
@@ -120,6 +125,9 @@ void WebNNBufferImplBackendTest::SetUp() {
     GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
                  << base::mac::MacOSVersion();
   }
+
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
 
   GTEST_SKIP() << "WebNNBuffer not implemented on macOS";
 }
@@ -134,15 +142,20 @@ class WebNNBufferImplBackendTest : public testing::Test {
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 #endif
+
+    WebNNContextProviderImpl::CreateForTesting(
+        webnn_provider_remote_.BindNewPipeAndPassReceiver());
   }
+
+  void TearDown() override;
 
  protected:
   bool CreateWebNNContext(
-      mojo::Remote<mojom::WebNNContextProvider>& webnn_provider_remote,
       mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::machine_learning::FakeServiceConnectionImpl
       fake_service_connection_;
@@ -150,13 +163,17 @@ class WebNNBufferImplBackendTest : public testing::Test {
 };
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
+void WebNNBufferImplBackendTest::TearDown() {
+  webnn_provider_remote_.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
 bool WebNNBufferImplBackendTest::CreateWebNNContext(
-    mojo::Remote<mojom::WebNNContextProvider>& webnn_provider_remote,
     mojo::Remote<mojom::WebNNContext>& webnn_context_remote) {
   bool is_platform_supported = true;
 
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
-  webnn_provider_remote->CreateWebNNContext(
+  webnn_provider_remote_->CreateWebNNContext(
       mojom::CreateContextOptions::New(
           mojom::CreateContextOptions::Device::kGpu,
           mojom::CreateContextOptions::PowerPreference::kDefault,
@@ -181,12 +198,8 @@ bool IsBufferDataEqual(const mojo_base::BigBuffer& a,
 TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -209,12 +222,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
 TEST_F(WebNNBufferImplBackendTest, CreateBufferImplOversizedTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -239,12 +248,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplOversizedTest) {
 TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -272,12 +277,8 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
 TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManySameTokenTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -306,12 +307,8 @@ TEST_F(WebNNBufferImplBackendTest,
        CreateBufferImplManyReuseTokenAfterDisconnectTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -349,12 +346,8 @@ TEST_F(WebNNBufferImplBackendTest,
 TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
@@ -381,12 +374,8 @@ TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTest) {
 TEST_F(WebNNBufferImplBackendTest, WriteBufferImplTooLargeTest) {
   BadMessageTestHelper bad_message_helper;
 
-  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote.BindNewPipeAndPassReceiver());
-
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_provider_remote, webnn_context_remote)) {
+  if (!CreateWebNNContext(webnn_context_remote)) {
     GTEST_SKIP() << "WebNN not supported on this platform.";
   }
 
