@@ -6,6 +6,24 @@
  * @fileoverview
  * 'settings-dropdown-v2' is an element displaying a list of options. Works with
  * or without a pref object.
+ *
+ * - Usage: without pref
+ *   - `value` must be provided and `pref` must not be used.
+ *
+ *   <settings-dropdown-v2
+ *       options="[[dropdownOptions_]]"
+ *       value="[[value]]"
+ *       on-change="onDropdownChange_">
+ *   <settings-dropdown-v2>
+ *
+ * - Usage: with pref
+ *   - `pref` must be provided and `value` must not be used.
+ *
+ *   <settings-dropdown-v2
+ *       options="[[dropdownOptions_]]"
+ *       pref="[[prefs.foo.bar]]"
+ *       on-change="onDropdownChange_">
+ *   <settings-dropdown-v2>
  */
 
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -90,7 +108,6 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
     ];
   }
 
-  readonly notFoundValue: string;
   options: DropdownOptionList;
   override validPrefTypes: chrome.settingsPrivate.PrefType[] = [
     chrome.settingsPrivate.PrefType.NUMBER,
