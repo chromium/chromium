@@ -16512,26 +16512,6 @@
             ]
         }
     ],
-    "ResourceAttributionValidation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240304",
-                    "enable_features": [
-                        "ResourceAttributionValidation"
-                    ]
-                }
-            ]
-        }
-    ],
     "RestartToGainAccessToKeychain": [
         {
             "platforms": [

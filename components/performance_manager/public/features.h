@@ -156,10 +156,6 @@ extern const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging;
 // If Chrome CPU utilization is over the specified percent then we will log it.
 extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
 
-// When enabled, the PageResource2 UKM is logged twice, once using Resource
-// Attribution and once using legacy measurements, to compare the results.
-BASE_DECLARE_FEATURE(kResourceAttributionValidation);
-
 // When enabled, background pages that use a lot of CPU may be frozen when
 // Battery Saver is active.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);

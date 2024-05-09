@@ -27,7 +27,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/metrics/page_resource_cpu_monitor.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -181,41 +180,12 @@ class PatternedHistogramTester {
       base::MakeRefCounted<RefCountedHistogramTester>();
 };
 
-struct TestParams {
-  // If true, the kValidateResourceAttribution feature will be enabled.
-  bool validate_resource_attribution = false;
-
-  // Expect that whenever the PageResourceUsage2 UKM is recorded, it will
-  // contain an entry for each algorithm in this list.
-  std::vector<PageMeasurementAlgorithm> expected_algorithms;
-};
-
-const TestParams kAllTestParams[] = {
-    {.validate_resource_attribution = false,
-     .expected_algorithms = {PageMeasurementAlgorithm::kEvenSplitAndAggregate}},
-    {.validate_resource_attribution = true,
-     .expected_algorithms = {PageMeasurementAlgorithm::kEvenSplitAndAggregate,
-                             PageMeasurementAlgorithm::kLegacy}},
-};
-
-class PageResourceMonitorUnitTest
-    : public GraphTestHarness,
-      public ::testing::WithParamInterface<TestParams> {
+class PageResourceMonitorUnitTest : public GraphTestHarness {
  public:
   PageResourceMonitorUnitTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        {features::kCPUInterventionEvaluationLogging,
-         {{"threshold_chrome_cpu_percent", "50"}}},
-    };
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam().validate_resource_attribution) {
-      enabled_features.push_back(
-          {features::kResourceAttributionValidation, {}});
-    } else {
-      disabled_features.push_back(features::kResourceAttributionValidation);
-    }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCPUInterventionEvaluationLogging,
+        {{"threshold_chrome_cpu_percent", "50"}});
   }
 
   ~PageResourceMonitorUnitTest() override = default;
@@ -241,14 +211,6 @@ class PageResourceMonitorUnitTest
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
     last_collection_time_ = base::TimeTicks::Now();
-
-    if (GetParam().validate_resource_attribution) {
-      // Also set legacy test data.
-      legacy_cpu_delegate_factory_.SetDefaultCPUUsage(0.5);
-      monitor_->GetCPUMonitorForTesting()
-          ->SetCPUMeasurementDelegateFactoryForTesting(
-              graph(), &legacy_cpu_delegate_factory_);
-    }
   }
 
   void TearDown() override {
@@ -314,7 +276,6 @@ class PageResourceMonitorUnitTest
   // Factories to return fake measurement delegates. These must be deleted after
   // `monitor_` to ensure that they outlive all delegates they create.
   SimulatedCPUMeasurementDelegateFactory cpu_delegate_factory_;
-  SimulatedCPUMeasurementDelegateFactory legacy_cpu_delegate_factory_;
   FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -351,9 +312,8 @@ void PageResourceMonitorUnitTest::WaitForMetricsAndTestBackgroundStates(
   WaitForMetrics();
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
-  // Expect 1 entry per page per algorithm.
-  EXPECT_EQ(entries.size(),
-            expected_states.size() * GetParam().expected_algorithms.size());
+  // Expect 1 entry per page.
+  EXPECT_EQ(entries.size(), expected_states.size());
   for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "BackgroundState",
@@ -362,11 +322,7 @@ void PageResourceMonitorUnitTest::WaitForMetricsAndTestBackgroundStates(
   ResetUkmRecorder();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageResourceMonitorUnitTest,
-                         ::testing::ValuesIn(kAllTestParams));
-
-TEST_P(PageResourceMonitorUnitTest, TestPageResourceUsage) {
+TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsage) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -375,13 +331,12 @@ TEST_P(PageResourceMonitorUnitTest, TestPageResourceUsage) {
   TriggerCollectPageResourceUsage();
   WaitForMetrics();
 
-  // Expect 1 entry per algorithm.
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
-  EXPECT_EQ(entries.size(), GetParam().expected_algorithms.size());
+  EXPECT_EQ(entries.size(), 1u);
 }
 
-TEST_P(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
+TEST_F(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id =
       ukm::AssignNewSourceId();  // ukm::NoURLSourceId();
@@ -390,21 +345,15 @@ TEST_P(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
   mock_graph.page->SetUkmSourceId(mock_source_id);
   mock_graph.page->SetType(performance_manager::PageType::kTab);
 
-  // Each SourceId should record an entry for each algorithm.
-  std::vector<std::pair<ukm::SourceId, PageMeasurementAlgorithm>>
-      expected_ids_and_algorithms;
-  for (const PageMeasurementAlgorithm algorithm :
-       GetParam().expected_algorithms) {
-    expected_ids_and_algorithms.emplace_back(mock_source_id, algorithm);
-    expected_ids_and_algorithms.emplace_back(mock_source_id_2, algorithm);
-  }
+  // Each SourceId should record an entry.
+  std::vector<ukm::SourceId> expected_ids{mock_source_id, mock_source_id_2};
 
   TriggerCollectPageResourceUsage();
   WaitForMetrics();
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
-  EXPECT_EQ(entries.size(), GetParam().expected_algorithms.size());
+  EXPECT_EQ(entries.size(), 1u);
 
   mock_graph.page->SetUkmSourceId(mock_source_id_2);
 
@@ -413,23 +362,22 @@ TEST_P(PageResourceMonitorUnitTest, TestPageResourceUsageNavigation) {
 
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
-  EXPECT_EQ(entries.size(), 2 * GetParam().expected_algorithms.size());
+  EXPECT_EQ(entries.size(), 2u);
 
-  std::vector<std::pair<ukm::SourceId, PageMeasurementAlgorithm>>
-      ids_and_algorithms;
+  std::vector<ukm::SourceId> ids;
   for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* algorithm =
         test_ukm_recorder()->GetEntryMetric(entry, "MeasurementAlgorithm");
     ASSERT_NE(algorithm, nullptr);
-    ids_and_algorithms.emplace_back(
-        entry->source_id, static_cast<PageMeasurementAlgorithm>(*algorithm));
+    EXPECT_EQ(static_cast<PageMeasurementAlgorithm>(*algorithm),
+              PageMeasurementAlgorithm::kEvenSplitAndAggregate);
+    ids.emplace_back(entry->source_id);
   }
 
-  EXPECT_THAT(ids_and_algorithms, ::testing::UnorderedElementsAreArray(
-                                      expected_ids_and_algorithms));
+  EXPECT_THAT(ids, ::testing::UnorderedElementsAreArray(expected_ids));
 }
 
-TEST_P(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
+TEST_F(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   ukm::SourceId mock_source_id = ukm::NoURLSourceId();
   mock_graph.page->SetUkmSourceId(mock_source_id);
@@ -442,7 +390,7 @@ TEST_P(PageResourceMonitorUnitTest, TestOnlyRecordTabs) {
   EXPECT_EQ(entries2.size(), 0UL);
 }
 
-TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
+TEST_F(PageResourceMonitorUnitTest, TestResourceUsage) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
 
   // Register fake memory results. Make sure they're divisible by 2 for easier
@@ -453,13 +401,6 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
       .resident_set_size_kb = 1230};
   memory_summaries[mock_graph.other_process->GetResourceContext()] = {
       .resident_set_size_kb = 4560, .private_footprint_kb = 7890};
-  if (GetParam().validate_resource_attribution) {
-    // Also set legacy test data.
-    mock_graph.frame->SetResidentSetKbEstimate(1230 / 2);
-    mock_graph.other_frame->SetResidentSetKbEstimate(1230 / 2);
-    mock_graph.child_frame->SetResidentSetKbEstimate(4560);
-    mock_graph.other_frame->SetPrivateFootprintKbEstimate(7890);
-  }
 
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -474,8 +415,8 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageResourceUsage2::kEntryName);
-  // Expect 1 entry per page per algorithm.
-  EXPECT_EQ(entries.size(), GetParam().expected_algorithms.size() * 2);
+  // Expect 1 entry per page.
+  EXPECT_EQ(entries.size(), 2u);
 
   // `page` gets its memory from `frame`, which is 1/2 the memory from
   // `process`.
@@ -502,17 +443,10 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
   };
   const auto kExpectedAllCPUUsage = 2500 + 7500;
 
-  // Each SourceId should record an entry for each algorithm.
-  std::vector<std::pair<ukm::SourceId, PageMeasurementAlgorithm>>
-      expected_ids_and_algorithms;
-  for (const PageMeasurementAlgorithm algorithm :
-       GetParam().expected_algorithms) {
-    expected_ids_and_algorithms.emplace_back(mock_source_id, algorithm);
-    expected_ids_and_algorithms.emplace_back(mock_source_id2, algorithm);
-  }
+  // Each SourceId should record an entry.
+  std::vector<ukm::SourceId> expected_ids{mock_source_id, mock_source_id2};
 
-  std::vector<std::pair<ukm::SourceId, PageMeasurementAlgorithm>>
-      ids_and_algorithms;
+  std::vector<ukm::SourceId> ids;
   for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "ResidentSetSizeEstimate",
@@ -527,11 +461,11 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
     const int64_t* algorithm =
         test_ukm_recorder()->GetEntryMetric(entry, "MeasurementAlgorithm");
     ASSERT_NE(algorithm, nullptr);
-    ids_and_algorithms.emplace_back(
-        entry->source_id, static_cast<PageMeasurementAlgorithm>(*algorithm));
+    EXPECT_EQ(static_cast<PageMeasurementAlgorithm>(*algorithm),
+              PageMeasurementAlgorithm::kEvenSplitAndAggregate);
+    ids.emplace_back(entry->source_id);
   }
-  EXPECT_THAT(ids_and_algorithms, ::testing::UnorderedElementsAreArray(
-                                      expected_ids_and_algorithms));
+  EXPECT_THAT(ids, ::testing::UnorderedElementsAreArray(expected_ids));
 }
 
 // TODO(crbug.com/328630446): Test fails on ChromeOS MSan.
@@ -541,7 +475,7 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
 #else
 #define MAYBE_TestResourceUsageBackgroundState TestResourceUsageBackgroundState
 #endif
-TEST_P(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
+TEST_F(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -600,7 +534,7 @@ TEST_P(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_P(PageResourceMonitorUnitTest, TestCPUInterventionMetrics) {
+TEST_F(PageResourceMonitorUnitTest, TestCPUInterventionMetrics) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
 
   // Foreground page.
@@ -828,7 +762,7 @@ TEST_P(PageResourceMonitorUnitTest, TestCPUInterventionMetrics) {
   }
 }
 
-TEST_P(PageResourceMonitorUnitTest, CPUInterventionMetricsNoForegroundTabs) {
+TEST_F(PageResourceMonitorUnitTest, CPUInterventionMetricsNoForegroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
   GetCPUDelegate(mock_graph.process.get())
@@ -863,7 +797,7 @@ TEST_P(PageResourceMonitorUnitTest, CPUInterventionMetricsNoForegroundTabs) {
   immediate.ExpectUniqueSample("TopNBackgroundCPU.2", 100);
 }
 
-TEST_P(PageResourceMonitorUnitTest, CPUInterventionMetricsNoBackgroundTabs) {
+TEST_F(PageResourceMonitorUnitTest, CPUInterventionMetricsNoBackgroundTabs) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
   GetCPUDelegate(mock_graph.process.get())
@@ -906,11 +840,7 @@ class PageResourceMonitorNoCPUProbeTest : public PageResourceMonitorUnitTest {
   PageResourceMonitorNoCPUProbeTest() { enable_system_cpu_probe_ = false; }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageResourceMonitorNoCPUProbeTest,
-                         ::testing::ValuesIn(kAllTestParams));
-
-TEST_P(PageResourceMonitorNoCPUProbeTest,
+TEST_F(PageResourceMonitorNoCPUProbeTest,
        CPUInterventionMetricsWithoutSystemCPU) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   mock_graph.page->SetType(performance_manager::PageType::kTab);
