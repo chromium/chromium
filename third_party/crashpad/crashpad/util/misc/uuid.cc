@@ -41,7 +41,9 @@
 namespace crashpad {
 
 static_assert(sizeof(UUID) == 16, "UUID must be 16 bytes");
-static_assert(std::is_pod<UUID>::value, "UUID must be POD");
+static_assert(std::is_standard_layout<UUID>::value,
+              "UUID must be a standard-layout type");
+static_assert(std::is_trivial<UUID>::value, "UUID must be a trivial type");
 
 bool UUID::operator==(const UUID& that) const {
   return memcmp(this, &that, sizeof(*this)) == 0;
@@ -114,7 +116,7 @@ bool UUID::InitializeWithNew() {
   // from libuuid is not available everywhere.
   // On Windows, do not use UuidCreate() to avoid a dependency on rpcrt4, so
   // that this function is usable early in DllMain().
-  base::RandBytes(this, sizeof(*this));
+  base::RandBytes(base::byte_span_from_ref(*this));
 
   // Set six bits per RFC 4122 §4.4 to identify this as a pseudo-random UUID.
   data_3 = (4 << 12) | (data_3 & 0x0fff);  // §4.1.3
