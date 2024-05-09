@@ -595,6 +595,16 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Propagate the break-before/break-after of the child (if applicable).
   void PropagateChildBreakValues(const LayoutResult& child_layout_result);
 
+  bool ShouldCalculateScrollableOverflow() const {
+    // Most nodes should calculate scrollable overflow and store it on the
+    // resulting fragment, except for replaced content, and the root fragment
+    // when paginating (the size of the root fragment is the same as the initial
+    // containing block size, but page sizes may vary. Overflow calculation must
+    // be done per fragmentainer).
+    return node_ && !node_.IsReplaced() &&
+           (!node_.IsPaginatedRoot() || IsFragmentainerBoxType());
+  }
+
  private:
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column

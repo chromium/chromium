@@ -883,7 +883,13 @@ void PrePaintTreeWalk::WalkPageContainer(
   WalkInternal(*page_container_link->GetLayoutObject(), page_container_context,
                &container_pre_paint_info);
 
-  PhysicalOffset adjustment = page_container_link.offset;
+  // Calculate the offset into the stitched coordinate system, where each page
+  // is stacked after oneanother in the block direction. Example: in
+  // horizontal-tb mode, if the page height is 800px and this is the third
+  // page, the offset will 1600px.
+  PhysicalOffset pagination_adjustment =
+      StitchedPageContentRect(page_container).offset;
+
   for (const PhysicalFragmentLink& grandchild : page_container.Children()) {
     DCHECK_EQ(grandchild->GetBoxType(), PhysicalFragment::kPageBorderBox);
 
@@ -898,6 +904,30 @@ void PrePaintTreeWalk::WalkPageContainer(
     WalkInternal(*grandchild->GetLayoutObject(), page_border_box_context,
                  &border_pre_paint_info);
 
+    if (page_border_box_context.tree_builder_context) {
+      // Create paint properties for the page border box fragment. This fragment
+      // is responsible for @page borders and other decorations, in addition to
+      // the document background. So this needs to be in the coordinate system
+      // of paginated layout.
+      gfx::Transform matrix;
+      matrix.Translate(float(pagination_adjustment.left),
+                       float(pagination_adjustment.top));
+      TransformPaintPropertyNode::State transform_state;
+      transform_state.transform_and_origin = {matrix, gfx::Point3F()};
+
+      PaintPropertyTreeBuilderFragmentContext& fragment_context =
+          page_border_box_context.tree_builder_context->fragment_context;
+      const LayoutObject* object = grandchild->GetLayoutObject();
+      FragmentData& fragment_data =
+          object->GetMutableForPainting().FirstFragment();
+      fragment_data.EnsurePaintProperties().UpdateTransform(
+          *fragment_context.current.transform, std::move(transform_state));
+      fragment_data.SetLocalBorderBoxProperties(PropertyTreeStateOrAlias(
+          *fragment_data.PaintProperties()->Transform(),
+          *fragment_context.current.clip, *fragment_context.current_effect));
+    }
+
+    // A page border box fragment should only have one child: the page area.
     const PhysicalFragmentLink& page_area = grandchild->Children()[0];
     DCHECK_EQ(page_area->GetBoxType(), PhysicalFragment::kPageArea);
 
@@ -910,14 +940,14 @@ void PrePaintTreeWalk::WalkPageContainer(
       PaintPropertyTreeBuilderFragmentContext& fragment_context =
           page_area_context.tree_builder_context->fragment_context;
       containing_block_context = &fragment_context.current;
-      containing_block_context->paint_offset += adjustment;
+      containing_block_context->paint_offset += pagination_adjustment;
     }
 
     WalkFragmentainer(parent_object, page_area, page_area_context,
                       fragmentainer_idx);
 
     if (containing_block_context) {
-      containing_block_context->paint_offset -= adjustment;
+      containing_block_context->paint_offset -= pagination_adjustment;
     }
   }
 }

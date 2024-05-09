@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
@@ -11,10 +12,50 @@
 
 namespace blink {
 
+namespace {
+
+wtf_size_t PageNumberFromPageArea(const PhysicalBoxFragment& page_area) {
+  DCHECK_EQ(page_area.GetBoxType(), PhysicalFragment::kPageArea);
+  if (const BlockBreakToken* break_token = page_area.GetBreakToken()) {
+    return break_token->SequenceNumber();
+  }
+  const LayoutView& view = *page_area.GetDocument().GetLayoutView();
+  DCHECK_GE(PageCount(view), 1u);
+  return PageCount(view) - 1;
+}
+
+}  // anonymous namespace
+
 wtf_size_t PageCount(const LayoutView& view) {
   DCHECK(view.ShouldUsePrintingLayout());
   const auto& fragments = view.GetPhysicalFragment(0)->Children();
   return ClampTo<wtf_size_t>(fragments.size());
+}
+
+const PhysicalBoxFragment* GetPageContainer(const LayoutView& view,
+                                            wtf_size_t page_number) {
+  if (!view.PhysicalFragmentCount()) {
+    return nullptr;
+  }
+  const auto& pages = view.GetPhysicalFragment(0)->Children();
+  if (page_number >= pages.size()) {
+    return nullptr;
+  }
+  const auto* child = To<PhysicalBoxFragment>(pages[page_number].get());
+  if (child->GetBoxType() != PhysicalFragment::kPageContainer) {
+    // Not paginated, at least not yet.
+    return nullptr;
+  }
+  return child;
+}
+
+const PhysicalBoxFragment* GetPageArea(const LayoutView& view,
+                                       wtf_size_t page_number) {
+  const auto* page_container = GetPageContainer(view, page_number);
+  if (!page_container) {
+    return nullptr;
+  }
+  return &GetPageArea(GetPageBorderBox(*page_container));
 }
 
 const PhysicalBoxFragment& GetPageBorderBox(
@@ -41,11 +82,45 @@ const PhysicalBoxFragment& GetPageArea(
 
 PhysicalRect StitchedPageContentRect(const LayoutView& layout_view,
                                      wtf_size_t page_number) {
-  const auto& fragments = layout_view.GetPhysicalFragment(0)->Children();
-  CHECK_GE(fragments.size(), 1u);
-  const PhysicalFragmentLink& page = fragments[page_number];
-  DCHECK_EQ(page->GetBoxType(), PhysicalFragment::kPageContainer);
-  return PhysicalRect(page.offset, page->Size());
+  return StitchedPageContentRect(*GetPageContainer(layout_view, page_number));
+}
+
+PhysicalRect StitchedPageContentRect(
+    const PhysicalBoxFragment& page_container) {
+  DCHECK_EQ(page_container.GetBoxType(), PhysicalFragment::kPageContainer);
+  const PhysicalBoxFragment& page_border_box = GetPageBorderBox(page_container);
+  const PhysicalBoxFragment& page_area = GetPageArea(page_border_box);
+  PhysicalRect physical_page_rect = page_area.LocalRect();
+
+  if (const BlockBreakToken* previous_break_token =
+          FindPreviousBreakTokenForPageArea(page_area)) {
+    LayoutUnit consumed_block_size = previous_break_token->ConsumedBlockSize();
+    WritingMode writing_mode = page_container.Style().GetWritingMode();
+    if (writing_mode == WritingMode::kVerticalRl) {
+      const LayoutView& view = *page_container.GetDocument().GetLayoutView();
+      const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+      physical_page_rect.offset.left += first_page_area.Size().width;
+      physical_page_rect.offset.left -=
+          consumed_block_size + page_area.Size().width;
+    } else if (writing_mode == WritingMode::kVerticalLr) {
+      physical_page_rect.offset.left += consumed_block_size;
+    } else {
+      physical_page_rect.offset.top += consumed_block_size;
+    }
+  }
+
+  return physical_page_rect;
+}
+
+const BlockBreakToken* FindPreviousBreakTokenForPageArea(
+    const PhysicalBoxFragment& page_area) {
+  DCHECK_EQ(page_area.GetBoxType(), PhysicalFragment::kPageArea);
+  wtf_size_t page_number = PageNumberFromPageArea(page_area);
+  if (page_number == 0) {
+    return nullptr;
+  }
+  const LayoutView& view = *page_area.GetDocument().GetLayoutView();
+  return GetPageArea(view, page_number - 1)->GetBreakToken();
 }
 
 float CalculateOverflowShrinkForPrinting(const LayoutView& view,

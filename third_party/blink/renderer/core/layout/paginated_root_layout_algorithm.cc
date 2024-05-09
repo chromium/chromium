@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/page_border_box_layout_algorithm.h"
@@ -26,8 +27,8 @@ PaginatedRootLayoutAlgorithm::PaginatedRootLayoutAlgorithm(
 
 const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
-  auto writing_direction = GetConstraintSpace().GetWritingDirection();
-  LogicalOffset page_offset;
+  WritingModeConverter converter(GetConstraintSpace().GetWritingDirection(),
+                                 container_builder_.Size());
   wtf_size_t page_index = 0;
   AtomicString page_name;
 
@@ -56,11 +57,14 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
       DCHECK_EQ(page_name, result.fragment->PageName());
     }
 
-    container_builder_.AddChild(*result.fragment, page_offset);
-
-    LayoutUnit page_block_size =
-        LogicalFragment(writing_direction, *result.fragment).BlockSize();
-    page_offset.block_offset += page_block_size;
+    // Each page container establishes its own coordinate system, without any
+    // relationship to other page containers (there *is* a relationship on the
+    // document contents side of things (stitched coordinate system), but that's
+    // not relevant here). Set the physical offset of the page container to 0,0,
+    // so that we don't have to add work-arounds to ignore it on the paint side.
+    LogicalOffset origin =
+        converter.ToLogical(PhysicalOffset(), result.fragment->Size());
+    container_builder_.AddChild(*result.fragment, origin);
 
     page_area_params.break_token = result.fragmentainer_break_token;
     page_index++;

@@ -128,7 +128,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
 #endif
 
   PhysicalRect scrollable_overflow = {PhysicalOffset(), physical_size};
-  if (builder->node_ && !builder->node_.IsReplaced()) {
+  if (builder->ShouldCalculateScrollableOverflow()) {
     ScrollableOverflowCalculator calculator(
         To<BlockNode>(builder->node_),
         /* is_css_box */ !builder->IsFragmentainerBoxType(),

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -45,6 +46,26 @@ void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
   const auto* properties = fragment_to_paint_->PaintProperties();
   if (!properties)
     return;
+
+  if (!object.Parent() && !object.HasLayer()) {
+#if DCHECK_IS_ON()
+    DCHECK(object.IsDetachedNonDomRoot());
+    DCHECK(object.IsBox());
+    DCHECK_EQ(To<LayoutBox>(object).GetPhysicalFragment(0)->GetBoxType(),
+              PhysicalFragment::kPageBorderBox);
+#endif
+
+    // The page border box fragment paints @page borders and other decorations,
+    // in addition to the document background (the one typically defined on the
+    // BODY or HTML element). Therefore, this is in the coordinate system of the
+    // document, which may have a different scale factor than the page
+    // container, which is fitted to the paper size, if any.
+    chunk_properties_.emplace(
+        input_paint_info_.context.GetPaintController(),
+        fragment_to_paint_->LocalBorderBoxProperties(), object,
+        DisplayItem::PaintPhaseToDrawingType(input_paint_info_.phase));
+    return;
+  }
 
   auto new_chunk_properties = input_paint_info_.context.GetPaintController()
                                   .CurrentPaintChunkProperties();
