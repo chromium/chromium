@@ -157,6 +157,11 @@ class PermissionPrompt {
   // Get the type of prompt UI shown for metrics.
   virtual PermissionPromptDisposition GetPromptDisposition() const = 0;
 
+  // Check if the view shown is an "Ask" prompt for metrics. Currently this only
+  // distinguishes different prompt views displayed through the Page Embedded
+  // Permission Element.
+  virtual bool IsAskPrompt() const = 0;
+
   // Get the prompt view bounds in screen coordinates.
   virtual std::optional<gfx::Rect> GetViewBoundsInScreen() const = 0;
 

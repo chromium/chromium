@@ -56,6 +56,10 @@ PermissionPromptNotificationsMac::GetPromptDisposition() const {
   return permissions::PermissionPromptDisposition::MAC_OS_PROMPT;
 }
 
+bool PermissionPromptNotificationsMac::IsAskPrompt() const {
+  return true;
+}
+
 std::optional<gfx::Rect>
 PermissionPromptNotificationsMac::GetViewBoundsInScreen() const {
   return std::nullopt;

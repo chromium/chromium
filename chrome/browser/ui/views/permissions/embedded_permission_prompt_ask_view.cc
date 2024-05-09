@@ -15,6 +15,8 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptAskView,
                                       kAllowId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptAskView,
+                                      kAllowThisTimeId);
 
 EmbeddedPermissionPromptAskView::EmbeddedPermissionPromptAskView(
     Browser* browser,
@@ -62,7 +64,7 @@ EmbeddedPermissionPromptAskView::GetButtonsConfiguration() const {
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
     buttons.emplace_back(
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal);
+        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
   }
   buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
                        ButtonType::kAllow, ui::ButtonStyle::kTonal, kAllowId);

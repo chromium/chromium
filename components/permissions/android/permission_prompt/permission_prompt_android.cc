@@ -50,6 +50,10 @@ PermissionPromptAndroid::GetPromptVariants() const {
   return {};
 }
 
+bool PermissionPromptAndroid::IsAskPrompt() const {
+  return true;
+}
+
 void PermissionPromptAndroid::Closing() {
   delegate_->Dismiss();
 }

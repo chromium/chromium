@@ -1064,6 +1064,10 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
     DeletePrompt();
 }
 
+bool PermissionRequestManager::ShouldRecordUmaForCurrentPrompt() const {
+  return (!view_ || view_->IsAskPrompt());
+}
+
 void PermissionRequestManager::CurrentRequestsDecided(
     PermissionAction permission_action) {
   DCHECK(IsRequestInProgress());
@@ -1094,13 +1098,16 @@ void PermissionRequestManager::CurrentRequestsDecided(
 
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
-  PermissionUmaUtil::PermissionPromptResolved(
-      requests_, web_contents(), permission_action, time_to_decision,
-      DetermineCurrentRequestUIDisposition(),
-      DetermineCurrentRequestUIDispositionReasonForUMA(),
-      view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
-      prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
-      did_show_prompt_, did_click_manage_, did_click_learn_more_);
+
+  if (ShouldRecordUmaForCurrentPrompt()) {
+    PermissionUmaUtil::PermissionPromptResolved(
+        requests_, web_contents(), permission_action, time_to_decision,
+        DetermineCurrentRequestUIDisposition(),
+        DetermineCurrentRequestUIDispositionReasonForUMA(),
+        view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
+        prediction_grant_likelihood_, was_decision_held_back_, ignore_reason,
+        did_show_prompt_, did_click_manage_, did_click_learn_more_);
+  }
 
   std::optional<QuietUiReason> quiet_ui_reason;
   if (ShouldCurrentRequestUseQuietUI())
@@ -1401,6 +1408,10 @@ void PermissionRequestManager::StorePermissionActionForUMA(
     const GURL& origin,
     RequestType request_type,
     PermissionAction permission_action) {
+  if (!ShouldRecordUmaForCurrentPrompt()) {
+    return;
+  }
+
   std::optional<ContentSettingsType> content_settings_type =
       RequestTypeToContentSettingsType(request_type);
   if (content_settings_type.has_value()) {

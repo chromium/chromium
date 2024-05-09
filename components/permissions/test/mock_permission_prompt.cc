@@ -58,6 +58,10 @@ MockPermissionPrompt::GetPromptVariants() const {
   return {};
 }
 
+bool MockPermissionPrompt::IsAskPrompt() const {
+  return true;
+}
+
 MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
                                            Delegate* delegate)
     : factory_(factory), delegate_(delegate) {

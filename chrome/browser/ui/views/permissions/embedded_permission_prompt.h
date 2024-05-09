@@ -75,6 +75,7 @@ class EmbeddedPermissionPrompt
   bool ShouldFinalizeRequestAfterDecided() const override;
   std::vector<permissions::ElementAnchoredBubbleVariant> GetPromptVariants()
       const override;
+  bool IsAskPrompt() const override;
 
   // EmbeddedPermissionPromptViewDelegate:
   void Allow() override;

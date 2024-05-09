@@ -360,6 +360,10 @@ EmbeddedPermissionPrompt::GetPromptVariants() const {
   return variants;
 }
 
+bool EmbeddedPermissionPrompt::IsAskPrompt() const {
+  return (embedded_prompt_variant_ == Variant::kAsk);
+}
+
 void EmbeddedPermissionPrompt::Allow() {
   PrecalculateVariantsForMetrics();
   delegate_->Accept();

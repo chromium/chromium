@@ -265,6 +265,10 @@ class PermissionRequestManager
 
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override;
 
+  // For permissions that have visible views, we should only record
+  // PromptResolved metrics, for ask prompts.
+  bool ShouldRecordUmaForCurrentPrompt() const;
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
@@ -297,8 +301,8 @@ class PermissionRequestManager
   // Return true if we keep showing the current request, otherwise return false
   bool ReprioritizeCurrentRequestIfNeeded();
 
-  // Validate the input request. If the request is invalid and |should_finalize|
-  // is set, cancel and remove it from *_map_ and *_set_.
+  // Validate the input request. If the request is invalid and
+  // |should_finalize| is set, cancel and remove it from *_map_ and *_set_.
   // Return true if the request is valid, otherwise false.
   bool ValidateRequest(PermissionRequest* request, bool should_finalize = true);
 
