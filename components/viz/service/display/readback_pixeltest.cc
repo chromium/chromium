@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
@@ -196,55 +197,6 @@ void ReadbackTexturesOnGpuThread(
   scoped_write->ApplyBackendSurfaceEndState();
 }
 
-void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
-                                 gpu::SharedContextState* context_state,
-                                 const gpu::Mailbox& mailbox,
-                                 const gfx::Size& texture_size,
-                                 SkColorType color_type,
-                                 base::span<const uint8_t> pixel_data) {
-  if (!context_state->MakeCurrent(nullptr)) {
-    return;
-  }
-
-  auto representation = shared_image_manager->ProduceSkia(
-      mailbox, context_state->memory_type_tracker(), context_state);
-
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-
-  auto scoped_write = representation->BeginScopedWriteAccess(
-      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
-      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-
-  context_state->gr_context()->wait(begin_semaphores.size(),
-                                    begin_semaphores.data());
-
-  size_t row_bytes = GetRowBytesForColorType(texture_size.width(), color_type);
-
-  SkPixmap pixmap(SkImageInfo::Make(texture_size.width(), texture_size.height(),
-                                    color_type, representation->alpha_type()),
-                  pixel_data.data(), row_bytes);
-
-  auto* surface = scoped_write->surface();
-  surface->writePixels(pixmap, 0, 0);
-  representation->SetCleared();
-
-  GrFlushInfo flush_info;
-  flush_info.fNumSemaphores = end_semaphores.size();
-  flush_info.fSignalSemaphores = end_semaphores.data();
-
-  gpu::AddVulkanCleanupTaskForSkiaFlush(context_state->vk_context_provider(),
-                                        &flush_info);
-
-  // Graphite surfaces do not need to be flushed, only Ganesh ones.
-  if (GrDirectContext* direct_context = context_state->gr_context()) {
-    direct_context->flush(flush_info);
-  }
-  scoped_write->ApplyBackendSurfaceEndState();
-}
-
 // Reads back NV12 planes from textures returned in the result.
 // Will issue a task to the GPU thread and block on its completion.
 // The |texture_size| needs to be passed in explicitly, because if the request
@@ -289,41 +241,36 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
   wait.Wait();
 }
 
-void WriteRGBAPlane(TestGpuServiceHolder* gpu_service_holder,
-                    gpu::Mailbox mailbox,
-                    const gfx::Size& texture_size,
-                    base::span<const uint8_t> pixel_data) {
-  base::WaitableEvent wait;
-
-  // Write the texture on the GPU main thread to ensure ordering with the
-  // creation of the SharedImage referred to by `mailbox`.
-  gpu_service_holder->ScheduleGpuMainTask(base::BindLambdaForTesting(
-      [&mailbox, &texture_size, &pixel_data, &wait]() {
-        WriteTextureOnGpuMainThread(
-            TestGpuServiceHolder::GetInstance()
-                ->gpu_service()
-                ->shared_image_manager(),
-            TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
-            mailbox, texture_size, kRGBA_8888_SkColorType, pixel_data);
-        wait.Signal();
-      }));
-
-  wait.Wait();
-}
-
-// Reads back RGBA planes from textures returned in the result like above.
-void ReadbackRGBAPlanes(TestGpuServiceHolder* gpu_service_holder,
+// Readback RGBA CopyOutputResult from texture into `out_plane`.
+void ReadbackResultRGBA(TestGpuServiceHolder* gpu_service_holder,
+                        bool is_software,
                         CopyOutputResult& result,
                         const gfx::Size& texture_size,
                         SkBitmap& out_plane) {
+  auto mailbox = result.GetTextureResult()->mailbox_holders[0].mailbox;
+  CHECK(!mailbox.IsZero());
+
+  if (is_software) {
+    // Access the memory on test thread since SoftwareRenderer has already
+    // written to it here.
+    auto memory_tracker = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
+    auto representation = gpu_service_holder->gpu_service()
+                              ->shared_image_manager()
+                              ->ProduceMemory(mailbox, memory_tracker.get());
+    auto access = representation->BeginScopedReadAccess();
+    memcpy(out_plane.pixmap().writable_addr(), access->pixmap().addr(),
+           out_plane.pixmap().computeByteSize());
+    return;
+  }
+
   base::WaitableEvent wait;
 
   // Some shared image implementations don't allow concurrent read/write to
   // a same image. At this point, compositor GPU thread might be reading the
   // image so it's better we issue the readback on the compositor GPU thread to
   // avoid contention.
-  gpu_service_holder->ScheduleCompositorGpuTask(
-      base::BindLambdaForTesting([&out_plane, &result, &wait, &texture_size]() {
+  gpu_service_holder->ScheduleCompositorGpuTask(base::BindLambdaForTesting(
+      [&out_plane, &mailbox, &wait, &texture_size]() {
         auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
                                          ->gpu_service()
                                          ->shared_image_manager();
@@ -335,10 +282,8 @@ void ReadbackRGBAPlanes(TestGpuServiceHolder* gpu_service_holder,
         texture_infos.emplace_back(texture_size, kRGBA_8888_SkColorType,
                                    out_plane);
 
-        ReadbackTexturesOnGpuThread(
-            shared_image_manager, context_state,
-            result.GetTextureResult()->mailbox_holders[0].mailbox,
-            texture_infos);
+        ReadbackTexturesOnGpuThread(shared_image_manager, context_state,
+                                    mailbox, texture_infos);
 
         wait.Signal();
       }));
@@ -420,12 +365,6 @@ class ReadbackPixelTest : public VizPixelTest {
                        : FILE_PATH_LITERAL("one_of_16_color_rects.png"));
   }
 
-  // Returns an appropriate shard image usage.
-  uint32_t GetUsage() const {
-    return is_software_renderer() ? gpu::SHARED_IMAGE_USAGE_CPU_WRITE
-                                  : gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  }
-
   // All subclasses should call it from within their virtual SetUp() method.
   void SetUpReadbackPixeltest(bool scale_by_half) {
     DCHECK(!is_initialized_);
@@ -492,6 +431,28 @@ class ReadbackPixelTest : public VizPixelTest {
     return result;
   }
 
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImageWithPixels(
+      SharedImageFormat format,
+      gfx::Size size,
+      const gfx::ColorSpace color_space,
+      base::span<const uint8_t> pixels) {
+    auto* sii = child_context_provider_->SharedImageInterface();
+    CHECK(sii);
+
+    if (is_software_renderer()) {
+      auto result = sii->CreateSharedImage({format, size, color_space,
+                                            gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+                                            "TestLabels"});
+      memcpy(result.mapping.memory(), pixels.data(), pixels.size());
+      return result.shared_image;
+    } else {
+      return sii->CreateSharedImage(
+          {format, size, color_space, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+           "TestLabels"},
+          pixels);
+    }
+  }
+
  private:
   // Creates a RenderPass that embeds a single quad containing |bitmap|.
   std::unique_ptr<AggregatedRenderPass> GenerateRootRenderPass(
@@ -531,12 +492,10 @@ class ReadbackPixelTest : public VizPixelTest {
   ResourceId CreateSharedImageResource(const gfx::Size& size,
                                        SharedImageFormat format,
                                        base::span<const uint8_t> pixels) {
-    gpu::SharedImageInterface* sii =
-        child_context_provider_->SharedImageInterface();
-    DCHECK(sii);
-    auto client_shared_image = sii->CreateSharedImage(
-        {format, size, gfx::ColorSpace(), GetUsage(), "TestPixels"}, pixels);
-    gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
+        CreateSharedImageWithPixels(format, size, gfx::ColorSpace(), pixels);
+    gpu::SyncToken sync_token = child_context_provider_->SharedImageInterface()
+                                    ->GenUnverifiedSyncToken();
 
     TransferableResource resource =
         is_software_renderer()
@@ -629,7 +588,8 @@ TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequest) {
       actual.allocPixels(SkImageInfo::Make(size.width(), size.height(),
                                            kRGBA_8888_SkColorType,
                                            kUnpremul_SkAlphaType));
-      ReadbackRGBAPlanes(gpu_service_holder_, *result, result->size(), actual);
+      ReadbackResultRGBA(gpu_service_holder_, is_software_renderer(), *result,
+                         result->size(), actual);
       break;
     }
 #endif
@@ -732,15 +692,10 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   std::vector<uint8_t> pixels =
       GeneratePixels(format.EstimatedSizeInBytes(source_size), pattern);
   scoped_refptr<gpu::ClientSharedImage> blit_dest_shared_image =
-      sii->CreateSharedImage(
-          {format, source_size, color_space,
-           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
-          gpu::kNullSurfaceHandle);
+      CreateSharedImageWithPixels(format, source_size, color_space, pixels);
 
   ASSERT_TRUE(blit_dest_shared_image);
   gpu::Mailbox mailbox = blit_dest_shared_image->mailbox();
-
-  WriteRGBAPlane(gpu_service_holder_, mailbox, source_size, pixels);
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
       RequestFormat(), RequestDestination(),
@@ -775,7 +730,8 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   actual.allocPixels(
       SkImageInfo::Make(source_size.width(), source_size.height(),
                         kRGBA_8888_SkColorType, kPremul_SkAlphaType));
-  ReadbackRGBAPlanes(gpu_service_holder_, *result, source_size, actual);
+  ReadbackResultRGBA(gpu_service_holder_, is_software_renderer(), *result,
+                     source_size, actual);
 
   sii->DestroySharedImage(gpu::SyncToken(), std::move(blit_dest_shared_image));
 
@@ -814,7 +770,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ReadbackPixelTestRGBAWithBlit,
     testing::Combine(
-        testing::Values(RendererType::kSkiaGL),
+        testing::Values(RendererType::kSoftware, RendererType::kSkiaGL),
         testing::Bool(),  // Result scaling: Scale by half?
         testing::Values(LetterboxingBehavior::kDoNotLetterbox,
                         LetterboxingBehavior::kLetterbox),
