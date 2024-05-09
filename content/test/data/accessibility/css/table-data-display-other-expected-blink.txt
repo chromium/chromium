@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++table tableRowCount=2 tableColumnCount=3
-++++++++rowGroup ignored
+++++++++rowGroup
 ++++++++++row tableRowIndex=0
 ++++++++++++columnHeader name='1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='1'

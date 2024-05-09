@@ -740,8 +740,11 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // result in inclusion.
   }
 
-  if (IsTableLikeRole() || IsTableRowLikeRole() || IsTableCellLikeRole())
+  if (IsTableLikeRole() || IsTableRowLikeRole() || IsTableCellLikeRole() ||
+      element->HasTagName(html_names::kTheadTag) ||
+      element->HasTagName(html_names::kTfootTag)) {
     return kIncludeObject;
+  }
 
   if (IsA<HTMLHtmlElement>(node)) {
     if (ignored_reasons) {

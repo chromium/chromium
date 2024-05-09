@@ -4046,7 +4046,8 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   // Keep table-related elements in the tree, because it's too easy for them
   // to in and out of being ignored based on their ancestry, as their role
   // can depend on several levels up in the hierarchy.
-  if (IsA<HTMLTableElement>(element) || IsA<HTMLTableSectionElement>(element) ||
+  if (IsA<HTMLTableElement>(element) ||
+      element->HasTagName(html_names::kTbodyTag) ||
       IsA<HTMLTableRowElement>(element) || IsA<HTMLTableCellElement>(element)) {
     return true;
   }
