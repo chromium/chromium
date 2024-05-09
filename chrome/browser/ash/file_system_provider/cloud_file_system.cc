@@ -110,7 +110,8 @@ const std::string GetVersionTag(EntryMetadata* metadata) {
 }
 
 std::optional<int64_t> GetCloudSize(EntryMetadata* metadata) {
-  if (metadata && metadata->size) {
+  // If the size doesn't exist, it may return -1, let's avoid this error case.
+  if (metadata && metadata->size && *metadata->size > -1) {
     return *metadata->size;
   }
   return std::nullopt;
