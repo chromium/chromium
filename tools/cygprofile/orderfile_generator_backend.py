@@ -370,7 +370,6 @@ class OrderfileUpdater:
 
   _CLOUD_STORAGE_BUCKET_FOR_DEBUG = None
   _CLOUD_STORAGE_BUCKET = None
-  _GCLIENT_SETDEP_DIR = _SRC_PATH
   _UPLOAD_TO_CLOUD_COMMAND = 'upload_to_google_storage.py'
   _UPLOAD_TO_NEW_CLOUD_COMMAND = 'upload_to_google_storage_first_class.py'
 
@@ -436,8 +435,9 @@ class OrderfileUpdater:
       logging.info(output_file)
       # Load existing objects to avoid overwriting other arch's objects.
       getdep_cmd = ['gclient', 'getdep', '-r', 'orderfiles']
-      dep_str: str = self._step_recorder.RunCommand(
-          getdep_cmd, cwd=self._GCLIENT_SETDEP_DIR, capture_output=True).stdout
+      dep_str: str = self._step_recorder.RunCommand(getdep_cmd,
+                                                    cwd=self._repository_root,
+                                                    capture_output=True).stdout
       # dep_str is a python representation of the object, not valid JSON.
       dep_objects = ast.literal_eval(dep_str)
       values = []
@@ -454,7 +454,7 @@ class OrderfileUpdater:
         else:
           values.append(",".join(map(str, dep_object.values())))
       setdep_cmd = ['gclient', 'setdep', '-r', f'orderfiles@{"?".join(values)}']
-      self._step_recorder.RunCommand(setdep_cmd, cwd=self._GCLIENT_SETDEP_DIR)
+      self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
     print('Download: https://sandbox.google.com/storage/%s/%s' %
           (bucket, _GenerateHash(filename)))
 
@@ -1102,7 +1102,7 @@ class OrderfileGenerator:
     ]
     if self._options.arch == 'arm64':
       # DEPS is updated as well in the new cloud flow.
-      paths.append('DEPS')
+      paths.append(str(self._clank_dir / 'DEPS'))
     self._orderfile_updater._CommitStashedFiles(paths)
     return True
 
