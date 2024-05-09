@@ -236,10 +236,19 @@ std::string JSONParser::StringBuilder::DestructiveAsString() {
 // JSONParser private //////////////////////////////////////////////////////////
 
 std::optional<std::string_view> JSONParser::PeekChars(size_t count) {
-  if (index_ + count > input_.length())
+  if (count > input_.length() - index_) {
     return std::nullopt;
-  // Using StringPiece::substr() is significantly slower (according to
-  // base_perftests) than constructing a substring manually.
+  }
+  // Using string_view::substr() was historically significantly slower
+  // (according to base_perftests) than constructing a substring manually.
+  //
+  // TODO(crbug.com/40284755): Is this still the case? Ideally the bounds check
+  // performed by substr would be deleted by the optimizer for being redundant
+  // with the runtime check above. However, to do so, the compiler would need
+  // to know `index_ <= input_.length()` is a class invariant. If we
+  // restructured the code so that we only stored the remaining data, that
+  // would avoid this, but it would prevent rewinding (the places in this file
+  // which look at `input_[index_ - 1]`.)
   return std::string_view(input_.data() + index_, count);
 }
 
