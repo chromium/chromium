@@ -255,6 +255,67 @@ chromium-metrics-reviews@google.com.
   <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
+<histogram
+    name="Scheduling.ThreadController.ActiveOffCpuVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread stayed off-cpu during
+    active periods relative to the total time since the last metric was stored.
+    Recorded over a window of length one second and each sample is independent
+    of the previous one, hence knowing the value of x[i] does not provide any
+    information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second and 50 ms was off-cpu, as sample of 5% is stored. In
+    this example, the corresponding on-cpu sample would be 15%.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveOnCpuVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread stayed on-cpu during
+    active periods relative to the total time since the last metric was stored.
+    Recorded over a window of length one second and each sample is independent
+    of the previous one, hence knowing the value of x[i] does not provide any
+    information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second and 150 ms was on-cpu, as sample of 15% is stored. In
+    this example, the corresponding off-cpu sample would be 5%.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Scheduling.ThreadController.ActiveVsWallTimePercentage.CrGpuMain"
+    units="%" expires_after="2025-05-07">
+  <owner>henrika@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Records the percentage of time the main GPU thread is active relative to the
+    total time since the last metric was stored. Recorded over a window of
+    length one second and each sample is independent of the previous one, hence
+    knowing the value of x[i] does not provide any information about x[i+1].
+
+    Example: if the main GPU thread has been in an active state for 200 ms
+    during the last second, a sample of 20% will be stored.
+
+    NOTE: This metric is only recorded when the command-line flag
+    enable-gpu-main-time-keeper-metrics is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.ThreadController.IdleDuration.Short.{NamedThread}"
     units="microseconds" expires_after="2025-01-26">
   <owner>olivierli@google.com</owner>
