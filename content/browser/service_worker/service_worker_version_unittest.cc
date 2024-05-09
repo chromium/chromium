@@ -1477,7 +1477,7 @@ TEST_P(ServiceWorkerVersionTest,
   // Now begin the navigation commit with the same process id used by the
   // worker. This should cause the worker to stop being considered foreground
   // priority.
-  service_worker_client->OnBeginNavigationCommit(
+  service_worker_client->CommitResponse(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
       PolicyContainerPolicies(), std::move(reporter),

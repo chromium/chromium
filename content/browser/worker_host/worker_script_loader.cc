@@ -284,9 +284,10 @@ void WorkerScriptLoader::CommitCompleted(
     // TODO(crbug.com/41478971): Pass the PolicyContainerPolicies. It can
     // be built from `WorkerScriptLoader::OnReceiveResponse` from the
     // `response_head->parsed_headers`.
-    service_worker_handle_->service_worker_client()
-        ->CompleteWebWorkerPreparation(PolicyContainerPolicies(),
-                                       ukm_source_id_);
+    service_worker_handle_->service_worker_client()->CommitResponse(
+        /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+        /*coep_reporter=*/{}, ukm_source_id_);
+    service_worker_handle_->service_worker_client()->SetExecutionReady();
   }
 
   client_->OnComplete(status);

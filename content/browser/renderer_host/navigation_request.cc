@@ -6033,7 +6033,7 @@ void NavigationRequest::CommitNavigation() {
     // Notify the service worker navigation handle that navigation commit is
     // about to go.
     if (service_worker_handle_->service_worker_client()) {
-      service_worker_handle_->service_worker_client()->OnBeginNavigationCommit(
+      service_worker_handle_->service_worker_client()->CommitResponse(
           GetRenderFrameHost()->GetGlobalId(),
           policy_container_builder_->FinalPolicies(),
           std::move(reporter_remote), commit_params_->document_ukm_source_id);

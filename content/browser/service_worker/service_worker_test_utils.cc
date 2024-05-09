@@ -325,7 +325,7 @@ base::WeakPtr<ServiceWorkerClient> CreateServiceWorkerClientForWindow(
 
   // In production code this is called from NavigationRequest in the browser
   // process right before navigation commit.
-  service_worker_client->OnBeginNavigationCommit(
+  service_worker_client->CommitResponse(
       render_frame_host_id, PolicyContainerPolicies(), std::move(reporter),
       ukm::kInvalidSourceId);
   return service_worker_client;

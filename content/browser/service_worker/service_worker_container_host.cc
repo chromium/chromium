@@ -1111,30 +1111,36 @@ ServiceWorkerClientInfo ServiceWorkerClient::GetServiceWorkerClientInfo()
   return *client_info_;
 }
 
-void ServiceWorkerClient::OnBeginNavigationCommit(
-    const GlobalRenderFrameHostId& rfh_id,
+void ServiceWorkerClient::CommitResponse(
+    std::optional<GlobalRenderFrameHostId> rfh_id,
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
-    ukm::SourceId document_ukm_source_id) {
+    ukm::SourceId ukm_source_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsContainerForWindowClient());
 
-  ongoing_navigation_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-  client_info_ = rfh_id;
+  if (IsContainerForWindowClient()) {
+    CHECK(coep_reporter);
+    CHECK(rfh_id);
+    ongoing_navigation_frame_tree_node_id_ =
+        RenderFrameHost::kNoFrameTreeNodeId;
+    client_info_ = *rfh_id;
 
-  if (controller_)
-    controller_->UpdateForegroundPriority();
+    if (controller_) {
+      controller_->UpdateForegroundPriority();
+    }
+  }
 
   DCHECK(!policy_container_policies_.has_value());
   policy_container_policies_ = policy_container_policies.Clone();
 
-  coep_reporter_.Bind(std::move(coep_reporter));
-
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_to_be_passed;
-  coep_reporter_->Clone(
-      coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
+  if (coep_reporter) {
+    coep_reporter_.Bind(std::move(coep_reporter));
+    coep_reporter_->Clone(
+        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
+  }
 
   if (controller_ && controller_->fetch_handler_existence() ==
                          ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
@@ -1145,13 +1151,16 @@ void ServiceWorkerClient::OnBeginNavigationCommit(
         std::move(coep_reporter_to_be_passed));
   }
 
-  auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
-  // `rfh` may be null in tests (but it should not happen in production).
-  if (rfh)
-    rfh->AddServiceWorkerClient(client_uuid(), base::AsWeakPtr(this));
+  if (IsContainerForWindowClient()) {
+    auto* rfh = RenderFrameHostImpl::FromID(*rfh_id);
+    // `rfh` may be null in tests (but it should not happen in production).
+    if (rfh) {
+      rfh->AddServiceWorkerClient(client_uuid(), base::AsWeakPtr(this));
+    }
+  }
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
-  ukm_source_id_ = document_ukm_source_id;
+  ukm_source_id_ = ukm_source_id;
 
   TransitionToClientPhase(ClientPhase::kResponseCommitted);
 }
@@ -1167,31 +1176,6 @@ void ServiceWorkerClient::OnEndNavigationCommit() {
     controller_->OnControlleeNavigationCommitted(client_uuid_,
                                                  GetRenderFrameHostId());
   }
-}
-
-void ServiceWorkerClient::CompleteWebWorkerPreparation(
-    const PolicyContainerPolicies& policy_container_policies,
-    ukm::SourceId worker_ukm_source_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsContainerForWorkerClient());
-
-  DCHECK(!policy_container_policies_);
-  policy_container_policies_ = policy_container_policies.Clone();
-  if (controller_ && controller_->fetch_handler_existence() ==
-                         ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
-    DCHECK(pending_controller_receiver_);
-    // TODO(crbug.com/41478971): Plumb the COEP reporter.
-    controller_->controller()->Clone(
-        std::move(pending_controller_receiver_),
-        policy_container_policies_->cross_origin_embedder_policy,
-        mojo::NullRemote());
-  }
-
-  DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
-  ukm_source_id_ = worker_ukm_source_id;
-
-  TransitionToClientPhase(ClientPhase::kResponseCommitted);
-  SetExecutionReady();
 }
 
 void ServiceWorkerClient::UpdateUrls(
@@ -1430,7 +1414,6 @@ const std::string& ServiceWorkerClient::client_uuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_uuid_;
 }
-
 
 ServiceWorkerVersion* ServiceWorkerClient::controller() const {
 #if DCHECK_IS_ON()

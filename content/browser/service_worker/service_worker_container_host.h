@@ -258,33 +258,21 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Returns the client info for this container host.
   ServiceWorkerClientInfo GetServiceWorkerClientInfo() const;
 
-  // For service worker window clients. Called when the navigation is ready to
-  // commit. Updates this host with information about the frame committed to.
-  // After this is called, is_response_committed() and is_execution_ready()
-  // return true.
-  //
+  // Transitions to `kResponseCommitted`.
+  // `rfh_id` is given only for window clients.
   // TODO(falken): Pass in an RenderFrameHostImpl instead of an ID. Some
   // tests use a fake id.
-  void OnBeginNavigationCommit(
-      const GlobalRenderFrameHostId& rfh_id,
+  void CommitResponse(
+      std::optional<GlobalRenderFrameHostId> rfh_id,
       const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      ukm::SourceId document_ukm_source_id);
+      ukm::SourceId ukm_source_id);
 
   // For service worker window clients. Called after the navigation commits to a
   // RenderFrameHost. At this point, the previous ServiceWorkerContainerHost
   // for that RenderFrameHost no longer exists.
   void OnEndNavigationCommit();
-
-  // For service worker clients that are shared workers or dedicated workers.
-  // Called when the web worker main script resource has finished loading.
-  // Updates this host with information about the worker.
-  // After this is called, is_response_committed() and is_execution_ready()
-  // return true.
-  void CompleteWebWorkerPreparation(
-      const PolicyContainerPolicies& cross_origin_embedder_policy,
-      ukm::SourceId worker_ukm_source_id);
 
   void UpdateUrls(const GURL& url,
                   const std::optional<url::Origin>& top_frame_origin,
@@ -501,6 +489,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
     return policy_container_policies_;
   }
 
+  // Sets execution ready flag and runs execution ready callbacks.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
+  void SetExecutionReady();
+
  private:
   class ServiceWorkerRunningStatusObserver;
 
@@ -515,9 +507,6 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // Discards all references to matching registrations.
   void RemoveAllMatchingRegistrations();
-
-  // Sets |execution_ready_| and runs execution ready callbacks.
-  void SetExecutionReady();
 
   void RunExecutionReadyCallbacks();
 
@@ -698,7 +687,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   bool navigation_commit_ended_ = false;
 
   // The frame tree node ID that is set in the constructor and is reset in
-  // OnBeginNavigationCommit().
+  // CommitResponse().
   int ongoing_navigation_frame_tree_node_id_ =
       RenderFrameHost::kNoFrameTreeNodeId;
 

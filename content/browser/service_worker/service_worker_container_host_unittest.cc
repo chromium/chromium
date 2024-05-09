@@ -219,7 +219,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
     // In production code this is called from NavigationRequest in the browser
     // process right before navigation commit.
-    service_worker_client->OnBeginNavigationCommit(
+    service_worker_client->CommitResponse(
         GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                                 1 /* route_id */),
         PolicyContainerPolicies(), std::move(reporter),
@@ -1197,8 +1197,10 @@ void ServiceWorkerContainerHostTest::TestReservedClientsAreNotExposed(
         url, url::Origin::Create(url),
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
     EXPECT_FALSE(CanFindServiceWorkerClient(service_worker_client.get()));
-    service_worker_client->CompleteWebWorkerPreparation(
-        PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
+    service_worker_client->CommitResponse(
+        /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+        /*coep_reporter=*/{}, ukm::UkmRecorder::GetNewSourceID());
+    service_worker_client->SetExecutionReady();
     EXPECT_TRUE(CanFindServiceWorkerClient(service_worker_client.get()));
   }
 
@@ -1288,8 +1290,10 @@ void ServiceWorkerContainerHostTest::TestClientPhaseTransition(
   service_worker_client->UpdateUrls(
       url, url::Origin::Create(url),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-  service_worker_client->CompleteWebWorkerPreparation(
-      PolicyContainerPolicies(), ukm::UkmRecorder::GetNewSourceID());
+  service_worker_client->CommitResponse(
+      /*rfh_id=*/std::nullopt, PolicyContainerPolicies(), /*coep_reporter=*/{},
+      ukm::UkmRecorder::GetNewSourceID());
+  service_worker_client->SetExecutionReady();
 
   EXPECT_TRUE(service_worker_client->is_response_committed());
   EXPECT_TRUE(service_worker_client->is_execution_ready());
