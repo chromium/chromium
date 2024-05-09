@@ -30,9 +30,6 @@ BASE_DECLARE_FEATURE(kLauncherFuzzyMatchForOmnibox);
 // Enables image search in the launcher.
 BASE_DECLARE_FEATURE(kLauncherImageSearch);
 
-// Segmentation flag for local image search.
-BASE_DECLARE_FEATURE(kFeatureManagementLocalImageSearch);
-
 // Whether or not to override configuration of the local image search confidence
 // threshold with an experiment.
 BASE_DECLARE_FEATURE(kLauncherLocalImageSearchConfidence);

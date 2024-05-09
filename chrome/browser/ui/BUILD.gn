@@ -3926,6 +3926,7 @@ static_library("ui") {
       "//chromeos/ash/services/recording/public/mojom",
       "//chromeos/components/in_session_auth",
       "//chromeos/components/kiosk",
+      "//chromeos/components/libsegmentation:buildflags",
       "//chromeos/components/mahi/public/cpp:cpp",
       "//chromeos/components/mgs",
       "//chromeos/components/onc",

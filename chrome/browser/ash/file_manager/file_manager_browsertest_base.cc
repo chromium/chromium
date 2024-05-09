@@ -2369,7 +2369,7 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   if (options.enable_local_image_search) {
     enabled_features.push_back(ash::features::kFilesLocalImageSearch);
     enabled_features.push_back(
-        search_features::kFeatureManagementLocalImageSearch);
+        ash::features::kFeatureManagementLocalImageSearch);
     enabled_features.push_back(search_features::kICASupportedByHardware);
     enabled_features.push_back(search_features::kLauncherImageSearch);
     enabled_features.push_back(search_features::kLauncherImageSearchIca);
@@ -2377,7 +2377,7 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   } else {
     disabled_features.push_back(ash::features::kFilesLocalImageSearch);
     disabled_features.push_back(
-        search_features::kFeatureManagementLocalImageSearch);
+        ash::features::kFeatureManagementLocalImageSearch);
     disabled_features.push_back(search_features::kICASupportedByHardware);
     disabled_features.push_back(search_features::kLauncherImageSearch);
     disabled_features.push_back(search_features::kLauncherImageSearchIca);
