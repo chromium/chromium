@@ -133,6 +133,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // entity optionally contains a passkey Sync entity. This may be omitted for
   // create() requests.
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  // existing_cred_ids contains a list of credential IDs in the current
+  // RP ID. Only populated for create() requests.
+  std::vector<std::vector<uint8_t>> existing_cred_ids;
   // The PIN entered by the user (wrapped for the enclave), and the correct PIN
   // (encrypted to the security domain secret). Optional, may be nullptr.
   std::unique_ptr<ClaimedPIN> claimed_pin;

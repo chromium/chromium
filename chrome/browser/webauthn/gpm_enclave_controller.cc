@@ -1088,6 +1088,13 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->save_passkey_callback =
           base::BindOnce(&GPMEnclaveController::OnPasskeyCreated,
                          weak_ptr_factory_.GetWeakPtr());
+      base::ranges::transform(
+          creds_, std::back_inserter(request->existing_cred_ids),
+          [](const auto& cred) {
+            const std::string& cred_id = cred.credential_id();
+            return std::vector<uint8_t>(cred_id.begin(), cred_id.end());
+          });
+
       break;
     }
 
