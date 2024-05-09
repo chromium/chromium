@@ -32,6 +32,10 @@ class PassageEmbedder : public mojom::PassageEmbedder {
   // to be called before the model can be executed.
   void SetEmbeddingsModelInputWindowSize(uint32_t size);
 
+  // mojom::PassageEmbedder:
+  void GenerateEmbeddings(const std::vector<std::string>& inputs,
+                          GenerateEmbeddingsCallback callback) override;
+
  private:
   // Loads the text embeddings tflite model from the bytes in the given file.
   // Return true if successful.
@@ -46,10 +50,6 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // Executes the model to generate text embeddings result for the input.
   std::optional<OutputType> Execute(InputType input);
-
-  // mojom::PassageEmbedder:
-  void GenerateEmbeddings(const std::vector<std::string>& inputs,
-                          GenerateEmbeddingsCallback callback) override;
 
   mojo::Receiver<mojom::PassageEmbedder> receiver_;
 
