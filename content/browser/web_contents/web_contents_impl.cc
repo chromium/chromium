@@ -1204,6 +1204,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   preferred_contrast_ = native_theme->GetPreferredContrast();
   prefers_reduced_transparency_ = native_theme->GetPrefersReducedTransparency();
   inverted_colors_ = native_theme->GetInvertedColors();
+  renderer_preferences_.caret_blink_interval =
+      native_theme->GetCaretBlinkInterval();
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
@@ -10401,6 +10403,8 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   bool prefers_reduced_transparency =
       observed_theme->GetPrefersReducedTransparency();
   bool inverted_colors = observed_theme->GetInvertedColors();
+  base::TimeDelta caret_blink_interval =
+      observed_theme->GetCaretBlinkInterval();
   bool preferences_changed = false;
 
   if (using_dark_colors_ != using_dark_colors) {
@@ -10430,6 +10434,14 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
   if (preferences_changed) {
     NotifyPreferencesChanged();
+  }
+
+  // Only caret blink interval from NativeTheme impacts
+  // blink::RendererPreferences, which are not synced in
+  // NotifyPreferencesChanged(). Sync these if the interval has changed.
+  if (renderer_preferences_.caret_blink_interval != caret_blink_interval) {
+    renderer_preferences_.caret_blink_interval = caret_blink_interval;
+    SyncRendererPrefs();
   }
 }
 
