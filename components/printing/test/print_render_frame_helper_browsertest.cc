@@ -18,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
@@ -1553,6 +1554,52 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewWithSrcdocSelection) {
   OnPrintPreviewForRenderFrame(srcdoc_frame, /*has_selection=*/true,
                                subframe_preview_ui.get());
   VerifyDidPreviewPage(true, 0, subframe_preview_ui.get());
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewUsesSrcdocBaseUrl) {
+  GURL parent_base_url("https://example.com");
+  static const char kHTMLWithSrcdocChildFrame[] =
+      "<html><head><base href='%s'></head><body>"
+      "<iframe name='srcdoc_frame' srcdoc='foo'></iframe>"
+      "</body></html>";
+  LoadHTML(base::StringPrintf(kHTMLWithSrcdocChildFrame,
+                              parent_base_url.spec().c_str()));
+
+  // Create selection in the child frame.
+  WebLocalFrame* srcdoc_frame =
+      GetMainFrame()->FindFrameByName("srcdoc_frame")->ToWebLocalFrame();
+  srcdoc_frame->ExecuteCommand("SelectAll");
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+
+  // Verify that print preview succeeds.
+
+  // The subframe will need its own preview UI. Declare it here so it can be
+  // passed to `VerifyDidPreviewPage` after `OnPrintPreviewForRenderFrame`
+  // completes.
+  auto subframe_preview_ui = std::make_unique<FakePrintPreviewUI>();
+
+  // Setup callback to capture the url and base_url of the intermediate preview
+  // document.
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromWebFrame(srcdoc_frame);
+  PrintRenderFrameHelper* print_render_frame_helper =
+      GetPrintRenderFrameHelperForFrame(render_frame);
+
+  GURL preview_document_url;
+  GURL preview_document_base_url;
+  print_render_frame_helper->SetWebDocumentCollectionCallbackForTest(
+      base::BindLambdaForTesting([&](const blink::WebDocument& document) {
+        preview_document_url = document.Url();
+        preview_document_base_url = document.BaseURL();
+      }));
+
+  // Do the print preview.
+  OnPrintPreviewForRenderFrame(srcdoc_frame, /*has_selection=*/true,
+                               subframe_preview_ui.get());
+
+  VerifyDidPreviewPage(true, 0, subframe_preview_ui.get());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), preview_document_url);
+  EXPECT_EQ(parent_base_url, preview_document_base_url);
 }
 
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {

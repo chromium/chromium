@@ -150,6 +150,12 @@ class PrintRenderFrameHelper
 
   const mojo::AssociatedRemote<mojom::PrintManagerHost>& GetPrintManagerHost();
 
+  using PreviewDocumentTestCallback =
+      base::OnceCallback<void(const blink::WebDocument&)>;
+
+  void SetWebDocumentCollectionCallbackForTest(
+      PreviewDocumentTestCallback callback);
+
  private:
   friend class PrintRenderFrameHelperPreviewTest;
   friend class PrintRenderFrameHelperTestBase;
@@ -655,6 +661,10 @@ class PrintRenderFrameHelper
   bool do_deferred_print_for_system_dialog_ = false;
 
   mojo::AssociatedRemote<mojom::PrintManagerHost> print_manager_host_;
+
+  // Stores a test-only callback for verifying the WebDocument values of the
+  // preview document.
+  PreviewDocumentTestCallback preview_document_test_callback_;
 
   base::WeakPtrFactory<PrintRenderFrameHelper> weak_ptr_factory_{this};
 };

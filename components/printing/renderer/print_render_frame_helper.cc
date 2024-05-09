@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -1027,8 +1028,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
     const WebPreferences& preferences) {
   std::string html = frame()->SelectionAsMarkup().Utf8();
 
-  // Save the URL before `frame_` gets reset below.
-  GURL original_url = frame()->GetDocument().Url();
+  // Save the base URL before `frame_` gets reset below.
+  GURL original_base_url = frame()->GetDocument().BaseURL();
 
   // Create a new WebView with the same settings as the current display one.
   // Except that we disable javascript (don't want any active content running
@@ -1084,8 +1085,12 @@ void PrepareFrameAndViewForPrint::CopySelection(
   // When loading is done this will call didStopLoading() and that will do the
   // actual printing.
   auto web_navigation_params = std::make_unique<blink::WebNavigationParams>();
-  // Use the original URL, so relative links can stay as such.
-  web_navigation_params->url = original_url;
+  // Use the original base URL as the new frame's base url, so relative links
+  // can stay as such. Also, set the new frame's url to about:blank as this
+  // doesn't have the risks of loading a subframe-only URL like about:srcdoc in
+  // a main frame, and it doesn't pose a cross-origin concern like the base URL.
+  web_navigation_params->url = GURL(url::kAboutBlankURL);
+  web_navigation_params->fallback_base_url = original_base_url;
   blink::WebNavigationParams::FillStaticResponse(
       web_navigation_params.get(), "text/html", "UTF-8", std::move(html));
   navigation_control_->CommitNavigation(std::move(web_navigation_params),
@@ -1241,6 +1246,12 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
   return print_manager_host_;
+}
+
+void PrintRenderFrameHelper::SetWebDocumentCollectionCallbackForTest(
+    PreviewDocumentTestCallback callback) {
+  CHECK_IS_TEST();
+  preview_document_test_callback_ = std::move(callback);
 }
 
 bool PrintRenderFrameHelper::IsScriptInitiatedPrintAllowed(
@@ -1721,6 +1732,11 @@ void PrintRenderFrameHelper::PrepareFrameForPreviewDocument() {
 }
 
 void PrintRenderFrameHelper::OnFramePreparedForPreviewDocument() {
+  if (preview_document_test_callback_) {
+    std::move(preview_document_test_callback_)
+        .Run(prep_frame_view_->frame()->GetDocument());
+  }
+
   if (reset_prep_frame_view_) {
     PrepareFrameForPreviewDocument();
     return;

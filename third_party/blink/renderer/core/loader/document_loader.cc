@@ -2186,9 +2186,6 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   // true, we won't try to compare the nonce of this origin (if it's opaque) to
   // the browser-calculated origin later on.
   bool origin_is_newly_created = false;
-  bool is_sandboxed = (policy_container_->GetPolicies().sandbox_flags &
-                       network::mojom::blink::WebSandboxFlags::kOrigin) !=
-                      network::mojom::blink::WebSandboxFlags::kNone;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
     // and used directly. It is currently supplied only for failed navigations
@@ -2235,23 +2232,20 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     debug_info_builder.Append(", url=");
     debug_info_builder.Append(owner_document->Url().BaseAsString());
     debug_info_builder.Append(")");
-  } else if (url_.IsAboutSrcdocURL() && is_sandboxed) {
+  } else if (url_.IsAboutSrcdocURL()) {
     // If there's no owner_document and this is a sandboxed srcdoc load, then
     // get the origin from the remote parent. In general, a srcdoc navigation
-    // with no owner_document can only currently happen in two cases:
-    // 1) if the iframe is sandboxed and isolated sandboxed frames is enabled,
-    //    in which case, copy the origin from the remote parent here (though
-    //    this origin will only be used to derive the actual opaque origin
-    //    later),
-    // 2) if we are print-previewing a selection of a srcdoc frame (see
-    //    crbug.com/333992355), in which case (i) the original frame url is
-    //    copied, but (ii) the document is in a mainframe, meaning there is
-    //    no parent.
-    // In the second case, we handle the origin calculation in the terminal
-    // else-block below.
+    // with no owner_document can only currently happen  if the iframe is
+    // sandboxed and isolated sandboxed frames is enabled, in which case, copy
+    // the origin from the remote parent here (though this origin will only be
+    // used to derive the actual opaque origin later),
     // TODO(https://crbug.com/328279696): this block can be removed once the
     // about:srcdoc navigation blocking finishes rolling out, as then the
     // initiator can never be cross-origin to the parent.
+    bool is_sandboxed = (policy_container_->GetPolicies().sandbox_flags &
+                         network::mojom::blink::WebSandboxFlags::kOrigin) !=
+                        network::mojom::blink::WebSandboxFlags::kNone;
+    CHECK(is_sandboxed);
     debug_info_builder.Append("about_srcdoc_with_remote_parent[origin=");
     origin = frame_->Tree()
                  .Parent()
