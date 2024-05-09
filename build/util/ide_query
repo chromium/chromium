@@ -76,11 +76,14 @@ def main():
     target = os.path.relpath(source, start=options.out_dir) + "^"
     targets.append(target)
 
+  if _use_reclient(options.out_dir):
+    # b/335795623 ide_query compiler_arguments contain non-compiler arguments
+    sys.stderr.write(
+        'ide_query won\`t work well with "use_remoteexec=true"\n'
+        'Drop "use_remoteexec=true" from args.gn.')
+    sys.exit(1)
   if options.perform_build:
-    if _use_reclient(options.out_dir):
-      args = ['autoninja']
-    else:
-      args = ['siso', 'ninja']
+    args = ['siso', 'ninja']
     # use `-k=0` to build generated files as much as possible.
     args.extend([
         '-k=0',
