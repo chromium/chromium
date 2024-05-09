@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
@@ -230,15 +231,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                          value:(BOOL)value {
   ContentNotificationSettingsAction* settingsAction =
       [[ContentNotificationSettingsAction alloc] init];
-
+  settingsAction.toggleStatus = value;
   switch (clientID) {
     case PushNotificationClientId::kContent:
-      settingsAction.contentNotificationEnabled =
-          [NSNumber numberWithBool:value];
+      settingsAction.toggleChanged = SettingsToggleTypeContent;
       break;
     case PushNotificationClientId::kSports:
-      settingsAction.sportsNotificationEnabled =
-          [NSNumber numberWithBool:value];
+      settingsAction.toggleChanged = SettingsToggleTypeSports;
       break;
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kTips:

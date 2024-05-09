@@ -11,7 +11,6 @@
 @class UNNotificationContent;
 
 typedef NS_ENUM(NSInteger, NAUActionType);
-enum class ContentNotificationActionType;
 
 @class ContentNotificationSettingsAction;
 

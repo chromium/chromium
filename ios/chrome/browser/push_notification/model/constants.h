@@ -20,6 +20,16 @@ typedef NS_ENUM(NSInteger, NAUActionType) {
   NAUActionTypeFeedbackClicked = 3,
 };
 
+// Enum for the NAU implementation for Content notifications.
+typedef NS_ENUM(NSInteger, SettingsToggleType) {
+  // None of the toggles has changed.
+  SettingsToggleTypeNone = 0,
+  // The settings toggle identifier for Content for NAU.
+  SettingsToggleTypeContent = 1,
+  // The settings toggle identifier for sports for NAU.
+  SettingsToggleTypeSports = 2,
+};
+
 // Key of commerce notification used in pref
 // kFeaturePushNotificationPermissions.
 extern const char kCommerceNotificationKey[];

@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+typedef NS_ENUM(NSInteger, SettingsToggleType);
+
 @interface ContentNotificationSettingsAction : NSObject
 
 // The notifications' OS authorization status. Nil when no change detected.
@@ -15,10 +17,10 @@
 // The notifications' OS previous authorization status. Nil when no change
 // detected.
 @property(nonatomic, assign) UNAuthorizationStatus previousAuthorizationStatus;
-// Whether content notifications are enabled or disabled.
-@property(nonatomic, strong) NSNumber* contentNotificationEnabled;
-// Whether sports notifications are enabled or disabled. nil if not set.
-@property(nonatomic, strong) NSNumber* sportsNotificationEnabled;
+// Which toggle has changed status. 0 if None.
+@property(nonatomic) SettingsToggleType toggleChanged;
+// Whether the `toggleChanged` is enabled or disabled.
+@property(nonatomic, assign) BOOL toggleStatus;
 
 @end
 
