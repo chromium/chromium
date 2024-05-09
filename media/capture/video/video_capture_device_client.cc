@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -28,6 +27,7 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -490,9 +490,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
         VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
     return;
   }
-  base::ScopedClosureRunner unmap_closure(
-      base::BindOnce([](gfx::GpuMemoryBuffer* buffer) { buffer->Unmap(); },
-                     base::Unretained(buffer)));
+  absl::Cleanup scoped_unmap = [buffer] { buffer->Unmap(); };
 
   int ret = -EINVAL;
   switch (frame_format.pixel_format) {
