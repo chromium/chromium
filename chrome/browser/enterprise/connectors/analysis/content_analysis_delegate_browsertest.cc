@@ -12,11 +12,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -1132,14 +1133,22 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
 // - block_large_files
 class ContentAnalysisDelegateBlockingSettingBrowserTest
     : public ContentAnalysisDelegateBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ContentAnalysisDelegateBlockingSettingBrowserTest()
-      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {}
+      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {
+    if (is_resumable()) {
+      scoped_feature_list_.InitAndEnableFeature(kResumableUploadEnabled);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kResumableUploadEnabled);
+    }
+  }
 
   bool machine_scope() const { return std::get<0>(GetParam()); }
 
   bool setting_param() const { return std::get<1>(GetParam()); }
+
+  bool is_resumable() const { return std::get<2>(GetParam()); }
 
   // Use a string since the setting value is inserted into a JSON policy.
   const char* bool_setting_value() const {
@@ -1152,10 +1161,19 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateBlockingSettingBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                        BlockPasswordProtected) {
+  // When the resumable protocol is in use and the `blocked_password_protected`
+  // setting is off, the final verdict is determined by the server, not by the
+  // policy value. So this specific scenario only applies to multi-part upload.
+  if (is_resumable() && setting_param() == false) {
+    return;
+  }
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath test_zip;
@@ -1250,6 +1268,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
                        BlockLargeFiles) {
+  // When the resumable protocol is in use and the `blocked_large_files` setting
+  // is off, the final verdict is determined by the server, not by the policy
+  // value. So this specific testcase only applies to multi-part upload.
+  if (is_resumable() && setting_param() == false) {
+    return;
+  }
+
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.

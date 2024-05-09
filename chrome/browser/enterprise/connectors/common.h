@@ -283,9 +283,22 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
 
+// Returns true if the request will use the scotty resumable upload
+// protocol for sending scans to the server.
+bool IsResumableUpload(
+    const safe_browsing::BinaryUploadService::Request& request);
+
 // Returns true if `result` as returned by BinaryUploadService is considered a
-// a failed result when attempting a cloud-based content analysis.
-bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result);
+// a failed result when attempting a cloud-based multipart content analysis.
+bool CloudMultipartResultIsFailure(
+    safe_browsing::BinaryUploadService::Result result);
+
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// a failed result when attempting a cloud-based resumable content analysis.
+bool CloudResumableResultIsFailure(
+    safe_browsing::BinaryUploadService::Result result,
+    bool block_large_files,
+    bool block_password_protected_files);
 
 // Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a local content analysis.

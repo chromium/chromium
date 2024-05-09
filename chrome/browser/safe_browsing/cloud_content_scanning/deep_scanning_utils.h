@@ -180,6 +180,10 @@ GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
                              DataRegion data_region);
 DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
 
+// Returns true for consumer scans and not on enterprise scans.
+bool IsConsumerScanRequest(
+    const safe_browsing::BinaryUploadService::Request& request);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_DEEP_SCANNING_UTILS_H_

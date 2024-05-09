@@ -232,9 +232,15 @@ void FilesRequestHandler::OnGotFileInfo(
   file_info_[index].size = data.size;
   file_info_[index].mime_type = data.mime_type;
 
-  bool failed = analysis_settings_->cloud_or_local_settings.is_cloud_analysis()
-                    ? CloudResultIsFailure(result)
-                    : LocalResultIsFailure(result);
+  bool is_cloud =
+      analysis_settings_->cloud_or_local_settings.is_cloud_analysis();
+  bool is_resumable = IsResumableUpload(*request);
+  bool failed = is_resumable
+                    ? CloudResumableResultIsFailure(
+                          result, analysis_settings_->block_large_files,
+                          analysis_settings_->block_password_protected_files)
+                    : (is_cloud ? CloudMultipartResultIsFailure(result)
+                                : LocalResultIsFailure(result));
   if (failed) {
     FinishRequestEarly(std::move(request), result);
     return;

@@ -454,4 +454,17 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting) {
   return DataRegion::NO_PREFERENCE;
 }
 
+bool IsConsumerScanRequest(const BinaryUploadService::Request& request) {
+  if (request.cloud_or_local_settings().is_local_analysis()) {
+    return false;
+  }
+
+  for (const std::string& tag : request.content_analysis_request().tags()) {
+    if (tag == "dlp") {
+      return false;
+    }
+  }
+  return request.device_token().empty();
+}
+
 }  // namespace safe_browsing

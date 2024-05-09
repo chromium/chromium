@@ -12,11 +12,13 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -72,6 +74,16 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
     case TriggeredRule::BLOCK:
       return ContentAnalysisAcknowledgement::BLOCK;
   }
+}
+
+bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+    BinaryUploadService::Result result,
+    bool block_large_files,
+    bool block_password_protected_files) {
+  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+          !block_large_files) ||
+         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+          !block_password_protected_files);
 }
 
 }  // namespace
@@ -561,8 +573,26 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       /* file_count */ 1, state, download_item);
 }
 
-bool CloudResultIsFailure(BinaryUploadService::Result result) {
+bool IsResumableUpload(const BinaryUploadService::Request& request) {
+  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
+  // we should update the logic here as well.
+  return !safe_browsing::IsConsumerScanRequest(request) &&
+         request.cloud_or_local_settings().is_cloud_analysis() &&
+         request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY &&
+         IsResumableUploadEnabled();
+}
+
+bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
   return result != BinaryUploadService::Result::SUCCESS;
+}
+
+bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
+                                   bool block_large_files,
+                                   bool block_password_protected_files) {
+  return result != BinaryUploadService::Result::SUCCESS &&
+         !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+             result, block_large_files, block_password_protected_files);
 }
 
 bool LocalResultIsFailure(BinaryUploadService::Result result) {

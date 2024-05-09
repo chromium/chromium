@@ -9,12 +9,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/resumable_uploader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -51,23 +52,6 @@ constexpr int kMaxRetryAttempt = 2;
 bool* IgnoreFCMDelaysStorage() {
   static bool ignore = false;
   return &ignore;
-}
-
-bool IsConsumerScanRequest(const CloudBinaryUploadService::Request& request) {
-  for (const std::string& tag : request.content_analysis_request().tags()) {
-    if (tag == "dlp")
-      return false;
-  }
-  return request.device_token().empty();
-}
-
-bool IsResumableUpload(const CloudBinaryUploadService::Request& request) {
-  // Currently resumable upload doesn't support paste. If one day we do, we
-  // should update the logic here as well.
-  return !IsConsumerScanRequest(request) &&
-         request.content_analysis_request().analysis_connector() !=
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY &&
-         enterprise_connectors::IsResumableUploadEnabled();
 }
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
@@ -200,7 +184,7 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
 
 bool IgnoreErrorResultForResumableUpload(BinaryUploadService::Request* request,
                                          BinaryUploadService::Result result) {
-  return IsResumableUpload(*request) &&
+  return enterprise_connectors::IsResumableUpload(*request) &&
          (result == BinaryUploadService::Result::FILE_TOO_LARGE ||
           result == BinaryUploadService::Result::FILE_ENCRYPTED);
 }
@@ -546,7 +530,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
         std::move(traffic_annotation), std::move(callback));
   } else if (!data.path.empty()) {
     upload_request =
-        IsResumableUpload(*request)
+        enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreateFileRequest(
                   url_loader_factory_, std::move(url), metadata, result,
                   data.path, data.size, std::move(traffic_annotation),
@@ -558,7 +542,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   } else if (data.page.IsValid()) {
     upload_request =
-        IsResumableUpload(*request)
+        enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreatePageRequest(
                   url_loader_factory_, std::move(url), metadata, result,
                   std::move(data.page), std::move(traffic_annotation),
@@ -788,8 +772,9 @@ void CloudBinaryUploadService::RecordRequestMetrics(Request::Id request_id,
       return;
     }
 
-    std::string protocol =
-        IsResumableUpload(*request) ? "Resumable" : "Multipart";
+    std::string protocol = enterprise_connectors::IsResumableUpload(*request)
+                               ? "Resumable"
+                               : "Multipart";
 
     // Example values:
     //   "Enterprise.ResumableRequest.Print.Duration
