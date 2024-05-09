@@ -7077,6 +7077,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown.
+    'Shown' is recorded when the Lens Permission Bubble is successfully shown.
+    'Not Shown' is recorded when the Lens Permission Bubble is already showing.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.PermissionBubble.UserAction"
+    enum="LensPermissionBubbleUserAction" expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions.
+  </summary>
+</histogram>
+
 <histogram name="Lens.QuickActionSearchWidget.LensSupportStatus"
     enum="LensSupportStatus" expires_after="2024-06-21">
   <owner>benwgold@chromium.org</owner>

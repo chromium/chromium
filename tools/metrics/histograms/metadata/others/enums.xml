@@ -54,6 +54,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_controller.h:InvocationSource) -->
 
+<!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
+
+<enum name="LensPermissionBubbleUserAction">
+  <summary>The user interaction with the Lens Permission Bubble</summary>
+  <int value="0" label="Help Center link opened"/>
+  <int value="1" label="Accept button pressed"/>
+  <int value="2" label="Cancel button pressed"/>
+  <int value="3" label="Esc key pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>
