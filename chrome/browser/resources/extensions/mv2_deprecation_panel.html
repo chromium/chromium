@@ -3,13 +3,10 @@
     padding: 0;
   }
 
-  .cr-row.first {
-    padding-top: 5px;
-  }
-
   .header {
     align-items: center;
     display: flex;
+    padding: 12px 0px;
   }
 
   .header-text {
@@ -29,6 +26,27 @@
   .header-button {
     margin-inline-start: auto;
   }
+
+  .extensions {
+    border-top: var(--cr-separator-line);
+  }
+
+  .extension-row {
+    border-top: none;
+  }
+
+  .extension-icon {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  .extension-name {
+    padding-inline-start: 20px;
+  }
+
+  .find-alternative-button {
+    margin-inline-start: auto;
+  }
 </style>
 
 <div class="panel-background" id="panelContainer">
@@ -45,5 +63,20 @@
     <cr-button class="header-button">
       $i18n{mv2DeprecationPanelDismissButton}
     </cr-button>
+  </div>
+
+  <div class="extensions">
+    <template is="dom-repeat" items="[[extensions]]">
+      <div class="extension-row cr-row">
+        <img class="extension-icon" src="[[item.iconUrl]]" role="presentation">
+        <div class="extension-name text-elide">[[item.name]]</div>
+        <cr-button class="find-alternative-button">
+          $i18n{mv2DeprecationPanelFindAlternativeButton}
+          <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
+        </cr-button>
+        <cr-icon-button class="icon-more-vert header-aligned-button">
+        </cr-icon-button>
+      </div>
+    </template>
   </div>
 </div>
