@@ -443,6 +443,59 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   }
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
+  {
+    base::HistogramTester histogram_tester;
+    const auto* test_accounts_json = R"({
+    "accounts" : [
+      {
+        "id" : "1234",
+        "email": "test@email.example",
+        "name": "    "
+      }
+    ]
+    })";
+
+    FetchStatus accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+    EXPECT_EQ(ParseStatus::kInvalidResponseError,
+              accounts_response.parse_status);
+    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+    EXPECT_TRUE(accounts.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Blink.FedCm.Status.AccountsResponseInvalidReason",
+        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    const auto* test_accounts_json = R"({
+    "accounts" : [
+      {
+        "id" : "1234",
+        "email": "",
+        "name": "Test User"
+      }
+    ]
+    })";
+
+    FetchStatus accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+    EXPECT_EQ(ParseStatus::kInvalidResponseError,
+              accounts_response.parse_status);
+    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+    EXPECT_TRUE(accounts.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Blink.FedCm.Status.AccountsResponseInvalidReason",
+        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
+  }
+}
+
 // Test that parsing accounts fails if two accounts have the same account id.
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountDuplicateIds) {
   const auto* accounts_json = R"({

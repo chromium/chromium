@@ -249,6 +249,15 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
   if (!(id && email && name))
     return std::nullopt;
 
+  auto trimmed_email =
+      base::TrimWhitespace(base::UTF8ToUTF16(*email), base::TRIM_ALL);
+  auto trimmed_name =
+      base::TrimWhitespace(base::UTF8ToUTF16(*name), base::TRIM_ALL);
+  // TODO(crbug.com/40849405): validate email address.
+  if (trimmed_email.empty() || trimmed_name.empty()) {
+    return std::nullopt;
+  }
+
   RecordApprovedClientsExistence(approved_clients != nullptr);
 
   std::optional<LoginState> approved_value;
