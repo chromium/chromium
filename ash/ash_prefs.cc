@@ -65,6 +65,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "ash/system/phonehub/onboarding_nudge_controller.h"
 #include "ash/system/power/battery_saver_controller.h"
+#include "ash/system/power/power_notification_controller.h"
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/power/power_sounds_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -223,6 +224,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   KeyboardBacklightColorController::RegisterPrefs(registry);
   BatterySaverController::RegisterLocalStatePrefs(registry);
   PowerSoundsController::RegisterLocalStatePrefs(registry);
+  PowerNotificationController::RegisterLocalStatePrefs(registry);
   quick_pair::ScanningEnabledProvider::RegisterLocalStatePrefs(registry);
 
   if (for_test) {

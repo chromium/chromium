@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -22,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
@@ -35,6 +37,8 @@ namespace ash {
 namespace {
 
 const char kNotifierPower[] = "ash.power";
+constexpr base::TimeDelta kCriticalNotificationDurationUpdateInterval =
+    base::Seconds(15);
 
 // Informs the PowerNotificationController when a USB notification is closed.
 class UsbNotificationDelegate : public message_center::NotificationDelegate {
@@ -93,6 +97,23 @@ void LogBatteryForNoCharger(
           << " Remaining time: " << remaining_minutes << " minutes.";
 }
 
+std::string CriticalNotificationOutcomeToString(
+    PowerNotificationController::CriticalNotificationOutcome outcome) {
+  switch (outcome) {
+    case PowerNotificationController::CriticalNotificationOutcome::Crashed:
+      return "Crashed";
+    case PowerNotificationController::CriticalNotificationOutcome::
+        LowBatteryShutdown:
+      return "LowBatteryShutdown";
+    case PowerNotificationController::CriticalNotificationOutcome::PluggedIn:
+      return "PluggedIn";
+    case PowerNotificationController::CriticalNotificationOutcome::Suspended:
+      return "Suspended";
+    case PowerNotificationController::CriticalNotificationOutcome::UserShutdown:
+      return "UserShutdown";
+  }
+}
+
 // Record remaining battery time in second when notification is shown for
 // critical state.
 void RecordTimeToEmptyForCriticalState(base::TimeDelta remaining_time) {
@@ -108,24 +129,31 @@ void RecordTimeToEmptyForCriticalState(base::TimeDelta remaining_time) {
 
 // Record remaining battery time in second when the device transitions from a
 // critical state to charging state upon connecting the charger.
-void MaybeRecordTimeToEmptyPluggedIn(
-    bool was_in_critical_state,
-    bool line_power_was_connected,
+void RecordTimeToEmptyPluggedIn(
     const std::optional<base::TimeDelta> remaining_time) {
   if (!remaining_time.has_value()) {
     return;
   }
+  base::UmaHistogramCustomCounts("Ash.PowerNotification.TimeToEmptyPluggedIn",
+                                 remaining_time->InSeconds(),
+                                 /*min=*/0,
+                                 /*exclusive_max=*/base::Hours(1).InSeconds(),
+                                 /*buckets=*/100);
+}
 
-  bool line_power_is_connected = PowerStatus::Get()->IsLinePowerConnected();
-  if (!line_power_was_connected && line_power_is_connected &&
-      was_in_critical_state) {
-    base::UmaHistogramCustomCounts(
-        "Ash.PowerNotification.TimeToEmptyPluggedIn",
-        remaining_time->InSeconds(),
-        /*min=*/0,
-        /*exclusive_max=*/base::Minutes(10).InSeconds(),
-        /*buckets=*/100);
-  }
+void RecordCriticalNotificationOutcome(
+    PowerNotificationController::CriticalNotificationOutcome outcome,
+    base::TimeDelta duration) {
+  base::UmaHistogramEnumeration(
+      "Ash.PowerNotification.CriticalNotificationOutcome", outcome);
+  base::UmaHistogramCustomCounts(
+      base::StrCat(
+          {"Ash.PowerNotification.CriticalNotificationToOutcomeDuration.",
+           CriticalNotificationOutcomeToString(outcome)}),
+      duration.InSeconds(),
+      /*min=*/0,
+      /*exclusive_max=*/base::Hours(1).InSeconds(),
+      /*buckets=*/100);
 }
 
 }  // namespace
@@ -140,12 +168,35 @@ PowerNotificationController::PowerNotificationController(
       critical_percentage_(5),
       low_power_percentage_(battery_saver_activation_charge_percent_),
       no_warning_percentage_(low_power_percentage_ + 5) {
+  if (Shell::HasInstance()) {
+    shell_observation_.Observe(ash::Shell::Get());
+  }
+  chromeos::PowerManagerClient::Get()->AddObserver(this);
   PowerStatus::Get()->AddObserver(this);
+
+  local_state_ = Shell::Get()->local_state();
+  if (local_state_ && local_state_->GetTimeDelta(
+                          prefs::kCriticalStateDuration) != base::TimeDelta()) {
+    // This indicates the device does not undergo a graceful shutdown last time,
+    // because pref is not reset.
+    RecordCriticalNotificationOutcome(
+        PowerNotificationController::CriticalNotificationOutcome::Crashed,
+        local_state_->GetTimeDelta(prefs::kCriticalStateDuration));
+  }
+  ResetCriticalNotificationTimestamp();
 }
 
 PowerNotificationController::~PowerNotificationController() {
   PowerStatus::Get()->RemoveObserver(this);
+  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   message_center_->RemoveNotification(kUsbNotificationId, false);
+}
+
+// static
+void PowerNotificationController::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimeDeltaPref(prefs::kCriticalStateDuration,
+                                  base::TimeDelta());
 }
 
 void PowerNotificationController::SetUserOptStatus(bool status) {
@@ -171,13 +222,20 @@ void PowerNotificationController::OnPowerStatusChanged() {
     battery_notification_.reset();
     battery_notification_ =
         std::make_unique<BatteryNotification>(message_center_, this);
+    if (notification_state_ == NOTIFICATION_CRITICAL &&
+        !PowerStatus::Get()->IsLinePowerConnected()) {
+      critical_notification_shown_time_ = base::TimeTicks::Now();
+      StartPeriodicUpdate();
+    }
   } else if (notification_state_ == NOTIFICATION_NONE) {
     battery_notification_.reset();
-    // Maybe record remaining battery time when the device transitions from a
-    // critical state to charging state upon connecting the charger.
-    MaybeRecordTimeToEmptyPluggedIn(
-        was_in_critical_state_, line_power_was_connected_,
-        remaining_time_to_empty_from_critical_state_);
+    if (PluggedInCriticalState()) {
+      RecordTimeToEmptyPluggedIn(
+          remaining_time_to_empty_from_critical_state_.value());
+      MaybeRecordCriticalNotificationOutcome(
+          PowerNotificationController::CriticalNotificationOutcome::PluggedIn,
+          base::TimeTicks::Now() - critical_notification_shown_time_);
+    }
   } else if (battery_notification_.get()) {
     battery_notification_->Update();
   }
@@ -188,6 +246,39 @@ void PowerNotificationController::OnPowerStatusChanged() {
   remaining_time_to_empty_from_critical_state_ =
       PowerStatus::Get()->GetBatteryTimeToEmpty();
   was_in_critical_state_ = GetNotificationState() == NOTIFICATION_CRITICAL;
+}
+
+void PowerNotificationController::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  MaybeRecordCriticalNotificationOutcome(
+      PowerNotificationController::CriticalNotificationOutcome::Suspended,
+      base::TimeTicks::Now() - critical_notification_shown_time_);
+}
+
+void PowerNotificationController::ShutdownRequested(
+    power_manager::RequestShutdownReason reason) {
+  if (reason ==
+      power_manager::RequestShutdownReason::REQUEST_SHUTDOWN_FOR_USER) {
+    MaybeRecordCriticalNotificationOutcome(
+        PowerNotificationController::CriticalNotificationOutcome::UserShutdown,
+        base::TimeTicks::Now() - critical_notification_shown_time_);
+  }
+  ResetCriticalNotificationTimestamp();
+}
+
+void PowerNotificationController::RestartRequested(
+    power_manager::RequestRestartReason reason) {
+  ResetCriticalNotificationTimestamp();
+}
+
+void PowerNotificationController::OnShellDestroying() {
+  // User-initiated shutdowns are recorded separately in `ShutdownRequested`,
+  // for powred initiated shutdown, it will be recorded in`OnShellDestroying`.
+  MaybeRecordCriticalNotificationOutcome(
+      PowerNotificationController::CriticalNotificationOutcome::
+          LowBatteryShutdown,
+      base::TimeTicks::Now() - critical_notification_shown_time_);
+  shell_observation_.Reset();
 }
 
 bool PowerNotificationController::MaybeShowUsbChargerNotification() {
@@ -364,6 +455,17 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   }
 
   return std::nullopt;
+}
+
+void PowerNotificationController::MaybeRecordCriticalNotificationOutcome(
+    PowerNotificationController::CriticalNotificationOutcome outcome,
+    base::TimeDelta duration) {
+  if (critical_notification_shown_time_ == base::TimeTicks()) {
+    return;
+  }
+
+  RecordCriticalNotificationOutcome(outcome, duration);
+  ResetCriticalNotificationTimestamp();
 }
 
 bool PowerNotificationController::UpdateNotificationState() {
@@ -556,6 +658,34 @@ bool PowerNotificationController::
 
 void PowerNotificationController::NotifyUsbNotificationClosedByUser() {
   usb_notification_dismissed_ = true;
+}
+
+bool PowerNotificationController::PluggedInCriticalState() {
+  bool line_power_is_connected = PowerStatus::Get()->IsLinePowerConnected();
+  return was_in_critical_state_ && !line_power_was_connected_ &&
+         line_power_is_connected;
+}
+
+void PowerNotificationController::StartPeriodicUpdate() {
+  timer_.Start(
+      FROM_HERE, kCriticalNotificationDurationUpdateInterval, this,
+      &PowerNotificationController::UpdateCriticalNotificationDurationPrefs);
+}
+
+void PowerNotificationController::ResetCriticalNotificationTimestamp() {
+  if (timer_.IsRunning()) {
+    timer_.Stop();
+  }
+  critical_notification_shown_time_ = base::TimeTicks();
+  if (local_state_) {
+    local_state_->ClearPref(prefs::kCriticalStateDuration);
+  }
+}
+
+void PowerNotificationController::UpdateCriticalNotificationDurationPrefs() {
+  local_state_->SetTimeDelta(
+      prefs::kCriticalStateDuration,
+      base::TimeTicks::Now() - critical_notification_shown_time_);
 }
 
 }  // namespace ash

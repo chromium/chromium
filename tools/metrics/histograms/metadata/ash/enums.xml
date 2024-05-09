@@ -544,6 +544,14 @@ ash/ambient/util/time_of_day_utils.h -->
       label="Disabled because the related URLs are blocked by policy"/>
 </enum>
 
+<enum name="CriticalNotificationOutcome">
+  <int value="0" label="Crashed"/>
+  <int value="1" label="LowBatteryShutdown"/>
+  <int value="2" label="PluggedIn"/>
+  <int value="3" label="Suspended"/>
+  <int value="4" label="UserShutdown"/>
+</enum>
+
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>

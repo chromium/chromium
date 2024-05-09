@@ -1174,6 +1174,11 @@ inline constexpr char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
 // lock to happen if the user is detected to be absent.
 inline constexpr char kPowerQuickLockDelay[] = "power.quick_lock_delay.ms";
 
+// A `TimeDelta` pref for the duration when the critical notification is
+// displayed to when no outcome has occurred yet. Updates every 15 seconds.
+inline constexpr char kCriticalStateDuration[] =
+    "ash.power_notification.critical_state_duration";
+
 // A boolean pref that reflects the value of the policy
 // DeviceEphemeralNetworkPoliciesEnabled.
 inline constexpr char kDeviceEphemeralNetworkPoliciesEnabled[] =

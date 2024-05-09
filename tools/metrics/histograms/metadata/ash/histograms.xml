@@ -208,6 +208,19 @@ chromium-metrics-reviews@google.com.
   <variant name="Event"/>
 </variants>
 
+<variants name="CriticalNotificationOutcome">
+  <variant name="Crashed"
+      summary="The device crashes, it includes the case when the battery is
+               empty and powerd does not have time to perform a graceful
+               shutdown."/>
+  <variant name="LowBatteryShutdown"
+      summary="The device automatically shuts down due to a low battery."/>
+  <variant name="PluggedIn" summary="The device connects to a power source."/>
+  <variant name="Suspended" summary="The device enters a suspended state."/>
+  <variant name="UserShutdown"
+      summary="The device is shut down gracefully by the user."/>
+</variants>
+
 <variants name="DisplayModes">
 <!-- Should be kept in sync with variants AppDisplayModes in
   tools/metrics/histograms/metadata/apps/histograms.xml.
@@ -6386,6 +6399,30 @@ chromium-metrics-reviews@google.com.
     <variant name="30SecondDelay" summary="30 Second Delay"/>
     <variant name="NoDelay" summary="No Delay"/>
   </token>
+</histogram>
+
+<histogram name="Ash.PowerNotification.CriticalNotificationOutcome"
+    enum="CriticalNotificationOutcome" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the outcome after a critical battery notification appears.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.PowerNotification.CriticalNotificationToOutcomeDuration.{Outcome}"
+    units="seconds" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the time interval from when a critical battery notification appears
+    to when an outcome such as plugging in, user-initiated shutdown, automatic
+    shutdown due to low battery, suspension or crash occurs.
+  </summary>
+  <token key="Outcome" variants="CriticalNotificationOutcome"/>
 </histogram>
 
 <histogram name="Ash.PowerNotification.TimeToEmptyForCritialState"
