@@ -164,10 +164,10 @@ static const char* RecordReplayGetProcessType(
   LocalFrame* frame,
   scoped_refptr<DOMWrapperWorld> world
 ) {
-  bool isMainWorld = world->IsMainWorld();
+  bool isExtension = frame->GetDocument()->Url().Protocol().Utf8() == "chrome-extension";
   bool isRoot = frame->IsOutermostMainFrame();
   bool isDevtools = !!DevToolsFrontendImpl::From(frame);
-  if (!isMainWorld) {
+  if (isExtension) {
     return "extension";
   }
   if (isDevtools) {
