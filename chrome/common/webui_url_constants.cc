@@ -608,6 +608,7 @@ const char kAllSitesSettingsSubpage[] = "content/all";
 const char kFileSystemSubpage[] = "content/filesystem";
 const char kFileSystemSettingsSubpage[] = "content/filesystem/siteDetails";
 const char kOnDeviceSiteDataSubpage[] = "content/siteData";
+const char kOfferWritingHelpSubpage[] = "content/offerWritingHelp";
 const char kCookieSettingsSubPage[] = "cookies";
 const char kExperimentalAISettingsSubPage[] = "ai";
 const char kDefaultBrowserSubPage[] = "defaultBrowser";

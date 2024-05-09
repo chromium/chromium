@@ -525,6 +525,7 @@ extern const char kAllSitesSettingsSubpage[];
 extern const char kFileSystemSubpage[];
 extern const char kFileSystemSettingsSubpage[];
 extern const char kOnDeviceSiteDataSubpage[];
+extern const char kOfferWritingHelpSubpage[];
 extern const char kCookieSettingsSubPage[];
 extern const char kExperimentalAISettingsSubPage[];
 extern const char kDefaultBrowserSubPage[];

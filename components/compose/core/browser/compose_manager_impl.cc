@@ -200,7 +200,11 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
         Suggestion(l10n_util::GetStringUTF16(
                        IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT),
                    PopupItemId::kComposeDisable);
-    suggestion.children = {std::move(disable)};
+    Suggestion go_to_settings =
+        Suggestion(l10n_util::GetStringUTF16(
+                       IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT),
+                   PopupItemId::kComposeGoToSettings);
+    suggestion.children = {std::move(disable), std::move(go_to_settings)};
   }
 
   return suggestion;
@@ -219,7 +223,7 @@ void ComposeManagerImpl::DisableCompose() {
 }
 
 void ComposeManagerImpl::GoToSettings() {
-  // TODO(b/333929225): Implement.
+  client_->OpenProactiveNudgeSettings();
   compose::LogComposeProactiveNudgeCtr(
       compose::ComposeProactiveNudgeCtrEvent::kOpenSettings);
 }

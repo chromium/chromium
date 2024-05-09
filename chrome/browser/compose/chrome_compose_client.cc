@@ -531,6 +531,17 @@ void ChromeComposeClient::DisableProactiveNudge() {
   proactive_nudge_enabled_.SetValue(false);
 }
 
+void ChromeComposeClient::OpenProactiveNudgeSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
+  // `browser` should never be null here. This can only be triggered when there
+  // is an active ComposeSession, which  is indirectly owned by the same
+  // WebContents that holds the field that the Compose dialog is triggered from.
+  // The session is created when that dialog is opened and it is destroyed if
+  // its WebContents is destroyed.
+  CHECK(browser);
+  chrome::ShowSettingsSubPage(browser, chrome::kOfferWritingHelpSubpage);
+}
+
 bool ChromeComposeClient::ShouldTriggerContextMenu(
     content::RenderFrameHost* rfh,
     content::ContextMenuParams& params) {
