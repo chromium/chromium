@@ -23,7 +23,8 @@ enum class ExtensionSignalType {
   kCookiesGet = 5,
   kDeclarativeNetRequest = 6,
   kTabsApi = 7,
-  kMaxValue = kTabsApi,
+  kDeclarativeNetRequestAction = 8,
+  kMaxValue = kDeclarativeNetRequestAction,
 };
 
 // An abstract signal. Subclasses provide type-specific functionality to
