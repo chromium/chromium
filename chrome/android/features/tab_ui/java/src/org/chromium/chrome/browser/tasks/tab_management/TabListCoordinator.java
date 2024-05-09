@@ -97,7 +97,6 @@ public class TabListCoordinator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
-    private final @UiType int mItemType;
     private final ViewGroup mRootView;
 
     private boolean mIsInitialized;
@@ -112,9 +111,9 @@ public class TabListCoordinator
     private int mEmptyStateHeadingResId;
     private int mEmptyStateSubheadingResId;
     private boolean mIsEmptyViewInitialized;
-
     private @Nullable Runnable mAwaitingLayoutRunnable;
     private int mAwaitingTabId = Tab.INVALID_TAB_ID;
+    private @TabActionState int mTabActionState;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -132,7 +131,8 @@ public class TabListCoordinator
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
      *     click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
-     * @param itemType The item type to put in the list of tabs.
+     * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
+     *     Must always be CLOSABLE for TabListMode.STRIP.
      * @param selectionDelegateProvider Provider to provide selected Tabs for a selectable tab list.
      *     It's NULL when selection is not possible.
      * @param priceWelcomeMessageControllerSupplier A supplier for a controller to show
@@ -160,7 +160,7 @@ public class TabListCoordinator
             @Nullable
                     TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
-            @UiType int itemType,
+            @TabActionState int initialTabActionState,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             @NonNull ViewGroup parentView,
@@ -180,7 +180,7 @@ public class TabListCoordinator
                 actionOnRelatedTabs,
                 gridCardOnClickListenerProvider,
                 dialogHandler,
-                itemType,
+                initialTabActionState,
                 selectionDelegateProvider,
                 priceWelcomeMessageControllerSupplier,
                 parentView,
@@ -207,7 +207,7 @@ public class TabListCoordinator
             @Nullable
                     TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
-            @UiType int itemType,
+            @TabActionState int initialTabActionState,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             @NonNull ViewGroup parentView,
@@ -220,7 +220,7 @@ public class TabListCoordinator
             int emptyHeadingStringResId,
             int emptySubheadingStringResId) {
         mMode = mode;
-        mItemType = itemType;
+        mTabActionState = initialTabActionState;
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
@@ -231,7 +231,7 @@ public class TabListCoordinator
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID) {
             mAdapter.registerType(
-                    UiType.SELECTABLE,
+                    UiType.TAB,
                     parent -> {
                         ViewGroup group =
                                 (ViewGroup)
@@ -241,27 +241,9 @@ public class TabListCoordinator
                                                         parentView,
                                                         false);
                         group.setClickable(true);
-                        ((TabGridView) group).setTabActionState(TabActionState.SELECTABLE);
-
                         return group;
                     },
-                    TabGridViewBinder::bindSelectableTab);
-
-            mAdapter.registerType(
-                    UiType.CLOSABLE,
-                    parent -> {
-                        ViewGroup group =
-                                (ViewGroup)
-                                        LayoutInflater.from(context)
-                                                .inflate(
-                                                        R.layout.tab_grid_card_item,
-                                                        parentView,
-                                                        false);
-                        group.setClickable(true);
-                        ((TabGridView) group).setTabActionState(TabActionState.CLOSABLE);
-                        return group;
-                    },
-                    TabGridViewBinder::bindClosableTab);
+                    TabGridViewBinder::bindTab);
 
             recyclerListener =
                     (holder) -> {
@@ -275,8 +257,7 @@ public class TabListCoordinator
                             view.removeAllViews();
                         }
 
-                        if (holderItemViewType != UiType.CLOSABLE
-                                && holderItemViewType != UiType.SELECTABLE) {
+                        if (holderItemViewType != UiType.TAB) {
                             return;
                         }
 
@@ -298,7 +279,7 @@ public class TabListCoordinator
                     TabStripViewBinder::bind);
         } else if (mMode == TabListMode.LIST) {
             mAdapter.registerType(
-                    UiType.CLOSABLE,
+                    UiType.TAB,
                     parent -> {
                         ViewLookupCachingFrameLayout group =
                                 (ViewLookupCachingFrameLayout)
@@ -308,26 +289,9 @@ public class TabListCoordinator
                                                         parentView,
                                                         false);
                         group.setClickable(true);
-                        ((TabGridView) group).setTabActionState(TabActionState.CLOSABLE);
                         return group;
                     },
-                    TabListViewBinder::bindClosableListTab);
-
-            mAdapter.registerType(
-                    UiType.SELECTABLE,
-                    parent -> {
-                        ViewGroup group =
-                                (ViewGroup)
-                                        LayoutInflater.from(context)
-                                                .inflate(
-                                                        R.layout.tab_list_card_item,
-                                                        parentView,
-                                                        false);
-                        group.setClickable(true);
-                        ((TabGridView) group).setTabActionState(TabActionState.SELECTABLE);
-                        return group;
-                    },
-                    TabListViewBinder::bindSelectableListTab);
+                    TabListViewBinder::bindTab);
         } else {
             throw new IllegalArgumentException(
                     "Attempting to create a tab list UI with invalid mode");
@@ -367,7 +331,7 @@ public class TabListCoordinator
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentName,
-                        itemType,
+                        initialTabActionState,
                         actionConfirmationManager);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
@@ -546,8 +510,10 @@ public class TabListCoordinator
                 mRecyclerView.createDynamicView(dynamicResourceLoader);
             }
 
+            // TODO(crbug.com/339460636): Initialize the item touch helper in setTabActionState
+            // function.
             if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
-                    && mItemType != UiType.SELECTABLE) {
+                    && mTabActionState != TabActionState.SELECTABLE) {
                 TabGridItemTouchHelperCallback callback =
                         (TabGridItemTouchHelperCallback)
                                 mMediator.getItemTouchHelperCallback(

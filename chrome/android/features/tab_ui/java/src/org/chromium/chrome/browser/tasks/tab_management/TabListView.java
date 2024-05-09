@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.View;
-import android.widget.ImageView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ImageView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
@@ -24,7 +24,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 // TODO(crbug.com/339038505): De-dupe logic in TabGridView.
 /** Holds the view for a tab list. */
 public class TabListView extends SelectableItemViewBase<Integer> {
-    private @TabActionState int mTabActionState;
+    private @TabActionState int mTabActionState = TabActionState.UNSET;
 
     public TabListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,6 +32,8 @@ public class TabListView extends SelectableItemViewBase<Integer> {
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
+        if (mTabActionState == tabActionState) return;
+
         mTabActionState = tabActionState;
         if (mTabActionState == TabActionState.CLOSABLE) {
             setTabActionButtonCloseDrawable();
@@ -41,20 +43,19 @@ public class TabListView extends SelectableItemViewBase<Integer> {
     }
 
     private void setTabActionButtonCloseDrawable() {
+        assert mTabActionState != TabActionState.UNSET;
         var resources = getResources();
 
-        ImageView actionButton =
-                (ImageView) findViewById(R.id.end_button);
+        ImageView actionButton = (ImageView) findViewById(R.id.end_button);
         actionButton.setVisibility(View.VISIBLE);
-        int closeButtonSize =
-                (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
-        Bitmap bitmap =
-                BitmapFactory.decodeResource(resources, R.drawable.btn_close);
+        int closeButtonSize = (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, R.drawable.btn_close);
         Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
         actionButton.setImageBitmap(bitmap);
     }
 
     private void setTabActionButtonSelectionDrawable() {
+        assert mTabActionState != TabActionState.UNSET;
         var resources = getResources();
 
         Drawable selectionListIcon =

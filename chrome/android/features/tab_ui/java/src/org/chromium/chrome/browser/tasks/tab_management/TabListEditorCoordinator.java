@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -162,7 +162,7 @@ class TabListEditorCoordinator {
             ViewGroup rootView,
             boolean displayGroups,
             SnackbarManager snackbarManager,
-            @UiType int itemType) {
+            @TabActionState int initialTabActionState) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mContext = context;
             mParentView = parentView;
@@ -196,7 +196,7 @@ class TabListEditorCoordinator {
                             displayGroups,
                             null,
                             null,
-                            itemType,
+                            initialTabActionState,
                             this::getSelectionDelegate,
                             null,
                             mTabListEditorLayout,
@@ -306,7 +306,7 @@ class TabListEditorCoordinator {
                             displayGroups,
                             snackbarManager,
                             mTabListEditorLayout,
-                            itemType);
+                            initialTabActionState);
         }
     }
 

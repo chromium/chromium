@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManage
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridView.QuickDeleteAnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
@@ -392,7 +393,7 @@ class TabListMediator {
     private ComponentCallbacks mComponentCallbacks;
     private TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
     private int mNextTabId = Tab.INVALID_TAB_ID;
-    private @UiType int mUiType;
+    private @TabActionState int mTabActionState;
     private GridLayoutManager mGridLayoutManager;
     // mRecyclerView and mOnScrollListener are null, unless the the price drop IPH or badge is
     // enabled.
@@ -900,7 +901,8 @@ class TabListMediator {
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
      *     PriceWelcomeMessage.
      * @param componentName This is a unique string to identify different components.
-     * @param uiType The type of UI this mediator should be building.
+     * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
+     *     Must always be CLOSABLE for TabListMode.STRIP.
      */
     public TabListMediator(
             Context context,
@@ -919,7 +921,7 @@ class TabListMediator {
             @Nullable TabGridDialogHandler dialogHandler,
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
-            @UiType int uiType,
+            @TabActionState int initialTabActionState,
             @NonNull ActionConfirmationManager actionConfirmationManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
@@ -936,7 +938,7 @@ class TabListMediator {
         mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
         mTabGridDialogHandler = dialogHandler;
         mActionsOnAllRelatedTabs = actionOnRelatedTabs;
-        mUiType = uiType;
+        mTabActionState = initialTabActionState;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mProfile = regularTabModelSupplier.get().getProfile();
         mTabGroupVisualDataDialogManager = null;
@@ -1307,7 +1309,7 @@ class TabListMediator {
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
         if (mMode == TabListMode.GRID
-                && mUiType != UiType.SELECTABLE
+                && mTabActionState != TabActionState.SELECTABLE
                 && PriceTrackingFeatures.isPriceTrackingEnabled(profile)) {
             mListObserver =
                     new ListObserver<Void>() {
@@ -1657,7 +1659,7 @@ class TabListMediator {
                         || isUpdatingId
                         || forceUpdateLastSelected
                         || isInTabGroup)) {
-            boolean isSelectable = mUiType == UiType.SELECTABLE;
+            boolean isSelectable = mTabActionState == TabActionState.SELECTABLE;
             ThumbnailFetcher callback =
                     new ThumbnailFetcher(
                             mThumbnailProvider,
@@ -1707,7 +1709,8 @@ class TabListMediator {
                     @Override
                     public void onConfigurationChanged(Configuration newConfig) {
                         updateSpanCount(manager, newConfig.screenWidthDp);
-                        if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE) {
+                        if (mMode == TabListMode.GRID
+                                && mTabActionState != TabActionState.SELECTABLE) {
                             updateLayout();
                         }
                     }
@@ -1919,6 +1922,7 @@ class TabListMediator {
                         : R.color.favicon_background_color;
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
                         .with(TabProperties.TAB_ID, pseudoTab.getId())
                         .with(TabProperties.TITLE, getLatestTitleForTab(pseudoTab))
                         .with(
@@ -1957,7 +1961,7 @@ class TabListMediator {
                     mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
         }
 
-        if (mUiType == UiType.SELECTABLE) {
+        if (mTabActionState == TabActionState.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
             // Non-incognito mode and incognito in both light/dark themes in dark theme all look
             // dark.
@@ -2018,10 +2022,13 @@ class TabListMediator {
             updateActionButtonDescriptionString(pseudoTab, tabInfo);
         }
 
+        @UiType
+        int tabUiType =
+                mMode == TabListMode.STRIP ? TabProperties.UiType.STRIP : TabProperties.UiType.TAB;
         if (index >= mModel.size()) {
-            mModel.add(new SimpleRecyclerViewAdapter.ListItem(mUiType, tabInfo));
+            mModel.add(new SimpleRecyclerViewAdapter.ListItem(tabUiType, tabInfo));
         } else {
-            mModel.add(index, new SimpleRecyclerViewAdapter.ListItem(mUiType, tabInfo));
+            mModel.add(index, new SimpleRecyclerViewAdapter.ListItem(tabUiType, tabInfo));
         }
 
         setupPersistedTabDataFetcherForTab(pseudoTab, index);
@@ -2037,7 +2044,7 @@ class TabListMediator {
             }
         }
         if (mThumbnailProvider != null && mVisible) {
-            boolean isSelectable = mUiType == UiType.SELECTABLE;
+            boolean isSelectable = mTabActionState == TabActionState.SELECTABLE;
             ThumbnailFetcher callback =
                     new ThumbnailFetcher(
                             mThumbnailProvider,

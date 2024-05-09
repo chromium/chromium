@@ -270,7 +270,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     getActivity()
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, null);
-                    ((TabGridView) mTabGridView).setTabActionState(TabActionState.CLOSABLE);
                     mTabStripView =
                             (ViewGroup)
                                     getActivity()
@@ -281,21 +280,16 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     getActivity()
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_card_item, null);
-                    ((TabGridView) mSelectableTabGridView)
-                            .setTabActionState(TabActionState.SELECTABLE);
                     mSelectableTabListView =
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_list_card_item, null);
-                    ((TabListView) mSelectableTabListView)
-                            .setTabActionState(TabActionState.SELECTABLE);
                     mTabListView =
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_list_card_item, null);
-                    ((TabListView) mTabListView).setTabActionState(TabActionState.CLOSABLE);
 
                     view.addView(mTabGridView);
                     view.addView(mTabStripView);
@@ -310,6 +304,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                 () -> {
                     mGridModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                                    .with(TabProperties.TAB_ACTION_STATE, TabActionState.CLOSABLE)
                                     .with(TabProperties.IS_INCOGNITO, false)
                                     .with(TabProperties.TAB_ID, TAB1_ID)
                                     .with(
@@ -336,6 +331,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .build();
                     mSelectableModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                                    .with(TabProperties.TAB_ACTION_STATE, TabActionState.SELECTABLE)
                                     .with(
                                             TabProperties.SELECTABLE_TAB_CLICKED_LISTENER,
                                             mMockSelectedListener)
@@ -349,7 +345,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
                     mGridMCP =
                             PropertyModelChangeProcessor.create(
-                                    mGridModel, mTabGridView, TabGridViewBinder::bindClosableTab);
+                                    mGridModel, mTabGridView, TabGridViewBinder::bindTab);
                     mStripMCP =
                             PropertyModelChangeProcessor.create(
                                     mStripModel, mTabStripView, TabStripViewBinder::bind);
@@ -357,13 +353,11 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                             PropertyModelChangeProcessor.create(
                                     mSelectableModel,
                                     mSelectableTabGridView,
-                                    TabGridViewBinder::bindSelectableTab);
+                                    TabGridViewBinder::bindTab);
                     PropertyModelChangeProcessor.create(
-                            mSelectableModel,
-                            mSelectableTabListView,
-                            TabListViewBinder::bindSelectableListTab);
+                            mSelectableModel, mSelectableTabListView, TabListViewBinder::bindTab);
                     PropertyModelChangeProcessor.create(
-                            mGridModel, mTabListView, TabListViewBinder::bindClosableListTab);
+                            mGridModel, mTabListView, TabListViewBinder::bindTab);
                 });
         mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()

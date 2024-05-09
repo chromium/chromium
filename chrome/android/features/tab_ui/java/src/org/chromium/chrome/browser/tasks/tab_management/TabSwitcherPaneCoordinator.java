@@ -213,7 +213,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             /* actionOnRelatedTabs= */ true,
                             getGridCardOnClickListenerProvider(),
                             /* dialogHandler= */ null,
-                            TabProperties.UiType.CLOSABLE,
+                            TabProperties.TabActionState.CLOSABLE,
                             /* selectionDelegateProvider= */ null,
                             this::getPriceWelcomeMessageController,
                             parentView,

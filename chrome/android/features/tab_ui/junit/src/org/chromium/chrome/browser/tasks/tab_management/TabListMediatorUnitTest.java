@@ -136,6 +136,7 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ThumbnailFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -1217,7 +1218,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        UiType.CLOSABLE,
+                        TabActionState.CLOSABLE,
                         mActionConfirmationManager);
         mMediator.initWithNative(mProfile);
 
@@ -2908,7 +2909,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.CLOSABLE,
+                        TabProperties.TabActionState.CLOSABLE,
                         mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -2943,7 +2944,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.CLOSABLE,
+                        TabProperties.TabActionState.CLOSABLE,
                         mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3375,7 +3376,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE,
+                        TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3421,7 +3422,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE,
+                        TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3467,7 +3468,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE,
+                        TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3878,7 +3879,7 @@ public class TabListMediatorUnitTest {
         int uiType = 0;
         if (type == TabListMediatorType.TAB_SWITCHER
                 || type == TabListMediatorType.TAB_GRID_DIALOG) {
-            uiType = TabProperties.UiType.CLOSABLE;
+            uiType = TabProperties.TabActionState.CLOSABLE;
         } else if (type == TabListMediatorType.TAB_STRIP) {
             uiType = TabProperties.UiType.STRIP;
         }

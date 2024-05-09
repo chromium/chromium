@@ -43,9 +43,9 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** Junit Tests for {@link TabGridViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,7 +53,7 @@ public final class TabGridViewBinderUnitTest {
     private static final int INIT_WIDTH = 100;
     private static final int INIT_HEIGHT = 200;
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock private ViewLookupCachingFrameLayout mViewGroup;
+    @Mock private TabGridView mViewGroup;
     @Mock private TabListMediator.ThumbnailFetcher mFetcher;
     @Mock private TabThumbnailView mThumbnailView;
     @Mock private ImageView mFaviconView;
@@ -75,6 +75,7 @@ public final class TabGridViewBinderUnitTest {
 
         mModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ACTION_STATE, TabActionState.CLOSABLE)
                         .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
                         .with(TabProperties.IS_INCOGNITO, false)
                         .with(TabProperties.IS_SELECTED, true)
@@ -98,7 +99,7 @@ public final class TabGridViewBinderUnitTest {
     @org.robolectric.annotation.Config(qualifiers = "sw348dp")
     public void bindClosableTabWithCardWidth_updateNullFetcher() {
         mModel.set(TabProperties.THUMBNAIL_FETCHER, null);
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
         verify(mThumbnailView).setImageDrawable(null);
 
@@ -107,7 +108,7 @@ public final class TabGridViewBinderUnitTest {
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
         final int updatedCardWidth = 200;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView, times(2)).updateThumbnailPlaceholder(false, true);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
@@ -123,7 +124,7 @@ public final class TabGridViewBinderUnitTest {
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
         final int updatedCardWidth = 200;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
@@ -155,7 +156,7 @@ public final class TabGridViewBinderUnitTest {
         final int updatedCardWidth = 200;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
         mModel.set(TabProperties.IS_SELECTED, false);
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
@@ -188,7 +189,7 @@ public final class TabGridViewBinderUnitTest {
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
 
         // Call.
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
@@ -222,7 +223,7 @@ public final class TabGridViewBinderUnitTest {
         final int updatedCardHeight = 400;
         mModel.set(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, updatedCardHeight));
         // Call.
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
 
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
@@ -259,7 +260,7 @@ public final class TabGridViewBinderUnitTest {
                     }
                 };
         mModel.set(TabProperties.FAVICON_FETCHER, fetcher);
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 
         verify(mFaviconView).setImageDrawable(mDrawable);
     }
@@ -267,7 +268,7 @@ public final class TabGridViewBinderUnitTest {
     @Test
     public void testBindNullFaviconFetcher() {
         mModel.set(TabProperties.FAVICON_FETCHER, null);
-        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
+        TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 
         verify(mFaviconView).setImageDrawable(null);
     }

@@ -757,7 +757,7 @@ class TabListRecyclerView extends RecyclerView
     private int getSwappableItemCount() {
         int count = 0;
         for (int i = 0; i < getAdapter().getItemCount(); i++) {
-            if (getAdapter().getItemViewType(i) == TabProperties.UiType.CLOSABLE) count++;
+            if (getAdapter().getItemViewType(i) == TabProperties.UiType.TAB) count++;
         }
         return count;
     }

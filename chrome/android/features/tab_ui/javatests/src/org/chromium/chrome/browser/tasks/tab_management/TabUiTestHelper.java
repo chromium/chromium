@@ -846,8 +846,7 @@ public class TabUiTestHelper {
                 RecyclerView.ViewHolder viewHolder =
                         recyclerView.findViewHolderForAdapterPosition(i);
                 if (viewHolder == null) return;
-                if (viewHolder.getItemViewType() != TabProperties.UiType.CLOSABLE
-                        && viewHolder.getItemViewType() != TabProperties.UiType.SELECTABLE
+                if (viewHolder.getItemViewType() != TabProperties.UiType.TAB
                         && viewHolder.getItemViewType() != TabProperties.UiType.STRIP) {
                     nonTabCardCount += 1;
                 }

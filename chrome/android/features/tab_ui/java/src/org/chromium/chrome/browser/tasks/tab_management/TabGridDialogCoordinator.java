@@ -210,7 +210,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             false,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
-                            TabProperties.UiType.CLOSABLE,
+                            TabProperties.TabActionState.CLOSABLE,
                             null,
                             null,
                             containerView,
@@ -310,7 +310,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mRootView,
                             /* displayGroups= */ false,
                             mSnackbarManager,
-                            TabProperties.UiType.SELECTABLE);
+                            TabProperties.TabActionState.SELECTABLE);
         }
 
         return mTabListEditorCoordinator.getController();

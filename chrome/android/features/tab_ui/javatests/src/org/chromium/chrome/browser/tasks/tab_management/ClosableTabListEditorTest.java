@@ -96,7 +96,7 @@ public class ClosableTabListEditorTest {
                                             .getCompositorViewHolderForTesting(),
                                     /* displayGroups= */ true,
                                     mSnackbarManager,
-                                    TabProperties.UiType.CLOSABLE);
+                                    TabProperties.TabActionState.CLOSABLE);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

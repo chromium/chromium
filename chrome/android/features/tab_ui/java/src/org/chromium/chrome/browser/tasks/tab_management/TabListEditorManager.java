@@ -121,7 +121,7 @@ public class TabListEditorManager {
                             mRootView,
                             /* displayGroups= */ true,
                             mSnackbarManager,
-                            TabProperties.UiType.SELECTABLE);
+                            TabProperties.TabActionState.SELECTABLE);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

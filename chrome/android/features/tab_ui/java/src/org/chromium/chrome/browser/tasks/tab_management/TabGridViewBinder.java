@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,41 +45,40 @@ class TabGridViewBinder {
     private static final String SHOPPING_METRICS_IDENTIFIER = "EnterTabSwitcher";
 
     /**
-     * Bind a closable tab to a view.
-     * @param model The model to bind.
+     * Main entrypoint for binding TabGridView
+     *
      * @param view The view to bind to.
-     * @param propertyKey The property that changed.
+     * @param model The model to bind.
+     * @param viewType The view type to bind.
      */
-    public static void bindClosableTab(
+    public static void bindTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         assert view instanceof ViewLookupCachingFrameLayout;
-        if (propertyKey == null) {
-            onBindAll((ViewLookupCachingFrameLayout) view, model, TabProperties.UiType.CLOSABLE);
+        @TabActionState Integer tabActionState = model.get(TabProperties.TAB_ACTION_STATE);
+        if (tabActionState == null) {
+            assert false : "TAB_ACTION_STATE must be set before initial bindTab call.";
             return;
         }
-        bindCommonProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
-        bindClosableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
-    }
 
-    /**
-     * Bind a selectable tab to a view.
-     * @param model The model to bind.
-     * @param view The view to bind to.
-     * @param propertyKey The property that changed.
-     */
-    public static void bindSelectableTab(
-            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
-        assert view instanceof ViewLookupCachingFrameLayout;
+        ((TabGridView) view).setTabActionState(tabActionState);
         if (propertyKey == null) {
-            onBindAll((ViewLookupCachingFrameLayout) view, model, TabProperties.UiType.SELECTABLE);
+            onBindAll((ViewLookupCachingFrameLayout) view, model, tabActionState);
             return;
         }
+
         bindCommonProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
-        bindSelectableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        if (tabActionState == TabActionState.CLOSABLE) {
+            bindClosableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        } else if (tabActionState == TabActionState.SELECTABLE) {
+            bindSelectableTabProperties(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        } else {
+            assert false : "Unsupported TabActionState provided to bindTab.";
+        }
     }
 
     /**
      * Rebind all properties on a model to the view.
+     *
      * @param view The view to bind to.
      * @param model The model to bind.
      * @param viewType The view type to bind.
@@ -86,14 +86,14 @@ class TabGridViewBinder {
     private static void onBindAll(
             ViewLookupCachingFrameLayout view,
             PropertyModel model,
-            @TabProperties.UiType int viewType) {
+            @TabActionState int tabActionState) {
         for (PropertyKey propertyKey : TabProperties.ALL_KEYS_TAB_GRID) {
             bindCommonProperties(model, view, propertyKey);
-            switch (viewType) {
-                case TabProperties.UiType.SELECTABLE:
+            switch (tabActionState) {
+                case TabProperties.TabActionState.SELECTABLE:
                     bindSelectableTabProperties(model, view, propertyKey);
                     break;
-                case TabProperties.UiType.CLOSABLE:
+                case TabProperties.TabActionState.CLOSABLE:
                     bindClosableTabProperties(model, view, propertyKey);
                     break;
                 default:

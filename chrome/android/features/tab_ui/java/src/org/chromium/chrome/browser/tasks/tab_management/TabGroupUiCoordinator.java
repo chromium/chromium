@@ -184,7 +184,7 @@ public class TabGroupUiCoordinator
                             false,
                             null,
                             null,
-                            TabProperties.UiType.STRIP,
+                            TabProperties.TabActionState.UNSET,
                             null,
                             null,
                             mTabListContainerView,

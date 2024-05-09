@@ -30,14 +30,43 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List. */
 class TabListViewBinder {
     private static final int INVALID_COLOR_ID = -1;
     private static final int TAB_GROUP_ICON_COLOR_LEVEL = 1;
+
+    /**
+     * Main entrypoint for binding TabListView
+     *
+     * @param view The view to bind to.
+     * @param model The model to bind.
+     * @param viewType The view type to bind.
+     */
+    public static void bindTab(
+            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
+        assert view instanceof ViewLookupCachingFrameLayout;
+        @TabActionState Integer tabActionState = model.get(TabProperties.TAB_ACTION_STATE);
+        if (tabActionState == null) {
+            assert false : "TAB_ACTION_STATE must be set before initial bindTab call.";
+            return;
+        }
+
+        ((TabListView) view).setTabActionState(tabActionState);
+        bindListTab(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        if (tabActionState == TabActionState.CLOSABLE) {
+            bindClosableListTab(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        } else if (tabActionState == TabActionState.SELECTABLE) {
+            bindSelectableListTab(model, (ViewLookupCachingFrameLayout) view, propertyKey);
+        } else {
+            assert false : "Unsupported TabActionState provided to bindTab.";
+        }
+    }
 
     // TODO(crbug.com/40107066): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
@@ -83,11 +112,12 @@ class TabListViewBinder {
 
     /**
      * Bind a closable tab to view.
+     *
      * @param model The model to bind.
      * @param view The view to bind to.
      * @param propertyKey The property that changed.
      */
-    public static void bindClosableListTab(
+    private static void bindClosableListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         bindListTab(model, view, propertyKey);
 
@@ -215,11 +245,12 @@ class TabListViewBinder {
 
     /**
      * Bind a selectable tab to view.
+     *
      * @param model The model to bind.
      * @param view The view to bind to.
      * @param propertyKey The property that changed.
      */
-    public static void bindSelectableListTab(
+    private static void bindSelectableListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         bindListTab(model, view, propertyKey);
 

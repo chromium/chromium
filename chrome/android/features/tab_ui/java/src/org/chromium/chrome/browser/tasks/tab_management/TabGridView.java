@@ -12,22 +12,22 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
-import android.graphics.drawable.InsetDrawable;
 
-import androidx.core.content.res.ResourcesCompat;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,7 +39,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
     private static final float ZOOM_IN_SCALE = 0.8f;
 
-    private @TabActionState int mTabActionState;
+    private @TabActionState int mTabActionState = TabActionState.UNSET;
 
     @IntDef({
         AnimationStatus.SELECTED_CARD_ZOOM_IN,
@@ -87,6 +87,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
      * @param status The target animation status in {@link AnimationStatus}.
      */
     void scaleTabGridCardView(@AnimationStatus int status) {
+        assert mTabActionState != TabActionState.UNSET;
         assert status < AnimationStatus.NUM_ENTRIES;
 
         final View backgroundView = fastFindViewById(R.id.background_view);
@@ -131,6 +132,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     void hideTabGridCardViewForQuickDelete(@QuickDeleteAnimationStatus int status) {
+        assert mTabActionState != TabActionState.UNSET;
         assert status < QuickDeleteAnimationStatus.NUM_ENTRIES;
 
         final ViewGroup contentView = (ViewGroup) fastFindViewById(R.id.content_view);
@@ -166,6 +168,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     void setTabActionButtonDrawable(boolean isTabGroup) {
+        assert mTabActionState != TabActionState.UNSET;
         if (isTabGroup) {
             ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
             actionButton.setImageDrawable(
@@ -177,6 +180,8 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
+        if (mTabActionState == tabActionState) return;
+
         mTabActionState = tabActionState;
         if (mTabActionState == TabActionState.CLOSABLE) {
             setTabActionButtonCloseDrawable();
@@ -186,6 +191,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     private void setTabActionButtonCloseDrawable() {
+        assert mTabActionState != TabActionState.UNSET;
         ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
 
         if (sCloseButtonBitmapWeakRef == null || sCloseButtonBitmapWeakRef.get() == null) {
@@ -202,6 +208,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     }
 
     private void setTabActionButtonSelectionDrawable() {
+        assert mTabActionState != TabActionState.UNSET;
         var resources = getResources();
         Drawable selectionListIcon =
                 ResourcesCompat.getDrawable(

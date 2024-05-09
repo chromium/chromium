@@ -243,7 +243,7 @@ public class TabSwitcherCoordinator
                             true,
                             mMediator,
                             null,
-                            TabProperties.UiType.CLOSABLE,
+                            TabProperties.TabActionState.CLOSABLE,
                             null,
                             this::getMessageManager,
                             container,
