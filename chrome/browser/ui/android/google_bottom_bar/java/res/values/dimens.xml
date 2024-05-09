@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
 <resources>
   <dimen name="google_bottom_bar_height">64dp</dimen>
+  <dimen name="google_bottom_bar_padding">16dp</dimen>
+  <dimen name="google_bottom_bar_expanded_button_padding_horizontal">10dp</dimen>
+  <dimen name="google_bottom_bar_button_padding">12dp</dimen>
+  <dimen name="google_bottom_bar_button_size">48dp</dimen>
 </resources>

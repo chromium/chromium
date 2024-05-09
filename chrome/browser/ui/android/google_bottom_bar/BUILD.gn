@@ -26,7 +26,18 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/dimens.xml" ]
+  sources = [
+    "java/res/drawable/bookmark_add.xml",
+    "java/res/layout/google_bottom_bar_spotlight.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/page_insights:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
 }
 
 robolectric_library("junit") {

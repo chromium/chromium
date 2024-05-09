@@ -5,9 +5,8 @@
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
 
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
@@ -26,17 +25,9 @@ public class GoogleBottomBarViewCreator {
     }
 
     /**
-     * @return empty view. TODO - replace with actual implementation
+     * @return empty view. TODO: build view dynamically based on config
      */
     public View createGoogleBottomBarView() {
-        LinearLayout parent = new LinearLayout(mContext);
-
-        parent.setLayoutParams(
-                new LinearLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT,
-                        mContext.getResources()
-                                .getDimensionPixelSize(R.dimen.google_bottom_bar_height)));
-        parent.setOrientation(LinearLayout.HORIZONTAL);
-        return parent;
+        return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
     }
 }

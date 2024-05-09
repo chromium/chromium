@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--TODO: update image Icon contentDescription for accessibility-->
+<!--TODO: move page_insights_icon to its own resource target-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/google_bottom_bar_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/google_bottom_bar_height"
+    android:paddingLeft="@dimen/google_bottom_bar_padding"
+    android:paddingRight="@dimen/google_bottom_bar_padding"
+    android:background="@color/google_bottom_bar_background_color"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+  <ImageView
+      android:id="@+id/google_bottom_bar_page_insights_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingStart="2dp"
+      android:paddingTop="2dp"
+      android:scaleType="centerInside"
+      android:layout_gravity="center"
+      android:importantForAccessibility="yes"
+      android:contentDescription="@null"
+      android:visibility="visible"
+      android:src="@drawable/page_insights_icon"
+      app:tint="@color/default_icon_color_baseline" />
+  <LinearLayout
+      android:id="@+id/google_bottom_bar_non_spotlit_buttons_container"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:layout_height="@dimen/google_bottom_bar_height"
+      android:layout_gravity="center_vertical"
+      android:gravity="end"
+      android:paddingStart="@dimen/google_bottom_bar_expanded_button_padding_horizontal"
+      android:paddingEnd="@dimen/google_bottom_bar_expanded_button_padding_horizontal"
+      android:orientation="horizontal">
+    <ImageView
+        android:id="@+id/google_bottom_bar_save_button"
+        android:layout_width="@dimen/google_bottom_bar_button_size"
+        android:layout_height="@dimen/google_bottom_bar_button_size"
+        android:scaleType="centerInside"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@null"
+        android:src="@drawable/bookmark_add"
+        app:tint="@color/default_icon_color_baseline" />
+    <ImageView
+        android:id="@+id/google_bottom_bar_share_button"
+        android:layout_width="@dimen/google_bottom_bar_button_size"
+        android:layout_height="@dimen/google_bottom_bar_button_size"
+        android:scaleType="centerInside"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@null"
+        android:visibility="visible"
+        android:src="@drawable/ic_share_white_24dp"
+        app:tint="@color/default_icon_color_baseline" />
+  </LinearLayout>
+</LinearLayout>
