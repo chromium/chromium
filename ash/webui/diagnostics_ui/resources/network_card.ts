@@ -342,6 +342,22 @@ export class NetworkCardElement extends NetworkCardElementBase {
       this.timerId = -1;
     }
   }
+
+  getTimerIdForTesting(): number {
+    return this.timerId;
+  }
+
+  setTimeoutInMsForTesting(timeout: number): void {
+    this.timeoutInMs = timeout;
+  }
+
+  getTimeoutInMsForTesting(): number {
+    return this.timeoutInMs;
+  }
+
+  getUnableToObtainIpAddressForTesting(): boolean {
+    return this.unableToObtainIpAddress;
+  }
 }
 
 declare global {
