@@ -423,15 +423,23 @@ void Label::SetObscured(bool obscured) {
                     kPropertyEffectsPreferredSizeChanged);
 }
 
-bool Label::IsDisplayTextTruncated() const {
+bool Label::IsDisplayTextClipped() const {
   MaybeBuildDisplayText();
   if (!full_text_ || full_text_->text().empty())
     return false;
   auto text_bounds = GetTextBounds();
+  return text_bounds.width() > GetContentsBounds().width() ||
+         text_bounds.height() > GetContentsBounds().height();
+}
+
+bool Label::IsDisplayTextTruncated() const {
+  MaybeBuildDisplayText();
+  if (!full_text_ || full_text_->text().empty()) {
+    return false;
+  }
   return (display_text_ &&
           display_text_->text() != display_text_->GetDisplayText()) ||
-         text_bounds.width() > GetContentsBounds().width() ||
-         text_bounds.height() > GetContentsBounds().height();
+         IsDisplayTextClipped();
 }
 
 bool Label::GetAllowCharacterBreak() const {

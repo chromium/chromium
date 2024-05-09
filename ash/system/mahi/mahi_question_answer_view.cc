@@ -74,8 +74,8 @@ constexpr int kTextBubbleCornerRadius = 12;
 // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth` when
 // the panel is resizable.
 constexpr int kTextBubbleLabelDefaultMaximumWidth =
-    mahi_constants::kPanelDefaultWidth - mahi_constants::kPanelPadding.width() -
-    kQuestionAnswerInteriorMargin.width() - kTextBubbleInteriorMargin.width();
+    mahi_constants::kScrollViewWidth - kQuestionAnswerInteriorMargin.width() -
+    kTextBubbleInteriorMargin.width();
 
 // ErrorBubble -----------------------------------------------------------------
 

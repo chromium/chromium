@@ -216,6 +216,10 @@ class VIEWS_EXPORT Label : public View,
   bool GetObscured() const;
   void SetObscured(bool obscured);
 
+  // Returns true if some portion of the text is not displayed because of
+  // clipping.
+  bool IsDisplayTextClipped() const;
+
   // Returns true if some portion of the text is not displayed, either because
   // of eliding or clipping.
   bool IsDisplayTextTruncated() const;

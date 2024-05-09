@@ -7,6 +7,7 @@
 
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash::mahi_constants {
 
@@ -53,6 +54,10 @@ inline constexpr gfx::Size kContentIconSize = gfx::Size(16, 16);
 inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding(/*all=*/16);
+
+inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
+                                        views::kHighlightBorderThickness * 2 -
+                                        kPanelPadding.width();
 
 inline constexpr int kScrollContentsViewBottomPadding = 40;
 

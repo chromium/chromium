@@ -22,6 +22,7 @@
 #include "ash/system/mahi/mahi_utils.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
@@ -187,6 +189,25 @@ views::Label* GetSummaryLabel(views::View* mahi_view) {
       mahi_view->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
 }
 
+// Generates a random string, given the maximum amount of words the string can
+// have.
+std::u16string GetRandomString(int max_words_count) {
+  int string_length = base::RandInt(1, max_words_count);
+  std::vector<char> random_chars;
+  for (int string_index = 0; string_index < string_length; string_index++) {
+    int word_length = base::RandInt(1, 10);
+    for (int word_index = 0; word_index < word_length; word_index++) {
+      // Add a random character from 'a' to 'z' to the string.
+      random_chars.push_back(base::RandInt('a', 'z'));
+    }
+
+    // Add a space between each word.
+    random_chars.push_back(0x20);
+  }
+
+  return std::u16string(random_chars.begin(), random_chars.end());
+}
+
 }  // namespace
 
 class MahiPanelViewTest : public AshTestBase {
@@ -236,7 +257,10 @@ class MahiPanelViewTest : public AshTestBase {
   void CreatePanelWidget() {
     ResetPanelWidget();
     widget_ = CreateFramelessTestWidget();
-    widget_->SetFullscreen(true);
+    widget_->SetBounds(
+        gfx::Rect(/*x=*/0, /*y=*/0,
+                  /*width=*/mahi_constants::kPanelDefaultWidth,
+                  /*height=*/mahi_constants::kPanelDefaultHeight));
     panel_view_ = widget_->SetContentsView(
         std::make_unique<MahiPanelView>(&ui_controller_));
   }
@@ -1916,6 +1940,83 @@ TEST_F(MahiPanelViewTest, ReportQuestionCountWhenMahiPanelDestroyed) {
       mahi_constants::kQuestionCountPerMahiSessionHistogramName,
       /*sample=*/2,
       /*expected_count=*/1);
+}
+
+// Make sure that summary label is displayed correctly given any kind of text.
+TEST_F(MahiPanelViewTest, RandomizedTextSummaryLabel) {
+  auto random_string = GetRandomString(/*max_words_count=*/500);
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault(
+          [random_string](chromeos::MahiManager::MahiSummaryCallback callback) {
+            std::move(callback).Run(random_string,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  ui_controller()->RefreshContents();
+  views::test::RunScheduledLayout(widget());
+
+  auto* summary_label = views::AsViewClass<views::Label>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
+
+  // Make sure the summary label is not clipped.
+  EXPECT_FALSE(summary_label->IsDisplayTextClipped())
+      << "Summary label is clipped with the text: " << random_string;
+
+  // Make sure the label is within the bounds of its parent view.
+  auto* scroll_view = views::AsViewClass<views::ScrollView>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView));
+  EXPECT_LE(summary_label->width(), scroll_view->GetVisibleRect().width())
+      << "Summary label width surpasses scroll view visible width: "
+      << random_string;
+}
+
+// Make sure the question and answer labels are displayed correctly given any
+// kind of texts.
+TEST_F(MahiPanelViewTest, RandomizedTextQuestionAnswerLabels) {
+  auto random_answer = GetRandomString(/*max_words_count=*/100);
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [&random_answer](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(random_answer,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  auto random_question = GetRandomString(/*max_words_count=*/100);
+  views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield))
+      ->SetText(random_question);
+
+  // Pressing the send button should create a question and answer text bubble.
+  LeftClickOn(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kAskQuestionSendButton));
+
+  views::test::RunScheduledLayout(widget());
+
+  auto* question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* question_label = views::AsViewClass<views::Label>(
+      question_answer_view->children()[0]->GetViewByID(
+          mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+  EXPECT_FALSE(question_label->IsDisplayTextClipped())
+      << "Question label is clipped with the text: " << random_question;
+
+  auto* scroll_view = views::AsViewClass<views::ScrollView>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView));
+  EXPECT_LE(question_label->width(), scroll_view->GetVisibleRect().width())
+      << "Question label width surpasses scroll view visible width: "
+      << random_answer;
+
+  auto* answer_label = views::AsViewClass<views::Label>(
+      question_answer_view->children()[1]->GetViewByID(
+          mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel));
+
+  EXPECT_FALSE(answer_label->IsDisplayTextClipped())
+      << "Answer label is clipped with the text: " << random_answer;
+  EXPECT_LE(answer_label->width(), scroll_view->GetVisibleRect().width())
+      << "Answer label width surpasses scroll view visible width: "
+      << random_answer;
 }
 
 }  // namespace ash
