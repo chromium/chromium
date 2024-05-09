@@ -77,18 +77,18 @@ found in the LICENSE file.
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]" tabindex="0">
       $i18n{removePiiRadioButton}
     </cr-radio-button>
-    <iron-collapse id="privacy-disclaimer"
+    <cr-collapse id="privacy-disclaimer"
         opened$="[[showDisclaimer_(selectedRadioButton_)]]">
       <div tabindex="0">
         $i18n{piiRemovalDisclaimer}
       </div>
-    </iron-collapse>
+    </cr-collapse>
     <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]" tabindex="0">
       $i18n{manuallySelectPiiRadioButton}
     </cr-radio-button>
   </cr-radio-group>
 </div>
-<iron-collapse id="detected-pii-container" opened="[[showPIISelection_]]">
+<cr-collapse id="detected-pii-container" opened="[[showPIISelection_]]">
   <div>
     <template is="dom-repeat" items="[[detectedPIIItems_]]">
       <div id="detected-pii-item">
@@ -100,14 +100,14 @@ found in the LICENSE file.
             <span>[[item.piiTypeDescription]]: [[item.count]]</span>
           </cr-checkbox>
         </cr-expand-button>
-        <iron-collapse class="pii-item-collapse"
+        <cr-collapse class="pii-item-collapse"
             opened="[[item.expandDetails]]">
           <div class="pii-details" tabindex="0">[[item.detectedData]]</div>
-        </iron-collapse>
+        </cr-collapse>
       </div>
     </template>
   </div>
-</iron-collapse>
+</cr-collapse>
 <div class="navigation-buttons">
   <cr-button id="cancelButton" on-click="onCancelClick_">
     $i18n{cancelButtonText}
