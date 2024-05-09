@@ -465,8 +465,8 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
               BitmapImage::MaybeCreateTransparentPlaceholderImage(url)) {
         document.CountUse(
             WebFeature::kSimplifyLoadingTransparentPlaceholderImage);
-        new_image_content = MakeGarbageCollected<ImageResourceContent>(
-            std::move(transparent_image));
+        new_image_content =
+            ImageResourceContent::CreateLoaded(transparent_image);
       }
     }
     if (!new_image_content) {

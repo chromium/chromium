@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -209,6 +211,27 @@ TEST_F(HTMLImageElementSimTest,
       << "Expect error that Shared Storage operations are not allowed in "
          "insecure contexts but got: "
       << ConsoleMessages().front();
+}
+
+TEST_F(HTMLImageElementSimTest, OnloadTransparentPlaceholderImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kSimplifyLoadingTransparentPlaceholderImage);
+
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <body onload='console.log("main body onload");'>
+      <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+           onload='console.log("image element onload");'>
+    </body>)");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Ensure that both body and image are successfully loaded.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("image element onload"));
 }
 
 class HTMLImageElementUseCounterTest : public HTMLImageElementTest {

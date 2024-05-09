@@ -195,8 +195,10 @@ gfx::Size BitmapImage::SizeWithConfig(SizeConfig config) const {
 }
 
 void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
-  BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension(),
-                                            use_counter);
+  if (!is_transparent_placeholder_) {
+    BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension(),
+                                              use_counter);
+  }
 }
 
 bool BitmapImage::GetHotSpot(gfx::Point& hot_spot) const {
