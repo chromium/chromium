@@ -177,7 +177,9 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     });
     this.viewport_!.setUserInitiatedCallback(
         userInitiated => this.setUserInitiated_(userInitiated));
-    window.addEventListener('beforeunload', () => this.resetTrackers_());
+    window.addEventListener('beforeunload', (event: BeforeUnloadEvent) =>
+        this.onBeforeUnload(event),
+    );
 
     // Handle scripting messages from outside the extension that wish to
     // interact with it. We also send a message indicating that extension has
@@ -557,6 +559,14 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   protected rotateCounterclockwise() {
     record(UserAction.ROTATE);
     this.currentController!.rotateCounterclockwise();
+  }
+
+  /**
+   * Handles the `BeforeUnloadEvent` event.
+   * @param event The `BeforeUnloadEvent` object representing the event.
+   */
+  protected onBeforeUnload(_: BeforeUnloadEvent) {
+    this.resetTrackers_();
   }
 
   private resetTrackers_() {
