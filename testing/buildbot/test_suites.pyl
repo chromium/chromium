@@ -7685,7 +7685,7 @@
     'optimization_guide_linux_gtests': {
       'optimization_guide_gpu_gtests': {
         'variants': [
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
@@ -7709,13 +7709,13 @@
       },
       'ondevice_quality_tests_suite': {
         'variants': [
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {
         'variants': [
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
@@ -7725,7 +7725,7 @@
       'optimization_guide_gpu_gtests': {
         'variants': [
           'AMD_RADEON_RX_5500_XT',
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
@@ -7750,14 +7750,14 @@
       'ondevice_quality_tests_suite': {
         'variants': [
           'AMD_RADEON_RX_5500_XT',
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {
         'variants': [
           'AMD_RADEON_RX_5500_XT',
-          'INTEL_UHD_630',
+          'INTEL_UHD_630_OR_770',
           'NVIDIA_GEFORCE_GTX_1660',
         ],
       },

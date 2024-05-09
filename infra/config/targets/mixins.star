@@ -785,10 +785,10 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "intel_uhd_630",
+    name = "intel_uhd_630_or_770",
     swarming = targets.swarming(
         dimensions = {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
         },
     ),
 )

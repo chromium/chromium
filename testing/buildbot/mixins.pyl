@@ -606,10 +606,10 @@
       },
     },
   },
-  'intel_uhd_630': {
+  'intel_uhd_630_or_770': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:9bc5',
+        'gpu': '8086:9bc5|8086:4680',
       },
     },
   },

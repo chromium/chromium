@@ -852,10 +852,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_gpu_unittests Intel UHD 630",
+        "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -863,7 +863,7 @@
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
@@ -986,14 +986,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_quality_tests Intel UHD 630",
+        "name": "ondevice_quality_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1001,7 +1001,7 @@
         },
         "test": "ondevice_quality_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_quality_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1064,20 +1064,19 @@
           "--chromedriver",
           "chromedriver.exe",
           "--binary",
-          "Chrome.exe",
-          "--target-platform=win32"
+          "Chrome.exe"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests Intel UHD 630",
+        "name": "ondevice_stability_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1085,7 +1084,7 @@
         },
         "test": "ondevice_stability_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1140,14 +1139,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests_light Intel UHD 630",
+        "name": "ondevice_stability_tests_light Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1155,7 +1154,7 @@
         },
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
@@ -1241,10 +1240,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_gpu_unittests Intel UHD 630",
+        "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1252,7 +1251,7 @@
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
@@ -1347,14 +1346,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_quality_tests Intel UHD 630",
+        "name": "ondevice_quality_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1362,7 +1361,7 @@
         },
         "test": "ondevice_quality_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_quality_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1402,14 +1401,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests Intel UHD 630",
+        "name": "ondevice_stability_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1417,7 +1416,7 @@
         },
         "test": "ondevice_stability_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1450,14 +1449,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests_light Intel UHD 630",
+        "name": "ondevice_stability_tests_light Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -1465,7 +1464,7 @@
         },
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
@@ -1568,10 +1567,10 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "optimization_guide_gpu_unittests Intel UHD 630",
+        "name": "optimization_guide_gpu_unittests Intel UHD 630 or 770",
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1579,7 +1578,7 @@
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
@@ -1702,14 +1701,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_quality_tests Intel UHD 630",
+        "name": "ondevice_quality_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1717,7 +1716,7 @@
         },
         "test": "ondevice_quality_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_quality_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1784,14 +1783,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests Intel UHD 630",
+        "name": "ondevice_stability_tests Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1799,7 +1798,7 @@
         },
         "test": "ondevice_stability_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "args": [
@@ -1853,14 +1852,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ondevice_stability_tests_light Intel UHD 630",
+        "name": "ondevice_stability_tests_light Intel UHD 630 or 770",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5",
+            "gpu": "8086:9bc5|8086:4680",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -1868,7 +1867,7 @@
         },
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
-        "variant_id": "Intel UHD 630"
+        "variant_id": "Intel UHD 630 or 770"
       },
       {
         "merge": {
