@@ -130,6 +130,8 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
         observer: 'onScrollTargetChanged_',
       },
 
+      scrollOffset: Number,
+
       isEmpty: {
         type: Boolean,
         reflectToAttribute: true,
@@ -145,6 +147,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   isEmpty: boolean;
   query: string;
   scrollTarget: HTMLElement = document.documentElement;
+  scrollOffset: number = 0;
   timeRangeStart?: Date;
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;

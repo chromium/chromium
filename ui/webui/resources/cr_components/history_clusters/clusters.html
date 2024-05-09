@@ -92,7 +92,7 @@
            on-hide-visit="onHideVisit_" on-hide-visits="onHideVisits_"
            on-remove-visits="onRemoveVisits_"
            hidden="[[!result_.clusters.length]]"
-           scroll-target="[[scrollTarget]]">
+           scroll-target="[[scrollTarget]]" scroll-offset="[[scrollOffset]]">
   <!-- We must have a tabindex on these history-cluster elements, because
        iron-list gets very confused handling arrow keys without them. Moreover,
        we can't allow Tab to traverse all list elements because:

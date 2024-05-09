@@ -134,8 +134,9 @@
             </div>
           </template>
           <div id="tabsScrollContainer">
-            <template is="dom-if" if="[[enableHistoryEmbeddings_]]">
-              <div class="history-cards">
+            <template is="dom-if" if="[[enableHistoryEmbeddings_]]"
+                on-dom-change="onHistoryEmbeddingsContainerShown_">
+              <div id="historyEmbeddingsContainer" class="history-cards">
                 <history-embeddings-promo></history-embeddings-promo>
                 <cr-history-embeddings-filter-chips
                     time-range-start="[[queryStateAfterDate_]]"
@@ -166,7 +167,8 @@
                   pending-delete="{{pendingDelete_}}"
                   query-result="[[queryResult_]]"
                   path="history"
-                  scroll-target="[[scrollTarget]]">
+                  scroll-target="[[scrollTarget]]"
+                  scroll-offset="[[tabContentScrollOffset_]]">
               </history-list>
               <template is="dom-if"
                   if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
@@ -174,7 +176,8 @@
                     query="[[queryState_.searchTerm]]"
                     time-range-start="[[queryStateAfterDate_]]"
                     path="grouped"
-                    scroll-target="[[scrollTarget]]">
+                    scroll-target="[[scrollTarget]]"
+                    scroll-offset="[[tabContentScrollOffset_]]">
                 </history-clusters>
               </template>
             </iron-pages>

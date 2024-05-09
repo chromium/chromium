@@ -157,6 +157,10 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollTarget) {
   RunTestCase("SetsScrollTarget");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollOffset) {
+  RunTestCase("SetsScrollOffset");
+}
+
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   HistoryWithHistoryEmbeddingsTest() {

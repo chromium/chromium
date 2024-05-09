@@ -286,6 +286,12 @@ suite('history-clusters', () => {
     assertEquals(document.body, clustersElement.$.scrollThreshold.scrollTarget);
   });
 
+  test('sets scroll offset', async () => {
+    const clustersElement = await setupClustersElement();
+    clustersElement.scrollOffset = 123;
+    assertEquals(123, clustersElement.$.clusters.scrollOffset);
+  });
+
   test('loads more results for tall monitors', async () => {
     const clustersElement = new HistoryClustersElement();
     clustersElement.scrollTarget = document.body;

@@ -110,6 +110,7 @@ export class HistoryListElement extends HistoryListElementBase {
         type: Object,
         observer: 'onScrollTargetChanged_',
       },
+      scrollOffset: Number,
 
       isEmpty: {
         type: Boolean,
@@ -131,6 +132,7 @@ export class HistoryListElement extends HistoryListElementBase {
   lastSelectedIndex: number;
   queryState: QueryState;
   scrollTarget: HTMLElement = document.documentElement;
+  scrollOffset: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();

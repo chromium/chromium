@@ -681,6 +681,13 @@ suite('HistoryListTest', function() {
     assertEquals(app.scrollTarget, element.$['scroll-threshold'].scrollTarget);
   });
 
+  test('SetsScrollOffset', async () => {
+    await finishSetup(TEST_HISTORY_RESULTS);
+    await flushTasks();
+    element.scrollOffset = 123;
+    assertEquals(123, element.$['infinite-list'].scrollOffset);
+  });
+
   teardown(function() {
     app.dispatchEvent(new CustomEvent(
         'change-query', {bubbles: true, composed: true, detail: {search: ''}}));

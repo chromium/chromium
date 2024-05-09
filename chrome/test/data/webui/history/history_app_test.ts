@@ -9,6 +9,7 @@ import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
 import {TestBrowserService} from './test_browser_service.js';
 
 suite('HistoryAppTest', function() {
@@ -61,6 +62,34 @@ suite('HistoryAppTest', function() {
         {bubbles: true, composed: true, detail: {search: 'one'}}));
     await flushTasks();
     assertFalse(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
+  });
+
+  test('SetsScrollOffset', async () => {
+    function resizeAndWait(height: number) {
+      const historyEmbeddingsContainer =
+          element.shadowRoot!.querySelector<HTMLElement>(
+              '#historyEmbeddingsContainer');
+      assertTrue(!!historyEmbeddingsContainer);
+
+      return new Promise<void>((resolve) => {
+        const observer = new ResizeObserver(() => {
+          if (historyEmbeddingsContainer.offsetHeight === height) {
+            resolve();
+            observer.unobserve(historyEmbeddingsContainer);
+          }
+        });
+        observer.observe(historyEmbeddingsContainer);
+        historyEmbeddingsContainer.style.height = `${height}px`;
+      });
+    }
+
+    await resizeAndWait(700);
+    await flushTasks();
+    assertEquals(700, element.$.history.scrollOffset);
+
+    await resizeAndWait(400);
+    await flushTasks();
+    assertEquals(400, element.$.history.scrollOffset);
   });
 
   test('QueriesMoreFromSiteFromHistoryEmbeddings', async () => {

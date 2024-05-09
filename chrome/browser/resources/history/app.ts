@@ -134,6 +134,7 @@ export interface HistoryAppElement {
     'toolbar': HistoryToolbarElement,
     tabsScrollContainer: HTMLElement,
     router: HistoryRouterElement,
+    historyEmbeddingsContainer: HTMLElement,
   };
 }
 
@@ -263,6 +264,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       },
 
       productSpecificationsListsEnabled_: Boolean,
+      tabContentScrollOffset_: Number,
     };
   }
 
@@ -292,6 +294,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private hasHistoryEmbeddingsResults_: boolean;
   private productSpecificationsListsEnabled_: boolean =
       loadTimeData.getBoolean('productSpecificationsListsEnabled');
+  private historyEmbeddingsResizeObserver_?: ResizeObserver;
+  private tabContentScrollOffset_: number = 0;
 
   constructor() {
     super();
@@ -357,6 +361,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    if (this.historyEmbeddingsResizeObserver_) {
+      this.historyEmbeddingsResizeObserver_.disconnect();
+      this.historyEmbeddingsResizeObserver_ = undefined;
+    }
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -788,6 +796,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private onHistoryEmbeddingsIsEmptyChanged_(e: CustomEvent<{value: boolean}>) {
     this.hasHistoryEmbeddingsResults_ = !e.detail.value;
+  }
+
+  private onHistoryEmbeddingsContainerShown_() {
+    assert(this.enableHistoryEmbeddings_);
+    const historyEmbeddingsContainer =
+        this.shadowRoot!.querySelector('#historyEmbeddingsContainer');
+    assert(historyEmbeddingsContainer);
+    this.historyEmbeddingsResizeObserver_ = new ResizeObserver((entries) => {
+      assert(entries.length === 1);
+      this.tabContentScrollOffset_ = entries[0].contentRect.height;
+    });
+    this.historyEmbeddingsResizeObserver_.observe(historyEmbeddingsContainer);
   }
 }
 
