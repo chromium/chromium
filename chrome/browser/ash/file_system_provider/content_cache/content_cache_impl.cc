@@ -27,11 +27,10 @@ namespace ash::file_system_provider {
 
 namespace {
 
-std::map<int, CacheFileContext> GetIdFromCachedFiles(
-    const base::FilePath& cache_directory) {
-  std::map<int, CacheFileContext> contexts;
+std::map<int, int64_t> GetFilesOnDisk(const base::FilePath& cache_directory) {
+  std::map<int, int64_t> files_on_disk;
   if (cache_directory.empty()) {
-    return contexts;
+    return files_on_disk;
   }
 
   base::FileEnumerator enumerator(cache_directory, /*recursive=*/false,
@@ -51,10 +50,10 @@ std::map<int, CacheFileContext> GetIdFromCachedFiles(
       // them.
       continue;
     }
-    contexts.try_emplace(id, info.GetSize(), id);
+    files_on_disk.try_emplace(id, info.GetSize());
   }
 
-  return contexts;
+  return files_on_disk;
 }
 
 bool RemoveAllFilesOnDiskById(
@@ -488,46 +487,47 @@ const base::FilePath ContentCacheImpl::GetPathOnDiskFromId(int64_t id) {
 void ContentCacheImpl::LoadFromDisk(base::OnceClosure callback) {
   // Identify all the files from the `root_dir_`.
   io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetIdFromCachedFiles, root_dir_),
+      FROM_HERE, base::BindOnce(&GetFilesOnDisk, root_dir_),
       base::BindOnce(&ContentCacheImpl::GotFilesFromDisk,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ContentCacheImpl::GotFilesFromDisk(
-    base::OnceClosure callback,
-    std::map<int, CacheFileContext> contexts) {
+void ContentCacheImpl::GotFilesFromDisk(base::OnceClosure callback,
+                                        std::map<int, int64_t> files_on_disk) {
   // Get all the items from the database.
   context_db_.AsyncCall(&ContextDatabase::GetAllItems)
       .Then(base::BindOnce(&ContentCacheImpl::GotItemsFromContextDatabase,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           std::move(contexts)));
+                           std::move(files_on_disk)));
 }
 
 void ContentCacheImpl::GotItemsFromContextDatabase(
     base::OnceClosure callback,
-    std::map<int, CacheFileContext> contexts_on_disk,
+    std::map<int, int64_t> files_on_disk,
     ContextDatabase::IdToItemMap items_in_db) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Identify files on disk that have no entry in the database.
   std::set<base::FilePath> paths_on_disk_to_remove;
   std::list<PathContextPair> cached_files;
-  for (auto& [id, ctx] : contexts_on_disk) {
+  for (auto& [id, bytes_on_disk] : files_on_disk) {
     ContextDatabase::IdToItemMap::const_iterator item_it = items_in_db.find(id);
     if (item_it == items_in_db.end()) {
+      // Remove files on disk that have no entry in the database.
       paths_on_disk_to_remove.emplace(
-          root_dir_.Append(base::NumberToString(ctx.id())));
+          root_dir_.Append(base::NumberToString(id)));
     } else {
+      // Create contexts for each non-orphaned file on the disk using the
+      // database entry.
+      CacheFileContext ctx(item_it->second.version_tag, bytes_on_disk, id);
       ctx.set_accessed_time(item_it->second.accessed_time);
-      ctx.set_version_tag(item_it->second.version_tag);
       cached_files.emplace_back(item_it->second.fsp_path, std::move(ctx));
     }
   }
 
-  // Identify SQL entries that have no file on disk.
   std::vector<int64_t> ids_in_db_to_remove;
   for (const auto& [id, item] : items_in_db) {
-    if (!contexts_on_disk.contains(id)) {
+    if (!files_on_disk.contains(id)) {
+      // Remove SQL entries that have no file on disk.
       ids_in_db_to_remove.emplace_back(id);
     }
   }

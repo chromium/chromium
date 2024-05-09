@@ -92,12 +92,12 @@ class ContentCacheImpl : public ContentCache {
   // by the id (i.e. the file name on disk) with a corresponding
   // `CacheFileContext` containing the total bytes on disk populated.
   void GotFilesFromDisk(base::OnceClosure callback,
-                        std::map<int, CacheFileContext> contexts);
+                        std::map<int, int64_t> files_on_disk);
 
   // Invoked in the flow of `LoadFromDisk` once all the items from the database
   // have been retrieved.
   void GotItemsFromContextDatabase(base::OnceClosure callback,
-                                   std::map<int, CacheFileContext> contexts,
+                                   std::map<int, int64_t> files_on_disk,
                                    ContextDatabase::IdToItemMap items);
 
   // Invoked in the flow of `LoadFromDisk` once all the orphaned files (from

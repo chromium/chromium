@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -109,16 +111,16 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     return inserted_id;
   }
 
-  ContextDatabase::Item GetItemById(int64_t item_id) {
-    ContextDatabase::Item item;
-    TestFuture<bool> db_get_item_future;
+  std::unique_ptr<std::optional<ContextDatabase::Item>> GetItemById(
+      int64_t item_id) {
+    TestFuture<std::unique_ptr<std::optional<ContextDatabase::Item>>>
+        db_get_item_future;
     db_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          return context_db_->GetItemById(item_id, item);
+          return context_db_->GetItemById(item_id);
         }),
         db_get_item_future.GetCallback());
-    EXPECT_TRUE(db_get_item_future.Get());
-    return item;
+    return db_get_item_future.Take();
   }
 
   void AddItemToDbAndDisk(const base::FilePath& fsp_path,
@@ -573,8 +575,11 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
 
-  ContextDatabase::Item item = GetItemById(inserted_id);
-  EXPECT_FALSE(item.item_exists);
+  // Expect `std::nullopt` is returned as the item is not found.
+  std::unique_ptr<std::optional<ContextDatabase::Item>> item =
+      GetItemById(inserted_id);
+  EXPECT_TRUE(item);
+  EXPECT_FALSE(item->has_value());
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest, RemoveItemsRemovesEvictedFiles) {

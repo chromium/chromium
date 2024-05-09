@@ -41,10 +41,6 @@ class ContextDatabase {
   // field of `item_exists` that will be set to `false` if the item requested is
   // not available.
   struct Item {
-    // Allows for constructing a blank `Item` to pass by ref into the
-    // `GetItemById` in order to have everything populated.
-    Item();
-
     Item(int64_t id,
          const std::string& fsp_path,
          const std::string& version_tag,
@@ -59,22 +55,18 @@ class ContextDatabase {
 
     // The version tag that this file is identified by, useful to invalidate if
     // the underlying version changes but not the path nor size.
-    std::string version_tag;
+    const std::string version_tag;
 
     // The last time the file was accessed, this is persisted as the users
     // cryptohome is mounted with `MS_NOATIME` meaning the files atime is not
     // updated after creation.
     base::Time accessed_time;
-
-    // If the item doesn't exist, this is set to false.
-    bool item_exists = true;
   };
 
-  // Retrieve an item by `item_id`. If this returns false, indicates a more
-  // fatal error. If this returns true the supplied `Item` will contain the data
-  // or alternatively the field `item_exists` will be false indicating the
-  // requested record is not available.
-  bool GetItemById(int64_t item_id, Item& item);
+  // Retrieve an item by `item_id`. Return a `nullptr` upon an error retrieving
+  // the item. Return `std::nullopt` if the item doesn't exist.
+  std::unique_ptr<std::optional<ContextDatabase::Item>> GetItemById(
+      int64_t item_id);
 
   // Update the accessed time for the supplied `item_id`.
   bool UpdateAccessedTime(int64_t item_id, base::Time new_accessed_time);

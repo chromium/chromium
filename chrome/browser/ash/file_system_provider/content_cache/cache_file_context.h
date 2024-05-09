@@ -21,16 +21,14 @@ inline constexpr int kUnknownId = -1;
 // and guard against multiple writers to a single file.
 class CacheFileContext {
  public:
-  // Used to create the context initially when the file hasn't fully been cached
-  // to disk.
-  explicit CacheFileContext(const std::string& version_tag);
-
-  // Used to repopulate the context on session startup with the file information
-  // that is already cached on disk.
-  CacheFileContext(int64_t bytes_on_disk, int64_t id);
+  // When repopulating the context on session startup with the file information
+  // that is already cached on disk, use the `bytes_on_disk` and `id` fields.
+  // Otherwise leave the default values.
+  explicit CacheFileContext(const std::string& version_tag,
+                            int64_t bytes_on_disk = 0,
+                            int64_t id = kUnknownId);
 
   CacheFileContext(CacheFileContext&&);
-  CacheFileContext& operator=(CacheFileContext&&);
   CacheFileContext(const CacheFileContext&) = delete;
   CacheFileContext& operator=(const CacheFileContext&) = delete;
 
@@ -47,9 +45,6 @@ class CacheFileContext {
   }
 
   const std::string& version_tag() const { return version_tag_; }
-  void set_version_tag(const std::string& version_tag) {
-    version_tag_ = version_tag;
-  }
 
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
@@ -66,18 +61,20 @@ class CacheFileContext {
   // The number of contiguous bytes that are written to this file currently. If
   // a file write is in progress, this might not represent the entire size of
   // the file on disk.
-  int64_t bytes_on_disk_ = 0;
+  int64_t bytes_on_disk_;
 
   // The latest access time, cryptohome is mounted with MS_NOATIME so we need to
   // keep track of this separately.
   base::Time accessed_time_ = base::Time::Now();
 
-  // The version tag for this specific file.
-  std::string version_tag_;
+  // The version tag for this specific file. This is read-only as the version
+  // can never be changed without deleting the context for the file and
+  // replacing it with an updated version.
+  const std::string version_tag_;
 
   // A unique ID associated with this file that is used to write the file on
   // disk.
-  int64_t id_ = kUnknownId;
+  int64_t id_;
 
   // True if there is an open writer to this file, multiple writers at
   // disjoint offset ranges is currently not supported.

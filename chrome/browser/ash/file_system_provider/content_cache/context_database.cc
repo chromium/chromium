@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 
+#include <memory>
+#include <optional>
 #include <sstream>
 
 #include "base/sequence_checker.h"
@@ -64,8 +66,6 @@ constexpr int ContextDatabase::kCurrentVersionNumber = 1;
 
 // The oldest version that is still compatible with `kCurrentVersionNumber`.
 constexpr int ContextDatabase::kCompatibleVersionNumber = 1;
-
-ContextDatabase::Item::Item() = default;
 
 ContextDatabase::Item::Item(int64_t id,
                             const std::string& fsp_path,
@@ -148,18 +148,19 @@ bool ContextDatabase::AddItem(const base::FilePath& fsp_path,
   return true;
 }
 
-bool ContextDatabase::GetItemById(int64_t item_id, Item& item) {
+std::unique_ptr<std::optional<ContextDatabase::Item>>
+ContextDatabase::GetItemById(int64_t item_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (item_id < 0) {
-    return false;
+    return nullptr;
   }
 
   std::unique_ptr<sql::Statement> statement = std::make_unique<sql::Statement>(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectItemByIdSql));
   if (!statement) {
     LOG(ERROR) << "Couldn't create SQL statement";
-    return false;
+    return nullptr;
   }
 
   statement->BindInt64(0, item_id);
@@ -167,19 +168,18 @@ bool ContextDatabase::GetItemById(int64_t item_id, Item& item) {
     // In the event the `Step()` failed, this could simply mean there is no item
     // for the `item_id`. `Succeeded` will return true in this case.
     if (statement->Succeeded()) {
-      item.item_exists = false;
-      return true;
+      return std::make_unique<std::optional<Item>>(std::nullopt);
     }
     LOG(ERROR) << "Couldn't execute statement";
-    return false;
+    return nullptr;
   }
 
-  item.fsp_path = base::FilePath(statement->ColumnString(0));
-  item.version_tag = statement->ColumnString(1);
-  item.accessed_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(statement->ColumnInt64(2));
-
-  return true;
+  return std::make_unique<std::optional<ContextDatabase::Item>>(Item(
+      item_id,
+      /*fsp_path=*/statement->ColumnString(0),
+      /*version_tag=*/statement->ColumnString(1),
+      /*accessed_time=*/
+      base::Time::FromMillisecondsSinceUnixEpoch(statement->ColumnInt64(2))));
 }
 
 bool ContextDatabase::UpdateAccessedTime(int64_t item_id,
