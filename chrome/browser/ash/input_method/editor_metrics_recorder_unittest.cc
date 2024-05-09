@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::input_method {
@@ -30,6 +33,17 @@ class FakeContextObserver : public EditorContext::Observer {
 
   // EditorContext::Observer overrides
   void OnContextUpdated() override {}
+};
+
+class FakeSystem : public EditorContext::System {
+ public:
+  FakeSystem() = default;
+  ~FakeSystem() override = default;
+
+  // EditorContext::System overrides
+  std::optional<ukm::SourceId> GetUkmSourceId() override {
+    return std::nullopt;
+  }
 };
 
 class EditorMetricsRecorderTest : public testing::Test {
@@ -56,8 +70,9 @@ class StateRewriteMetricsTest : public EditorMetricsRecorderTest,
 
 TEST_P(StateRewriteMetricsTest, RecordStateMetricPerTone) {
   const StateCase& test_case = GetParam();
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
@@ -107,8 +122,9 @@ class StateWriteMetricsTest : public EditorMetricsRecorderTest,
 
 TEST_P(StateWriteMetricsTest, RecordStateMetricPerTone) {
   const StateCase& test_case = GetParam();
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
@@ -150,8 +166,9 @@ class CharectersInsertedMetricsTest
 
 TEST_P(CharectersInsertedMetricsTest, RecordStateMetricPerTone) {
   const CharectersInsertedCase& test_case = GetParam();
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context, test_case.mode);
   metrics_recorder.SetTone(test_case.tone);
 
@@ -205,8 +222,9 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(EditorMetricsRecorderTest, WriteCharectersInsertedMetrics) {
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -235,8 +253,9 @@ class SettingToneFromQueryAndFreeformTest
 
 TEST_P(SettingToneFromQueryAndFreeformTest, ConvertQueryToneToMetricTone) {
   const SetToneCase& test_case = GetParam();
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.query_tone_string,
@@ -291,8 +310,9 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                          });
 
 TEST_F(EditorMetricsRecorderTest, WriteServerResponseMetrics) {
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kWrite);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -317,9 +337,9 @@ class RewriteServerResponseMetricsTest
 
 TEST_P(RewriteServerResponseMetricsTest, RewriteServerResponseMetrics) {
   const ServerResponseRewriteCase& test_case = GetParam();
-
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder metrics_recorder(&context,
                                          EditorOpportunityMode::kRewrite);
   metrics_recorder.SetTone(test_case.tone);
@@ -408,8 +428,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Write"});
   ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -432,8 +453,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
   ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);
@@ -455,8 +477,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
   ScopedFeatureList feature_list;
+  FakeSystem system;
   FakeContextObserver observer;
-  EditorContext context(&observer, kAllowedCountryCode);
+  EditorContext context(&observer, &system, kAllowedCountryCode);
   EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
 
   context.OnActivateIme(test_case.engine_id);

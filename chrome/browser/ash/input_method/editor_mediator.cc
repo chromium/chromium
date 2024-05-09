@@ -30,7 +30,7 @@ namespace ash::input_method {
 EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
     : profile_(profile),
       panel_manager_(this),
-      editor_context_(this, country_code),
+      editor_context_(this, this, country_code),
       editor_switch_(
           std::make_unique<EditorSwitch>(this, profile, &editor_context_)),
       metrics_recorder_(
@@ -98,6 +98,19 @@ void EditorMediator::BindEditorPanelManager(
 
 void EditorMediator::OnContextUpdated() {
   editor_switch_->OnContextUpdated();
+}
+
+std::optional<ukm::SourceId> EditorMediator::GetUkmSourceId() {
+  TextInputTarget* text_input = IMEBridge::Get()->GetInputContextHandler();
+  if (!text_input) {
+    return std::nullopt;
+  }
+
+  ukm::SourceId source_id = text_input->GetClientSourceForMetrics();
+  if (source_id == ukm::kInvalidSourceId) {
+    return std::nullopt;
+  }
+  return source_id;
 }
 
 void EditorMediator::OnFocus(int context_id) {

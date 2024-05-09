@@ -37,6 +37,7 @@ namespace input_method {
 // plumbing to broker mojo connections from WebUIs and other clients, and
 // providing an overall unified interface for the backend of the project.
 class EditorMediator : public EditorContext::Observer,
+                       public EditorContext::System,
                        public EditorEventSink,
                        public EditorPanelManager::Delegate,
                        public EditorSwitch::Observer,
@@ -60,6 +61,9 @@ class EditorMediator : public EditorContext::Observer,
 
   // EditorContext::Observer
   void OnContextUpdated() override;
+
+  // EditorContext::System
+  std::optional<ukm::SourceId> GetUkmSourceId() override;
 
   // EditorEventSink overrides
   void OnFocus(int context_id) override;

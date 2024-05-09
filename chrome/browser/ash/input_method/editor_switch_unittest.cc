@@ -25,6 +25,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/text_input_type.h"
@@ -44,6 +45,17 @@ class FakeEditorContextObserver : public EditorContext::Observer {
  public:
   // EditorContext::Observer overrides
   void OnContextUpdated() override {}
+};
+
+class FakeSystem : public EditorContext::System {
+ public:
+  FakeSystem() = default;
+  ~FakeSystem() override = default;
+
+  // EditorContext::System overrides
+  std::optional<ukm::SourceId> GetUkmSourceId() override {
+    return std::nullopt;
+  }
 };
 
 class FakeEditorSwitchObserver : public EditorSwitch::Observer {
@@ -175,9 +187,10 @@ TEST_P(EditorSwitchAvailabilityTest, TestEditorAvailability) {
   TestingProfile profile;
   profile.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       test_case.is_managed);
+  FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, test_case.country_code);
+  EditorContext context(&context_observer, &system, test_case.country_code);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/&profile,
                              /*context=*/&context);
@@ -518,9 +531,10 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile(test_case.email);
+  FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, kAllowedTestCountry);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);
@@ -610,9 +624,10 @@ TEST_P(EditorSwitchEnglishOnlyTest, EditorIsEnabledForEnglishInputMethodsOnly) {
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile("testuser@gmail.com");
+  FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, kAllowedTestCountry);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);
@@ -695,9 +710,10 @@ TEST_P(EditorSwitchInternationalizeTest,
 
   std::unique_ptr<TestingProfile> profile =
       CreateTestingProfile("testuser@gmail.com");
+  FakeSystem system;
   FakeEditorContextObserver context_observer;
   FakeEditorSwitchObserver switch_observer;
-  EditorContext context(&context_observer, kAllowedTestCountry);
+  EditorContext context(&context_observer, &system, kAllowedTestCountry);
   EditorSwitch editor_switch(/*observer=*/&switch_observer,
                              /*profile=*/profile.get(),
                              /*context=*/&context);

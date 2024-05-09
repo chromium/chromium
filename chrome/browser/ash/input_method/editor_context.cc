@@ -4,17 +4,32 @@
 
 #include "chrome/browser/ash/input_method/editor_context.h"
 
+#include <optional>
+
 #include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
 #include "url/gurl.h"
 
 namespace ash::input_method {
 
-EditorContext::EditorContext(Observer* observer, std::string_view country_code)
-    : observer_(observer), active_country_code_(country_code) {}
+EditorContext::EditorContext(Observer* observer,
+                             System* system,
+                             std::string_view country_code)
+    : observer_(observer),
+      system_(system),
+      active_country_code_(country_code) {}
 
 EditorContext::~EditorContext() = default;
+
+bool EditorContext::InTabletMode() {
+  return tablet_mode_enabled_;
+}
+
+std::optional<ukm::SourceId> EditorContext::GetUkmSourceId() {
+  return system_->GetUkmSourceId();
+}
 
 void EditorContext::OnInputContextUpdated(
     const TextInputMethod::InputContext& input_context,
@@ -39,10 +54,6 @@ void EditorContext::OnTabletModeUpdated(bool is_enabled) {
 void EditorContext::OnTextSelectionLengthChanged(size_t text_length) {
   selected_text_length_ = text_length;
   observer_->OnContextUpdated();
-}
-
-bool EditorContext::InTabletMode() {
-  return tablet_mode_enabled_;
 }
 
 std::string_view EditorContext::active_country_code() {

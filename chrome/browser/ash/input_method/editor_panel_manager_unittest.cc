@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
 
+#include <optional>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::input_method {
@@ -27,6 +30,17 @@ class FakeContextObserver : public EditorContext::Observer {
   void OnContextUpdated() override {}
 };
 
+class FakeSystem : public EditorContext::System {
+ public:
+  FakeSystem() = default;
+  ~FakeSystem() override = default;
+
+  // EditorContext::System overrides
+  std::optional<ukm::SourceId> GetUkmSourceId() override {
+    return std::nullopt;
+  }
+};
+
 class EditorPanelManagerDelegateForTesting
     : public EditorPanelManager::Delegate {
  public:
@@ -35,7 +49,7 @@ class EditorPanelManagerDelegateForTesting
       const std::vector<EditorBlockedReason>& blocked_reasons)
       : opportunity_mode_(opportunity_mode),
         blocked_reasons_(blocked_reasons),
-        context_(&context_observer_, kAllowedCountryCode),
+        context_(&context_observer_, &system_, kAllowedCountryCode),
         metrics_recorder_(&context_, opportunity_mode) {}
   void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
                             pending_receiver) override {}
@@ -59,6 +73,7 @@ class EditorPanelManagerDelegateForTesting
  private:
   EditorOpportunityMode opportunity_mode_;
   std::vector<EditorBlockedReason> blocked_reasons_;
+  FakeSystem system_;
   FakeContextObserver context_observer_;
   EditorContext context_;
   EditorMetricsRecorder metrics_recorder_;

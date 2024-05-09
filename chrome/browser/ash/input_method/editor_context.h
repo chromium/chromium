@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONTEXT_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_CONTEXT_H_
 
+#include <optional>
+
 #include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_type.h"
 #include "url/gurl.h"
@@ -21,24 +24,31 @@ class EditorContext {
   class Observer {
    public:
     virtual ~Observer() = default;
-
     virtual void OnContextUpdated() = 0;
   };
 
-  EditorContext(Observer* observer, std::string_view country_code);
+  class System {
+   public:
+    virtual ~System() = default;
+    virtual std::optional<ukm::SourceId> GetUkmSourceId() = 0;
+  };
+
+  EditorContext(Observer* observer,
+                System* system,
+                std::string_view country_code);
   ~EditorContext();
 
+  bool InTabletMode();
+
+  std::optional<ukm::SourceId> GetUkmSourceId();
+
+  // Event listeners
   void OnInputContextUpdated(
       const TextInputMethod::InputContext& input_context,
       const TextFieldContextualInfo& text_field_contextual_info);
-
   void OnActivateIme(std::string_view engine_id);
-
   void OnTabletModeUpdated(bool tablet_mode_enabled);
-
   void OnTextSelectionLengthChanged(size_t new_length);
-
-  bool InTabletMode();
 
   // Getters
   std::string_view active_country_code();
@@ -52,6 +62,7 @@ class EditorContext {
  private:
   // Not owned by this class
   raw_ptr<Observer> observer_;
+  raw_ptr<System> system_;
 
   std::string active_country_code_;
   std::string active_engine_id_;
