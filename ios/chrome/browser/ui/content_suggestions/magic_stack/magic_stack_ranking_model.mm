@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/ui/ntp/home_start_data_source.h"
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
@@ -301,6 +302,14 @@
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   auto inputContext =
       base::MakeRefCounted<segmentation_platform::InputContext>();
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kSegmentationPlatformIosModuleRankerSplitBySurface)) {
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsShowingStartSurface,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            [self.homeStartDataSource isStartSurface]));
+  }
   int mvtFreshnessImpressionCount = _localState->GetInteger(
       prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
   inputContext->metadata_args.emplace(

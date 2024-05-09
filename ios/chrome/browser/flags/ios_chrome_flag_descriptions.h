@@ -842,6 +842,12 @@ extern const char kScreenTimeIntegrationDescription[];
 extern const char kSegmentationPlatformIosModuleRankerName[];
 extern const char kSegmentationPlatformIosModuleRankerDescription[];
 
+// Title and description for the flag to enable Segmentation ranking for the
+// Home Magic Stack split between Start and NTP.
+extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
+extern const char
+    kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
+
 // Title and description for the flag to send UMA data over any network.
 extern const char kSendUmaOverAnyNetwork[];
 extern const char kSendUmaOverAnyNetworkDescription[];

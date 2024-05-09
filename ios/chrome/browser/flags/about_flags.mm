@@ -975,6 +975,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
          kSegmentationPlatformIosModuleRankerVariations,
          flag_descriptions::kSegmentationPlatformIosModuleRankerName)},
+    {"ios-magic-stack-segmentation-ranking-split-by-surface",
+     flag_descriptions::kSegmentationPlatformIosModuleRankerSplitBySurfaceName,
+     flag_descriptions::
+         kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::
+             kSegmentationPlatformIosModuleRankerSplitBySurface)},
+
     {"default-browser-intents-show-settings",
      flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
      flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,

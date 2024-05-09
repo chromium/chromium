@@ -154,4 +154,12 @@ BASE_FEATURE(kSegmentationPlatformUmaFromSqlDb,
              "SegmentationPlatformUmaFromSqlDb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface,
+             "SegmentationPlatformIosModuleRankerSplitBySurface",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace segmentation_platform::features

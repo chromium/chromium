@@ -357,6 +357,7 @@
   if (IsIOSMagicStackCollectionViewEnabled()) {
     _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
   }
+  _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
 
   self.contentSuggestionsViewController =
       [[ContentSuggestionsViewController alloc] init];
