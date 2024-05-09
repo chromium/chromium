@@ -128,8 +128,9 @@ export class AppElement extends AppElementBase {
       CustomizeChromeApiProxy.getInstance().handler.updateScrollToSection();
       // Install observer to log extension cards impression.
       const extensionsCardSectionObserver =
-          new IntersectionObserver(([{intersectionRatio}]) => {
-            if (intersectionRatio >= 0.8) {
+          new IntersectionObserver(entries => {
+            assert(entries.length >= 1);
+            if (entries[0]!.intersectionRatio >= 0.8) {
               extensionsCardSectionObserver.disconnect();
               this.dispatchEvent(
                   new Event('detect-extensions-card-section-impression'));

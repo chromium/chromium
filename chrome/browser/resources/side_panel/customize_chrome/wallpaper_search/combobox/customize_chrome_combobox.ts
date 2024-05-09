@@ -81,14 +81,14 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     };
   }
 
-  defaultOptionLabel: string;
+  defaultOptionLabel: string = '';
   protected expanded_: boolean = false;
   private expandedGroups_: {[groupIndex: number]: boolean} = {};
   private highlightableElements_: HTMLElement[] = [];
   private highlightedElement_: HTMLElement|null = null;
-  private indentDefaultOption_: boolean;
+  protected indentDefaultOption_: boolean = false;
   items: ComboboxGroup[]|ComboboxItem[] = [];
-  label: string;
+  label: string = '';
   rightAlignDropbox: boolean = false;
   private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
@@ -154,7 +154,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       return false;
     }
 
-    const firstItem = this.items[0];
+    const firstItem = this.items[0]!;
     if ('items' in firstItem) {
       // First item is a group, so not indented.
       return false;
@@ -190,10 +190,6 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
     return this.label;
   }
 
-  private getItemAriaSelected_(item: ComboboxItem) {
-    return this.isItemSelected_(item) ? 'true' : 'false';
-  }
-
   private highlightElement_(element: HTMLElement|null, byKeyboard: boolean) {
     if (this.highlightedElement_) {
       this.highlightedElement_.removeAttribute('highlighted');
@@ -216,7 +212,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   }
 
   protected isGroupExpanded_(groupIndex: number): boolean {
-    return this.expandedGroups_[groupIndex];
+    return this.expandedGroups_[groupIndex]!;
   }
 
   protected isItemSelected_(item: ComboboxItem): boolean {

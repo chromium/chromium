@@ -29,7 +29,7 @@ export class HoverButtonElement extends CrLitElement {
     };
   }
 
-  label: string;
+  label: string = '';
   labelDescription: string|null = null;
 
   constructor() {

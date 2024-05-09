@@ -38,15 +38,15 @@ export class ToolbarElement extends CrLitElement {
   private handler_: CustomizeToolbarHandlerInterface;
   private listenerIds_: number[] = [];
 
-  private actionId_: number;
+  private actionId_: number = -1;
 
   constructor() {
     super();
     this.handler_ = CustomizeToolbarApiProxy.getInstance().handler;
 
     this.handler_.listActions().then(({actions}) => {
-      this.actionId_ = actions[0].id;
-      this.$.actionLabel.innerText = actions[0].displayName;
+      this.actionId_ = actions[0]!.id;
+      this.$.actionLabel.innerText = actions[0]!.displayName;
 
       this.handler_.getActionPinned(this.actionId_).then(({pinned}) => {
         this.$.actionToggle.checked = pinned;

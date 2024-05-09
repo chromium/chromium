@@ -80,11 +80,11 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   protected collections_: BackgroundCollection[] = [];
-  private selectedCategory_: SelectedCategory;
-  private theme_: Theme;
-  protected isClassicChromeSelected_: boolean;
-  protected isLocalImageSelected_: boolean;
-  protected isWallpaperSearchSelected_: boolean;
+  private selectedCategory_: SelectedCategory = {type: CategoryType.NONE};
+  private theme_: Theme|null = null;
+  protected isClassicChromeSelected_: boolean = false;
+  protected isLocalImageSelected_: boolean = false;
+  protected isWallpaperSearchSelected_: boolean = false;
   protected wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
 
@@ -155,7 +155,7 @@ export class CategoriesElement extends CategoriesElementBase {
     const collections = this.shadowRoot!.querySelectorAll('.collection');
     if (collections.length >= 5) {
       this.registerHelpBubble(
-          CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]);
+          CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]!);
     }
   }
 

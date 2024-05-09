@@ -113,9 +113,9 @@ export interface WallpaperSearchElement {
 
 function getRandomDescriptorA(descriptorArrayA: DescriptorA[]): string {
   const randomLabels =
-      descriptorArrayA[Math.floor(Math.random() * descriptorArrayA.length)]
+      descriptorArrayA[Math.floor(Math.random() * descriptorArrayA.length)]!
           .labels;
-  return randomLabels[Math.floor(Math.random() * randomLabels.length)];
+  return randomLabels[Math.floor(Math.random() * randomLabels.length)]!;
 }
 
 function recordStatusChange(status: WallpaperSearchStatus) {
@@ -189,22 +189,22 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   protected inspirationGroups_: InspirationGroup[] = [];
   protected inspirationCardEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled');
-  protected inspirationToggleIcon_: string;
+  protected inspirationToggleIcon_: string = '';
   protected loading_: boolean = false;
   protected openInspirations_: boolean = false;
   protected results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultDescriptors|null = null;
   private resultsPromises_: Array<Promise<WallpaperSearchResponse>> = [];
   private selectedDefaultColor_: string|undefined;
-  protected selectedDescriptorA_: string|null;
-  protected selectedDescriptorB_: string|null;
-  protected selectedDescriptorC_: string|null;
-  private selectedDescriptorD_: DescriptorDValue|null;
+  protected selectedDescriptorA_: string|null = null;
+  protected selectedDescriptorB_: string|null = null;
+  protected selectedDescriptorC_: string|null = null;
+  private selectedDescriptorD_: DescriptorDValue|null = null;
   protected selectedFeedbackOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
   protected selectedHue_: number|null = null;
-  protected shouldShowHistory_: boolean;
-  protected shouldShowInspiration_: boolean;
+  protected shouldShowHistory_: boolean = false;
+  protected shouldShowInspiration_: boolean = false;
   private status_: WallpaperSearchStatus = WallpaperSearchStatus.kOk;
   private theme_?: Theme;
 
@@ -716,7 +716,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       // Start processing requests, as well as any requests that are added
       // while waiting for results.
       while (this.resultsPromises_.length > 0) {
-        const {status, results} = await this.resultsPromises_[0];
+        const {status, results} = await this.resultsPromises_[0]!;
         this.resultsPromises_.shift();
         // The results of the last request to be processed will be shown in the
         // renderer.

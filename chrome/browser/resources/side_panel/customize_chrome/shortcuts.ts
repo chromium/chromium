@@ -52,9 +52,9 @@ export class ShortcutsElement extends CrLitElement {
     };
   }
 
-  private customLinksEnabled_: boolean;
+  private customLinksEnabled_: boolean = false;
   protected shortcutsRadioSelection_: string|undefined = undefined;
-  protected show_: boolean;
+  protected show_: boolean = false;
   protected initialized_: boolean = false;
 
   private setMostVisitedSettingsListenerId_: number|null = null;

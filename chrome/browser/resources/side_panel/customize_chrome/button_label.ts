@@ -34,7 +34,7 @@ export class ButtonLabelElement extends CrLitElement {
     };
   }
 
-  label: string;
+  label: string = '';
   labelDescription: string|null = null;
 }
 

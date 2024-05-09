@@ -87,7 +87,7 @@ export class AppearanceElement extends AppearanceElementBase {
   }
 
   protected theme_?: Theme;
-  protected editThemeButtonText_: string;
+  protected editThemeButtonText_: string = '';
   protected thirdPartyThemeId_: string|null = null;
   protected thirdPartyThemeName_: string|null = null;
   protected showBottomDivider_: boolean = false;
@@ -97,7 +97,7 @@ export class AppearanceElement extends AppearanceElementBase {
   protected showThemeSnapshot_: boolean = false;
   protected showUploadedImageButton_: boolean = false;
   protected showSearchedImageButton_: boolean = false;
-  protected showManagedDialog_: boolean;
+  protected showManagedDialog_: boolean = false;
   protected wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
   private wallpaperSearchEnabled_: boolean =

@@ -62,14 +62,14 @@ export class ThemesElement extends ThemesElementBase {
 
   selectedCollection: BackgroundCollection|null = null;
 
-  protected header_: string;
+  protected header_: string = '';
   protected isRefreshToggleChecked_: boolean = false;
   private theme_?: Theme;
   protected themes_: CollectionImage[] = [];
 
   private callbackRouter_: CustomizeChromePageCallbackRouter;
   private pageHandler_: CustomizeChromePageHandlerInterface;
-  private previewImageLoadStartEpoch_: number;
+  private previewImageLoadStartEpoch_: number = -1;
   private setThemeListenerId_: number|null = null;
 
   constructor() {
