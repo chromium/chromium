@@ -8,6 +8,8 @@ assert(is_chromeos)
 
 source_set("mahi") {
   sources = [
+    "magic_boost/magic_boost_opt_in_card.cc",
+    "magic_boost/magic_boost_opt_in_card.h",
     "mahi_condensed_menu_view.cc",
     "mahi_condensed_menu_view.h",
     "mahi_menu_constants.h",
