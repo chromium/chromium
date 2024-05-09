@@ -29,6 +29,8 @@ class SparkyDelegateImpl : public manta::SparkyDelegate {
   // manta::SparkyDelegate
   bool SetSettings(std::unique_ptr<manta::SettingsData> settings_data) override;
   SettingsDataList* GetSettingsList() override;
+  std::optional<base::Value> GetSettingValue(
+      const std::string& setting_id) override;
 
  private:
   friend class SparkyDelegateImplTest;

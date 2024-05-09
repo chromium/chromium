@@ -23,6 +23,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
+#include "components/manta/sparky/sparky_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -129,6 +130,14 @@ void SparkyProvider::QuestionAndAnswer(
   sparky_context_data.set_task(task);
   sparky_context_data.set_page_contents(original_content);
 
+  if (task == proto::Task::TASK_SETTINGS) {
+    auto* settings_list = sparky_delegate_->GetSettingsList();
+    if (settings_list) {
+      auto* settings_data = sparky_context_data.mutable_settings_data();
+      AddSettingsProto(*settings_list, settings_data);
+    }
+  }
+
   std::string serialized_sparky_data;
   sparky_context_data.SerializeToString(&serialized_sparky_data);
 
@@ -192,7 +201,19 @@ void SparkyProvider::RequestAdditionalInformation(
     const std::vector<SparkyQAPair> QAHistory,
     const std::string& question,
     SparkyShowAnswerCallback done_callback,
-    manta::MantaStatus status) {}
+    manta::MantaStatus status) {
+  if (context_request.has_settings()) {
+    if (!sparky_delegate_->GetSettingsList()->empty()) {
+      QuestionAndAnswer(original_content, QAHistory, question,
+                        proto::TASK_SETTINGS, std::move(done_callback));
+      return;
+    } else {
+      std::move(done_callback).Run("Unable to find settings list", status);
+      return;
+    }
+  }
+  std::move(done_callback).Run("", status);
+}
 
 void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,
                                       SparkyShowAnswerCallback done_callback,
@@ -204,14 +225,44 @@ void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,
       if (action.has_settings()) {
         UpdateSettings(action.settings());
       }
-    } else {
-      std::move(done_callback).Run(answer, status);
     }
+    std::move(done_callback).Run(answer, status);
   } else {
     std::move(done_callback).Run("", status);
   }
 }
 
-void SparkyProvider::UpdateSettings(proto::SettingsData settings) {}
+void SparkyProvider::UpdateSettings(proto::SettingsData settings) {
+  int settings_length = settings.setting_size();
+  for (int index = 0; index < settings_length; index++) {
+    auto setting = settings.setting(index);
+    std::unique_ptr<SettingsData> setting_data = nullptr;
+    if (setting.type() == proto::SettingType::SETTING_TYPE_BOOL &&
+        setting.value().has_bool_val()) {
+      setting_data = std::make_unique<SettingsData>(
+          setting.settings_id(), PrefType::kBoolean,
+          std::make_optional<base::Value>(setting.value().bool_val()));
+    } else if (setting.type() == proto::SettingType::SETTING_TYPE_DOUBLE &&
+               setting.value().has_double_val()) {
+      setting_data = std::make_unique<SettingsData>(
+          setting.settings_id(), PrefType::kDouble,
+          std::make_optional<base::Value>(setting.value().double_val()));
+    } else if (setting.type() == proto::SettingType::SETTING_TYPE_INTEGER &&
+               setting.value().has_int_val()) {
+      setting_data = std::make_unique<SettingsData>(
+          setting.settings_id(), PrefType::kInt,
+          std::make_optional<base::Value>(setting.value().int_val()));
+    } else if (setting.type() == proto::SettingType::SETTING_TYPE_STRING &&
+               setting.value().has_text_val()) {
+      setting_data = std::make_unique<SettingsData>(
+          setting.settings_id(), PrefType::kString,
+          std::make_optional<base::Value>(setting.value().text_val()));
+    }
+
+    if (setting_data != nullptr) {
+      sparky_delegate_->SetSettings(std::move(setting_data));
+    }
+  }
+}
 
 }  // namespace manta

@@ -102,4 +102,18 @@ SparkyDelegateImpl::SettingsDataList* SparkyDelegateImpl::GetSettingsList() {
   return &current_prefs_;
 }
 
+std::optional<base::Value> SparkyDelegateImpl::GetSettingValue(
+    const std::string& setting_id) {
+  if (setting_id == prefs::kDarkModeEnabled) {
+    return std::make_optional<base::Value>(
+        profile_->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled));
+  }
+  auto pref_object = prefs_util_->GetPref(setting_id);
+  if (pref_object.has_value()) {
+    return std::move(pref_object->value);
+  } else {
+    return std::nullopt;
+  }
+}
+
 }  // namespace ash

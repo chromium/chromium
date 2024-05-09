@@ -57,6 +57,8 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
 
   virtual bool SetSettings(std::unique_ptr<SettingsData> settings_data) = 0;
   virtual SettingsDataList* GetSettingsList() = 0;
+  virtual std::optional<base::Value> GetSettingValue(
+      const std::string& setting_id) = 0;
 };
 
 }  // namespace manta

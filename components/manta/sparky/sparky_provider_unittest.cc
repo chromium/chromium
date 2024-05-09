@@ -5,6 +5,7 @@
 #include "components/manta/sparky/sparky_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -40,11 +41,20 @@ class FakeSparkyDelegate : public SparkyDelegate {
  public:
   FakeSparkyDelegate() {
     current_prefs_ = SettingsDataList();
-    current_prefs_["dark_mode"] = std::make_unique<SettingsData>(
-        "dark_mode", PrefType::kBoolean, std::make_optional<base::Value>(true));
-    current_prefs_["adaptive_charging"] =
-        std::make_unique<SettingsData>("adaptive_charging", PrefType::kBoolean,
+    current_prefs_["ash.dark_mode.enabled"] = std::make_unique<SettingsData>(
+        "ash.dark_mode.enabled", PrefType::kBoolean,
+        std::make_optional<base::Value>(true));
+    current_prefs_["power.adaptive_charging_enabled"] =
+        std::make_unique<SettingsData>("power.adaptive_charging_enabled",
+                                       PrefType::kBoolean,
                                        std::make_optional<base::Value>(false));
+    current_prefs_["ash.night_light.enabled"] = std::make_unique<SettingsData>(
+        "ash.night_light.enabled", PrefType::kBoolean,
+        std::make_optional<base::Value>(false));
+    current_prefs_["ash.night_light.color_temperature"] =
+        std::make_unique<SettingsData>("ash.night_light.color_temperature",
+                                       PrefType::kDouble,
+                                       std::make_optional<base::Value>(0.1));
   }
 
   // manta::SparkyDelegate
@@ -60,6 +70,15 @@ class FakeSparkyDelegate : public SparkyDelegate {
       return nullptr;
     } else {
       return &current_prefs_;
+    }
+  }
+
+  std::optional<base::Value> GetSettingValue(
+      const std::string& setting_id) override {
+    if (current_prefs_.contains(setting_id)) {
+      return current_prefs_[setting_id]->value->Clone();
+    } else {
+      return std::nullopt;
     }
   }
 
@@ -79,6 +98,10 @@ class FakeSparkyProvider : public SparkyProvider, public FakeBaseProvider {
                        identity_manager,
                        std::make_unique<FakeSparkyDelegate>()),
         FakeBaseProvider(test_url_loader_factory, identity_manager) {}
+
+  std::optional<base::Value> CheckSettingValue(const std::string& setting_id) {
+    return sparky_delegate_->GetSettingValue(setting_id)->Clone();
+  }
 };
 
 class SparkyProviderTest : public BaseProviderTest {
@@ -200,6 +223,132 @@ TEST_F(SparkyProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   // No metric logged.
   histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",
                                     0);
+}
+
+// Test that setting actions can be executed if requested in the response.
+TEST_F(SparkyProviderTest, SettingAction) {
+  base::HistogramTester histogram_tester;
+  manta::proto::Response response;
+  manta::proto::OutputData& output_data = *response.add_output_data();
+  manta::proto::Proto3Any& custom_response = *output_data.mutable_custom();
+  custom_response.set_type_url(
+      "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse");
+  proto::SparkyResponse sparky_response;
+  auto* final_response = sparky_response.mutable_final_response();
+  final_response->set_answer("text answer");
+  auto* action = final_response->mutable_action();
+  auto* setting_actions = action->mutable_settings();
+  auto* setting_data = setting_actions->add_setting();
+  setting_data->set_type(proto::SETTING_TYPE_BOOL);
+  setting_data->set_settings_id("power.adaptive_charging_enabled");
+  auto* settings_value = setting_data->mutable_value();
+  settings_value->set_bool_val(true);
+
+  std::string serialized_sparky_response;
+  sparky_response.SerializeToString(&serialized_sparky_response);
+  custom_response.set_value(serialized_sparky_response);
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
+                          net::OK);
+  std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
+
+  auto quit_closure = task_environment_.QuitClosure();
+
+  ASSERT_EQ(false, sparky_provider
+                       ->CheckSettingValue("power.adaptive_charging_enabled")
+                       ->GetBool());
+
+  sparky_provider->QuestionAndAnswer(
+      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
+      "Turn on adaptive charging", proto::Task::TASK_SETTINGS,
+      base::BindLambdaForTesting(
+          [&quit_closure](const std::string& answer_string,
+                          MantaStatus manta_status) {
+            ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
+            ASSERT_STREQ("text answer", answer_string.c_str());
+            quit_closure.Run();
+          }));
+  task_environment_.RunUntilQuit();
+
+  ASSERT_EQ(true, sparky_provider
+                      ->CheckSettingValue("power.adaptive_charging_enabled")
+                      ->GetBool());
+
+  // Metric is logged when response is successfully parsed.
+  histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",
+                                    1);
+}
+
+// Test that sparky response with multiple actions is correctly executed and the
+// final string is passed to the callback.
+TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
+  base::HistogramTester histogram_tester;
+  manta::proto::Response response;
+  manta::proto::OutputData& output_data = *response.add_output_data();
+  manta::proto::Proto3Any& custom_response = *output_data.mutable_custom();
+  custom_response.set_type_url(
+      "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse");
+  proto::SparkyResponse sparky_response;
+  auto* final_response = sparky_response.mutable_final_response();
+  final_response->set_answer("text answer");
+  auto* action = final_response->mutable_action();
+  auto* setting_actions = action->mutable_settings();
+  auto* bool_setting = setting_actions->add_setting();
+  bool_setting->set_type(proto::SETTING_TYPE_BOOL);
+  bool_setting->set_settings_id("ash.night_light.enabled");
+  auto* bool_value = bool_setting->mutable_value();
+  bool_value->set_bool_val(true);
+  auto* double_setting = setting_actions->add_setting();
+  double_setting->set_type(proto::SETTING_TYPE_DOUBLE);
+  double_setting->set_settings_id("ash.night_light.color_temperature");
+  auto* double_value = double_setting->mutable_value();
+  double_value->set_double_val(0.5);
+
+  std::string serialized_sparky_response;
+  sparky_response.SerializeToString(&serialized_sparky_response);
+  custom_response.set_value(serialized_sparky_response);
+
+  std::string response_data;
+  response.SerializeToString(&response_data);
+
+  SetEndpointMockResponse(GURL{kMockEndpoint}, response_data, net::HTTP_OK,
+                          net::OK);
+  std::unique_ptr<FakeSparkyProvider> sparky_provider = CreateSparkyProvider();
+
+  auto quit_closure = task_environment_.QuitClosure();
+
+  ASSERT_EQ(
+      false,
+      sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
+  ASSERT_EQ(0.1, sparky_provider
+                     ->CheckSettingValue("ash.night_light.color_temperature")
+                     ->GetDouble());
+
+  sparky_provider->QuestionAndAnswer(
+      "page content", std::vector<FakeSparkyProvider::SparkyQAPair>(),
+      "Turn on adaptive charging", proto::Task::TASK_SETTINGS,
+      base::BindLambdaForTesting(
+          [&quit_closure](const std::string& answer_string,
+                          MantaStatus manta_status) {
+            ASSERT_EQ(manta_status.status_code, MantaStatusCode::kOk);
+            ASSERT_STREQ("text answer", answer_string.c_str());
+            quit_closure.Run();
+          }));
+  task_environment_.RunUntilQuit();
+
+  ASSERT_EQ(
+      true,
+      sparky_provider->CheckSettingValue("ash.night_light.enabled")->GetBool());
+  ASSERT_EQ(0.5, sparky_provider
+                     ->CheckSettingValue("ash.night_light.color_temperature")
+                     ->GetDouble());
+
+  // Metric is logged when response is successfully parsed.
+  histogram_tester.ExpectTotalCount("Ash.MantaService.SparkyProvider.TimeCost",
+                                    1);
 }
 
 }  // namespace manta

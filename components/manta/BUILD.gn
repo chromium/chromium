@@ -44,6 +44,8 @@ component("manta") {
       "sparky/sparky_delegate.h",
       "sparky/sparky_provider.cc",
       "sparky/sparky_provider.h",
+      "sparky/sparky_util.cc",
+      "sparky/sparky_util.h",
     ]
     deps += [ "//chromeos/constants:constants" ]
   }
@@ -62,6 +64,7 @@ source_set("unit_tests") {
       "orca_provider_unittest.cc",
       "snapper_provider_unittest.cc",
       "sparky/sparky_provider_unittest.cc",
+      "sparky/sparky_util_unittest.cc",
     ]
   }
 
