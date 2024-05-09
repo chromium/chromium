@@ -261,6 +261,17 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)
             maybeUpdateTempTabStripDrawableBackground(isIncognito, mAppHeaderState);
+
+            // Manually setting the top margin of the toolbar hairline. On high density tablets,
+            // the rounding for dp -> px conversion can cause off-by-one error for the toolbar
+            // hairline top margin, result in a sequence of top UI misalignment.
+            // See https://crbug.com/40941027.
+            final int toolbarLayoutHeight =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+            View toolbarHairline = mToolbarContainer.findViewById(R.id.toolbar_hairline);
+            var lp = (MarginLayoutParams) toolbarHairline.getLayoutParams();
+            lp.topMargin = mToolbar.getTabStripHeight() + toolbarLayoutHeight;
+            toolbarHairline.setLayoutParams(lp);
         }
     }
 
