@@ -138,7 +138,10 @@ public class OmniboxUrlEmphasizer {
      * @param useDarkForegroundColors Whether the text colors should be dark (i.e. appropriate for
      *     use on a light background).
      * @param emphasizeScheme Whether the scheme should be emphasized.
+     * @deprecated in favor of {@link #emphasizeUrl(Spannable, AutocompleteSchemeClassifier, int,
+     *     boolean, int, int, int, int)} because this method doesn't support dynamic colors.
      */
+    @Deprecated
     public static void emphasizeUrl(
             Spannable url,
             Context context,

@@ -9,16 +9,18 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.ColorUtils;
 
 class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
@@ -95,19 +97,35 @@ class ContextMenuHeaderCoordinator {
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {
         CharSequence url = params.getUrl().getSpec();
         if (!TextUtils.isEmpty(url)) {
-            boolean useDarkColors = !ColorUtils.inNightMode(activity);
-
             SpannableString spannableUrl =
                     new SpannableString(ChromeContextMenuPopulator.createUrlText(params));
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(profile);
+            @ColorInt
+            int nonEmphasizedColor =
+                    OmniboxResourceProvider.getUrlBarSecondaryTextColor(
+                            activity, BrandedColorScheme.APP_DEFAULT);
+            @ColorInt
+            int emphasizedColor =
+                    OmniboxResourceProvider.getUrlBarPrimaryTextColor(
+                            activity, BrandedColorScheme.APP_DEFAULT);
+            @ColorInt
+            int dangerColor =
+                    OmniboxResourceProvider.getUrlBarDangerColor(
+                            activity, BrandedColorScheme.APP_DEFAULT);
+            @ColorInt
+            int secureColor =
+                    OmniboxResourceProvider.getUrlBarSecureColor(
+                            activity, BrandedColorScheme.APP_DEFAULT);
             OmniboxUrlEmphasizer.emphasizeUrl(
                     spannableUrl,
-                    activity,
                     chromeAutocompleteSchemeClassifier,
                     ConnectionSecurityLevel.NONE,
-                    useDarkColors,
-                    false);
+                    /* emphasizeScheme= */ false,
+                    nonEmphasizedColor,
+                    emphasizedColor,
+                    dangerColor,
+                    secureColor);
             chromeAutocompleteSchemeClassifier.destroy();
             url = spannableUrl;
         }
