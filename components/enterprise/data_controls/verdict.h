@@ -25,10 +25,12 @@ class Verdict {
   static Verdict Block(TriggeredRules triggered_rules);
   static Verdict Allow();
 
-  // In some circumstances multiple verdicts need to be merged, for example when
-  // an action has involves two different profiles. This helper can be used to
-  // simplify the logic to apply to the action for both verdicts.
-  static Verdict Merge(Verdict verdict_1, Verdict verdict_2);
+  // Creates a combination of two `Verdict`s when both a source and destination
+  // `Verdict` are obtained in a single paste. The merge `Verdict` has the
+  // highest precedence between the two original verdicts, but only the
+  // triggered rules of the destination one for reporting.
+  static Verdict MergePasteVerdicts(Verdict source_verdict,
+                                    Verdict destination_verdict);
 
   ~Verdict();
   Verdict(Verdict&&);

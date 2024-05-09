@@ -49,43 +49,68 @@ TEST(DataControlVerdictTest, Level) {
 }
 
 TEST(DataControlVerdictTest, MergedLevel_NotSet) {
-  ASSERT_EQ(Verdict::Merge(NotSet(), NotSet()).level(), Rule::Level::kNotSet);
-  ASSERT_EQ(Verdict::Merge(NotSet(), Report()).level(), Rule::Level::kReport);
-  ASSERT_EQ(Verdict::Merge(NotSet(), Warn()).level(), Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Merge(NotSet(), Block()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(NotSet(), Allow()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), NotSet()).level(),
+            Rule::Level::kNotSet);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), Report()).level(),
+            Rule::Level::kReport);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), Block()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(NotSet(), Allow()).level(),
+            Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, MergedLevel_Report) {
-  ASSERT_EQ(Verdict::Merge(Report(), NotSet()).level(), Rule::Level::kReport);
-  ASSERT_EQ(Verdict::Merge(Report(), Report()).level(), Rule::Level::kReport);
-  ASSERT_EQ(Verdict::Merge(Report(), Warn()).level(), Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Merge(Report(), Block()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Report(), Allow()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), NotSet()).level(),
+            Rule::Level::kReport);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), Report()).level(),
+            Rule::Level::kReport);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), Block()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Report(), Allow()).level(),
+            Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, MergedLevel_Warn) {
-  ASSERT_EQ(Verdict::Merge(Warn(), NotSet()).level(), Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Merge(Warn(), Report()).level(), Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Merge(Warn(), Warn()).level(), Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Merge(Warn(), Block()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Warn(), Allow()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), NotSet()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), Report()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), Warn()).level(),
+            Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), Block()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Warn(), Allow()).level(),
+            Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, MergedLevel_Block) {
-  ASSERT_EQ(Verdict::Merge(Block(), NotSet()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Block(), Report()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Block(), Warn()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Block(), Block()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Merge(Block(), Allow()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), NotSet()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), Report()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), Warn()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), Block()).level(),
+            Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Block(), Allow()).level(),
+            Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, MergedLevel_Allow) {
-  ASSERT_EQ(Verdict::Merge(Allow(), NotSet()).level(), Rule::Level::kAllow);
-  ASSERT_EQ(Verdict::Merge(Allow(), Report()).level(), Rule::Level::kAllow);
-  ASSERT_EQ(Verdict::Merge(Allow(), Warn()).level(), Rule::Level::kAllow);
-  ASSERT_EQ(Verdict::Merge(Allow(), Block()).level(), Rule::Level::kAllow);
-  ASSERT_EQ(Verdict::Merge(Allow(), Allow()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), NotSet()).level(),
+            Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Report()).level(),
+            Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Warn()).level(),
+            Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Block()).level(),
+            Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::MergePasteVerdicts(Allow(), Allow()).level(),
+            Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, TriggeredRules) {
@@ -111,19 +136,16 @@ TEST(DataControlVerdictTest, TriggeredRules) {
 TEST(DataControlVerdictTest, MergedTriggeredRules) {
   // Two verdicts with the same triggered rule merge correctly and don't
   // internally duplicate the rule in two.
-  auto merged_warnings = Verdict::Merge(Warn(), Warn());
+  auto merged_warnings = Verdict::MergePasteVerdicts(Warn(), Warn());
   EXPECT_EQ(merged_warnings.triggered_rules().size(), 1u);
   EXPECT_TRUE(merged_warnings.triggered_rules().count(kWarnRuleID));
   EXPECT_EQ(merged_warnings.triggered_rules().at(kWarnRuleID), kWarnRuleName);
 
   // Merging three verdicts with different rules should rules in a verdict with
-  // all three rules present.
-  auto all_merged = Verdict::Merge(Warn(), Verdict::Merge(Report(), Block()));
-  EXPECT_EQ(all_merged.triggered_rules().size(), 3u);
-  EXPECT_TRUE(all_merged.triggered_rules().count(kReportRuleID));
-  EXPECT_EQ(all_merged.triggered_rules().at(kReportRuleID), kReportRuleName);
-  EXPECT_TRUE(all_merged.triggered_rules().count(kWarnRuleID));
-  EXPECT_EQ(all_merged.triggered_rules().at(kWarnRuleID), kWarnRuleName);
+  // only the destination triggered rules.
+  auto all_merged = Verdict::MergePasteVerdicts(
+      Warn(), Verdict::MergePasteVerdicts(Report(), Block()));
+  EXPECT_EQ(all_merged.triggered_rules().size(), 1u);
   EXPECT_TRUE(all_merged.triggered_rules().count(kBlockRuleID));
   EXPECT_EQ(all_merged.triggered_rules().at(kBlockRuleID), kBlockRuleName);
 }

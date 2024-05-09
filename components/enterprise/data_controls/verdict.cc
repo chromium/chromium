@@ -34,20 +34,13 @@ Verdict Verdict::Allow() {
 }
 
 // static
-Verdict Verdict::Merge(Verdict verdict_1, Verdict verdict_2) {
-  if (verdict_2.level() > verdict_1.level()) {
-    verdict_1.level_ = verdict_2.level();
+Verdict Verdict::MergePasteVerdicts(Verdict source_verdict,
+                                    Verdict destination_verdict) {
+  if (source_verdict.level() > destination_verdict.level()) {
+    destination_verdict.level_ = source_verdict.level();
   }
 
-  for (auto& id_and_name : verdict_2.triggered_rules_) {
-    if (verdict_1.triggered_rules_.count(id_and_name.first)) {
-      continue;
-    }
-    verdict_1.triggered_rules_[id_and_name.first] =
-        std::move(id_and_name.second);
-  }
-
-  return verdict_1;
+  return destination_verdict;
 }
 
 Verdict::Verdict(Rule::Level level, TriggeredRules triggered_rules)

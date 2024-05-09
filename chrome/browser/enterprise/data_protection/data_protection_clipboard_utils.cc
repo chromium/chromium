@@ -254,7 +254,7 @@ void PasteIfAllowedByDataControls(
                      ->GetPasteVerdict(source, destination, metadata);
   if (source.browser_context() &&
       source.browser_context() != destination.browser_context()) {
-    verdict = data_controls::Verdict::Merge(
+    verdict = data_controls::Verdict::MergePasteVerdicts(
         data_controls::ChromeRulesServiceFactory::GetForBrowserContext(
             source.browser_context())
             ->GetPasteVerdict(source, destination, metadata),
