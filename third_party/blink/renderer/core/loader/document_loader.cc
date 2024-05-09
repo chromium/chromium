@@ -1187,10 +1187,6 @@ void DocumentLoader::DecodedBodyDataReceived(
     base::span<const char> encoded_data) {
   // Decoding has already happened, we don't need the decoder anymore.
   parser_->SetDecoder(nullptr);
-  if (response_.WasFetchedViaServiceWorker()) {
-    total_body_size_from_service_worker_ += data.length();
-  }
-
   DecodedBodyData body_data(data, DocumentEncodingData(encoding_data),
                             encoded_data);
   BodyDataReceivedImpl(body_data);
@@ -1213,6 +1209,9 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   base::span<const char> encoded_data = data.EncodedData();
   if (encoded_data.size()) {
+    if (response_.WasFetchedViaServiceWorker()) {
+      total_body_size_from_service_worker_ += encoded_data.size();
+    }
     GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
                                                   encoded_data.size());
     probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
