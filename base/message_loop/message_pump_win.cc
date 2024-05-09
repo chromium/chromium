@@ -14,8 +14,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -389,26 +387,6 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
 void MessagePumpForUI::HandleWorkMessage() {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  if (!g_ui_pump_improvements_win && in_dispatch_message_ &&
-      !in_nested_native_loop_with_application_tasks_) {
-    // An undeclared nested native loop is spinning in DispatchMessage(), which
-    // will pump application tasks (task execution is not disabled since
-    // DoWork() is not on the stack). Since UIPumpImprovementsWin will break
-    // this use case (application tasks will no longer run because kMsgHaveWork
-    // is not pumped), investigation is being done into stacks where this occurs
-    // and whether they need to be remediated.
-    //
-    // A `StackTrace` is used to deduplicate stacks to ensure that all instances
-    // of undeclared nested runloops are detected during a session.
-    //
-    // TODO(crbug.com/335672561): Remove this once data has been analyzed.
-    uintptr_t id = 0;
-    for (const void* address : debug::StackTrace().addresses()) {
-      id ^= reinterpret_cast<uintptr_t>(address);
-    }
-    debug::DumpWithoutCrashingWithUniqueId(id);
-  }
-
   // If we are being called outside of the context of Run, then don't try to do
   // any work.  This could correspond to a MessageBox call or something of that
   // sort.
@@ -633,10 +611,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   for (Observer& observer : observers_)
     observer.WillDispatchMSG(msg);
   ::TranslateMessage(&msg);
-  {
-    AutoReset<bool> reset(&in_dispatch_message_, true);
-    ::DispatchMessage(&msg);
-  }
+  ::DispatchMessage(&msg);
   for (Observer& observer : observers_)
     observer.DidDispatchMSG(msg);
 

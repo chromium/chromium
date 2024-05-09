@@ -197,13 +197,6 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   //   - HandleNestedNativeLoopWithApplicationTasks(false) is called.
   bool in_nested_native_loop_with_application_tasks_ = false;
 
-  // This is set upon entering DispatchMessage() in ProcessNextWindowsMessage(),
-  // and unset upon exit. It is used to track nested runloops which pump during
-  // DispatchMessage(), a use case currently broken by UIPumpImprovementsWin
-  // (since, when they are undeclared, do not pump kMsgHaveWork, but do without
-  // the feature enabled).
-  bool in_dispatch_message_ = false;
-
   enum class WakeupState {
     kApplicationTask,
     kNative,
