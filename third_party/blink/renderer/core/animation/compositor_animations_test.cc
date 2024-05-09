@@ -2746,18 +2746,8 @@ class ScopedBackgroundColorPaintImageGenerator {
   class FakeBackgroundColorPaintImageGenerator
       : public BackgroundColorPaintImageGenerator {
     scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
-                               const Node* node,
-                               const Vector<Color>& animated_colors,
-                               const Vector<double>& offsets,
-                               const std::optional<double>& progress) override {
+                               const Node* node) override {
       return BitmapImage::Create();
-    }
-
-    bool GetBGColorPaintWorkletParams(Node* node,
-                                      Vector<Color>* animated_colors,
-                                      Vector<double>* offsets,
-                                      std::optional<double>* progress) override {
-      return true;
     }
 
     Animation* GetAnimationIfCompositable(const Element* element) override {

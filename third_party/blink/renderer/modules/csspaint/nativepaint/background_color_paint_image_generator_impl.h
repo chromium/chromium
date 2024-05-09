@@ -26,15 +26,7 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
 
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
-                             const Node*,
-                             const Vector<Color>& animated_colors,
-                             const Vector<double>& offsets,
-                             const std::optional<double>& progress) final;
-
-  bool GetBGColorPaintWorkletParams(Node* node,
-                                    Vector<Color>* animated_colors,
-                                    Vector<double>* offsets,
-                                    std::optional<double>* progress) final;
+                             const Node*) final;
 
   Animation* GetAnimationIfCompositable(const Element* element) final;
 

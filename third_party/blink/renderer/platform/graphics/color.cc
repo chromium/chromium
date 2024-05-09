@@ -245,7 +245,6 @@ Color Color::FromColorMix(Color::ColorSpace interpolation_space,
                           Color color2,
                           float percentage,
                           float alpha_multiplier) {
-  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
   DCHECK(alpha_multiplier >= 0.0f && alpha_multiplier <= 1.0f);
   Color result = InterpolateColors(interpolation_space, hue_method, color1,
                                    color2, percentage);
@@ -268,7 +267,6 @@ float Color::HueInterpolation(float value1,
                               Color::HueInterpolationMethod hue_method) {
   DCHECK(value1 >= 0.0f && value1 < 360.0f) << value1;
   DCHECK(value2 >= 0.0f && value2 < 360.0f) << value2;
-  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
   // Adapt values of angles if needed, depending on the hue_method.
   switch (hue_method) {
     case Color::HueInterpolationMethod::kShorter: {
@@ -401,8 +399,6 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
                                Color color1,
                                Color color2,
                                float percentage) {
-  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
-
   // https://www.w3.org/TR/css-color-4/#missing:
   // When interpolating colors, missing components do not behave as zero values
   // for color space conversions.

@@ -37,23 +37,7 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
-                             const Node*,
-                             const Vector<Color>& animated_colors,
-                             const Vector<double>& offsets,
-                             const std::optional<double>& progress);
-
-  // Get the animated colors and offsets from the animation keyframes. Moreover,
-  // we obtain the progress of the animation from the main thread, such that if
-  // the animation failed to run on the compositor thread, we can still paint
-  // the element off the main thread with that progress + the keyframes.
-  // Returning false meaning that we cannot paint background color with
-  // BackgroundColorPaintWorklet.
-  // A side effect of this is that it will ensure a unique_id exists.
-  static bool GetBGColorPaintWorkletParams(Node* node,
-                                           Vector<Color>* animated_colors,
-                                           Vector<double>* offsets,
-                                           std::optional<double>* progress);
+  scoped_refptr<Image> Paint(const gfx::SizeF& container_size, const Node*);
 
   static Animation* GetAnimationIfCompositable(const Element* element);
 

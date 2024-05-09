@@ -28,6 +28,7 @@ include_rules = [
     "+ui/display/screen_infos.h",
     "+ui/display/mojom",
     "+ui/color",
+    "+ui/gfx/animation/keyframe/timing_function.h",
     "+ui/gfx/geometry",
     "-web",
 ]

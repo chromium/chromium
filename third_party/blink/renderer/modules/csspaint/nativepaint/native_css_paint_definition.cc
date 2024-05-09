@@ -95,4 +95,21 @@ bool NativeCssPaintDefinition::DefaultValueFilter(
   return value || interpolable_value;
 }
 
+std::optional<double> NativeCssPaintDefinition::Progress(
+    const std::optional<double>& main_thread_progress,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  std::optional<double> progress = main_thread_progress;
+
+  // Override the progress from the main thread if the animation has been
+  // started on the compositor.
+  if (!animated_property_values.empty()) {
+    DCHECK_EQ(animated_property_values.size(), 1u);
+    const auto& entry = animated_property_values.begin();
+    progress = entry->second.float_value.value();
+  }
+
+  return progress;
+}
+
 }  // namespace blink
