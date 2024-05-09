@@ -36,8 +36,8 @@ interface LanguageDropdownItem {
   checked: boolean;
   languageCode: string;
   notification: Notification;
-  // Whether this is the language of the currently selected voice
-  selectedVoiceLang: boolean;
+  // Whether this toggle should be disabled
+  disabled: boolean;
   callback: () => void;
 }
 
@@ -161,7 +161,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                 isError: this.isNotificationError(lang, voicePackInstallStatus),
                 text: this.getNotificationText(lang, voicePackInstallStatus),
               },
-              selectedVoiceLang: lang.toLowerCase() === selectedLangLowerCase,
+              disabled: this.enabledLanguagesInPref &&
+                  this.enabledLanguagesInPref.includes(lang) &&
+                  (lang.toLowerCase() === selectedLangLowerCase),
               callback: () =>
                   this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                     bubbles: true,
