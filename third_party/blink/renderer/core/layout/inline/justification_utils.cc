@@ -98,7 +98,7 @@ String BuildJustificationText(const String& text_content,
 }
 
 void JustifyResults(const String& text_content,
-                    String line_text,
+                    const String& line_text,
                     unsigned line_text_start_offset,
                     ShapeResultSpacing<String>& spacing,
                     InlineItemResults& results) {
@@ -163,19 +163,18 @@ void JustifyResults(const String& text_content,
             std::max(item_result.inline_size, base_line.Width());
       }
       if (i + 1 < results.size()) {
-        // Adjust line_text and line_text_start_offset because line_text is
-        // intermittent due to ruby annotations.
+        // Adjust line_text_start_offset because line_text is intermittent due
+        // to ruby annotations.
         wtf_size_t next_start_offset = results[i + 1].StartOffset();
         if (item_result.inline_size == base_line.Width()) {
-          line_text = line_text.Substring(base_line.EndTextOffset() -
-                                          line_text_start_offset);
+          // BuildJustificationText() didn't produce text for the annotation.
+          line_text_start_offset +=
+              next_start_offset - base_line.EndTextOffset();
         } else {
           // BuildJustificationText() didn't produce any text for this ruby
-          // column. We drop the text prior to this column.
-          line_text = line_text.Substring(base_line.StartOffset() -
-                                          line_text_start_offset);
+          // column.
+          line_text_start_offset += next_start_offset - base_line.StartOffset();
         }
-        line_text_start_offset = next_start_offset;
       }
     }
   }
