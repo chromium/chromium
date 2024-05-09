@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './strings.m.js';
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
@@ -53,10 +54,7 @@ export class ProductSelectionMenuElement extends PolymerElement {
         value: '',
       },
 
-      sections: {
-        type: Array,
-        value: () => [],
-      },
+      sections: Array,
     };
   }
 
@@ -77,18 +75,23 @@ export class ProductSelectionMenuElement extends PolymerElement {
     const recentlyViewedTabs =
         this.urlInfosToListEntries_(recentlyViewedUrlInfos.urlInfos);
 
-    this.sections = [
-      {
+    const updatedSections: MenuSection[] = [];
+    if (openTabs.length > 0) {
+      updatedSections.push({
         title: loadTimeData.getString('openTabs'),
         entries: openTabs,
         expanded: true,
-      },
-      {
+      });
+    }
+    if (recentlyViewedTabs.length > 0) {
+      updatedSections.push({
         title: loadTimeData.getString('recentlyViewedTabs'),
         entries: recentlyViewedTabs,
         expanded: true,
-      },
-    ];
+      });
+    }
+    // Notify elements that use the |sections| property of its new value.
+    this.set('sections', updatedSections);
 
     const rect = element.getBoundingClientRect();
     this.$.menu.get().showAt(element, {

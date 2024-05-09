@@ -1,4 +1,4 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style cr-hidden-style">
   :host {
     --cr-url-list-item-padding: 0;
     --product-selector-width: 250px;
@@ -37,6 +37,13 @@
     overflow: clip;
     width: var(--product-selector-width);
   }
+
+  #empty {
+    font-weight: 500;
+    line-height: 20px;
+    padding: 12px;
+    width: var(--product-selector-width);
+  }
 </style>
 
 <cr-lazy-render id="menu">
@@ -44,26 +51,25 @@
     <cr-action-menu on-close="onClose_">
       <div id="selectionContainer">
         <template is="dom-repeat" items="[[sections]]" as="section">
-          <template is="dom-if" if="[[section.entries.length]]" restamp>
-            <cr-expand-button expanded="{{section.expanded}}" no-hover
-                expand-icon="cr:arrow-drop-down"
-                collapse-icon="cr:arrow-drop-up">
-              <div class="section-title">[[section.title]]</div>
-            </cr-expand-button>
-            <iron-collapse opened="[[section.expanded]]">
-              <template is="dom-repeat" items="[[section.entries]]">
-                <cr-url-list-item class="dropdown-item" size="medium"
-                    url="[[item.url]]" title="[[item.title]]"
-                    description="[[getUrl_(item)]]" no-hover
-                    on-click="onSelect_">
-                </cr-url-list-item>
-              </template>
-              <!-- Add spacer instead of adding margin or padding to the -->
-              <!-- parent for smooth expand/collapse transitions. -->
-              <div class="dropdown-spacer"></div>
-            </iron-collapse>
-          </template>
+          <cr-expand-button expanded="{{section.expanded}}" no-hover
+              expand-icon="cr:arrow-drop-down"
+              collapse-icon="cr:arrow-drop-up">
+            <div class="section-title">[[section.title]]</div>
+          </cr-expand-button>
+          <iron-collapse opened="[[section.expanded]]">
+            <template is="dom-repeat" items="[[section.entries]]">
+              <cr-url-list-item class="dropdown-item" size="medium"
+                  url="[[item.url]]" title="[[item.title]]"
+                  description="[[getUrl_(item)]]" no-hover
+                  on-click="onSelect_">
+              </cr-url-list-item>
+            </template>
+            <!-- Add spacer instead of adding margin or padding to the -->
+            <!-- parent for smooth expand/collapse transitions. -->
+            <div class="dropdown-spacer"></div>
+          </iron-collapse>
         </template>
+        <div id="empty" hidden="[[sections]]">$i18n{emptyMenu}</div>
       </div>
     </cr-action-menu>
   </template>

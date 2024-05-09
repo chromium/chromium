@@ -6,11 +6,14 @@ import 'chrome://compare/product_selection_menu.js';
 
 import type {ProductSelectionMenuElement} from 'chrome://compare/product_selection_menu.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('ProductSelectionMenuTest', () => {
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
@@ -50,6 +53,21 @@ suite('ProductSelectionMenuTest', () => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxyImpl.setInstance(shoppingServiceApi);
+    loadTimeData.overrideValues(
+        {openTabs: 'open tabs', recentlyViewedTabs: 'recently viewed tabs'});
+  });
+
+  test('empty state shown', async () => {
+    initRecentlyViewedTabUrlInfos([]);
+    initOpenTabUrlInfos([]);
+
+    const menu = await createMenu();
+    menu.showAt(document.body);
+    await flushTasks();
+
+    assertEquals(0, menu.sections.length);
+    assertNotStyle($$(menu, '#empty')!, 'display', 'none');
+    assertFalse(!!$$(menu, '.section-title'));
   });
 
   test('open tabs shown', async () => {
@@ -61,13 +79,18 @@ suite('ProductSelectionMenuTest', () => {
       url: url,
     }];
     initOpenTabUrlInfos(openTabs);
+
     const menu = await createMenu();
     menu.showAt(document.body);
     await flushTasks();
 
+    assertStyle($$(menu, '#empty')!, 'display', 'none');
+    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    assertEquals(1, sectionTitles.length);
+    assertEquals('open tabs', sectionTitles[0]!.textContent);
     // Ensure the number of open tab list items is equal to the number of open
     // tabs.
-    assertEquals(2, menu.sections.length);
+    assertEquals(1, menu.sections.length);
     const menuOpenTabEntries = menu.sections[0]!.entries;
     assertEquals(openTabs.length, menuOpenTabEntries.length);
     assertEquals(title, menuOpenTabEntries[0]!.title);
@@ -83,17 +106,56 @@ suite('ProductSelectionMenuTest', () => {
       url: url,
     }];
     initRecentlyViewedTabUrlInfos(recentlyViewedTabs);
-    const menu = await createMenu();
 
+    const menu = await createMenu();
     menu.showAt(document.body);
     await flushTasks();
 
+    assertStyle($$(menu, '#empty')!, 'display', 'none');
+    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    assertEquals(1, sectionTitles.length);
+    assertEquals('recently viewed tabs', sectionTitles[0]!.textContent);
     // Ensure the number of recently viewed list items is equal to the number
     // of recently viewed tabs.
-    assertEquals(2, menu.sections.length);
-    const recentlyViewedTabEntries = menu.sections[1]!.entries;
+    assertEquals(1, menu.sections.length);
+    const recentlyViewedTabEntries = menu.sections[0]!.entries;
     assertEquals(recentlyViewedTabs.length, recentlyViewedTabEntries.length);
     assertEquals(title, recentlyViewedTabEntries[0]!.title);
+    assertEquals(url.url, recentlyViewedTabEntries[0]!.url);
+  });
+
+  test('both open and recently viewed tabs shown', async () => {
+    const title1 = 'title1';
+    const url = stringToMojoUrl('http://example.com');
+    const openTabs = [{
+      title: title1,
+      url: url,
+    }];
+    initOpenTabUrlInfos(openTabs);
+    const title2 = 'title2';
+    const recentlyViewedTabs = [{
+      title: title2,
+      url: url,
+    }];
+    initRecentlyViewedTabUrlInfos(recentlyViewedTabs);
+
+    const menu = await createMenu();
+    menu.showAt(document.body);
+    await flushTasks();
+
+    assertStyle($$(menu, '#empty')!, 'display', 'none');
+    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    assertEquals(2, sectionTitles.length);
+    assertEquals('open tabs', sectionTitles[0]!.textContent);
+    assertEquals('recently viewed tabs', sectionTitles[1]!.textContent);
+    assertEquals(2, menu.sections.length);
+    const menuOpenTabEntries = menu.sections[0]!.entries;
+    assertEquals(openTabs.length, menuOpenTabEntries.length);
+    assertEquals(title1, menuOpenTabEntries[0]!.title);
+    assertEquals(url.url, menuOpenTabEntries[0]!.url);
+    const recentlyViewedTabEntries = menu.sections[1]!.entries;
+    assertEquals(recentlyViewedTabs.length, recentlyViewedTabEntries.length);
+    assertEquals(title2, recentlyViewedTabEntries[0]!.title);
     assertEquals(url.url, recentlyViewedTabEntries[0]!.url);
   });
 
@@ -162,5 +224,35 @@ suite('ProductSelectionMenuTest', () => {
     assertTrue(!!event);
     assertEquals('http://example.com', event.detail.url);
     assertFalse(crActionMenu.open);
+  });
+
+  test('updates when infos change', async () => {
+    initRecentlyViewedTabUrlInfos([]);
+    initOpenTabUrlInfos([]);
+
+    const menu = await createMenu();
+    menu.showAt(document.body);
+    await flushTasks();
+
+    assertFalse(!!$$(menu, '.section-title'));
+
+    const title = 'title';
+    const url = stringToMojoUrl('http://example.com');
+    const openTabs = [{
+      title: title,
+      url: url,
+    }];
+    initOpenTabUrlInfos(openTabs);
+
+    menu.showAt(document.body);
+    await flushTasks();
+
+    const sectionTitles = menu.shadowRoot!.querySelectorAll('.section-title');
+    assertEquals(1, sectionTitles.length);
+    assertEquals('open tabs', sectionTitles[0]!.textContent);
+    const menuOpenTabEntries = menu.sections[0]!.entries;
+    assertEquals(openTabs.length, menuOpenTabEntries.length);
+    assertEquals(title, menuOpenTabEntries[0]!.title);
+    assertEquals(url.url, menuOpenTabEntries[0]!.url);
   });
 });

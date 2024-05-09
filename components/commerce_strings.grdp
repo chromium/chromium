@@ -513,6 +513,9 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR" translateable="false" desc="The text displayed in the product selector when there is no currently selected product.">
     Add a tab
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_SELECTION_MENU" translateable="false" desc="The text that shows when the product selection menu has nothing to show.">
+    First, read this then add tabs.
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT" translateable="false" desc="The default text for the Product Specifications page action chip before adding the current page.">
     Add to analysis?
   </message>
