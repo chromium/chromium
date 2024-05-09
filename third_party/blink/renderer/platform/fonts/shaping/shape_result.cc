@@ -2232,7 +2232,10 @@ unsigned ShapeResult::CachedPreviousSafeToBreakOffset(unsigned offset) const {
   }
 
   // Previous safe break is at the start of the run.
-  return 0;
+  return RuntimeEnabledFeatures::
+                 ShapeResultCachedPreviousSafeToBreakOffsetEnabled()
+             ? start_index_
+             : 0;
 }
 
 namespace {

@@ -3524,6 +3524,11 @@
       status: "stable",
     },
     {
+      // crbug.com/329677645
+      name: "ShapeResultCachedPreviousSafeToBreakOffset",
+      status: "stable",
+    },
+    {
       name: "SharedArrayBuffer",
       base_feature: "none",
       public: true,

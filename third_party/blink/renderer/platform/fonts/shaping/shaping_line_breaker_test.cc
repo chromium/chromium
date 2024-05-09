@@ -321,6 +321,32 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
   EXPECT_EQ(segment1->Width(), line->Width());
 }
 
+TEST_F(ShapingLineBreakerTest, HanKerningCloseUnsafe) {
+  // Create a condition where all of the following are true:
+  // 1. `ShouldTrimEnd(text_spacing_trim_)` (default).
+  // 2. The candidate break is `Character::MaybeHanKerningClose`; e.g., U+FF09.
+  // 3. After the candidate break is breakable.
+  Font font(font_description);
+  String string{u"x\uFF09\u3042"};
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
+  // 4. `ShapeResult::StartIndex` isn't 0.
+  const unsigned start_offset = 1;
+  ShapeResult* sub_result = result->SubRange(start_offset, result->EndIndex());
+  // 5. The candidate break isn't safe to break.
+  const unsigned unsafe_offsets[]{1};
+  sub_result->AddUnsafeToBreak(unsafe_offsets);
+  const LayoutUnit available_width =
+      LayoutUnit::FromFloatFloor(sub_result->PositionForOffset(1)) - 1;
+
+  LazyLineBreakIterator break_iterator(string);
+  HarfBuzzShapingLineBreaker breaker(&shaper, &font, sub_result,
+                                     &break_iterator, nullptr);
+  unsigned break_offset = 0;
+  ShapeLine(&breaker, start_offset, available_width, &break_offset);
+  EXPECT_EQ(break_offset, 2u);
+}
+
 struct BreakOpportunityTestData {
   const char16_t* string;
   Vector<unsigned> break_positions;
