@@ -598,6 +598,9 @@ class TabImpl implements Tab {
                 boolean isPdf = PdfUtils.isPdfNavigation(params.getUrl(), params);
                 mIsNativePageCommitPending =
                         maybeShowNativePage(params.getUrl(), false, isPdf ? new PdfInfo() : null);
+                if (isPdf) {
+                    params.setIsPdf(true);
+                }
             }
 
             if ("chrome://java-crash/".equals(params.getUrl())) {
