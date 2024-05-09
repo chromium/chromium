@@ -80,18 +80,18 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                         mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
                         suggestionTextColorReversal);
 
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].mText);
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].mText);
+        model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].getText());
+        model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].getText());
 
         model.set(
                 AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
-                details[0].mAccessibilityDescription);
+                details[0].getAccessibilityDescription());
         model.set(
                 AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
-                details[1].mAccessibilityDescription);
+                details[1].getAccessibilityDescription());
 
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].mMaxLines);
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].mMaxLines);
+        model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].getMaxLines());
+        model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES, details[1].getMaxLines());
 
         setTabSwitchOrRefineAction(model, suggestion, position);
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
