@@ -122,6 +122,22 @@ class VariationsService
   // for clients that are not actually dogfooders.
   bool IsLikelyDogfoodClient() const;
 
+  // Sets the return value for subsequent calls to `IsLikelyDogfoodClient()`.
+  // This is a convenience function only for testing, because the two approaches
+  // that follow production code paths are cumbersome to get right:
+  // * `SetRestrictMode` also configures this behavior, but must be called early
+  //   during the `VariationsService` initialization flow.
+  // * Enterprise policies also configure this behavior, but the logic is
+  //   different per-platform. In particular, Ash ChromeOS and Lacros each have
+  //   distinct flows vs. other platforms.
+  //
+  // Warning: Depending on exactly when this is called, this might also change
+  // the constructed variations server URL's params. In other cases, it will
+  // cause the server URL to be out of sync with the `restrict_mode_`. In tests
+  // that require these to be in sync, prefer to call `SetRestrictMode()` at the
+  // appropriate time.
+  void SetIsLikelyDogfoodClientForTesting(bool is_dogfood_client);
+
   // Returns the variations server URL. |http_options| determines whether to
   // use the http or https URL. This function will return an empty GURL when
   // the restrict param exists for USE_HTTP, to indicate that no HTTP fallback

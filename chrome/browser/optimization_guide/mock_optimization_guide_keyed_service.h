@@ -75,7 +75,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               (optimization_guide::UserVisibleFeatureKey),
               (const));
   MOCK_METHOD(bool,
-              ShouldFeatureBeCurrentlyAllowedForLogging,
+              ShouldFeatureBeCurrentlyAllowedForFeedback,
               (optimization_guide::UserVisibleFeatureKey feature),
               (const));
   MOCK_METHOD(void,

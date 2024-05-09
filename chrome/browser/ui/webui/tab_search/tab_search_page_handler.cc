@@ -586,7 +586,7 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
   OptimizationGuideKeyedService* opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
   if (!opt_guide_keyed_service ||
-      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
           optimization_guide::UserVisibleFeatureKey::kTabOrganization)) {
     return;
   }

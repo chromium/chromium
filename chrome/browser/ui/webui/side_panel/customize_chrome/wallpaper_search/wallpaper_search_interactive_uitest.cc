@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                        FeedbackDialogShowsOnThumbsDown) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
-              ShouldFeatureBeCurrentlyAllowedForLogging(
+              ShouldFeatureBeCurrentlyAllowedForFeedback(
                   optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))
       .WillOnce(testing::Return(true));
 

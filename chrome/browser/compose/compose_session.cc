@@ -874,7 +874,7 @@ bool ComposeSession::CanShowFeedbackPage() {
       OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!opt_guide_keyed_service ||
-      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
           optimization_guide::UserVisibleFeatureKey::kCompose)) {
     return false;
   }

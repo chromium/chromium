@@ -55,6 +55,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -67,6 +68,9 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace optimization_guide {
+
+using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
+
 namespace {
 
 using proto::OptimizationType;
@@ -215,7 +219,15 @@ class OptimizationGuideKeyedServiceBrowserTest
     cmd->AppendSwitch(switches::kPurgeHintsStore);
   }
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     OptimizationGuideKeyedServiceDisabledBrowserTest::SetUpOnMainThread();
@@ -327,11 +339,13 @@ class OptimizationGuideKeyedServiceBrowserTest
     return consumer_->last_can_apply_optimization_decision();
   }
 
-  OptimizationGuideKeyedService* ogks() {
+  OptimizationGuideKeyedService* service() {
     auto* profile = browser()->profile();
-    OptimizationGuideKeyedService* ogks =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-    return ogks;
+    return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  }
+
+  ModelExecutionFeaturesController* model_execution_features_controller() {
+    return service()->model_execution_features_controller_.get();
   }
 
   std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryForCompose() {
@@ -342,7 +356,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     return std::make_unique<ModelQualityLogEntry>(
         std::move(log_ai_data_request),
-        ogks()->GetChromeModelQualityLogsUploaderService()->GetWeakPtr());
+        service()->GetChromeModelQualityLogsUploaderService()->GetWeakPtr());
   }
 
   GURL url_with_hints() { return url_with_hints_; }
@@ -380,6 +394,32 @@ class OptimizationGuideKeyedServiceBrowserTest
     scoped_metrics_consent_.emplace(consent);
   }
 
+  void EnableFeature(UserVisibleFeatureKey feature) {
+    // Sign in must be enabled as a prerequisite for enabling any user-visible
+    // feature.
+    EnableSignIn();
+
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetInteger(prefs::GetSettingEnabledPrefName(feature),
+                      static_cast<int>(prefs::FeatureOptInState::kEnabled));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetEnterprisePolicy(const std::string& key,
+                           ModelExecutionEnterprisePolicyValue value) {
+    // Enable logging via the enterprise policy.
+    policies_.Set(key, policy::POLICY_LEVEL_MANDATORY,
+                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                  base::Value(static_cast<int>(value)), nullptr);
+    policy_provider_.UpdateChromePolicy(policies_);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetIsDogfoodClient(bool is_dogfood_client) {
+    g_browser_process->variations_service()->SetIsLikelyDogfoodClientForTesting(
+        is_dogfood_client);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
@@ -411,6 +451,11 @@ class OptimizationGuideKeyedServiceBrowserTest
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
+
+  // Enterprise policies. Stored as a member variable because each call to
+  // `UpdateChromePolicy` clears previous updates; so accumulate the policies
+  // in this `PolicyMap` instead.
+  policy::PolicyMap policies_;
 
   testing::TestHintsComponentCreator test_hints_component_creator_;
   std::unique_ptr<OptimizationGuideConsumerWebContentsObserver> consumer_;
@@ -1389,25 +1434,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", false, 1);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
-class OptimizationGuideKeyedServiceEnterpriseBrowserTest
-    : public OptimizationGuideKeyedServiceBrowserTest {
- public:
-  void SetUp() override {
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-    OptimizationGuideKeyedServiceBrowserTest::SetUp();
-  }
-
- protected:
-  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-};
-
-IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        CheckUploadWithEnterprisePolicy) {
   // Enable metrics consent and sign in.
   SetMetricsConsent(true);
@@ -1437,7 +1464,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   // Create a new ModelQualityLogEntry and pass it to the
   // UploadModelQualityLogs.
@@ -1458,7 +1486,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   // Create a new ModelQualityLogEntry and pass it to the
   // UploadModelQualityLogs.
@@ -1480,7 +1509,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
                     static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
@@ -1499,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
       ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        CheckCanUploadLogsWithEnterprisePolicy) {
   // Enable metrics consent and sign in.
   SetMetricsConsent(true);
@@ -1530,7 +1560,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
@@ -1548,7 +1579,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   EXPECT_FALSE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
@@ -1567,7 +1599,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
                     static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
@@ -1579,7 +1612,57 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
       ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       FeedbackIsEnabledWhenLoggingIsEnabled) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(policy::key::kHelpMeWriteSettings,
+                      ModelExecutionEnterprisePolicyValue::kAllow);
+
+  EXPECT_TRUE(
+      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       FeedbackIsDisabledWhenLoggingIsDisabled_NotDogfood) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  SetIsDogfoodClient(false);
+
+  EXPECT_FALSE(
+      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       FeedbackIsEnabledWhenLoggingIsDisabled_Dogfood) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  SetIsDogfoodClient(true);
+
+  EXPECT_TRUE(
+      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       FeedbackIsDisabledWhenFeatureIsDisabled_Dogfood) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  // Note: Unlike the tests above, do not enable the feature; leave it in the
+  // default state.
+  SetEnterprisePolicy(policy::key::kHelpMeWriteSettings,
+                      ModelExecutionEnterprisePolicyValue::kDisable);
+  SetIsDogfoodClient(true);
+
+  EXPECT_FALSE(
+      service()->ShouldFeatureBeCurrentlyAllowedForFeedback(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        CheckModelQualityLogsUploadOnDestruction) {
   // Enable metrics consent and sign in.
   SetMetricsConsent(true);
@@ -1606,7 +1689,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
                     static_cast<int>(prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
   EXPECT_TRUE(ogks->GetChromeModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
@@ -1623,7 +1707,5 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", true, 1);
 }
-
-#endif  //  !BUILDFLAG(IS_ANDROID)
 
 }  // namespace optimization_guide
