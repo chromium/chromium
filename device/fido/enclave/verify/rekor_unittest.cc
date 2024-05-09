@@ -118,4 +118,36 @@ TEST(RekorTest, GetRekorLogEntryBody) {
   EXPECT_EQ(log_entry_body->spec.data.hash.hash_type, HashType::kSHA256);
 }
 
+TEST(RekorTest, RekorSignatureBundleFromLogEntryWithVerification) {
+  std::string json = GetJsonFromFile("logentry");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<RekorSignatureBundle> rekor_signature_bundle =
+      GetRekorSignatureBundle(log_entry.value());
+  // TODO(livseibert): Once VerifyRekorSignature is implemented, check that this
+  // result is valid.
+  EXPECT_TRUE(rekor_signature_bundle.has_value());
+}
+
+TEST(RekorTest, RekorSignatureBundleFromLogEntryWithoutVerification) {
+  std::string json = GetJsonFromFile("logentry_noverification");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<RekorSignatureBundle> rekor_signature_bundle =
+      GetRekorSignatureBundle(log_entry.value());
+  EXPECT_FALSE(rekor_signature_bundle.has_value());
+}
+
+TEST(RekorTest, RekorSignatureBundleFromLogEntryWithBackslash) {
+  std::string json = GetJsonFromFile("logentry_backslash");
+  base::span<const uint8_t> span = base::make_span(
+      reinterpret_cast<const uint8_t*>(json.data()), json.size());
+  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  std::optional<RekorSignatureBundle> rekor_signature_bundle =
+      GetRekorSignatureBundle(log_entry.value());
+  EXPECT_FALSE(rekor_signature_bundle.has_value());
+}
+
 }  // namespace device::enclave

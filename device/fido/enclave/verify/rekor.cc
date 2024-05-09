@@ -11,6 +11,9 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 
 namespace device::enclave {
@@ -54,6 +57,8 @@ RekorSignatureBundle::RekorSignatureBundle(std::vector<uint8_t> canonicalized,
       signature(std::move(signature)) {}
 RekorSignatureBundle::RekorSignatureBundle() = default;
 RekorSignatureBundle::~RekorSignatureBundle() = default;
+RekorSignatureBundle::RekorSignatureBundle(
+    const RekorSignatureBundle& rekor_signature_bundle) = default;
 
 LogEntry::LogEntry(std::string body,
                    base::Time integrated_time,
@@ -148,6 +153,35 @@ std::optional<Body> GetRekorLogEntryBody(base::span<const uint8_t> log_entry) {
     return std::nullopt;
   }
   return body_result;
+}
+
+std::optional<RekorSignatureBundle> GetRekorSignatureBundle(
+    const LogEntry& log_entry) {
+  if (!log_entry.verification.has_value()) {
+    return std::nullopt;
+  }
+  std::string signature;
+  if (!base::Base64Decode(log_entry.verification->signed_entry_timestamp,
+                          &signature)) {
+    return std::nullopt;
+  }
+  if (log_entry.body.find('\\') != std::string::npos ||
+      log_entry.log_id.find('\\') != std::string::npos ||
+      log_entry.body.find('\"') != std::string::npos ||
+      log_entry.log_id.find('\"') != std::string::npos) {
+    return std::nullopt;
+  }
+  std::string canonicalized =
+      base::StrCat({"{\"body\":{\"", log_entry.body, "\"},\"integratedTime\":{",
+                    base::NumberToString(log_entry.integrated_time.ToTimeT()),
+                    "},\"logID\":{\"", log_entry.log_id, "\"},\"logIndex\":{",
+                    base::NumberToString(log_entry.log_index), "}}"});
+  RekorSignatureBundle rekor_signature_bundle;
+  rekor_signature_bundle.canonicalized =
+      std::vector<uint8_t>(canonicalized.begin(), canonicalized.end());
+  rekor_signature_bundle.signature =
+      std::vector<uint8_t>(signature.begin(), signature.end());
+  return rekor_signature_bundle;
 }
 
 }  // namespace device::enclave

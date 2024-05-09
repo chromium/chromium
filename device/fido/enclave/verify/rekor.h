@@ -116,11 +116,12 @@ struct Body {
 // This bundle can be verified using the public key from Rekor. The public key
 // can be obtained from the `/api/v1/log/publicKey` Rest API. For
 // `sigstore.dev`, it is a PEM-encoded x509/PKIX public key.
-struct RekorSignatureBundle {
+struct COMPONENT_EXPORT(DEVICE_FIDO) RekorSignatureBundle {
   RekorSignatureBundle(std::vector<uint8_t> canonicalized,
                        std::vector<uint8_t> signature);
   RekorSignatureBundle();
   ~RekorSignatureBundle();
+  RekorSignatureBundle(const RekorSignatureBundle& rekor_signature_bundle);
 
   // Canonicalized JSON representation, based on RFC 8785 rules, of a subset
   // of a Rekor LogEntry fields that are signed to generate
@@ -141,6 +142,7 @@ bool VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
                          base::span<const uint8_t> rekor_public_key,
                          base::span<const uint8_t> endorsement);
 
+// Parses the given bytes into a Rekor `LogEntry` object.
 std::optional<LogEntry> COMPONENT_EXPORT(DEVICE_FIDO)
     GetRekorLogEntry(base::span<const uint8_t> log_entry);
 
@@ -158,8 +160,8 @@ bool VerifyRekorSignature(base::span<const uint8_t> log_entry,
 bool VerifyRekorBody(const Body&, base::span<const uint8_t> contents_bytes);
 
 // Parses `RekorSignatureBundle` from `log_entry`.
-std::optional<RekorSignatureBundle> RekorSignatureBundle(
-    base::span<const uint8_t> log_entry);
+std::optional<RekorSignatureBundle> COMPONENT_EXPORT(DEVICE_FIDO)
+    GetRekorSignatureBundle(const LogEntry& log_entry);
 
 }  // namespace device::enclave
 
