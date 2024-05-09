@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -41,6 +42,14 @@ GURL SwitchBackToLegacyHostIfNeeded(GURL url) {
     url = url.ReplaceComponents(replace_host);
   }
   return url;
+}
+
+void RecordFetchStatus(policy::EnterpriseUserInfoFetchStatus status) {
+  base::UmaHistogramEnumeration("Enterprise.UserInfoFetch.Status", status);
+}
+
+void RecordHttpErrorCode(int code) {
+  base::UmaHistogramSparse("Enterprise.UserInfoFetch.HttpErrorCode", code);
 }
 
 }  // namespace
@@ -106,11 +115,13 @@ void UserInfoFetcher::OnFetchComplete(
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   if (url_loader->NetError() != net::OK) {
+    RecordFetchStatus(EnterpriseUserInfoFetchStatus::kFailedWithNetworkError);
     if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
       int response_code = url_loader->ResponseInfo()->headers->response_code();
       DLOG_POLICY(WARNING, POLICY_AUTH)
           << "UserInfo request failed with HTTP code: " << response_code;
       error = GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
+      RecordHttpErrorCode(response_code);
     } else {
       DLOG_POLICY(WARNING, POLICY_AUTH) << "UserInfo request failed";
       error =
@@ -130,9 +141,15 @@ void UserInfoFetcher::OnFetchComplete(
   std::optional<base::Value> parsed_value =
       base::JSONReader::Read(*unparsed_data);
   if (parsed_value && parsed_value->is_dict()) {
+    RecordFetchStatus(EnterpriseUserInfoFetchStatus::kSuccess);
     delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());
   } else {
-    NOTREACHED() << "Could not parse userinfo response from server";
+    EnterpriseUserInfoFetchStatus status =
+        parsed_value ? EnterpriseUserInfoFetchStatus::kResponseIsNotDict
+                     : EnterpriseUserInfoFetchStatus::kCantParseJsonInResponse;
+    RecordFetchStatus(status);
+    DLOG_POLICY(WARNING, POLICY_AUTH)
+        << "Could not parse userinfo response from server: " << *unparsed_data;
     delegate_->OnGetUserInfoFailure(GoogleServiceAuthError(
         GoogleServiceAuthError::CONNECTION_FAILED));
   }

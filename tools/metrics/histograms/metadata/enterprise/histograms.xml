@@ -3054,6 +3054,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.UserInfoFetch.HttpErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-02-12">
+  <owner>vincb@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records the http error code when there is a network error that comes with a
+    http error code.
+
+    Recorded at the end of an user info fetch if there is a network error that
+    comes with a http error code.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserInfoFetch.Status"
+    enum="EnterpriseUserInfoFetchStatus" expires_after="2025-02-12">
+  <owner>vincb@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records the status of fetching user info when doing registration for user
+    policy.
+
+    Recorded at the end of each user info fetch.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.UserPolicy.Count" units="policies"
     expires_after="2024-08-11">
   <owner>vincb@google.com</owner>
