@@ -56,8 +56,6 @@ class OnDeviceModelServiceAdaptationControllerTest : public testing::Test {
     pref_service_.SetTime(
         prefs::localstate::kLastTimeOnDeviceEligibleFeatureWasUsed,
         base::Time::Now());
-
-    ClearAdaptationModelIdCounterForTesting();
   }
 
   void Initialize() {

@@ -150,16 +150,22 @@ class FakeOnDeviceModelServiceController
   bool did_launch_service_ = false;
 };
 
-// Sets the amount of delay that is added before the on-device model execution
-// response is sent.
-void SetOnDeviceModelExecuteDelayForTesting(base::TimeDelta delay);
+class ScopedOnDeviceModelServiceTestSettings {
+ public:
+  ScopedOnDeviceModelServiceTestSettings();
+  ~ScopedOnDeviceModelServiceTestSettings();
 
-// Sets the on-device model execution response.
-void SetOnDeviceModelExecuteResultForTesting(
-    const std::vector<std::string>& result);
+  // Sets the amount of delay that is added before the on-device model execution
+  // response is sent.
+  void SetExecuteDelay(base::TimeDelta delay);
 
-// Clears the on-device adaptation model counter.
-void ClearAdaptationModelIdCounterForTesting();
+  // Sets the on-device model execution response.
+  void SetExecuteResult(const std::vector<std::string>& result);
+
+ private:
+  base::TimeDelta old_execute_delay_;
+  std::vector<std::string> old_model_execute_result_;
+};
 
 }  // namespace optimization_guide
 

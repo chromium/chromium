@@ -242,17 +242,27 @@ void FakeOnDeviceModelServiceController::LaunchService() {
       drop_connection_request_);
 }
 
-void SetOnDeviceModelExecuteDelayForTesting(base::TimeDelta delay) {
+ScopedOnDeviceModelServiceTestSettings::ScopedOnDeviceModelServiceTestSettings()
+    : old_execute_delay_(g_execute_delay),
+      old_model_execute_result_(g_model_execute_result) {
+  g_execute_delay = base::TimeDelta();
+  g_model_execute_result.clear();
+}
+
+ScopedOnDeviceModelServiceTestSettings::
+    ~ScopedOnDeviceModelServiceTestSettings() {
+  g_execute_delay = old_execute_delay_;
+  g_model_execute_result = old_model_execute_result_;
+}
+
+void ScopedOnDeviceModelServiceTestSettings::SetExecuteDelay(
+    base::TimeDelta delay) {
   g_execute_delay = delay;
 }
 
-void SetOnDeviceModelExecuteResultForTesting(
+void ScopedOnDeviceModelServiceTestSettings::SetExecuteResult(
     const std::vector<std::string>& result) {
   g_model_execute_result = result;
-}
-
-void ClearAdaptationModelIdCounterForTesting() {
-  g_adaptation_model_id_counter = 0;
 }
 
 }  // namespace optimization_guide
