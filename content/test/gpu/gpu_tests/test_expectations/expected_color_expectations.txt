@@ -95,6 +95,7 @@
 
 # ExpectedColor_MediaRecorderFromVideoElement fails when protected memory is used.
 crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElement [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
