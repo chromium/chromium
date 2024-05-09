@@ -294,6 +294,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
                          MethodCallback callback,
                          base::File checksum_file);
 
+  void GetFirmwareFilename(const base::FilePath& checksum_filepath,
+                           base::File checksum_file,
+                           MethodCallback completion_callback,
+                           std::string file_contents);
+
   void TriggerDownloadOfFirmwareFile(const base::FilePath& checksum_filepath,
                                      base::File checksum_file,
                                      MethodCallback callback,

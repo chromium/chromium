@@ -318,11 +318,6 @@ bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
 }
 
 std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
-  // Due to
-  // https://gitlab.com/fwupd/lvfs-website/-/blob/9430bd058f06eee468acf7230dcca4c6108c46c6/jcat/jcatfile.py#L56
-  // LVFS appends 8 bytes of garbage data and we need to ignore it.
-  int pos = json_content.find_last_of("}");
-  json_content = json_content.substr(0, pos + 1);
   if (json_content == "") {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json for empty string";
     return "";
@@ -371,6 +366,22 @@ void CleanUpTempFiles(const base::FilePath& file1,
                       const base::FilePath& file2) {
   base::DeleteFile(file1);
   base::DeleteFile(file2);
+}
+
+std::string ReadFileToString(const base::FilePath& filename) {
+  FIRMWARE_LOG(DEBUG) << "ReadFileToString: " << filename;
+  std::string file_contents;
+  base::ReadFileToString(filename, &file_contents);
+  return file_contents;
+}
+
+std::string UncompressFileAndGetFilename(std::string file_contents) {
+  // Log an EVENT here in case b/339310876 comes up again.
+  FIRMWARE_LOG(EVENT) << "GzipUncompress: " << file_contents.size();
+  std::string content;
+  compression::GzipUncompress(file_contents, &content);
+  std::string firmware_filename = GetFirmwareFileNameFromJsonString(content);
+  return firmware_filename;
 }
 
 }  // namespace
@@ -562,6 +573,7 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
     return;
   }
 
+  FIRMWARE_LOG(USER) << "RequestAllUpdates: " << static_cast<int>(source);
   is_fetching_updates_ = true;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -583,13 +595,19 @@ void FirmwareUpdateManager::MaybeRefreshRemote(bool refresh_allowed) {
 
 void FirmwareUpdateManager::RequestDevices() {
   if (FwupdClient::Get()) {
+    FIRMWARE_LOG(USER) << "RequestDevices";
     FwupdClient::Get()->RequestDevices();
+  } else {
+    FIRMWARE_LOG(USER) << "RequestDevices: No FwupdCleint";
   }
 }
 
 void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
   if (FwupdClient::Get()) {
+    FIRMWARE_LOG(USER) << "RequestUpdates";
     FwupdClient::Get()->RequestUpdates(device_id);
+  } else {
+    FIRMWARE_LOG(USER) << "RequestDevices: No FwupdCleint";
   }
 }
 
@@ -1110,17 +1128,40 @@ void FirmwareUpdateManager::OnGetChecksumFile(
     std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
     return;
   }
+  FIRMWARE_LOG(DEBUG) << "OnGetChecksumFile: " << checksum_filepath
+                      << ", Reading file to string.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::FilePath& filename) {
-            std::string file_contents;
-            std::string content;
-            base::ReadFileToString(filename, &file_contents);
-            compression::GzipUncompress(file_contents, &content);
-            return GetFirmwareFileNameFromJsonString(content);
-          },
-          checksum_filepath),
+      FROM_HERE, base::BindOnce(&ReadFileToString, checksum_filepath),
+      base::BindOnce(&FirmwareUpdateManager::GetFirmwareFilename,
+                     weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
+                     std::move(checksum_file), std::move(completion_callback)));
+}
+
+void FirmwareUpdateManager::GetFirmwareFilename(
+    const base::FilePath& checksum_filepath,
+    base::File checksum_file,
+    MethodCallback completion_callback,
+    std::string file_contents) {
+  size_t file_len = file_contents.size();
+  if (file_len == 0) {
+    FIRMWARE_LOG(ERROR) << "Invalid file contents: " << checksum_filepath;
+    std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
+    return;
+  }
+  if (file_len > 8) {
+    // LVFS may append 8 bytes of garbage data that we need to ignore. See:
+    // https://gitlab.com/fwupd/lvfs-website/-/blob/9430bd058f06eee468acf7230dcca4c6108c46c6/jcat/jcatfile.py#L56
+    if (file_contents.substr(file_len - 8, 8) == "IHATECDN") {
+      // Log an EVENT here in case b/339310876 comes up again.
+      FIRMWARE_LOG(EVENT) << "GetFirmwareFilename: Truncating last 8 bytes.";
+      file_contents = file_contents.substr(0, file_len - 8);
+    }
+  }
+
+  FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath
+                      << ", Uncompressing and parsing checksum file.";
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&UncompressFileAndGetFilename, file_contents),
       base::BindOnce(&FirmwareUpdateManager::TriggerDownloadOfFirmwareFile,
                      weak_ptr_factory_.GetWeakPtr(), checksum_filepath,
                      std::move(checksum_file), std::move(completion_callback)));
@@ -1161,6 +1202,7 @@ void FirmwareUpdateManager::UpdateMetadata(
     const base::FilePath& firmware_filepath,
     MethodCallback completion_callback,
     base::File firmware_file) {
+  FIRMWARE_LOG(EVENT) << "UpdateMetadata: " << firmware_filepath;
   if (!firmware_file.IsValid()) {
     FIRMWARE_LOG(ERROR) << "Invalid file: " << firmware_filepath;
     std::move(completion_callback).Run(MethodResult::kInvalidPatchFile);
@@ -1196,7 +1238,6 @@ void FirmwareUpdateManager::RefreshRemoteComplete(MethodResult result) {
   firmware_update::metrics::EmitRefreshRemoteResult(result);
 
   // Continue requesting devices after refresh remote is complete.
-  FIRMWARE_LOG(USER) << "RequestAllUpdates()";
   RequestDevices();
 }
 
