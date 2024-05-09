@@ -5232,6 +5232,28 @@ void GraphImpl::CreateAndBuild(
             id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kGelu: {
+        // Check feature level by referring to MSDN doc:
+        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
+        //
+        // TODO(crbug.com/338686898): Emulate gelu with decomposed operations on
+        // platforms with low feature level according to
+        // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gelu-method
+        if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1)) {
+          create_operator_result =
+              CreateOperatorNodeForUnary<DML_ACTIVATION_GELU_OPERATOR_DESC,
+                                         DML_OPERATOR_ACTIVATION_GELU>(
+                  id_to_operand_map, operation->get_gelu(), graph_builder,
+                  id_to_node_output_map);
+        } else {
+          create_operator_result = base::unexpected(CreateError(
+              mojom::Error::Code::kUnknownError,
+              "Failed to create Gelu operator because the DirectML feature "
+              "level on this platform is lower than the minimum required "
+              "one."));
+        }
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         create_operator_result = CreateOperatorNodeForGemm(
             id_to_operand_map, operation.get(),
