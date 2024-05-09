@@ -135,7 +135,8 @@ void WaylandPointer::OnMotion(void* data,
 
   self->delegate_->OnPointerMotionEvent(
       self->connection_->MaybeConvertLocation(location, target),
-      wl::EventMillisecondsToTimeTicks(time), EventDispatchPolicyForPlatform());
+      wl::EventMillisecondsToTimeTicks(time), EventDispatchPolicyForPlatform(),
+      /*is_synthesized=*/false);
 }
 
 // static
@@ -177,7 +178,8 @@ void WaylandPointer::OnButton(void* data,
   }
   self->delegate_->OnPointerButtonEvent(
       type, changed_button, wl::EventMillisecondsToTimeTicks(time),
-      /*window=*/nullptr, EventDispatchPolicyForPlatform());
+      /*window=*/nullptr, EventDispatchPolicyForPlatform(),
+      /*allow_release_of_unpressed_button=*/false, /*is_synthesized=*/false);
 }
 
 // static

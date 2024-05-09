@@ -778,7 +778,8 @@ void WaylandDataDragController::DispatchPointerRelease(
   pointer_delegate_->OnPointerButtonEvent(
       ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
       pointer_grabber_for_window_drag_, wl::EventDispatchPolicy::kImmediate,
-      /*allow_release_of_unpressed_button=*/true);
+      /*allow_release_of_unpressed_button=*/true,
+      /*is_synthesized=*/true);
   pointer_grabber_for_window_drag_ = nullptr;
 }
 

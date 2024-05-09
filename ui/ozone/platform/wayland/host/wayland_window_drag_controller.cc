@@ -303,8 +303,9 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
   pointer_location_ = location;
 
   if (*drag_source_ == DragEventSource::kMouse) {
-    pointer_delegate_->OnPointerMotionEvent(
-        location, timestamp, wl::EventDispatchPolicy::kImmediate);
+    pointer_delegate_->OnPointerMotionEvent(location, timestamp,
+                                            wl::EventDispatchPolicy::kImmediate,
+                                            /*is_synthesized=*/true);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     LOG_IF(WARNING, touch_pointer_ids.size() < 1u)
@@ -312,7 +313,8 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
         << touch_pointer_ids.size();
     for (auto id : touch_pointer_ids) {
       touch_delegate_->OnTouchMotionEvent(location, timestamp, id,
-                                          wl::EventDispatchPolicy::kImmediate);
+                                          wl::EventDispatchPolicy::kImmediate,
+                                          /*is_synthesized=*/true);
     }
   }
 }
@@ -365,7 +367,7 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   if (*drag_source_ == DragEventSource::kMouse) {
     pointer_delegate_->OnPointerMotionEvent(
         {pointer_location_.x(), -1}, timestamp,
-        wl::EventDispatchPolicy::kImmediate);
+        wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
     for (auto id : touch_pointer_ids) {
@@ -376,7 +378,7 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
       // the drag event is discarded.
       touch_delegate_->OnTouchMotionEvent(
           {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp, id,
-          wl::EventDispatchPolicy::kImmediate);
+          wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
     }
   }
 }
@@ -597,13 +599,16 @@ void WaylandWindowDragController::HandleDropAndResetState(
       if (pointer_grab_owner_) {
         pointer_delegate_->OnPointerButtonEvent(
             ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
-            pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate);
+            pointer_grab_owner_, wl::EventDispatchPolicy::kImmediate,
+            /*allow_release_of_unpressed_button=*/false,
+            /*is_synthesized=*/true);
       }
     } else {
       const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
       for (auto id : touch_pointer_ids) {
         touch_delegate_->OnTouchReleaseEvent(
-            timestamp, id, wl::EventDispatchPolicy::kImmediate);
+            timestamp, id, wl::EventDispatchPolicy::kImmediate,
+            /*is_synthesized=*/true);
       }
     }
   }

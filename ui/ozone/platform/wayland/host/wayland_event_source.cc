@@ -348,18 +348,9 @@ void WaylandEventSource::OnPointerButtonEvent(
     int changed_button,
     base::TimeTicks timestamp,
     WaylandWindow* window,
-    wl::EventDispatchPolicy dispatch_policy) {
-  OnPointerButtonEvent(type, changed_button, timestamp, window, dispatch_policy,
-                       false);
-}
-
-void WaylandEventSource::OnPointerButtonEvent(
-    EventType type,
-    int changed_button,
-    base::TimeTicks timestamp,
-    WaylandWindow* window,
     wl::EventDispatchPolicy dispatch_policy,
-    bool allow_release_of_unpressed_button) {
+    bool allow_release_of_unpressed_button,
+    bool is_synthesized) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
 
@@ -389,6 +380,9 @@ void WaylandEventSource::OnPointerButtonEvent(
   if (target) {
     // MouseEvent's flags should contain the button that was released too.
     int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
+    if (is_synthesized) {
+      flags |= EF_IS_SYNTHESIZED;
+    }
     MouseEvent event(type, pointer_location_, pointer_location_, timestamp,
                      flags, changed_button);
     if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
@@ -416,10 +410,14 @@ void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
 void WaylandEventSource::OnPointerMotionEvent(
     const gfx::PointF& location,
     base::TimeTicks timestamp,
-    wl::EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy,
+    bool is_synthesized) {
   pointer_location_ = location;
 
   int flags = pointer_flags_ | keyboard_modifiers_;
+  if (is_synthesized) {
+    flags |= EF_IS_SYNTHESIZED;
+  }
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
                    timestamp, flags, 0);
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
@@ -574,7 +572,8 @@ void WaylandEventSource::OnTouchPressEvent(
 void WaylandEventSource::OnTouchReleaseEvent(
     base::TimeTicks timestamp,
     PointerId id,
-    wl::EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy,
+    bool is_synthesized) {
   // Make sure this touch point was present before.
   const auto it = touch_points_.find(id);
   if (it == touch_points_.end()) {
@@ -585,9 +584,13 @@ void WaylandEventSource::OnTouchReleaseEvent(
   TouchPoint* touch_point = it->second.get();
   gfx::PointF location = touch_point->last_known_location;
   PointerDetails details(EventPointerType::kTouch, id);
+  int flags = keyboard_modifiers_;
+  if (is_synthesized) {
+    flags |= EF_IS_SYNTHESIZED;
+  }
 
   TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details,
-                   keyboard_modifiers_);
+                   flags);
   if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
     OnTouchReleaseInternal(id);
@@ -658,17 +661,24 @@ void WaylandEventSource::OnTouchMotionEvent(
     const gfx::PointF& location,
     base::TimeTicks timestamp,
     PointerId id,
-    wl::EventDispatchPolicy dispatch_policy) {
+    wl::EventDispatchPolicy dispatch_policy,
+    bool is_synthesized) {
   const auto it = touch_points_.find(id);
   // Make sure this touch point was present before.
   if (it == touch_points_.end()) {
     LOG(WARNING) << "Touch event fired with wrong id";
     return;
   }
+
   it->second->last_known_location = location;
   PointerDetails details(EventPointerType::kTouch, id);
+  int flags = keyboard_modifiers_;
+  if (is_synthesized) {
+    flags |= EF_IS_SYNTHESIZED;
+  }
+
   TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
-                   keyboard_modifiers_);
+                   flags);
   if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
     SetTouchTargetAndDispatchTouchEvent(&event);
   } else {
@@ -847,7 +857,8 @@ void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
   // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
   OnPointerMotionEvent(*relative_pointer_location_, timestamp,
-                       wl::EventDispatchPolicy::kImmediate);
+                       wl::EventDispatchPolicy::kImmediate,
+                       /*is_sythesized=*/false);
 }
 
 bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {

@@ -120,16 +120,13 @@ class WaylandEventSource : public PlatformEventSource,
                             int changed_button,
                             base::TimeTicks timestamp,
                             WaylandWindow* window,
-                            wl::EventDispatchPolicy dispatch_policy) override;
-  void OnPointerButtonEvent(EventType evtype,
-                            int changed_button,
-                            base::TimeTicks timestamp,
-                            WaylandWindow* window,
                             wl::EventDispatchPolicy dispatch_policy,
-                            bool allow_release_of_unpressed_button) override;
+                            bool allow_release_of_unpressed_button,
+                            bool is_synthesized) override;
   void OnPointerMotionEvent(const gfx::PointF& location,
                             base::TimeTicks timestamp,
-                            wl::EventDispatchPolicy dispatch_policy) override;
+                            wl::EventDispatchPolicy dispatch_policy,
+                            bool is_synthesized) override;
   void OnPointerAxisEvent(const gfx::Vector2dF& offset,
                           base::TimeTicks timestamp) override;
   void OnPointerFrameEvent() override;
@@ -152,11 +149,13 @@ class WaylandEventSource : public PlatformEventSource,
                          wl::EventDispatchPolicy dispatch_policy) override;
   void OnTouchReleaseEvent(base::TimeTicks timestamp,
                            PointerId id,
-                           wl::EventDispatchPolicy dispatch_policy) override;
+                           wl::EventDispatchPolicy dispatch_policy,
+                           bool is_synthesized) override;
   void OnTouchMotionEvent(const gfx::PointF& location,
                           base::TimeTicks timestamp,
                           PointerId id,
-                          wl::EventDispatchPolicy dispatch_policy) override;
+                          wl::EventDispatchPolicy dispatch_policy,
+                          bool is_synthesized) override;
   void OnTouchCancelEvent() override;
   void OnTouchFrame() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;

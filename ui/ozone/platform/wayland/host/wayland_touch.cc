@@ -100,7 +100,8 @@ void WaylandTouch::OnTouchUp(void* data,
   DCHECK(self);
 
   self->delegate_->OnTouchReleaseEvent(wl::EventMillisecondsToTimeTicks(time),
-                                       id, EventDispatchPolicyForPlatform());
+                                       id, EventDispatchPolicyForPlatform(),
+                                       /*is_synthesized=*/false);
 }
 
 // static
@@ -122,7 +123,8 @@ void WaylandTouch::OnTouchMotion(void* data,
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
   self->delegate_->OnTouchMotionEvent(location,
                                       wl::EventMillisecondsToTimeTicks(time),
-                                      id, EventDispatchPolicyForPlatform());
+                                      id, EventDispatchPolicyForPlatform(),
+                                      /*is_synthesized=*/false);
 }
 
 // static
