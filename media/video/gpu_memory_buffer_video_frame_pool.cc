@@ -1208,46 +1208,38 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     PlaneResource& plane_resource = frame_resources->plane_resources[plane];
     gfx::GpuMemoryBuffer* gpu_memory_buffer =
         frame_resources->plane_resources[plane].gpu_memory_buffer.get();
-
-    if (gpu_memory_buffer) {
-      // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
-      // create the shared image.
-      gfx::GpuMemoryBufferType buffer_type = gpu_memory_buffer->GetType();
-      if (buffer_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-        UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatSoftwareGmb",
-                                  output_format_);
-      }
-      if (buffer_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER &&
-          buffer_type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-        UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatHardwareGmb",
-                                  output_format_);
-      }
+    // This method is only expected to be called when there is a GMB and copy to
+    // it didn't fail.
+    CHECK(gpu_memory_buffer);
+    // Log software/hardware backed GpuMemoryBuffer's `output_format_` used to
+    // create the shared image.
+    gfx::GpuMemoryBufferType buffer_type = gpu_memory_buffer->GetType();
+    if (buffer_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+      UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatSoftwareGmb",
+                                output_format_);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormatHardwareGmb",
+                                output_format_);
     }
 
 #if BUILDFLAG(IS_MAC)
     // Shared image uses iosurface as native resource which is compatible to
     // WebGPU always.
-    is_webgpu_compatible = (gpu_memory_buffer != nullptr);
-    if (is_webgpu_compatible) {
-      is_webgpu_compatible &= media::IOSurfaceIsWebGPUCompatible(
-          gpu_memory_buffer->CloneHandle().io_surface.get());
-    }
+    is_webgpu_compatible = media::IOSurfaceIsWebGPUCompatible(
+        gpu_memory_buffer->CloneHandle().io_surface.get());
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    is_webgpu_compatible = (gpu_memory_buffer != nullptr);
-    if (is_webgpu_compatible) {
-      is_webgpu_compatible &=
-          gpu_memory_buffer->CloneHandle()
-              .native_pixmap_handle.supports_zero_copy_webgpu_import;
-    }
+    is_webgpu_compatible =
+        gpu_memory_buffer->CloneHandle()
+            .native_pixmap_handle.supports_zero_copy_webgpu_import;
 #endif
 
     // Bind the texture and create or rebind the image. This image may be read
     // via the raster interface for import into canvas and/or 2-copy import into
     // WebGL as well as potentially being read via the GLES interface for 1-copy
     // import into WebGL.
-    if (gpu_memory_buffer && !plane_resource.shared_image) {
+    if (!plane_resource.shared_image) {
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -1285,7 +1277,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
              kDebugLabel});
       }
       CHECK(plane_resource.shared_image);
-    } else if (plane_resource.shared_image) {
+    } else {
       sii->UpdateSharedImage(frame_resources->sync_token,
                              plane_resource.shared_image->mailbox());
     }
