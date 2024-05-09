@@ -410,6 +410,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="CustomTabs.Omnibox.EnabledState" units="BooleanEnabled"
+    expires_after="2025-05-01">
+  <owner>ender@google.com</owner>
+  <owner>sinansahin@google.com</owner>
+  <summary>
+    Records whether a CustomTab was requested to include an interactive Omnibox.
+    Recorded once per CCT instantiation event. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Omnibox.FocusResultedInNavigation" units="Boolean"
+    expires_after="2025-05-01">
+  <owner>ender@google.com</owner>
+  <owner>sinansahin@google.com</owner>
+  <summary>
+    Records whether user initiated navigation after focusing the Omnibox. Value
+    of 'true' indicates user chose to initiate navigation, whereas value of
+    'false' suggests the user abandoned the interaction with the Omnibox.
+    Recorded once per interaction with Omnibox on CCT when the CCT receives a
+    response from SearchActivity. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Omnibox.NumNavigationsPerSession" units="count"
+    expires_after="2025-05-01">
+  <owner>ender@google.com</owner>
+  <owner>sinansahin@google.com</owner>
+  <summary>
+    Records the number of navigations issued on CustomTab during its lifetime.
+    Recorded only on CCTs that feature an interactive Omnibox. Recorded once per
+    CCT when CCT is about to be destroyed. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
     expires_after="2024-10-06">
   <owner>jinsukkim@chromium.org</owner>
