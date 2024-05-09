@@ -299,7 +299,7 @@ targets.compile_target(
 
 targets.compile_target(
     name = "pdfium_test",
-    label = "//third_party/pdfium/samples:pdfium_test",
+    label = "//third_party/pdfium/testing:pdfium_test",
 )
 
 targets.compile_target(

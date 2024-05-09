@@ -1317,7 +1317,7 @@
     "type": "console_test_launcher",
   },
   "pdfium_test": {
-    "label": "//third_party/pdfium/samples:pdfium_test",
+    "label": "//third_party/pdfium/testing:pdfium_test",
     "type": "additional_compile_target",
   },
   "perfetto_unittests": {
