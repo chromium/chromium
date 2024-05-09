@@ -78,6 +78,9 @@ void LocalAuthenticationRequestWidget::Show(
     std::unique_ptr<UserContext> user_context) {
   CHECK(!g_instance);
 
+  const auto& auth_factors = user_context->GetAuthFactorsData();
+  CHECK(auth_factors.FindLocalPasswordFactor());
+
   g_instance = new LocalAuthenticationRequestWidget(
       std::move(local_authentication_callback), title, description, delegate,
       std::move(user_context));
