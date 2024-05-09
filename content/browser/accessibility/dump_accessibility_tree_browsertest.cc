@@ -121,6 +121,8 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
       features::kEnableAccessibilityAriaVirtualContent);
   // crbug.com/330686628 - temporary until enabled everywhere
   enabled_features->emplace_back(blink::features::kPasswordStrongLabel);
+  // crbug.com/339418716 - temporary until enabled by default
+  enabled_features->emplace_back(features::kPermissionElement);
   DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                             disabled_features);
 }
@@ -2987,6 +2989,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityP) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityParam) {
   RunHtmlTest(FILE_PATH_LITERAL("param.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPermission) {
+  RunHtmlTest(FILE_PATH_LITERAL("permission.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {

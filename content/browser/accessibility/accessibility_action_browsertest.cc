@@ -12,7 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -45,6 +47,11 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityActionBrowserTest() {}
   ~AccessibilityActionBrowserTest() override {}
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kPermissionElement}, {});
+    ContentBrowserTest::SetUp();
+  }
 
  protected:
   BrowserAccessibility* FindNode(ax::mojom::Role role,
@@ -153,6 +160,8 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     }
     return nullptr;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -1458,5 +1467,37 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, OpenSelectPopup) {
   EXPECT_EQ(3U, open_popup->InternalChildCount());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !(BUILDFLAG(IS_IOS)
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusPermissionElement) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <body>
+        <permission type="invalid" aria-label="invalid-pepc">
+        <permission type="camera" aria-label="valid-pepc">
+      </body>
+      )HTML");
+
+  BrowserAccessibility* invalid_pepc =
+      FindNode(ax::mojom::Role::kButton, "invalid-pepc");
+  BrowserAccessibility* valid_pepc =
+      FindNode(ax::mojom::Role::kButton, "valid-pepc");
+  ASSERT_NE(nullptr, invalid_pepc);
+  ASSERT_NE(nullptr, valid_pepc);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kFocus;
+
+  invalid_pepc->AccessibilityPerformAction(action_data);
+  ASSERT_FALSE(waiter.WaitForNotificationWithTimeout(base::Milliseconds(500)));
+  ASSERT_FALSE(invalid_pepc->IsFocused());
+  valid_pepc->AccessibilityPerformAction(action_data);
+
+  // Only the valid permission element is focusable.
+  ASSERT_TRUE(waiter.WaitForNotification());
+  ASSERT_EQ(waiter.event_target_id(), valid_pepc->GetId());
+  ASSERT_TRUE(valid_pepc->IsFocused());
+}
 
 }  // namespace content

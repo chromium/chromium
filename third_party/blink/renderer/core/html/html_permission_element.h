@@ -49,6 +49,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   void AttachLayoutTree(AttachContext& context) override;
   void DetachLayoutTree(bool performing_reattach) override;
+  void Focus(const FocusParams& params) override;
+  bool SupportsFocus(UpdateBehavior) const override;
 
   bool granted() const { return permissions_granted_; }
 

@@ -4447,6 +4447,8 @@ data/accessibility/html/param-expected-mac.txt
 data/accessibility/html/param-expected-uia-win.txt
 data/accessibility/html/param-expected-win.txt
 data/accessibility/html/param.html
+data/accessibility/html/permission-expected-blink.txt
+data/accessibility/html/permission.html
 data/accessibility/html/picture-expected-android-assist-data.txt
 data/accessibility/html/picture-expected-android-external.txt
 data/accessibility/html/picture-expected-android.txt
