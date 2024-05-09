@@ -792,6 +792,40 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>Records the session duration in Chrome OS camera service.</summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.SuperRes.AverageLatency" units="microseconds"
+    expires_after="2025-05-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average processing latency to upsample the cropped frame.
+    Emitted when the camera session is closed.
+
+    This metric is reported on ChromeOS devices with Super Resolution feature
+    enabled (high-resolution clock required for microsecond granularity).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.Error" enum="SuperResError"
+    expires_after="2025-05-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records whether there's an error that can compromise the Super Resolution
+    feature. Emitted at most once for each error when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SuperRes.NumStillShotsTaken" units="captures"
+    expires_after="2025-05-31">
+  <owner>julianachang@google.com</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of Super Resolution still capture shots taken in a camera
+    session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.CertProvisioning.CsrSignTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
     units="ms" expires_after="2025-04-01">

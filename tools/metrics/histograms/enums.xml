@@ -33785,6 +33785,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Search"/>
 </enum>
 
+<enum name="SuperResError">
+  <int value="0" label="NoError"/>
+  <int value="1" label="Initialization error"/>
+  <int value="2" label="Upsampling request error"/>
+</enum>
+
 <enum name="SupervisedUserProtoFetcherStatus">
   <int value="0" label="NoError"/>
   <int value="1" label="AuthError"/>
