@@ -108,9 +108,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
       OperationResult result,
       std::optional<WifiDirectConnectionMetadata> metadata)>;
 
-  // Create a Wifi P2P group with the given `ssid` and `passphrase`.
-  void CreateWifiP2PGroup(const std::string& ssid,
-                          const std::string& passphrase,
+  // SSID and passphrase should be provided or omit at the same time. If both
+  // SSID and passphrase are provide, it will attempt to create the WiFi P2P
+  // group with the given `ssid` and `passphrase`. Otherwise, the platform will
+  // generate the ssid and passphrase.
+  void CreateWifiP2PGroup(std::optional<std::string> ssid,
+                          std::optional<std::string> passphrase,
                           WifiP2PGroupCallback callback);
 
   // Destroys the Wifi P2P group using its shill id.

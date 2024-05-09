@@ -39,12 +39,10 @@ class WifiDirectManager : public mojom::WifiDirectManager {
       mojo::PendingReceiver<mojom::WifiDirectManager> pending_receiver);
 
   // mojom::WifiDirectManager
-  void CreateWifiDirectGroup(const std::string& ssid,
-                             const std::string& passphrase,
+  void CreateWifiDirectGroup(wifi_direct::mojom::WifiCredentialsPtr credentials,
                              CreateWifiDirectGroupCallback callback) override;
   void ConnectToWifiDirectGroup(
-      const std::string& ssid,
-      const std::string& passphrase,
+      wifi_direct::mojom::WifiCredentialsPtr credentials,
       std::optional<uint32_t> frequency,
       ConnectToWifiDirectGroupCallback callback) override;
 

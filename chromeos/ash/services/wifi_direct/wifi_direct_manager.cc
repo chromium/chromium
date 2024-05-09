@@ -9,6 +9,7 @@
 
 namespace ash::wifi_direct {
 
+using wifi_direct::mojom::WifiCredentialsPtr;
 using wifi_direct::mojom::WifiDirectOperationResult;
 
 namespace {
@@ -64,22 +65,22 @@ void WifiDirectManager::BindPendingReceiver(
 }
 
 void WifiDirectManager::CreateWifiDirectGroup(
-    const std::string& ssid,
-    const std::string& passphrase,
+    WifiCredentialsPtr credentials,
     CreateWifiDirectGroupCallback callback) {
   WifiP2PController::Get()->CreateWifiP2PGroup(
-      ssid, passphrase,
+      credentials ? std::optional{credentials->ssid} : std::nullopt,
+      credentials ? std::optional{credentials->passphrase} : std::nullopt,
       base::BindOnce(&WifiDirectManager::OnCreateOrConnectWifiDirectGroup,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WifiDirectManager::ConnectToWifiDirectGroup(
-    const std::string& ssid,
-    const std::string& passphrase,
+    WifiCredentialsPtr credentials,
     std::optional<uint32_t> frequency,
     ConnectToWifiDirectGroupCallback callback) {
+  CHECK(credentials);
   WifiP2PController::Get()->ConnectToWifiP2PGroup(
-      ssid, passphrase, frequency,
+      credentials->ssid, credentials->passphrase, frequency,
       base::BindOnce(&WifiDirectManager::OnCreateOrConnectWifiDirectGroup,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

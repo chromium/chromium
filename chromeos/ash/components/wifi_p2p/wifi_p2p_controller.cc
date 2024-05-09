@@ -182,10 +182,13 @@ bool WifiP2PController::IsInitialized() {
   return g_wifi_p2p_controller;
 }
 
-void WifiP2PController::CreateWifiP2PGroup(const std::string& ssid,
-                                           const std::string& passphrase,
-                                           WifiP2PGroupCallback callback) {
-  if (!ValidateWifiDirectCredentails(ssid, passphrase)) {
+void WifiP2PController::CreateWifiP2PGroup(
+    std::optional<std::string> ssid,
+    std::optional<std::string> passphrase,
+    WifiP2PGroupCallback callback) {
+  CHECK(ssid.has_value() == passphrase.has_value());
+  if (ssid && passphrase &&
+      !ValidateWifiDirectCredentails(*ssid, *passphrase)) {
     std::move(callback).Run(OperationResult::kInvalidArguments,
                             /*metadata=*/std::nullopt);
     return;

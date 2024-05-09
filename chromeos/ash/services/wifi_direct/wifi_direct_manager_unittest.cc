@@ -21,6 +21,7 @@
 
 namespace ash::wifi_direct {
 
+using mojom::WifiCredentialsPtr;
 using mojom::WifiDirectOperationResult;
 using mojom::WifiP2PCapabilitiesPtr;
 
@@ -59,26 +60,24 @@ class WifiDirectManagerTest : public testing::Test {
   }
 
   WifiP2POperationTestResult CreateWifiDirectGroup(
-      const std::string& ssid,
-      const std::string& passphrase) {
+      WifiCredentialsPtr credentials) {
     auto wifi_direct_manager_async_waiter =
         mojom::WifiDirectManagerAsyncWaiter(wifi_direct_manager_.get());
     WifiP2POperationTestResult test_result;
     wifi_direct_manager_async_waiter.CreateWifiDirectGroup(
-        ssid, passphrase, &test_result.result,
+        std::move(credentials), &test_result.result,
         &test_result.wifi_direct_connection);
     return test_result;
   }
 
   WifiP2POperationTestResult ConnectToWifiDirectGroup(
-      const std::string& ssid,
-      const std::string& passphrase,
+      WifiCredentialsPtr credentials,
       std::optional<uint32_t> frequency) {
     auto wifi_direct_manager_async_waiter =
         mojom::WifiDirectManagerAsyncWaiter(wifi_direct_manager_.get());
     WifiP2POperationTestResult test_result;
     wifi_direct_manager_async_waiter.ConnectToWifiDirectGroup(
-        ssid, passphrase, frequency, &test_result.result,
+        std::move(credentials), frequency, &test_result.result,
         &test_result.wifi_direct_connection);
     return test_result;
   }
@@ -124,13 +123,16 @@ class WifiDirectManagerTest : public testing::Test {
   std::unique_ptr<WifiDirectManager> wifi_direct_manager_;
 };
 
-TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
+TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
   ShillManagerClient::Get()
       ->GetTestInterface()
       ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
                                         shill::kCreateP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = "DIRECT-1a";
+  credentials->passphrase = "test_passphrase";
   WifiP2POperationTestResult result_arguments =
-      CreateWifiDirectGroup("DIRECT-1a", "passphrase");
+      CreateWifiDirectGroup(std::move(credentials));
   EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
   ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
 
@@ -154,14 +156,54 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
                              ->GetRecentlyDestroyedP2PGroupId());
 }
 
-TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupFailure_InvalidArguments) {
+TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupNoCredentials_Success) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
+                                        shill::kCreateP2PGroupResultSuccess);
+  WifiP2POperationTestResult result_arguments = CreateWifiDirectGroup(nullptr);
+  EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
+  ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
+
+  mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
+      std::move(result_arguments.wifi_direct_connection));
+  ExpectConnectionsCount(1);
+  auto properties = GetProperties(wifi_direct_connection);
+  EXPECT_EQ(1000u, properties->frequency);
+  EXPECT_EQ(kIpv4Address, properties->ipv4_address);
+  EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
+  // Request disconnection from client side.
+  wifi_direct_connection.reset();
+  ExpectConnectionsCount(0);
+}
+
+TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupFailure_InvalidCredentials) {
   ShillManagerClient::Get()
       ->GetTestInterface()
       ->SetSimulateCreateP2PGroupResult(
           FakeShillSimulatedResult::kSuccess,
           shill::kCreateP2PGroupResultNotSupported);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = "invalid-ssid";
+  credentials->passphrase = "test_passphrase";
   WifiP2POperationTestResult result_arguments =
-      CreateWifiDirectGroup("DIRECT-1a", "passphrase");
+      CreateWifiDirectGroup(std::move(credentials));
+  EXPECT_EQ(result_arguments.result,
+            WifiDirectOperationResult::kInvalidArguments);
+  EXPECT_FALSE(result_arguments.wifi_direct_connection.is_valid());
+}
+
+TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupFailure_NotSupported) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateCreateP2PGroupResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kCreateP2PGroupResultNotSupported);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = "DIRECT-1a";
+  credentials->passphrase = "test_passphrase";
+  WifiP2POperationTestResult result_arguments =
+      CreateWifiDirectGroup(std::move(credentials));
   EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kNotSupported);
   EXPECT_FALSE(result_arguments.wifi_direct_connection.is_valid());
 }
@@ -172,8 +214,9 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
       ->SetSimulateConnectToP2PGroupResult(
           FakeShillSimulatedResult::kSuccess,
           shill::kConnectToP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
   WifiP2POperationTestResult result_arguments =
-      ConnectToWifiDirectGroup("DIRECT-1a", "passphrase", 5200u);
+      ConnectToWifiDirectGroup(std::move(credentials), 5200u);
   EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
   ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
 
@@ -202,8 +245,9 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {
       ->GetTestInterface()
       ->SetSimulateConnectToP2PGroupResult(FakeShillSimulatedResult::kSuccess,
                                            "invalid_result");
+  auto credentials = mojom::WifiCredentials::New();
   WifiP2POperationTestResult result_arguments =
-      ConnectToWifiDirectGroup("DIRECT-1a", "passphrase", 5200u);
+      ConnectToWifiDirectGroup(std::move(credentials), 5200u);
   EXPECT_EQ(result_arguments.result,
             WifiDirectOperationResult::kInvalidResultCode);
   EXPECT_FALSE(result_arguments.wifi_direct_connection.is_valid());
