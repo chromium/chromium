@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.provider.Settings;
 import android.text.TextUtils;
 
@@ -20,7 +19,6 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFetchService;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.accessibility.DeviceAccessibilitySettingsHandler;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
@@ -45,9 +42,6 @@ import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** Tracks the foreground session state for the Chrome activities. */
 public class ChromeActivitySessionTracker {
@@ -57,8 +51,6 @@ public class ChromeActivitySessionTracker {
 
     private final OmahaServiceStartDelayer mOmahaServiceStartDelayer =
             new OmahaServiceStartDelayer();
-    private final Map<Activity, Supplier<TabModelSelector>> mTabModelSelectorSuppliers =
-            new HashMap<>();
 
     // Used to trigger variation changes (such as seed fetches) upon application foregrounding.
     private final VariationsSession mVariationsSession;
@@ -85,26 +77,9 @@ public class ChromeActivitySessionTracker {
     }
 
     /**
-     * Register a supplier which returns the total tab count for the given application.
-     * @param activity The activity associated with the given tab count supplier.
-     * @param tabCountSupplier Supplies the current tab count for the given activity.
-     */
-    public void registerTabModelSelectorSupplier(
-            Activity activity, Supplier<TabModelSelector> tabCountSupplier) {
-        mTabModelSelectorSuppliers.put(activity, tabCountSupplier);
-    }
-
-    /**
-     * Unregisters the supplier associated with the given activity.
-     * @param activity Tha activity to unregister.
-     */
-    public void unregisterTabModelSelectorSupplier(Activity activity) {
-        mTabModelSelectorSuppliers.remove(activity);
-    }
-
-    /**
      * Asynchronously returns the value of the "restrict" URL param that the variations service
      * should use for variation seed requests.
+     *
      * @param callback Callback that will be called with the param value when available.
      */
     public void getVariationsRestrictModeValue(Callback<String> callback) {
