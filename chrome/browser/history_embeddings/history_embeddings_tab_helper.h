@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -51,6 +52,12 @@ class HistoryEmbeddingsTabHelper
   // This is called some time after `DidFinishLoad` to do passage extraction.
   // Calls may be canceled by weak pointer invalidation.
   void ExtractPassages(content::WeakDocumentPtr weak_render_frame_host);
+
+  // Callback for `ExtractPassages()`. It's in a member method to enable
+  // cancellation via `weak_factory_`.
+  void ExtractPassagesWithHistoryData(
+      content::WeakDocumentPtr weak_render_frame_host,
+      history::QueryURLResult result);
 
   // Invalidates weak pointers and cancels any pending extraction callbacks.
   void CancelExtraction();

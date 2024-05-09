@@ -16,7 +16,6 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
@@ -80,60 +79,57 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
 
 void HistoryEmbeddingsTabHelper::ExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
-  if (!history_visit_time_.has_value() || !history_url_.has_value()) {
+  if (!history_url_.has_value()) {
     return;
   }
 
-  history::HistoryService* history_service = GetHistoryService();
-  if (!history_service) {
+  if (history::HistoryService* history_service = GetHistoryService()) {
+    // Callback is a member method instead of inline to enable cancellation via
+    // weak pointer in `CancelExtraction()`.
+    history_service->GetMostRecentVisitsForGurl(
+        history_url_.value(), 1,
+        base::BindOnce(
+            &HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData,
+            weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
+        &task_tracker_);
+  }
+}
+
+void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
+    content::WeakDocumentPtr weak_render_frame_host,
+    history::QueryURLResult result) {
+  // `visits` can be empty for navigations that don't result in a
+  // visit being added to the DB, e.g. navigations to
+  // "chrome://" URLs.
+  if (!result.success || result.visits.empty()) {
     return;
   }
-  history_embeddings::HistoryEmbeddingsService* embeddings_service =
-      GetHistoryEmbeddingsService();
-  if (!embeddings_service) {
+  const history::URLRow& url_row = result.row;
+  const history::VisitRow& latest_visit = result.visits[0];
+  CHECK(url_row.id());
+  CHECK(latest_visit.visit_id);
+  CHECK_EQ(url_row.id(), latest_visit.url_id);
+  // Make sure the visit we got actually corresponds to the
+  // navigation by comparing the visit_times.
+  if (!history_visit_time_.has_value() ||
+      latest_visit.visit_time != *history_visit_time_) {
+    return;
+  }
+  // Make sure the latest visit (the first one in the array) is
+  // a local one. That should almost always be the case, since
+  // this gets called just after a local visit happened, but in
+  // some rare cases it might not be, e.g. if another device
+  // sent us a visit "from the future". If this turns out to be
+  // a problem, consider implementing a
+  // GetMostRecent*Local*VisitsForURL().
+  if (!latest_visit.originator_cache_guid.empty()) {
     return;
   }
 
-  history_service->GetMostRecentVisitsForGurl(
-      history_url_.value(), 1,
-      base::BindOnce(
-          [](base::WeakPtr<history_embeddings::HistoryEmbeddingsService>
-                 history_embeddings_service,
-             content::WeakDocumentPtr weak_render_frame_host,
-             base::Time visit_time, history::QueryURLResult result) {
-            // `visits` can be empty for navigations that don't result in a
-            // visit being added to the DB, e.g. navigations to
-            // "chrome://" URLs.
-            if (!history_embeddings_service || !result.success ||
-                result.visits.empty()) {
-              return;
-            }
-            const history::URLRow& url_row = result.row;
-            const history::VisitRow& latest_visit = result.visits[0];
-            CHECK(url_row.id());
-            CHECK(latest_visit.visit_id);
-            CHECK_EQ(url_row.id(), latest_visit.url_id);
-            // Make sure the visit we got actually corresponds to the
-            // navigation by comparing the visit_times.
-            if (latest_visit.visit_time != visit_time) {
-              return;
-            }
-            // Make sure the latest visit (the first one in the array) is
-            // a local one. That should almost always be the case, since
-            // this gets called just after a local visit happened, but in
-            // some rare cases it might not be, e.g. if another device
-            // sent us a visit "from the future". If this turns out to be
-            // a problem, consider implementing a
-            // GetMostRecent*Local*VisitsForURL().
-            if (!latest_visit.originator_cache_guid.empty()) {
-              return;
-            }
-            history_embeddings_service->RetrievePassages(
-                latest_visit, weak_render_frame_host);
-          },
-          embeddings_service->AsWeakPtr(), weak_render_frame_host,
-          history_visit_time_.value()),
-      &task_tracker_);
+  if (history_embeddings::HistoryEmbeddingsService* embeddings_service =
+          GetHistoryEmbeddingsService()) {
+    embeddings_service->RetrievePassages(latest_visit, weak_render_frame_host);
+  }
 
   // Clear the data. It isn't reused and will be set anew by later navigation.
   history_visit_time_.reset();
