@@ -145,8 +145,12 @@ BubbleFrameView::~BubbleFrameView() = default;
 // static
 std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
     const std::u16string& title_text) {
-  return CreateLabelWithContextAndStyle(title_text, style::CONTEXT_DIALOG_TITLE,
-                                        style::STYLE_PRIMARY);
+  std::unique_ptr<Label> label = CreateLabelWithContextAndStyle(
+      title_text, style::CONTEXT_DIALOG_TITLE, style::STYLE_PRIMARY);
+  if (base::FeatureList::IsEnabled(features::kBubbleFrameViewTitleIsHeading)) {
+    label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+  }
+  return label;
 }
 
 // static

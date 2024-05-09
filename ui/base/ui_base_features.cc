@@ -542,4 +542,7 @@ BASE_FEATURE(kUseGammaContrastRegistrySettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
+BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
+             "BubbleFrameViewTitleIsHeading",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
