@@ -56,7 +56,7 @@ public class RemoteTabGroupMutationHelper {
 
         // Add tabs to the group.
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, groupId);
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(rootId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         for (int position = 0; position < tabs.size(); position++) {
             addTab(groupId, tabs.get(position), position);
         }
@@ -120,16 +120,17 @@ public class RemoteTabGroupMutationHelper {
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, localGroupId);
-        List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(rootId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         // We just reconciled local state with sync. The tabs should match.
-        assert tabIds.size() == group.savedTabs.size()
+        assert tabs.size() == group.savedTabs.size()
                 : "Local tab count doesn't match with remote : local #"
-                        + tabIds.size()
+                        + tabs.size()
                         + " vs remote #"
                         + group.savedTabs.size();
-        for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
+        for (int i = 0; i < group.savedTabs.size() && i < tabs.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
-            mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));
+            mTabGroupSyncService.updateLocalTabId(
+                    localGroupId, savedTab.syncId, tabs.get(i).getId());
         }
     }
 
