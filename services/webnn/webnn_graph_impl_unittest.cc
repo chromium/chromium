@@ -2895,20 +2895,6 @@ TEST_F(WebNNGraphImplTest, GatherTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the indices data type is not one of uint32 or
-    // int64.
-    GatherTester{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {3, 4, 5}},
-        .attributes = {.indices = {.type = mojom::Operand::DataType::kInt32,
-                                   .dimensions = {6, 7}},
-                       .axis = 1},
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {3, 6, 7, 5}},
-        .expected = false}
-        .Test();
-  }
-  {
     // Test the invalid graph for the output shapes are not expected.
     GatherTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
