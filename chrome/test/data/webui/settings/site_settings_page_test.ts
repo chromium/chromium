@@ -53,6 +53,14 @@ suite('SiteSettingsPage', function() {
           },
         },
       },
+      compose: {
+        proactive_nudge_enabled: {
+          enabled: {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          },
+        },
+      },
     };
     document.body.appendChild(page);
     flush();

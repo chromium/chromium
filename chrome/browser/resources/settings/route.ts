@@ -89,6 +89,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
     r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   }
+  if (loadTimeData.getBoolean('enableComposeProactiveNudge')) {
+    r.SITE_SETTINGS_OFFER_WRITING_HELP =
+        r.SITE_SETTINGS.createChild('offerWritingHelp');
+  }
   r.SITE_SETTINGS_BACKGROUND_SYNC =
       r.SITE_SETTINGS.createChild('backgroundSync');
   r.SITE_SETTINGS_CAMERA = r.SITE_SETTINGS.createChild('camera');

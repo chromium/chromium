@@ -164,6 +164,16 @@
         </settings-subpage>
       </template>
 
+      <template is="dom-if" if="[[enableComposeProactiveNudge_]]">
+        <template is="dom-if" route-path="/content/offerWritingHelp" no-search>
+          <settings-subpage page-title="$i18n{siteSettingsOfferWritingHelp}"
+              learn-more-url="$i18n{composeLearnMorePageURL}">
+            <settings-offer-writing-help-page prefs="{{prefs}}">
+            </settings-offer-writing-help-page>
+          </settings-subpage>
+        </template>
+      </template>
+
       <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <template is="dom-if" route-path="/securityKeys">
           <settings-subpage associated-control="[[$$('#securityLinkRow')]]"

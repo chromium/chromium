@@ -1857,7 +1857,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
-
+  html_source->AddString("composeLearnMorePageURL",
+                         chrome::kComposeLearnMorePageURL);
   html_source->AddString("doNotTrackLearnMoreURL",
                          chrome::kDoNotTrackLearnMoreURL);
   html_source->AddString("exceptionsLearnMoreURL",
@@ -3171,6 +3172,16 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsPerformance", IDS_SITE_SETTINGS_TYPE_PERFORMANCE},
       {"siteSettingsPerformanceSublabel",
        IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL},
+      {"siteSettingsOfferWritingHelp",
+       IDS_SITE_SETTINGS_TYPE_OFFER_WRITING_HELP},
+      {"offerWritingHelpToggleLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
+      {"offerWritingHelpToggleSublabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
+      {"siteSettingsOfferWritingHelpEnabledSublabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_ENABLED_SUB_LABEL},
+      {"siteSettingsOfferWritingHelpDisabledSublabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SUB_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -474,6 +474,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [::permissions::prefs::kUnusedSitePermissionsRevocationEnabled] =
           settings_api::PrefType::kBoolean;
+  (*s_allowlist)[prefs::kEnableProactiveNudge] =
+      settings_api::PrefType::kBoolean;
 
   // Clear browsing data settings.
   (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistory] =

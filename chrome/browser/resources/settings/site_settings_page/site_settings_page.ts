@@ -206,6 +206,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsJavascriptJitBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_OFFER_WRITING_HELP,
+      id: Id.OFFER_WRITING_HELP,
+      label: 'siteSettingsOfferWritingHelp',
+      icon: 'settings:compose',
+      shouldShow: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
+    },
+    {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
@@ -531,6 +538,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.PERFORMANCE,
               Id.JAVASCRIPT_JIT,
               Id.AUTOMATIC_FULLSCREEN,
+              Id.OFFER_WRITING_HELP,
             ]),
           };
         },

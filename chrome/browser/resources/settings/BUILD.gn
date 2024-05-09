@@ -206,6 +206,7 @@ build_webui("build") {
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
     "site_settings_page/unused_site_permissions.ts",
+    "site_settings/offer_writing_help_page.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",

@@ -482,6 +482,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ToggleButton) {
   RunTest("settings/settings_toggle_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, OfferWritingHelpPage) {
+  RunTest("settings/offer_writing_help_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "mocha.run()");
 }

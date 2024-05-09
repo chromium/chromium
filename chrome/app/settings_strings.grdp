@@ -1427,6 +1427,20 @@
     </if>
   </if>
 
+  <!-- Offer Writing Help Page -->
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL" desc="Label of the setting that enables the feature that provides writing help suggestions.">
+    Offer writing help
+  </message>
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL" desc="Sub-label of the setting that enables the feature that provides writing help suggestions.">
+    "Help me write" can automatically open when a text box on a site can be filled with short-form content
+  </message>
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_ENABLED_SUB_LABEL" desc="Sub-label for the site settings writing help page link, used when the offer writing help preference is enabled.">
+    Allow "Help me write" to automatically open
+  </message>
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SUB_LABEL" desc="Sub-label for the site settings writing help page link, used when the offer writing help preference is disabled.">
+    Don't allow "Help me write" to automatically open
+  </message>
+
   <!-- Anti-abuse Page -->
   <message name="IDS_SETTINGS_ANTI_ABUSE_ENABLED_SUB_LABEL" desc="The label used for the anti-abuse site settings sub-label when the anti-abuse setting is turned on.">
     Sites can help verify you're not a bot

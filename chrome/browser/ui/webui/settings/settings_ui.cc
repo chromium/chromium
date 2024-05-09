@@ -86,6 +86,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -396,6 +397,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableLinkedServicesSetting",
       base::FeatureList::IsEnabled(features::kLinkedServicesSetting));
+
+  html_source->AddBoolean("enableComposeProactiveNudge",
+                          base::FeatureList::IsEnabled(
+                              compose::features::kEnableComposeProactiveNudge));
 
   html_source->AddBoolean(
       "enablePageContentSetting",
