@@ -26,7 +26,10 @@ class DocumentIconFetcher
  public:
   // Fetches all icons for the top level primary frame of the given web
   // contents. `callback` will always be called (even on document destruction),
-  // and always called asynchronously.
+  // and always called asynchronously. If the callback is not called with an
+  // error, it is guaranteed to include at least one icon (i.e. it is not
+  // possible for fetching to succeed but not return any icons. If no icons
+  // were found, a fallback icon is generated).
   static void FetchIcons(content::WebContents& web_contents,
                          FetchIconsFromDocumentCallback callback);
 
@@ -38,9 +41,11 @@ class DocumentIconFetcher
 
   explicit DocumentIconFetcher(content::RenderFrameHost* rfh);
 
-  void RunTask(FetchIconsFromDocumentCallback callback);
+  void RunTask(char32_t fallback_letter,
+               FetchIconsFromDocumentCallback callback);
 
   void OnTaskComplete(int id,
+                      char32_t fallback_letter,
                       FetchIconsFromDocumentCallback original_callback,
                       FetchIconsFromDocumentResult result);
 

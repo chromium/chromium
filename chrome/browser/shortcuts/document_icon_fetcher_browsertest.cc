@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
 #include "chrome/browser/shortcuts/image_test_utils.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -59,7 +60,9 @@ IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, PageNoIcons) {
       future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().has_value());
-  EXPECT_THAT(future.Get().value(), testing::IsEmpty());
+  EXPECT_THAT(
+      future.Get().value(),
+      testing::ElementsAre(gfx::test::EqualsBitmap(GenerateBitmap(128, U'P'))));
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentIconFetcherTest, IconMetadata) {

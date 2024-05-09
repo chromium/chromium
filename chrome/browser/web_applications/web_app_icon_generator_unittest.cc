@@ -155,8 +155,7 @@ void TestIconGeneration(int icon_size,
   // Now run the resizing/generation and validation.
   bool is_generated_icon = true;
   auto size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   ValidateIconsGeneratedAndResizedCorrectly(
@@ -239,9 +238,8 @@ TEST_F(WebAppIconGeneratorTest, LinkedAppIconsAreNotChanged) {
 
   // Now run the resizing and generation into a new web icons info.
   bool is_generated_icon = true;
-  SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, sizes, GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+  SizeToBitmap size_map = ResizeIconsAndGenerateMissing(downloaded, sizes, U'T',
+                                                        &is_generated_icon);
   EXPECT_EQ(sizes.size(), size_map.size());
   EXPECT_FALSE(is_generated_icon);
 
@@ -264,8 +262,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromOddSizes) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // No icons should be generated. The LARGE and MEDIUM sizes should be resized.
@@ -284,8 +281,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromLarger) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect icon for MEDIUM and LARGE to be resized from the gigantor icon
@@ -301,8 +297,7 @@ TEST_F(WebAppIconGeneratorTest, AllIconsGeneratedWhenNotDownloaded) {
   // Now run the resizing and generation.
   bool is_generated_icon = false;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
   EXPECT_TRUE(is_generated_icon);
 
   // Expect all icons to be generated.
@@ -320,8 +315,7 @@ TEST_F(WebAppIconGeneratorTest, IconResizedFromLargerAndSmaller) {
   // Now run the resizing and generation.
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &is_generated_icon);
+      downloaded, TestSizesToGenerate(), U'T', &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect no icons to be generated, but the LARGE and SMALL icons to be
@@ -344,60 +338,6 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedWhenOnlyAGigantorOneIsProvided) {
   // When an enormous icon is provided, each desired icon size should be resized
   // from it, and no icons should be generated.
   TestIconGeneration(icon_size::k512, 0, 3);
-}
-
-TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromUrl) {
-  // ASCII:
-  EXPECT_EQ((char32_t)'E',
-            GenerateIconLetterFromUrl(GURL("http://example.com")));
-  // Cyrillic capital letter ZHE for something like https://zhuk.rf:
-  EXPECT_EQ(0x0416U,
-            GenerateIconLetterFromUrl(GURL("https://xn--f1ai0a.xn--p1ai/")));
-  // Arabic:
-  EXPECT_EQ(0x0645U,
-            GenerateIconLetterFromUrl(GURL("http://xn--mgbh0fb.example/")));
-  // UTF-16 surrogate code units.
-  // "𨭎𨥫𨋍" (U+28B4E, U+2896B, U+282CD)
-  // (nonsensical sequence of non-BMP Chinese characters, IDNA-encoded)
-  EXPECT_EQ(0x28b4eU,
-            GenerateIconLetterFromUrl(GURL("http://xn--8h8k10hnsb.example/")));
-  // "🌏👍" (U+1F30F, U+1F44D)
-  // (sequence of non-BMP emoji characters, IDNA-encoded)
-  // Emoji are not allowed in IDNA domains, so the first character of this
-  // domain is simply 'X'.
-  EXPECT_EQ((char32_t)'X',
-            GenerateIconLetterFromUrl(GURL("http://xn--vg8h2t.example/")));
-}
-
-TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromAppName) {
-  // ASCII Encoding
-  EXPECT_EQ((char32_t)'T', GenerateIconLetterFromAppName(u"test app name"));
-  EXPECT_EQ((char32_t)'T', GenerateIconLetterFromAppName(u"Test app name"));
-  // UTF-16 encoding (single code units):
-  // "имя" (U+0438, U+043C, U+044F)
-  const char16_t russian_name[] = {0x0438, 0x043c, 0x044f, 0x0};
-  EXPECT_EQ(0x0418U, GenerateIconLetterFromAppName(russian_name));
-  // UTF-16 surrogate code units.
-  // "𨭎𨥫𨋍" (U+28B4E, U+2896B, U+282CD)
-  // (nonsensical sequence of non-BMP Chinese characters, UTF-16-encoded)
-  const char16_t chinese_name[] = {0xd862, 0xdf4e, 0xd862, 0xdd6b,
-                                   0xd860, 0xdecd, 0x0};
-  EXPECT_EQ(0x28b4eU, GenerateIconLetterFromAppName(chinese_name));
-  // "🌏👍" (U+1F30F, U+1F44D)
-  // (sequence of non-BMP emoji characters, UTF-16-encoded)
-  const char16_t emoji_name[] = {0xd83c, 0xdf0f, 0xd83d, 0xdc4d, 0x0};
-  EXPECT_EQ(0x1f30fU, GenerateIconLetterFromAppName(emoji_name));
-}
-
-TEST_F(WebAppIconGeneratorTest, IconLetterToString) {
-  // ASCII character
-  EXPECT_EQ(u"T", IconLetterToString('T'));
-  // BMP character 'И' (U+0418)
-  EXPECT_EQ(std::u16string({0x0418}), IconLetterToString(0x0418));
-  // Non-BMP character '𨭎' (U+28B4E)
-  EXPECT_EQ(std::u16string({0xd862, 0xdf4e}), IconLetterToString(0x28b4e));
-  // Non-BMP character '🌏' (U+1F30F)
-  EXPECT_EQ(std::u16string({0xd83c, 0xdf0f}), IconLetterToString(0x1f30f));
 }
 
 TEST_F(WebAppIconGeneratorTest, GenerateIcons) {

@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -29,7 +30,8 @@ void DocumentIconFetcher::FetchIcons(content::WebContents& web_contents,
   DocumentIconFetcher* fetch_manager =
       DocumentIconFetcher::GetOrCreateForCurrentDocument(
           web_contents.GetPrimaryMainFrame());
-  fetch_manager->RunTask(std::move(callback));
+  fetch_manager->RunTask(GenerateIconLetterFromName(web_contents.GetTitle()),
+                         std::move(callback));
 }
 
 DocumentIconFetcher::~DocumentIconFetcher() {
@@ -55,7 +57,8 @@ DOCUMENT_USER_DATA_KEY_IMPL(DocumentIconFetcher);
 DocumentIconFetcher::DocumentIconFetcher(content::RenderFrameHost* rfh)
     : content::DocumentUserData<DocumentIconFetcher>(rfh) {}
 
-void DocumentIconFetcher::RunTask(FetchIconsFromDocumentCallback callback) {
+void DocumentIconFetcher::RunTask(char32_t fallback_letter,
+                                  FetchIconsFromDocumentCallback callback) {
   std::unique_ptr<FetchIconsFromDocumentTask> task =
       std::make_unique<FetchIconsFromDocumentTask>(
           base::PassKey<DocumentIconFetcher>(), render_frame_host());
@@ -65,15 +68,21 @@ void DocumentIconFetcher::RunTask(FetchIconsFromDocumentCallback callback) {
   // Note: the callback may be called synchronously.
   iter->second->Start(base::BindOnce(&DocumentIconFetcher::OnTaskComplete,
                                      weak_factory_.GetWeakPtr(), task_id,
-                                     std::move(callback)));
+                                     fallback_letter, std::move(callback)));
 }
 
 void DocumentIconFetcher::OnTaskComplete(
     int id,
+    char32_t fallback_letter,
     FetchIconsFromDocumentCallback original_callback,
     FetchIconsFromDocumentResult result) {
   int num_erased = fetch_tasks_.erase(id);
   CHECK(num_erased > 0 || in_destruction_);
+
+  if (result.has_value() && result->empty()) {
+    result->push_back(GenerateBitmap(128, fallback_letter));
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(original_callback), result));
 }

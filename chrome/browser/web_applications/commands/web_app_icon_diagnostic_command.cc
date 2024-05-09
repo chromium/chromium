@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -130,8 +131,9 @@ void WebAppIconDiagnosticCommand::DiagnoseGeneratedOrEmptyIconBitmap(
   }
 
   DCHECK(icon_size_);
-  SkBitmap generated_icon_bitmap = GenerateBitmap(
-      *icon_size_, GenerateIconLetterFromAppName(base::UTF8ToUTF16(name)));
+  SkBitmap generated_icon_bitmap = shortcuts::GenerateBitmap(
+      *icon_size_,
+      shortcuts::GenerateIconLetterFromName(base::UTF8ToUTF16(name)));
   result_->has_generated_icon_bitmap =
       gfx::BitmapsAreEqual(icon_bitmap, generated_icon_bitmap);
 

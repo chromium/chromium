@@ -22,6 +22,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
   // The letter for https://example.com should be the first letter of the host,
   // which is "E".
   SkBitmap generated_icon_bitmap =
-      GenerateBitmap(icon_size::k128, static_cast<char32_t>('E'));
+      shortcuts::GenerateBitmap(icon_size::k128, static_cast<char32_t>('E'));
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, generated_icon_bitmap));
 }
 

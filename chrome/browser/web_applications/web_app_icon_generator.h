@@ -61,24 +61,6 @@ std::set<SquareSizePx> SizesToGenerate();
 SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
                                      const std::set<SquareSizePx>& sizes);
 
-// Generates a square container icon of |output_size| by drawing the given
-// |icon_letter|.
-SkBitmap GenerateBitmap(SquareSizePx output_size, char32_t icon_letter);
-
-// Returns the first letter from |app_url| that will be painted on the generated
-// icon.
-char32_t GenerateIconLetterFromUrl(const GURL& app_url);
-
-// Returns the first letter from |app_name| that will be painted on the
-// generated icon.
-char32_t GenerateIconLetterFromAppName(const std::u16string& app_name);
-
-// Converts a codepoint (intended to be the first letter of an app name or URL)
-// to a UTF-16 string.
-//
-// Public for testing.
-std::u16string IconLetterToString(char32_t cp);
-
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |icon_letter| is the first letter of app name if available
 // otherwise the first letter of app url.

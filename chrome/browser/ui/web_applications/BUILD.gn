@@ -93,6 +93,7 @@ source_set("browser_tests") {
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/permissions",
+    "//chrome/browser/shortcuts",
     "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/app_service:test_support",

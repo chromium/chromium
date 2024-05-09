@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -922,8 +923,8 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
 
   char32_t icon_letter =
       web_app_info->title.empty()
-          ? GenerateIconLetterFromUrl(web_app_info->start_url)
-          : GenerateIconLetterFromAppName(web_app_info->title);
+          ? shortcuts::GenerateIconLetterFromUrl(web_app_info->start_url)
+          : shortcuts::GenerateIconLetterFromName(web_app_info->title);
 
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY
   // are present, by generating icons for any sizes that have failed to
