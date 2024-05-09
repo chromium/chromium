@@ -471,6 +471,11 @@ if (enable_scrambled_message_ids) {
 #             type is move-only. If true, generated bindings will pass the type
 #             by value and use std::move() at call sites.
 #
+#         non_const_ref (optional)
+#             A boolean value (default false) which indicates whether the C++
+#             type not const. If true, generated bindings will omit const for
+#             the type within bindings.
+#
 #         nullable_is_same_type (optional)
 #             A boolean value (default false) which indicates that the C++ type
 #             has some baked-in semantic notion of a "null" state. If true, the

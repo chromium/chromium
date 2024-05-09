@@ -33,7 +33,11 @@
 
 {%- macro pass_params(parameters) %}
 {%-   for param in parameters %}
+{%- if param.kind|is_non_const_ref_kind %}
+p_{{param.name}}
+{%- else %}
 std::move(p_{{param.name}})
+{%- endif %}
 {%-     if not loop.last %}, {% endif %}
 {%-   endfor %}
 {%- endmacro %}

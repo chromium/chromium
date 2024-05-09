@@ -123,7 +123,12 @@ namespace mojo {
 void {{interface.name}}InterceptorForTesting::{{method.name}}({{interface_macros.declare_request_params("", method)}}) {
   GetForwardingInterface()->{{method.name}}(
     {%- for param in method.parameters -%}
-    std::move({{param.name}}){%- if not loop.last %}, {% endif %}
+    {%- if param.kind|is_non_const_ref_kind %}
+    {{param.name}}
+    {%- else %}
+    std::move({{param.name}})
+    {% endif %}
+    {%- if not loop.last %}, {% endif %}
     {%- endfor %}
     {%-   if method.response_parameters != None -%}
     {%-     if method.parameters %}, {% endif -%}

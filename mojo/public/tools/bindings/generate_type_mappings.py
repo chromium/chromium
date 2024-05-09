@@ -91,6 +91,7 @@ def LoadCppTypemapConfig(path):
             'force_serialize': entry.get('force_serialize', False),
             'hashable': entry.get('hashable', False),
             'move_only': entry.get('move_only', False),
+            'non_const_ref': entry.get('non_const_ref', False),
             'nullable_is_same_type': entry.get('nullable_is_same_type', False),
             'non_copyable_non_movable': False,
         }

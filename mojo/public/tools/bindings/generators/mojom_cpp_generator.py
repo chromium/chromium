@@ -431,6 +431,7 @@ class Generator(generator.Generator):
         "is_feature_kind": mojom.IsFeatureKind,
         "is_hashable": self._IsHashableKind,
         "is_map_kind": mojom.IsMapKind,
+        "is_non_const_ref_kind": self._IsNonConstRefKind,
         "is_nullable_kind": mojom.IsNullableKind,
         "is_object_kind": mojom.IsObjectKind,
         "is_reference_kind": mojom.IsReferenceKind,
@@ -638,8 +639,8 @@ class Generator(generator.Generator):
         return False
       elif mojom.IsAnyInterfaceKind(kind):
         return False
-      # TODO(crbug.com/41326458): Arrays and maps could be made hashable. We just
-      # don't have a use case yet.
+      # TODO(crbug.com/41326458): Arrays and maps could be made hashable. We
+      # just don't have a use case yet.
       elif mojom.IsArrayKind(kind):
         return False
       elif mojom.IsMapKind(kind):
@@ -788,6 +789,11 @@ class Generator(generator.Generator):
       return True
     return False
 
+  def _IsNonConstRefKind(self, kind):
+    if self._IsTypemappedKind(kind):
+      return self.typemap[self._GetFullMojomNameForKind(kind)]["non_const_ref"]
+    return False
+
   def _IsFullHeaderRequiredForImport(self, imported_module):
     """Determines whether a given import module requires a full header include,
     or if the forward header is sufficient."""
@@ -845,6 +851,9 @@ class Generator(generator.Generator):
     return ((not mojom.IsReferenceKind(kind)) or self._IsMoveOnlyKind(kind) or
         self._IsCopyablePassByValue(kind))
 
+  def _ShouldPassParamByNonConstRef(self, kind):
+    return self._IsNonConstRefKind(kind)
+
   def _GetCppWrapperCallType(self, kind, add_same_module_namespaces=False):
     # TODO: Remove this once interfaces are always passed as PtrInfo.
     if mojom.IsInterfaceKind(kind):
@@ -862,14 +871,21 @@ class Generator(generator.Generator):
           kind, add_same_module_namespaces=add_same_module_namespaces)
     cpp_wrapper_type = self._GetCppWrapperType(
         kind, add_same_module_namespaces=add_same_module_namespaces)
-    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind)
-                             else "const %s&" % cpp_wrapper_type)
+    if self._ShouldPassParamByValue(kind):
+      return cpp_wrapper_type
+    elif self._ShouldPassParamByNonConstRef(kind):
+      return "%s&" % cpp_wrapper_type
+    else:
+      return "const %s&" % cpp_wrapper_type
 
   def _GetCppWrapperParamTypeNew(self, kind):
     cpp_wrapper_type = self._GetCppWrapperType(kind)
-    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind)
-                                 or mojom.IsArrayKind(kind)
-                             else "const %s&" % cpp_wrapper_type)
+    if self._ShouldPassParamByValue(kind) or mojom.IsArrayKind(kind):
+      return cpp_wrapper_type
+    elif self._ShouldPassParamByNonConstRef(kind):
+      return "%s&" % cpp_wrapper_type
+    else:
+      return "const %s&" % cpp_wrapper_type
 
   def _GetCppFieldType(self, kind):
 
