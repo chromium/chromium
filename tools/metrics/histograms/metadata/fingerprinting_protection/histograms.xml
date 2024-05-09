@@ -1,0 +1,48 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Fingerprinting Protection
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram
+    name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
+    units="microseconds" expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations that were marked {Result}.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+  <token key="Result">
+    <variant name="Allowed"/>
+    <variant name="Disallowed"/>
+    <variant name="WouldDisallow"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

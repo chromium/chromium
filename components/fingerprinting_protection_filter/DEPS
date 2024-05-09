@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/subresource_filter/core",
   "+components/subresource_filter/content/shared/browser",
+  "+components/subresource_filter/core",
   "+content/public/browser",
   "+content/public/test",
 ]
