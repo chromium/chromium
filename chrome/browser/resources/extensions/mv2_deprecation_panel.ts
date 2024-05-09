@@ -7,11 +7,20 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ItemDelegate} from './item.js';
 import {getTemplate} from './mv2_deprecation_panel.html.js';
+
+export interface ExtensionsMv2DeprecationPanelElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+  };
+}
 
 export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   static get is() {
@@ -24,6 +33,8 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
 
   static get properties() {
     return {
+      delegate: Object,
+
       /*
        * Extensions to display in the panel.
        */
@@ -49,8 +60,10 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   }
 
   extensions: chrome.developerPrivate.ExtensionInfo[];
+  delegate: ItemDelegate;
   private headerString_: string;
   private subtitleString_: string;
+  private lastClickedExtensionId_: string;
 
   /**
    * Updates properties after extensions change.
@@ -70,6 +83,25 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
    */
   private getSubtitleString_(): TrustedHTML {
     return sanitizeInnerHtml(this.subtitleString_);
+  }
+
+  /**
+   * Opens the action menu.
+   */
+  private onExtensionActionMenuClick_(
+      event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    // Store the id of the extension whose action menu was opened.
+    this.lastClickedExtensionId_ = event.model.item.id;
+    this.$.actionMenu.showAt(event.target as HTMLElement);
+  }
+
+  /**
+   * Triggers an extension removal when the remove button is clicked for an
+   * extension.
+   */
+  private onRemoveExtensionActionClicked_(): void {
+    this.$.actionMenu.close();
+    this.delegate.deleteItem(this.lastClickedExtensionId_);
   }
 }
 

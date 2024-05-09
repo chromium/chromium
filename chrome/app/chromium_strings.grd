@@ -856,7 +856,7 @@ Permissions you've already given to websites and apps may apply to this account.
         This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.
       </message>
 
-      <!-- chrome://settings/extensions page -->
+      <!-- chrome://extensions page -->
   <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">
     {NUM_EXTENSIONS, plural,
      =1 {Chromium recommends that you remove it}
@@ -868,7 +868,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chromium cannot prevent extensions from recording history in Incognito mode. Displayed in extensions management UI after an extension is selected to be run in Incognito mode.">
         Warning: Chromium cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.
       </message>
-      <message name="IDS_EXTENSIONS_UNINSTALL" desc="The link for uninstalling extensions.">
+      <message name="IDS_EXTENSIONS_UNINSTALL" desc="The label for a control that triggers an extension uninstall.">
         Remove from Chromium
       </message>
       <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_IN_CHROME" desc="The label to indicate that a shortcut will be triggerable only from within the Chrome application.">

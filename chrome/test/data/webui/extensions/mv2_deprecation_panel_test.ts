@@ -6,21 +6,27 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createExtensionInfo} from './test_util.js';
+import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
 suite('ExtensionsMV2DeprecationPanel', function() {
   let panelElement: ExtensionsMv2DeprecationPanelElement;
+  let mockDelegate: MockItemDelegate;
 
   setup(function() {
+    mockDelegate = new MockItemDelegate();
+
     panelElement = document.createElement('extensions-mv2-deprecation-panel');
     panelElement.extensions = [createExtensionInfo({
       name: 'Extension A',
+      id: 'a'.repeat(32),
       isAffectedByMV2Deprecation: true,
     })];
+    panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
 
     return flushTasks();
@@ -59,4 +65,29 @@ suite('ExtensionsMV2DeprecationPanel', function() {
         extensionRows[1]?.querySelector('.extension-name')?.textContent?.trim(),
         'Extension B');
   });
+
+  test(
+      'extension action menu buttons trigger the correct call',
+      async function() {
+        const extension = panelElement.shadowRoot!
+                              .querySelectorAll<HTMLElement>('.extension-row')
+                              ?.[0];
+        assertTrue(!!extension);
+
+        // Click on the extension's action menu button so we store the extension
+        // id whose action menu was expanded.
+        const actionButton =
+            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+        assertTrue(!!actionButton);
+        actionButton.click();
+
+        // Click on the remove button in the action menu, and verify it
+        // triggered the correct delegate call.
+        const removeAction =
+            panelElement.shadowRoot!.querySelector<HTMLElement>(
+                '#removeAction');
+        assertTrue(!!removeAction);
+        await mockDelegate.testClickingCalls(
+            removeAction, 'deleteItem', [panelElement.extensions[0]?.id]);
+      });
 });

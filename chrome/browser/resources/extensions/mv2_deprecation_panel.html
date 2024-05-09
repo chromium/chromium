@@ -74,9 +74,17 @@
           $i18n{mv2DeprecationPanelFindAlternativeButton}
           <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
         </cr-button>
-        <cr-icon-button class="icon-more-vert header-aligned-button">
+        <cr-icon-button class="icon-more-vert header-aligned-button"
+            on-click="onExtensionActionMenuClick_">
         </cr-icon-button>
       </div>
     </template>
+
+    <cr-action-menu id="actionMenu">
+      <button class="dropdown-item" id="removeAction"
+          on-click="onRemoveExtensionActionClicked_">
+        $i18n{mv2DeprecationPanelRemoveExtensionButton}
+      </button>
+    </cr-action-menu>
   </div>
 </div>
