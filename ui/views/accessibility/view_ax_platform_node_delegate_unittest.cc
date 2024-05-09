@@ -308,6 +308,7 @@ class ViewAXPlatformNodeDelegateMenuTest
                               MenuItemView::Type::kTitle);
 
     submenu_ = menu_->GetSubmenu();
+    owner_->GetRootView()->AddChildView(submenu_);
     submenu_->GetMenuItemAt(3)->SetSelected(true);
   }
 

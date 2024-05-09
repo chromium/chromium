@@ -636,6 +636,9 @@ void View::SetVisible(bool visible) {
     }
 
     visible_ = visible;
+    // The visible state of a view can affect both its own focusability and that
+    // of its descendants.
+    GetViewAccessibility().UpdateFocusableStateRecursive();
     AdvanceFocusIfNecessary();
 
     // Notify the parent.
@@ -1950,6 +1953,11 @@ void View::SetFocusBehavior(FocusBehavior focus_behavior) {
   }
 
   focus_behavior_ = focus_behavior;
+  // We don't have to update the focusable state here recursively because a
+  // view's focus behavior does not affect its children's focus behavior. For
+  // example, a container view may have a focus behavior of NEVER, but its
+  // children may still be focusable.
+  GetViewAccessibility().UpdateFocusableState();
   AdvanceFocusIfNecessary();
 
   OnPropertyChanged(&focus_behavior_, kPropertyEffectsNone);
@@ -3111,6 +3119,10 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // rooted at |this| should be hidden. Otherwise, all the child layers should
   // inherit the visibility of the owner View.
   view->UpdateLayerVisibility();
+
+  // Make sure that the accessible focusable state of the descendants of the
+  // `view` is correct.
+  view->GetViewAccessibility().UpdateFocusableStateRecursive();
 
   // Need to notify the layout manager because one of the callbacks below might
   // want to know the view's new preferred size, minimum size, etc.

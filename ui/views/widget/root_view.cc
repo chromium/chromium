@@ -138,6 +138,8 @@ class AnnounceTextView : public View {
     node_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                                   "polite");
 
+    !announce_text_.empty() ? node_data->SetNameChecked(announce_text_)
+                            : node_data->SetNameExplicitlyEmpty();
     node_data->SetNameChecked(announce_text_);
     node_data->AddState(ax::mojom::State::kInvisible);
   }

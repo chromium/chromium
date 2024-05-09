@@ -197,9 +197,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   data->relative_bounds.bounds = gfx::RectF(view_->GetBoundsInScreen());
 
-  if (ViewAccessibility::IsAccessibilityFocusable())
-    data->AddState(ax::mojom::State::kFocusable);
-
   if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
     data->AddState(ax::mojom::State::kInvisible);
 
@@ -275,18 +272,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
 }
 
 bool ViewAccessibility::IsAccessibilityFocusable() const {
-  // Descendants of leaf nodes should not be reported as focusable, because all
-  // such descendants are not exposed to the accessibility APIs of any platform.
-  // (See `AXNode::IsLeaf()` for more information.) We avoid calling
-  // `IsChildOfLeaf()` for performance reasons, because `FocusManager` makes use
-  // of this method, which means that it would be called frequently. However,
-  // since all descendants of leaf nodes are ignored by default, and since our
-  // testing framework enforces the condition that all ignored nodes should not
-  // be focusable, if there is test coverage, such a situation will cause a test
-  // failure.
-  return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         GetIsEnabled() && view_->IsDrawn() &&
-         !ViewAccessibility::GetIsIgnored();
+  return data_.HasState(ax::mojom::State::kFocusable);
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
@@ -565,6 +551,8 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
     // `ax::mojom::Restriction`).
     data_.SetRestriction(ax::mojom::Restriction::kNone);
   }
+
+  UpdateFocusableState();
 
   // TODO(crbug.com/40896388): We need a specific enabled-changed event for
   // this. Some platforms have specific state-changed events and this generic
@@ -849,5 +837,21 @@ void ViewAccessibility::AdjustIgnoredState() {
   bool is_ignored =
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
   SetState(ax::mojom::State::kIgnored, is_ignored);
+  UpdateFocusableState();
+}
+
+void ViewAccessibility::UpdateFocusableState() {
+  bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
+                      GetIsEnabled() && view_->IsDrawn() &&
+                      !ViewAccessibility::GetIsIgnored();
+  SetState(ax::mojom::State::kFocusable, is_focusable);
+}
+
+void ViewAccessibility::UpdateFocusableStateRecursive() {
+  internal::ScopedChildrenLock lock(view_);
+  UpdateFocusableState();
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().UpdateFocusableStateRecursive();
+  }
 }
 }  // namespace views

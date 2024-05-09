@@ -297,6 +297,17 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* GetNextWindowFocus() const;
   Widget* GetPreviousWindowFocus() const;
 
+  // Updates the focusable state of the `data_` object.
+  // The view is considered focusable if it is not set to never receive focus
+  // This function must be called whenever an attribute that can affect the
+  // focusable state changes
+  void UpdateFocusableState();
+
+  // This function recursively updates the focusable state of the `data_` member
+  // and that of the view's children. Then it updates the focusable state of the
+  // current view.
+  void UpdateFocusableStateRecursive();
+
   // Override the child tree id.
   void OverrideChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;

@@ -5534,6 +5534,12 @@ class WidgetSetAspectRatioTest
   }
 
   void TearDown() override {
+    // `ViewAccessibility` objects have some references to the `widget` which
+    // must be updated when the widget is freed. The function that is in charge
+    // of clearing these lists however (`OnNativeWidgetDestroying`), is never
+    // called in this test suite because we use a `MockNativeWindow` rather than
+    // a `NativeWindow`. So we make sure this clean up happens manually.
+    widget()->OnNativeWidgetDestroying();
     native_widget_.reset();
     widget()->Close();
     widget_.reset();
