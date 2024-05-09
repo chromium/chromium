@@ -101,3 +101,6 @@
 
 # crbug.com/339502391
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
+
+# crbug.com/339658545
+-org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
