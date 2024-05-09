@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -1992,10 +1993,10 @@ TEST_F(FasterSplitScreenTest, RecordWindowIndexAndCount) {
   // Select `w2` which is the only window.
   ClickOverviewItem(GetEventGenerator(), w2.get());
   histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
-                                      /*index=*/0,
+                                      /*sample=*/0,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
-                                      /*size=*/1, /*expected_count=*/1);
+                                      /*sample=*/1, /*expected_count=*/1);
   MaximizeToClearTheSession(w2.get());
 
   // Start partial overview with 2 windows in overview.
@@ -2005,10 +2006,10 @@ TEST_F(FasterSplitScreenTest, RecordWindowIndexAndCount) {
   // Select `w2` which is the 2nd mru window.
   ClickOverviewItem(GetEventGenerator(), w2.get());
   histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
-                                      /*index=*/1,
+                                      /*sample=*/1,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
-                                      /*size=*/2, /*expected_count=*/1);
+                                      /*sample=*/2, /*expected_count=*/1);
   MaximizeToClearTheSession(w2.get());
 
   // Start partial overview with 3 windows in overview.
@@ -2018,23 +2019,34 @@ TEST_F(FasterSplitScreenTest, RecordWindowIndexAndCount) {
   // Select `w3` which is the 3rd mru window.
   ClickOverviewItem(GetEventGenerator(), w3.get());
   histogram_tester_.ExpectBucketCount(kPartialOverviewSelectedWindowIndex,
-                                      /*index=*/2,
+                                      /*sample=*/2,
                                       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kPartialOverviewWindowListSize,
-                                      /*size=*/3, /*expected_count=*/1);
+                                      /*sample=*/3, /*expected_count=*/1);
 }
 
 // -----------------------------------------------------------------------------
 // SnapGroupTest:
 
 // A test fixture to test the snap group feature.
-class SnapGroupTest : public FasterSplitScreenTest {
+class SnapGroupTest : public AshTestBase {
  public:
   SnapGroupTest() {
-    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
-                                          {features::kSnapGroup,
-                                           features::kSameAppWindowCycle},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {features::kSnapGroup,
+                           features::kOsSettingsRevampWayfinding,
+                           features::kSameAppWindowCycle},
+                          /*disabled_features=*/{});
+  }
+  explicit SnapGroupTest(base::test::TaskEnvironment::TimeSource time)
+      : AshTestBase(time) {
+    scoped_feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {features::kSnapGroup,
+                           features::kOsSettingsRevampWayfinding,
+                           features::kSameAppWindowCycle},
+                          /*disabled_features=*/{});
   }
   SnapGroupTest(const SnapGroupTest&) = delete;
   SnapGroupTest& operator=(const SnapGroupTest&) = delete;
@@ -2183,7 +2195,9 @@ TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
 
   SnapTwoTestWindows(w1.get(), w2.get());
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_FALSE(snap_group_controller->AddSnapGroup(w1.get(), w3.get()));
+  EXPECT_FALSE(snap_group_controller->AddSnapGroup(
+      w1.get(), w3.get(), /*replace=*/false,
+      /*carry_over_creation_Time=*/std::nullopt));
 
   EXPECT_EQ(snap_groups.size(), 1u);
   EXPECT_EQ(window_to_snap_group_map.size(), 2u);
@@ -6668,7 +6682,20 @@ TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 
-using SnapGroupHistogramTest = SnapGroupTest;
+class SnapGroupHistogramTest : public SnapGroupTest {
+ public:
+  SnapGroupHistogramTest()
+      : SnapGroupTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~SnapGroupHistogramTest() override = default;
+
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment()->AdvanceClock(delta);
+    task_environment()->RunUntilIdle();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
 
 // Tests that the pipeline to get snap action source info all the way to be
 // stored in the `SplitViewOverviewSession` is working. This test focuses on the
@@ -6713,10 +6740,62 @@ TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
   MaximizeToClearTheSession(window1.get());
 }
 
+// Verifies that the recorded duration of a snap group accurately reflects both
+// its persistence and actual duration.
+TEST_F(SnapGroupHistogramTest, SnapGroupDuration) {
+  const std::string persistence_duration_histogram_name =
+      BuildHistogramName(kSnapGroupPersistenceDurationRootWord);
+  histogram_tester_.ExpectTotalCount(persistence_duration_histogram_name, 0);
+
+  const std::string actual_duration_histogram_name =
+      BuildHistogramName(kSnapGroupActualDurationRootWord);
+  histogram_tester_.ExpectTotalCount(actual_duration_histogram_name, 0);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  AdvanceClock(base::Seconds(10));
+
+  // Snap `w3` to perform "snap to replace".
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // `persistence_duration_histogram_name` remains as 0 as the lifespan of the
+  // Snap Group persists.
+  histogram_tester_.ExpectTotalCount(persistence_duration_histogram_name, 0);
+
+  // Whereas for `actual_duration_histogram_name`, it recorded the actual Snap
+  // Group duration.
+  histogram_tester_.ExpectBucketCount(actual_duration_histogram_name,
+                                      /*sample=*/10, /*expected_count=*/1);
+
+  AdvanceClock(base::Seconds(10));
+
+  snap_group_controller->RemoveSnapGroup(
+      snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
+  histogram_tester_.ExpectBucketCount(persistence_duration_histogram_name,
+                                      /*sample=*/20, /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(actual_duration_histogram_name,
+                                      /*sample=*/10, /*expected_count=*/2);
+}
+
 TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   UpdateDisplay("800x600");
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kSnapGroupsCountHistogramName, 0);
+
+  const std::string snap_groups_count_histogram =
+      BuildHistogramName(kSnapGroupsCountRootWord);
+
+  histogram_tester_.ExpectTotalCount(snap_groups_count_histogram, 0);
 
   // Create and test we record 1 group.
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -6724,9 +6803,9 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = SnapGroupController::Get();
   ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
-  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
-                                     /*sample=*/1,
-                                     /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(snap_groups_count_histogram,
+                                      /*sample=*/1,
+                                      /*expected_count=*/1);
 
   // Create a maximized window to occlude the snapped windows so we can start
   // partial overview and create a 2nd snap group.
@@ -6737,16 +6816,16 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
   SnapTwoTestWindows(w3.get(), w4.get());
   ASSERT_EQ(2u, snap_group_controller->snap_groups_for_testing().size());
-  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
-                                     /*sample=*/2,
-                                     /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(snap_groups_count_histogram,
+                                      /*sample=*/2,
+                                      /*expected_count=*/1);
 
   // Close `w3` so we remove the 2nd snap group. Test we record 1 group.
   w3.reset();
   ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
-  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
-                                     /*sample=*/1,
-                                     /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(snap_groups_count_histogram,
+                                      /*sample=*/1,
+                                      /*expected_count=*/2);
 
   // Snap to replace `w5` in the 1st snap group. Test we don't record.
   std::unique_ptr<aura::Window> w5(CreateAppWindow());
@@ -6754,11 +6833,11 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
-  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
-                                     /*sample=*/1,
-                                     /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(snap_groups_count_histogram,
+                                      /*sample=*/1,
+                                      /*expected_count=*/2);
 
-  histogram_tester.ExpectTotalCount(kSnapGroupsCountHistogramName, 3);
+  histogram_tester_.ExpectTotalCount(snap_groups_count_histogram, 3);
 }
 
 }  // namespace ash

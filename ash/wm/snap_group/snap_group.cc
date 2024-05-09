@@ -22,6 +22,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -37,8 +38,13 @@ using chromeos::WindowStateType;
 
 }  // namespace
 
-SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
-    : snap_group_divider_(this) {
+SnapGroup::SnapGroup(aura::Window* window1,
+                     aura::Window* window2,
+                     std::optional<base::TimeTicks> sticky_creation_time)
+    : snap_group_divider_(this),
+      carry_over_creation_time_(
+          sticky_creation_time.value_or(base::TimeTicks().Now())),
+      actual_creation_time_(base::TimeTicks().Now()) {
   CHECK_EQ(window1->parent(), window2->parent());
 
   auto* window_state1 = WindowState::Get(window1);

@@ -4,6 +4,7 @@
 
 #include "ash/wm/snap_group/snap_group_controller.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/root_window_controller.h"
@@ -25,6 +26,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -72,9 +74,11 @@ bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
          window2 == RetrieveTheOtherWindowInSnapGroup(window1);
 }
 
-SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
-                                             aura::Window* window2,
-                                             bool replace) {
+SnapGroup* SnapGroupController::AddSnapGroup(
+    aura::Window* window1,
+    aura::Window* window2,
+    bool replace,
+    std::optional<base::TimeTicks> carry_over_creation_time) {
   // We should only allow snap group to be created for windows that have the
   // same parent.
   if (window1->parent() != window2->parent()) {
@@ -92,7 +96,7 @@ SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
   }
 
   std::unique_ptr<SnapGroup> snap_group =
-      std::make_unique<SnapGroup>(window1, window2);
+      std::make_unique<SnapGroup>(window1, window2, carry_over_creation_time);
 
   window_to_snap_group_map_.emplace(window1, snap_group.get());
   window_to_snap_group_map_.emplace(window2, snap_group.get());
@@ -131,8 +135,16 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
       FROM_HERE, std::move(group_to_remove));
 
   if (!replace) {
+    // Records persistence duration and Snap Groups count when the removal of
+    // `group_to_remove` is not due to 'Snap to Replace'.
+    RecordSnapGroupPersistenceDuration(base::TimeTicks::Now() -
+                                       snap_group->carry_over_creation_time_);
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
   }
+
+  // We should always record the actual duration of the Snap Group upon removal.
+  RecordSnapGroupActualDuration(base::TimeTicks::Now() -
+                                snap_group->actual_creation_time_);
 
   return true;
 }
@@ -226,9 +238,13 @@ bool SnapGroupController::OnSnappingWindow(
 
   // TODO(b/331470570): Consider directly replacing the `to_be_snapped_window`
   // within the `snap_group`.
+  const auto carry_over_creation_time =
+      group_to_replace->carry_over_creation_time_;
   RemoveSnapGroup(group_to_replace, /*replace=*/true);
-  SnapGroup* new_snap_group =
-      AddSnapGroup(new_primary_window, new_secondary_window, /*replace=*/true);
+  SnapGroup* new_snap_group = AddSnapGroup(
+      new_primary_window, new_secondary_window, /*replace=*/true,
+      /*carry_over_creation_time=*/
+      std::make_optional<base::TimeTicks>(carry_over_creation_time));
 
   // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
   // snap ratio of the `group_to_replace` is preserved.

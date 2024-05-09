@@ -1916,8 +1916,9 @@ bool SplitViewController::MaybeCreateSnapGroup() {
       IsSnapGroupEnabledInClamshellMode()) {
     SnapGroupController* snap_group_controller = SnapGroupController::Get();
     // TODO(b/286963080): Move this to SnapGroupController.
-    if (snap_group_controller->AddSnapGroup(primary_window_,
-                                            secondary_window_)) {
+    if (snap_group_controller->AddSnapGroup(
+            primary_window_, secondary_window_, /*replace=*/false,
+            /*sticky_creation_time=*/std::nullopt)) {
       // Ending split view will call `UpdateStateAndNotifyObservers()` that
       // state is now `kNoSnap` and end overview in
       // `OverviewGrid::OnSplitViewStateChanged()`.

@@ -22,9 +22,32 @@ void RecordPartialOverviewMetrics(OverviewItemBase* item) {
   }
 }
 
+void RecordSnapGroupPersistenceDuration(base::TimeDelta persistence_duration) {
+  base::UmaHistogramCustomCounts(
+      BuildHistogramName(kSnapGroupPersistenceDurationRootWord),
+      persistence_duration.InSeconds(), /*min=*/1,
+      /*exclusive_max=*/base::Hours(8).InSeconds(),
+      /*buckets=*/50);
+}
+
+void RecordSnapGroupActualDuration(base::TimeDelta actual_duration) {
+  base::UmaHistogramCustomCounts(
+      BuildHistogramName(kSnapGroupActualDurationRootWord),
+      actual_duration.InSeconds(), /*min=*/1,
+      /*exclusive_max=*/base::Hours(8).InSeconds(),
+      /*buckets=*/50);
+}
+
 void ReportSnapGroupsCountHistogram(int count) {
-  UMA_HISTOGRAM_EXACT_LINEAR(kSnapGroupsCountHistogramName, count,
+  UMA_HISTOGRAM_EXACT_LINEAR(BuildHistogramName(kSnapGroupsCountRootWord),
+                             count,
                              /*exclusive_max=*/101);
+}
+
+std::string BuildHistogramName(const char* const root_word) {
+  std::string histogram_name(kSnapGroupsMetricCommonPrefix);
+  histogram_name.append(root_word);
+  return histogram_name;
 }
 
 }  // namespace ash

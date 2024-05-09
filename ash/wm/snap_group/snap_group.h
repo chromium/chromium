@@ -5,11 +5,14 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
+#include <optional>
+
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 
@@ -26,12 +29,18 @@ class ScopedOverviewHideWindows;
 // `LayoutDividerController` interface to allow synchronized resizing of the
 // windows within the group. The creation will eventually be done in
 // `SnapGroupController` after the major window layout architecture is complete.
+// `sticky_creation_time` specifies the creation time of a prior Snap Group from
+// which the current one was derived using the Snap to Replace feature.  If this
+// value is not specified, it means that the current Snap Group was not created
+// from a previous one.
 class SnapGroup : public aura::WindowObserver,
                   public WindowStateObserver,
                   public LayoutDividerController,
                   public display::DisplayObserver {
  public:
-  SnapGroup(aura::Window* window1, aura::Window* window2);
+  SnapGroup(aura::Window* window1,
+            aura::Window* window2,
+            std::optional<base::TimeTicks> sticky_creation_time);
   SnapGroup(const SnapGroup&) = delete;
   SnapGroup& operator=(const SnapGroup&) = delete;
   ~SnapGroup() override;
@@ -146,6 +155,15 @@ class SnapGroup : public aura::WindowObserver,
 
   // The secondary snapped window in the group.
   raw_ptr<aura::Window> window2_;
+
+  // Tracks the timestamp of the original Snap Group's creation time, preserved
+  // when using 'Snap to Replace'.
+  const base::TimeTicks carry_over_creation_time_;
+
+  // Tracks the actual creation time of `this` without carrying over the
+  // creation time from a previous Snap Group when using Snap to Replace i.e.
+  // the two snapped windows remain unchanged throughout its existence.
+  const base::TimeTicks actual_creation_time_;
 
   // True if the shutting down process has been triggered.
   bool is_shutting_down_ = false;
