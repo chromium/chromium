@@ -1128,8 +1128,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
-    // TODO(crbug.com/40927698): When pausing, can we pause on a word boundary
-    // and continue playing from the previous word?
     this.speechPlayingState = {
       ...this.speechPlayingState,
       paused: true,
@@ -1363,7 +1361,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // with no feedback.
       this.speechEngineLoaded = true;
 
-      // TODO(crbug.com/40927698): Add more sophisticated error handling.
       if (error.error === 'interrupted') {
         // SpeechSynthesis.cancel() was called, therefore, do nothing.
         return;
@@ -1466,8 +1463,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.onSpeechFinished();
       }
     };
-
-    // TODO(crbug.com/40927698): Add word callbacks for word highlighting.
 
     const voice = this.getSpeechSynthesisVoice();
     if (!voice) {
