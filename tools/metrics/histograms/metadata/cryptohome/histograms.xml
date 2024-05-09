@@ -126,6 +126,7 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name="BackUp"/>
     <variant name="CleanUp"/>
+    <variant name="Exchange"/>
     <variant name="FixXattr"/>
     <variant name="Move"/>
     <variant name="RemoveReappearedDownloads"/>
@@ -133,6 +134,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetXattrForNewCryptoHome"/>
     <variant name="SetXattrToMigrated"/>
     <variant name="SetXattrToMigrating"/>
+    <variant name="UnmaskItem"/>
   </token>
 </histogram>
 
