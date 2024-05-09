@@ -1996,7 +1996,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // Tests that opening a popup after a verifying sheet, then closing the popup,
 // notifies the observer.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       ClosePopupAfterVerifyingSheetShouldNotify) {
+       UserClosingPopupAfterVerifyingSheetShouldNotify) {
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
   const std::vector<Account>& accounts = idp_data.accounts;
@@ -2018,6 +2018,33 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
   controller->popup_window_->ClosePopupWindow();
   EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kOther);
+}
+
+// Tests that opening a popup after a verifying sheet, then closing the popup
+// programmatically, does not notify the observer.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CodeClosingPopupAfterVerifyingSheetShouldNotNotify) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+
+  CreateAndShowPopupWindow(*controller);
+  controller->CloseModalDialog();
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
 }
 
 // Tests that if the dialog skips requesting permission, the verifying sheet is

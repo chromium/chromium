@@ -824,6 +824,9 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 void FedCmAccountSelectionView::CloseModalDialog() {
   auto show_accounts_callback = std::move(show_accounts_dialog_callback_);
   if (popup_window_) {
+    // Programmatic closure should never notify the delegate. If necessary the
+    // caller will take care of that, e.g. by aborting the flow.
+    notify_delegate_of_dismiss_ = false;
     // If the pop-up window is for IDP sign-in (as triggered from the mismatch
     // dialog or the add account button from the account chooser), we do not
     // destroy the bubble widget and wait for the accounts fetch before
@@ -834,7 +837,6 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // TODO(crbug.com/40281136): Verify if the current behaviour is what we want
     // for AuthZ/error.
     if (IsIdpSigninPopupOpen()) {
-      notify_delegate_of_dismiss_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();
       popup_window_state_ =

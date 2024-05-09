@@ -73,8 +73,9 @@ enum class FedCmRequestIdTokenStatus {
   kReplacedByButtonMode,
   kContinuationPopupClosedByUser,
   kSuccessUsingIdentityProviderResolve,
+  kContinuationPopupClosedByIdentityProviderClose,
 
-  kMaxValue = kSuccessUsingIdentityProviderResolve
+  kMaxValue = kContinuationPopupClosedByIdentityProviderClose
 };
 
 // This enum describes whether user sign-in states between IDP and browser
@@ -191,8 +192,9 @@ enum class FedCmContinueOnPopupStatus {
 enum class FedCmContinueOnPopupResult {
   kTokenReceived = 0,
   kWindowClosed = 1,
+  kClosedByIdentityProviderClose = 2,
 
-  kMaxValue = kWindowClosed
+  kMaxValue = kClosedByIdentityProviderClose
 };
 
 // This enum is used when we fail a FedCM request due to a bad

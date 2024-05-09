@@ -162,7 +162,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            IdpSigninStatusPopupClosedAfterAccountsPopulated);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
-                           ClosePopupAfterVerifyingSheetShouldNotify);
+                           UserClosingPopupAfterVerifyingSheetShouldNotify);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            AccountChooserResultMetric);
 

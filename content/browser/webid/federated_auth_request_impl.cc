@@ -2851,6 +2851,20 @@ void FederatedAuthRequestImpl::OnClose() {
 #endif  // BUILDFLAG(IS_ANDROID)
   CHECK(request_dialog_controller_);
   request_dialog_controller_->CloseModalDialog();
+
+  // When IdentityProvider.close is called in the continuation popup, we
+  // should abort the flow.
+  if (dialog_type_ == kContinueOnPopup) {
+    fedcm_metrics_->RecordContinueOnPopupResult(
+        FedCmContinueOnPopupResult::kClosedByIdentityProviderClose);
+    // Popups always get dismissed with reason kOther, so we never embargo.
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kError,
+        TokenStatus::kContinuationPopupClosedByIdentityProviderClose,
+        /*token_error=*/std::nullopt,
+        /*should_delay_callback=*/false);
+    return;
+  }
 }
 
 bool FederatedAuthRequestImpl::OnResolve(
@@ -2858,7 +2872,11 @@ bool FederatedAuthRequestImpl::OnResolve(
     const std::optional<std::string>& account_id,
     const std::string& token) {
   // Close the pop-up window post user permission.
-  OnClose();
+  // TODO(crbug.com/339481286): Make this work on Android.
+  if (!request_dialog_controller_) {
+    return false;
+  }
+  request_dialog_controller_->CloseModalDialog();
 
   permission_delegate_->GrantSharingPermission(
       origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
