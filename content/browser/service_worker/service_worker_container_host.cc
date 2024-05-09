@@ -471,7 +471,7 @@ void ServiceWorkerClient::EnsureControllerServiceWorker(
   controller_->RunAfterStartWorker(
       PurposeToEventType(purpose),
       base::BindOnce(&ServiceWorkerClient::StartControllerComplete,
-                     base::AsWeakPtr(this), std::move(receiver)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
 }
 
 void ServiceWorkerContainerHost::CloneContainerHost(
@@ -1155,7 +1155,8 @@ void ServiceWorkerClient::CommitResponse(
     auto* rfh = RenderFrameHostImpl::FromID(*rfh_id);
     // `rfh` may be null in tests (but it should not happen in production).
     if (rfh) {
-      rfh->AddServiceWorkerClient(client_uuid(), base::AsWeakPtr(this));
+      rfh->AddServiceWorkerClient(client_uuid(),
+                                  weak_ptr_factory_.GetWeakPtr());
     }
   }
 

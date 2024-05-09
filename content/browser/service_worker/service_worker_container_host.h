@@ -158,8 +158,7 @@ class CONTENT_EXPORT ServiceWorkerObjectManager final {
 // registration in order to resolve navigator.serviceWorker.ready once the
 // registration settles, if need.
 class CONTENT_EXPORT ServiceWorkerClient final
-    : public ServiceWorkerRegistration::Listener,
-      public base::SupportsWeakPtr<ServiceWorkerClient> {
+    : public ServiceWorkerRegistration::Listener {
  public:
   using ExecutionReadyCallback = base::OnceClosure;
 
@@ -493,6 +492,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-environment-execution-ready-flag
   void SetExecutionReady();
 
+  base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   class ServiceWorkerRunningStatusObserver;
 
@@ -694,6 +697,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // For all instances --------------------------------------------------------
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ServiceWorkerClient> weak_ptr_factory_{this};
 };
 
 // `ServiceWorkerContainerHost` is the host of a ServiceWorkerContainer in the
