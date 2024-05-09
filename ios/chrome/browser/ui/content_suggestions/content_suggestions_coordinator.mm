@@ -394,6 +394,8 @@
   _mostVisitedTilesMediator = nil;
   [_tabResumptionMediator disconnect];
   _tabResumptionMediator = nil;
+  [_magicStackRankingModel disconnect];
+  _magicStackRankingModel = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];

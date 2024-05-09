@@ -46,6 +46,8 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (void)disconnect;
+
 // Fetches the latest module ranking.
 - (void)fetchLatestMagicStackRanking;
 

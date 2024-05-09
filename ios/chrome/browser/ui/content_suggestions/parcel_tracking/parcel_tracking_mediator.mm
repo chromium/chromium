@@ -25,7 +25,7 @@
 @end
 
 @implementation ParcelTrackingMediator {
-  commerce::ShoppingService* _shoppingService;
+  raw_ptr<commerce::ShoppingService> _shoppingService;
   NSArray<ParcelTrackingItem*>* _parcelTrackingItems;
   UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
 }
@@ -37,17 +37,6 @@
   if (self) {
     _shoppingService = shoppingService;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
-
-    __weak ParcelTrackingMediator* weakSelf = self;
-    _shoppingService->GetAllParcelStatuses(base::BindOnce(^(
-        bool success,
-        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
-      ParcelTrackingMediator* strongSelf = weakSelf;
-      if (!strongSelf || !success) {
-        return;
-      }
-      [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
-    }));
   }
   return self;
 }
@@ -55,6 +44,7 @@
 - (void)disconnect {
   _shoppingService = nil;
   _URLLoadingBrowserAgent = nil;
+  _delegate = nil;
 }
 
 #pragma mark - Public
@@ -97,6 +87,25 @@
       base::BindOnce(
           ^(bool, std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>){
           }));
+}
+
+- (void)setDelegate:(id<ParcelTrackingMediatorDelegate>)delegate {
+  if (delegate == _delegate) {
+    return;
+  }
+  _delegate = delegate;
+  if (_delegate) {
+    __weak ParcelTrackingMediator* weakSelf = self;
+    _shoppingService->GetAllParcelStatuses(base::BindOnce(^(
+        bool success,
+        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
+      ParcelTrackingMediator* strongSelf = weakSelf;
+      if (!strongSelf || !success || !strongSelf.delegate) {
+        return;
+      }
+      [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
+    }));
+  }
 }
 
 #pragma mark - ParcelTrackingCommands

@@ -274,6 +274,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (self.itemConfig && self.itemConfig.itemType == kMostRecentTab) {
+    self.itemConfig = nil;
     [self.delegate removeTabResumptionModule];
   }
 }
@@ -367,7 +368,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
           item.faviconImage = attributes.faviconImage;
           TabResumptionItem* previousItem = strongSelf.itemConfig;
           strongSelf.itemConfig = item;
-          if (previousItem) {
+          if (previousItem && IsIOSMagicStackCollectionViewEnabled()) {
             [strongSelf.delegate
                 tabResumptionHelperDidReplaceItem:previousItem];
           } else {

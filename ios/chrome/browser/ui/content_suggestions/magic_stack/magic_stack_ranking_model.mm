@@ -125,7 +125,7 @@
 - (void)fetchLatestMagicStackRanking {
     [self fetchMagicStackModuleRankingFromSegmentationPlatform];
   if (!IsIOSMagicStackCollectionViewEnabled()) {
-    if (IsTabResumptionEnabled() && _tabResumptionMediator.itemConfig) {
+    if ([self shouldShowTabResumption]) {
       [self.consumer
           showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
     }
@@ -239,14 +239,17 @@
   }
 
   _latestMagicStackOrder = [self segmentationMagicStackOrder];
-  for (NSUInteger index = 0; index < [_latestMagicStackOrder count]; index++) {
-    ContentSuggestionsModuleType type =
-        (ContentSuggestionsModuleType)[_latestMagicStackOrder[index] intValue];
-    if (type == ContentSuggestionsModuleType::kParcelTracking) {
-      MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
-      change.new_module = type;
-      change.index = index;
-      [self.consumer updateMagicStackOrder:change];
+  if ([self isMagicStackOrderReady]) {
+    for (NSUInteger index = 0; index < [_latestMagicStackOrder count];
+         index++) {
+      ContentSuggestionsModuleType type = (ContentSuggestionsModuleType)
+          [_latestMagicStackOrder[index] intValue];
+      if (type == ContentSuggestionsModuleType::kParcelTracking) {
+        MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
+        change.new_module = type;
+        change.index = index;
+        [self.consumer updateMagicStackOrder:change];
+      }
     }
   }
 
@@ -406,9 +409,7 @@
         }
         break;
       case ContentSuggestionsModuleType::kTabResumption:
-        if (!IsTabResumptionEnabled() ||
-            tab_resumption_prefs::IsTabResumptionDisabled(_localState) ||
-            !_tabResumptionMediator.itemConfig) {
+        if (![self shouldShowTabResumption]) {
           break;
         }
         // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
@@ -472,9 +473,7 @@
         }
         break;
       case ContentSuggestionsModuleType::kTabResumption:
-        if (!IsTabResumptionEnabled() ||
-            tab_resumption_prefs::IsTabResumptionDisabled(_localState) ||
-            !_tabResumptionMediator.itemConfig) {
+        if (![self shouldShowTabResumption]) {
           break;
         }
         // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
@@ -567,6 +566,13 @@
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
   return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
+}
+
+// Returns YES if the tab resumption module should added into the Magic Stack.
+- (BOOL)shouldShowTabResumption {
+  return IsTabResumptionEnabled() &&
+         !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
+         _tabResumptionMediator.itemConfig;
 }
 
 @end
