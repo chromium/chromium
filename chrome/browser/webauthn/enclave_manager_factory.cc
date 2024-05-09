@@ -21,7 +21,11 @@ EnclaveManagerInterface* EnclaveManagerFactory::GetForProfile(
 
 EnclaveManager* EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
     Profile* profile) {
-  return static_cast<EnclaveManager*>(GetForProfile(profile));
+  EnclaveManagerInterface* interface = GetForProfile(profile);
+  if (!interface) {
+    return nullptr;
+  }
+  return interface->GetEnclaveManager();
 }
 
 // static

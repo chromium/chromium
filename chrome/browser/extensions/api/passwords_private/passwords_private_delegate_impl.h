@@ -140,6 +140,8 @@ class PasswordsPrivateDelegateImpl
   void DisconnectCloudAuthenticator(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
+  bool IsConnectedToCloudAuthenticator(
+      content::WebContents* web_contents) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 

@@ -4658,6 +4658,7 @@ static_library("browser") {
       "webauthn/enclave_manager.h",
       "webauthn/enclave_manager_factory.cc",
       "webauthn/enclave_manager_factory.h",
+      "webauthn/enclave_manager_interface.cc",
       "webauthn/enclave_manager_interface.h",
       "webauthn/gpm_enclave_controller.cc",
       "webauthn/gpm_enclave_controller.h",

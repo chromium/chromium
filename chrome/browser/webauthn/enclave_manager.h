@@ -110,13 +110,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   EnclaveManager(const EnclaveManager&) = delete;
   EnclaveManager(const EnclaveManager&&) = delete;
 
+  // Returns `this`.
+  EnclaveManager* GetEnclaveManager() override;
+
   // Returns true if there are no current operations pending.
   bool is_idle() const;
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
   bool is_loaded() const;
   // Returns true if the current user has been registered with the enclave.
-  bool is_registered() const;
+  bool is_registered() const override;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
   // or `AddDeviceAndPINToAccount` can be called.
   bool has_pending_keys() const;

@@ -967,6 +967,19 @@ void PasswordsPrivateDelegateImpl::DisconnectCloudAuthenticator(
   }
 }
 
+bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
+    content::WebContents* web_contents) {
+  EnclaveManagerInterface* enclave_manager =
+      EnclaveManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
+  if (!enclave_manager) {
+    return false;
+  }
+
+  return enclave_manager->is_registered();
+}
+
 base::WeakPtr<PasswordsPrivateDelegate>
 PasswordsPrivateDelegateImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

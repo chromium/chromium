@@ -2424,6 +2424,10 @@ EnclaveManager::EnclaveManager(
 
 EnclaveManager::~EnclaveManager() = default;
 
+EnclaveManager* EnclaveManager::GetEnclaveManager() {
+  return this;
+}
+
 bool EnclaveManager::is_idle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !loading_ && !state_machine_;
