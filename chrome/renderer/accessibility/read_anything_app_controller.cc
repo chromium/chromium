@@ -392,6 +392,7 @@ ReadAnythingAppController::ReadAnythingAppController(
 
 ReadAnythingAppController::~ReadAnythingAppController() {
   RecordNumSelections();
+  LogSpeechEventCounts();
 }
 
 void ReadAnythingAppController::AccessibilityEventReceived(
@@ -821,6 +822,10 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("logMetric", &ReadAnythingAppController::LogUmaHistogramTimes)
+      .SetMethod("logLongMetric",
+                 &ReadAnythingAppController::LogUmaHistogramLongTimes)
+      .SetMethod("incrementMetricCount",
+                 &ReadAnythingAppController::IncrementMetricCount)
       .SetMethod("logSpeechError",
                  &ReadAnythingAppController::LogSpeechErrorEvent)
       .SetMethod("sendGetVoicePackInfoRequest",
@@ -1647,6 +1652,19 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
 void ReadAnythingAppController::LogUmaHistogramTimes(int64_t time,
                                                      std::string metric) {
   base::UmaHistogramTimes(metric, base::Milliseconds(time));
+}
+
+void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,
+                                                         std::string metric) {
+  base::UmaHistogramLongTimes(metric, base::Milliseconds(time));
+}
+
+void ReadAnythingAppController::IncrementMetricCount(std::string metric) {
+  model_.IncrementMetric(metric);
+}
+
+void ReadAnythingAppController::LogSpeechEventCounts() {
+  model_.LogSpeechEventCounts();
 }
 
 void ReadAnythingAppController::LogSpeechErrorEvent(std::string error_code) {

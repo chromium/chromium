@@ -327,6 +327,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // need to download Natural voices for automatically
   private languagesForVoiceDownloads: Set<string> = new Set();
 
+  // Metrics captured for logging.
+  private playSessionStartTime: number = -1;
+
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
   // window.speechSynthesis.speaking on some platforms.
@@ -443,6 +446,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readingMode.onCopy();
       return false;
     };
+  }
+
+  // Record metrics
+  private recordPlayClick() {
+    this.incrementMetricCount('Play');
+  }
+
+  private recordPauseClick() {
+    this.incrementMetricCount('Pause');
+  }
+
+  private recordNextClick() {
+    this.incrementMetricCount('NextButton');
+  }
+
+  private recordPreviousClick() {
+    this.incrementMetricCount('PreviousButton');
+  }
+
+  private incrementMetricCount(action: string) {
+    chrome.readingMode.incrementMetricCount(
+        'Accessibility.ReadAnything.ReadAloud' + action + 'SessionCount');
   }
 
   private getOffsetInAncestor(node: Node): number {
@@ -1116,8 +1141,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
   private onPlayPauseClick_() {
     if (this.speechPlayingState.paused) {
+      this.playSessionStartTime = Date.now();
+      this.recordPlayClick();
       this.playSpeech();
     } else {
+      this.logSpeechPlaySession();
+      this.recordPauseClick();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
     }
   }
@@ -1161,7 +1190,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  private logSpeechPlaySession() {
+    // Don't log a playback session just in case something has gotten out of
+    // sync and we call stopSpeech before playSpeech.
+    if (this.playSessionStartTime > 0) {
+      chrome.readingMode.logLongMetric(
+          Date.now() - this.playSessionStartTime,
+          'Accessibility.ReadAnything.SpeechPlaybackSession');
+      this.playSessionStartTime = -1;
+    }
+  }
+
   private playNextGranularity_() {
+    this.recordNextClick();
     this.synth.cancel();
     this.resetPreviousHighlight();
     // Reset the word boundary index whenever we move the granularity position.
@@ -1174,6 +1215,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private playPreviousGranularity_() {
+    this.recordPreviousClick();
     this.synth.cancel();
     // This must be called BEFORE calling
     // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
@@ -1641,6 +1683,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     // Clear the formatting we added for highlighting.
     this.updateContent();
+    this.logSpeechPlaySession();
   }
 
   private clearReadAloudState() {

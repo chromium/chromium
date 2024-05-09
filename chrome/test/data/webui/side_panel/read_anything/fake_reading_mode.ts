@@ -220,6 +220,9 @@ export class FakeReadingMode {
   // Called when the voice used for speech is changed via the webui toolbar.
   onVoiceChange(_voice: string, _lang: string) {}
 
+  // Called when a tracked count-based metric is incremented.
+  incrementMetricCount(_metric: string) {}
+
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
     this.highlightGranularity = 1;
@@ -377,4 +380,6 @@ export class FakeReadingMode {
   }
 
   logMetric(_time: number, _metricName: string) : void {}
+
+  logLongMetric(_time: number, _metricName: string): void {}
 }

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_thread.h"
+#include "read_anything_app_model.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -1676,4 +1677,14 @@ int ReadAnythingAppModel::GetNextWordHighlightLength(int start_index) {
   // Get the word length of the next word following the index.
   int word_length = GetNextWord(current_text);
   return word_length;
+}
+
+void ReadAnythingAppModel::IncrementMetric(const std::string& metric_name) {
+  metric_to_count_map_[metric_name]++;
+}
+
+void ReadAnythingAppModel::LogSpeechEventCounts() {
+  for (const auto& [metric, count] : metric_to_count_map_) {
+    base::UmaHistogramCounts1000(metric, count);
+  }
 }

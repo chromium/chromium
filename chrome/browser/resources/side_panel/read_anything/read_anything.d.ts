@@ -346,6 +346,12 @@ declare namespace chrome {
     // Log UmaHistogram
     function logMetric(time: number, metricName: string): void;
 
+    // Log UmaHistogramLong
+    function logLongMetric(time: number, metricName: string): void;
+
+    // Log UmaHistogramCount
+    function incrementMetricCount(metricName: string): void;
+
     // Log speech errors.
     function logSpeechError(errorCode: string): void;
 

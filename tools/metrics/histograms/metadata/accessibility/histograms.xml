@@ -2378,6 +2378,21 @@ even if they fit the naming pattern. -->
   <summary>Records when the Read Anything omnibox icon is shown.</summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud{Action}SessionCount"
+    units="count" expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the count per session of the number of Read Aloud {Action} actions.
+  </summary>
+  <token key="Action">
+    <variant name="NextButton" summary="next granularity"/>
+    <variant name="Pause" summary="pause speech"/>
+    <variant name="Play" summary="play speech"/>
+    <variant name="PreviousButton" summary="previous granularity"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
     units="ms" expires_after="2025-02-28">
   <owner>abigailbklein@google.com</owner>
@@ -2415,6 +2430,17 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records when a speech error event is captured with Read Anything Read Aloud.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.SpeechPlaybackSession" units="ms"
+    expires_after="2024-09-30">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the length of time of a speech playback session from play to pause
+    or from play to speech stopped, either due to reaching the end of content or
+    an error.
   </summary>
 </histogram>
 
