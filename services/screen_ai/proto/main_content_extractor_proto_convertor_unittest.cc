@@ -345,12 +345,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Range(0, kProtoConversionTestCasesCount),
                      testing::Bool()));
 
-#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AxTreeJsonToProtoTest DISABLED_AxTreeJsonToProtoTest
-#else
-#define MAYBE_AxTreeJsonToProtoTest AxTreeJsonToProtoTest
-#endif
-TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
+TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
   const base::FilePath kInputJsonPath = GetInputFilePath();
   const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 
