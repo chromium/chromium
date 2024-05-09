@@ -78,6 +78,8 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
     min_pages_per_batch_ = min_pages;
   }
 
+  void DisableStatusNodesForTesting() { has_landmark_node_ = false; }
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty);
   void FlushForTesting();
