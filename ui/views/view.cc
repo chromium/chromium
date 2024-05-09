@@ -639,6 +639,9 @@ void View::SetVisible(bool visible) {
     // The visible state of a view can affect both its own focusability and that
     // of its descendants.
     GetViewAccessibility().UpdateFocusableStateRecursive();
+    GetViewAccessibility().UpdateInvisibleState();
+    AdvanceFocusIfNecessary();
+
     AdvanceFocusIfNecessary();
 
     // Notify the parent.

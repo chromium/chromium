@@ -226,7 +226,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Hides this view from the accessibility APIs. Keep in mind that this is not
   // the sole determinant of whether the ignored state is set. See
-  // `AdjustIgnoredState`.
+  // `UpdateIgnoredState`.
   void SetIsIgnored(bool is_ignored);
   virtual bool GetIsIgnored() const;
 
@@ -444,7 +444,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // This is set to true when the view is explicitly marked as ignored by
   // `SetIsIgnored`. It is not the only condition that will cause a view to have
   // the ignored accessible state, as `pruned_` and `is_leaf_` can also cause
-  // this. See `AdjustIgnoredState`.
+  // this. See `UpdateIgnoredState`.
   bool should_be_ignored_ = false;
 
   // Used by the Views system to help some assistive technologies, such as
@@ -479,7 +479,16 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void SetState(ax::mojom::State state, bool is_enabled);
 
-  void AdjustIgnoredState();
+  // Updates the ignored state of the `data_` object.
+  // The view is considered ignored if it should be ignored as per
+  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
+  // is 'kNone'.
+  void UpdateIgnoredState();
+
+  // Updates the invisible state of the `data_` object.
+  // The view is considered invisible if it is not visible
+  // (`!view_->GetVisible()`) and its role is not 'kAlert'.
+  void UpdateInvisibleState();
 
   bool ignore_missing_widget_for_testing_ = false;
 };

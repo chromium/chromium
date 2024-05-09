@@ -197,9 +197,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   data->relative_bounds.bounds = gfx::RectF(view_->GetBoundsInScreen());
 
-  if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
-    data->AddState(ax::mojom::State::kInvisible);
-
   DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
       << "Please annotate child tree ids using "
          "ViewAccessibility::OverrideChildTreeID.";
@@ -390,7 +387,8 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 
   data_.role = role;
-  AdjustIgnoredState();
+  UpdateIgnoredState();
+  UpdateInvisibleState();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -645,7 +643,7 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
 
   should_be_ignored_ = is_ignored;
 
-  AdjustIgnoredState();
+  UpdateIgnoredState();
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
@@ -797,7 +795,7 @@ void ViewAccessibility::PruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = true;
-    child->GetViewAccessibility().AdjustIgnoredState();
+    child->GetViewAccessibility().UpdateIgnoredState();
     child->GetViewAccessibility().PruneSubtree();
   }
 
@@ -810,7 +808,7 @@ void ViewAccessibility::UnpruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().pruned_ = false;
-    child->GetViewAccessibility().AdjustIgnoredState();
+    child->GetViewAccessibility().UpdateIgnoredState();
     // If we encounter a node that has already been explicitly set to be a leaf,
     // don't unprune it/its subtree. Otherwise we could end up in situations
     // where we have a node that is set to be a leaf, but has unpruned children.
@@ -833,7 +831,7 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
   }
 }
 
-void ViewAccessibility::AdjustIgnoredState() {
+void ViewAccessibility::UpdateIgnoredState() {
   bool is_ignored =
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
   SetState(ax::mojom::State::kIgnored, is_ignored);
@@ -853,5 +851,11 @@ void ViewAccessibility::UpdateFocusableStateRecursive() {
   for (auto& child : view_->children()) {
     child->GetViewAccessibility().UpdateFocusableStateRecursive();
   }
+}
+
+void ViewAccessibility::UpdateInvisibleState() {
+  bool is_invisible =
+      !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
+  SetState(ax::mojom::State::kInvisible, is_invisible);
 }
 }  // namespace views
