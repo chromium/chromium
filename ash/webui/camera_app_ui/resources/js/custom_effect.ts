@@ -9,7 +9,6 @@ import {I18nString} from './i18n_string.js';
 import {SvgWrapper} from './lit/components/svg-wrapper.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
-import {PerfEvent} from './type.js';
 import * as util from './util.js';
 
 /**
@@ -112,16 +111,6 @@ export enum IndicatorType {
  * modes/cameras.
  */
 export function setup(): void {
-  state.addObserver(PerfEvent.CAMERA_SWITCHING, (val) => {
-    if (val) {
-      hide();
-    }
-  });
-  state.addObserver(PerfEvent.MODE_SWITCHING, (val) => {
-    if (val) {
-      hide();
-    }
-  });
   state.addObserver(state.State.STREAMING, (val) => {
     if (!val) {
       hide();
