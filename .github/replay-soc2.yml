@@ -20,4 +20,5 @@ allowlist:
   - replay-scripts/**
   - "**/BUCK"
   - BUCK
+  - REPLAY_BACKEND_REV
 blocklist:
