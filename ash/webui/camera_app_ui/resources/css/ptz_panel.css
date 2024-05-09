@@ -9,7 +9,7 @@
   position: absolute;
 }
 
-#ptz-panel button:hover {
+#ptz-panel button:enabled:hover {
   /* Use linear-gradient to apply multiple background colors. */
   background: linear-gradient(
     0deg,
