@@ -194,6 +194,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "NtpIdentityDisc";
       case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
         return "OidcRedirectionInterception";
+      case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+        return "WebAuthnModalDialog";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

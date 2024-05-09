@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
@@ -368,7 +370,6 @@ GPMEnclaveController::GPMEnclaveController(
   //   a) set `account_state_` to some value (unless it's happy with the default
   //      of `kNone`.)
   //   b) called `SetActive`.
-
   if (creds_.empty() &&
       request_type == device::FidoRequestType::kGetAssertion) {
     // No possibility of using GPM for this request.
@@ -424,6 +425,22 @@ GPMEnclaveController::account_state_for_testing() const {
 }
 
 void GPMEnclaveController::OnEnclaveLoaded() {
+  // Verify the state of the primary account sign-in info.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  GoogleServiceAuthError signin_error =
+      identity_manager->GetErrorStateOfRefreshTokenForAccount(
+          account.account_id);
+  if (signin_error.IsPersistentError()) {
+    FIDO_LOG(EVENT) << "Recoverable sign-in error: " << signin_error.ToString();
+    account_state_ = AccountState::kNone;
+    model_->EnclaveNeedsReauth();
+    SetActive(false);
+    return;
+  }
+
   if (enclave_manager_->is_ready()) {
     FIDO_LOG(EVENT) << "Enclave is ready";
     SetAccountStateReady();
@@ -949,10 +966,11 @@ void GPMEnclaveController::OnTouchIDComplete(bool success) {
 void GPMEnclaveController::OnForgotGPMPinPressed() {
   changing_gpm_pin_ = true;
   // TODO(enclave): Use biometrics instead of GAIA reauth (if available).
-  model_->SetStep(Step::kGPMReauthAccount);
+  model_->SetStep(Step::kGPMReauthForPinReset);
 }
 
 void GPMEnclaveController::OnReauthComplete(std::string rapt) {
+  CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMCreatePin);
 }

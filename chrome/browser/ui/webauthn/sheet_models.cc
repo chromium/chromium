@@ -37,6 +37,19 @@
 
 namespace {
 
+using CredentialMech = AuthenticatorRequestDialogModel::Mechanism::Credential;
+using EnclaveMech = AuthenticatorRequestDialogModel::Mechanism::Enclave;
+using ICloudKeychainMech =
+    AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain;
+
+bool IsLocalPasskeyOrEnclaveAuthenticator(
+    const AuthenticatorRequestDialogModel::Mechanism& mech) {
+  return (absl::holds_alternative<CredentialMech>(mech.type) &&
+          absl::get<CredentialMech>(mech.type).value().source !=
+              device::AuthenticatorType::kPhone) ||
+         absl::holds_alternative<EnclaveMech>(mech.type);
+}
+
 // Possibly returns a resident key warning if the model indicates that it's
 // needed.
 std::u16string PossibleResidentKeyWarning(
@@ -1577,24 +1590,14 @@ AuthenticatorMultiSourcePickerSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 
-  using CredentialMech = AuthenticatorRequestDialogModel::Mechanism::Credential;
-  using ICloudKeychainMech =
-      AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain;
-  bool has_local_passkeys =
-      base::ranges::any_of(dialog_model->mechanisms, [](const auto& mech) {
-        return absl::holds_alternative<CredentialMech>(mech.type) &&
-               absl::get<CredentialMech>(mech.type).value().source !=
-                   device::AuthenticatorType::kPhone;
-      });
-  if (has_local_passkeys) {
+  if (base::ranges::any_of(dialog_model->mechanisms,
+                           &IsLocalPasskeyOrEnclaveAuthenticator)) {
     primary_passkeys_label_ =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_THIS_DEVICE_LABEL);
     for (size_t i = 0; i < dialog_model->mechanisms.size(); ++i) {
       const AuthenticatorRequestDialogModel::Mechanism& mech =
           dialog_model->mechanisms[i];
-      if ((absl::holds_alternative<CredentialMech>(mech.type) &&
-           absl::get<CredentialMech>(mech.type).value().source !=
-               device::AuthenticatorType::kPhone) ||
+      if (IsLocalPasskeyOrEnclaveAuthenticator(mech) ||
           // iCloud Keychain appears in the primary list if present. This
           // happens when Chrome does not have permission to enumerate
           // credentials from iCloud Keychain. Thus this generic option is the

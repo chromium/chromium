@@ -16118,6 +16118,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_ERROR_DESC" desc="The description of a dialog that is shown when an error occurs with Google Password Manager. Since this involves communication with a server, the most likely cause of the error is a connectivity problem thus 'reach' refers to this external communication.">
         Can’t reach Google Password Manager. Try again in a few minutes
       </message>
+      <message name="IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE" desc="The first line in a button that is shown when Sync is 'paused' and the user is trying to sign in with or create a passkey. Sync 'paused' is a state where the user has opted in to Sync, but their sign-in status has expired and they need to sign in again to restore it. Tapping this button closes the passkey window and opens a new tab where the user can sign in to Google.">
+        Sign in again
+      </message>
+      <message name="IDS_WEBAUTHN_SIGN_IN_AGAIN_DESCRIPTION" desc="The second line in a button that is shown when Sync is 'paused' and the user is trying to sign in with or create a passkey. Sync 'paused' is a state where the user has opted in to Sync, but their sign-in status has expired and they need to sign in again to restore it. Tapping this button closes the passkey window and opens a new tab where the user can sign in to Google.">
+        To sync and use passkeys from Google
+      </message>
 
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">

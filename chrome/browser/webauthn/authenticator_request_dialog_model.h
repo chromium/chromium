@@ -98,8 +98,11 @@ class AuthenticatorRequestDialogController;
   /* powered. Valid action when at step: kBlePowerOnManual, */                \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)       \
-  /* Called when the enclave authenticator is available for a request */      \
+  /* Called when the enclave authenticator is available for a request. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(EnclaveEnabled)                               \
+  /* Called when the enclave authenticator needs a reauth before it is */     \
+  /* available for a request. */                                              \
+  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveNeedsReauth)                           \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \
@@ -312,7 +315,7 @@ struct AuthenticatorRequestDialogModel {
     kTrustThisComputerCreation,
 
     // Changing GPM PIN.
-    kGPMReauthAccount,
+    kGPMReauthForPinReset,
   };
 
   // Views and controllers implement this interface to receive events, which
@@ -605,6 +608,8 @@ class AuthenticatorRequestDialogController
       std::optional<device::AuthenticatorType> type = std::nullopt);
 
   void EnclaveEnabled() override;
+
+  void EnclaveNeedsReauth() override;
 
   void OnCreatePasskeyAccepted() override;
 
@@ -917,6 +922,9 @@ class AuthenticatorRequestDialogController
   void StartICloudKeychain();
   void StartEnclave();
 
+  // Triggers gaia account reauth to restore sync to working order.
+  void ReauthForSyncRestore();
+
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
@@ -1057,6 +1065,10 @@ class AuthenticatorRequestDialogController
   // enclave_enabled_ is true if a "Google Password Manager" entry should be
   // offered as a mechanism for creating a credential.
   bool enclave_enabled_ = false;
+
+  // enclave_needs_reauth_ is true if a "Reauth to use Google Password Manager"
+  // entry should be offered as a mechanism for creating or using a credential.
+  bool enclave_needs_reauth_ = false;
 
   // The RP's hints. See
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints

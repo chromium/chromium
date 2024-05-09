@@ -121,7 +121,8 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
       l10n_util::GetStringFUTF16(IDS_WEBAUTHN_FROM_PHONE_LABEL, kPhoneName));
 }
 
-TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
+TEST_F(AuthenticatorMultiSourcePickerSheetModelTest,
+       GPMPasskeysAndLocalPasskeys) {
   AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
   dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
   dialog_model.priority_phone_name = dialog_model.paired_phone_names.at(0);
@@ -138,6 +139,24 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
   AuthenticatorMultiSourcePickerSheetModel model(&dialog_model);
   EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(1));
   EXPECT_THAT(model.secondary_passkey_indices(), testing::ElementsAre(0, 2));
+  EXPECT_EQ(model.primary_passkeys_label(),
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_THIS_DEVICE_LABEL));
+}
+
+TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMMechanismAndPhones) {
+  AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
+  dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
+  dialog_model.priority_phone_name = dialog_model.paired_phone_names.at(0);
+  dialog_model.mechanisms.emplace_back(
+      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
+  dialog_model.mechanisms.emplace_back(Mechanism::Enclave(), u"enclave",
+                                       u"enclave", kPasskeyAoaIcon,
+                                       base::DoNothing());
+
+  AuthenticatorMultiSourcePickerSheetModel model(&dialog_model);
+  EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(1));
+  EXPECT_THAT(model.secondary_passkey_indices(), testing::ElementsAre(0));
   EXPECT_EQ(model.primary_passkeys_label(),
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_THIS_DEVICE_LABEL));
 }

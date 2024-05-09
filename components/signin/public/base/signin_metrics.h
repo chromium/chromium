@@ -221,6 +221,10 @@ enum class AccessPoint : int {
   // The identity is received through an interception of a 3rd party OIDC auth
   // redirection.
   ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION = 64,
+  // The "Sign in again" button on a Web Authentication modal dialog when
+  // reauthentication is necessary to sign in with or save a passkey from the
+  // Google Password Manager.
+  ACCESS_POINT_WEBAUTHN_MODAL_DIALOG = 65,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

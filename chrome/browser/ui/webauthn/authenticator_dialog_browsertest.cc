@@ -1039,14 +1039,14 @@ class QuitBrowserWhenReauthTokenReceived
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 };
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, Reauth) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, ReauthForPinReset) {
   QuitBrowserWhenReauthTokenReceived observer(model_.get());
 
   // This should open a pop-up to a GAIA reauth page. That page will be faked
   // by this test class and the fake will immediately complete with a token
   // with the value "RAPT". That will cause `QuitBrowserWhenReauthTokenReceived`
   // to close the browser and complete the test.
-  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMReauthAccount);
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
 
   RunUntilBrowserProcessQuits();
 }

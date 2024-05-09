@@ -148,7 +148,7 @@ class AuthenticatorRequestWindow
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         break;
 
-      case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:
+      case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
         url = GetGpmResetPinUrl();
         reauth_observer_ = std::make_unique<ReauthWebContentsObserver>(
             web_contents.get(), url,

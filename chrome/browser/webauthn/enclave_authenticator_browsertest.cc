@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -44,6 +46,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
@@ -67,6 +70,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
@@ -1392,6 +1396,57 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_TRUE(IsReady(request_delegate()
                           ->enclave_controller_for_testing()
                           ->account_state_for_testing()));
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       GpmEnclaveNeedsReauth) {
+  // Set the account state to a recoverable signin error.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  CoreAccountId account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // Add a passkey to make sure it's not shown.
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  // The dialog should always jump to the mechanism selection for signin errors.
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  ASSERT_EQ(browser()->tab_strip_model()->GetTabCount(), 1);
+
+  // No credentials should be displayed since tapping on them won't work.
+  EXPECT_FALSE(
+      base::ranges::any_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
+      }));
+
+  // The enclave button has text indicating the user they need to sign in.
+  const auto enclave_mech =
+      base::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      });
+  ASSERT_NE(enclave_mech, dialog_model()->mechanisms.end());
+  EXPECT_EQ(enclave_mech->name,
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE));
+  std::move(enclave_mech->callback).Run();
+
+  // Tapping the button should cancel the request and open a new tab for reauth.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_TRUE(script_result.starts_with("\"error NotAllowedError"))
+      << script_result;
+  EXPECT_EQ(browser()->tab_strip_model()->GetTabCount(), 2);
 }
 
 class EnclaveAuthenticatorWithoutPinBrowserTest

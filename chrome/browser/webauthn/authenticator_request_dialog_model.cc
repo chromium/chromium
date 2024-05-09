@@ -26,6 +26,8 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
@@ -399,7 +401,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
-    case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:
+    case AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset:
       return StepUIType::WINDOW;
 
     case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
@@ -1869,6 +1871,14 @@ void AuthenticatorRequestDialogController::StartEnclave() {
   model_->OnGPMSelected();
 }
 
+void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+      Profile::FromBrowserContext(
+          model_->GetWebContents()->GetBrowserContext()),
+      signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG);
+  CancelAuthenticatorRequest();
+}
+
 void AuthenticatorRequestDialogController::ContactPhone(
     const std::string& name) {
 #if BUILDFLAG(IS_MAC)
@@ -2104,6 +2114,12 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
           !allow_icloud_keychain_) {
         continue;
       }
+      if (cred.source == device::AuthenticatorType::kEnclave &&
+          enclave_needs_reauth_) {
+        // Do not list passkeys from the enclave if it needs reauth before
+        // proceeding.  Instead, we'll show a button to trigger reauth.
+        continue;
+      }
       if (cred.source == device::AuthenticatorType::kPhone) {
         specific_phones_listed = true;
       } else {
@@ -2195,6 +2211,21 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         Mechanism::Enclave(), name, name, vector_icons::kPasswordManagerIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
                             base::Unretained(this)));
+  }
+  if (enclave_needs_reauth_ && !use_conditional_mediation_) {
+    // Show a button that lets the user sign in again to restore sync. This
+    // cancels the request, so we can't do it for conditional UI requests.
+    // TODO(enclave): add support for conditional UI.
+    const std::u16string name =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE);
+    Mechanism enclave(
+        Mechanism::Enclave(), name, name, vector_icons::kSyncIcon,
+        base::BindRepeating(
+            &AuthenticatorRequestDialogController::ReauthForSyncRestore,
+            base::Unretained(this)));
+    enclave.description =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_DESCRIPTION);
+    model_->mechanisms.emplace_back(std::move(enclave));
   }
 
   if (transport_availability_.has_icloud_keychain && allow_icloud_keychain_ &&
@@ -2324,6 +2355,11 @@ void AuthenticatorRequestDialogController::AddWindowsButton(
 
 std::optional<size_t>
 AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
+  // Never pick a priority mechanism if we are showing the enclave reauth
+  // button.
+  if (enclave_needs_reauth_ && !use_conditional_mediation_) {
+    return std::nullopt;
+  }
   if (transport_availability_.request_type ==
       device::FidoRequestType::kGetAssertion) {
     // If there is a single mechanism, go to that.
@@ -2641,6 +2677,10 @@ void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
 
 void AuthenticatorRequestDialogController::EnclaveEnabled() {
   enclave_enabled_ = true;
+}
+
+void AuthenticatorRequestDialogController::EnclaveNeedsReauth() {
+  enclave_needs_reauth_ = true;
 }
 
 void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(

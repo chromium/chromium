@@ -80,7 +80,7 @@ void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
   }
   notify_pin_change_callback_ = std::move(callback);
   // TODO(enclave): use local UV instead of GPM reauth when available.
-  model_->SetStep(Step::kGPMReauthAccount);
+  model_->SetStep(Step::kGPMReauthForPinReset);
 }
 
 void ChangePinControllerImpl::CancelAuthenticatorRequest() {
@@ -89,6 +89,7 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
 }
 
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
+  CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMCreatePin);
 }
