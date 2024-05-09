@@ -61,6 +61,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
+#include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
@@ -112,6 +113,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kDownloadsMigrateToJobsAPI,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
+    &features::kAndroidBrowserControlsInViz,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,

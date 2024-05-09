@@ -11229,6 +11229,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFetchGaiaHashOnSignInName,
      flag_descriptions::kFetchGaiaHashOnSignInDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kFetchGaiaHashOnSignIn)},
+
+    {"android-browser-controls-in-viz",
+     flag_descriptions::kAndroidBrowserControlsInVizName,
+     flag_descriptions::kAndroidBrowserControlsInVizDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidBrowserControlsInViz)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

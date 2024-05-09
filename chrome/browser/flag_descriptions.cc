@@ -70,6 +70,12 @@ const char kAndroidNoSurfaceSyncForBrowserControlsName[] =
 const char kAndroidNoSurfaceSyncForBrowserControlsDescription[] =
     "Disable surface sync for top controls when scrolling";
 
+const char kAndroidBrowserControlsInVizName[] =
+    "Android Browser Controls in Viz";
+const char kAndroidBrowserControlsInVizDescription[] =
+    "Let viz move browser controls when scrolling. For now, this applies only "
+    "to top controls.";
+
 const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
 const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "

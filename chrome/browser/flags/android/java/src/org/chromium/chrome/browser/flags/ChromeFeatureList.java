@@ -215,6 +215,7 @@ public abstract class ChromeFeatureList {
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
+    public static final String BROWSER_CONTROLS_IN_VIZ = "AndroidBrowserControlsInViz";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
@@ -796,6 +797,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_ID_MAP, true);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
+    public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, false);
     public static final MutableFlagWithSafeDefault sTotallyEdgeToEdge =
             newMutableFlagWithSafeDefault(TOTALLY_EDGE_TO_EDGE, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =

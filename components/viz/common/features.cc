@@ -33,6 +33,15 @@ const char kDynamicSchedulerPercentile[] = "percentile";
 
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+// During a scroll, enable viz to move browser controls according to the
+// offsets provided by the embedded renderer, circumventing browser main
+// involvement. For now, this applies only to top controls.
+BASE_FEATURE(kAndroidBrowserControlsInViz,
+             "AndroidBrowserControlsInViz",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode,
              "BackdropFilterMirrorEdgeMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
