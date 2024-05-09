@@ -147,6 +147,8 @@ void PassageEmbedder::GenerateEmbeddings(
     if (tokenized.size() < embeddings_input_window_size_) {
       tokenized.push_back(sp_processor_->eos_id());
     }
+    base::UmaHistogramBoolean("History.Embeddings.Embedder.InputTruncated",
+                              tokenized.size() > embeddings_input_window_size_);
     tokenized.resize(embeddings_input_window_size_);
     base::UmaHistogramMediumTimes(
         "History.Embeddings.Embedder.TokenizationDuration",

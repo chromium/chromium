@@ -1782,6 +1782,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Embedder.InputTruncated" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
+  <summary>
+    Whether the tokenized input was truncated during embeddings generation.
+    Logged each time an input tokenization succeeds.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Embedder.SentencePieceModelLoadDuration"
     units="ms" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>
