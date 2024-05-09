@@ -415,20 +415,25 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallFromNonHomeTabUrl) {
-  GURL start_url = embedded_test_server()->GetURL(
+  GURL install_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_customizations.json");
-  webapps::AppId app_id = InstallTestWebApp(start_url);
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  webapps::AppId app_id = InstallTestWebApp(install_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
-  // Expect the home tab was opened in addition to the launch URL.
+  // Expect the home tab was opened in addition to the install URL.
   EXPECT_EQ(tab_strip->count(), 2);
+  // Home tab - start URL.
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
-  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
-            registrar().GetAppStartUrl(app_id));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  // Regular tab (active) - install URL.
+  EXPECT_FALSE(tab_strip->IsTabPinned(1));
   EXPECT_EQ(tab_strip->active_index(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(), install_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpeningPinsHomeTab) {
