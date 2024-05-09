@@ -8020,6 +8020,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
         Middle Button
       </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_TOP_BUTTON_DEFAULT_NAME" desc="The name of the top mouse button on a mouse">
+        Top Button
+      </message>
       <message name="IDS_SETTINGS_CUSTOMIZATION_SIDE_BUTTON_DEFAULT_NAME" desc="The name of the side mouse button on a mouse">
         Side Button
       </message>

@@ -25,6 +25,35 @@ std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
   return {};
 }
 
+std::vector<mojom::ButtonRemappingPtr> GetThreeKeyButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      /*remapping_action=*/nullptr));
+  return array;
+}
+
+std::vector<mojom::ButtonRemappingPtr>
+GetFourKeyWithTopButtonButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/l10n_util::GetStringUTF8(
+          IDS_SETTINGS_CUSTOMIZATION_TOP_BUTTON_DEFAULT_NAME),
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      /*remapping_action=*/nullptr));
+  return array;
+}
+
 std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
@@ -185,14 +214,26 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0x405e},
            {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Logitech MX Ergo Trackball (USB Dongle)
+          {{0x046d, 0x406f},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
           // Logitech MX Master 2S (USB Dongle)
           {{0x046d, 0x4069},
            {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kLogitechSixKeyWithTab}},
+          // Logitech Pebble M350 (USB Dongle)
+          {{0x046d, 0x4080},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kThreeKey}},
           // Logitech MX Master 3 (USB Dongle)
           {{0x046d, 0x4082},
            {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kLogitechSixKeyWithTab}},
+          // Logitech MX Anywhere 3 (USB Dongle)
+          {{0x046d, 0x4090},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
           // Logitech ERGO M575 (USB Dongle)
           {{0x046d, 0x4096},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
@@ -210,16 +251,52 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0xb02a},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech M550
+          {{0x046d, 0xb02b},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kThreeKey}},
+          // Logitech Pop Mouse
+          {{0x046d, 0xb030},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFourKeyWithTopButton}},
+          // Logitech Lift
+          {{0x046d, 0xb031},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech M650 For Business
+          {{0x046d, 0xb032},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
           // Logitech MX Master 3S (Bluetooth)
           {{0x046d, 0xb034},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kLogitechSixKey}},
-          // Logitech MX Master 3S B (Bluetooth)
+          // Logitech MX Master 3S For Business (Bluetooth)
           {{0x046d, 0xb035},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kLogitechSixKey}},
+          // Logitech Pebble 2 M350S
+          {{0x046d, 0xb036},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kThreeKey}},
           // Logitech MX Anywhere 3S (Bluetooth)
           {{0x046d, 0xb037},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech M240 Silent
+          {{0x046d, 0xb03a},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kThreeKey}},
+          // Logitech MX Ergo S Trackball
+          {{0x046d, 0xb03e},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech Signature AI Edition M750
+          {{0x046d, 0xb040},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech M650 For Business
+          {{0x046d, 0xb032},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
           // Logitech M500 (USB)
@@ -320,6 +397,10 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0x4079},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // Logitech MX Vertical
+          {{0x046d, 0x407b},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
           // Logitech G604
           {{0x046d, 0x4085},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
@@ -1327,8 +1408,24 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
           {{0x46d, 0xb027}, {0x46d, 0x4096}},
           // Logitech MX Master 2S (Bluetooth -> USB Dongle)
           {{0x046d, 0xb019}, {0x046d, 0x4069}},
+          // Logitech MX Ergo Trackball (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb01d}, {0x046d, 0x406f}},
+          // Logitech MX Vertical (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb020}, {0x046d, 0x407b}},
+          // Logitech Pebble M350 (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb021}, {0x046d, 0x4080}},
           // Logitech MX Master 3 (Bluetooth -> USB Dongle)
           {{0x046d, 0xb023}, {0x046d, 0x4082}},
+          // Logitech MX Anywhere 3 (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb025}, {0x046d, 0x4090}},
+          // Logitech MX Anywhere 3 For Business (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb02d}, {0x046d, 0x4090}},
+          // Logitech Lift For Business (Bluetooth -> Bluetooth)
+          {{0x046d, 0xb033}, {0x046d, 0xb031}},
+          // Logitech MX Anywhere 3S For Business (Bluetooth -> Bluetooth)
+          {{0x046d, 0xb038}, {0x046d, 0xb037}},
+          // Logitech M240 Silent For Business (Bluetooth -> Bluetooth)
+          {{0x046d, 0xb03b}, {0x046d, 0xb03a}},
           // Logitech M720 Triathlon (Bluetooth -> USB Dongle)
           {{0x046d, 0xb015}, {0x046d, 0x405e}},
           // Wacom Intuos S (Bluetooth -> USB)
@@ -1553,6 +1650,10 @@ std::vector<mojom::ButtonRemappingPtr> GetButtonRemappingListForConfig(
       return GetLogitechSixKeyButtonRemappingList();
     case mojom::MouseButtonConfig::kLogitechSixKeyWithTab:
       return GetLogitechSixKeyWithTabButtonRemappingList();
+    case mojom::MouseButtonConfig::kThreeKey:
+      return GetThreeKeyButtonRemappingList();
+    case mojom::MouseButtonConfig::kFourKeyWithTopButton:
+      return GetFourKeyWithTopButtonButtonRemappingList();
   }
 }
 

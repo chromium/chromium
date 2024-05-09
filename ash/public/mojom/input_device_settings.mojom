@@ -405,6 +405,11 @@ enum MouseButtonConfig {
   // Logitech mouse with six customizable buttons, where the 6th button sends
   // tab.
   kLogitechSixKeyWithTab = 3,
+  // Mice with three buttons that are: {Left, Middle, Right}
+  kThreeKey = 4,
+  // Mice with four buttons where there is the standard {Left, Middle, Right}
+  // and an additional button on the top that is the button code {Forward}.
+  kFourKeyWithTopButton = 5,
 };
 
 // Contains the valid set of graphics tablet button configs.
