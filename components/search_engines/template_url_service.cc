@@ -546,19 +546,71 @@ bool TemplateURLService::ShowInDefaultList(const TemplateURL* t_url) const {
 }
 
 bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
-  return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue ||
-         (t_url->created_by_policy() ==
-              TemplateURLData::CreatedByPolicy::kSiteSearch &&
-          t_url->featured_by_policy());
+  return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue;
 }
 
 bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
-  // Hide synthetic entries created by SiteSearchSettings policy, since they
-  // are only used for discoverability and the corresponding entry that doesn't
-  // start with "@" is already shown in the actives list.
-  return t_url->created_by_policy() ==
+  switch (t_url->created_by_policy()) {
+    case TemplateURLData::CreatedByPolicy::kNoPolicy:
+      // Hide if the preferred search engine for the keyword is created by
+      // policy. The call to `GetTemplateURLForKeyword` already ensure
+      // prioritization of search engines, so there is no need to replicate the
+      // logic here.
+      return GetTemplateURLForKeyword(t_url->keyword())->created_by_policy() !=
+             TemplateURLData::CreatedByPolicy::kNoPolicy;
+
+    case TemplateURLData::CreatedByPolicy::kDefaultSearchProvider:
+      return false;
+
+    case TemplateURLData::CreatedByPolicy::kSiteSearch: {
+      // Always show featured Enterprise site search engines.
+      if (t_url->featured_by_policy()) {
+        return false;
+      }
+
+      // A featured site search engine with keyword "work" is represented by two
+      // TemplateURLs in the service:
+      // - One with `featured_by_policy = true` and keyword "@work"
+      // - One with `featured_by_policy = false` and keyword "work"
+      //
+      // In the settings page, we want to show only one entry with both keywords
+      // separated by a comma ("@work, work"). The logic below hides the one
+      // that doesn't start with the "@" symbol.
+      //
+      // It also handles one corner case when the user explicitely created a
+      // site search engine with keyword "work", which overrides the one with
+      // the same keyword created by policy. In that case, we want to show both
+      // the Enterprise one with keyword "@work" and the user-defined one.
+      const TemplateURL* t_url_with_at =
+          GetTemplateURLForKeyword(u"@" + t_url->keyword());
+      return t_url_with_at &&
+             t_url_with_at->created_by_policy() ==
+                 TemplateURLData::CreatedByPolicy::kSiteSearch &&
+             t_url_with_at->featured_by_policy();
+    }
+  }
+}
+
+bool TemplateURLService::FeaturedOverridesNonFeatured(
+    const TemplateURL* template_url) const {
+  CHECK(template_url);
+
+  if (template_url->created_by_policy() !=
+          TemplateURLData::CreatedByPolicy::kSiteSearch ||
+      !template_url->featured_by_policy()) {
+    return false;
+  }
+
+  const std::u16string& keyword = template_url->keyword();
+  CHECK(!keyword.empty());
+  CHECK_EQ(keyword[0], u'@');
+
+  const TemplateURL* turl_without_at =
+      GetTemplateURLForKeyword(std::u16string(keyword, 1));
+  return turl_without_at &&
+         turl_without_at->created_by_policy() ==
              TemplateURLData::CreatedByPolicy::kSiteSearch &&
-         t_url->featured_by_policy();
+         !turl_without_at->featured_by_policy();
 }
 
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,

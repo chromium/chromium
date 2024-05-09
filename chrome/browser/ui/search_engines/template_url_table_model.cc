@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"
@@ -181,6 +182,14 @@ std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
 
 void TemplateURLTableModel::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
+}
+
+std::u16string TemplateURLTableModel::GetKeywordToDisplay(size_t row) {
+  std::u16string keyword =
+      GetText(row, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN);
+  return template_url_service_->FeaturedOverridesNonFeatured(entries_[row])
+             ? base::JoinString({keyword, std::u16string(keyword, 1)}, u", ")
+             : keyword;
 }
 
 void TemplateURLTableModel::Remove(size_t index) {

@@ -399,6 +399,8 @@ struct SearchEngineOrderingTestCase {
   const char16_t* short_name;
   bool is_active;
   bool created_by_site_search_policy = false;
+  bool featured_by_policy = false;
+  bool safe_for_autoreplace = false;
 };
 
 std::unique_ptr<TemplateURL> CreateTemplateUrlForSortingTest(
@@ -411,6 +413,8 @@ std::unique_ptr<TemplateURL> CreateTemplateUrlForSortingTest(
   data.created_by_policy = test_case.created_by_site_search_policy
                                ? TemplateURLData::CreatedByPolicy::kSiteSearch
                                : TemplateURLData::CreatedByPolicy::kNoPolicy;
+  data.featured_by_policy = test_case.featured_by_policy;
+  data.safe_for_autoreplace = test_case.safe_for_autoreplace;
   return std::make_unique<TemplateURL>(data);
 }
 
@@ -511,7 +515,8 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByNameWithManagedSiteSearch) {
   }
 
   ASSERT_EQ(table_model()->last_active_engine_index(),
-            table_model()->last_search_engine_index() + 5);
+            table_model()->last_search_engine_index() +
+                std::size(kExpectedShortNamesOrder));
   ASSERT_EQ(table_model()->last_other_engine_index(),
             table_model()->last_active_engine_index());
 
@@ -520,5 +525,164 @@ TEST_F(KeywordEditorControllerTest, EnginesSortedByNameWithManagedSiteSearch) {
         table_model()->last_search_engine_index() + i);
     ASSERT_TRUE(template_url);
     EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
+  }
+}
+
+TEST_F(KeywordEditorControllerTest, FeaturedEnterpriseSiteSearch) {
+  const SearchEngineOrderingTestCase kTestCases[] = {
+      {
+          .keyword = u"@kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = false,
+      },
+      {
+          .keyword = u"@kw2",
+          .short_name = u"Featured 2",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"User-defined engine",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+      },
+      {
+          .keyword = u"kw3",
+          .short_name = u"Non-featured",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = false,
+      },
+  };
+
+  const std::u16string kExpectedShortNamesOrder[] = {
+      u"Featured 1", u"Featured 2", u"Non-featured", u"User-defined engine"};
+  const std::u16string kExpectedKeywordsToDisplay[] = {u"@kw1, kw1", u"@kw2",
+                                                       u"kw3", u"kw2"};
+
+  std::vector<TemplateURL*> engines;
+  for (SearchEngineOrderingTestCase test_case : kTestCases) {
+    engines.push_back(
+        util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
+    // Table model should have updated.
+    VerifyChanged();
+  }
+
+  ASSERT_EQ(table_model()->last_active_engine_index(),
+            table_model()->last_search_engine_index() +
+                std::size(kExpectedShortNamesOrder));
+  ASSERT_EQ(table_model()->last_other_engine_index(),
+            table_model()->last_active_engine_index());
+
+  for (size_t i = 0; i < std::size(kExpectedShortNamesOrder); ++i) {
+    size_t row = table_model()->last_search_engine_index() + i;
+    const TemplateURL* template_url = table_model()->GetTemplateURL(row);
+    ASSERT_TRUE(template_url);
+    EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
+    EXPECT_EQ(table_model()->GetKeywordToDisplay(row),
+              kExpectedKeywordsToDisplay[i]);
+  }
+}
+
+TEST_F(KeywordEditorControllerTest,
+       EnterpriseSiteSearchConflictWithExistingEngines) {
+  const SearchEngineOrderingTestCase kTestCases[] = {
+      {
+          .keyword = u"kw1",
+          .short_name = u"User-defined engine",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+          .safe_for_autoreplace = false,
+      },
+      {
+          .keyword = u"@kw1",
+          .short_name = u"User-defined engine with @",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+          .safe_for_autoreplace = false,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"Auto-created engine",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+          .featured_by_policy = false,
+          .safe_for_autoreplace = true,
+      },
+      {
+          .keyword = u"@kw2",
+          .short_name = u"Auto-created engine with @",
+          .is_active = true,
+          .created_by_site_search_policy = false,
+          .featured_by_policy = false,
+          .safe_for_autoreplace = true,
+      },
+      {
+          .keyword = u"@kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw1",
+          .short_name = u"Featured 1",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = false,
+      },
+      {
+          .keyword = u"@kw2",
+          .short_name = u"Featured 2",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = true,
+      },
+      {
+          .keyword = u"kw2",
+          .short_name = u"Featured 2",
+          .is_active = true,
+          .created_by_site_search_policy = true,
+          .featured_by_policy = false,
+      },
+  };
+
+  const std::u16string kExpectedShortNamesOrder[] = {
+      u"Featured 1", u"Featured 2", u"User-defined engine"};
+  const std::u16string kExpectedKeywordsToDisplay[] = {u"@kw1", u"@kw2, kw2",
+                                                       u"kw1"};
+
+  std::vector<TemplateURL*> engines;
+  for (SearchEngineOrderingTestCase test_case : kTestCases) {
+    engines.push_back(
+        util()->model()->Add(CreateTemplateUrlForSortingTest(test_case)));
+    // Table model should have updated.
+    VerifyChanged();
+  }
+
+  ASSERT_EQ(table_model()->last_active_engine_index(),
+            table_model()->last_search_engine_index() +
+                std::size(kExpectedShortNamesOrder));
+  ASSERT_EQ(table_model()->last_other_engine_index(),
+            table_model()->last_active_engine_index());
+
+  for (size_t i = 0; i < std::size(kExpectedShortNamesOrder); ++i) {
+    size_t row = table_model()->last_search_engine_index() + i;
+    const TemplateURL* template_url = table_model()->GetTemplateURL(row);
+    ASSERT_TRUE(template_url);
+    EXPECT_EQ(template_url->short_name(), kExpectedShortNamesOrder[i]);
+    EXPECT_EQ(table_model()->GetKeywordToDisplay(row),
+              kExpectedKeywordsToDisplay[i]);
   }
 }
