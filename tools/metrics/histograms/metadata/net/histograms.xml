@@ -1547,8 +1547,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.DotUpgradeSucceeded" enum="Boolean"
-    expires_after="2024-10-13">
-  <owner>horo@chromium.org</owner>
+    expires_after="2025-05-08">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH from a DoT hostname was attempted and succeeded.
@@ -1557,8 +1557,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.HasPublicInsecureNameserver"
-    enum="Boolean" expires_after="2024-06-12">
-  <owner>horo@chromium.org</owner>
+    enum="Boolean" expires_after="2025-05-08">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if there was at least one public nameserver during an attempt to
@@ -1571,8 +1571,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.DohSpecified" enum="Boolean"
-    expires_after="2024-10-13">
-  <owner>horo@chromium.org</owner>
+    expires_after="2025-05-08">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because the DoH config was already
@@ -1581,8 +1581,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.UnhandledOptions"
-    enum="Boolean" expires_after="2024-06-12">
-  <owner>horo@chromium.org</owner>
+    enum="Boolean" expires_after="2025-05-08">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH was not attempted because of unhandled options in the
@@ -1592,8 +1592,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
-    expires_after="2024-10-13">
-  <owner>horo@chromium.org</owner>
+    expires_after="2025-05-08">
+  <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
     True if upgrade to DoH from insecure DNS was attempted and succeeded. False
