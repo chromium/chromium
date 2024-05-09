@@ -122,6 +122,9 @@ class NearbyPresenceService {
   CreateNearbyPresenceConnectionsManager() = 0;
 };
 
+std::ostream& operator<<(std::ostream& stream,
+                         const NearbyPresenceService::StatusCode status_code);
+
 }  // namespace ash::nearby::presence
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_NEARBY_PRESENCE_SERVICE_H_

@@ -33,4 +33,46 @@ NearbyPresenceService::ScanSession::ScanSession(
 
 NearbyPresenceService::ScanSession::~ScanSession() {}
 
+std::ostream& operator<<(std::ostream& stream,
+                         const NearbyPresenceService::StatusCode status_code) {
+  switch (status_code) {
+    case NearbyPresenceService::StatusCode::kAbslOk:
+      return stream << "OK";
+    case NearbyPresenceService::StatusCode::kAbslCancelled:
+      return stream << "Cancelled";
+    case NearbyPresenceService::StatusCode::kAbslUnknown:
+      return stream << "Unknown";
+    case NearbyPresenceService::StatusCode::kAbslInvalidArgument:
+      return stream << "Invalid Argument";
+    case NearbyPresenceService::StatusCode::kAbslDeadlineExceeded:
+      return stream << "Deadline Exceeded";
+    case NearbyPresenceService::StatusCode::kAbslNotFound:
+      return stream << "Not Found";
+    case NearbyPresenceService::StatusCode::kAbslAlreadyExists:
+      return stream << "Already Exists";
+    case NearbyPresenceService::StatusCode::kAbslPermissionDenied:
+      return stream << "Permission Denied";
+    case NearbyPresenceService::StatusCode::kAbslResourceExhausted:
+      return stream << "Resource Exhausted";
+    case NearbyPresenceService::StatusCode::kAbslFailedPrecondition:
+      return stream << "Failed Precondition";
+    case NearbyPresenceService::StatusCode::kAbslAborted:
+      return stream << "Aborted";
+    case NearbyPresenceService::StatusCode::kAbslOutOfRange:
+      return stream << "Out of Range";
+    case NearbyPresenceService::StatusCode::kAbslUnimplemented:
+      return stream << "Unimplemented";
+    case NearbyPresenceService::StatusCode::kAbslInternal:
+      return stream << "Internal";
+    case NearbyPresenceService::StatusCode::kAbslUnavailable:
+      return stream << "Unavailable";
+    case NearbyPresenceService::StatusCode::kAbslDataLoss:
+      return stream << "Data Loss";
+    case NearbyPresenceService::StatusCode::kAbslUnauthenticated:
+      return stream << "Unauthenticated";
+    case NearbyPresenceService::StatusCode::kFailedToStartProcess:
+      return stream << "Failed to Start Process";
+  }
+}
+
 }  // namespace ash::nearby::presence
