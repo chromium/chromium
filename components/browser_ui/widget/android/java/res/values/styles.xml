@@ -153,6 +153,15 @@ found in the LICENSE file.
     <style name="AssistiveChip" parent="Chip">
         <item name="cornerRadius">@dimen/chip_default_height</item>
     </style>
+    <style name="HistoryAppChip" parent="Chip">
+        <item name="android:minHeight">18dp</item>
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="iconWidth">16dp</item>
+        <item name="iconHeight">16dp</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="solidColorChip">true</item>
+        <item name="chipColor">@macro/history_chip_bg_color</item>
+    </style>
     <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
         <item name="iconWidth">28dp</item>
         <item name="iconHeight">28dp</item>
