@@ -7,7 +7,7 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
@@ -52,9 +52,7 @@ void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
         new_shared_credentials) {
   base::Value::List list;
   for (const auto& credential : new_shared_credentials) {
-    // Hex encoding converts the secret_id blob to a UTF-8 compatible string.
-    list.Append(base::HexEncode(std::vector<uint8_t>(
-        credential.secret_id().begin(), credential.secret_id().end())));
+    list.Append(base::NumberToString(credential.id()));
   }
   pref_service_->SetList(prefs::kNearbyPresenceSharedCredentialIdListPrefName,
                          std::move(list));
@@ -72,10 +70,7 @@ bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
 
   std::set<std::string> new_shared_credential_ids;
   for (const auto& credential : new_shared_credentials) {
-    // Hex encode the blobs for correct comparison with the IDs encoded in
-    // UpdatePersistedSharedCredentials().
-    new_shared_credential_ids.insert(base::HexEncode(std::vector<uint8_t>(
-        credential.secret_id().begin(), credential.secret_id().end())));
+    new_shared_credential_ids.insert(base::NumberToString(credential.id()));
   }
 
   return new_shared_credential_ids != persisted_shared_credential_ids;

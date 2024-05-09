@@ -201,15 +201,16 @@ void NearbyPresenceCredentialStorage::UpdateLocalCredential(
   // create a vector with a single pair in-line using an initializer list.
   auto credential_pair_to_update = std::make_unique<std::vector<
       std::pair<std::string, ::nearby::internal::LocalCredential>>>();
-  credential_pair_to_update->emplace_back(std::make_pair(
-      local_credential_proto.secret_id(), local_credential_proto));
+  std::string id = base::NumberToString(local_credential_proto.id());
+  credential_pair_to_update->emplace_back(
+      std::make_pair(id, local_credential_proto));
 
   // Only match the credential being updated.
   leveldb_proto::KeyFilter update_filter = base::BindRepeating(
       [](const std::string& key, const std::string& target_key) {
         return key == target_key;
       },
-      local_credential_proto.secret_id());
+      id);
 
   // TODO(b/333701895): Verify that this works as expected during a broadcast.
   private_db_->UpdateEntriesWithRemoveFilter(
@@ -347,9 +348,10 @@ void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(
       std::pair<std::string, ::nearby::internal::LocalCredential>>>();
   base::flat_set<std::string> keys_to_not_delete;
   for (const auto& local_credential : proto_local_credentials) {
+    std::string id = base::NumberToString(local_credential.id());
     credential_pairs_to_save->emplace_back(
-        std::make_pair(local_credential.secret_id(), local_credential));
-    keys_to_not_delete.insert(local_credential.secret_id());
+        std::make_pair(id, local_credential));
+    keys_to_not_delete.insert(id);
   }
 
   private_db_->UpdateEntriesWithRemoveFilter(
