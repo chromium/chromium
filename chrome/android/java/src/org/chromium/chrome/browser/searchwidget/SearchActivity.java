@@ -685,12 +685,6 @@ public class SearchActivity extends AsyncInitializationActivity
         if (name != null) RecordUserAction.record(name);
     }
 
-    @Override
-    @VisibleForTesting
-    public final void startDelayedNativeInitialization() {
-        super.startDelayedNativeInitialization();
-    }
-
     private static SearchActivityDelegate getActivityDelegate() {
         synchronized (DELEGATE_LOCK) {
             if (sDelegate == null) sDelegate = new SearchActivityDelegate();
