@@ -454,6 +454,14 @@ crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_
 crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 # finder:enable-narrowing
 
+# Flaking due to DCHECK see https://crbug.com/339457781
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_BackdropFilter [ RetryOnFailure ]
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_VP9 [ RetryOnFailure ]
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_MP4 [ RetryOnFailure ]
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_AV1 [ RetryOnFailure ]
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
+crbug.com/339457781 [ android android-SM-S911U1 renderer-skia-vulkan ] Pixel_Video_HEVC [ RetryOnFailure ]
+
 # ChromeOS Volteer failures
 crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Failure ]
 
