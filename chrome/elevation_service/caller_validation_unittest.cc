@@ -176,7 +176,10 @@ TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
 // |   |__ app2.exe
 // |   |__ app3.exe
 // |   |__ Temp
-// |       |__ app7.exe
+// |   |   |__ app7.exe
+// |   |
+// |   |__ 1.2.3.4
+// |       |__ app10.exe
 // |
 // |__ Temp
 // |   |__ app4.exe
@@ -212,6 +215,9 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
       temp_dir.AppendASCII("Program Files").AppendASCII("app8.exe");
   const auto app9_path =
       temp_dir.AppendASCII("Program Files (x86)").AppendASCII("app9.exe");
+  const auto app10_path = temp_dir.AppendASCII("Application")
+                              .AppendASCII("1.2.3.4")
+                              .AppendASCII("app10.exe");
 
   // Should ignore 'Temp' and 'Application' for matches.
   ASSERT_NO_FATAL_FAILURE(
@@ -247,6 +253,12 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
       VerifyValidationResult(app8_path, app9_path, /*expected_match=*/true));
   ASSERT_NO_FATAL_FAILURE(
       VerifyValidationResult(app1_path, app8_path, /*expected_match=*/false));
+  // Verify app in version dir normalizes to the parent directory.
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyValidationResult(app2_path, app10_path, /*expected_match=*/true));
+  // Verify app in version dir does not match an unrelated directory.
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyValidationResult(app5_path, app10_path, /*expected_match=*/false));
 }
 
 // To run this locally, copy the elevation_service_unittests binary to a
@@ -291,6 +303,8 @@ TEST_F(CallerValidationTest, TrimProcessPath) {
       {L"C:\\scoped_dir1234\\Program Files "
        L"(x86)\\Google\\scoped_dir1234\\Chrome\\chrome.exe",
        L"C:\\scoped_dir1234\\Program Files\\Google\\scoped_dir1234\\Chrome"},
+      {L"C:\\Program Files\\Google\\Chrome\\Application\\1.2.3.4\\chrome.exe",
+       L"C:\\Program Files\\Google\\Chrome"},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {

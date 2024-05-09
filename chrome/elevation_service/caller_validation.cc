@@ -19,8 +19,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
 
@@ -30,7 +32,7 @@ namespace {
 
 // Paths look like this: "C:\Program Files\Blah\app.exe".
 // This function will remove the final EXE, then it will remove paths that match
-// 'Temp' or 'Application' if they are the final directory.
+// 'Temp', 'Application' or a version pattern if they are the final directory.
 //
 // Examples:
 // "C:\Program Files\Blah\app.exe" ->
@@ -46,6 +48,9 @@ namespace {
 // "C:\Program Files\Blah"
 //
 // "C:\Program Files (x86)\Blah\Application\app.exe" ->
+// "C:\Program Files\Blah"
+//
+// "C:\Program Files (x86)\Blah\Application\1.2.3.4\app.exe" ->
 // "C:\Program Files\Blah"
 //
 base::FilePath MaybeTrimProcessPath(const base::FilePath& full_path) {
@@ -64,6 +69,10 @@ base::FilePath MaybeTrimProcessPath(const base::FilePath& full_path) {
       continue;
     }
     if (token == 2 && it->starts_with(L"scoped_dir")) {
+      token--;
+      continue;
+    }
+    if (token == 2 && base::Version(base::WideToASCII(it->data())).IsValid()) {
       token--;
       continue;
     }
