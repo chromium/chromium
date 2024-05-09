@@ -28,7 +28,11 @@ using mojom::WifiP2PCapabilitiesPtr;
 namespace {
 
 constexpr char kIpv4Address[] = "100.0.0.1";
-const int testShillId = 0;
+constexpr char kDefaultSSID[] = "DIRECT-A0";
+constexpr char kDefaultPassphrase[] = "direct-passphrase";
+constexpr char kAssignedSSID[] = "DIRECT-1a";
+constexpr char kAssignedPassphrase[] = "test_passphrase";
+const int kTestShillId = 0;
 
 }  // namespace
 
@@ -129,8 +133,8 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
       ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
                                         shill::kCreateP2PGroupResultSuccess);
   auto credentials = mojom::WifiCredentials::New();
-  credentials->ssid = "DIRECT-1a";
-  credentials->passphrase = "test_passphrase";
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
   WifiP2POperationTestResult result_arguments =
       CreateWifiDirectGroup(std::move(credentials));
   EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
@@ -142,6 +146,8 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
   auto properties = GetProperties(wifi_direct_connection);
   EXPECT_EQ(1000u, properties->frequency);
   EXPECT_EQ(kIpv4Address, properties->ipv4_address);
+  EXPECT_EQ(kAssignedSSID, properties->credentials->ssid);
+  EXPECT_EQ(kAssignedPassphrase, properties->credentials->passphrase);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
 
   FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
@@ -151,9 +157,9 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupWithCredentials_Success) {
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
-  EXPECT_EQ(testShillId, ShillManagerClient::Get()
-                             ->GetTestInterface()
-                             ->GetRecentlyDestroyedP2PGroupId());
+  EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
+                              ->GetTestInterface()
+                              ->GetRecentlyDestroyedP2PGroupId());
 }
 
 TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupNoCredentials_Success) {
@@ -171,6 +177,8 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupNoCredentials_Success) {
   auto properties = GetProperties(wifi_direct_connection);
   EXPECT_EQ(1000u, properties->frequency);
   EXPECT_EQ(kIpv4Address, properties->ipv4_address);
+  EXPECT_EQ(kDefaultSSID, properties->credentials->ssid);
+  EXPECT_EQ(kDefaultPassphrase, properties->credentials->passphrase);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
   // Request disconnection from client side.
   wifi_direct_connection.reset();
@@ -215,6 +223,8 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
           FakeShillSimulatedResult::kSuccess,
           shill::kConnectToP2PGroupResultSuccess);
   auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
   WifiP2POperationTestResult result_arguments =
       ConnectToWifiDirectGroup(std::move(credentials), 5200u);
   EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
@@ -226,6 +236,8 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   auto properties = GetProperties(wifi_direct_connection);
   EXPECT_EQ(5200u, properties->frequency);
   EXPECT_EQ(kIpv4Address, properties->ipv4_address);
+  EXPECT_EQ(kAssignedSSID, properties->credentials->ssid);
+  EXPECT_EQ(kAssignedPassphrase, properties->credentials->passphrase);
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
 
   FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
@@ -235,9 +247,9 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
-  EXPECT_EQ(testShillId, ShillManagerClient::Get()
-                             ->GetTestInterface()
-                             ->GetRecentlyDisconnectedP2PGroupId());
+  EXPECT_EQ(kTestShillId, ShillManagerClient::Get()
+                              ->GetTestInterface()
+                              ->GetRecentlyDisconnectedP2PGroupId());
 }
 
 TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {

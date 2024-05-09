@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 
+#include "chromeos/ash/components/wifi_p2p/wifi_p2p_group.h"
 #include "chromeos/ash/services/wifi_direct/wifi_direct_connection.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -100,20 +101,20 @@ void WifiDirectManager::GetWifiP2PCapabilities(
 void WifiDirectManager::OnCreateOrConnectWifiDirectGroup(
     CreateWifiDirectGroupCallback callback,
     WifiP2PController::OperationResult result,
-    std::optional<WifiP2PController::WifiDirectConnectionMetadata> metadata) {
+    std::optional<WifiP2PGroup> group_metadata) {
   WifiDirectOperationResult mojo_result = GetMojoOperationResult(result);
   if (mojo_result != WifiDirectOperationResult::kSuccess) {
     std::move(callback).Run(mojo_result, mojo::NullRemote());
     return;
   }
 
-  CHECK(metadata);
-  const int shill_id = metadata->shill_id;
+  CHECK(group_metadata);
+  const int shill_id = group_metadata->shill_id();
   NET_LOG(EVENT) << "Creating Wifi direct connection with Shill id: "
                  << shill_id;
 
   auto wifi_direct_connection_pair = WifiDirectConnection::Create(
-      *metadata,
+      *group_metadata,
       base::BindOnce(&WifiDirectManager::OnClientRequestedDisconnection,
                      weak_ptr_factory_.GetWeakPtr(), shill_id));
   if (base::Contains(shill_id_to_wifi_direct_connection_, shill_id)) {

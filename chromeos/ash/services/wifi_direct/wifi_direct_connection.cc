@@ -6,16 +6,17 @@
 
 namespace ash::wifi_direct {
 
-using WifiDirectConnectionMetadata =
-    WifiP2PController::WifiDirectConnectionMetadata;
-
 namespace {
 
 mojom::WifiDirectConnectionPropertiesPtr GetMojoProperties(
-    const WifiDirectConnectionMetadata& metadata) {
+    const WifiP2PGroup& group_metadata) {
   auto properties = mojom::WifiDirectConnectionProperties::New();
-  properties->frequency = metadata.frequency;
-  properties->ipv4_address = metadata.ipv4_address;
+  properties->frequency = group_metadata.frequency();
+  properties->ipv4_address = group_metadata.ipv4_address();
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = group_metadata.ssid();
+  credentials->passphrase = group_metadata.passphrase();
+  properties->credentials = std::move(credentials);
   return properties;
 }
 
@@ -23,34 +24,33 @@ mojom::WifiDirectConnectionPropertiesPtr GetMojoProperties(
 
 // static
 WifiDirectConnection::InstanceWithPendingRemotePair
-WifiDirectConnection::Create(const WifiDirectConnectionMetadata& metadata,
+WifiDirectConnection::Create(const WifiP2PGroup& group_metadata,
                              base::OnceClosure disconnect_handler) {
   // Use base::WrapUnique(new WifiDirectConnection(...)) instead of
   // std::make_unique<WifiDirectConnection> to access a private constructor.
   std::unique_ptr<WifiDirectConnection> wifi_direct_connection =
-      base::WrapUnique(new WifiDirectConnection(metadata));
+      base::WrapUnique(new WifiDirectConnection(group_metadata));
 
   return std::make_pair(
       std::move(wifi_direct_connection),
       wifi_direct_connection->CreateRemote(std::move(disconnect_handler)));
 }
 
-WifiDirectConnection::WifiDirectConnection(
-    const WifiDirectConnectionMetadata& metadata)
-    : metadata_(metadata) {
+WifiDirectConnection::WifiDirectConnection(const WifiP2PGroup& group_metadata)
+    : group_metadata_(group_metadata) {
   CHECK(WifiP2PController::IsInitialized());
 }
 
 WifiDirectConnection::~WifiDirectConnection() = default;
 
 void WifiDirectConnection::GetProperties(GetPropertiesCallback callback) {
-  std::move(callback).Run(GetMojoProperties(metadata_));
+  std::move(callback).Run(GetMojoProperties(group_metadata_));
 }
 
 void WifiDirectConnection::AssociateSocket(mojo::PlatformHandle socket,
                                            AssociateSocketCallback callback) {
-  WifiP2PController::Get()->TagSocket(metadata_.network_id, socket.TakeFD(),
-                                      std::move(callback));
+  WifiP2PController::Get()->TagSocket(group_metadata_.network_id(),
+                                      socket.TakeFD(), std::move(callback));
 }
 
 mojo::PendingRemote<mojom::WifiDirectConnection>
@@ -63,7 +63,7 @@ WifiDirectConnection::CreateRemote(base::OnceClosure disconnect_handler) {
 }
 
 bool WifiDirectConnection::IsOwner() const {
-  return metadata_.is_owner;
+  return group_metadata_.is_owner();
 }
 
 void WifiDirectConnection::FlushForTesting() {

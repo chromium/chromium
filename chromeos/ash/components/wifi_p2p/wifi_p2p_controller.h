@@ -16,6 +16,8 @@
 
 namespace ash {
 
+class WifiP2PGroup;
+
 // Class for handling initialization and access to chromeos wifi_p2p controller.
 // Exposes functions for following operations:
 // 1. Create a p2p group
@@ -38,20 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
 
   // Returns true if the global instance has been initialized.
   static bool IsInitialized();
-
-  // Wifi direct group metadata includes: shill_id and frequency.
-  struct WifiDirectConnectionMetadata {
-    // Unique ID to identify the Wifi direct group.
-    int shill_id;
-    // The operating frequency of the Wifi direct group network.
-    uint32_t frequency;
-    // Unique ID to identify the network in Patchpanel.
-    int network_id;
-    // Ipv4 address for the Wifi direct network.
-    std::string ipv4_address;
-    // Boolean indicating if the device is group owner or client.
-    bool is_owner;
-  };
 
   struct WifiP2PCapabilities {
     WifiP2PCapabilities(const bool is_owner_ready, const bool is_client_ready)
@@ -104,9 +92,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
 
   // Return callback for the CreateWifiP2PGroup or ConnectToWifiP2PGroup
   // methods.
-  using WifiP2PGroupCallback = base::OnceCallback<void(
-      OperationResult result,
-      std::optional<WifiDirectConnectionMetadata> metadata)>;
+  using WifiP2PGroupCallback =
+      base::OnceCallback<void(OperationResult result,
+                              std::optional<WifiP2PGroup> group_metadata)>;
 
   // SSID and passphrase should be provided or omit at the same time. If both
   // SSID and passphrase are provide, it will attempt to create the WiFi P2P

@@ -86,6 +86,7 @@ interface WifiDirectManager {
 };
 
 struct WifiDirectConnectionProperties {
+  WifiCredentials credentials;
   uint32 frequency;
   string ipv4_address;
 };
