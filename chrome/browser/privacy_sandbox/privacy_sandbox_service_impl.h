@@ -106,6 +106,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       const override;
   base::Time TopicsConsentLastUpdateTime() const override;
   std::string TopicsConsentLastUpdateText() const override;
+#if BUILDFLAG(IS_ANDROID)
+  void RecordActivityType(
+      PrivacySandboxStorageActivityType type) const override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   friend class PrivacySandboxServiceTest;

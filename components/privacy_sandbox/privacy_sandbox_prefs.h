@@ -143,6 +143,10 @@ inline constexpr char kPrivacySandboxTopicsConsentLastUpdateReason[] =
 inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
     "privacy_sandbox.topics_consent.text_at_last_update";
 
+// Pref which contains a list of the activity type from the last 100 chrome
+// launches
+inline constexpr char kPrivacySandboxActivityTypeRecord[] =
+    "privacy_sandbox.activity_type.record";
 }  // namespace prefs
 
 namespace privacy_sandbox {

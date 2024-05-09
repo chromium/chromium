@@ -281,6 +281,32 @@ class PrivacySandboxService : public KeyedService {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Clank startup, the RecordActivityType function will be called once,
+  // passing in the corresponding PrivacySandboxStorageActivityType. Each time
+  // the function is called, the kPrivacySandboxActivityTypeRecord preference
+  // will be updated with a new list of activity type launches. This list is
+  // limited in size and by the timestamps of recordable launches
+  // (kPrivacySandboxActivityTypeStorageLastNLaunches and
+  // kPrivacySandboxActivityTypeStorageWithinXDays). By having this storage
+  // component, we can create an accurate heuristic to identify distinct user
+  // groups based on their Chrome usage patterns. This will enable us to tailor
+  // the user experience for specific launches in the near future.
+  enum class PrivacySandboxStorageActivityType {
+    kTabbed,              // BrApp
+    kAGSACustomTab,       // AGSA-CCT
+    kNonAGSACustomTab,    // Non-AGSA-CCT
+    kTrustedWebActivity,  // TWA
+    //   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
+    kWebapp,
+    //   - https://web.dev/webapks/
+    kWebApk,  // PWA
+    kMaxValue = kWebApk,
+  };
+  virtual void RecordActivityType(
+      PrivacySandboxStorageActivityType type) const = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
