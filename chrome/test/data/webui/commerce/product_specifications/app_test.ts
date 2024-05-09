@@ -337,6 +337,45 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[1]);
   });
 
+  suite('Header', () => {
+    test('displays correct subtitle for retrieved sets', async () => {
+      const specsSet = createSpecsSet({
+        name: 'fooName',
+      });
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsSetByUuid',
+          Promise.resolve({set: specsSet}));
+
+      const promiseValues = createAppPromiseValues({idParam: 'foo123'});
+      createAppElementWithPromiseValues(promiseValues);
+      await flushTasks();
+
+      assertEquals('fooName', appElement.$.header.subtitle);
+    });
+
+    test('displays correct subtitle for created sets', async () => {
+      const urlsParam = ['https://example3.com/', 'https://example4.com/'];
+      const promiseValues = createAppPromiseValues({
+        idParam: '',
+        urlsParam: urlsParam,
+      });
+      createAppElementWithPromiseValues(promiseValues);
+      await flushTasks();
+
+      // TODO(b/338427523): Parameterize this test once there is UI for choosing
+      // the name.
+      assertEquals('Product specs', appElement.$.header.subtitle);
+    });
+
+    test('displays correct subtitle for empty state', async () => {
+      router.setResultFor('getCurrentQuery', '');
+      createAppElement();
+      await flushTasks();
+
+      assertEquals(null, appElement.$.header.subtitle);
+    });
+  });
+
   suite('EmptyState', () => {
     test('shows empty state if app loads without urls', () => {
       router.setResultFor('getCurrentQuery', '');

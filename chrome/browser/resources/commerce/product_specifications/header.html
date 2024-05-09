@@ -19,7 +19,7 @@
     font-weight: 500;
   }
 
-  #pageTitle {
+  #title {
     color: var(--color-product-specifications-primary-title);
   }
 
@@ -31,7 +31,7 @@
     width: 2px;
   }
 
-  #pageSubtitle {
+  #subtitle {
     color: var(--color-product-specifications-secondary-title);
     flex: 1;
   }
@@ -41,11 +41,12 @@
   }
 </style>
 <img id="logo" srcset="chrome://theme/current-channel-logo@4x 4x"
-  role="presentation">
-<div class="title-text" id="pageTitle">$i18n{pageTitle}</div>
-<div id="divider"></div>
-<div class="title-text" id="pageSubtitle">$i18n{categoryTitle}</div>
-<cr-icon-button id="menuButton" class="icon-more-vert" on-click="showMenu_">
+    role="presentation">
+<div class="title-text" id="title">$i18n{pageTitle}</div>
+<div id="divider" hidden="[[!subtitle]]"></div>
+<div class="title-text" id="subtitle" hidden="[[!subtitle]]">[[subtitle]]</div>
+<cr-icon-button id="menuButton" class="icon-more-vert" on-click="showMenu_"
+    hidden="[[!subtitle]]">
 </cr-icon-button>
 
 <header-menu id="menu" on-close="onCloseMenu_"></header-menu>

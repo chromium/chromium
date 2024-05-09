@@ -63,7 +63,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Product Specifications");
-  source->AddString("categoryTitle", "Product category being compared...");
   source->AddString("summaryTitle", "Summary");
 
   static constexpr webui::LocalizedString kStrings[] = {

@@ -6,8 +6,10 @@ import 'chrome://compare/header.js';
 
 import type {HeaderElement} from 'chrome://compare/header.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
 suite('HeaderTest', () => {
   let header: HeaderElement;
@@ -53,5 +55,19 @@ suite('HeaderTest', () => {
     assertTrue(!!menuClosedBackgroundColor);
     assertEquals(
         baseBackgroundColor.toString(), menuClosedBackgroundColor.toString());
+  });
+
+  test('setting `subtitle` gives the header a subtitle', async () => {
+    assertStyle($$(header, '#subtitle')!, 'display', 'none');
+    assertStyle($$(header, '#divider')!, 'display', 'none');
+    assertStyle($$(header, '#menuButton')!, 'display', 'none');
+
+    header.subtitle = 'foo';
+    await waitAfterNextRender(header);
+
+    assertEquals('foo', $$(header, '#subtitle')!.textContent);
+    assertNotStyle($$(header, '#subtitle')!, 'display', 'none');
+    assertNotStyle($$(header, '#divider')!, 'display', 'none');
+    assertNotStyle($$(header, '#menuButton')!, 'display', 'none');
   });
 });

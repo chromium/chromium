@@ -17,6 +17,7 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {HeaderElement} from './header.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
@@ -42,6 +43,7 @@ function aggregateProductDataByClusterId(
 
 export interface ProductSpecificationsElement {
   $: {
+    header: HeaderElement,
     productSelector: ProductSelectorElement,
     summaryTable: TableElement,
   };
@@ -58,6 +60,8 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
+      setName_: String,
+
       showEmptyState_: {
         type: Boolean,
         value: false,
@@ -74,6 +78,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
+  private setName_: string;
   private showEmptyState_: boolean;
   private specsTable_: {columns: TableColumn[], rows: TableRow[]};
 
@@ -103,6 +108,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
           {value: idParam});
       if (set) {
+        this.setName_ = set.name;
         this.populateTable_(set.urls.map(url => (url.url)));
         return;
       }
@@ -120,9 +126,11 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
+    // TODO(b/338427523): Add UI for choosing the name.
+    const setName = 'Product specs';
+    this.setName_ = setName;
     const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
-        // TODO(b/338118596): Add UI for choosing the name.
-        /* name= */ 'Product specs', urls.map(url => ({url})));
+        setName, urls.map(url => ({url})));
     if (createdSet) {
       window.history.replaceState(
           undefined, '', '?id=' + createdSet.uuid.value);

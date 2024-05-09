@@ -30,6 +30,11 @@ export class HeaderElement extends PolymerElement {
 
   static get properties() {
     return {
+      subtitle: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
       showingMenu_: {
         type: Boolean,
         value: false,
@@ -37,6 +42,8 @@ export class HeaderElement extends PolymerElement {
       },
     };
   }
+
+  subtitle: string|null = null;
 
   private showingMenu_: boolean;
 
