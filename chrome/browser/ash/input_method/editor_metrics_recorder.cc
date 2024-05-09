@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +15,8 @@
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace ash::input_method {
 
@@ -83,6 +87,21 @@ std::string_view AsString(const LanguageCategory& category) {
       return "Japanese";
     case LanguageCategory::kOther:
       return "Other";
+  }
+}
+
+std::optional<EditorCriticalStates> AsCriticalState(const EditorStates& state) {
+  switch (state) {
+    case EditorStates::kNativeUIShown:
+    case EditorStates::kPromoCardImpression:
+      return EditorCriticalStates::kShowUI;
+    case EditorStates::kNativeRequest:
+    case EditorStates::kWebUIRequest:
+      return EditorCriticalStates::kRequestTriggered;
+    case EditorStates::kInsert:
+      return EditorCriticalStates::kTextInserted;
+    default:
+      return std::nullopt;
   }
 }
 
@@ -225,6 +244,12 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
         state);
   }
 
+  if (std::optional<EditorCriticalStates> critical_state =
+          AsCriticalState(state);
+      critical_state != std::nullopt) {
+    LogEditorCriticalState(*critical_state);
+  }
+
   if (mode_ != EditorOpportunityMode::kRewrite) {
     return;
   }
@@ -326,6 +351,16 @@ void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
       return;
     case EditorOpportunityMode::kNone:
       return;
+  }
+}
+
+void EditorMetricsRecorder::LogEditorCriticalState(
+    const EditorCriticalStates& critical_state) {
+  if (std::optional<ukm::SourceId> source_id = context_->GetUkmSourceId();
+      source_id.has_value()) {
+    ukm::builders::InputMethod_Manta_Orca(*source_id)
+        .SetEditorCriticalStates(static_cast<int>(critical_state))
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

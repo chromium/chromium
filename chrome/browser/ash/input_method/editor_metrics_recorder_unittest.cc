@@ -14,8 +14,12 @@
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "editor_metrics_enums.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::input_method {
@@ -23,6 +27,8 @@ namespace ash::input_method {
 namespace {
 
 using base::test::ScopedFeatureList;
+using testing::IsEmpty;
+using UkmEntry = ukm::builders::InputMethod_Manta_Orca;
 
 constexpr std::string_view kAllowedCountryCode = "au";
 
@@ -37,13 +43,20 @@ class FakeContextObserver : public EditorContext::Observer {
 
 class FakeSystem : public EditorContext::System {
  public:
-  FakeSystem() = default;
+  FakeSystem() {}
+
+  explicit FakeSystem(ukm::SourceId ukm_source_id)
+      : ukm_source_id_(ukm_source_id) {}
+
   ~FakeSystem() override = default;
 
   // EditorContext::System overrides
   std::optional<ukm::SourceId> GetUkmSourceId() override {
-    return std::nullopt;
+    return ukm_source_id_;
   }
+
+ private:
+  std::optional<ukm::SourceId> ukm_source_id_;
 };
 
 class EditorMetricsRecorderTest : public testing::Test {
@@ -488,6 +501,144 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
   recorder.LogEditorState(EditorStates::kDismiss);
 
   histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
+
+struct CriticalStateCase {
+  EditorStates editor_state;
+  EditorCriticalStates expected_critical_state;
+};
+
+class WritesCriticalStateMetrics
+    : public EditorMetricsRecorderTest,
+      public testing::WithParamInterface<CriticalStateCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    EditorMetricsRecorderTest,
+    WritesCriticalStateMetrics,
+    testing::ValuesIn<CriticalStateCase>({
+        {EditorStates::kNativeUIShown, EditorCriticalStates::kShowUI},
+        {EditorStates::kPromoCardImpression, EditorCriticalStates::kShowUI},
+        {EditorStates::kNativeRequest, EditorCriticalStates::kRequestTriggered},
+        {EditorStates::kWebUIRequest, EditorCriticalStates::kRequestTriggered},
+        {EditorStates::kInsert, EditorCriticalStates::kTextInserted},
+    }));
+
+TEST_P(WritesCriticalStateMetrics, ForRewrite) {
+  const auto& [editor_state, expected_critical_state] = GetParam();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = ukm_recorder.GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
+  FakeSystem system(source_id);
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  recorder.LogEditorState(editor_state);
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0], UkmEntry::kEditorCriticalStatesName,
+      static_cast<int>(expected_critical_state));
+}
+
+TEST_P(WritesCriticalStateMetrics, ForWrite) {
+  const auto& [editor_state, expected_critical_state] = GetParam();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = ukm_recorder.GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
+  FakeSystem system(source_id);
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  recorder.LogEditorState(editor_state);
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entries[0], UkmEntry::kEditorCriticalStatesName,
+      static_cast<int>(expected_critical_state));
+}
+
+class DoesNotWriteCriticalStateMetrics
+    : public EditorMetricsRecorderTest,
+      public testing::WithParamInterface<EditorStates> {};
+
+INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
+                         DoesNotWriteCriticalStateMetrics,
+                         testing::ValuesIn<EditorStates>({
+                             EditorStates::kNativeUIShowOpportunity,
+                             EditorStates::kDismiss,
+                             EditorStates::kRefineRequest,
+                             EditorStates::kSuccessResponse,
+                             EditorStates::kErrorResponse,
+                             EditorStates::kThumbsUp,
+                             EditorStates::kThumbsDown,
+                             EditorStates::kReturnToPreviousSuggestions,
+                             EditorStates::kClickCloseButton,
+                             EditorStates::kApproveConsent,
+                             EditorStates::kDeclineConsent,
+                             EditorStates::kBlocked,
+                             EditorStates::kBlockedByUnsupportedRegion,
+                             EditorStates::kBlockedByManagedStatus,
+                             EditorStates::kBlockedByConsent,
+                             EditorStates::kBlockedBySetting,
+                             EditorStates::kBlockedByTextLength,
+                             EditorStates::kBlockedByUrl,
+                             EditorStates::kBlockedByApp,
+                             EditorStates::kBlockedByInputMethod,
+                             EditorStates::kBlockedByInputType,
+                             EditorStates::kBlockedByAppType,
+                             EditorStates::kBlockedByInvalidFormFactor,
+                             EditorStates::kBlockedByNetworkStatus,
+                             EditorStates::ErrorUnknown,
+                             EditorStates::ErrorInvalidArgument,
+                             EditorStates::ErrorResourceExhausted,
+                             EditorStates::ErrorBackendFailure,
+                             EditorStates::ErrorNoInternetConnection,
+                             EditorStates::ErrorUnsupportedLanguage,
+                             EditorStates::ErrorBlockedOutputs,
+                             EditorStates::ErrorRestrictedRegion,
+                             EditorStates::kPromoCardExplicitDismissal,
+                             EditorStates::kConsentScreenImpression,
+                             EditorStates::kTextInsertionRequested,
+                             EditorStates::kTextQueuedForInsertion,
+                             EditorStates::kRequest,
+                             EditorStates::kBlockedByUnsupportedCapability,
+                             EditorStates::kBlockedByUnknownCapability,
+                         }));
+
+TEST_P(DoesNotWriteCriticalStateMetrics, ForRewrite) {
+  const EditorStates& editor_state = GetParam();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = ukm_recorder.GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
+  FakeSystem system(source_id);
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  recorder.LogEditorState(editor_state);
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_THAT(entries, IsEmpty());
+}
+
+TEST_P(DoesNotWriteCriticalStateMetrics, ForWrite) {
+  const EditorStates& editor_state = GetParam();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = ukm_recorder.GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL("https://test.example.com"));
+  FakeSystem system(source_id);
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  recorder.LogEditorState(editor_state);
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_THAT(entries, IsEmpty());
 }
 
 }  // namespace

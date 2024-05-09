@@ -13528,6 +13528,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="InputMethod.Manta.Orca">
+  <owner>curtismcmullan@google.com</owner>
+  <summary>
+    Metrics recording a summary of critical user interactions with the Editor
+    feature. The event is recorded whenever a user triggers a critical event in
+    the Editor funnel (specifically; the UI is shown, a request is triggered, or
+    a user inserts some suggested text).
+  </summary>
+  <metric name="EditorCriticalStates" enum="IMEEditorCriticalStates">
+    <summary>
+      A summary of interactions with the Editor feature for the purpose of
+      identifying common contexts where the feature is used.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="InputMethod.NonCompliantApi">
   <owner>shend@chromium.org</owner>
   <summary>

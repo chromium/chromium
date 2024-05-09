@@ -13798,6 +13798,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="FAST_EXIT_FIELD"/>
 </enum>
 
+<enum name="IMEEditorCriticalStates">
+  <int value="0" label="SHOW_UI"/>
+  <int value="1" label="REQUEST_TRIGGERED"/>
+  <int value="2" label="TEXT_INSERTED"/>
+</enum>
+
 <!-- If any update to the enum values here is made, the relevant google3 metrics update must also be made to ensure compatibility. Example: cl/576730646-->
 
 <enum name="IMEPKLongpressDiacriticAction">

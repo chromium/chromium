@@ -19,6 +19,20 @@ enum class EditorTone {
   kMaxValue = kUnknown,
 };
 
+// Must match with IMEEditorCriticalStates in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class EditorCriticalStates {
+  // Recorded whenever the native card UI is shown to a user, regardless of the
+  // contents of the card (ie includes promo and editor card).
+  kShowUI = 0,
+  // Recorded whenever a request is sent to the server.
+  kRequestTriggered = 1,
+  // Recorded whenever a text suggestion is inserted to a text field.
+  kTextInserted = 2,
+};
+
 // Must match with IMEEditorStates in enums.xml
 //
 // These values are persisted to logs. Entries should not be renumbered and

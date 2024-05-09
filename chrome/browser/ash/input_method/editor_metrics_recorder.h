@@ -33,7 +33,6 @@ class EditorMetricsRecorder {
                std::optional<std::string_view> freeform_text);
   void SetTone(EditorTone tone);
   void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
-
   void LogEditorState(EditorStates state);
   void LogNumberOfCharactersInserted(int number_of_characters);
   void LogNumberOfCharactersSelectedForInsert(int number_of_characters);
@@ -41,6 +40,8 @@ class EditorMetricsRecorder {
   void LogLengthOfLongestResponseFromServer(int number_of_characters);
 
  private:
+  void LogEditorCriticalState(const EditorCriticalStates& critical_state);
+
   // Not owned by this class
   raw_ptr<EditorContext> context_;
 
