@@ -16,7 +16,6 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,8 +25,15 @@ import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 export interface CertificateEntryV2Element {
   $: {
     certhash: CrInputElement,
-    viewbutton: CrIconButtonElement,
+    copy: HTMLElement,
+    view: HTMLElement,
   };
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'hash-copied': CustomEvent<void>;
+  }
 }
 
 
@@ -53,6 +59,12 @@ export class CertificateEntryV2Element extends PolymerElement {
   private onViewCertificate_() {
     CertificatesV2BrowserProxy.getInstance().handler.viewCertificate(
         this.sha256hashHex);
+  }
+
+  private onCopyHash_() {
+    navigator.clipboard.writeText(this.sha256hashHex);
+    this.dispatchEvent(
+        new CustomEvent('hash-copied', {composed: true, bubbles: true}));
   }
 }
 

@@ -10,14 +10,16 @@
 
 import './certificate_entry_v2.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
-import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_manager_v2.html.js';
@@ -27,9 +29,9 @@ import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 export interface CertificateManagerV2Element {
   $: {
     crsCerts: CrCollapseElement,
+    toast: CrToastElement,
   };
 }
-
 
 export class CertificateManagerV2Element extends PolymerElement {
   static get is() {
@@ -45,6 +47,8 @@ export class CertificateManagerV2Element extends PolymerElement {
       selectedTabIndex_: Number,
       tabNames_: Array,
 
+      toastMessage_: String,
+
       // TODO(crbug.com/40928765): Split CRS tab out into its own HTML/TS file
       // pair. Or create some cert-list element and reuse that.
       crsCertificates_: Array,
@@ -55,6 +59,18 @@ export class CertificateManagerV2Element extends PolymerElement {
       // </if>
     };
   }
+
+  private selectedTabIndex_: number = 0;
+  // TODO(crbug.com/40928765): Support localization.
+  private tabNames_: string[] =
+      ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
+  private toastMessage_: string;
+  private crsCertificates_: SummaryCertInfo[] = [];
+  private crsTrustedCertsOpened_: boolean = true;
+  private platformClientCerts_: SummaryCertInfo[] = [];
+  // <if expr="is_win or is_macosx">
+  private provisionedClientCerts_: SummaryCertInfo[] = [];
+  // </if>
 
   override ready() {
     super.ready();
@@ -77,16 +93,11 @@ export class CertificateManagerV2Element extends PolymerElement {
     // </if>
   }
 
-  private selectedTabIndex_: number = 0;
-  // TODO(crbug.com/40928765): Support localization.
-  private tabNames_: string[] =
-      ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
-  private crsCertificates_: SummaryCertInfo[] = [];
-  private crsTrustedCertsOpened_: boolean = true;
-  private platformClientCerts_: SummaryCertInfo[] = [];
-  // <if expr="is_win or is_macosx">
-  private provisionedClientCerts_: SummaryCertInfo[] = [];
-  // </if>
+  private onValueCopied_() {
+    // TODO(crbug.com/40928765): Support localization.
+    this.toastMessage_ = 'Hash copied to clipboard';
+    this.$.toast.show();
+  }
 }
 
 declare global {

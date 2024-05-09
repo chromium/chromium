@@ -11,10 +11,7 @@ import type {CertificateManagerV2Element} from 'chrome://resources/cr_components
 import type {CertificateManagerPageHandlerInterface, CertificateManagerPageRemote, SummaryCertInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateManagerPageCallbackRouter} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="not (is_win or is_macosx)">
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
-// </if>
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -104,7 +101,7 @@ suite('CertificateEntryV2Test', () => {
     await microtasksFinished();
     assertEquals(
         'deadbeef', certEntry.$.certhash.value, 'wrong hash in input box');
-    certEntry.$.viewbutton.click();
+    certEntry.$.view.click();
     const hash = await testProxy.handler.whenCalled('viewCertificate');
     assertEquals('deadbeef', hash, 'click provided wrong hash');
   });
@@ -125,6 +122,26 @@ suite('CertificateManagerV2Test', () => {
     certManager = document.createElement('certificate-manager-v2');
     document.body.appendChild(certManager);
   }
+
+  test('Copy hash', async () => {
+    const certs: SummaryCertInfo[] = [
+      {
+        'sha256hashHex': 'deadbeef',
+        'displayName': 'cert1',
+      },
+    ];
+    testProxy.handler.setChromeRootStoreCerts(certs);
+    initializeElement();
+
+    await microtasksFinished();
+    assertFalse(certManager.$.toast.open);
+
+    const certEntries =
+        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
+    assertEquals(1, certEntries.length, 'no certs found');
+    certEntries[0]!.$.copy.click();
+    assertTrue(certManager.$.toast.open);
+  });
 
 
   test('CRS list populated', async () => {
