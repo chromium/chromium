@@ -103,16 +103,14 @@ export class CrRouter extends EventTarget {
   // Updates the window history state if the URL is updated from setters.
   private updateState_() {
     const url = new URL(window.location.origin);
-    url.pathname = window.encodeURI(this.path_)
-                       .replace(/\#/g, '%23')
-                       .replace(/\?/g, '%3F');
+    const pathPieces = this.path_.split('/');
+    url.pathname =
+        pathPieces.map(piece => window.encodeURIComponent(piece)).join('/');
     if (this.query_) {
-      url.search = this.query_.replace(/\#/g, '%23')
-                       .replace(/\+/g, '%2B')
-                       .replace(/ /g, '%20');
+      url.search = this.query_;
     }
     if (this.hash_) {
-      url.hash = window.encodeURI(this.hash_);
+      url.hash = window.encodeURIComponent(this.hash_);
     }
 
     const now = window.performance.now();

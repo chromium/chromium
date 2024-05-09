@@ -17,7 +17,6 @@ build_webui("build") {
     "folder_node.ts",
     "item.ts",
     "list.ts",
-    "router.ts",
     "toolbar.ts",
   ]
 
@@ -34,6 +33,7 @@ build_webui("build") {
     "dnd_manager.ts",
     "mouse_focus_behavior.ts",
     "reducers.ts",
+    "router.ts",
     "store_client_mixin.ts",
     "store.ts",
     "types.ts",

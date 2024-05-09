@@ -16,8 +16,8 @@ suite('CrRouterTest', function() {
     const router = CrRouter.getInstance();
 
     assertEquals('/', window.location.pathname);
-    router.setPath('foo');
-    assertEquals('/foo', window.location.pathname);
+    router.setPath('foo/nested');
+    assertEquals('/foo/nested', window.location.pathname);
 
     assertEquals('', window.location.hash);
     router.setHash('bar');
@@ -30,7 +30,7 @@ suite('CrRouterTest', function() {
     router.setQueryParams(queryParams);
     const updatedParams =
         new URLSearchParams(window.location.search.substring(1));
-    assertEquals('hello+world', updatedParams.get('q'));
+    assertEquals('hello world', updatedParams.get('q'));
   });
 
   test('calls listeners when url changes', function() {
@@ -57,13 +57,15 @@ suite('CrRouterTest', function() {
     assertEquals(0, queryHistory.length);
     assertEquals(0, hashHistory.length);
 
-    window.history.replaceState({}, '', '/foo?q=abc&test=def#bar');
+    window.history.replaceState(
+        {}, '', '/foo/nested?q=hello+world&test=def#bar');
     window.dispatchEvent(new CustomEvent('popstate'));
     assertEquals(1, pathHistory.length);
     assertEquals(1, queryHistory.length);
     assertEquals(1, hashHistory.length);
-    assertEquals('/foo', pathHistory[0]!);
-    assertEquals('q=abc&test=def', queryHistory[0]!.toString());
+    assertEquals('/foo/nested', pathHistory[0]!);
+    assertEquals('q=hello+world&test=def', queryHistory[0]!.toString());
+    assertEquals('hello world', queryHistory[0]!.get('q'));
     assertEquals('bar', hashHistory[0]!);
 
     router.removeEventListener('cr-router-path-changed', pathListener);
