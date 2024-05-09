@@ -103,13 +103,8 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params) {
   DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(neis): Make this a CHECK after confirming that it doesn't happen in
-  // the wild.
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      !ash::switches::IsAshDebugBrowserEnabled()) {
-    base::debug::DumpWithoutCrashing();
-    LOG(ERROR) << "Unexpected SINGLETON_TAB navigation in Ash";
-  }
+  CHECK(crosapi::browser_util::IsAshWebBrowserEnabled() ||
+        ash::switches::IsAshDebugBrowserEnabled());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   content::WebContents* contents =
