@@ -19843,6 +19843,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       TestInvalidComputedSize) {
+  GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  url::Origin test_origin2 = url::Origin::Create(GURL("https://b.test/"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  base::HistogramTester histogram_tester;
+  blink::mojom::AuctionDataConfig config;
+  config.per_buyer_configs.emplace(test_origin,
+                                   blink::mojom::AuctionDataBuyerConfig::New(
+                                       std::numeric_limits<uint32_t>::max()));
+  config.per_buyer_configs.emplace(test_origin2,
+                                   blink::mojom::AuctionDataBuyerConfig::New(
+                                       std::numeric_limits<uint32_t>::max()));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': Computed request size is invalid.",
+      GetInterestGroupAdAuctionData(
+          test_origin, kDefaultBiddingAndAuctionGCPCoordinatorOrigin, &config));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                        Preconnects) {
   GURL test_url = embedded_https_test_server().GetURL(
       "a.test", "/interest_group/empty.html");

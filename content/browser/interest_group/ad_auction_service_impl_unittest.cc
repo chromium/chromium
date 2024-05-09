@@ -11720,6 +11720,51 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
                     test_origin_a, testing::ElementsAre("boats", "cars"))));
   }
 
+  // Don't specify size for buyer a, specify too small size for buyer b.
+  {
+    blink::mojom::AuctionDataConfigPtr config =
+        blink::mojom::AuctionDataConfig::New();
+    // All groups require 418 bytes, so less than that.
+    config->request_size = 412 + 56;
+    config->per_buyer_configs.emplace(
+        test_origin_a, blink::mojom::AuctionDataBuyerConfig::New());
+    // Buyer B requires 129 bytes.
+    config->per_buyer_configs.emplace(
+        test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/128));
+
+    std::vector<uint8_t> msg;
+    base::flat_map<url::Origin, std::vector<std::string>> group_names;
+    base::RunLoop run_loop;
+    manager_->GetInterestGroupAdAuctionData(
+        /*top_level_origin=*/test_origin_a,
+        /*generation_id=*/
+        base::Uuid::ParseCaseInsensitive(
+            "00000000-0000-0000-0000-000000000000"),
+        /*config=*/std::move(config),
+        /*callback=*/
+        base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+          msg = std::move(data.request);
+          group_names = std::move(data.group_names);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    std::string expected =
+        "AgAAARylZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
+        "Oi8vYS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPk"
+        "sOimQKhATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
+        "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
+        "IfQIyrS8zT6YfKXmqteTfTAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAA==";
+    EXPECT_EQ(expected, base::Base64Encode(msg));
+    EXPECT_THAT(group_names,
+                testing::UnorderedElementsAre(testing::Pair(
+                    test_origin_a, testing::ElementsAre("boats", "cars"))));
+  }
+
   // Don't specify size for buyer a, should see 1 group for each owner.
   {
     blink::mojom::AuctionDataConfigPtr config =
@@ -11729,7 +11774,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     config->per_buyer_configs.emplace(
         test_origin_a, blink::mojom::AuctionDataBuyerConfig::New());
     config->per_buyer_configs.emplace(
-        test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/128));
+        test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/129));
 
     std::vector<uint8_t> msg;
     base::flat_map<url::Origin, std::vector<std::string>> group_names;

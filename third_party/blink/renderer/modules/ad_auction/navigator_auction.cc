@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -4382,7 +4383,7 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
     config_ptr->request_size = config->requestSize();
   }
 
-  size_t default_request_size = 0;
+  base::CheckedNumeric<uint32_t> default_request_size = 0;
   if (config->hasPerBuyerConfig()) {
     bool all_have_target_size = true;
     for (const auto& per_buyer_config : config->perBuyerConfig()) {
@@ -4418,7 +4419,11 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
             "is not specified.");
         return ScriptPromise<AdAuctionData>();
       }
-      config_ptr->request_size = default_request_size;
+      if (!default_request_size.IsValid()) {
+        exception_state.ThrowTypeError("Computed request size is invalid.");
+        return ScriptPromise<AdAuctionData>();
+      }
+      config_ptr->request_size = default_request_size.ValueOrDie();
     }
   }
 

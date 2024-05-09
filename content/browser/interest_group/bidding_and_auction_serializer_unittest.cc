@@ -22,6 +22,11 @@ constexpr char kOriginStringB[] = "https://b.test";
 constexpr char kOriginStringC[] = "https://c.test";
 constexpr char kOriginStringD[] = "https://d.test";
 
+// Bidder overhead is 1 byte for tag/length of buyer, 14 bytes for buyer, 1 byte
+// for tag of serialized data, 1 byte for length of serialized data (length <
+// 256).
+const size_t kBidderOverhead = 1 + 14 + 1 + 1;
+
 StorageInterestGroup MakeInterestGroup(blink::InterestGroup interest_group) {
   // Create fake previous wins. The time of these wins is ignored, since the
   // InterestGroupManager attaches the current time when logging a win.
@@ -322,15 +327,13 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
   histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3, 2);
-  histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 2);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 200, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
@@ -370,6 +373,158 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 95, 1);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
+}
+
+class TargetSizeEstimatorTest : public testing::Test {
+ protected:
+  const GURL kUrlA = GURL(kOriginStringA);
+  const url::Origin kOriginA = url::Origin::Create(kUrlA);
+  const GURL kUrlB = GURL(kOriginStringB);
+  const url::Origin kOriginB = url::Origin::Create(kUrlB);
+  const GURL kUrlC = GURL(kOriginStringC);
+  const url::Origin kOriginC = url::Origin::Create(kUrlC);
+  const GURL kUrlD = GURL(kOriginStringD);
+  const url::Origin kOriginD = url::Origin::Create(kUrlD);
+};
+
+TEST_F(TargetSizeEstimatorTest, TotalSizeExceedsSizeT) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = 100;
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<size_t>::max());
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<size_t>::max());
+
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0u), 50 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 50u), 50 - kBidderOverhead);
+}
+
+TEST_F(TargetSizeEstimatorTest, LargeSizeBeforeGroups) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = std::numeric_limits<size_t>::max();
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/100);
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/100);
+
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(
+      std::numeric_limits<size_t>::max(), &*config);
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100);
+  // No space left for groups.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0), 0u);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 0), 0u);
+}
+
+TEST_F(TargetSizeEstimatorTest, FixedSizeGroups) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = 300;
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/100);
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/100);
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 100 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0), 100 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100), 100 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 200), 100 - kBidderOverhead);
+}
+
+TEST_F(TargetSizeEstimatorTest, FixedSizeGroupsShrink) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = 300;
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/50);
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/50);
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  config->per_buyer_configs[kOriginD] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 150 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginD, 50 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0), 50 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 50), 50 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 100), 150 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 250), 50 - kBidderOverhead);
+}
+
+// Specifically designed groups where each iteration in
+// TargetSizeEstimator::UpdateUnsizedGroupSizes only removes 1 buyer.
+TEST_F(TargetSizeEstimatorTest, EqualWorstCase) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = 429;  // fits all groups exactly
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  config->per_buyer_configs[kOriginD] =
+      blink::mojom::AuctionDataBuyerConfig::New();
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 108 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 110 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginD, 111 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0), 100 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100), 108 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 208), 110 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 318), 111 - kBidderOverhead);
+}
+
+// Specifically designed groups where each iteration in
+// TargetSizeEstimator::UpdateSizedGroupSizes only removes 1 buyer. Note this is
+// the same as the previous test only for sized groups, as equal size is a
+// special case of proportional.
+TEST_F(TargetSizeEstimatorTest, ProportionalWorstCase) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = 429;  // fits all groups exactly
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+  config->per_buyer_configs[kOriginD] =
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 108 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 110 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginD, 111 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0), 100 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100), 108 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 208), 110 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 318), 111 - kBidderOverhead);
 }
 
 }  // namespace

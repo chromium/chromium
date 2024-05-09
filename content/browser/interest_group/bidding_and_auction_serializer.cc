@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
 #include <algorithm>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -88,7 +89,7 @@ constexpr std::size_t constexpr_strlen(const char* s) {
 }
 
 // Length of the CBOR encoded length of a CBOR value.
-size_t LengthOfLength(size_t length) {
+size_t LengthOfLength(uint64_t length) {
   if (length < 24) {
     return 0;
   }
@@ -102,6 +103,31 @@ size_t LengthOfLength(size_t length) {
     return 4;
   }
   return 8;
+}
+
+// Finds the number of bytes from `length` that need to be used to store the
+// size of the largest CBOR value that fits.
+// Solves `length = 1 + x + LengthOfLength(x)` for `LengthOfLength(x)`.
+size_t MaxLengthOfTaggedData(uint64_t length) {
+  size_t lol_x = 0;
+  if (length <= 23 + 1) {
+    // Length and tag stored in a single byte.
+    lol_x = 0;
+  } else if (length <= 0xFF + 1 + 1) {
+    // Length and tag stored in separate bytes.
+    lol_x = 1;
+  } else if (length <= 0xFFFF + 1 + 2) {
+    // 1 byte tag, 2 bytes length.
+    lol_x = 2;
+  } else if (length <= 0xFFFFFFFF + 1 + 4) {
+    // 1 byte tag, 4 bytes length.
+    lol_x = 4;
+  } else {
+    // 1 byte tag, 8 bytes length.
+    lol_x = 8;
+  }
+  DCHECK_EQ(LengthOfLength(length - 1 - lol_x), lol_x);
+  return lol_x;
 }
 
 // CBOR encoded length of a string with the given length.
@@ -370,127 +396,6 @@ CompressedInterestGroups CompressInterestGroups(
   return result;
 }
 
-class TargetSizeEstimator {
- public:
-  TargetSizeEstimator(size_t total_size_before_groups,
-                      const blink::mojom::AuctionDataConfig* config)
-      : total_size_before_groups_(total_size_before_groups), config_(config) {
-    DCHECK(config);
-    for (const auto& per_buyer_config : config->per_buyer_configs) {
-      DCHECK(config->request_size);
-      if (per_buyer_config.second->target_size) {
-        total_per_buyer_size_ += per_buyer_config.second->target_size.value();
-      } else {
-        has_unsized_groups_ = true;
-      }
-    }
-  }
-
-  // Estimate the maximum compressed size (bytes) in the request that can be
-  // used to store compressed serialized interest groups for the given bidder.
-  // If there is no maximum, return std::nullopt.
-  std::optional<uint64_t> EstimateTargetSize(
-      const url::Origin& bidder,
-      base::CheckedNumeric<size_t> bidders_elements_size,
-      size_t remaining_bidders) {
-    if (!config_->request_size) {
-      return std::nullopt;
-    }
-    base::CheckedNumeric<uint64_t> target_compressed_size;
-    base::CheckedNumeric<size_t> current_size =
-        total_size_before_groups_ + bidders_elements_size;
-    DCHECK_LE(static_cast<size_t>(current_size.ValueOrDie()),
-              static_cast<size_t>(*config_->request_size));
-    base::CheckedNumeric<size_t> remaining_size =
-        *config_->request_size - current_size;
-    DCHECK_LE(static_cast<size_t>(per_buyer_current_allowed_size_.ValueOrDie()),
-              static_cast<size_t>(total_per_buyer_size_.ValueOrDie()));
-    base::CheckedNumeric<size_t> remaining_per_buyer_size =
-        total_per_buyer_size_ - per_buyer_current_allowed_size_;
-
-    auto maybe_config = config_->per_buyer_configs.find(bidder);
-    if (maybe_config != config_->per_buyer_configs.end() &&
-        maybe_config->second->target_size) {
-      per_buyer_current_allowed_size_ +=
-          maybe_config->second->target_size.value();
-      if (has_unsized_groups_) {
-        // If there are groups without specific sizes then just use the target
-        // size ("fixed" mode). If we run short then use the remaining space.
-        target_compressed_size =
-            remaining_size.Min(maybe_config->second->target_size.value());
-      } else {
-        // If there are no unsized groups then we can try to expand to fit the
-        // remaining space. Use the `target_size` as weights to allocate the
-        // space. The total remaining weight is `remaining_per_buyer_size` so
-        // the weight for this buyer is
-        // `target_size`/`remaining_per_buyer_size`. Note we cast up to
-        // uint64_t to avoid overflow from the multiply.
-        target_compressed_size =
-            (base::CheckedNumeric<uint64_t>(
-                 maybe_config->second->target_size.value()) *
-             remaining_size) /
-            remaining_per_buyer_size;
-      }
-
-    } else {
-      // No target size for this bidder. Share remaining space evenly among the
-      // remaining buyers. Note that we require all specifically sized buyers to
-      // be handled first (order set by
-      // InterestGroupManagerImpl::GetInterestGroupAdAuctionData), so if we're
-      // here then we must have gone through all of the `total_per_buyer_size_`.
-      DCHECK_EQ(
-          static_cast<size_t>(per_buyer_current_allowed_size_.ValueOrDie()),
-          static_cast<size_t>(total_per_buyer_size_.ValueOrDie()));
-      target_compressed_size = remaining_size / remaining_bidders;
-    }
-
-    // Approximate overhead for the bidder origin and field length. This will
-    // slightly overestimate the size by a few bytes, but that's fine.
-
-    // Size of encoding the bidder origin.
-    base::CheckedNumeric<size_t> bidder_origin_overhead =
-        TaggedStringLength(bidder.Serialize().size());
-
-    if (target_compressed_size.ValueOrDie() <
-        bidder_origin_overhead.ValueOrDie()) {
-      // If we don't have enough space for even the bidder origin, then just
-      // skip this bidder. We may be able to fit a bidder with a shorter origin
-      // though.
-      return 0;
-    }
-
-    base::CheckedNumeric<size_t> overhead = bidder_origin_overhead;
-
-    // Add the size of encoding the remaining length. For simplicity we assume
-    // that we would need to encode the full length of space after the bidder
-    // origin. For an exact estimate we would also need to subtract the space
-    // used to calculate the length of the remaining space, but that's
-    // recursive and would only save a couple of bytes in some cases. As a
-    // result this is an overestimate of the actual overhead.
-    overhead += LengthOfLength(
-        (target_compressed_size - overhead).ValueOrDie<size_t>());
-
-    if (target_compressed_size.ValueOrDie() < overhead.ValueOrDie()) {
-      // If we don't have enough space for even the overhead, then just skip
-      // this bidder. We may be able to fit a bidder with a shorter origin
-      // though.
-      return 0;
-    }
-
-    // Set the target size to the remaining space after considering the
-    // overhead.
-    target_compressed_size -= overhead;
-    return target_compressed_size.ValueOrDie();
-  }
-
- private:
-  bool has_unsized_groups_ = false;
-  const size_t total_size_before_groups_ = 0;
-  base::CheckedNumeric<size_t> total_per_buyer_size_ = 0;
-  base::CheckedNumeric<size_t> per_buyer_current_allowed_size_ = 0;
-  raw_ptr<const blink::mojom::AuctionDataConfig> config_;
-};
-
 SerializedBiddersMap SerializeBidderGroupsWithConfig(
     const std::vector<
         std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>&
@@ -498,7 +403,23 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
     const blink::mojom::AuctionDataConfig& config,
     size_t total_size_before_groups,
     base::Time start_time) {
-  TargetSizeEstimator estimator(total_size_before_groups, &config);
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(
+      total_size_before_groups, &config);
+
+  // First serialize all of the buyers' groups to determine which buyers will
+  // not use all of their space. If they fit without applying limits then we
+  // will use this result for the final serialization. This also allows us to
+  // estimate the compression ratio for the groups.
+  std::vector<CompressedInterestGroups> all_bidders_full_compressed_groups;
+  all_bidders_full_compressed_groups.reserve(bidders_and_groups.size());
+  for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
+    const auto& bidder_groups = bidders_and_groups[idx];
+    all_bidders_full_compressed_groups.emplace_back(
+        CompressInterestGroups(bidder_groups.second, start_time, std::nullopt));
+    estimator.UpdatePerBuyerMaxSize(
+        bidder_groups.first,
+        all_bidders_full_compressed_groups[idx].data.size());
+  }
 
   SerializedBiddersMap result{{}, {}, 0, 0, 0, 0};
   result.bidders.reserve(bidders_and_groups.size());
@@ -509,18 +430,15 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
 
     std::optional<uint64_t> target_compressed_size =
         estimator.EstimateTargetSize(bidder_groups.first,
-                                     result.bidders_elements_size,
-                                     bidders_and_groups.size() - idx);
+                                     result.bidders_elements_size);
 
     if (target_compressed_size && target_compressed_size.value() <= 0) {
       // No space for this bidder.
       continue;
     }
 
-    CompressedInterestGroups compressed_groups;
-    // First try compressing without limits.
-    compressed_groups =
-        CompressInterestGroups(bidder_groups.second, start_time, std::nullopt);
+    CompressedInterestGroups compressed_groups =
+        std::move(all_bidders_full_compressed_groups[idx]);
 
     if (target_compressed_size) {
       int num_iterations = 0;
@@ -548,21 +466,21 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
         // The loop condition implies that C > T. Further, we know that
         // CompressInterestGroups will always satisfy U <= D. So we calculate
         // the next target uncompressed size as D'= T*U/C. Rearranging and
-        // substituting C > T into D' = T * U / C, we get D' * C / U < C, or D'
-        // < U (for positive U and C). This gives us D' < U <= D, implying that
-        // the next uncompressed target size is strictly less than the current
-        // uncompressed target size. Therefore, the loop will terminate.
-        // Further, if the previous compression ratio is the same as the new
-        // compression ratio then it will take only a single iteration to
-        // converge.
+        // substituting C > T into D' = T * U / C, we get D' * C / U < C, or
+        // D' < U (for positive U and C). This gives us D' < U <= D, implying
+        // that the next uncompressed target size is strictly less than the
+        // current uncompressed target size. Therefore, the loop will
+        // terminate. Further, if the previous compression ratio is the same
+        // as the new compression ratio then it will take only a single
+        // iteration to converge.
         size_t current_uncompressed_target_size =
             (*target_compressed_size * compressed_groups.uncompressed_size) /
             compressed_groups.data.size();
         // Shrink this a little because smaller things don't compress as well.
         // 15/16 is a bit of a fudge factor that seemed to work well when
         // working with some simulated data. This is not necessary for
-        // correctness, but makes things converge faster at the (unlikely) cost
-        // of excluding some groups that could have been included.
+        // correctness, but makes things converge faster at the (unlikely)
+        // cost of excluding some groups that could have been included.
         current_uncompressed_target_size =
             (current_uncompressed_target_size * 15) / 16;
 
@@ -570,8 +488,8 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
             bidder_groups.second, start_time, current_uncompressed_target_size);
       }
 
-      // Only record iteration count if we were trying to fit within a specific
-      // size.
+      // Only record iteration count if we were trying to fit within a
+      // specific size.
       base::UmaHistogramCounts100(
           "Ads.InterestGroup.ServerAuction.Request.NumIterations",
           num_iterations);
@@ -605,6 +523,289 @@ BiddingAndAuctionData::~BiddingAndAuctionData() = default;
 
 BiddingAndAuctionData& BiddingAndAuctionData::operator=(
     BiddingAndAuctionData&& other) = default;
+
+BiddingAndAuctionSerializer::TargetSizeEstimator::TargetSizeEstimator(
+    size_t total_size_before_groups,
+    const blink::mojom::AuctionDataConfig* config)
+    : total_size_before_groups_(total_size_before_groups), config_(config) {
+  DCHECK(config_);
+  DCHECK(config_->request_size || config_->per_buyer_configs.empty());
+}
+
+BiddingAndAuctionSerializer::TargetSizeEstimator::~TargetSizeEstimator() =
+    default;
+
+void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdatePerBuyerMaxSize(
+    const url::Origin& bidder,
+    size_t max_size) {
+  base::CheckedNumeric<size_t> overhead =
+      TaggedStringLength(bidder.Serialize().size());
+  overhead += 1 + LengthOfLength(max_size);
+
+  size_t new_size = (overhead + max_size).ValueOrDie();
+  per_buyer_size_[bidder] = new_size;
+
+  auto it = config_->per_buyer_configs.find(bidder);
+  if (it != config_->per_buyer_configs.end() &&
+      it->second->target_size.has_value()) {
+    // Update size estimates for sized buyers.
+    per_buyer_total_allowed_size_ += it->second->target_size.value();
+  } else {
+    // Update estimates for unsized buyers.
+    total_unsized_buyers_++;
+  }
+}
+
+std::optional<uint64_t>
+BiddingAndAuctionSerializer::TargetSizeEstimator::EstimateTargetSize(
+    const url::Origin& bidder,
+    base::CheckedNumeric<size_t> bidders_elements_size) {
+  if (!config_->request_size) {
+    return std::nullopt;
+  }
+  base::CheckedNumeric<uint64_t> target_compressed_size;
+  base::CheckedNumeric<size_t> current_size =
+      total_size_before_groups_ + bidders_elements_size;
+  if (!current_size.IsValid() ||
+      current_size.ValueOrDie() >= *config_->request_size) {
+    return 0;
+  }
+  base::CheckedNumeric<size_t> remaining_size =
+      *config_->request_size - current_size;
+  DCHECK_LE(static_cast<uint64_t>(per_buyer_current_allowed_size_.ValueOrDie()),
+            static_cast<uint64_t>(per_buyer_total_allowed_size_.ValueOrDie()));
+
+  auto it = config_->per_buyer_configs.find(bidder);
+  if (it != config_->per_buyer_configs.end() &&
+      it->second->target_size.has_value()) {
+    size_t buyer_size = it->second->target_size.value();
+    if (total_unsized_buyers_ > 0) {
+      // If there are groups without specific sizes then just use the target
+      // size ("fixed" mode). If we run short then use the remaining space.
+      target_compressed_size = remaining_size.Min(buyer_size);
+      per_buyer_current_allowed_size_ += buyer_size;
+    } else {
+      if (per_buyer_current_allowed_size_.ValueOrDie() == 0) {
+        // We haven't processed any proportionally-sized buyers yet, so we
+        // need to perform our global size estimation to determine how we
+        // allocate the entire remaining space.
+        UpdateSizedGroupSizes(remaining_size.ValueOrDie());
+      }
+      base::CheckedNumeric<uint64_t> remaining_per_buyer_size =
+          per_buyer_total_allowed_size_ - per_buyer_current_allowed_size_;
+
+      // Although we performed global size assignment, there may be extra
+      // space available if a previous buyer didn't use their entire
+      // allocation. We expand the allocation proportionally based on the
+      // remaining size. Note we cast up to uint64_t to avoid overflow from
+      // the multiply.
+      target_compressed_size =
+          (base::CheckedNumeric<uint64_t>(per_buyer_size_[bidder]) *
+           remaining_size) /
+          remaining_per_buyer_size;
+      per_buyer_current_allowed_size_ += per_buyer_size_[bidder];
+    }
+  } else {
+    // No target size for this bidder. Note that we require all specifically
+    // sized buyers to be handled first (order set by
+    // InterestGroupManagerImpl::GetInterestGroupAdAuctionData), so if we're
+    // here then we must have gone through all of the
+    // `per_buyer_total_allowed_size_`.
+    DCHECK_EQ(
+        static_cast<uint64_t>(per_buyer_current_allowed_size_.ValueOrDie()),
+        static_cast<uint64_t>(per_buyer_total_allowed_size_.ValueOrDie()));
+    if (!unsized_buyer_size_) {
+      // We haven't processed any unsized buyers yet, so we need to perform
+      // our global size estimation to determine how we allocate the entire
+      // remaining space equally across all unsized buyers.
+      UpdateUnsizedGroupSizes(remaining_size.ValueOrDie());
+    }
+    if (per_buyer_size_[bidder] > unsized_buyer_size_.value()) {
+      DCHECK_GT(remaining_unallocated_unsized_buyers_, 0u);
+      // Although we performed global size assignment, there may be extra
+      // space available if a previous buyer didn't use their entire
+      // allocation. We expand the allocation equally among groups that
+      // filled up their initial allocation (unallocated groups). This may
+      // actually be less than `unsized_buyer_size_` because that was
+      // calculated using the ceiling of the average size.
+      DCHECK_GE(static_cast<size_t>(remaining_size.ValueOrDie()),
+                static_cast<size_t>(
+                    remaining_allocated_unsized_buyer_size_.ValueOrDie()));
+      target_compressed_size = (base::CheckedNumeric<uint64_t>(remaining_size) -
+                                remaining_allocated_unsized_buyer_size_) /
+                               remaining_unallocated_unsized_buyers_;
+      remaining_unallocated_unsized_buyers_--;
+    } else {
+      // This buyer could put all of their data in so just set the size to
+      // what was required (or remaining size if it ended up being less - this
+      // can happen since we took the ceiling of the size in the global
+      // allocation).
+      target_compressed_size = remaining_size.Min(per_buyer_size_[bidder]);
+      remaining_allocated_unsized_buyer_size_ -= per_buyer_size_[bidder];
+    }
+  }
+
+  // Calculate the overhead for the bidder origin and field length.
+
+  // Size of encoding the bidder origin.
+  base::CheckedNumeric<size_t> bidder_origin_overhead =
+      TaggedStringLength(bidder.Serialize().size());
+
+  if (!bidder_origin_overhead.IsValid() ||
+      target_compressed_size.ValueOrDie() <
+          bidder_origin_overhead.ValueOrDie()) {
+    // If we don't have enough space for even the bidder origin, then just
+    // skip this bidder. We may be able to fit a bidder with a shorter origin
+    // though.
+    return 0;
+  }
+
+  base::CheckedNumeric<size_t> overhead = bidder_origin_overhead;
+
+  // Add the size of encoding the tag and remaining length.
+  overhead += 1 + MaxLengthOfTaggedData(
+                      (target_compressed_size - overhead).ValueOrDie());
+
+  if (!overhead.IsValid() ||
+      overhead.ValueOrDie() > target_compressed_size.ValueOrDie()) {
+    // If we don't have enough space for even the overhead, then just skip
+    // this bidder. We may be able to fit a bidder with a shorter origin
+    // though.
+    return 0;
+  }
+
+  // Set the target size to the remaining space after considering the
+  // overhead.
+  target_compressed_size -= overhead;
+  return target_compressed_size.ValueOrDie();
+}
+
+void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdateSizedGroupSizes(
+    size_t remaining_size) {
+  std::map<url::Origin, size_t> allocated_sizes;
+  base::CheckedNumeric<uint64_t> unallocated_target_size =
+      per_buyer_total_allowed_size_;
+  base::CheckedNumeric<size_t> unallocated_size = remaining_size;
+  std::set<url::Origin> allocated_buyers;
+
+  // Iteratively refine the size estimates by pulling out buyers that are
+  // definitely going to get more space than they can use. We stop when either
+  // all of the buyers have been removed or no more buyers can be removed.
+  for (size_t iteration = 0; iteration < per_buyer_size_.size(); iteration++) {
+    base::CheckedNumeric<uint64_t> new_total_per_buyer_size = 0;
+    // For each buyer determine if it needs the space it would be allocated.
+    // Reallocates unused space from previous iterations.
+    for (const auto& [bidder, bidder_config] : config_->per_buyer_configs) {
+      // We only use proportional allocation if all buyers have a targetSize.
+      DCHECK(bidder_config->target_size.has_value());
+
+      if (allocated_buyers.contains(bidder)) {
+        // Already removed from the pool.
+        new_total_per_buyer_size += per_buyer_size_[bidder];
+        continue;
+      }
+
+      // Use the `target_size`s as a weight to allocate the space. The total
+      // weight of groups contending for the remaining space is
+      // `unallocated_target_size` so the weight for this buyer is
+      // `target_size`/`unallocated_target_size`. Note we cast up to
+      // uint64_t to avoid overflow from the multiply.
+      base::CheckedNumeric<uint64_t> allocated_size =
+          (base::CheckedNumeric<uint64_t>(bidder_config->target_size.value()) *
+           unallocated_size) /
+          unallocated_target_size;
+
+      if (per_buyer_size_[bidder] <= allocated_size.ValueOrDie()) {
+        // New bidder that doesn't need any more space. Reserve it for exactly
+        // as much space as it needs.
+        allocated_sizes[bidder] = per_buyer_size_[bidder];
+        allocated_buyers.insert(bidder);
+        unallocated_size -= per_buyer_size_[bidder];
+        unallocated_target_size -= bidder_config->target_size.value();
+        new_total_per_buyer_size += per_buyer_size_[bidder];
+        continue;
+      }
+
+      allocated_sizes[bidder] = allocated_size.ValueOrDie<size_t>();
+      new_total_per_buyer_size += allocated_size;
+    }
+    // If we've converged to a new total size or we can fit all of the groups
+    // for all of the bidders, then we're done.
+    if (new_total_per_buyer_size.ValueOrDie() ==
+            per_buyer_total_allowed_size_.ValueOrDie() ||
+        unallocated_target_size.ValueOrDie() == 0) {
+      per_buyer_total_allowed_size_ = new_total_per_buyer_size;
+      break;
+    }
+    per_buyer_total_allowed_size_ = new_total_per_buyer_size;
+  }
+
+  for (const auto& [bidder, size] : allocated_sizes) {
+    per_buyer_size_[bidder] = size;
+  }
+}
+
+void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdateUnsizedGroupSizes(
+    size_t remaining_size) {
+  DCHECK_GT(total_unsized_buyers_, 0u);
+  remaining_unallocated_unsized_buyers_ = total_unsized_buyers_;
+  base::CheckedNumeric<size_t> unallocated_size = remaining_size;
+  std::set<url::Origin> allocated_buyers;
+  size_t previous_size_allocation = 0;
+  // Iteratively refine the size estimates by pulling out buyers that are
+  // definitely going to get more space than they can use. We stop when either
+  // all of the buyers have been removed or no more buyers can be removed.
+  for (size_t iteration = 0; iteration < per_buyer_size_.size(); iteration++) {
+    if (remaining_unallocated_unsized_buyers_ == 0) {
+      // All buyers removed.
+      break;
+    }
+    // Set the size allocation to the ceiling of the remaining available space
+    // divided by the number of remaining groups. Ceiling is fine because we
+    // avoid allocating too much space when we do the final allocation in
+    // `EstimateTargetSize`, and in the common case groups will not exactly
+    // fit in an allocation. Cast up to uint64_t to avoid any addition
+    // overflow before the divide.
+    size_t equal_size_allocation =
+        ((base::CheckedNumeric<uint64_t>(unallocated_size) +
+          remaining_unallocated_unsized_buyers_ - 1) /
+         remaining_unallocated_unsized_buyers_)
+            .ValueOrDie<size_t>();
+    if (equal_size_allocation == previous_size_allocation) {
+      // No changes mean no more buyers can be removed, so we're done.
+      break;
+    }
+    unsized_buyer_size_ = equal_size_allocation;
+
+    // For each buyer determine if it needs the space it would be allocated.
+    // Reallocates unused space from previous iterations.
+    for (const auto& [bidder, buyer_size] : per_buyer_size_) {
+      // Skip sized groups.
+      auto it = config_->per_buyer_configs.find(bidder);
+      if (it != config_->per_buyer_configs.end() &&
+          it->second->target_size.has_value()) {
+        continue;
+      }
+
+      if (allocated_buyers.contains(bidder)) {
+        // This was already removed from the pool, so just skip it.
+        continue;
+      }
+
+      if (buyer_size <= equal_size_allocation) {
+        // New bidder that doesn't need any more space. Reserve it for exactly
+        // as much space as it needs.
+        unallocated_size -= buyer_size;
+        allocated_buyers.insert(bidder);
+        DCHECK_GT(remaining_unallocated_unsized_buyers_, 0u);
+        remaining_unallocated_unsized_buyers_--;
+        remaining_allocated_unsized_buyer_size_ += buyer_size;
+        continue;
+      }
+    }
+    previous_size_allocation = equal_size_allocation;
+  }
+}
 
 BiddingAndAuctionSerializer::BiddingAndAuctionSerializer() {
   start_time_ = base::Time::Now();
