@@ -106,8 +106,8 @@ You should not check in any pre-built binaries where there is an alternate,
 supported solution for getting them. If you need to compile from source,
 consider using [CIPD](cipd_and_3pp.md) instead.
 
-_Accessible to Googlers only. Non-Googlers can email one of the people in
-third_party/OWNERS for help.
+This is accessible to Googlers only. Non-Googlers can email one of the people
+in third_party/OWNERS for help.
 
 See [Chrome Code Policy](https://goto.google.com/chrome-code-policy)
 
@@ -185,8 +185,8 @@ and do not need to modify `//third_party/.gitignore`.
 
 ### Checking in large files
 
-_Accessible to Googlers only. Non-Googlers can email one of the people in
-third_party/OWNERS for help.
+This is accessible to Googlers only. Non-Googlers can email one of the people
+in third_party/OWNERS for help.
 
 See [Moving large files to Google Storage](https://goto.google.com/checking-in-large-files)
 
