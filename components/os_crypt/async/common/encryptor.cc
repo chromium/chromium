@@ -17,14 +17,13 @@
 #include "crypto/aead.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <dpapi.h>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "components/os_crypt/async/common/encryptor_features.h"
 #endif
 
@@ -109,9 +108,9 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
 #if BUILDFLAG(IS_WIN)
       // Copy. This makes it thread safe. Must outlive aead.
       std::vector<uint8_t> decrypted_key(key_);
-      base::ScopedClosureRunner zero_memory(
-          base::BindOnce(base::IgnoreResult(&::SecureZeroMemory),
-                         std::data(decrypted_key), std::size(decrypted_key)));
+      absl::Cleanup zero_memory = [&decrypted_key] {
+        ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
+      };
 
       if (encrypted_) {
         ::CryptUnprotectMemory(std::data(decrypted_key),
@@ -154,9 +153,9 @@ std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
 #if BUILDFLAG(IS_WIN)
       // Copy. This makes it thread safe. Must outlive aead.
       std::vector<uint8_t> decrypted_key(key_);
-      base::ScopedClosureRunner zero_memory(
-          base::BindOnce(base::IgnoreResult(&::SecureZeroMemory),
-                         std::data(decrypted_key), std::size(decrypted_key)));
+      absl::Cleanup zero_memory = [&decrypted_key] {
+        ::SecureZeroMemory(decrypted_key.data(), decrypted_key.size());
+      };
       if (encrypted_) {
         ::CryptUnprotectMemory(std::data(decrypted_key),
                                std::size(decrypted_key),
