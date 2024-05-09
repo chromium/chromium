@@ -1520,6 +1520,55 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
 </enum>
 
+<enum name="WebChromeClientMethod">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="void onProgressChanged(WebView, int)"/>
+  <int value="2" label="void onReceivedTitle(WebView, String)"/>
+  <int value="3" label="void onReceivedIcon(WebView, Bitmap)"/>
+  <int value="4" label="void onReceivedTouchIconUrl(WebView, String, boolean)"/>
+  <int value="5"
+      label="void onShowCustomView(View, WebChromeClient$CustomViewCallback)"/>
+  <int value="6"
+      label="void onShowCustomView(View, int,
+             WebChromeClient$CustomViewCallback)"/>
+  <int value="7" label="void onHideCustomView()"/>
+  <int value="8"
+      label="boolean onCreateWindow(WebView, boolean, boolean, Message)"/>
+  <int value="9" label="void onRequestFocus(WebView)"/>
+  <int value="10" label="void onCloseWindow(WebView)"/>
+  <int value="11" label="boolean onJsAlert(WebView, String, String, JsResult)"/>
+  <int value="12"
+      label="boolean onJsConfirm(WebView, String, String, JsResult)"/>
+  <int value="13"
+      label="boolean onJsPrompt(WebView, String, String, String,
+             JsPromptResult)"/>
+  <int value="14"
+      label="boolean onJsBeforeUnload(WebView, String, String, JsResult)"/>
+  <int value="15"
+      label="void onExceededDatabaseQuota(String, String, long, long, long,
+             WebStorage$QuotaUpdater)"/>
+  <int value="16"
+      label="void onReachedMaxAppCacheSize(long, long,
+             WebStorage$QuotaUpdater)"/>
+  <int value="17"
+      label="void onGeolocationPermissionsShowPrompt(String,
+             GeolocationPermissions$Callback)"/>
+  <int value="18" label="void onGeolocationPermissionsHidePrompt()"/>
+  <int value="19" label="void onPermissionRequest(PermissionRequest)"/>
+  <int value="20" label="void onPermissionRequestCanceled(PermissionRequest)"/>
+  <int value="21" label="boolean onJsTimeout()"/>
+  <int value="22" label="void onConsoleMessage(String, int, String)"/>
+  <int value="23" label="boolean onConsoleMessage(ConsoleMessage)"/>
+  <int value="24" label="Bitmap getDefaultVideoPoster()"/>
+  <int value="25" label="View getVideoLoadingProgressView()"/>
+  <int value="26" label="void getVisitedHistory(ValueCallback)"/>
+  <int value="27"
+      label="boolean onShowFileChooser(WebView, ValueCallback,
+             WebChromeClient$FileChooserParams)"/>
+  <int value="28" label="void openFileChooser(ValueCallback, String, String)"/>
+  <int value="29" label="void setupAutoFill(Message)"/>
+</enum>
+
 <enum name="WebViewApiCall">
   <int value="0" label="WebView.addJavascriptInterface"/>
   <int value="1" label="WebView.autofill"/>
@@ -1820,6 +1869,51 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="WebChromeClient.getDefaultVideoPoster"/>
   <int value="38" label="WebViewClient.onRenderProcessGone"/>
   <int value="39" label="WebViewClient.onScaleChanged"/>
+</enum>
+
+<enum name="WebViewClientMethod">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="boolean shouldOverrideUrlLoading(WebView, String)"/>
+  <int value="2"
+      label="boolean shouldOverrideUrlLoading(WebView, WebResourceRequest)"/>
+  <int value="3" label="void onPageStarted(WebView, String, Bitmap)"/>
+  <int value="4" label="void onPageFinished(WebView, String)"/>
+  <int value="5" label="void onLoadResource(WebView, String)"/>
+  <int value="6" label="void onPageCommitVisible(WebView, String)"/>
+  <int value="7"
+      label="WebResourceResponse shouldInterceptRequest(WebView, String)"/>
+  <int value="8"
+      label="WebResourceResponse shouldInterceptRequest(WebView,
+             WebResourceRequest)"/>
+  <int value="9" label="void onTooManyRedirects(WebView, Message, Message)"/>
+  <int value="10" label="void onReceivedError(WebView, int, String, String)"/>
+  <int value="11"
+      label="void onReceivedError(WebView, WebResourceRequest,
+             WebResourceError)"/>
+  <int value="12"
+      label="void onReceivedHttpError(WebView, WebResourceRequest,
+             WebResourceResponse)"/>
+  <int value="13" label="void onFormResubmission(WebView, Message, Message)"/>
+  <int value="14"
+      label="void doUpdateVisitedHistory(WebView, String, boolean)"/>
+  <int value="15"
+      label="void onReceivedSslError(WebView, SslErrorHandler, SslError)"/>
+  <int value="16"
+      label="void onReceivedClientCertRequest(WebView, ClientCertRequest)"/>
+  <int value="17"
+      label="void onReceivedHttpAuthRequest(WebView, HttpAuthHandler, String,
+             String)"/>
+  <int value="18" label="boolean shouldOverrideKeyEvent(WebView, KeyEvent)"/>
+  <int value="19" label="void onUnhandledKeyEvent(WebView, KeyEvent)"/>
+  <int value="20" label="void onUnhandledInputEvent(WebView, InputEvent)"/>
+  <int value="21" label="void onScaleChanged(WebView, float, float)"/>
+  <int value="22"
+      label="void onReceivedLoginRequest(WebView, String, String, String)"/>
+  <int value="23"
+      label="boolean onRenderProcessGone(WebView, RenderProcessGoneDetail)"/>
+  <int value="24"
+      label="void onSafeBrowsingHit(WebView, WebResourceRequest, int,
+             SafeBrowsingResponse)"/>
 </enum>
 
 <enum name="WebViewClientTypeEnum">

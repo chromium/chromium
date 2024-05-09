@@ -4855,6 +4855,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ApiCall.Overridden.WebChromeClient"
+    enum="WebChromeClientMethod" expires_after="2025-05-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records which methods of WebChromeClient the caller has overridden when
+    calling WebView.setWebChromeClient. The goal of this histogram is to
+    determine the popularity of the various callback methods present in
+    WebChromeClient.
+
+    This histogram is logged every time a WebChromeClient is set.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ApiCall.Overridden.WebChromeClient.Count"
+    units="Methods" expires_after="2025-05-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how many methods of WebChromeClient the caller has overridden when
+    calling WebView.setWebChromeClient. The goal of this histogram is to track
+    how many methods apps override to assist the analysis of API usage in
+    WebView.
+
+    This histogram is logged every time a WebChromeClient is set.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ApiCall.Overridden.WebViewClient"
+    enum="WebViewClientMethod" expires_after="2025-05-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records which methods of WebViewClient the caller has overridden when
+    calling WebView.setWebViewClient. The goal of this histogram is to determine
+    the popularity of the various callback methods present in WebViewClient.
+
+    This histogram is logged every time a WebViewClient is set.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ApiCall.Overridden.WebViewClient.Count"
+    units="Methods" expires_after="2025-05-31">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records how many methods of WebViewClient the caller has overridden when
+    calling WebView.setWebViewClient. The goal of this histogram is to track how
+    many methods apps override to assist the analysis of API usage in WebView.
+
+    This histogram is logged every time a WebViewClient is set.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ApiCall.Static" enum="WebViewApiCallStatic"
     expires_after="2024-08-22">
   <owner>ntfschr@chromium.org</owner>

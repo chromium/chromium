@@ -35,6 +35,7 @@ android_library("glue_java") {
 
   sources = [
     "java/src/com/android/webview/chromium/AndroidXProcessGlobalConfig.java",
+    "java/src/com/android/webview/chromium/ApiImplementationLogger.java",
     "java/src/com/android/webview/chromium/CallbackConverter.java",
     "java/src/com/android/webview/chromium/ContentSettingsAdapter.java",
     "java/src/com/android/webview/chromium/CookieManagerAdapter.java",
