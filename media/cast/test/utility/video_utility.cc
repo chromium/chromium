@@ -126,18 +126,39 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value) {
 }
 
 void PopulateVideoFrameWithNoise(VideoFrame* frame) {
-  const int height = frame->coded_size().height();
-  const int stride_y = frame->stride(VideoFrame::kYPlane);
-  const int stride_u = frame->stride(VideoFrame::kUPlane);
-  const int stride_v = frame->stride(VideoFrame::kVPlane);
-  const int half_height = (height + 1) / 2;
-  uint8_t* const y_plane = frame->writable_data(VideoFrame::kYPlane);
-  uint8_t* const u_plane = frame->writable_data(VideoFrame::kUPlane);
-  uint8_t* const v_plane = frame->writable_data(VideoFrame::kVPlane);
+  const size_t height = frame->coded_size().height();
+  const size_t half_height = (height + 1u) / 2u;
+  base::span<uint8_t> y_plane =
+      // SAFETY: The Y plane has a width specified by stride() and a height of
+      // coded_size().
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_BUFFERS(base::span(
+          frame->writable_data(VideoFrame::kYPlane),
+          height *
+              base::checked_cast<size_t>(frame->stride(VideoFrame::kYPlane))));
+  base::span<uint8_t> u_plane =
+      // SAFETY: The U plane has a width specified by stride() and a height that
+      // is half of coded_size(), rounding up.
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_BUFFERS(base::span(
+          frame->writable_data(VideoFrame::kUPlane),
+          half_height *
+              base::checked_cast<size_t>(frame->stride(VideoFrame::kUPlane))));
+  base::span<uint8_t> v_plane =
+      // SAFETY: The V plane has a width specified by stride() and a height that
+      // is half of coded_size(), rounding up.
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_BUFFERS(base::span(
+          frame->writable_data(VideoFrame::kVPlane),
+          half_height *
+              base::checked_cast<size_t>(frame->stride(VideoFrame::kVPlane))));
 
-  base::RandBytes(y_plane, height * stride_y);
-  base::RandBytes(u_plane, half_height * stride_u);
-  base::RandBytes(v_plane, half_height * stride_v);
+  base::RandBytes(y_plane);
+  base::RandBytes(u_plane);
+  base::RandBytes(v_plane);
 }
 
 bool PopulateVideoFrameFromFile(VideoFrame* frame, FILE* video_file) {
