@@ -355,6 +355,8 @@ class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
             device::UserVerificationRequirement::kPreferred)) {
       if (kIsMac) {
         model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+      } else {
+        model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
       }
     }
   }
@@ -469,6 +471,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto pconf = Step::kPhoneConfirmationSheet;
   const auto hero = Step::kSelectPriorityMechanism;
   [[maybe_unused]] const auto enclave_touchid = Step::kGPMTouchID;
+  [[maybe_unused]] const auto enclave_pin = Step::kGPMEnterPin;
   using psync = base::StrongAlias<class PhoneFromSyncTag, std::string>;
   using pqr = base::StrongAlias<class PhoneFromQrTag, std::string>;
   using PhoneVariant = absl::variant<psync, pqr>;
@@ -835,6 +838,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {c(enclave_cred1), add},
        hero},
     #endif
+      // If an enclave credential is in an allowlist, we should jump to UV
+      // immediately.
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, enclave_cred},
+       {},
+       {c(enclave_cred1), add},
+       kIsMac ? enclave_touchid : enclave_pin},
   };
 
   // Tests for the new UI that lists synced passkeys mixed with local

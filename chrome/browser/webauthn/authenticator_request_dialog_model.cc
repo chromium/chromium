@@ -780,18 +780,37 @@ void AuthenticatorRequestDialogController::
         }
         return;
       }
+      // If not doing UV, but the allowlist matches an enclave credential,
+      // show UI to serve as user presence.
+      if (!will_do_uv && transport_availability_.request_type ==
+                             device::FidoRequestType::kGetAssertion) {
+        for (auto& cred : transport_availability_.recognized_credentials) {
+          if (cred.source == device::AuthenticatorType::kEnclave) {
+            model_->creds = {cred};
+            SetCurrentStep(Step::kPreSelectSingleAccount);
+            return;
+          }
+        }
+      }
       if (transport_availability_.has_platform_authenticator_credential ==
           device::FidoRequestHandlerBase::RecognizedCredential::
               kNoRecognizedCredential) {
-        // If there are no local matches but there are phone passkeys, jump to
-        // the phone from sync.
+        // If there are no local matches but there are phone or enclave
+        // passkeys, jump to the first one of them.
         for (auto& mechanism : model_->mechanisms) {
           const auto& type = mechanism.type;
-          if (absl::holds_alternative<Mechanism::Credential>(type) &&
-              absl::get<Mechanism::Credential>(type)->source ==
-                  device::AuthenticatorType::kPhone) {
-            SetCurrentStep(Step::kPhoneConfirmationSheet);
-            return;
+          if (absl::holds_alternative<Mechanism::Credential>(type)) {
+            if (absl::get<Mechanism::Credential>(type)->source ==
+                device::AuthenticatorType::kEnclave) {
+              CHECK(will_do_uv);
+              mechanism.callback.Run();
+              return;
+            }
+            if (absl::get<Mechanism::Credential>(type)->source ==
+                device::AuthenticatorType::kPhone) {
+              SetCurrentStep(Step::kPhoneConfirmationSheet);
+              return;
+            }
           }
         }
       }
