@@ -39,7 +39,9 @@
       });
   `);
   await dp.Network.setCacheDisabled({cacheDisabled: true});
-  await session.evaluate(`GCController.collectAll()`);
+  for (var i = 0; i < 3; ++i) {
+    await session.evaluateAsync(`new Promise(resolve => GCController.asyncCollectAll(resolve))`);
+  }
   testRunner.log('Requesting response body with cache disabled')
   await getResponseBodyAndDump(0);
   testRunner.completeTest();
