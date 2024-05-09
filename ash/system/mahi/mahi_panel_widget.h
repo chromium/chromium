@@ -40,6 +40,8 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
                                views::View* starting_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
+  bool is_refresh_view_visible_ = false;
+
   // Owned by views hierarchy.
   raw_ptr<RefreshBannerView> refresh_view_ = nullptr;
 

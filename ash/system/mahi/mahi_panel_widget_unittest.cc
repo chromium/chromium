@@ -12,9 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -56,7 +59,7 @@ class MahiPanelWidgetTest : public AshTestBase {
   std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
 };
 
-TEST_F(MahiPanelWidgetTest, WidgetBounds) {
+TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
   auto* root_window = GetContext();
   auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id(),
                                                    &ui_controller_);
@@ -71,35 +74,37 @@ TEST_F(MahiPanelWidgetTest, WidgetBounds) {
       widget->GetRestoredBounds());
 }
 
-TEST_F(MahiPanelWidgetTest, WidgetBoundsWithRefreshBanner) {
-  auto widget = MahiPanelWidget::CreatePanelWidget(GetPrimaryDisplay().id(),
-                                                   &ui_controller_);
-
-  auto* panel_view = widget->GetContentsView()->GetViewByID(
+TEST_F(MahiPanelWidgetTest, WidgetBoundsAfterRefreshBannerUpdate) {
+  views::UniqueWidgetPtr panel_widget = MahiPanelWidget::CreatePanelWidget(
+      GetPrimaryDisplay().id(), &ui_controller_);
+  // Set the widget bounds to be different to the default bounds, so that we can
+  // test that the panel location is preserved.
+  panel_widget->SetBounds(gfx::Rect(100, 200, 300, 200));
+  const gfx::Rect kInitialPanelWidgetBounds =
+      panel_widget->GetWindowBoundsInScreen();
+  views::View* panel_view = panel_widget->GetContentsView()->GetViewByID(
       mahi_constants::ViewId::kMahiPanelView);
+  const gfx::Rect kInitialPanelViewBounds = panel_view->GetBoundsInScreen();
 
-  auto* refresh_view = widget->GetContentsView()->GetViewByID(
+  views::View* refresh_view = panel_widget->GetContentsView()->GetViewByID(
       mahi_constants::ViewId::kRefreshView);
-
-  auto panel_view_bounds = panel_view->GetBoundsInScreen();
-  auto widget_bounds = widget->GetRestoredBounds();
-
-  // Make sure the panel takes up the entire available space in the widget when
-  // `refresh_view` is not shown.
-  EXPECT_EQ(panel_view_bounds, widget_bounds);
-
   refresh_view->SetVisible(true);
 
-  // Make sure the `MahiPanelView` has the exact same location on the screen
-  // after the `RefreshBannerView` changes visibility.
-  EXPECT_EQ(panel_view_bounds, panel_view->GetBoundsInScreen());
+  // The widget bounds should now provide space for the refresh banner at the
+  // top, while preserving the panel view bounds.
+  EXPECT_EQ(panel_widget->GetWindowBoundsInScreen().InsetsFrom(
+                kInitialPanelWidgetBounds),
+            gfx::Insets::TLBR(refresh_view->height() -
+                                  mahi_constants::kRefreshBannerStackDepth,
+                              0, 0, 0));
+  EXPECT_EQ(panel_view->GetBoundsInScreen(), kInitialPanelViewBounds);
 
-  // The widget's height should increase by the height of the
-  // `RefreshBannerView` subtracted by `kRefreshBannerStackDepth`.
-  int height_delta =
-      widget->GetRestoredBounds().height() - widget_bounds.height();
-  EXPECT_EQ(height_delta, refresh_view->GetBoundsInScreen().height() -
-                              mahi_constants::kRefreshBannerStackDepth);
+  refresh_view->SetVisible(false);
+
+  // The panel widget and view bounds should be restored to their values before
+  // the refresh banner was shown.
+  EXPECT_EQ(panel_widget->GetWindowBoundsInScreen(), kInitialPanelWidgetBounds);
+  EXPECT_EQ(panel_view->GetBoundsInScreen(), kInitialPanelViewBounds);
 }
 
 }  // namespace ash

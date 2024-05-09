@@ -15,6 +15,8 @@
 #include "ash/system/mahi/refresh_banner_view.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -24,31 +26,27 @@ namespace ash {
 
 namespace {
 
-constexpr int kPanelHeightWithRefreshBanner = 524;
+constexpr int kRefreshBannerHeight = 32;
 constexpr int kPanelBoundsPadding = 8;
 
 constexpr char kWidgetName[] = "MahiPanel";
 
-gfx::Rect CalculateWidgetBounds(aura::Window* root_window,
-                                bool refresh_banner_shown = false) {
+gfx::Rect CalculateInitialWidgetBounds(aura::Window* root_window) {
   auto display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
   auto bottom_right = display.work_area().bottom_right();
-
-  // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultHeight`
-  // when the panel is resizable.
-  int height = refresh_banner_shown ? kPanelHeightWithRefreshBanner
-                                    : mahi_constants::kPanelDefaultHeight;
 
   // The panel is positioned at the bottom right corner of the screen.
   // TODO(b/319476980): Make sure Mahi main panel bounds work when shelf
   // alignment changes.
   // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth`
-  // when the panel is resizable.
+  // and `kPanelDefaultHeight` when the panel is resizable.
   return gfx::Rect(bottom_right.x() - mahi_constants::kPanelDefaultWidth -
                        kPanelBoundsPadding,
-                   bottom_right.y() - height - kPanelBoundsPadding,
-                   mahi_constants::kPanelDefaultWidth, height);
+                   bottom_right.y() - mahi_constants::kPanelDefaultHeight -
+                       kPanelBoundsPadding,
+                   mahi_constants::kPanelDefaultWidth,
+                   mahi_constants::kPanelDefaultHeight);
 }
 
 }  // namespace
@@ -97,7 +95,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<MahiPanelWidget>(std::move(params), ui_controller);
 
-  widget->SetBounds(CalculateWidgetBounds(root_window));
+  widget->SetBounds(CalculateInitialWidgetBounds(root_window));
   return widget;
 }
 
@@ -110,14 +108,26 @@ void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,
                                               views::View* starting_view) {
   CHECK_EQ(observed_view, refresh_view_);
 
-  SetBounds(
-      CalculateWidgetBounds(GetNativeWindow(), observed_view->GetVisible()));
+  if (is_refresh_view_visible_ == observed_view->GetVisible()) {
+    return;
+  }
+  is_refresh_view_visible_ = observed_view->GetVisible();
+
+  // Update widget bounds to provide space for the refresh banner if needed.
+  gfx::Rect widget_bounds = GetWindowBoundsInScreen();
+  if (is_refresh_view_visible_) {
+    widget_bounds.Outset(gfx::Outsets::TLBR(kRefreshBannerHeight, 0, 0, 0));
+  } else {
+    widget_bounds.Inset(gfx::Insets::TLBR(kRefreshBannerHeight, 0, 0, 0));
+  }
+  SetBounds(widget_bounds);
 }
 
 void MahiPanelWidget::OnViewIsDeleting(views::View* observed_view) {
   CHECK_EQ(observed_view, refresh_view_);
 
   refresh_view_observation_.Reset();
+  is_refresh_view_visible_ = false;
   refresh_view_ = nullptr;
 }
 
