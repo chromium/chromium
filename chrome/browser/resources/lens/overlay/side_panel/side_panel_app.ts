@@ -14,6 +14,10 @@ import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
 
+// The url query parameter keys for the viewport size.
+const VIEWPORT_HEIGHT_KEY = 'bih';
+const VIEWPORT_WIDTH_KEY = 'biw';
+
 export interface LensSidePanelAppElement {
   $: {results: HTMLIFrameElement};
 }
@@ -54,10 +58,20 @@ export class LensSidePanelAppElement extends PolymerElement {
   }
 
   private loadResultsInFrame_(resultsUrl: Url) {
+    const url = new URL(resultsUrl.url);
+    const resultsBoundingRect = this.$.results.getBoundingClientRect();
+    if (resultsBoundingRect.width > 0) {
+      url.searchParams.set(
+          VIEWPORT_WIDTH_KEY, resultsBoundingRect.width.toString());
+    }
+    if (resultsBoundingRect.height > 0) {
+      url.searchParams.set(
+          VIEWPORT_HEIGHT_KEY, resultsBoundingRect.height.toString());
+    }
     // The src needs to be reset explicitly every time this function is called
     // to force a reload. We cannot get the currently displayed URL from the
     // frame because of cross-origin restrictions.
-    this.$.results.src = resultsUrl.url;
+    this.$.results.src = url.href;
   }
 }
 

@@ -110,6 +110,8 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
+constexpr char kViewportWidthQueryParamKey[] = "biw";
+constexpr char kViewportHeightQueryParamKey[] = "bih";
 
 void ClickBubbleDialogButton(
     views::BubbleDialogDelegate* bubble_widget_delegate,
@@ -371,14 +373,40 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     }));
   }
 
-  // Helper to remove the start time query param from the url.
-  GURL RemoveStartTimeParam(const GURL& url_to_process) {
+  // Helper to remove the start time and viewport size query params from the
+  // url.
+  GURL RemoveStartTimeAndSizeParams(const GURL& url_to_process) {
+    GURL processed_url = url_to_process;
     std::string actual_start_time;
     bool has_start_time = net::GetValueForKeyInQuery(
         GURL(url_to_process), kStartTimeQueryParamKey, &actual_start_time);
     EXPECT_TRUE(has_start_time);
-    return net::AppendOrReplaceQueryParameter(
-        url_to_process, kStartTimeQueryParamKey, std::nullopt);
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kStartTimeQueryParamKey, std::nullopt);
+    processed_url = RemoveViewportSizeParams(processed_url);
+    return processed_url;
+  }
+
+  // Helper to remove the viewport size query params from the url.
+  GURL RemoveViewportSizeParams(const GURL& url_to_process) {
+    GURL processed_url = url_to_process;
+    std::string actual_viewport_width;
+    bool has_viewport_width = net::GetValueForKeyInQuery(
+        GURL(url_to_process), kViewportWidthQueryParamKey,
+        &actual_viewport_width);
+    std::string actual_viewport_height;
+    bool has_viewport_height = net::GetValueForKeyInQuery(
+        GURL(url_to_process), kViewportHeightQueryParamKey,
+        &actual_viewport_height);
+    EXPECT_TRUE(has_viewport_width);
+    EXPECT_TRUE(has_viewport_height);
+    EXPECT_NE(actual_viewport_width, "0");
+    EXPECT_NE(actual_viewport_height, "0");
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportWidthQueryParamKey, std::nullopt);
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportHeightQueryParamKey, std::nullopt);
+    return processed_url;
   }
 
  private:
@@ -1332,7 +1360,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  EXPECT_EQ(loaded_search_query->search_query_url_, first_search_url);
+  GURL url_without_viewport_size =
+      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_viewport_size, first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -1353,11 +1383,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
-  EXPECT_EQ(loaded_search_query->search_query_url_, second_search_url);
+  url_without_viewport_size =
+      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_viewport_size, second_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  EXPECT_EQ(observer.last_navigation_url(), second_search_url);
+  url_without_viewport_size =
+      RemoveViewportSizeParams(observer.last_navigation_url());
+  EXPECT_EQ(url_without_viewport_size, second_search_url);
 
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
@@ -1371,11 +1405,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  EXPECT_EQ(loaded_search_query->search_query_url_, first_search_url);
+  url_without_viewport_size =
+      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_viewport_size, first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  EXPECT_EQ(pop_observer.last_navigation_url(), first_search_url);
+  url_without_viewport_size =
+      RemoveViewportSizeParams(pop_observer.last_navigation_url());
+  EXPECT_EQ(url_without_viewport_size, first_search_url);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1410,9 +1448,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  GURL url_without_start_time =
-      RemoveStartTimeParam(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_start_time, first_search_url);
+  GURL url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time_or_size, first_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
@@ -1435,16 +1473,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
-  url_without_start_time =
-      RemoveStartTimeParam(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_start_time, second_search_url);
+  url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 1);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 100);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
-  url_without_start_time = RemoveStartTimeParam(observer.last_navigation_url());
-  EXPECT_EQ(url_without_start_time, second_search_url);
+  url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time_or_size, second_search_url);
 
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
@@ -1458,17 +1497,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  url_without_start_time =
-      RemoveStartTimeParam(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_start_time, first_search_url);
+  url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(loaded_search_query->search_query_url_);
+  EXPECT_EQ(url_without_start_time_or_size, first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_TRUE(loaded_search_query->selected_text_);
   EXPECT_EQ(loaded_search_query->selected_text_->first, 20);
   EXPECT_EQ(loaded_search_query->selected_text_->second, 200);
-  url_without_start_time =
-      RemoveStartTimeParam(pop_observer.last_navigation_url());
-  EXPECT_EQ(url_without_start_time, first_search_url);
+  url_without_start_time_or_size =
+      RemoveStartTimeAndSizeParams(pop_observer.last_navigation_url());
+  EXPECT_EQ(url_without_start_time_or_size, first_search_url);
 
   // Verify the text selection was sent back to mojo and any old selections were
   // cleared.
