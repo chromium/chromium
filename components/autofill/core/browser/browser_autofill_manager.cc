@@ -1877,9 +1877,9 @@ void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
       suggestions, base::TimeTicks::Now() - request_start_time);
   // TODO(b/309163415): Replace parameter of FormFieldData in
   // `TryToShowTouchToFill` by FieldGlobalId.
-  if (form_element_was_clicked && touch_to_fill_delegate_ &&
-      touch_to_fill_delegate_->TryToShowTouchToFill(
-          form, *form.FindFieldByGlobalId(field_id))) {
+  const FormFieldData* form_field = form.FindFieldByGlobalId(field_id);
+  if (form_field && form_element_was_clicked && touch_to_fill_delegate_ &&
+      touch_to_fill_delegate_->TryToShowTouchToFill(form, *form_field)) {
     return;
   }
   external_delegate_->OnSuggestionsReturned(field_id, suggestions);
