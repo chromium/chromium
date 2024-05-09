@@ -145,6 +145,9 @@ void CloudFileSystem::OnContentCacheInitialized(
       << "Error initializing the content cache: " << error_or_cache.error();
   if (error_or_cache.has_value()) {
     content_cache_ = std::move(error_or_cache.value());
+    content_cache_->SetOnItemEvictedCallback(
+        base::BindRepeating(&CloudFileSystem::OnItemEvictedFromCache,
+                            weak_ptr_factory_.GetWeakPtr()));
     for (const base::FilePath& file_path :
          content_cache_->GetCachedFilePaths()) {
       // Notifications are received though Notify() so no notification_callback
@@ -157,6 +160,14 @@ void CloudFileSystem::OnContentCacheInitialized(
                  base::DoNothing());
     }
   }
+}
+
+void CloudFileSystem::OnItemEvictedFromCache(const base::FilePath& file_path) {
+  VLOG(1) << file_path << " evicted from the content cache";
+  RemoveWatcher(GetContentCacheURL(), file_path, /*recursive=*/false,
+                base::BindOnce([](base::File::Error result) {
+                  VLOG(1) << "Removed file watcher on file: " << result;
+                }));
 }
 
 AbortCallback CloudFileSystem::RequestUnmount(
@@ -587,7 +598,6 @@ void CloudFileSystem::OnGetMetadataCompleted(
   if (result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(entry_path);
-    // TODO(b/328679535): Remove watcher for file.
   }
   std::move(callback).Run(std::move(entry_metadata), result);
 }

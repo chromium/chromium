@@ -111,6 +111,12 @@ void ContentCacheImpl::Evict(const base::FilePath& file_path) {
   EvictContext(file_path, ctx);
 }
 
+void ContentCacheImpl::SetOnItemEvictedCallback(
+    OnItemEvictedCallback on_item_evicted_callback) {
+  DCHECK(on_item_evicted_callback_.is_null());
+  on_item_evicted_callback_ = std::move(on_item_evicted_callback);
+}
+
 void ContentCacheImpl::RemoveItems(RemovedItemStatsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -209,6 +215,9 @@ void ContentCacheImpl::EvictContext(const base::FilePath& path,
     VLOG(2) << "Evicting '" << path << "'";
     ctx.set_pending_removal(true);
     evicted_cache_items_++;
+    if (on_item_evicted_callback_) {
+      on_item_evicted_callback_.Run(path);
+    }
   } else {
     VLOG(2) << "Item '" << path << "'is already evicted";
   }

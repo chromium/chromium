@@ -141,6 +141,7 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   void OnTimer();
   void OnContentCacheInitialized(
       base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
+  void OnItemEvictedFromCache(const base::FilePath& file_path);
   // Called when opening a file is completed with either a success or an error.
   void OnOpenFileCompleted(const base::FilePath& file_path,
                            OpenFileMode mode,

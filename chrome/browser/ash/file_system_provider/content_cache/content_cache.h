@@ -16,6 +16,8 @@
 namespace ash::file_system_provider {
 
 using FileErrorCallback = base::OnceCallback<void(base::File::Error)>;
+using OnItemEvictedCallback =
+    base::RepeatingCallback<void(const base::FilePath&)>;
 
 // Alias to explain the inner int indicates `bytes_read`.
 using FileErrorOrBytesRead = base::FileErrorOr<int>;
@@ -84,6 +86,11 @@ class ContentCache {
   // is inaccessible from this point onwards despite it remaining on disk and
   // the database. It will be removed when `RemoveItems()` is called.
   virtual void Evict(const base::FilePath& file_path) = 0;
+
+  // Call this on_item_evicted_callback with the item's FSP path when it is
+  // evicted.
+  virtual void SetOnItemEvictedCallback(
+      OnItemEvictedCallback on_item_evicted_callback) = 0;
 
   // Remove items which have their `evicted` bool set to true. If an
   // removal is already in progress, the callback will be queued to be called

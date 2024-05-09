@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -739,6 +740,48 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_THAT(no_items_evicted_future.Get(),
               AllOf(Field(&RemovedItemStats::num_items, 0),
                     Field(&RemovedItemStats::bytes_removed, 0)));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest, EvictCallsCallback) {
+  // Inserts file into cache with size `kDefaultChunkSize`.
+  int64_t random_path_size = kDefaultChunkSize;
+  base::FilePath random_path("random-path1");
+  WriteFileToCache(random_path, "versionA", random_path_size);
+
+  TestFuture<const base::FilePath&> future;
+  content_cache_->SetOnItemEvictedCallback(future.GetRepeatingCallback());
+
+  content_cache_->Evict(random_path);
+
+  // Wait until the OnItemEvictedCallback has been called with the correct file
+  // path.
+  EXPECT_EQ(future.Take(), random_path);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest, ResizeCallsCallback) {
+  content_cache_->SetMaxCacheItems(2);
+
+  // Inserts file into cache with size `kDefaultChunkSize`. 1 space left.
+  int64_t random_path1_size = kDefaultChunkSize;
+  base::FilePath random_path1("random-path1");
+  WriteFileToCache(random_path1, "versionA", random_path1_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 0 spaces
+  // left.
+  int64_t random_path2_size = kDefaultChunkSize * 2;
+  base::FilePath random_path2("random-path2");
+  WriteFileToCache(random_path2, "versionA", random_path2_size);
+
+  TestFuture<const base::FilePath&> future;
+  content_cache_->SetOnItemEvictedCallback(future.GetRepeatingCallback());
+
+  // Resize the cache to only have 1 spot, the `random-path1` entry
+  // (least-recently used) should be evicted since there are no files already
+  // evicted.
+  content_cache_->SetMaxCacheItems(1);
+
+  // Wait until the OnItemEvictedCallback has been called with the correct file
+  // path.
+  EXPECT_EQ(future.Take(), random_path1);
 }
 
 }  // namespace

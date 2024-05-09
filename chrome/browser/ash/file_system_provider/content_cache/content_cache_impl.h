@@ -60,6 +60,9 @@ class ContentCacheImpl : public ContentCache {
 
   void Evict(const base::FilePath& file_path) override;
 
+  void SetOnItemEvictedCallback(
+      OnItemEvictedCallback on_item_evicted_callback) override;
+
   void RemoveItems(RemovedItemStatsCallback callback) override;
 
  private:
@@ -151,6 +154,7 @@ class ContentCacheImpl : public ContentCache {
   size_t max_cache_items_;
   // Number of evicted items that will be removed on the next removal cycle.
   size_t evicted_cache_items_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  OnItemEvictedCallback on_item_evicted_callback_;
   base::OnceCallbackList<void(RemovedItemStats)> on_removed_callbacks_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};

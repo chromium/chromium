@@ -7,13 +7,16 @@
 #include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -89,6 +92,10 @@ class MockContentCache : public ContentCache {
   MOCK_METHOD(std::vector<base::FilePath>, GetCachedFilePaths, (), (override));
   MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));
   MOCK_METHOD(void,
+              SetOnItemEvictedCallback,
+              (OnItemEvictedCallback on_item_evicted_callback),
+              (override));
+  MOCK_METHOD(void,
               RemoveItems,
               (RemovedItemStatsCallback callback),
               (override));
@@ -151,10 +158,38 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
         std::make_unique<MockContentCache>();
     base::WeakPtr<MockContentCache> cache_weak_ptr =
         mock_content_cache->GetWeakPtr();
+    EXPECT_CALL(*mock_content_cache, SetOnItemEvictedCallback(_)).Times(1);
     EXPECT_CALL(mock_cache_manager_,
                 InitializeForProvider(_, IsNotNullCallback()))
         .WillOnce(RunOnceCallback<1>(std::move(mock_content_cache)));
     return cache_weak_ptr;
+  }
+
+  void CreateContentCache() {
+    EXPECT_TRUE(temp_cache_dir_.CreateUniqueTempDir());
+
+    // Initialize a `ContextDatabase` in memory on a blocking task runner.
+    std::unique_ptr<ContextDatabase> context_db =
+        std::make_unique<ContextDatabase>(base::FilePath());
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    BoundContextDatabase db(db_task_runner, std::move(context_db));
+    TestFuture<bool> future;
+    db.AsyncCall(&ContextDatabase::Initialize).Then(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+
+    std::unique_ptr<ContentCache> content_cache =
+        ContentCacheImpl::Create(temp_cache_dir_.GetPath(), std::move(db));
+    EXPECT_CALL(mock_cache_manager_,
+                InitializeForProvider(_, IsNotNullCallback()))
+        .WillOnce(RunOnceCallback<1>(std::move(content_cache)));
+  }
+
+  std::unique_ptr<CloudFileSystem> CreateContentCacheAndCloudFileSystem() {
+    CreateContentCache();
+    return CreateCloudFileSystem(/*with_mock_cache_manager=*/true);
   }
 
   MockContentCacheAndCloudFileSystem
@@ -205,6 +240,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
   MockCacheManager mock_cache_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  base::ScopedTempDir temp_cache_dir_;
 };
 
 TEST_F(FileSystemProviderCloudFileSystemTest, ContiguousReadsWriteToCache) {
@@ -460,6 +496,45 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
                         Field(&Watcher::recursive, IsFalse()))),
           Pair(_, AllOf(Field(&Watcher::entry_path, base::FilePath("/b.txt")),
                         Field(&Watcher::recursive, IsFalse()))))));
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       WatcherAddedWhenFileAddedAndRemovedWhenFileEvicted) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  std::unique_ptr<CloudFileSystem> cloud_file_system =
+      CreateContentCacheAndCloudFileSystem();
+
+  // Add file to the cache.
+  int file_handle =
+      GetFileHandleFromSuccessfulOpenFile(*cloud_file_system, fake_file_path);
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/0,
+                       /*length=*/1);
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+
+  // There should be a watcher added for the file.
+  EXPECT_THAT(cloud_file_system->GetWatchers(),
+              Pointee(UnorderedElementsAre(
+                  Pair(_, AllOf(Field(&Watcher::entry_path, fake_file_path),
+                                Field(&Watcher::recursive, IsFalse()))))));
+
+  // Remove the entry from the underlying FSP, this should result in a
+  // base::File::FILE_ERROR_NOT_FOUND on the `GetMetadata` request.
+  DeleteEntryOnFakeFileSystem(fake_file_path);
+
+  // The file will be evicted after the unsuccessful GetMetadata request.
+  GetMetadataFuture get_metadata_future;
+  cloud_file_system->GetMetadata(fake_file_path,
+                                 /*fields*/ {},
+                                 get_metadata_future.GetRepeatingCallback());
+  EXPECT_EQ(get_metadata_future.Get<base::File::Error>(),
+            base::File::FILE_ERROR_NOT_FOUND);
+
+  // Expect watcher is removed.
+  EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
 }
 
 TEST_F(FileSystemProviderCloudFileSystemTest,
