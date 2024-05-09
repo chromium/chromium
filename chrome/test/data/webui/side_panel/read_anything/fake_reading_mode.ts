@@ -382,4 +382,8 @@ export class FakeReadingMode {
   logMetric(_time: number, _metricName: string) : void {}
 
   logLongMetric(_time: number, _metricName: string): void {}
+
+  logSpeechError(errorCode: string): void {
+    console.error('Read Aloud got a speech error during test:', errorCode);
+  }
 }
