@@ -96,12 +96,24 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     //   dependencies to the correct lib{core,alloc,std} when depended on by the
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
-    let mut dependencies = deps::collect_dependencies(
-        &run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)?,
-        Some(vec![config.resolve.root.clone()]),
-        None,
-        &config,
-    );
+    let mut dependencies = {
+        let metadata =
+            run_cargo_metadata(paths.std_fake_root.into(), cargo_extra_options, cargo_extra_env)
+                .with_context(|| {
+                    format!(
+                        "Failed to parse cargo metadata in a directory synthesized from \
+                         {} and {}",
+                        paths.std_fake_root_cargo_template.display(),
+                        paths.std_fake_root_config_template.display(),
+                    )
+                })?;
+        deps::collect_dependencies(
+            &metadata,
+            Some(vec![config.resolve.root.clone()]),
+            None,
+            &config,
+        )
+    };
 
     // Filter out any crates' dependencies removed by config file.
     for dep in dependencies.iter_mut() {
