@@ -102,7 +102,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
             config()->GetEnableRates(version_info::Channel::CANARY));
   EXPECT_EQ((RelativePopulations{0, 80, 20}),
             config()->GetEnableRates(version_info::Channel::DEV));
-  EXPECT_EQ((RelativePopulations{100, 0, 0}),
+  EXPECT_EQ((RelativePopulations{90, 0, 10}),
             config()->GetEnableRates(version_info::Channel::BETA));
   EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::STABLE));
 
