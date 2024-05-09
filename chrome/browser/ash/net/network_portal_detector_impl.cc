@@ -22,6 +22,8 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/proxy_config/proxy_prefs.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -157,7 +159,20 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
   }
 
   default_network_id_ = default_network->guid();
-  bool has_proxy = default_network->proxy_config().has_value();
+
+  // If a proxy is configured and it is not "direct", then the
+  // |default_network| has a proxy. By default, managed networks have a
+  // "direct" proxy. A "direct" proxy is a direct connection to the
+  // network, so the proxy preferences are ignored.
+  bool has_proxy = false;
+  if (default_network->proxy_config().has_value()) {
+    ProxyConfigDictionary dict(default_network->proxy_config()->Clone());
+    ProxyPrefs::ProxyMode mode;
+    if (dict.GetMode(&mode)) {
+      has_proxy = mode != ProxyPrefs::MODE_DIRECT;
+    }
+  }
+
   NET_LOG(EVENT) << "PortalStateChanged, id="
                  << NetworkGuidId(default_network_id_)
                  << " state=" << default_network->connection_state()
