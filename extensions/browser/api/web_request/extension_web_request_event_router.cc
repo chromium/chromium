@@ -1120,11 +1120,6 @@ int WebRequestEventRouter::OnHeadersReceived(
   const bool is_incognito_context = browser_context->IsOffTheRecord();
 
   CHECK(request->dnr_actions);
-  initialize_blocked_requests |= base::ranges::any_of(
-      *request->dnr_actions, [](const DNRRequestAction& action) {
-        return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
-               !action.response_headers_to_modify.empty();
-      });
 
   initialize_blocked_requests |= ProcessDeclarativeRules(
       browser_context, keys::kOnHeadersReceivedEvent, request,
@@ -1178,22 +1173,8 @@ int WebRequestEventRouter::OnHeadersReceived(
           // outprioritized by allow rules matched during this request stage.
           request->EraseOutprioritizedDNRActions();
 
-          // Only record a rule match if no other actions will be taken on the
-          // request, based on examining actions matched in the onBeforeRequest
-          // stage.
-          // TODO(crbug,com/336589260): The proper logic to determine if an
-          // allow rule should be matched at this stage is quite complex: Record
-          // a match if any of the following applies:
-          // - There are no actions from onBeforeRequest.
-          // - There are only modifyHeaders actions for request headers matched
-          //   in onBeforeRequest.
-          // - This action outprioritizes all modify headers actions from this
-          //   extension, and there are no modify header actions to be taken on
-          //   this request based on priority.
-          // - If an allow rule "A" is matched in OnBeforeRequest, record a
-          //   match here if this action is from a different extension than "A"
-          //   or it has a higher priority than "A".
-          if (request->dnr_actions->empty()) {
+          if (request->ShouldRecordMatchedAllowRuleInOnHeadersReceived(
+                  action)) {
             OnDNRActionMatched(browser_context, *request, action);
           }
 
@@ -1260,6 +1241,12 @@ int WebRequestEventRouter::OnHeadersReceived(
       }
     }
   }
+
+  initialize_blocked_requests |= base::ranges::any_of(
+      *request->dnr_actions, [](const DNRRequestAction& action) {
+        return action.type == DNRRequestAction::Type::MODIFY_HEADERS &&
+               !action.response_headers_to_modify.empty();
+      });
 
   if (!initialize_blocked_requests) {
     return net::OK;  // Nobody saw a reason for modifying the request.

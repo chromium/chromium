@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -277,6 +278,45 @@ void WebRequestInfo::EraseOutprioritizedDNRActions() {
                  allow_rule_max_priority[action.extension_id].value_or(0);
         });
   }
+}
+
+bool WebRequestInfo::ShouldRecordMatchedAllowRuleInOnHeadersReceived(
+    const declarative_net_request::RequestAction& allow_action) const {
+  CHECK(dnr_actions.has_value());
+
+  // If there are no more relevant actions, `allow_action` should be matched.
+  if (dnr_actions->empty()) {
+    return true;
+  }
+
+  // If the only actions matched modify request headers, then `allow_action`
+  // should match since said actions are no longer relevant in
+  // onHeadersReceived.
+  bool only_request_headers_modified =
+      base::ranges::all_of(*dnr_actions, [](const auto& action) {
+        return action.type == declarative_net_request::RequestAction::Type::
+                                  MODIFY_HEADERS &&
+               action.response_headers_to_modify.empty();
+      });
+  if (only_request_headers_modified) {
+    return true;
+  }
+
+  // Compare allow actions.
+  if ((*dnr_actions)[0].IsAllowOrAllowAllRequests()) {
+    CHECK_EQ(1u, dnr_actions->size());
+
+    // If `allow_action` is from a different extension than `dnr_actions`, then
+    // we record a match since `allow action` could've prevented other action
+    // types from its extension from matching.
+    // If `allow_action` is from the same extension as `dnr_actions`, then it
+    // would've made `dnr_actions` empty through EraseOutprioritizedDNRActions()
+    // if it was higher priority, and if not (and this if statement is reached),
+    // it shouldn't be matched since `dnr_actions` still takes precedence.
+    return allow_action.extension_id != (*dnr_actions)[0].extension_id;
+  }
+
+  return false;
 }
 
 }  // namespace extensions

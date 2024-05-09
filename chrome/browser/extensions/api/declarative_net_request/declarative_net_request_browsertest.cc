@@ -645,6 +645,32 @@ class DeclarativeNetRequestBrowserTest
         browsertest_util::ScriptUserActivation::kDontActivate);
   }
 
+  // Calls getMatchedRules for `extension_id` and optionally, the `tab_id` and
+  // only rule matches more recent than `timestamp`. Returns a comma separated
+  // list of rule_ids, Matched Rules are sorted in ascending order by ruleId,
+  // and ties are resolved by the tabId (in ascending order.)
+  // E.g. "<rule_1>,<rule_2>,<rule_3>"
+  std::string GetRuleIdsMatched(const ExtensionId& extension_id,
+                                base::Time timestamp) {
+    static constexpr char kGetMatchedRulesScript[] = R"(
+      chrome.declarativeNetRequest.getMatchedRules(%s, (rules) => {
+        var ruleIds = rules.rulesMatchedInfo.map(rule => rule.rule.ruleId)
+            .sort();
+
+        chrome.test.sendScriptResult(ruleIds.join(','));
+      });
+    )";
+
+    double js_timestamp = timestamp.InMillisecondsFSinceUnixEpochIgnoringNull();
+    std::string param_string =
+        base::StringPrintf("{minTimeStamp: %f}", js_timestamp);
+
+    return ExecuteScriptInBackgroundPageAndReturnString(
+        extension_id,
+        base::StringPrintf(kGetMatchedRulesScript, param_string.c_str()),
+        browsertest_util::ScriptUserActivation::kDontActivate);
+  }
+
   // Calls getMatchedRules for |extension_id| and optionally, |tab_id| and
   // |timestamp|. Returns the matched rule count for rules more recent than
   // |timestamp| if specified, and are associated with the tab specified by
@@ -7490,7 +7516,6 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
   };
 
   // Verify that the extension correctly intercepts network requests.
-  // TODO(crbug.com/40727004): Add checks for matched rule IDs.
   for (const auto& test_case : test_cases) {
     GURL url =
         embedded_test_server()->GetURL(test_case.hostname, test_case.path);
@@ -7504,8 +7529,6 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     const GURL& final_url = web_contents()->GetLastCommittedURL();
     EXPECT_EQ(test_case.expected_final_url, final_url);
   }
-
-  // TODO(crbug.com/36589260): Add checks here for rule ids matched.
 }
 
 // Test that frames where response header matched allowAllRequests rules will
@@ -7744,6 +7767,234 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 
   // Verify that the page's cookie was successfully set by `set_cookie_rule`.
   EXPECT_EQ("key1=val1", GetPageCookie());
+}
+
+// Verify that getMatchedRules returns the correct rule matches for rules which
+// match on response headers.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, GetMatchedRules) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  std::vector<TestHeaderCondition> blank_header_condition =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("nonsense-header", {}, {})});
+
+  std::vector<TestHeaderInfo> blank_req_header_action =
+      std::vector<TestHeaderInfo>({TestHeaderInfo("req-header", "set", "val")});
+
+  std::vector<TestHeaderInfo> blank_resp_header_action =
+      std::vector<TestHeaderInfo>(
+          {TestHeaderInfo("resp-header", "append", "val")});
+
+  struct RuleData {
+    int id;
+    int priority;
+    std::string action_type;
+    std::string filter;
+    std::optional<std::vector<TestHeaderCondition>> header_condition =
+        std::nullopt;
+    std::optional<std::vector<TestHeaderInfo>> request_headers = std::nullopt;
+    std::optional<std::vector<TestHeaderInfo>> response_headers = std::nullopt;
+  } rule_data[] = {
+      // Used for all sub-tests. Allows all main-frame requests at the
+      // onHeadersReceived stage.
+      {1, 100, "allow", "*", blank_header_condition},
+
+      // Used for sub-test 1.
+      {2, 1, "block", "a.test"},
+
+      // Used for sub-test 2.
+      {3, 1, "allow", "b.test"},
+      {4, 99, "block", "b.test", blank_header_condition},
+
+      // Used for sub-test 3.
+      {5, 1000, "allow", "c.test"},
+      {6, 1, "block", "c.test", blank_header_condition},
+      {7, 1001, "block", "c.test2", blank_header_condition},
+
+      // Used for sub-test 4.
+      {8, 1000, "modifyHeaders", "d.test", std::nullopt,
+       blank_req_header_action},
+
+      // Used for sub-test 5.
+      {9, 1, "modifyHeaders", "e.test", std::nullopt, std::nullopt,
+       blank_resp_header_action},
+      {10, 200, "modifyHeaders", "e.test2", std::nullopt, std::nullopt,
+       blank_resp_header_action},
+
+      // Used for sub-test 6.
+      {11, 1, "modifyHeaders", "f.test", blank_header_condition, std::nullopt,
+       blank_resp_header_action},
+      {12, 200, "modifyHeaders", "f.test2", blank_header_condition,
+       std::nullopt, blank_resp_header_action},
+  };
+
+  std::vector<TestRule> rules;
+  for (const auto& rule : rule_data) {
+    TestRule test_rule = CreateGenericRule();
+    test_rule.id = rule.id;
+    test_rule.priority = rule.priority;
+    test_rule.action->type = rule.action_type;
+    test_rule.action->request_headers = rule.request_headers;
+    test_rule.action->response_headers = rule.response_headers;
+
+    test_rule.condition->url_filter.reset();
+    test_rule.condition->url_filter = rule.filter;
+    test_rule.condition->resource_types =
+        std::vector<std::string>({"main_frame"});
+    test_rule.condition->excluded_response_headers = rule.header_condition;
+
+    rules.push_back(std::move(test_rule));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      std::move(rules), "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  struct {
+    std::string hostname;
+    std::string expected_matched_rules;
+  } test_cases[] = {
+      // Sub-test 1:
+      // The request is blocked before making it to onHeadersReceived so only
+      // rule 2 (block) should match.
+      {"a.test", "2"},
+
+      // Sub-test 2:
+      // Both allow rules from both phases (1 and 3) should match since rule 1
+      // supercedes rule 3 based on priority in the onHeadersReceived phase.
+      // Note that rule 1 prevents rule 4 from blocking the request based on
+      // priority.
+      {"b.test", "1,3"},
+
+      // Sub-test 3:
+      // For the first request, only rule 5 is matched since it outprioritizes
+      // rule 1 as an allow rule and prevents rule 6 from blocking the request.
+      // For the second request, rule 7 outprioritizes rule 1 and 5 and blocks
+      // the request but both 5 and 7 are matched since they operate on
+      // different request stages.
+      {"c.test", "5"},
+      {"c.test2", "5,7"},
+
+      // Sub-test 4:
+      // Rule 8 only modifies request headers so it is matched in the
+      // onBeforeSendHeaders phase, which is before rule 1 is matched.
+      {"d.test", "1,8"},
+
+      // Sub-test 5:
+      // For the first request, rule 9 is outprioritized by rule 1 so it will
+      // not modify response headers, and rule 1 matches.
+      // For the second request, rule 10 DOES outprioritize rule 1 and modifies
+      // response headers, so only it matches.
+      {"e.test", "1"},
+      {"e.test2", "10"},
+
+      // Sub-test 6:
+      // Same as sub-test 5 except the modify header rules now match on response
+      // header conditions in the onHeadersReceived phase.
+      {"f.test", "1"},
+      {"f.test2", "12"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::Time start_time = base::Time::Now();
+    GURL url = embedded_test_server()->GetURL(test_case.hostname,
+                                              "/pages_with_script/index.html");
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    // Get the rule ids matched for the navigation request sent above.
+    std::string actual_rules_matched =
+        GetRuleIdsMatched(last_loaded_extension_id(), start_time);
+
+    EXPECT_EQ(test_case.expected_matched_rules, actual_rules_matched);
+  }
+}
+
+// Verify that getMatchedRules returns the correct rule matches for rules which
+// match on response headers between different extensions.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       GetMatchedRules_DifferentExtensions) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  auto create_rule = [](int id, int priority, const std::string& action_type,
+                        const std::string& filter, bool headers_received_rule) {
+    TestRule test_rule = CreateGenericRule();
+    test_rule.id = id;
+    test_rule.priority = priority;
+    test_rule.action->type = action_type;
+
+    test_rule.condition->url_filter.reset();
+    test_rule.condition->url_filter = filter;
+    test_rule.condition->resource_types =
+        std::vector<std::string>({"main_frame"});
+
+    if (headers_received_rule) {
+      test_rule.condition->excluded_response_headers =
+          std::vector<TestHeaderCondition>(
+              {TestHeaderCondition("nonsense-header", {}, {})});
+    }
+
+    return test_rule;
+  };
+
+  auto before_request_allow = create_rule(1, 100, "allow", "google.com", false);
+  auto headers_received_allow = create_rule(2, 10, "allow", "google", true);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {std::move(before_request_allow), std::move(headers_received_allow)},
+      "test_extension", {}));
+  auto extension_1_id = last_loaded_extension_id();
+
+  auto extension_2_allow = create_rule(3, 1, "allow", "google.xyz", false);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({std::move(extension_2_allow)},
+                                                 "test_extension_2", {}));
+  auto extension_2_id = last_loaded_extension_id();
+
+  // TODO(crbug.com/40727004): Expand this test by introducing a block rule from
+  // extension 1 that would've been bypassed by `before_request_allow` in the
+  // onHeadersReceived phase.
+  struct {
+    std::string hostname;
+    std::string ext_1_expected_matched_rules;
+    std::string ext_2_expected_matched_rules;
+  } test_cases[] = {
+      // This request only matches `before_request_allow`.
+      {"google.com", "1", ""},
+
+      // In onBeforeRequest, `extension_2_allow` takes precedence over
+      // `before_request_allow` since extension 2 was more recently installed.
+      // Once the request reaches onHeadersReceived, it should match with
+      // `headers_received_allow`.
+      // TODO(crbug.com/40727004): this should not match anything for
+      // `extension_1` since `extension_2_allow` carries over to
+      // onHeadersReceived and should outprioritize `headers_received_allow`.
+      {"google.xyz", "2", "3"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::Time start_time = base::Time::Now();
+    GURL url = embedded_test_server()->GetURL(test_case.hostname,
+                                              "/pages_with_script/index.html");
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    // Get the rule ids matched for both extensions for the navigation request
+    // sent above.
+    std::string ext_1_rules_matched =
+        GetRuleIdsMatched(extension_1_id, start_time);
+    EXPECT_EQ(test_case.ext_1_expected_matched_rules, ext_1_rules_matched);
+
+    std::string ext_2_rules_matched =
+        GetRuleIdsMatched(extension_2_id, start_time);
+    EXPECT_EQ(test_case.ext_2_expected_matched_rules, ext_2_rules_matched);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
