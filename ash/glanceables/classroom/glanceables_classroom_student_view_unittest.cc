@@ -19,6 +19,7 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
+#include "ash/style/counter_expand_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -127,6 +128,11 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   Combobox* GetComboBoxView() {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+  }
+
+  const CounterExpandButton* GetCounterExpandButton() const {
+    return views::AsViewClass<CounterExpandButton>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton)));
   }
 
   const views::View* GetListContainerView() const {
@@ -370,6 +376,7 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersListItems) {
   EXPECT_TRUE(GetListFooter()->GetVisible());
 
   GetComboBoxView()->SelectMenuItemForTest(3);
+  EXPECT_EQ(GetCounterExpandButton()->counter_for_test(), 3u);
   EXPECT_EQ(GetListContainerView()->children().size(), 3u);  // No more than 3.
 
   EXPECT_TRUE(GetListFooter()->GetVisible());
@@ -382,6 +389,7 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersEmptyListLabel) {
   ASSERT_TRUE(GetListContainerView());
   EXPECT_FALSE(GetEmptyListLabel()->GetVisible());
   EXPECT_TRUE(GetListFooter()->GetVisible());
+  EXPECT_EQ(GetCounterExpandButton()->counter_for_test(), 1u);
   EXPECT_EQ(GetListFooterItemsCountLabel()->GetText(), u"Showing 1 out of 1");
   EXPECT_EQ(GetListContainerView()->children().size(), 1u);
 
@@ -390,6 +398,7 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersEmptyListLabel) {
         std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->SelectMenuItemForTest(1);
+  EXPECT_EQ(GetCounterExpandButton()->counter_for_test(), 0u);
   EXPECT_EQ(GetListContainerView()->children().size(), 0u);
 
   // The empty list label should be shown, and the footer hidden.
@@ -401,6 +410,7 @@ TEST_F(GlanceablesClassroomStudentViewTest, RendersEmptyListLabel) {
         std::move(cb).Run(/*success=*/true, {});
       });
   GetComboBoxView()->SelectMenuItemForTest(2);
+  EXPECT_EQ(GetCounterExpandButton()->counter_for_test(), 0u);
   EXPECT_EQ(GetListContainerView()->children().size(), 0u);
 
   // The empty list label should be shown, and the footer hidden.

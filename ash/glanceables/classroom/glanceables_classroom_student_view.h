@@ -38,6 +38,7 @@ class ViewObserver;
 namespace ash {
 
 class Combobox;
+class CounterExpandButton;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 struct GlanceablesClassroomAssignment;
@@ -118,6 +119,7 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
+  raw_ptr<CounterExpandButton> expand_button_ = nullptr;
 
   // Total number of assignments in the selected assignment list.
   size_t total_assignments_ = 0u;

@@ -31,6 +31,7 @@ class LabelButton;
 namespace ash {
 
 class Combobox;
+class CounterExpandButton;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
 class GlanceablesTasksComboboxModel;
@@ -167,6 +168,7 @@ class ASH_EXPORT GlanceablesTasksView
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
+  raw_ptr<CounterExpandButton> expand_button_ = nullptr;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

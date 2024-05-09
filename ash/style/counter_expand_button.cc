@@ -54,7 +54,7 @@ CounterExpandButton::CounterExpandButton() {
 
   label->SetProperty(views::kMarginsKey, kLabelInsets);
   label->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-  label->SetText(base::NumberToString16(total_child_count_));
+  label->SetText(base::NumberToString16(counter_));
   label->SetVisible(ShouldShowLabel());
   label_ = AddChildView(std::move(label));
   if (chromeos::features::IsJellyEnabled()) {
@@ -91,7 +91,7 @@ void CounterExpandButton::SetExpanded(bool expanded) {
 
   expanded_ = expanded;
 
-  label_->SetText(base::NumberToString16(total_child_count_));
+  label_->SetText(base::NumberToString16(counter_));
   label_->SetVisible(ShouldShowLabel());
 
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
@@ -100,12 +100,12 @@ void CounterExpandButton::SetExpanded(bool expanded) {
 }
 
 bool CounterExpandButton::ShouldShowLabel() const {
-  return !expanded_ && total_child_count_;
+  return !expanded_ && counter_;
 }
 
 void CounterExpandButton::UpdateCounter(int count) {
-  total_child_count_ = count;
-  label_->SetText(base::NumberToString16(total_child_count_));
+  counter_ = count;
+  label_->SetText(base::NumberToString16(counter_));
   label_->SetVisible(ShouldShowLabel());
 }
 
@@ -134,7 +134,7 @@ void CounterExpandButton::UpdateTooltip() {
 void CounterExpandButton::AnimateExpandCollapse() {
   // If there is no child to expand/collapse, there's no animation to perform
   // here.
-  if (!total_child_count_) {
+  if (!counter_) {
     return;
   }
 
@@ -160,7 +160,7 @@ void CounterExpandButton::AnimateExpandCollapse() {
     bounds_animation_duration = kExpandButtonShowLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
   } else {
-    // In this case, `total_child_count_` is not zero and label is not visible.
+    // In this case, `counter_` is not zero and label is not visible.
     // This means the label switch from visible to invisible and we should do
     // fade out animation.
     label_fading_out_ = true;

@@ -24,6 +24,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
+#include "ash/style/counter_expand_button.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
@@ -109,6 +110,31 @@ std::u16string GetAssignmentListName(size_t index) {
   return l10n_util::GetStringUTF16(iter->second);
 }
 
+class ClassroomExpandButton : public CounterExpandButton {
+  METADATA_HEADER(ClassroomExpandButton, CounterExpandButton)
+ public:
+  ClassroomExpandButton() = default;
+  ClassroomExpandButton(const ClassroomExpandButton&) = delete;
+  ClassroomExpandButton& operator=(const ClassroomExpandButton&) = delete;
+  ~ClassroomExpandButton() override = default;
+
+  std::u16string GetExpandedStateTooltipText() override {
+    // The tooltip tells users that clicking on the button will collapse the
+    // Classroom view.
+    // TODO(b/338917100): Update this when the string is ready.
+    return u"Collapse Classroom";
+  }
+  std::u16string GetCollapsedStateTooltipText() override {
+    // The tooltip tells users that clicking on the button will expand the
+    // Classroom view.
+    // TODO(b/338917100): Update this when the string is ready.
+    return u"Expand Classroom";
+  }
+};
+
+BEGIN_METADATA(ClassroomExpandButton)
+END_METADATA
+
 class ClassroomStudentComboboxModel : public ui::ComboboxModel {
  public:
   ClassroomStudentComboboxModel() = default;
@@ -144,13 +170,22 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   SetInteriorMargin(kViewInteriorMargins);
   SetOrientation(views::LayoutOrientation::kVertical);
 
-  header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  auto* tasks_header_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  tasks_header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  tasks_header_container->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  tasks_header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  header_view_ = tasks_header_container->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   header_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred));
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
 
   auto* const header_icon =
       header_view_->AddChildView(std::make_unique<IconButton>(
@@ -176,6 +211,14 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       base::Unretained(this),
       /*initial_update=*/false));
   combobox_view_observation_.Observe(combo_box_view_);
+
+  expand_button_ = tasks_header_container->AddChildView(
+      std::make_unique<ClassroomExpandButton>());
+  expand_button_->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
+  // This is only set visible when both Tasks and Classroom exist, where the
+  // elevated background is created in that case.
+  expand_button_->SetVisible(false);
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -255,6 +298,7 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   force_hide_footer_view_ = true;
+  expand_button_->SetVisible(true);
 }
 
 void GlanceablesClassroomStudentView::OnSeeAllPressed() {
@@ -384,6 +428,9 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   }
   const size_t shown_assignments = list_container_view_->children().size();
   list_footer_view_->UpdateItemsCount(shown_assignments, total_assignments_);
+  // TODO(b/338917100): Revisit the counter used on the expand button later to
+  // see if we want to use the shown one or the total one.
+  expand_button_->UpdateCounter(shown_assignments);
 
   const bool is_list_empty = shown_assignments == 0;
   empty_list_label_->SetVisible(is_list_empty);

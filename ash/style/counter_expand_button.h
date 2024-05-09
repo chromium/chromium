@@ -79,6 +79,8 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  size_t counter_for_test() const { return counter_; }
+
  protected:
   views::ImageView* image() { return image_; }
   bool expanded() const { return expanded_; }
@@ -113,8 +115,9 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   // Used in layer bounds animation.
   gfx::Rect previous_bounds_;
 
-  // Total number of grouped child views in this button's parent view.
-  int total_child_count_ = 0;
+  // The number shown on `label_`. This is used to show the total number of
+  // grouped child views in this button's parent view.
+  size_t counter_ = 0;
 
   // The expand state of the button.
   bool expanded_ = false;

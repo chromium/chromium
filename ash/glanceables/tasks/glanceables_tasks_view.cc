@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
+#include "ash/style/counter_expand_button.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
@@ -98,6 +99,31 @@ std::u16string GetLastUpdateTimeMessage(base::Time time) {
         relative_date);
   }
 }
+
+class TasksExpandButton : public CounterExpandButton {
+  METADATA_HEADER(TasksExpandButton, CounterExpandButton)
+ public:
+  TasksExpandButton() = default;
+  TasksExpandButton(const TasksExpandButton&) = delete;
+  TasksExpandButton& operator=(const TasksExpandButton&) = delete;
+  ~TasksExpandButton() override = default;
+
+  std::u16string GetExpandedStateTooltipText() override {
+    // The tooltip tells users that clicking on the button will collapse the
+    // Tasks view.
+    // TODO(b/338917100): Update this when the string is ready.
+    return u"Collapse Tasks";
+  }
+  std::u16string GetCollapsedStateTooltipText() override {
+    // The tooltip tells users that clicking on the button will expand the
+    // Tasks view.
+    // TODO(b/338917100): Update this when the string is ready.
+    return u"Expand Tasks";
+  }
+};
+
+BEGIN_METADATA(TasksExpandButton)
+END_METADATA
 
 class AddNewTaskButton : public views::LabelButton {
   METADATA_HEADER(AddNewTaskButton, views::LabelButton)
@@ -182,13 +208,34 @@ GlanceablesTasksView::GlanceablesTasksView(
                                       kInteriorGlanceableBubbleMargin));
   SetOrientation(views::LayoutOrientation::kVertical);
 
-  tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  auto* tasks_header_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  tasks_header_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  tasks_header_container->SetCrossAxisAlignment(
+      views::LayoutAlignment::kCenter);
+  tasks_header_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  tasks_header_view_ = tasks_header_container->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetInteriorMargin(gfx::Insets::TLBR(1, 1, 0, 1));
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   tasks_header_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
+  tasks_header_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
+
+  expand_button_ = tasks_header_container->AddChildView(
+      std::make_unique<TasksExpandButton>());
+  expand_button_->SetID(
+      base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton));
+  // This is only set visible when both Tasks and Classroom exist, where the
+  // elevated background is created in that case.
+  expand_button_->SetVisible(false);
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->SetPreferredSize(kProgressBarPreferredSize);
@@ -313,6 +360,7 @@ void GlanceablesTasksView::UpdateTaskLists(
 void GlanceablesTasksView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
+  expand_button_->SetVisible(true);
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
@@ -475,6 +523,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   task_items_container_view_->SetVisible(
       !task_items_container_view_->children().empty());
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
+  expand_button_->UpdateCounter(tasks->item_count());
 
   task_list_combo_box_view_->SetTooltipText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME,
@@ -602,10 +651,11 @@ void GlanceablesTasksView::OnTaskSaved(
   }
   SetIsLoading(false);
   std::move(callback).Run(task);
-  task_items_container_view_->SetVisible(
-      !task_items_container_view_->children().empty());
-  list_footer_view_->SetVisible(task_items_container_view_->children().size() >=
-                                kMaximumTasks);
+
+  const size_t tasks_count = task_items_container_view_->children().size();
+  task_items_container_view_->SetVisible(tasks_count > 0);
+  expand_button_->UpdateCounter(tasks_count);
+  list_footer_view_->SetVisible(tasks_count >= kMaximumTasks);
 }
 
 const api::TaskList* GlanceablesTasksView::GetActiveTaskList() const {
