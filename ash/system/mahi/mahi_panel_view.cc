@@ -21,6 +21,7 @@
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_content_source_button.h"
 #include "ash/system/mahi/mahi_error_status_view.h"
+#include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_ui_update.h"
@@ -692,6 +693,14 @@ MahiPanelView::~MahiPanelView() {
                               base::TimeTicks::Now() - open_time_);
 }
 
+void MahiPanelView::OnMouseEvent(ui::MouseEvent* event) {
+  HandleDragEventIfNeeded(event);
+}
+
+void MahiPanelView::OnGestureEvent(ui::GestureEvent* event) {
+  HandleDragEventIfNeeded(event);
+}
+
 std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
   return views::Builder<views::FlexLayoutView>()
       .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -829,6 +838,14 @@ void MahiPanelView::OnSendButtonPressed() {
         mahi_constants::kMahiButtonClickHistogramName,
         mahi_constants::PanelButton::kAskQuestionSendButton);
   }
+}
+
+void MahiPanelView::HandleDragEventIfNeeded(ui::LocatedEvent* event) {
+  // Checks whether the event is part of a drag sequence and handles it if
+  // needed. Note that we only handle drag events for repositioning the panel
+  // here. Other drag behavior, e.g. for text selection, is handled by the
+  // panel's child views.
+  ui_controller_->drag_controller()->OnLocatedPanelEvent(event);
 }
 
 BEGIN_METADATA(MahiPanelView)

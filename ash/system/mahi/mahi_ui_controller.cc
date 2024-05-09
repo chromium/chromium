@@ -4,7 +4,10 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 
+#include <memory>
+
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/logging.h"
@@ -47,7 +50,8 @@ MahiUiController::Delegate::~Delegate() = default;
 
 // MahiUiController ------------------------------------------------------------
 
-MahiUiController::MahiUiController() = default;
+MahiUiController::MahiUiController()
+    : drag_controller_(std::make_unique<MahiPanelDragController>(this)) {}
 
 MahiUiController::~MahiUiController() {
   if (mahi_panel_widget_) {

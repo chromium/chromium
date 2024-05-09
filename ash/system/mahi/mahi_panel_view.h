@@ -16,6 +16,10 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+namespace ui {
+class LocatedEvent;
+}
+
 namespace views {
 class Textfield;
 }  // namespace views
@@ -42,6 +46,10 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   MahiPanelView& operator=(const MahiPanelView&) = delete;
   ~MahiPanelView() override;
 
+  // views::View:
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
  private:
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* textfield,
@@ -61,6 +69,10 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   void OnLearnMoreLinkClicked();
   void OnBackButtonPressed();
   void OnSendButtonPressed();
+
+  // Handles drag events to reposition the panel. Events that are not part of a
+  // drag event sequence are ignored.
+  void HandleDragEventIfNeeded(ui::LocatedEvent* event);
 
   // `ui_controller_` will outlive `this`.
   const raw_ptr<MahiUiController> ui_controller_;

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MAHI_MAHI_UI_CONTROLLER_H_
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -24,6 +25,8 @@ class View;
 }  // namespace views
 
 namespace ash {
+
+class MahiPanelDragController;
 
 // Communicates with `chromeos::MahiManager` and notifies delegates of updates.
 class ASH_EXPORT MahiUiController {
@@ -112,6 +115,10 @@ class ASH_EXPORT MahiUiController {
   // requests are fulfilled.
   void UpdateSummaryAndOutlines();
 
+  MahiPanelDragController* drag_controller() { return drag_controller_.get(); }
+
+  views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
+
  private:
   void HandleError(const MahiUiError& error);
 
@@ -135,6 +142,8 @@ class ASH_EXPORT MahiUiController {
 
   // The current state. Use `VisibilityState::kSummaryAndOutlines` by default.
   VisibilityState visibility_state_ = VisibilityState::kSummaryAndOutlines;
+
+  std::unique_ptr<MahiPanelDragController> drag_controller_;
 
   base::ObserverList<Delegate> delegates_;
 
