@@ -56,7 +56,7 @@ class FederatedIdentityAutoReauthnPermissionContext
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
       permission_autoblocker_;
-  const raw_ptr<PasswordManagerSettingsService> password_settings_service_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_H_

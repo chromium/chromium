@@ -22,9 +22,7 @@ FederatedIdentityAutoReauthnPermissionContext::
       permission_autoblocker_(
           PermissionDecisionAutoBlockerFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))),
-      password_settings_service_(
-          PasswordManagerSettingsServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context))) {}
+      browser_context_(browser_context) {}
 
 FederatedIdentityAutoReauthnPermissionContext::
     ~FederatedIdentityAutoReauthnPermissionContext() = default;
@@ -35,8 +33,10 @@ bool FederatedIdentityAutoReauthnPermissionContext::
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
              /*provider_id=*/nullptr) !=
              ContentSetting::CONTENT_SETTING_BLOCK &&
-         password_settings_service_->IsSettingEnabled(
-             password_manager::PasswordManagerSetting::kAutoSignIn);
+         PasswordManagerSettingsServiceFactory::GetForProfile(
+             Profile::FromBrowserContext(browser_context_))
+             ->IsSettingEnabled(
+                 password_manager::PasswordManagerSetting::kAutoSignIn);
 }
 
 bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
