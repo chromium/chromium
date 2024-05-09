@@ -10,7 +10,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
- * Represents a logical expression that has to be true to consider the Station active.
+ * Represents a logical expression that has to be true to consider the Station active and false to
+ * consider the Station exited.
  *
  * <p>LogicalElements should be declared by calling {@link
  * Elements.Builder#declareLogicalElement(LogicalElement)} passing in an instance created by one of
@@ -18,152 +19,67 @@ import java.util.concurrent.Callable;
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the LogicalElement is
  * in the right state.
+ *
+ * <p>LogicalElements that have no Exit condition should simply be enter Conditions, declared with
+ * {@link Elements.Builder#declareEnterCondition(Condition)}.
  */
 public class LogicalElement implements ElementInState {
-
     private final boolean mIsRunOnUiThread;
-    private final boolean mIsScoped;
     private final String mDescription;
     private final String mId;
     private final Condition mEnterCondition;
-    @Nullable private Condition mExitCondition;
+    private Condition mExitCondition;
 
     /**
-     * Alias for {@link #unscopedUiThreadLogicalElement(String, Callable)} as the default way to
-     * declare LogicalElements.
+     * Create a LogicalElement that runs the check on the UI Thread.
+     *
+     * <p>LogicalElements wait for the function to be true as an ENTER Condition. They also wait for
+     * the function to be false as an EXIT Condition when transitioning to a ConditionalState that
+     * does not declare the same LogicalElement.
+     */
+    public static LogicalElement uiThreadLogicalElement(
+            String description, Callable<Boolean> checkFunction, String id) {
+        return new LogicalElement(/* isRunOnUiThread= */ true, description, checkFunction, id);
+    }
+
+    /**
+     * Version of {@link #uiThreadLogicalElement(String, Callable, String)} using the |description|
+     * as |id|.
      */
     public static LogicalElement uiThreadLogicalElement(
             String description, Callable<Boolean> checkFunction) {
-        return unscopedUiThreadLogicalElement(description, checkFunction);
+        return new LogicalElement(
+                /* isRunOnUiThread= */ true, description, checkFunction, /* id= */ null);
     }
 
     /**
-     * Alias for {@link #unscopedInstrumentationThreadLogicalElement(String, Callable)} as the
-     * default way to declare LogicalElements.
+     * Create a LogicalElement that runs the check on the Instrumentation Thread.
+     *
+     * <p>LogicalElements wait for the function to be true as an ENTER Condition. They also wait for
+     * the function to be false as an EXIT Condition when transitioning to a ConditionalState that
+     * does not declare the same LogicalElement.
+     */
+    public static LogicalElement instrumentationThreadLogicalElement(
+            String description, Callable<Boolean> checkFunction, String id) {
+        return new LogicalElement(/* isRunOnUiThread= */ false, description, checkFunction, id);
+    }
+
+    /**
+     * Version of {@link #instrumentationThreadLogicalElement(String, Callable, String)} using the
+     * |description| as |id|.
      */
     public static LogicalElement instrumentationThreadLogicalElement(
             String description, Callable<Boolean> checkFunction) {
-        return unscopedInstrumentationThreadLogicalElement(description, checkFunction);
-    }
-
-    /**
-     * Create a shared-scope LogicalElement that runs the check on the UI Thread.
-     *
-     * <p>Shared LogicalElements wait for the function to be true as an ENTER Condition. It also
-     * waits for the function to be false as an EXIT Condition when transitioning to a
-     * ConditionalState that does not declare the LogicalElement too.
-     */
-    public static LogicalElement sharedUiThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction, String id) {
         return new LogicalElement(
-                /* isRunOnUiThread= */ true, /* isScoped= */ true, description, checkFunction, id);
-    }
-
-    /**
-     * Version of {@link #sharedUiThreadLogicalElement(String, Callable, String)} using the
-     * |description| as |id|.
-     */
-    public static LogicalElement sharedUiThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ true,
-                /* isScoped= */ true,
-                description,
-                checkFunction,
-                /* id= */ null);
-    }
-
-    /**
-     * Create a shared-scope LogicalElement that runs the check on the Instrumentation Thread.
-     *
-     * <p>Unscoped LogicalElements wait for the function to be true as an ENTER Condition. It also
-     * waits for the function to be false as an EXIT Condition when transitioning to a
-     * ConditionalState that does not declare the LogicalElement too.
-     */
-    public static LogicalElement sharedInstrumentationThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction, String id) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ false, /* isScoped= */ true, description, checkFunction, id);
-    }
-
-    /**
-     * Version of {@link #sharedInstrumentationThreadLogicalElement(String, Callable, String)} using
-     * the |description| as |id|.
-     */
-    public static LogicalElement sharedInstrumentationThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ false,
-                /* isScoped= */ true,
-                description,
-                checkFunction,
-                /* id= */ null);
-    }
-
-    /**
-     * Create an unscoped LogicalElement that runs the check on the UI Thread.
-     *
-     * <p>Unscoped LogicalElements wait for the function to be true as an ENTER Condition but do not
-     * generate an EXIT Condition.
-     */
-    public static LogicalElement unscopedUiThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction, String id) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ true, /* isScoped= */ false, description, checkFunction, id);
-    }
-
-    /**
-     * Version of {@link #unscopedUiThreadLogicalElement(String, Callable, String)} using the
-     * |description| as |id|.
-     */
-    public static LogicalElement unscopedUiThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ true,
-                /* isScoped= */ false,
-                description,
-                checkFunction,
-                /* id= */ null);
-    }
-
-    /**
-     * Create an unscoped LogicalElement that runs the check on the Instrumentation Thread.
-     *
-     * <p>Unscoped LogicalElements wait for the function to be true as an ENTER Condition but do not
-     * generate an EXIT Condition.
-     */
-    public static LogicalElement unscopedInstrumentationThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction, String id) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ false,
-                /* isScoped= */ false,
-                description,
-                checkFunction,
-                id);
-    }
-
-    /**
-     * Version of {@link #unscopedInstrumentationThreadLogicalElement(String, Callable, String)}
-     * using the |description| as |id|.
-     */
-    public static LogicalElement unscopedInstrumentationThreadLogicalElement(
-            String description, Callable<Boolean> checkFunction) {
-        return new LogicalElement(
-                /* isRunOnUiThread= */ false,
-                /* isScoped= */ false,
-                description,
-                checkFunction,
-                /* id= */ null);
+                /* isRunOnUiThread= */ false, description, checkFunction, /* id= */ null);
     }
 
     LogicalElement(
             boolean isRunOnUiThread,
-            boolean isScoped,
             String description,
             Callable<Boolean> checkFunction,
             @Nullable String id) {
         mIsRunOnUiThread = isRunOnUiThread;
-        mIsScoped = isScoped;
         mDescription = description;
         mId = "LE/" + (id != null ? id : description);
 
@@ -180,22 +96,18 @@ public class LogicalElement implements ElementInState {
                     }
                 };
 
-        if (mIsScoped) {
-            mExitCondition =
-                    new Condition(mIsRunOnUiThread) {
-                        @Override
-                        protected ConditionStatus checkWithSuppliers() throws Exception {
-                            return whether(!checkFunction.call());
-                        }
+        mExitCondition =
+                new Condition(mIsRunOnUiThread) {
+                    @Override
+                    protected ConditionStatus checkWithSuppliers() throws Exception {
+                        return whether(!checkFunction.call());
+                    }
 
-                        @Override
-                        public String buildDescription() {
-                            return "False: " + mDescription;
-                        }
-                    };
-        } else {
-            mExitCondition = null;
-        }
+                    @Override
+                    public String buildDescription() {
+                        return "False: " + mDescription;
+                    }
+                };
     }
 
     @Override
@@ -209,8 +121,8 @@ public class LogicalElement implements ElementInState {
     }
 
     @Override
-    public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
-        if (mIsScoped && !destinationElementIds.contains(mId)) {
+    public Condition getExitCondition(Set<String> destinationElementIds) {
+        if (!destinationElementIds.contains(mId)) {
             return mExitCondition;
         } else {
             return null;

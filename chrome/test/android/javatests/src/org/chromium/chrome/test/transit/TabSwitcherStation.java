@@ -16,8 +16,7 @@ import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.LogicalElement.sharedUiThreadLogicalElement;
-import static org.chromium.base.test.transit.LogicalElement.unscopedUiThreadLogicalElement;
+import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import android.view.View;
@@ -103,6 +102,8 @@ public abstract class TabSwitcherStation extends Station {
     protected TabSwitcherStation(
             ChromeTabbedActivityTestRule chromeTabbedActivityTestRule, boolean incognito) {
         super();
+
+        assert !HubFieldTrial.isHubEnabled();
         mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
         mIsIncognito = incognito;
     }
@@ -116,10 +117,7 @@ public abstract class TabSwitcherStation extends Station {
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
 
         elements.declareLogicalElement(
-                unscopedUiThreadLogicalElement(
-                        "HubFieldTrial Hub is disabled", this::isHubDisabled));
-        elements.declareLogicalElement(
-                sharedUiThreadLogicalElement(
+                uiThreadLogicalElement(
                         "LayoutManager is showing TAB_SWITCHER", this::isTabSwitcherLayoutShowing));
     }
 

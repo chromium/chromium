@@ -14,19 +14,21 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.LogicalElement.sharedUiThreadLogicalElement;
-import static org.chromium.base.test.transit.LogicalElement.unscopedUiThreadLogicalElement;
+import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
+import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -62,12 +64,14 @@ public abstract class HubBaseStation extends Station {
                                     R.string.accessibility_tab_switcher_incognito_stack)));
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
+    private ActivityElement<ChromeTabbedActivity> mActivityElement;
 
     /**
      * @param chromeTabbedActivityTestRule The {@link ChromeTabbedActivityTestRule} of the test.
      */
     public HubBaseStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
         super();
+        assert HubFieldTrial.isHubEnabled();
         mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
     }
 
@@ -76,7 +80,7 @@ public abstract class HubBaseStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareActivity(ChromeTabbedActivity.class);
+        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
@@ -88,15 +92,9 @@ public abstract class HubBaseStation extends Station {
         elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
 
         elements.declareLogicalElement(
-                unscopedUiThreadLogicalElement(
-                        "HubFieldTrial Hub is enabled", HubFieldTrial::isHubEnabled));
-        elements.declareLogicalElement(
-                sharedUiThreadLogicalElement(
+                uiThreadLogicalElement(
                         "LayoutManager is showing TAB_SWITCHER (Hub)", this::isHubLayoutShowing));
-        elements.declareLogicalElement(
-                unscopedUiThreadLogicalElement(
-                        "LayoutManager is not in transition to or from TAB_SWITCHER (Hub)",
-                        this::isHubLayoutNotInTransition));
+        elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
     /**
@@ -166,13 +164,6 @@ public abstract class HubBaseStation extends Station {
         return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
     }
 
-    private boolean isHubLayoutNotInTransition() {
-        LayoutManager layoutManager =
-                mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
-        return !layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER)
-                && !layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
-    }
-
     private void clickPaneSwitcherForPaneWithContentDescription(
             @StringRes int contentDescriptionRes) {
         // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
@@ -185,5 +176,28 @@ public abstract class HubBaseStation extends Station {
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
                                 withContentDescription(contentDescription)))
                 .perform(click());
+    }
+
+    private class HubLayoutNotInTransition extends UiThreadCondition {
+        private HubLayoutNotInTransition() {
+            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            LayoutManager layoutManager = mActivityElement.get().getLayoutManager();
+            boolean startingToShow = layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER);
+            boolean startingToHide = layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
+            return whether(
+                    !startingToShow && !startingToHide,
+                    "startingToShow=%b, startingToHide=%b",
+                    startingToShow,
+                    startingToHide);
+        }
+
+        @Override
+        public String buildDescription() {
+            return "LayoutManager is not in transition to or from TAB_SWITCHER (Hub)";
+        }
     }
 }
