@@ -903,7 +903,7 @@ class AvatarToolbarButtonProfileColorBrowserTest
  public:
   AvatarToolbarButtonProfileColorBrowserTest() {
     std::vector<base::test::FeatureRef> chrome_refresh_features = {
-        features::kChromeRefresh2023, features::kChromeWebuiRefresh2023};
+        features::kChromeRefresh2023};
     if (GetParam() == ColorThemeType::kUserColor) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/chrome_refresh_features,

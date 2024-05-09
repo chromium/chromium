@@ -83,8 +83,7 @@ class DownloadBubbleSecurityViewInfoTestGM3
       return;
     }
     features.InitWithFeatures(
-        {features::kChromeRefresh2023, features::kChromeRefreshSecondary2023,
-         features::kChromeWebuiRefresh2023},
+        {features::kChromeRefresh2023, features::kChromeRefreshSecondary2023},
         {});
   }
 

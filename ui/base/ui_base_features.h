@@ -240,8 +240,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 // Exposed for testing and flags integration. For actual checks please use
 // IsChromeWebuiRefresh2023().
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kChromeWebuiRefresh2023);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeWebuiRefresh2023();
 

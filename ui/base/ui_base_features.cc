@@ -519,14 +519,9 @@ bool IsChromeRefresh2023() {
          base::FeatureList::IsEnabled(kChromeRefreshSecondary2023);
 }
 
-BASE_FEATURE(kChromeWebuiRefresh2023,
-             "ChromeWebuiRefresh2023",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsChromeWebuiRefresh2023() {
   return IsChromeRefresh2023() &&
-         (base::FeatureList::IsEnabled(kChromeWebuiRefresh2023) ||
-          base::FeatureList::IsEnabled(kChromeRefreshSecondary2023));
+         base::FeatureList::IsEnabled(kChromeRefreshSecondary2023);
 }
 
 BASE_FEATURE(kBubbleMetricsApi,

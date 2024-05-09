@@ -38,9 +38,7 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023,
-         features::kChromeWebuiRefresh2023},
-        {});
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();

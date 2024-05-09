@@ -117,7 +117,6 @@ void InitPixelTestFeatures(const PixelTestParam& params,
 
   if (params.use_chrome_refresh_2023_style) {
     enabled_features.push_back(features::kChromeRefresh2023);
-    enabled_features.push_back(features::kChromeWebuiRefresh2023);
   }
 
   feature_list.InitWithFeatures(enabled_features, disabled_features);

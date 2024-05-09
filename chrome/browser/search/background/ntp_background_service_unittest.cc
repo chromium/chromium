@@ -148,8 +148,7 @@ TEST_P(NtpBackgroundServiceTest, CollectionRequest) {
 
 TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Enabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
+  scoped_feature_list.InitWithFeatures({features::kChromeRefresh2023}, {});
 
   g_browser_process->SetApplicationLocale("foo");
   service()->FetchCollectionInfo();

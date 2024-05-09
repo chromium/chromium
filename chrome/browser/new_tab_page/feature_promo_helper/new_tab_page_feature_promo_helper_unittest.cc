@@ -41,7 +41,7 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
     iph_feature_list_.Reset();
     iph_feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-         features::kChromeRefresh2023, features::kChromeWebuiRefresh2023});
+         features::kChromeRefresh2023});
   }
 
   NewTabPageFeaturePromoHelper* helper() { return helper_.get(); }

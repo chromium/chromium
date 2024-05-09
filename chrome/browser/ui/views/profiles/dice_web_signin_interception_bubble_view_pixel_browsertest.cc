@@ -222,7 +222,6 @@ class DiceWebSigninInterceptionBubblePixelTest
     std::vector<base::test::FeatureRef> enabled_features;
     if (GetParam().enable_webui_refresh) {
       enabled_features.push_back(features::kChromeRefresh2023);
-      enabled_features.push_back(features::kChromeWebuiRefresh2023);
     }
 
     if (GetParam().with_explicit_browser_signin_design) {

@@ -156,9 +156,7 @@ class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023,
-         features::kChromeWebuiRefresh2023},
-        {});
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
