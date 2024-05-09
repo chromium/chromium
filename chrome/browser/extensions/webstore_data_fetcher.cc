@@ -169,8 +169,15 @@ void WebstoreDataFetcher::FetchItemSnippet(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
+
+// The endpoint does not require an API key, but one will be provided if it's
+// called from a branded build (i.e. Chrome) so the API can distinguish if's
+// called from Chrome or another Chromium browser.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   resource_request->headers.SetHeader("X-Goog-Api-Key",
                                       google_apis::GetAPIKey());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   InitializeSimpleLoaderForRequest(
       std::move(resource_request),
       kWebstoreDataFetcherItemSnippetApiTrafficAnnotation);
