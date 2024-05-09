@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">La ventana de actualización de firmware para dispositivos externos está abierta. Hay <ph name="NUM_UPDATES" /> actualizaciones disponibles.</translation>
 <translation id="1145516343487477149">Encuentra artículos de ayuda y respuestas a preguntas frecuentes sobre Chromebooks.</translation>
 <translation id="1154390310959620237">Solo puedes personalizar 5 combinaciones de teclas. Borra una combinación de teclas para agregar una nueva.</translation>
+<translation id="1155154308031262006">Ingresa una instrucción</translation>
 <translation id="115705039208660697">piñas</translation>
 <translation id="1164939766849482256">Protector de pantalla Del amanecer a la noche</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las teclas. Arrastra el menú para moverlo.</translation>
@@ -907,6 +908,7 @@
 <translation id="6205145102504628069">Flujo de nubes</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>
+<translation id="6231648282154119906">La Navegación segura de Google analizará automáticamente los archivos sospechosos como parte de la protección mejorada que elegiste</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6234024205316847054">Mostrar puntos destacados</translation>
 <translation id="6235460611964961764">Restablecer el uso de datos manualmente</translation>

@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Egin fitxaren laster-marka}other{Egin fitxen laster-markak}}</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tolestu fitxa <ph name="TABS_COUNT_ONE" /> duen<ph name="TITLE_OF_GROUP" /> fitxa taldea.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
+<translation id="2498435670446402865">Aldatu fitxa taldearen izena</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
 <translation id="2569352796411618312">Iradokizuna: fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
 <translation id="2662028055331606429">Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

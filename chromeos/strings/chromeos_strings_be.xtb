@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">Акно абнаўлення ўбудаванага праграмнага забеспячэння для знешніх прылад адкрыта. Даступных абнаўленняў: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Даведачныя артыкулы і адказы на распаўсюджаныя пытанні пра Chromebook</translation>
 <translation id="1154390310959620237">Можна наладзіць толькі 5 спалучэнняў клавіш. Каб дадаць новае спалучэнне клавіш, трэба выдаліць адно з ужо дададзеных.</translation>
+<translation id="1155154308031262006">Увядзіце запыт</translation>
 <translation id="115705039208660697">ананасы</translation>
 <translation id="1164939766849482256">Застаўка "Ад відна да цямна"</translation>
 <translation id="1167755866710282443">Адкрыйце меню, каб наладзіць клавішы. Перацягніце меню для перамяшчэння.</translation>
@@ -329,6 +330,7 @@
 <translation id="2744221223678373668">Абагулена</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
 <translation id="2754757901767760034">лямпа</translation>
+<translation id="2780756493585863768">Нядаўнія фоны, створаныя з дапамогай AI ад Google</translation>
 <translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
 <translation id="2786429550992142861">лён</translation>
 <translation id="2787435249130282949">большая яркасць клавіятуры</translation>
@@ -906,6 +908,7 @@
 <translation id="6205145102504628069">Рух аблокаў</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
+<translation id="6231648282154119906">Падазроныя файлы будуць аўтаматычна сканіравацца сэрвісам "Google Бяспечны прагляд" у рамках выбранай вамі палепшанай абароны</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6234024205316847054">Паказаць асноўныя палажэнні</translation>
 <translation id="6235460611964961764">Скідваць выкарыстанне трафіка ўручную</translation>
@@ -1031,6 +1034,7 @@
 <translation id="6871256179359663621">светла-фіялетавы</translation>
 <translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
 <translation id="6900701049656042631">У гэтым альбоме няма фота. Дадаць фота можна з сайта <ph name="LINK" />.</translation>
+<translation id="6902359863093437070">Стварыць фон з дапамогай AI</translation>
 <translation id="6905163627763043954">Паспрабаваць</translation>
 <translation id="6905724422583748843">Вярнуцца на старонку "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Вечка сканера адкрыта. Закрыйце вечка і паўтарыце спробу.</translation>
@@ -1266,6 +1270,7 @@
 <translation id="8152370627892825"><ph name="DESCRIPTION" />: <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">чарадзейны</translation>
 <translation id="8162776280680283326">лісы</translation>
+<translation id="8167413449582155132">Фон створаны з дапамогай штучнага інтэлекту ад Google</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>

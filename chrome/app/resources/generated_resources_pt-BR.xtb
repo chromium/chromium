@@ -4769,6 +4769,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4536769240747010177">Recursos de tethering:</translation>
 <translation id="4538417792467843292">Excluir palavra</translation>
 <translation id="4538792345715658285">Instalada pela política empresarial.</translation>
+<translation id="4540409690203718935">Falha no acesso ao Gerenciador de senhas do Google. Tente de novo em alguns minutos</translation>
 <translation id="4541123282641193691">Não foi possível verificar sua conta. Tente novamente ou reinicie o Chromebook.</translation>
 <translation id="4541662893742891060">Não é possível se conectar a esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
 <translation id="4541706525461326392">Removendo o perfil. Pode levar alguns minutos..</translation>
@@ -5297,6 +5298,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4945439665401275950">Para configurar a impressão digital, peça para a criança tocar no botão liga/desliga. Os dados de impressão digital da criança são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">acesso rápido + seta para cima</translation>
 <translation id="4947376546135294974">Dados do site que você está visitando</translation>
+<translation id="4950100687509657457">Criar perfil</translation>
 <translation id="4950993567860689081">A sessão é gerenciada pela sua organização. Os administradores podem excluir seu perfil e também monitorar o tráfego de rede.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="495170559598752135">Ações</translation>
@@ -9531,6 +9533,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8186609076106987817">O servidor não encontrou o arquivo.</translation>
 <translation id="8188389033983459049">Verifique as configurações do seu dispositivo e ative-o para continuar</translation>
 <translation id="8188742492803591566">Insira o código de acesso mostrado no Chromecast ou na TV para transmitir a tela.</translation>
+<translation id="8189257540098107776">Não foi possível acessar o Gerenciador de senhas do Google</translation>
 <translation id="8189306097519446565">Contas escolares</translation>
 <translation id="8189750580333936930">Sandbox de privacidade</translation>
 <translation id="8191230140820435481">Gerenciar seus aplicativos, extensões e temas</translation>
@@ -10558,6 +10561,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8953476467359856141">Ao carregar</translation>
 <translation id="895347679606913382">Iniciando...</translation>
 <translation id="8954796993367253220">Para excluir o histórico do modo convidado, feche todas as janelas que estejam nesse modo.</translation>
+<translation id="8955093856391032948">traduzir</translation>
 <translation id="8955174612586215829">Localizar temas</translation>
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="8959144235813727886">Sites e apps</translation>

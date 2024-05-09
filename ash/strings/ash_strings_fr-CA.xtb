@@ -1443,6 +1443,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6555373427270923730">Entrez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
+<translation id="6559158502366839560">Explorer plus d'applis et de jeux</translation>
 <translation id="6559976592393364813">Adressez-vous à l'administrateur</translation>
 <translation id="6565007273808762236">Connexion eSIM non proposée</translation>
 <translation id="6570831796530454248">{0,plural, =1{Mettez à jour l'appareil d'ici une heure}one{Mettez à jour l'appareil d'ici # heure}other{Mettez à jour l'appareil d'ici # heures}}</translation>
@@ -2071,6 +2072,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="906458777597946297">Agrandir la fenêtre</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>
+<translation id="9071966355747967534">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas accessible</translation>
 <translation id="9072519059834302790">Il reste <ph name="TIME_LEFT" /> avant que la pile soit complètement épuisée.</translation>
 <translation id="9074432941673450836">Utilisez des applications pour faire tout ce dont vous avez besoin sur votre <ph name="PRODUCT_NAME" />. Vous trouverez vos applications dans le lanceur. Vous pouvez également appuyer sur la touche du lanceur (au-dessus de la touche Majuscule de gauche) du clavier.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

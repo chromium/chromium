@@ -1444,6 +1444,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6555373427270923730">Thayipha ikheli lewebhu kwibha yekheli, bese ucindezele okuthi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ukufaka okusha</translation>
+<translation id="6559158502366839560">Hlola ama-app amaningi namageyimu</translation>
 <translation id="6559976592393364813">Buza umlawuli</translation>
 <translation id="6565007273808762236">uxhumo lwe-eSIM alutholakali</translation>
 <translation id="6570831796530454248">{0,plural, =1{Buyekeza idivayisi phakathi nehora}one{Buyekeza idivayisi phakathi namahora angu-#}other{Buyekeza idivayisi phakathi namahora angu-#}}</translation>
@@ -2073,6 +2074,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="906458777597946297">Yenza iwindi libe likhulu</translation>
 <translation id="9065203028668620118">Hlela</translation>
 <translation id="9070640332319875144">Izilungiselelo zesilekeleli</translation>
+<translation id="9071966355747967534">Okuthi <ph name="FEATURE_NAME" /> akutholakali</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ibhethri lize liphele.</translation>
 <translation id="9074432941673450836">Sebenzisa ama-app ukwenza yonke into oyidingayo ku-<ph name="PRODUCT_NAME" /> yakho. Ungathola ama-app akho Kusiqalisi. Ungaphinda ucindezele ukhiye Wesiqalisi (ngenhla kokhiye we-Shift kwesokunxele) kukhibhodi.</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>

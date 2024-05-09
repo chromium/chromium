@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">A külső eszközök firmware-frissítésére szolgáló ablak megnyílt. <ph name="NUM_UPDATES" /> frissítés érhető el</translation>
 <translation id="1145516343487477149">Súgócikkek és a Chromebookkal kapcsolatos gyakori kérdésekre adott válaszok.</translation>
 <translation id="1154390310959620237">Csak öt billentyűparancsot szabhat személyre. Új billentyűparancs hozzáadásához töröljön egy meglévőt</translation>
+<translation id="1155154308031262006">Adja meg a kívánt utasítást</translation>
 <translation id="115705039208660697">ananászok</translation>
 <translation id="1164939766849482256">Hajnaltól sötétig képernyőkímélő</translation>
 <translation id="1167755866710282443">A kulcsok személyre szabásához nyissa meg a menüt. Az áthelyezéshez húzza a megfelelő helyre a menüt.</translation>
@@ -907,6 +908,7 @@
 <translation id="6205145102504628069">Szálló felhők</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
+<translation id="6231648282154119906">A Google Biztonságos Böngészés automatikusan ellenőrzi a gyanús fájlokat az Ön által kiválasztott speciális védelem részeként</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6234024205316847054">Főbb pontok megjelenítése</translation>
 <translation id="6235460611964961764">Adathasználat manuális visszaállítása</translation>

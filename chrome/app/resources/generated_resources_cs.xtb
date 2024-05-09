@@ -4753,6 +4753,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4536769240747010177">Možnosti sdílení datového připojení:</translation>
 <translation id="4538417792467843292">Smazat slovo</translation>
 <translation id="4538792345715658285">Nainstalováno podnikovými zásadami.</translation>
+<translation id="4540409690203718935">Správce hesel Google není dostupný. Zkuste to znovu za několik minut</translation>
 <translation id="4541123282641193691">Účet se nepodařilo ověřit. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="4541662893742891060">Propojení s tímto profilem se nezdařilo. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
 <translation id="4541706525461326392">Odstraňování profilu. Může to trvat několik minut.</translation>
@@ -5281,6 +5282,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4945439665401275950">Pokud chcete nastavit otisk prstu, nechte dítě dotknout se vypínače. Otisk prstu dítěte je bezpečně uložen a nikdy neopouští <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946998421534856407">spouštěč + šipka nahoru</translation>
 <translation id="4947376546135294974">Data z navštíveného webu</translation>
+<translation id="4950100687509657457">Vytvořit profil</translation>
 <translation id="4950993567860689081">Vaši relaci spravuje vaše organizace. Administrátoři mohou smazat váš profil a také sledovat síťový provoz.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="495170559598752135">Akce</translation>
@@ -9512,6 +9514,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8186609076106987817">Serveru se nepodařilo soubor najít.</translation>
 <translation id="8188389033983459049">Chcete-li pokračovat, zkontrolujte nastavení zařízení a zapněte Bluetooth</translation>
 <translation id="8188742492803591566">Pokud chcete zahájit odesílání obrazovky, zadejte přístupový kód zobrazený na Chromecastu nebo televizi.</translation>
+<translation id="8189257540098107776">Správce hesel Google není dostupný</translation>
 <translation id="8189306097519446565">Školní účty</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8191230140820435481">Spravovat aplikace, rozšíření a motivy</translation>
@@ -10539,6 +10542,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8953476467359856141">Při nabíjení</translation>
 <translation id="895347679606913382">Spouštění...</translation>
 <translation id="8954796993367253220">Pokud chcete vymazat historii režimu hosta, zavřete všechna okna hosta.</translation>
+<translation id="8955093856391032948">přeložit</translation>
 <translation id="8955174612586215829">Najít motivy</translation>
 <translation id="8957757410289731985">Upravit profil</translation>
 <translation id="8959144235813727886">Weby a aplikace</translation>

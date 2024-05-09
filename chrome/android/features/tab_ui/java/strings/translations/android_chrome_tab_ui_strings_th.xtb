@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{แท็บบุ๊กมาร์ก}other{แท็บบุ๊กมาร์ก}}</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{ยุบกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="2498435670446402865">เปลี่ยนชื่อกลุ่มแท็บ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2569352796411618312">คำแนะนำ: คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="2662028055331606429">การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -1749,13 +1749,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="2309284543927494965">Chặn bản cập nhật</translation>
 <translation id="2309341709647905294">Không báo cáo thông tin về những thiết bị ngoại vi được cắm vào thiết bị này</translation>
 <translation id="2309390639296060546">Cài đặt vị trí địa lý mặc định</translation>
-<translation id="2310254963100942637">Nếu bạn đặt chính sách này thành Bật, thì người dùng có thể gửi và nhận mật khẩu từ các thành viên gia đình (theo Dịch vụ dành cho gia đình).
-Khi bạn Bật hoặc không đặt chính sách này, Trình quản lý mật khẩu sẽ có một nút cho phép gửi mật khẩu.
-Mật khẩu đã nhận sẽ được lưu trữ vào tài khoản của người dùng và có trong Trình quản lý mật khẩu.
-
-Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thể gửi mật khẩu từ Trình quản lý mật khẩu cho người dùng khác và không thể nhận mật khẩu từ người dùng khác.
-
-Tính năng này không hoạt động nếu tính năng đồng bộ hoá Mật khẩu bị tắt (thông qua chế độ cài đặt người dùng hoặc do chính sách <ph name="SYNC_DISABLED" /> đang Bật).</translation>
 <translation id="2316700579410680894">Nếu đặt chính sách này, bạn có thể lập danh sách các mẫu URL chỉ định những trang web được hệ thống tự động cấp quyền truy cập vào thiết bị USB bằng mã sản phẩm và mã nhà cung cấp đã cho. Mỗi mục trên danh sách này phải có cả trường <ph name="DEVICES_FIELD_NAME" /> và trường <ph name="URLS_FIELD_NAME" /> thì chính sách mới hợp lệ. Mỗi mục trong trường <ph name="DEVICES_FIELD_NAME" /> có thể chứa trường <ph name="VENDOR_ID_FIELD_NAME" /> và <ph name="PRODUCT_ID_FIELD_NAME" />. Nếu bạn bỏ qua trường <ph name="VENDOR_ID_FIELD_NAME" />, hệ thống sẽ tạo một chính sách áp dụng cho mọi thiết bị. Nếu bạn bỏ qua trường <ph name="PRODUCT_ID_FIELD_NAME" />, hệ thống sẽ tạo một chính sách áp dụng cho mọi thiết bị có mã nhà cung cấp đã cho. Nếu có trường <ph name="PRODUCT_ID_FIELD_NAME" /> mà không có trường <ph name="VENDOR_ID_FIELD_NAME" /> thì chính sách sẽ không hợp lệ.
 
       Mô hình quản lý quyền truy cập USB sẽ cấp cho URL được chỉ định quyền truy cập vào thiết bị USB dưới dạng nguồn cấp cao nhất. Nếu các khung đã nhúng cần truy cập vào thiết bị USB, thì tiêu đề <ph name="FEATURE_POLICY_HEADER_NAME" /> "usb" sẽ được dùng để cấp quyền truy cập. URL này phải hợp lệ. Nếu không, chính sách sẽ bị bỏ qua.

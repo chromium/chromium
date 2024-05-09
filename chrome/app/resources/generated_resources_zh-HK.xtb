@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外置安全密鑰</translation>
 <translation id="1028700151766901954">原因：根據設定，LBS 會保留在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
+<translation id="1028823395684328817">如要繼續使用 Google 帳戶中的密碼和其他資訊，請驗證身分</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1029317248976101138">放大</translation>
 <translation id="1029526375103058355">輕按點撃功能</translation>
@@ -3317,6 +3318,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新。</translation>
 <translation id="3452999110156026232">家長存取權</translation>
 <translation id="3453082738208775226">要清理離線儲存空間嗎？</translation>
+<translation id="3453597230179205517">位置資訊存取權已停用</translation>
 <translation id="3453612417627951340">需要授權</translation>
 <translation id="3454213325559396544">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。</translation>
 <translation id="3454818737556063691">要將 1 個檔案移到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
@@ -3542,6 +3544,7 @@
 <translation id="3627588569887975815">在無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3627671146180677314">Netscape 憑證更新時間</translation>
 <translation id="3628275722731025472">關閉藍牙功能</translation>
+<translation id="3629630597033136279">已關閉 • 這項擴充功能尚未發布隱私權實務規範，例如擴充功能如何收集和使用資料</translation>
 <translation id="3629664892718440872">記住這個選擇</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
@@ -4764,7 +4767,7 @@
 <translation id="4536769240747010177">網絡共享功能：</translation>
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
-<translation id="4540409690203718935">連不上 Google 密碼管理工具，請過幾分鐘後再試</translation>
+<translation id="4540409690203718935">無法連接「Google 密碼管理工具」，請在幾分鐘後再試一次</translation>
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
@@ -4947,6 +4950,7 @@
 <translation id="467510802200863975">密碼不相符</translation>
 <translation id="4675828034887792601">建立捷徑以搜尋網站及管理搜尋引擎</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
+<translation id="4676616966096505747">部分資料尚未儲存到你的帳戶</translation>
 <translation id="4677772697204437347">GPU 記憶體使用量</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4678848110205818817">信用卡/扣帳卡</translation>
@@ -5293,6 +5297,7 @@
 <translation id="4945439665401275950">如要設定指紋，請讓子女輕觸開關按鈕。系統會妥善地將您子女的指紋資料儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="4946998421534856407">啟動器鍵 + 向上箭咀鍵</translation>
 <translation id="4947376546135294974">來自你正在瀏覽網站的資料</translation>
+<translation id="4950100687509657457">建立設定檔</translation>
 <translation id="4950993567860689081">工作階段由您的機構管理。管理員可刪除設定檔並監察網絡流量。</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
@@ -5436,6 +5441,7 @@
 <translation id="5070773577685395116">沒有收到通知嗎？</translation>
 <translation id="5071295820492622726">返去最近嘅下載項目</translation>
 <translation id="5071892329440114717">顯示標準保護功能詳情</translation>
+<translation id="5072500507106264618">只有系統服務可以使用你的位置資訊</translation>
 <translation id="5072836811783999860">顯示受管理書籤</translation>
 <translation id="5072900412896857127">無法載入《Google Play 服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" /> 和另外 # 個檔案}}</translation>
@@ -5478,6 +5484,7 @@
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
 <translation id="5100775515702043594">管理員固定咗「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5101839224773798795">遊標停止時自動點擊</translation>
+<translation id="5102244391872941183">系統服務和具有位置存取權的應用程式與網站可使用你的位置資訊</translation>
 <translation id="5103311607312269661">顯示屏校光亮度</translation>
 <translation id="5106350808162641062">移除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 監管。您可新增學校帳戶，以便在家長監管下存取學校資源。</translation>
@@ -6588,6 +6595,7 @@
 <translation id="5955721306465922729">有網站想開啟此應用程式。</translation>
 <translation id="5955809630138889698">此裝置可能只可使用網上示範模式。詳情請與您的支援代表聯絡。</translation>
 <translation id="5957987129450536192">輕按個人檔案相片附近的「揀選朗讀內容」圖示，然後選取您想聽到的內容。</translation>
+<translation id="5958836583172610505">同步功能已開啟</translation>
 <translation id="5959471481388474538">網絡無法使用</translation>
 <translation id="5959982036207776176">放大鏡會追蹤「揀選朗讀內容」功能所朗讀的字詞</translation>
 <translation id="5963413905009737549">區段</translation>
@@ -8089,6 +8097,7 @@
 <translation id="7120762240626567834">除非連線至 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智能破折號</translation>
+<translation id="7122605570852873914">仍要登出</translation>
 <translation id="7123030151043029868">已允許自動下載多個檔案</translation>
 <translation id="7124013154139278147">指派代表「上一個」的按鈕裝置</translation>
 <translation id="7124712201233930202">不符合您機構的政策規定</translation>
@@ -9201,6 +9210,7 @@
 <translation id="7947964080535614577">網站通常要顯示廣告，才能免費提供內容或服務。不過，部分網站會顯示滋擾性或誤導廣告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
 <translation id="7950629216186736592">原因：LBS 只支援 http://、https:// 和 file:// 網址。</translation>
+<translation id="7950814699499457511">已開啟 • 這項擴充功能尚未發布隱私權實務規範，例如擴充功能如何收集和使用資料</translation>
 <translation id="7951265006188088697">如要增加或管理 Google Pay 付款方法，請前往您的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">停用虛擬卡</translation>
 <translation id="795240231873601803">進行公司和學校帳戶的企業註冊程序</translation>
@@ -9521,7 +9531,7 @@
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8188742492803591566">輸入顯示在 Chromecast 或電視上的存取碼，即可開始投放畫面。</translation>
-<translation id="8189257540098107776">連不上 Google 密碼管理工具</translation>
+<translation id="8189257540098107776">無法連接「Google 密碼管理工具」</translation>
 <translation id="8189306097519446565">學校帳戶</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8191230140820435481">管理您的應用程式、擴充功能和主題</translation>

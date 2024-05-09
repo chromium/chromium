@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">Okno aktualizácie firmvéru externých zariadení je otvorené. K dispozícii je tento počet aktualizácií: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">Vyhľadajte články pomocníka a odpovede na bežné otázky o Chromebooku</translation>
 <translation id="1154390310959620237">Môžete prispôsobiť iba päť skratiek. Ak chcete pridať novú, odstráňte niektorú existujúcu.</translation>
+<translation id="1155154308031262006">Zadajte pokyn</translation>
 <translation id="115705039208660697">ananásy</translation>
 <translation id="1164939766849482256">Šetrič obrazovky s témou Od úsvitu do tmy</translation>
 <translation id="1167755866710282443">Ak chcete prispôsobiť klávesy, otvorte ponuku. Pohybujte sa jej presúvaním.</translation>
@@ -907,6 +908,7 @@
 <translation id="6205145102504628069">Tok oblakov</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
+<translation id="6231648282154119906">Bezpečné prehliadanie Google bude automaticky kontrolovať podozrivé súbory v rámci vybranej rozšírenej ochrany</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6234024205316847054">Zobraziť ohraničenie</translation>
 <translation id="6235460611964961764">Manuálne resetovať spotrebu dát</translation>

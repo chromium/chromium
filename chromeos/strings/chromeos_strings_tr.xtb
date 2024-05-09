@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">Harici cihazlar için donanım yazılımını güncelleme penceresi açık. <ph name="NUM_UPDATES" /> güncelleme var.</translation>
 <translation id="1145516343487477149">Sık sorulan Chromebook sorularıyla ilgili yardım makaleleri ve yanıtlar bulun</translation>
 <translation id="1154390310959620237">Yalnızca 5 kısayol özelleştirebilirsiniz. Yeni kısayol eklemek için mevcut bir kısayolu silin.</translation>
+<translation id="1155154308031262006">İstem girin</translation>
 <translation id="115705039208660697">ananaslar</translation>
 <translation id="1164939766849482256">Şafaktan geceye ekran koruyucu</translation>
 <translation id="1167755866710282443">Tuşları özelleştirmek için menüyü açın. Taşımak için menüyü sürükleyin.</translation>
@@ -907,6 +908,7 @@
 <translation id="6205145102504628069">Bulut Akışı</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
+<translation id="6231648282154119906">Şüpheli dosyalar, seçtiğiniz gelişmiş koruma kapsamında Google Güvenli Tarama tarafından otomatik olarak taranacak</translation>
 <translation id="6232017090690406397">Pil</translation>
 <translation id="6234024205316847054">Anahatları göster</translation>
 <translation id="6235460611964961764">Veri kullanımını manuel olarak sıfırla</translation>

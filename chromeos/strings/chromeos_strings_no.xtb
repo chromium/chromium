@@ -29,6 +29,7 @@
 <translation id="1145018782460575098">Vinduet for oppdatering av fastvare på eksterne enheter er åpent. <ph name="NUM_UPDATES" /> oppdateringer er tilgjengelige.</translation>
 <translation id="1145516343487477149">Finn hjelpeartikler og svar på vanlige Chromebook-spørsmål</translation>
 <translation id="1154390310959620237">Du kan bare tilpasse fem hurtigtaster. Slett en hurtigtast for å legge til en ny.</translation>
+<translation id="1155154308031262006">Skriv inn en forespørsel</translation>
 <translation id="115705039208660697">ananaser</translation>
 <translation id="1164939766849482256">Skjermsparer: Fra morgen til kveld</translation>
 <translation id="1167755866710282443">Åpne menyen for å tilpasse tastene. Dra menyen for å flytte den.</translation>
@@ -907,6 +908,7 @@
 <translation id="6205145102504628069">Skyflyt</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>
+<translation id="6231648282154119906">Mistenkelige filer skannes automatisk av Google Safe Browsing som en del av den økte beskyttelsen du har valgt</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6234024205316847054">Vis omriss</translation>
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
