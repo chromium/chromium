@@ -5302,21 +5302,6 @@
             ]
         }
     ],
-    "CrOSLateBootVmMemoryManagementService": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootVmMemoryManagementService"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLocalImageSearch": [
         {
             "platforms": [
