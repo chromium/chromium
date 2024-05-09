@@ -71,8 +71,8 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -494,9 +494,14 @@ class LocationBarMediator
     /* package */ void onSuggestionsChanged(@Nullable AutocompleteMatch defaultMatch) {
         // TODO (https://crbug.com/1152501): Refactor the LBM/LBC relationship such that LBM doesn't
         // need to communicate with other coordinators like this.
-        mStatusCoordinator.onDefaultMatchClassified(
-                defaultMatch != null ? defaultMatch.isSearchSuggestion() : true);
         String userText = mUrlCoordinator.getTextWithoutAutocomplete();
+        mStatusCoordinator.onDefaultMatchClassified(
+                // Zero suggest is always considered Search.
+                TextUtils.isEmpty(userText)
+                        ||
+                        // Otherwise, use the default match type (if possible), or assume Search (if
+                        // not).
+                        (defaultMatch != null ? defaultMatch.isSearchSuggestion() : true));
         if (mUrlCoordinator.shouldAutocomplete()) {
             mUrlCoordinator.setAutocompleteText(
                     userText, defaultMatch != null ? defaultMatch.getInlineAutocompletion() : "");
