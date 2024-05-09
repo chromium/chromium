@@ -3972,6 +3972,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.TypeC.ModeEntry" enum="ModeEntryMetric"
+    expires_after="2025-01-01">
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents the result of the Type-C daemon (typecd) attempting
+    mode entry with a connected peripheral. This metric will also record cases
+    where mode entry is not supported.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.TypeC.PartnerLocation" enum="PartnerLocationMetric"
     expires_after="2024-03-17">
   <owner>wonchung@google.com</owner>
@@ -4006,13 +4017,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.TypeC.WrongConfiguration"
-    enum="WrongConfigurationMetric" expires_after="2023-10-15">
+    enum="WrongConfigurationMetric" expires_after="2025-01-01">
   <owner>pmalani@chromium.org</owner>
   <owner>chromeos-power@google.com</owner>
   <summary>
     This value represents events where a USB Type-C peripheral couldn't be
     configured correctly, or experienced some other unexpected behaviour. It is
     recorded every time a new peripheral is connected.
+
+    Warning: this histogram was expired from Oct 10, 2023 to May 9, 2024; data
+    may be missing.
   </summary>
 </histogram>
 
@@ -4033,6 +4047,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <summary>Timing and number of USB devices attached.</summary>
+</histogram>
+
+<histogram name="ChromeOS.USB.DeviceError" enum="ChromeOSUsbDeviceError"
+    expires_after="2025-01-01">
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents a USB device error detected when a device is
+    disconnected.
+  </summary>
 </histogram>
 
 <histogram
@@ -4107,6 +4131,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <variant name="TypeA"/>
     <variant name="TypeC"/>
   </token>
+</histogram>
+
+<histogram name="ChromeOS.USB.UnboundInterface" enum="ChromeOSUsbDeviceClass"
+    expires_after="2025-01-01">
+  <owner>jthies@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    Recorded when a USB device enumerates an interface which is not bound to a
+    USB driver when handling the device's add uevent. The recorded value is the
+    interface/device class.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"

@@ -309,6 +309,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="USB 3.1 - Gen1,Gen2"/>
   <int value="6" label="USB4 - Gen3"/>
   <int value="7" label="Thunderbolt Only - 10G,20G"/>
+  <int value="8" label="Non-Emarked"/>
+  <int value="9" label="Non-Emarked (Captive)"/>
 </enum>
 
 <enum name="CameraEffectError">
@@ -731,6 +733,24 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Vendor Specific"/>
   <int value="16" label="Video"/>
   <int value="17" label="Wireless"/>
+</enum>
+
+<enum name="ChromeOSUsbDeviceError">
+  <int value="0" label="Any"/>
+  <int value="1" label="Language ID error"/>
+  <int value="2" label="Failed to suspend"/>
+  <int value="3" label="Not authorized"/>
+  <int value="4" label="Not accepting address"/>
+  <int value="5" label="String descriptor 0"/>
+  <int value="6" label="Descriptor read error"/>
+  <int value="7" label="Hub without ports"/>
+  <int value="8" label="Hub port status error"/>
+  <int value="9" label="Unable to enumerate"/>
+  <int value="10" label="Over current"/>
+  <int value="11" label="Port disabled"/>
+  <int value="12" label="Cannot reset"/>
+  <int value="13" label="Cannot disable"/>
+  <int value="14" label="Cannot enable"/>
 </enum>
 
 <enum name="ChromeOSUsbDeviceSpeed">
@@ -1324,6 +1344,18 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="0" label="NoMetadata"/>
   <int value="1" label="ClassificationOnly"/>
   <int value="2" label="HasButtonConfig"/>
+</enum>
+
+<enum name="ModeEntryMetric">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not supported"/>
+  <int value="2" label="Not attempted"/>
+  <int value="3" label="DP success"/>
+  <int value="4" label="DP failure"/>
+  <int value="5" label="TBT3 success"/>
+  <int value="6" label="TBT3 failure"/>
+  <int value="7" label="USB4 success"/>
+  <int value="8" label="USB4 failure"/>
 </enum>
 
 <enum name="ModifierKeyDomCodes">
