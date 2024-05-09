@@ -77,6 +77,7 @@
 #include "chrome/common/chrome_version.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "device/fido/mac/util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 // These tests are disabled under MSAN. The enclave subprocess is written in
@@ -462,6 +463,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     // Windows. Otherwise the version of webauthn.dll can differ between
     // builders causing differences / failures.
     fake_webauthn_dll_.set_available(false);
+#elif BUILDFLAG(IS_MAC)
+    // By default, Touch ID is disabled in these tests. Specific tests can
+    // replace this if they need.
+    biometrics_override_ =
+        std::make_unique<device::fido::mac::ScopedBiometricsOverride>(false);
 #endif
     clock_.SetNow(base::Time::FromTimeT(1000));
     OSCryptMocker::SetUp();
@@ -674,6 +680,9 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_webauthn_dll_;
   device::WinWebAuthnApi::ScopedOverride webauthn_dll_override_;
+#elif BUILDFLAG(IS_MAC)
+  std::unique_ptr<device::fido::mac::ScopedBiometricsOverride>
+      biometrics_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   crypto::ScopedMockUnexportableKeyProvider mock_hw_provider_;
