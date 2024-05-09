@@ -90,6 +90,8 @@ const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
+const char* kSparkIconResourceName =
+    "//resources/cr_components/searchbox/icons/spark.svg";
 const char* kTabIconResourceName =
     "//resources/cr_components/searchbox/icons/tab.svg";
 const char* kTrendingUpIconResourceName =
@@ -677,6 +679,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
     return kShareIconResourceName;
   }
 #endif
+  if (icon.name == omnibox::kSparkIcon.name) {
+    return kSparkIconResourceName;
+  }
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
                   "must have an equivalent SVG resource for the NTP Realbox. "
                   "icon.name: '"

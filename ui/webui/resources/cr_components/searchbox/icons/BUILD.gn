@@ -50,6 +50,7 @@ generate_grd("build_grdp") {
     "share_cr23.svg",
     "share.svg",
     "sites.svg",
+    "spark.svg",
     "sunrise_cr23.svg",
     "sunrise.svg",
     "tab_cr23.svg",
