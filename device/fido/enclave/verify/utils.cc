@@ -21,7 +21,7 @@ namespace device::enclave {
 
 namespace {
 
-bssl::UniquePtr<EC_KEY> GetECKey(base::span<const uint8_t> public_key) {
+bssl::UniquePtr<EVP_PKEY> ParseKey(base::span<const uint8_t> public_key) {
   CBS cbs;
   CBS_init(&cbs, public_key.data(), public_key.size());
   bssl::UniquePtr<EVP_PKEY> parsed_key(EVP_parse_public_key(&cbs));
@@ -29,6 +29,11 @@ bssl::UniquePtr<EC_KEY> GetECKey(base::span<const uint8_t> public_key) {
       EVP_PKEY_id(parsed_key.get()) != EVP_PKEY_EC) {
     return nullptr;
   }
+  return parsed_key;
+}
+
+bssl::UniquePtr<EC_KEY> GetECKey(base::span<const uint8_t> public_key) {
+  bssl::UniquePtr<EVP_PKEY> parsed_key = ParseKey(public_key);
   bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(parsed_key.get()));
   if (!ec_key || EC_GROUP_get_curve_name(EC_KEY_get0_group(ec_key.get())) !=
                      NID_X9_62_prime256v1) {
@@ -97,6 +102,22 @@ base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
     return base::unexpected("Could not verify the signature");
   }
   return base::expected<void, std::string>();
+}
+
+base::expected<bool, std::string> EqualKeys(
+    base::span<const uint8_t> public_key_a,
+    base::span<const uint8_t> public_key_b) {
+  bssl::UniquePtr<EVP_PKEY> parsed_key_a = ParseKey(public_key_a);
+  bssl::UniquePtr<EVP_PKEY> parsed_key_b = ParseKey(public_key_b);
+
+  if (!parsed_key_a || !parsed_key_b) {
+    return base::unexpected("Could not parse the passed key(s)");
+  }
+  int res = EVP_PKEY_cmp(parsed_key_a.get(), parsed_key_b.get());
+  if (res < 0) {
+    return base::unexpected("Error comparing keys");
+  }
+  return res;
 }
 
 }  // namespace device::enclave

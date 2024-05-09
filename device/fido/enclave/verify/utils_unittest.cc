@@ -20,6 +20,8 @@ const base::FilePath::StringPieceType kTestPemPath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_pub_key.pem");
 const base::FilePath::StringPieceType kTestRawPath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_pub_key.der");
+const base::FilePath::StringPieceType kTestAlternateRawPath = FILE_PATH_LITERAL(
+    "device/fido/enclave/verify/testdata/test_alternate_pub_key.der");
 const uint8_t kInvalidSignature[] = {1, 2, 3, 4};
 
 std::string ReadContentsOfFile(
@@ -50,6 +52,11 @@ TEST(UtilsTest, ConvertPemToRaw_WithValidPem_ReturnsRaw) {
 
   EXPECT_TRUE(res.has_value());
   EXPECT_EQ(std::string(res->begin(), res->end()), test_raw);
+  auto test_raw_span = base::make_span(
+      static_cast<const uint8_t*>((uint8_t*)test_raw.data()), test_raw.size());
+  auto res_span = base::make_span(
+      static_cast<const uint8_t*>((uint8_t*)res->data()), res->size());
+  EXPECT_TRUE(device::enclave::EqualKeys(test_raw_span, res_span).value());
 }
 
 TEST(UtilsTest, ConvertPemToRaw_WithInvalidPem_ReturnsError) {
@@ -101,6 +108,27 @@ TEST(UtilsTest, VerifySignatureRaw_WithInvalidSignature_Fails) {
       kInvalidSignature, test_digest_span, test_raw_span);
 
   EXPECT_FALSE(res.has_value());
+}
+
+TEST(UtilsTest, EqualKeys_WithEqualKeys_ReturnsTrue) {
+  auto test_raw = ReadContentsOfFile(kTestRawPath);
+  auto test_raw_span = base::make_span(
+      static_cast<const uint8_t*>((uint8_t*)test_raw.data()), test_raw.size());
+
+  EXPECT_TRUE(device::enclave::EqualKeys(test_raw_span, test_raw_span).value());
+}
+
+TEST(UtilsTest, EqualKeys_WithUnequalKeys_ReturnsFalse) {
+  auto test_raw = ReadContentsOfFile(kTestRawPath);
+  auto test_alternate_raw = ReadContentsOfFile(kTestAlternateRawPath);
+  auto test_raw_span = base::make_span(
+      static_cast<const uint8_t*>((uint8_t*)test_raw.data()), test_raw.size());
+  auto test_alternate_raw_span = base::make_span(
+      static_cast<const uint8_t*>((uint8_t*)test_alternate_raw.data()),
+      test_alternate_raw.size());
+  EXPECT_FALSE(
+      device::enclave::EqualKeys(test_raw_span, test_alternate_raw_span)
+          .value());
 }
 
 }  // namespace device::enclave

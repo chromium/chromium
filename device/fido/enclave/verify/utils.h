@@ -32,6 +32,14 @@ base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
                        base::span<const uint8_t> contents,
                        base::span<const uint8_t> public_key);
 
+// Compares two DER encoded ECDSA public keys provided. Instead of comparing the bytes, we
+// parse the bytes and compare p256 keys. Keys are considered equal if they are the same
+// on the elliptic curve. This means that the keys could have different bytes,
+// but still be the same key.
+base::expected<bool, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    EqualKeys(base::span<const uint8_t> public_key_a,
+              base::span<const uint8_t> public_key_b);
+
 }  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_VERIFY_UTILS_H_
