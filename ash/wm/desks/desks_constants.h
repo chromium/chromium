@@ -105,16 +105,16 @@ inline constexpr int kDeskButtonWidthHorizontalExpandedWithAvatar = 144;
 inline constexpr int kDeskButtonChildSpacingHorizontalZero = 4;
 inline constexpr int kDeskButtonChildSpacingHorizontalExpanded = 8;
 inline constexpr gfx::Size kDeskButtonAvatarSize = gfx::Size(20, 20);
-inline constexpr gfx::Insets kDeskButtonInsectVerticalNoAvatar =
+inline constexpr gfx::Insets kDeskButtonInsetVerticalNoAvatar =
     gfx::Insets::TLBR(4, 4, 4, 4);
-inline constexpr gfx::Insets kDeskButtonInsectHorizontalZeroWithAvatar =
+inline constexpr gfx::Insets kDeskButtonInsetHorizontalZeroWithAvatar =
     gfx::Insets::TLBR(0, 4, 0, 4);
-inline constexpr gfx::Insets kDeskButtonInsectHorizontalZeroNoAvatar =
+inline constexpr gfx::Insets kDeskButtonInsetHorizontalZeroNoAvatar =
     gfx::Insets::TLBR(0, 0, 0, 0);
-inline constexpr gfx::Insets kDeskButtonInsectHorizontalExpandedWithAvatar =
-    gfx::Insets::TLBR(0, 4, 0, 12);
-inline constexpr gfx::Insets kDeskButtonInsectHorizontalExpandedNoAvatar =
-    gfx::Insets::TLBR(0, 12, 0, 12);
+inline constexpr gfx::Insets kDeskButtonInsetHorizontalExpandedWithAvatar =
+    gfx::Insets::TLBR(0, 4, 0, 10);
+inline constexpr gfx::Insets kDeskButtonInsetHorizontalExpandedNoAvatar =
+    gfx::Insets::TLBR(0, 10, 0, 10);
 
 // Constant values used by the desk switch button.
 inline constexpr int kDeskButtonSwitchButtonCornerRadius = 4;

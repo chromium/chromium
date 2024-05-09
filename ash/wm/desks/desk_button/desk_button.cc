@@ -256,14 +256,14 @@ std::u16string DeskButton::GetTitle() const {
 
 gfx::Insets DeskButton::GetButtonInsets() const {
   if (desk_button_container_->zero_state()) {
-    return kDeskButtonInsectVerticalNoAvatar;
+    return kDeskButtonInsetVerticalNoAvatar;
   }
 
   if (IsShowingAvatar()) {
-    return kDeskButtonInsectHorizontalExpandedWithAvatar;
+    return kDeskButtonInsetHorizontalExpandedWithAvatar;
   }
 
-  return kDeskButtonInsectHorizontalExpandedNoAvatar;
+  return kDeskButtonInsetHorizontalExpandedNoAvatar;
 }
 
 void DeskButton::UpdateUi(const Desk* active_desk) {

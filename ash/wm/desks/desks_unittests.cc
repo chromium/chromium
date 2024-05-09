@@ -11360,7 +11360,7 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
     if (GetParam().alignment == ShelfAlignment::kBottom) {
       EXPECT_TRUE(gfx::Rect(4, 4, 128, 28).Contains(desk_button->bounds()));
       EXPECT_TRUE(
-          gfx::Rect(12, 0, 104, 28).Contains(desk_name_label->bounds()));
+          gfx::Rect(10, 0, 102, 28).Contains(desk_name_label->bounds()));
     } else {
       EXPECT_EQ(desk_button->bounds(), gfx::Rect(0, 0, 36, 36));
       EXPECT_EQ(desk_name_label->bounds(), gfx::Rect(4, 4, 28, 28));
