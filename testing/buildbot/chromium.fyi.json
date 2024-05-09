@@ -2834,6 +2834,7 @@
       {
         "args": [
           "--store-data-dependencies-in-temp",
+          "--store-tombstones",
           "--disable-field-trial-config",
           "--webview-verbose-logging",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
@@ -2889,6 +2890,7 @@
       {
         "args": [
           "--store-data-dependencies-in-temp",
+          "--store-tombstones",
           "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",
@@ -2947,6 +2949,7 @@
       {
         "args": [
           "--store-data-dependencies-in-temp",
+          "--store-tombstones",
           "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
           "--accept-empty-variations-seed-signature",
           "--webview-verbose-logging",

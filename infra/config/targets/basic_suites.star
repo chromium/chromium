@@ -18,6 +18,9 @@ targets.legacy_basic_suite(
     name = "android_12_fieldtrial_webview_tests",
     tests = {
         "webview_trichrome_64_cts_tests_no_field_trial": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             ci_only = True,
             swarming = targets.swarming(
                 shards = 2,
@@ -5002,6 +5005,9 @@ targets.legacy_basic_suite(
     name = "webview_64_cts_tests_gtest",
     tests = {
         "webview_64_cts_tests": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             swarming = targets.swarming(
                 shards = 2,
             ),
@@ -5056,6 +5062,9 @@ targets.legacy_basic_suite(
     name = "webview_cts_tests_gtest",
     tests = {
         "webview_cts_tests": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             swarming = targets.swarming(
                 shards = 2,
             ),
@@ -5067,6 +5076,9 @@ targets.legacy_basic_suite(
     name = "webview_cts_tests_gtest_no_field_trial",
     tests = {
         "webview_cts_tests_no_field_trial": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             swarming = targets.swarming(
                 shards = 2,
             ),
@@ -5080,6 +5092,7 @@ targets.legacy_basic_suite(
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
             args = [
                 "--store-data-dependencies-in-temp",
+                "--store-tombstones",
             ],
             swarming = targets.swarming(
                 shards = 2,
@@ -5099,6 +5112,9 @@ targets.legacy_basic_suite(
     name = "webview_trichrome_64_cts_tests_suite",
     tests = {
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             swarming = targets.swarming(
                 shards = 2,
             ),
@@ -5110,6 +5126,9 @@ targets.legacy_basic_suite(
     name = "webview_trichrome_64_cts_tests_no_field_trial_suite",
     tests = {
         "webview_trichrome_64_cts_tests_no_field_trial": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
             swarming = targets.swarming(
                 shards = 2,
             ),
@@ -5120,7 +5139,11 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "webview_trichrome_cts_tests_suite",
     tests = {
-        "webview_trichrome_cts_tests": targets.legacy_test_config(),
+        "webview_trichrome_cts_tests": targets.legacy_test_config(
+            args = [
+                "--store-tombstones",
+            ],
+        ),
     },
 )
 

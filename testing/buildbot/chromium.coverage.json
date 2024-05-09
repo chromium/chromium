@@ -6407,6 +6407,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",

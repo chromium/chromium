@@ -69,6 +69,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -111,6 +112,7 @@
       {
         "args": [
           "--disable-field-trial-config",
+          "--store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

@@ -3048,6 +3048,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3102,6 +3103,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
@@ -6528,6 +6530,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
@@ -6585,6 +6588,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
@@ -6646,6 +6650,7 @@
       {
         "args": [
           "--disable-field-trial-config",
+          "--store-tombstones",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
@@ -12847,6 +12852,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -12902,6 +12908,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
@@ -12961,6 +12968,7 @@
       {
         "args": [
           "--disable-field-trial-config",
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -16084,6 +16092,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -16139,6 +16148,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
@@ -16198,6 +16208,7 @@
       {
         "args": [
           "--disable-field-trial-config",
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -26642,6 +26653,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--gs-results-bucket=chromium-result-details",
@@ -28077,6 +28089,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -31030,6 +31043,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -31282,6 +31296,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--store-tombstones",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -31336,6 +31351,7 @@
       },
       {
         "args": [
+          "--store-tombstones",
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",

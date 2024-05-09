@@ -15,6 +15,7 @@
         ],
         'args': [
           '--disable-field-trial-config',
+          '--store-tombstones',
         ],
         'ci_only': True,
         'swarming': {
@@ -5225,6 +5226,9 @@
         'mixins': [
           'webview_cts_archive',
         ],
+        'args': [
+          '--store-tombstones',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -5276,6 +5280,9 @@
         'mixins': [
           'webview_cts_archive',
         ],
+        'args': [
+          '--store-tombstones',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -5290,6 +5297,7 @@
         ],
         'args': [
           '--disable-field-trial-config',
+          '--store-tombstones',
         ],
         'swarming': {
           'shards': 2,
@@ -5304,6 +5312,7 @@
         ],
         'args': [
           '--store-data-dependencies-in-temp',
+          '--store-tombstones',
         ],
         'swarming': {
           'shards': 2,
@@ -5327,6 +5336,7 @@
         ],
         'args': [
           '--disable-field-trial-config',
+          '--store-tombstones',
         ],
         'swarming': {
           'shards': 2,
@@ -5339,6 +5349,9 @@
         'mixins': [
           'webview_cts_archive',
         ],
+        'args': [
+          '--store-tombstones',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -5349,6 +5362,9 @@
       'webview_trichrome_cts_tests': {
         'mixins': [
           'webview_cts_archive',
+        ],
+        'args': [
+          '--store-tombstones',
         ],
       },
     },
