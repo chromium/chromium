@@ -57,7 +57,7 @@ namespace contentScripts {
     extensionTypes.RunAt? run_at;
     // The JavaScript "world" to run the script in. Defaults to
     // <code>ISOLATED</code>. Only available in Manifest V3 extensions.
-    [nodoc] extensionTypes.ExecutionWorld? world;
+    extensionTypes.ExecutionWorld? world;
   };
 
   dictionary ManifestKeys {
