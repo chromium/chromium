@@ -54,8 +54,7 @@ namespace test {
 //   // Destroy the production instance to eventually stop the discovery.
 //   // hid_instance.reset();
 //
-class FakeFidoDiscovery : public FidoDeviceDiscovery,
-                          public base::SupportsWeakPtr<FakeFidoDiscovery> {
+class FakeFidoDiscovery final : public FidoDeviceDiscovery {
  public:
   enum class StartMode {
     // SimulateStarted() needs to be called manually to finish starting the
@@ -67,6 +66,7 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   explicit FakeFidoDiscovery(FidoTransportProtocol transport,
                              StartMode mode = StartMode::kManual);
+  ~FakeFidoDiscovery() override;
 
   FakeFidoDiscovery(const FakeFidoDiscovery&) = delete;
   FakeFidoDiscovery& operator=(const FakeFidoDiscovery&) = delete;
@@ -91,6 +91,7 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   const StartMode mode_;
   base::RunLoop wait_for_start_loop_;
+  base::WeakPtrFactory<FakeFidoDiscovery> weak_ptr_factory_{this};
 };
 
 // Overrides FidoDeviceDiscovery::Create* to construct FakeFidoDiscoveries.

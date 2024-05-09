@@ -13,9 +13,7 @@
 namespace device::test {
 
 // A FidoDeviceDiscovery that always vends a single |VirtualFidoDevice|.
-class VirtualFidoDeviceDiscovery
-    : public FidoDeviceDiscovery,
-      public base::SupportsWeakPtr<VirtualFidoDeviceDiscovery> {
+class VirtualFidoDeviceDiscovery final : public FidoDeviceDiscovery {
  public:
   // Trace contains a history of the discovery objects that have been created by
   // a given factory. VirtualFidoDeviceDiscovery gets a reference to this object
@@ -69,6 +67,7 @@ class VirtualFidoDeviceDiscovery
   std::unique_ptr<EventStream<std::unique_ptr<cablev2::Pairing>>>
       contact_device_stream_;
   std::string id_;
+  base::WeakPtrFactory<VirtualFidoDeviceDiscovery> weak_ptr_factory_{this};
 };
 
 }  // namespace device::test

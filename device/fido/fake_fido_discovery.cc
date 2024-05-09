@@ -22,6 +22,8 @@ FakeFidoDiscovery::FakeFidoDiscovery(FidoTransportProtocol transport,
                                      StartMode mode)
     : FidoDeviceDiscovery(transport), mode_(mode) {}
 
+FakeFidoDiscovery::~FakeFidoDiscovery() = default;
+
 void FakeFidoDiscovery::WaitForCallToStart() {
   wait_for_start_loop_.Run();
 }
@@ -41,8 +43,9 @@ void FakeFidoDiscovery::StartInternal() {
 
   if (mode_ == StartMode::kAutomatic) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&FakeFidoDiscovery::SimulateStarted,
-                                  AsWeakPtr(), true /* success */));
+        FROM_HERE,
+        base::BindOnce(&FakeFidoDiscovery::SimulateStarted,
+                       weak_ptr_factory_.GetWeakPtr(), true /* success */));
   }
 }
 
