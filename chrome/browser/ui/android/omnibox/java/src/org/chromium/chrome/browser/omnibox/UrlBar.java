@@ -18,6 +18,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.BidiFormatter;
 import androidx.core.text.TextDirectionHeuristicsCompat;
@@ -101,6 +103,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private boolean mAllowFocus = true;
 
     private boolean mPendingScroll;
+    private int mLocationBarVerticalInset;
 
     // Captures the current intended text scroll type.
     // This may not be effective if mPendingScroll is true.
@@ -216,9 +219,11 @@ public abstract class UrlBar extends AutocompleteEditText {
                 this,
                 () -> {
                     // We have now avoided the first draw problem (see the comments above) so we
-                    // want to make the URL bar focusable so that touches etc. activate it.
+                    // want to
+                    // make the URL bar focusable so that touches etc. activate it.
                     setFocusable(mAllowFocus);
                     setFocusableInTouchMode(mAllowFocus);
+                    enforceMaxTextHeight();
                 });
 
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -254,6 +259,10 @@ public abstract class UrlBar extends AutocompleteEditText {
     /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;
+    }
+
+    public void setVerticalInset(int verticalInset) {
+        mLocationBarVerticalInset = verticalInset;
     }
 
     /**
@@ -1060,6 +1069,40 @@ public abstract class UrlBar extends AutocompleteEditText {
                         .setTextDirectionHeuristic(TextDirectionHeuristicsCompat.ANYRTL_LTR)
                         .build();
         return bidi.isRtl(text);
+    }
+
+    @VisibleForTesting
+    void enforceMaxTextHeight() {
+        int maxTextHeightPx = getMaxTextHeight();
+        // Don't touch the text size if the view has not measured and shown yet, or if it's a
+        // subject to custom layout constraints (e.g. CCT) that might result with font size being
+        // too small.
+        if (maxTextHeightPx <= 0) return;
+
+        var fontMetrics = getPaint().getFontMetrics();
+        var effectiveFontHeightPx = getMaxHeightOfFont(fontMetrics);
+
+        if (effectiveFontHeightPx > maxTextHeightPx) {
+            // we need to shrink the text to fit in the text field.
+            var scaleRatio = maxTextHeightPx / effectiveFontHeightPx;
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, getTextSize() * scaleRatio);
+        }
+    }
+
+    @VisibleForTesting
+    @Px
+    static float getMaxHeightOfFont(Paint.FontMetrics fontMetrics) {
+        return fontMetrics.bottom - fontMetrics.top;
+    }
+
+    @VisibleForTesting
+    @Px
+    int getMaxTextHeight() {
+        // Note: CCT uses UrlBar to present text. The UrlBar on CCT does not have a reliable
+        // inflated height when CCT is showing for the first time, as the logic is yet to decide
+        // what to present in the LocationBar. UrlBar is `GONE` and typically reports "0" until
+        // the logic decides to present it at a later time.
+        return Math.max(getHeight() - mLocationBarVerticalInset, 0);
     }
 
     /**
