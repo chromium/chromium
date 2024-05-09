@@ -162,7 +162,7 @@ std::unique_ptr<views::View> CreateFooter(
 
   // Note that the absence of a quiet zone may interfere with decoding
   // of QR codes even for small codes.
-  auto qr_image = qr_code_generator::GenerateBitmap(
+  auto qr_image = qr_code_generator::GenerateImage(
       base::as_byte_span(std::string_view(IOSPromoConfig.kPromoQRCodeURL)),
       qr_code_generator::ModuleStyle::kCircles,
       qr_code_generator::LocatorStyle::kRounded,
@@ -173,7 +173,7 @@ std::unique_ptr<views::View> CreateFooter(
   // can't result in input-too-long error or other errors).
   CHECK(qr_image.has_value());
 
-  image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_image.value()));
+  image_view->SetImage(qr_image.value());
 
   return built_footer_view;
 }

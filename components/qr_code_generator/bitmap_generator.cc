@@ -306,6 +306,23 @@ SkBitmap RenderBitmap(base::span<const uint8_t> data,
 
 const int kQuietZoneSizePixels = kModuleSizePixels * 4;
 
+base::expected<gfx::ImageSkia, Error> GenerateImage(
+    base::span<const uint8_t> data,
+    ModuleStyle module_style,
+    LocatorStyle locator_style,
+    CenterImage center_image,
+    QuietZone quiet_zone) {
+  // TODO(crbug.com/338570710) CreateImage() should generate a higher resolution
+  // QR code for displays with scale-factor > 1. Not generating higher
+  // resolution QR codes is OK because:
+  // - QR codes are shown to the user rarely.
+  // - Many callers display the QR code at a downsampled size.
+  // - Upscaling QR codes has few upscaling artifacts.
+  return GenerateBitmap(data, module_style, locator_style, center_image,
+                        quiet_zone)
+      .transform(&gfx::ImageSkia::CreateFrom1xBitmap);
+}
+
 base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,
                                                ModuleStyle module_style,
                                                LocatorStyle locator_style,

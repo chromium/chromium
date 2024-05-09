@@ -11,6 +11,7 @@
 #include "components/qr_code_generator/error.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace qr_code_generator {
 
@@ -65,8 +66,18 @@ enum class QuietZone {
 // additional explanation about the "quiet zone".
 extern const int kQuietZoneSizePixels;
 
+// Generates a gfx::ImageSkia with a QR code that encodes the `data`.
+base::expected<gfx::ImageSkia, Error> GenerateImage(
+    base::span<const uint8_t> data,
+    ModuleStyle module_style,
+    LocatorStyle locator_style,
+    CenterImage center_image,
+    QuietZone quiet_zone);
+
 // Generates an `SkBitmap` with a QR code that encodes the `data`.
 //
+// Use GenerateImage() if the QR code might be displayed on a high density
+// (retina) display.
 // TODO(lukasza, petewil): Consider letting the caller specify the exact light
 // and dark colors.  (Currently white and black are always used.)
 base::expected<SkBitmap, Error> GenerateBitmap(base::span<const uint8_t> data,

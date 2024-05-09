@@ -209,7 +209,7 @@ std::unique_ptr<views::View> CreateFooter(
   // size works well with surrounding UI elements).  Note that the absence of a
   // quiet zone may interfere with decoding of QR codes even for small codes
   // (for examples see #comment8, #comment9 and #comment6 in the bug).
-  auto qr_image = qr_code_generator::GenerateBitmap(
+  auto qr_image = qr_code_generator::GenerateImage(
       base::as_byte_span(std::string_view(constants::kQRCodeURL)),
       qr_code_generator::ModuleStyle::kCircles,
       qr_code_generator::LocatorStyle::kRounded,
@@ -233,7 +233,7 @@ std::unique_ptr<views::View> CreateFooter(
   views::ImageView* image_view =
       views::AsViewClass<views::ImageView>(qr_code_views.front());
 
-  image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_image.value()));
+  image_view->SetImage(qr_image.value());
 
   return built_footer_view;
 }

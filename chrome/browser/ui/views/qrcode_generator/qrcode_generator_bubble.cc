@@ -134,11 +134,11 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
 
   std::string input = base::UTF16ToUTF8(textfield_url_->GetText());
 
-  base::expected<SkBitmap, qr_code_generator::Error> qr_code;
+  base::expected<gfx::ImageSkia, qr_code_generator::Error> qr_code;
   if (qrcode_error_override_.has_value()) {
     qr_code = base::unexpected(qrcode_error_override_.value());
   } else {
-    qr_code = qr_code_generator::GenerateBitmap(
+    qr_code = qr_code_generator::GenerateImage(
         base::as_byte_span(input), qr_code_generator::ModuleStyle::kCircles,
         qr_code_generator::LocatorStyle::kRounded,
         qr_code_generator::CenterImage::kDino,
@@ -151,7 +151,7 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   }
 
   HideErrors(true);
-  UpdateQRImage(gfx::ImageSkia::CreateFrom1xBitmap(qr_code.value()));
+  UpdateQRImage(qr_code.value());
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
