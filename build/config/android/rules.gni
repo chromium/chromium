@@ -716,7 +716,7 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_resources") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, [ "testonly" ])
 
     _base_path = "$target_gen_dir/$target_name"
     if (defined(invoker.v14_skip)) {
