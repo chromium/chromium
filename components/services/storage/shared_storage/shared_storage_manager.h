@@ -94,9 +94,6 @@ class SharedStorageManager {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Resets the `database_` pointer.
-  void Shutdown();
-
   // Called when the system is under memory pressure.
   void OnMemoryPressure(
       base::OnceCallback<void()> callback,
