@@ -149,8 +149,7 @@ void SessionContext::FetchPersistedSessionContext() {
 
   std::optional<bool> did_transfer_wifi =
       session_info.FindBool(kPrepareForUpdateDidTransferWifiKey);
-  CHECK(did_transfer_wifi.has_value());
-  did_transfer_wifi_ = did_transfer_wifi.value();
+  did_transfer_wifi_ = did_transfer_wifi.value_or(true);
 
   prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
 }
