@@ -1275,6 +1275,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void tabMergeIntoGroup() {
         // Assume that moveTab in TabModel is finished. Selected tab in the group becomes mTab1.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
@@ -1298,6 +1299,40 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
         assertNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void tabMergeIntoGroup_Parity() {
+        // Assume that moveTab in TabModel is finished. Selected tab in the group becomes mTab1.
+        doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);
+        doReturn(mTab2).when(mTabModel).getTabAt(POSITION1);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
+
+        // Assume that reset in TabGroupModelFilter is finished.
+        createTabGroup(Arrays.asList(mTab1, mTab2), TAB1_ID, TAB_GROUP_ID);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+        assertThat(mModel.indexFromId(TAB1_ID), equalTo(POSITION1));
+        assertThat(mModel.indexFromId(TAB2_ID), equalTo(POSITION2));
+        var oldFetcher = mModel.get(0).model.get(TabProperties.FAVICON_FETCHER);
+        assertNotNull(oldFetcher);
+        assertNotNull(mModel.get(1).model.get(TabProperties.FAVICON_FETCHER));
+
+        doReturn(mock(TabListFaviconProvider.TabFaviconFetcher.class))
+                .when(mTabGroupColorFaviconProvider)
+                .getFaviconFromTabGroupColorFetcher(anyInt(), anyBoolean());
+
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
+        mMediatorTabGroupModelFilterObserver.didMergeTabToGroup(mTab1, TAB2_ID);
+
+        assertThat(mModel.size(), equalTo(1));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE1));
+        var newFetcher = mModel.get(0).model.get(TabProperties.FAVICON_FETCHER);
+        assertNotEquals(oldFetcher, newFetcher);
     }
 
     @Test

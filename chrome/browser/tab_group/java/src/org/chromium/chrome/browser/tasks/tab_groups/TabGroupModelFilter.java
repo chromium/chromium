@@ -645,22 +645,32 @@ public class TabGroupModelFilter extends TabModelFilter {
         int currentIndex = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
         assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
-        // Unconditionally signal removal of the tab from the group it is in.
-        mIsUndoing = true;
-        boolean groupExistedBeforeMove = mRootIdToGroupMap.get(originalRootId) != null;
+        boolean isChangingRootIds = tab.getRootId() != originalRootId;
+        boolean isChangingIndex = currentIndex != originalIndex;
+
+        // We need to explicitly trigger `didMoveTabOutOfGroup` if the tab is changing groups so
+        // that the old group is aware the tab is no longer in the group. The detection logic in
+        // `didMoveTab` fails to correctly handle this case if the tab is moving between tab
+        // groups because it lacks enough context, hence the `mIsUndoing` variable is used as a
+        // bodge to communicate this. Then we signal `didMergeTabToGroup` separately afterwards
+        // so long as the tab is actually becoming part of a tab group.
+        mIsUndoing = isChangingRootIds;
+
         setBothGroupIds(tab, originalRootId, originalTabGroupId);
-        if (currentIndex == originalIndex) {
-            didMoveTab(tab, originalIndex, currentIndex);
-        } else {
+        if (isChangingIndex) {
             if (currentIndex < originalIndex) originalIndex++;
             getTabModel().moveTab(tab.getId(), originalIndex);
+        } else if (isChangingRootIds) {
+            didMoveTab(tab, originalIndex, currentIndex);
         }
+        // Else we can ignore tabs that remain at the same index if they are not changing root IDs.
+
         mIsUndoing = false;
 
         // If undoing results in restoring a tab into a different group then notify observers it was
         // added.
         // TODO(b/b/339480464): Emit a matching willMergeTabToGroup somewhere upstream.
-        if (groupExistedBeforeMove || originalTabGroupId != null) {
+        if (isChangingRootIds && isTabInTabGroup(tab)) {
             TabGroup group = mRootIdToGroupMap.get(originalRootId);
             // Last shown tab IDs are not preserved across an undo.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {

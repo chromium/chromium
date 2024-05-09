@@ -1607,6 +1607,10 @@ class TabListMediator {
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
         boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
+        // Update the group color icon.
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
+            updateFaviconForTab(pseudoTab, null, null);
+        }
         // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
         // setting the property keys on the model. Both properties modify the onClickListener
         // so ensure that the default behavior (close on click) is set first, and tab groups
