@@ -137,6 +137,20 @@ chromium-metrics-reviews@google.com.
     Ephemeral users were enabled. Removed all profiles except those currently
     mounted, belonging to the owner or non-ephemeral.
   </int>
+  <int value="14" label="Daemon store cache cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="15" label="Daemon store cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
+  <int value="16" label="Mounted daemon store cache cleaned above target">
+    Successfully freed space above 2GB target.
+  </int>
+  <int value="17" label="Mounted daemon store cache cleaned above minimum">
+    Disk space was not above the 2GB target, but was above the minimum needed.
+    Decided not to proceed further with more aggressive cleanups.
+  </int>
 </enum>
 
 <enum name="CryptohomeDiskCleanupResult">
