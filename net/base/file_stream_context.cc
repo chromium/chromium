@@ -20,6 +20,10 @@
 #include "base/android/content_uri_utils.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "net/base/apple/guarded_fd.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace net {
 
 namespace {
@@ -200,6 +204,17 @@ FileStream::Context::IOResult FileStream::Context::GetFileInfoImpl(
 }
 
 FileStream::Context::IOResult FileStream::Context::CloseFileImpl() {
+#if BUILDFLAG(IS_MAC)
+  // https://crbug.com/330771755: Guard against a file descriptor being closed
+  // out from underneath the file.
+  if (file_.IsValid()) {
+    guardid_t guardid = reinterpret_cast<guardid_t>(this);
+    PCHECK(change_fdguard_np(file_.GetPlatformFile(), &guardid,
+                             GUARD_CLOSE | GUARD_DUP,
+                             /*nguard=*/nullptr, /*nguardflags=*/0,
+                             /*fdflagsp=*/nullptr) == 0);
+  }
+#endif
   file_.Close();
   return IOResult(OK, 0);
 }
@@ -216,6 +231,18 @@ void FileStream::Context::OnOpenCompleted(CompletionOnceCallback callback,
   file_ = std::move(open_result.file);
   if (file_.IsValid() && !orphaned_)
     OnFileOpened();
+
+#if BUILDFLAG(IS_MAC)
+  // https://crbug.com/330771755: Guard against a file descriptor being closed
+  // out from underneath the file.
+  if (file_.IsValid()) {
+    guardid_t guardid = reinterpret_cast<guardid_t>(this);
+    PCHECK(change_fdguard_np(file_.GetPlatformFile(), /*guard=*/nullptr,
+                             /*guardflags=*/0, &guardid,
+                             GUARD_CLOSE | GUARD_DUP,
+                             /*fdflagsp=*/nullptr) == 0);
+  }
+#endif
 
   OnAsyncCompleted(IntToInt64(std::move(callback)), open_result.error_code);
 }

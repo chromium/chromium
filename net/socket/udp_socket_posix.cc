@@ -57,6 +57,10 @@
 #include "net/android/network_library.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_APPLE)
+#include "net/base/apple/guarded_fd.h"
+#endif  // BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -68,36 +72,6 @@ namespace {
 constexpr int kBindRetries = 10;
 constexpr int kPortStart = 1024;
 constexpr int kPortEnd = 65535;
-
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
-
-// On macOS, the file descriptor is guarded to detect the cause of
-// https://crbug.com/640281. The guard mechanism is a private interface, so
-// these functions, types, and constants are not defined in any public header,
-// but with these declarations, it's possible to link against these symbols and
-// directly call into the functions that will be available at run time.
-
-// Declarations from 12.3 xnu-8020.101.4/bsd/sys/guarded.h (not in the SDK).
-extern "C" {
-
-using guardid_t = uint64_t;
-
-const unsigned int GUARD_CLOSE = 1u << 0;
-const unsigned int GUARD_DUP = 1u << 1;
-
-int guarded_close_np(int fd, const guardid_t* guard);
-int change_fdguard_np(int fd,
-                      const guardid_t* guard,
-                      unsigned int guardflags,
-                      const guardid_t* nguard,
-                      unsigned int nguardflags,
-                      int* fdflagsp);
-
-}  // extern "C"
-
-const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
-
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
@@ -175,7 +149,10 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
 
 int UDPSocketPosix::ConfigureOpenedSocket() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
-  PCHECK(change_fdguard_np(socket_, nullptr, 0, &kSocketFdGuard,
+  // https://crbug.com/41271555: Guard against a file descriptor being closed
+  // out from underneath the socket.
+  guardid_t guardid = reinterpret_cast<guardid_t>(this);
+  PCHECK(change_fdguard_np(socket_, nullptr, 0, &guardid,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
 #endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   socket_hash_ = GetSocketFDHash(socket_);
@@ -214,25 +191,28 @@ void UDPSocketPosix::Close() {
   DCHECK(ok);
 
   // Verify that |socket_| hasn't been corrupted. Needed to debug
-  // crbug.com/906005.
+  // https://crbug.com/41426706.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
   TRACE_EVENT("base", perfetto::StaticString{"CloseSocketUDP"});
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). This seems to be effective at clearing some, but not all,
-  // EPROTOTYPE errors. See https://crbug.com/1151048.
+  // EPROTOTYPE errors. See https://crbug.com/40732798.
   int value = 0;
   socklen_t value_len = sizeof(value);
   HANDLE_EINTR(getsockopt(socket_, SOL_SOCKET, SO_ERROR, &value, &value_len));
 
-  if (IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) != 0) {
+  // https://crbug.com/41271555: Guard against a file descriptor being closed
+  // out from underneath the socket.
+  guardid_t guardid = reinterpret_cast<guardid_t>(this);
+  if (IGNORE_EINTR(guarded_close_np(socket_, &guardid)) != 0) {
     // There is a bug in the Mac OS kernel that it can return an ENOTCONN or
     // EPROTOTYPE error. In this case we don't know whether the file descriptor
     // is still allocated or not. We cannot safely close the file descriptor
     // because it may have been reused by another thread in the meantime. We may
     // leak file handles here and cause a crash indirectly later. See
-    // https://crbug.com/1151048.
+    // https://crbug.com/40732798.
     PCHECK(errno == ENOTCONN || errno == EPROTOTYPE);
   }
 #else
