@@ -20,7 +20,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -35,6 +34,7 @@
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_win.h"
 #include "services/device/usb/usb_service.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace device {
 
@@ -732,8 +732,9 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
 
 void UsbDeviceHandleWin::OnFunctionAvailable(OpenInterfaceCallback callback,
                                              Interface* interface) {
-  base::ScopedClosureRunner run_callback(
-      base::BindOnce(std::move(callback), interface));
+  absl::Cleanup run_callback = [&callback, interface] {
+    std::move(callback).Run(interface);
+  };
 
   if (interface->handle.IsValid())
     return;
@@ -781,8 +782,9 @@ void UsbDeviceHandleWin::OnFirstInterfaceOpened(int interface_number,
     DCHECK_EQ(interface->first_interface, first_interface->interface_number);
   }
 
-  base::ScopedClosureRunner run_callback(
-      base::BindOnce(std::move(callback), interface));
+  absl::Cleanup run_callback = [&callback, interface] {
+    std::move(callback).Run(interface);
+  };
 
   if (!first_interface->handle.IsValid())
     return;
