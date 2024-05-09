@@ -590,9 +590,9 @@ class TabStripModel : public TabGroupController {
                                  ContextMenuCommand command_id);
 
   // Returns a list of the group ids that are going to be deleted if a given
-  // list of tab indexes are closed. used by context menu commands to decide
-  // whether to confirm group deletion.
-  std::vector<tab_groups::TabGroupId> GetGroupsDestroyedFromClosingIndices(
+  // list of tab indexes are removed from the group. used by context menu
+  // commands to decide whether to confirm group deletion.
+  std::vector<tab_groups::TabGroupId> GetGroupsDestroyedFromRemovingIndices(
       const std::vector<int>& indices) const;
 
   // There are multiple commands that close by indices. They all must check the

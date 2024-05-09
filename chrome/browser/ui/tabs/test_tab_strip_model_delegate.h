@@ -62,6 +62,9 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ConfirmDestroyingGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
+  bool ConfirmRemovingAllTabsFromGroups(
+      const std::vector<tab_groups::TabGroupId>& group_ids,
+      base::OnceCallback<void()> callback) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_

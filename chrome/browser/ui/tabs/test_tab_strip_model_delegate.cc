@@ -130,3 +130,9 @@ bool TestTabStripModelDelegate::ConfirmDestroyingGroups(
     base::OnceCallback<void()> callback) {
   return true;
 }
+
+bool TestTabStripModelDelegate::ConfirmRemovingAllTabsFromGroups(
+    const std::vector<tab_groups::TabGroupId>& group_ids,
+    base::OnceCallback<void()> callback) {
+  return true;
+}

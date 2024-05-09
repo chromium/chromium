@@ -68,6 +68,9 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool ConfirmDestroyingGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
+  bool ConfirmRemovingAllTabsFromGroups(
+      const std::vector<tab_groups::TabGroupId>& group_ids,
+      base::OnceCallback<void()> callback) override;
 
   void CloseFrame();
 
