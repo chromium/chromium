@@ -102,7 +102,10 @@ public class SamsungSelectionActionMenuHelper {
                                                     TRANSLATOR_PACKAGE_NAME))
                             .findAny()
                             .orElse(null);
-            assert translateResolveInfo != null;
+            if (translateResolveInfo == null) {
+                // Do not add Translate menu if resolve info is not available.
+                return;
+            }
             // Create menu item from Translate app resolve info and then add to default menu.
             menuItemBuilders.add(
                     new SelectionMenuItem.Builder(
