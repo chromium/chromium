@@ -77,7 +77,8 @@
           "builder": "win-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

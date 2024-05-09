@@ -275,6 +275,9 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",

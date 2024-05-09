@@ -762,6 +762,9 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
         short_name = "12L",

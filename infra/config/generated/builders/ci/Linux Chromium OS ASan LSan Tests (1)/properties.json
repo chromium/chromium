@@ -78,7 +78,8 @@
           "builder": "linux_chromium_chromeos_asan_rel_ng",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

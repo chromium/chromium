@@ -52,7 +52,8 @@
           "builder": "linux-chromeos-dbg",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {

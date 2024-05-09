@@ -75,6 +75,7 @@
           "group": "tryserver.chromium.linux"
         }
       ],
+      "retry_failed_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Tests (dbg)(1)/targets"
     }
   },
