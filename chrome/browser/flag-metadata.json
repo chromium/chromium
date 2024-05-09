@@ -3593,6 +3593,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-projector-gm3",
+    "owners": ["bzielinski@google.com", "cros-projector@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "enable-projector-server-side-speech-recognition",
     "owners": ["yilkal@chromium.org", "cros-projector@google.com"],
     "expiry_milestone": 115

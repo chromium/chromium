@@ -2488,6 +2488,9 @@ BASE_FEATURE(kProjectorDynamicColors,
              "ProjectorDynamicColors",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// controls whether the projector app uses updated styles and ui components.
+BASE_FEATURE(kProjectorGm3, "ProjectorGm3", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to show promise icons during app installations.
 BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4327,7 +4330,13 @@ bool IsProjectorUseUSMForS3Enabled() {
 }
 
 bool IsProjectorDynamicColorsEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorDynamicColors);
+  // For Projector, Gm3 requires dynamic colors.
+  return base::FeatureList::IsEnabled(kProjectorDynamicColors) ||
+         base::FeatureList::IsEnabled(kProjectorGm3);
+}
+
+bool IsProjectorGm3Enabled() {
+  return base::FeatureList::IsEnabled(kProjectorGm3);
 }
 
 bool IsQuickDimEnabled() {

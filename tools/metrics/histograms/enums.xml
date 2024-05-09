@@ -19310,6 +19310,7 @@ from previous Chrome versions.
   <int value="-874602599" label="HorizontalTabSwitcherAndroid:enabled"/>
   <int value="-873334439" label="PersistShareHubOnAppSwitch:disabled"/>
   <int value="-872764392" label="ContextualSuggestionsBottomSheet:disabled"/>
+  <int value="-872630301" label="ProjectorGm3:enabled"/>
   <int value="-871784177" label="DeprecateMenagerieAPI:enabled"/>
   <int value="-871520682"
       label="AccessibilityInternalsPageImprovements:enabled"/>
@@ -25138,6 +25139,7 @@ from previous Chrome versions.
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:enabled"/>
   <int value="1694798717" label="NewNetErrorPageUI:enabled"/>
   <int value="1694854500" label="disable-save-password-bubble"/>
+  <int value="1694947836" label="ProjectorGm3:disabled"/>
   <int value="1696139514" label="enable-ble-advertising-in-apps"/>
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
   <int value="1697576315" label="ZeroSuggestPrefetchingOnWeb:enabled"/>
