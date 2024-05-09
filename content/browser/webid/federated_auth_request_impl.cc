@@ -94,7 +94,7 @@ std::string ComputeUrlEncodedTokenPostData(
     const std::string& client_id,
     const std::string& nonce,
     const std::string& account_id,
-    bool is_sign_in,
+    bool disclosure_text_shown,
     bool is_auto_reauthn,
     const RpMode& rp_mode,
     const std::vector<std::string>& scope,
@@ -123,11 +123,12 @@ std::string ComputeUrlEncodedTokenPostData(
   // data sharing between IDP and RP. For returning users signing in, such
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
-  std::string disclosure_text_shown = is_sign_in ? "false" : "true";
+  std::string disclosure_text_shown_param =
+      disclosure_text_shown ? "true" : "false";
   if (!query.empty()) {
     query += "&";
   }
-  query += "disclosure_text_shown=" + disclosure_text_shown;
+  query += "disclosure_text_shown=" + disclosure_text_shown_param;
 
   // Shares with IdP that whether the identity credential was automatically
   // selected. This could help developers to better comprehend the token
@@ -2165,11 +2166,13 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
         weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
   }
 
+  CHECK(idp_info.data);
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
           render_frame_host(), idp_origin, idp_info.provider->config->client_id,
-          idp_info.provider->nonce, account_id, is_sign_in,
+          idp_info.provider->nonce, account_id,
+          !is_sign_in && idp_info.data->request_permission,
           identity_selection_type_ != kExplicit, rp_mode_,
           idp_info.provider->scope, idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
