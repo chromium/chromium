@@ -551,6 +551,10 @@ CreateActivationOperatorDesc(const Activation* activation) {
       return base::unexpected(
           CreateError(mojom::Error::Code::kNotSupportedError,
                       "The activation (gelu) is not supported."));
+    case Activation::Tag::kSoftmax:
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "The activation (softmax) is not supported."));
     default:
       NOTREACHED_NORETURN() << "The operation is not an activation.";
   }
@@ -3891,6 +3895,70 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftmax(
+    Adapter* adapter,
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::SoftmaxPtr& softmax,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, softmax->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = softmax->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  std::array<const NodeOutput*, 1> inputs = {input};
+
+  const OperatorNode* softmax_node = nullptr;
+  if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1)) {
+    // TODO(crbug.com/338094927): Support the N-D input and axis parameter for
+    // softmax to align with WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax-input-axis
+    //
+    // DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC is equivalent to
+    // DML_ACTIVATION_SOFTMAX_OPERATOR_DESC when AxisCount
+    // == 1, and Axes == {DimensionCount - 1}:
+    // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_softmax1_operator_desc#remarks
+    const auto input_rank = input_tensor_desc.GetDimensions().size();
+    CHECK_EQ(input_rank, 2u);
+    std::array<uint32_t, 1> axes = {1};
+    DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC softmax1_operator_desc{
+        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+        .AxisCount = base::checked_cast<uint32_t>(axes.size()),
+        .Axes = axes.data()};
+
+    softmax_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_ACTIVATION_SOFTMAX1, &softmax1_operator_desc, inputs);
+    if (!softmax_node) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "Failed to create softmax1 operator to implement "
+                            "WebNN softmax operation."));
+    }
+  } else {
+    DML_ACTIVATION_SOFTMAX_OPERATOR_DESC softmax_operator_desc{
+        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+
+    softmax_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_ACTIVATION_SOFTMAX, &softmax_operator_desc, inputs);
+    if (!softmax_node) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "Failed to create softmax operator to implement "
+                            "WebNN softmax operation."));
+    }
+  }
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      softmax_node, std::move(output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
     const IdToOperandMap& id_to_operand_map,
     const mojom::SoftplusPtr& softplus,
@@ -5326,11 +5394,9 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       case Operation::Tag::kSoftmax: {
-        create_operator_result =
-            CreateOperatorNodeForUnary<DML_ACTIVATION_SOFTMAX_OPERATOR_DESC,
-                                       DML_OPERATOR_ACTIVATION_SOFTMAX>(
-                id_to_operand_map, operation->get_softmax(), graph_builder,
-                id_to_node_output_map);
+        create_operator_result = CreateOperatorNodeForSoftmax(
+            adapter.get(), id_to_operand_map, operation->get_softmax(),
+            graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kSoftplus: {
