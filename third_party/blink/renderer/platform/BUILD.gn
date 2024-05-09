@@ -2696,17 +2696,6 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 
-# Fuzzer for blink::CrabbyAVIFImageDecoder
-fuzzer_test("blink_crabbyavif_decoder_fuzzer") {
-  sources = [ "image-decoders/avif/crabbyavif_image_decoder_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
-  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
-  libfuzzer_options = [ "rss_limit_mb=8192" ]
-}
-
 # Fuzzer for blink::ICOImageDecoder.
 fuzzer_test("blink_ico_decoder_fuzzer") {
   sources = [ "image-decoders/ico/ico_image_decoder_fuzzer.cc" ]

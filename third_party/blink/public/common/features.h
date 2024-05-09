@@ -386,9 +386,6 @@ extern const base::FeatureParam<base::TimeDelta> kHttpRttThreshold;
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
 
-// Enables the use of CrabbyAvif for decoding AVIF images.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrabbyAvif);
-
 // Enables input IPC to directly target the renderer's compositor thread without
 // hopping through the IO thread first.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
