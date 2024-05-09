@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote, MetricsProxyImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl, BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -40,6 +40,7 @@ import {navigateTo} from './test_util.js';
     setup(function() {
       window.history.replaceState({}, '', '/');
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      CrRouter.resetForTesting();
       BrowserServiceImpl.setInstance(new TestBrowserService());
       testBrowserProxy = new TestBrowserProxy();
       BrowserProxyImpl.setInstance(testBrowserProxy);
@@ -222,6 +223,7 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
   setup(function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    CrRouter.resetForTesting();
     testBrowserService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testBrowserService);
     testBrowserProxy = new TestBrowserProxy();
@@ -278,6 +280,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
   setup(() => {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    CrRouter.resetForTesting();
 
     // Some extra setup of mocking proxies to get the history-app to work.
     BrowserServiceImpl.setInstance(new TestBrowserService());

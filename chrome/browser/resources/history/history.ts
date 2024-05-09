@@ -12,6 +12,7 @@ export {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_comp
 export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+export {CrRouter} from 'chrome://resources/js/cr_router.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from './app.js';
 export {BrowserService, BrowserServiceImpl, QueryResult, RemoveVisitsRequest} from './browser_service.js';

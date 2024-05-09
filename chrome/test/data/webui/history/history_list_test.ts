@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, CrRouter, ensureLazyLoaded} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -38,6 +38,7 @@ suite('HistoryListTest', function() {
   setup(function() {
     window.history.replaceState({}, '', '/');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    CrRouter.resetForTesting();
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 
@@ -598,8 +599,7 @@ suite('HistoryListTest', function() {
     // Ensure that state changes are always mirrored to the URL.
     await finishSetup([]);
     testService.resetResolver('queryHistory');
-    app.shadowRoot!.querySelector('history-router')!.shadowRoot!
-        .querySelector('iron-location')!.dwellTime = 0;
+    CrRouter.getInstance().setDwellTime(0);
 
     testService.setQueryResult({
       info: createHistoryInfo('something else'),

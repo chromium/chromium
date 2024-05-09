@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
-import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
-
-import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRouter} from 'chrome://resources/js/cr_router.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {QueryState} from './externs.js';
-import {getTemplate} from './router.html.js';
 
 // All valid pages.
 // TODO(crbug.com/40069898): Change this to an enum and use that type for holding
@@ -29,7 +27,7 @@ export class HistoryRouterElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return null;
   }
 
   static get properties() {
@@ -44,37 +42,19 @@ export class HistoryRouterElement extends PolymerElement {
       },
 
       queryState: Object,
-
-      path_: String,
-
-      queryParams_: Object,
-
-      query_: {
-        type: String,
-        observer: 'onQueryChanged_',
-      },
-
-      urlQuery_: {
-        type: String,
-        observer: 'onUrlQueryChanged_',
-      },
     };
-  }
-
-  static get observers() {
-    return ['onUrlChanged_(path_, queryParams_)'];
   }
 
   lastSelectedTab: number;
   selectedPage: string;
   queryState: QueryState;
   timeRangeStart?: Date;
-  private parsing_: boolean = false;
-  private debouncer_: Debouncer|null = null;
-  private query_: string;
-  private queryParams_: {q: string, after?: string};
-  private path_: string;
-  private urlQuery_: string;
+
+  private eventTracker_: EventTracker = new EventTracker();
+
+  override ready() {
+    super.ready();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -84,20 +64,22 @@ export class HistoryRouterElement extends PolymerElement {
       window.location.href = window.location.href.split('#')[0] + '?' +
           window.location.hash.substr(1);
     }
+
+    const router = CrRouter.getInstance();
+    this.onPathChanged_(router.getPath());
+    this.onQueryParamsChanged_(router.getQueryParams());
+    this.eventTracker_.add(
+        router, 'cr-router-path-changed',
+        (e: Event) => this.onPathChanged_((e as CustomEvent<string>).detail));
+    this.eventTracker_.add(
+        router, 'cr-router-query-params-changed',
+        (e: Event) => this.onQueryParamsChanged_(
+            (e as CustomEvent<URLSearchParams>).detail));
   }
 
-  /**
-   * @param current Current value of the query.
-   * @param previous Previous value of the query.
-   */
-  private onQueryChanged_(_current: string, previous?: string) {
-    if (previous !== undefined) {
-      this.urlQuery_ = this.query_;
-    }
-  }
-
-  private onUrlQueryChanged_() {
-    this.query_ = this.urlQuery_;
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
   }
 
   /**
@@ -110,64 +92,51 @@ export class HistoryRouterElement extends PolymerElement {
       path = '';
     }
 
-    // Make all modifications at the end of the method so observers can't change
-    // the outcome.
-    this.path_ = '/' + path;
-    this.set('queryParams_.q', this.queryState.searchTerm || null);
-    this.set('queryParams_.after', this.queryState.after || null);
+    const router = CrRouter.getInstance();
+    router.setPath('/' + path);
+
+    if (!this.queryState) {
+      return;
+    }
+    const queryParams = new URLSearchParams();
+    if (this.queryState.searchTerm) {
+      queryParams.set('q', this.queryState.searchTerm);
+    }
+    if (this.queryState.after) {
+      queryParams.set('after', this.queryState.after);
+    }
+    router.setQueryParams(queryParams);
   }
 
   private selectedPageChanged_() {
-    // Update the URL if the page was changed externally, but ignore the update
-    // if it came from parseUrl_().
-    if (!this.parsing_) {
-      this.serializeUrl();
-    }
+    this.serializeUrl();
   }
 
-  private parseUrl_() {
-    this.parsing_ = true;
-    const changes: {search: string, after?: string} = {search: ''};
-    const sections = this.path_.substr(1).split('/');
+  private onPathChanged_(newPath: string) {
+    const sections = newPath.substr(1).split('/');
     const page = sections[0] ||
         (window.location.search ? 'history' :
                                   TABBED_PAGES[this.lastSelectedTab]);
-
-    changes.search = this.queryParams_.q || '';
-
-    let after = '';
-    if (this.queryParams_.after &&
-        this.queryParams_.after.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      const afterAsDate = new Date(this.queryParams_.after);
-      if (!isNaN(afterAsDate.getTime())) {
-        after = this.queryParams_.after;
-      }
-    }
-    changes.after = after;
-
-    // Must change selectedPage before `change-query`, otherwise the
-    // query-manager will call serializeUrl() with the old page.
     // TODO(b/338245900): This is kind of nasty. Without cr-tabs to constrain
     //   `selectedPage`, this can be set to an arbitrary value from the URL.
     //   To fix this, we should constrain the selected pages to an actual enum.
     this.selectedPage = page;
+  }
+
+  private onQueryParamsChanged_(newParams: URLSearchParams) {
+    const changes: {search: string, after?: string} = {search: ''};
+    changes.search = newParams.get('q') || '';
+    let after = '';
+    const afterFromParams = newParams.get('after');
+    if (!!afterFromParams && afterFromParams.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const afterAsDate = new Date(afterFromParams);
+      if (!isNaN(afterAsDate.getTime())) {
+        after = afterFromParams;
+      }
+    }
+    changes.after = after;
     this.dispatchEvent(new CustomEvent(
         'change-query', {bubbles: true, composed: true, detail: changes}));
-    this.serializeUrl();
-
-    this.parsing_ = false;
-  }
-
-  private onUrlChanged_() {
-    // Changing the url and query parameters at the same time will cause two
-    // calls to onUrlChanged_. Debounce the actual work so that these two
-    // changes get processed together.
-    this.debouncer_ = Debouncer.debounce(
-        this.debouncer_, microTask, this.parseUrl_.bind(this));
-  }
-
-  getDebouncerForTesting(): Debouncer|null {
-    return this.debouncer_;
   }
 }
 

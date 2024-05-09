@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserServiceImpl, CrRouter} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -20,6 +20,10 @@ suite('HistoryAppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserService = new TestBrowserService();
     BrowserServiceImpl.setInstance(browserService);
+    // Some of the tests below assume the query state is fully reset to empty
+    // between tests.
+    window.history.replaceState({}, '', '/');
+    CrRouter.resetForTesting();
     element = document.createElement('history-app');
     document.body.appendChild(element);
     return flushTasks();

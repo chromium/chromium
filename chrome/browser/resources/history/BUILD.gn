@@ -24,7 +24,6 @@ build_webui("build") {
     "history_list.ts",
     "history_toolbar.ts",
     "product_specifications_lists.ts",
-    "router.ts",
     "side_bar.ts",
     "synced_device_card.ts",
     "synced_device_manager.ts",
@@ -37,6 +36,7 @@ build_webui("build") {
     "history.ts",
     "lazy_load.ts",
     "query_manager.ts",
+    "router.ts",
     "searched_label.ts",
   ]
 

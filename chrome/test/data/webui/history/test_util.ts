@@ -5,6 +5,7 @@
 import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement, HistoryEntry, HistoryQuery} from 'chrome://history/history.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {middleOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
 /**
@@ -178,10 +179,8 @@ export function createWindow(tabUrls: string[]): ForeignSessionWindow {
   return {tabs: tabs, sessionId: 123, timestamp: 0};
 }
 
-export function navigateTo(route: string, app: HistoryAppElement) {
+export function navigateTo(route: string, _app: HistoryAppElement) {
   window.history.replaceState({}, '', route);
-  window.dispatchEvent(new CustomEvent('location-changed'));
-  // Update from the URL synchronously.
-  app.shadowRoot!.querySelector(
-                     'history-router')!.getDebouncerForTesting()!.flush();
+  window.dispatchEvent(new CustomEvent('popstate'));
+  flush();
 }
