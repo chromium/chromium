@@ -832,15 +832,15 @@ class CONTENT_EXPORT ServiceWorkerVersion
   struct InflightRequestTimeoutInfo {
     InflightRequestTimeoutInfo(int id,
                                ServiceWorkerMetrics::EventType event_type,
-                               const base::TimeTicks& expiration,
+                               const base::TimeTicks& expiration_time,
                                TimeoutBehavior timeout_behavior);
     ~InflightRequestTimeoutInfo();
-    // Compares |expiration|, or |id| if |expiration| is the same.
+    // Compares |expiration_time|, or |id| if |expiration_time| is the same.
     bool operator<(const InflightRequestTimeoutInfo& other) const;
 
     const int id;
     const ServiceWorkerMetrics::EventType event_type;
-    const base::TimeTicks expiration;
+    const base::TimeTicks expiration_time;
     const TimeoutBehavior timeout_behavior;
   };
 
@@ -873,7 +873,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // The following methods all rely on the internal |tick_clock_| for the
   // current time.
   void RestartTick(base::TimeTicks* time) const;
-  bool RequestExpired(const base::TimeTicks& expiration) const;
+  bool RequestExpired(const base::TimeTicks& expiration_time) const;
   base::TimeDelta GetTickDuration(const base::TimeTicks& time) const;
 
   // EmbeddedWorkerInstance::Listener overrides:
@@ -991,7 +991,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // The caller of MaybeTimeoutRequest must increase reference count of |this|
   // to avoid it deleted during the execution.
   bool MaybeTimeoutRequest(const InflightRequestTimeoutInfo& info);
-  void SetAllRequestExpirations(const base::TimeTicks& expiration);
+  void SetAllRequestExpirations(const base::TimeTicks& expiration_time);
 
   // Sets |stale_time_| if this worker is stale, causing an update to eventually
   // occur once the worker stops or is running too long.

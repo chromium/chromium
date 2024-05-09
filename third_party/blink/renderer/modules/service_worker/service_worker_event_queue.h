@@ -262,7 +262,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // For idle timeouts. The time when there's no inflight event. Set to null if
   // there are inflight events.
-  base::TimeTicks last_no_inflight_event_;
+  base::TimeTicks last_no_inflight_event_time_;
 
   // For idle timeouts. The delay until the worker is identified as idle after
   // all inflight events are completed.

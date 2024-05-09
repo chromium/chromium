@@ -218,7 +218,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   WriterState body_writer_state_ = WriterState::kNotStarted;
 
   mojo::SimpleWatcher client_producer_watcher_;
-  const base::TimeTicks request_start_;
+  const base::TimeTicks request_start_time_;
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       pending_network_client_receiver_;
 

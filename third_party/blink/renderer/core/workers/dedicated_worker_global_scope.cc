@@ -307,7 +307,7 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
               "script_url", script_url);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
-  fetch_classic_script_start_ = base::TimeTicks::Now();
+  fetch_classic_script_start_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
   // container from DedicatedWorkerHost
@@ -464,8 +464,9 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
               "DedicatedWorkerGlobalScope::DidFetchClassicScript");
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
-  base::UmaHistogramTimes("Worker.TopLevelScript.FetchClassicScriptTime",
-                          base::TimeTicks::Now() - fetch_classic_script_start_);
+  base::UmaHistogramTimes(
+      "Worker.TopLevelScript.FetchClassicScriptTime",
+      base::TimeTicks::Now() - fetch_classic_script_start_time_);
 
   // Step 12. "If the algorithm asynchronously completes with null, then:"
   if (classic_script_loader->Failed()) {

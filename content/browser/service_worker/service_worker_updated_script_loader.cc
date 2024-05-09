@@ -82,7 +82,7 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
       client_producer_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
-      request_start_(base::TimeTicks::Now()) {
+      request_start_time_(base::TimeTicks::Now()) {
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
       version_->status(), is_main_script_, version_->script_type());
@@ -226,7 +226,7 @@ void ServiceWorkerUpdatedScriptLoader::OnComplete(
 int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
     const network::mojom::URLResponseHead& response_head) {
   auto client_response = response_head.Clone();
-  client_response->request_start = request_start_;
+  client_response->request_start = request_start_time_;
 
   if (is_main_script_) {
     version_->SetMainScriptResponse(

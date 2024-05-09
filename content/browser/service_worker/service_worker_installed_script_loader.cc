@@ -26,7 +26,7 @@ ServiceWorkerInstalledScriptLoader::ServiceWorkerInstalledScriptLoader(
     scoped_refptr<ServiceWorkerVersion>
         version_for_main_script_http_response_info,
     const GURL& request_url)
-    : client_(std::move(client)), request_start_(base::TimeTicks::Now()) {
+    : client_(std::move(client)), request_start_time_(base::TimeTicks::Now()) {
   // Normally, the main script info is set by ServiceWorkerNewScriptLoader for
   // new service workers and ServiceWorkerInstalledScriptsSender for installed
   // service workes. But some embedders might preinstall scripts to the

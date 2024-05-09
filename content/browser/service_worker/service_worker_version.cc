@@ -288,10 +288,11 @@ void ServiceWorkerVersion::RestartTick(base::TimeTicks* time) const {
 }
 
 bool ServiceWorkerVersion::RequestExpired(
-    const base::TimeTicks& expiration) const {
-  if (expiration.is_null())
+    const base::TimeTicks& expiration_time) const {
+  if (expiration_time.is_null()) {
     return false;
-  return tick_clock_->NowTicks() >= expiration;
+  }
+  return tick_clock_->NowTicks() >= expiration_time;
 }
 
 base::TimeDelta ServiceWorkerVersion::GetTickDuration(
@@ -1356,11 +1357,11 @@ ServiceWorkerVersion::GetMainScriptResponse() {
 ServiceWorkerVersion::InflightRequestTimeoutInfo::InflightRequestTimeoutInfo(
     int id,
     ServiceWorkerMetrics::EventType event_type,
-    const base::TimeTicks& expiration,
+    const base::TimeTicks& expiration_time,
     TimeoutBehavior timeout_behavior)
     : id(id),
       event_type(event_type),
-      expiration(expiration),
+      expiration_time(expiration_time),
       timeout_behavior(timeout_behavior) {}
 
 ServiceWorkerVersion::InflightRequestTimeoutInfo::
@@ -1368,9 +1369,10 @@ ServiceWorkerVersion::InflightRequestTimeoutInfo::
 
 bool ServiceWorkerVersion::InflightRequestTimeoutInfo::operator<(
     const InflightRequestTimeoutInfo& other) const {
-  if (expiration == other.expiration)
+  if (expiration_time == other.expiration_time) {
     return id < other.id;
-  return expiration < other.expiration;
+  }
+  return expiration_time < other.expiration_time;
 }
 
 ServiceWorkerVersion::InflightRequest::InflightRequest(
@@ -2480,7 +2482,7 @@ void ServiceWorkerVersion::OnTimeoutTimer() {
   auto timeout_iter = request_timeouts.begin();
   while (timeout_iter != request_timeouts.end()) {
     const InflightRequestTimeoutInfo& info = *timeout_iter;
-    if (!RequestExpired(info.expiration)) {
+    if (!RequestExpired(info.expiration_time)) {
       break;
     }
     if (MaybeTimeoutRequest(info)) {
@@ -2609,14 +2611,14 @@ bool ServiceWorkerVersion::MaybeTimeoutRequest(
 }
 
 void ServiceWorkerVersion::SetAllRequestExpirations(
-    const base::TimeTicks& expiration) {
+    const base::TimeTicks& expiration_time) {
   std::set<InflightRequestTimeoutInfo> new_timeouts;
   for (const auto& info : request_timeouts_) {
     auto [iter, is_inserted] = new_timeouts.emplace(
         info.id, info.event_type,
         // Keep expiration that has `Max` value to avoid stop the worker after
-        // `expiration`.
-        info.expiration.is_max() ? info.expiration : expiration,
+        // `expiration_time`.
+        info.expiration_time.is_max() ? info.expiration_time : expiration_time,
         info.timeout_behavior);
     DCHECK(is_inserted);
     InflightRequest* request = inflight_requests_.Lookup(info.id);

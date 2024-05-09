@@ -245,7 +245,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool has_storage_access_;
 
   // The timestamp taken when FetchAndRunClassicScript() is called.
-  base::TimeTicks fetch_classic_script_start_;
+  base::TimeTicks fetch_classic_script_start_time_;
 
   // The timestamp taken when DedicatedWorker::Start() was called.
   base::TimeTicks dedicated_worker_start_time_;

@@ -75,7 +75,7 @@ class ServiceWorkerInstalledScriptLoader
   URLLoaderClientCheckedRemote client_;
   scoped_refptr<ServiceWorkerVersion>
       version_for_main_script_http_response_info_;
-  base::TimeTicks request_start_;
+  base::TimeTicks request_start_time_;
   std::unique_ptr<ServiceWorkerInstalledScriptReader> reader_;
 
   std::string encoding_;
