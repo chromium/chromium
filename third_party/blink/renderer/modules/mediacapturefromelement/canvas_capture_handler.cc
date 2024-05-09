@@ -284,7 +284,7 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
     std::unique_ptr<VideoCapturerSource> source,
     MediaStreamComponent** component) {
   uint8_t track_id_bytes[64];
-  base::RandBytes(track_id_bytes, sizeof(track_id_bytes));
+  base::RandBytes(track_id_bytes);
   String track_id = Base64Encode(track_id_bytes);
   media::VideoCaptureFormats preferred_formats = source->GetPreferredFormats();
   auto stream_video_source = std::make_unique<MediaStreamVideoCapturerSource>(

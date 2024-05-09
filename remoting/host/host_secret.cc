@@ -24,7 +24,7 @@ const char kHostSecretAlphabet[] = "0123456789";
 // Generates cryptographically strong random number in the range [0, max).
 int CryptoRandomInt(int max) {
   uint32_t random_int32;
-  base::RandBytes(&random_int32, sizeof(random_int32));
+  base::RandBytes(base::byte_span_from_ref(random_int32));
   return random_int32 % max;
 }
 

@@ -147,7 +147,7 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
 
   // Append 16 random 7bit ascii AlphaNumeric characters.
   char random_bytes[16];
-  base::RandBytes(random_bytes, sizeof(random_bytes));
+  base::RandBytes(base::as_writable_byte_span(random_bytes));
   for (char& c : random_bytes)
     c = kAlphaNumericEncodingMap[c & 0x3F];
   boundary.Append(random_bytes, sizeof(random_bytes));

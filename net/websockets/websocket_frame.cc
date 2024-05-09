@@ -181,7 +181,7 @@ WebSocketMaskingKey GenerateWebSocketMaskingKey() {
   // number generator, which means web application authors should not be able
   // to guess the next value of masking key.
   WebSocketMaskingKey masking_key;
-  base::RandBytes(masking_key.key, WebSocketFrameHeader::kMaskingKeyLength);
+  base::RandBytes(masking_key.key);
   return masking_key;
 }
 

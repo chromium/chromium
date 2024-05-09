@@ -4,8 +4,12 @@
 
 #include "device/fido/aoa/android_accessory_discovery.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -15,10 +19,6 @@
 #include "device/fido/aoa/android_accessory_device.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
-
-#include <utility>
-
-#include "base/functional/bind.h"
 
 // See https://source.android.com/devices/accessories/aoa for details on the
 // protocol used to talk to apps on the phone here.
@@ -261,11 +261,11 @@ void AndroidAccessoryDiscovery::OnAccessoryInterfaceClaimed(
   }
 
   std::array<uint8_t, kSyncNonceLength> nonce;
-  base::RandBytes(&nonce[0], kSyncNonceLength);
+  base::RandBytes(nonce);
 
   std::vector<uint8_t> packet;
   packet.push_back(AndroidAccessoryDevice::kCoaoaSync);
-  packet.insert(packet.end(), nonce.begin(), nonce.end());
+  base::Extend(packet, nonce);
 
   auto* device_ptr = device.get();
   const uint8_t out_endpoint = interface_info.out_endpoint;

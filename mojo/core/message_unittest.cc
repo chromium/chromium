@@ -899,7 +899,7 @@ TEST_F(MessageTest, ExtendMessagePayloadLarge) {
     // progressively extend the payload to this size.
     constexpr size_t kTestMessagePayloadSize = 512 * 1024;
     std::vector<uint8_t> test_payload(kTestMessagePayloadSize);
-    base::RandBytes(test_payload.data(), kTestMessagePayloadSize);
+    base::RandBytes(test_payload);
 
     size_t current_payload_size = 0;
     while (current_payload_size < kTestMessagePayloadSize) {

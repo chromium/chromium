@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -142,10 +143,10 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
     return static_cast<HttpAuthHandlerNTLM*>(auth_handler_.get());
   }
 
-  static void MockRandom(uint8_t* output, size_t n) {
+  static void MockRandom(base::span<uint8_t> output) {
     // This is set to 0xaa because the client challenge for testing in
     // [MS-NLMP] Section 4.2.1 is 8 bytes of 0xaa.
-    memset(output, 0xaa, n);
+    std::ranges::fill(output, 0xaa);
   }
 
   static uint64_t MockGetMSTime() {

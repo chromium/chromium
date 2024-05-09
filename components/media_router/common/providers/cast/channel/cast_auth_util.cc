@@ -127,8 +127,8 @@ class CastNonce {
   CastNonce() { GenerateNonce(); }
   void GenerateNonce() {
     // Create a cryptographically secure nonce.
-    crypto::RandBytes(base::WriteInto(&nonce_, kNonceSizeInBytes + 1),
-                      kNonceSizeInBytes);
+    nonce_.resize(kNonceSizeInBytes);
+    crypto::RandBytes(base::as_writable_byte_span(nonce_));
     nonce_generation_time_ = base::Time::Now();
   }
 

@@ -508,8 +508,7 @@ void VirtualFidoDevice::State::InjectLargeBlob(RegistrationData* credential,
         });
   } else {
     credential->large_blob_key.emplace();
-    base::RandBytes(credential->large_blob_key->data(),
-                    credential->large_blob_key->size());
+    base::RandBytes(*credential->large_blob_key);
   }
 
   large_blob_array.emplace_back(
@@ -693,7 +692,7 @@ FidoTransportProtocol VirtualFidoDevice::DeviceTransport() const {
 // static
 std::string VirtualFidoDevice::MakeVirtualFidoDeviceId() {
   uint8_t rand_bytes[32];
-  base::RandBytes(rand_bytes, sizeof(rand_bytes));
+  base::RandBytes(rand_bytes);
   return "VirtualFidoDevice-" + base::HexEncode(rand_bytes);
 }
 

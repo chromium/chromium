@@ -122,8 +122,8 @@ bool EncryptWithSeed(const std::string& data,
   key = symmetric_key->key();
 
   // Generate initialized vector of size 128 bits.
-  std::string iv;
-  crypto::RandBytes(base::WriteInto(&iv, kAesBlockSize + 1), kAesBlockSize);
+  std::string iv(kAesBlockSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(iv));
 
   crypto::Encryptor encryptor;
   if (!encryptor.Init(symmetric_key.get(), crypto::Encryptor::CBC, iv)) {

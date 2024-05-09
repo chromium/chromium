@@ -55,7 +55,7 @@ TEST(BigStringMojomTraitsTest, BigString_Short) {
 
 TEST(BigStringMojomTraitsTest, BigString_Long) {
   WTF::Vector<char> random_latin1_string(1024 * 1024);
-  base::RandBytes(random_latin1_string.data(), random_latin1_string.size());
+  base::RandBytes(base::as_writable_byte_span(random_latin1_string));
 
   String str(random_latin1_string.data(), random_latin1_string.size());
   String output;

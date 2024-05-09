@@ -9429,7 +9429,7 @@ struct ServerLinkValues {
 // transaction.
 static ServerLinkValues CreateServerLink() {
   std::vector<uint8_t> seed(device::cablev2::kQRSeedSize);
-  base::RandBytes(seed.data(), seed.size());
+  base::RandBytes(seed);
 
   bssl::UniquePtr<EC_GROUP> p256(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -9437,7 +9437,7 @@ static ServerLinkValues CreateServerLink() {
       EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
 
   ServerLinkValues ret;
-  base::RandBytes(ret.secret.data(), ret.secret.size());
+  base::RandBytes(ret.secret);
   CHECK_EQ(ret.peer_identity.size(),
            EC_POINT_point2oct(p256.get(), EC_KEY_get0_public_key(ec_key.get()),
                               POINT_CONVERSION_UNCOMPRESSED,

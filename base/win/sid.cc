@@ -232,7 +232,7 @@ std::optional<Sid> Sid::FromPSID(PSID sid) {
 
 Sid Sid::GenerateRandomSid() {
   DWORD sub_authorities[4] = {};
-  RandBytes(&sub_authorities, sizeof(sub_authorities));
+  RandBytes(as_writable_byte_span(sub_authorities));
   return FromSubAuthorities(SECURITY_NULL_SID_AUTHORITY,
                             std::size(sub_authorities), sub_authorities);
 }

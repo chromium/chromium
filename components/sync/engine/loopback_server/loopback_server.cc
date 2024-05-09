@@ -264,7 +264,7 @@ void LoopbackServer::Init() {
 
 std::vector<uint8_t> LoopbackServer::GenerateNewKeystoreKey() const {
   std::vector<uint8_t> generated_key(kKeystoreKeyLength);
-  base::RandBytes(generated_key.data(), generated_key.size());
+  base::RandBytes(generated_key);
   return generated_key;
 }
 

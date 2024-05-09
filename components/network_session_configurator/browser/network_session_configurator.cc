@@ -156,7 +156,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
     const uint8_t type = 0x0b + 0x1f * base::RandGenerator(8);
 
     uint8_t flags;
-    base::RandBytes(&flags, /* output_length = */ sizeof(flags));
+    base::RandBytes(base::byte_span_from_ref(flags));
 
     const size_t length = base::RandGenerator(7);
     // RandBytesAsString() does not support zero length.

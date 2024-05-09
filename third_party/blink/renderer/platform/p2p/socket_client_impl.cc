@@ -40,7 +40,7 @@ P2PSocketClientImpl::P2PSocketClientImpl(bool batch_packets)
       state_(kStateUninitialized),
       random_socket_id_(0),
       next_packet_id_(0) {
-  crypto::RandBytes(&random_socket_id_, sizeof(random_socket_id_));
+  crypto::RandBytes(base::byte_span_from_ref(random_socket_id_));
 }
 
 P2PSocketClientImpl::~P2PSocketClientImpl() {

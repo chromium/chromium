@@ -654,9 +654,10 @@ Status StorageQueue::WriteHeaderAndBlock(
   if (total_size > RecordHeader::kSize + data.size()) {
     // Fill in with random bytes.
     const size_t pad_size = total_size - (RecordHeader::kSize + data.size());
-    char junk_bytes[FRAME_SIZE];
-    crypto::RandBytes(junk_bytes, pad_size);
-    write_status = file->Append(std::string_view(&junk_bytes[0], pad_size));
+    uint8_t junk_bytes[FRAME_SIZE];
+    auto padding = base::span(junk_bytes).first(pad_size);
+    crypto::RandBytes(padding);
+    write_status = file->Append(base::as_string_view(padding));
     if (!write_status.has_value()) {
       return Status(error::RESOURCE_EXHAUSTED,
                     base::StrCat({"Cannot pad file=", file->name(), " status=",

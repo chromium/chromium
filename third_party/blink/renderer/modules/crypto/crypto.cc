@@ -73,7 +73,7 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
                        array->byteLength()));
     return NotShared<DOMArrayBufferView>(nullptr);
   }
-  crypto::RandBytes(array->BaseAddress(), array->byteLength());
+  crypto::RandBytes(array->ByteSpan());
   return array;
 }
 

@@ -573,7 +573,7 @@ void JpegClient::PrepareMemory(int32_t bitstream_buffer_id) {
   if (exif_size_ > 0) {
     auto shm = base::UnsafeSharedMemoryRegion::Create(exif_size_);
     auto shm_mapping = shm.Map();
-    base::RandBytes(shm_mapping.memory(), exif_size_);
+    base::RandBytes(shm_mapping.GetMemoryAsSpan<uint8_t>());
     exif_buffer_ =
         media::BitstreamBuffer(bitstream_buffer_id, std::move(shm), exif_size_);
   }

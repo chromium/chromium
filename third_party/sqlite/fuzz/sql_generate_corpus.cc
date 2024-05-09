@@ -63,27 +63,27 @@ int RandInt(int min, int max) {
   return GetRandom()(max - min + 1) + min;
 }
 
-void RandBytes(void* output, size_t output_len) {
-  uint8_t* out = static_cast<uint8_t*>(output);
-  for (size_t i = 0; i < output_len / sizeof(size_t); i++) {
+void RandBytes(base::span<uint8_t> output) {
+  size_t offset = 0u;
+  for (size_t i = 0u; i < output.size() / sizeof(size_t); i++) {
     size_t rand_num = GetRandom()();
-    for (size_t j = 0; j < sizeof(size_t); j++) {
-      *out = *reinterpret_cast<uint8_t*>(&rand_num);
-      out++;
+    for (size_t j = 0u; j < sizeof(size_t); j++) {
+      output[offset] = *reinterpret_cast<uint8_t*>(&rand_num);
+      offset++;
       rand_num >>= 8;
     }
   }
   size_t rand_num = GetRandom()();
-  for (size_t j = 0; j < output_len % sizeof(size_t); j++) {
-    *out = *reinterpret_cast<uint8_t*>(&rand_num);
-    out++;
+  for (size_t j = 0u; j < output.size() % sizeof(size_t); j++) {
+    output[offset] = *reinterpret_cast<uint8_t*>(&rand_num);
+    offset++;
     rand_num >>= 8;
   }
 }
 
 std::string RandBytesAsString(size_t length) {
-  std::string result;
-  RandBytes(base::WriteInto(&result, length + 1), length);
+  std::string result(length, '\0');
+  RandBytes(base::as_writable_byte_span(result));
   return result;
 }
 

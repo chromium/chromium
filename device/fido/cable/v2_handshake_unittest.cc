@@ -379,7 +379,7 @@ std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
 
 TEST(CableV2Encoding, Digits) {
   uint8_t test_data[24];
-  base::RandBytes(test_data, sizeof(test_data));
+  base::RandBytes(test_data);
 
   // |BytesToDigits| and |DigitsToBytes| should round-trip.
   for (size_t i = 0; i < sizeof(test_data); i++) {

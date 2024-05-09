@@ -260,7 +260,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   }
 
   salt_ = std::string(kSaltBytes, 0);
-  crypto::RandBytes(std::data(salt_), salt_.size());
+  crypto::RandBytes(base::as_writable_byte_span(salt_));
 
   std::string hash_base64;
   if (!HashWithMachineId(salt_, &hash_base64)) {

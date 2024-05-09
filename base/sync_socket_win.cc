@@ -56,7 +56,7 @@ bool CreatePairImpl(ScopedHandle* socket_a,
 
   do {
     unsigned long rnd_name;
-    RandBytes(&rnd_name, sizeof(rnd_name));
+    RandBytes(byte_span_from_ref(rnd_name));
 
     swprintf(name, kPipePathMax,
              kPipeNameFormat,

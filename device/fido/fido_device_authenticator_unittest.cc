@@ -137,10 +137,10 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
   }
 
   AuthenticatorGetAssertionResponse GetAssertionForWrite(
-      const std::vector<uint8_t>& blob,
+      base::span<const uint8_t> blob,
       std::vector<uint8_t> credential_id = kCredentialId1) {
     CtapGetAssertionOptions options;
-    options.large_blob_write = std::move(blob);
+    options.large_blob_write.emplace(blob.begin(), blob.end());
     std::vector<std::vector<uint8_t>> credential_ids;
     credential_ids.push_back(std::move(credential_id));
     std::vector<AuthenticatorGetAssertionResponse> responses =
@@ -207,14 +207,13 @@ TEST_F(FidoDeviceAuthenticatorTest,
 
 // Test reading and writing a blob that must fit in multiple fragments.
 TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlob) {
-  std::vector<uint8_t> large_blob;
-  large_blob.resize(2048);
-  base::RandBytes(large_blob.data(), large_blob.size());
+  std::array<uint8_t, 2048> large_blob;
+  base::RandBytes(large_blob);
   AuthenticatorGetAssertionResponse write = GetAssertionForWrite(large_blob);
   EXPECT_TRUE(write.large_blob_written);
 
   std::vector<AuthenticatorGetAssertionResponse> read = GetAssertionForRead();
-  EXPECT_EQ(read.at(0).large_blob, large_blob);
+  EXPECT_EQ(base::span(*read.at(0).large_blob), large_blob);
 }
 
 // Test reading and writing a blob using a PinUvAuthToken.
@@ -297,7 +296,7 @@ TEST_F(FidoDeviceAuthenticatorTest, TestWriteLargeBlobTooLarge) {
   // compressed, so fill it with random data so it doesn't shrink.
   std::vector<uint8_t> large_blob;
   large_blob.resize(kLargeBlobStorageSize * 2);
-  base::RandBytes(large_blob.data(), large_blob.size());
+  base::RandBytes(large_blob);
   AuthenticatorGetAssertionResponse write =
       GetAssertionForWrite(std::move(large_blob));
   EXPECT_FALSE(write.large_blob_written);

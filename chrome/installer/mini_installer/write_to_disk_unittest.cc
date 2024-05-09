@@ -51,15 +51,14 @@ TEST_F(WriteToDiskTest, ASmallVictory) {
 // Tests a simple write of data above the chunk threshold.
 TEST_F(WriteToDiskTest, LargeData) {
   constexpr size_t kBlobSize = 32 * 1024 * 1024 + 13;
-  std::vector<uint8_t> blob;
-  blob.resize(kBlobSize);
-  base::RandBytes(blob.data(), kBlobSize);
+  std::vector<uint8_t> blob(kBlobSize);
+  base::RandBytes(blob);
   const MemoryRange data = {blob.data(), blob.size()};
   const base::FilePath data_path = temp_dir().AppendASCII("data");
   ASSERT_PRED2(WriteToDisk, data, data_path.value().c_str());
   std::string data_string;
   ASSERT_PRED2(base::ReadFileToString, data_path, &data_string);
-  ASSERT_EQ(::memcmp(data_string.c_str(), blob.data(), kBlobSize), 0);
+  EXPECT_EQ(base::as_byte_span(data_string), blob);
 }
 
 // Tests that the last error code is set when there's a failure.

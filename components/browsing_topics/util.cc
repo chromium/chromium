@@ -43,7 +43,7 @@ uint64_t HmacHash(ReadOnlyHmacKey hmac_key,
 }
 
 bool g_hmac_key_overridden = false;
-  
+
 browsing_topics::HmacKey& GetHmacKeyOverrideForTesting() {
   static browsing_topics::HmacKey key;
   return key;
@@ -63,7 +63,7 @@ HmacKey GenerateRandomHmacKey() {
     return GetHmacKeyOverrideForTesting();
 
   HmacKey result = {};
-  base::RandBytes(result.data(), result.size());
+  base::RandBytes(result);
 
   return result;
 }

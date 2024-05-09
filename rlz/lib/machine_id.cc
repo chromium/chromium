@@ -33,7 +33,7 @@ bool GetMachineId(std::string* machine_id) {
   // hex character for 45 characters.
   unsigned char bytes[23];
   std::string str_bytes;
-  base::RandBytes(bytes, sizeof(bytes));
+  base::RandBytes(bytes);
   rlz_lib::BytesToString(bytes, sizeof(bytes), &str_bytes);
   str_bytes.resize(45);
   machine_id->clear();

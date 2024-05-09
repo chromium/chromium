@@ -173,11 +173,10 @@ namespace crypto {
 P224EncryptedKeyExchange::P224EncryptedKeyExchange(PeerType peer_type,
                                                    std::string_view password)
     : state_(kStateInitial), is_server_(peer_type == kPeerTypeServer) {
-  memset(&x_, 0, sizeof(x_));
-  memset(&expected_authenticator_, 0, sizeof(expected_authenticator_));
+  std::ranges::fill(expected_authenticator_, 0u);
 
   // x_ is a random scalar.
-  RandBytes(x_, sizeof(x_));
+  RandBytes(x_);
 
   // Calculate |password| hash to get SPAKE password value.
   SHA256HashString(std::string(password.data(), password.length()),

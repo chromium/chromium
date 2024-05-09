@@ -18,7 +18,9 @@ namespace ppapi {
 namespace {
 
 void GetRandomBytes(char* buffer, uint32_t num_bytes) {
-  base::RandBytes(buffer, num_bytes);
+  base::RandBytes(base::as_writable_bytes(
+      // SAFETY: The caller is required to give a valid pointer and size pair.
+      UNSAFE_BUFFERS(base::span(buffer, num_bytes))));
 }
 
 const PPB_Crypto_Dev crypto_interface = {&GetRandomBytes};

@@ -251,7 +251,7 @@ bool IsOutOfStorage(const base::FilePath& file_path,
 
 int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
-  crypto::RandBytes(&payload_id, sizeof(payload_id));
+  crypto::RandBytes(base::byte_span_from_ref(payload_id));
   return payload_id;
 }
 

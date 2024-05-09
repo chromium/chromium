@@ -39,7 +39,7 @@ void NearbyConnectionImpl::Write(std::vector<uint8_t> bytes) {
 
   NearbyConnectionsManager::PayloadPtr payload =
       NearbyConnectionsManager::Payload::New();
-  crypto::RandBytes(&payload->id, sizeof(payload->id));
+  crypto::RandBytes(base::byte_span_from_ref(payload->id));
   payload->content =
       PayloadContent::NewBytes(BytesPayload::New(std::move(bytes)));
   nearby_connections_manager_->Send(endpoint_id_, std::move(payload),

@@ -26,8 +26,8 @@ uint64_t GetMSTime() {
   return base::Time::Now().since_origin().InMicroseconds() * 10;
 }
 
-void GenerateRandom(uint8_t* output, size_t n) {
-  base::RandBytes(output, n);
+void GenerateRandom(base::span<uint8_t> output) {
+  base::RandBytes(output);
 }
 
 // static
@@ -149,7 +149,7 @@ int HttpAuthNtlmMechanism::GenerateAuthToken(
     return ERR_UNEXPECTED;
 
   uint8_t client_challenge[8];
-  g_generate_random_proc(client_challenge, 8);
+  g_generate_random_proc(client_challenge);
 
   auto next_token = ntlm_client_.GenerateAuthenticateMessage(
       domain, user, credentials->password(), hostname, channel_bindings, spn,

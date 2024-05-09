@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "net/base/auth.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth_mechanism.h"
@@ -28,8 +29,8 @@ class NET_EXPORT_PRIVATE HttpAuthNtlmMechanism : public HttpAuthMechanism {
   // since Jan 1, 1601 (UTC).
   using GetMSTimeProc = uint64_t (*)();
 
-  // A function that generates n random bytes in the output buffer.
-  using GenerateRandomProc = void (*)(uint8_t* output, size_t n);
+  // A function that generates random bytes into the entire output buffer.
+  using GenerateRandomProc = void (*)(base::span<uint8_t> output);
 
   // A function that returns the local host name. Returns an empty string if
   // the local host name is not available.

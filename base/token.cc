@@ -28,7 +28,7 @@ Token Token::CreateRandom() {
 
   // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
   // base version directly, and to prevent the dependency from base/ to crypto/.
-  base::RandBytes(&token, sizeof(token));
+  RandBytes(byte_span_from_ref(token));
 
   CHECK(!token.is_zero());
 
@@ -36,7 +36,7 @@ Token Token::CreateRandom() {
 }
 
 std::string Token::ToString() const {
-  return base::StringPrintf("%016" PRIX64 "%016" PRIX64, words_[0], words_[1]);
+  return StringPrintf("%016" PRIX64 "%016" PRIX64, words_[0], words_[1]);
 }
 
 // static

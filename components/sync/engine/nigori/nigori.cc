@@ -226,8 +226,8 @@ std::string Nigori::GetKeyName() const {
 
 // Enc[Kenc,Kmac](value)
 std::string Nigori::Encrypt(const std::string& value) const {
-  std::string iv;
-  crypto::RandBytes(base::WriteInto(&iv, kIvSize + 1), kIvSize);
+  std::array<uint8_t, kIvSize> iv;
+  crypto::RandBytes(iv);
 
   crypto::Encryptor encryptor;
   CHECK(encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv));
@@ -238,13 +238,13 @@ std::string Nigori::Encrypt(const std::string& value) const {
   HMAC hmac(HMAC::SHA256);
   CHECK(hmac.Init(keys_.mac_key->key()));
 
-  std::vector<unsigned char> hash(kHashSize);
-  CHECK(hmac.Sign(ciphertext, &hash[0], hash.size()));
+  std::array<uint8_t, kHashSize> hash;
+  CHECK(hmac.Sign(ciphertext, hash.data(), hash.size()));
 
   std::string output;
-  output.assign(iv);
+  output.assign(base::as_string_view(iv));
   output.append(ciphertext);
-  output.append(hash.begin(), hash.end());
+  output.append(base::as_string_view(hash));
   return base::Base64Encode(output);
 }
 
@@ -300,10 +300,8 @@ void Nigori::ExportKeys(std::string* user_key,
 
 // static
 std::string Nigori::GenerateScryptSalt() {
-  static const size_t kSaltSizeInBytes = 32;
-  std::string salt;
-  salt.resize(kSaltSizeInBytes);
-  crypto::RandBytes(std::data(salt), salt.size());
+  std::string salt(32u, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(salt));
   return salt;
 }
 

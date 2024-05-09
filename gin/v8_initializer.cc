@@ -20,6 +20,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -64,7 +65,12 @@ std::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
 #endif
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
-  base::RandBytes(buffer, amount);
+  base::RandBytes(
+      // SAFETY: This depends on callers providing a valid pointer/size pair.
+      //
+      // TODO(crbug.com/338574383): The signature is fixed as it's a callback
+      // from v8, but maybe v8 can use a span.
+      UNSAFE_BUFFERS(base::span(buffer, amount)));
   return true;
 }
 

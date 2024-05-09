@@ -1768,9 +1768,8 @@ std::string TemplateURLService::GetSessionToken() {
   base::TimeTicks current_time(base::TimeTicks::Now());
   // Renew token if it expired.
   if (current_time > token_expiration_time_) {
-    const size_t kTokenBytes = 12;
-    std::string raw_data;
-    base::RandBytes(base::WriteInto(&raw_data, kTokenBytes + 1), kTokenBytes);
+    std::array<uint8_t, 12> raw_data;
+    base::RandBytes(raw_data);
     base::Base64UrlEncode(raw_data,
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &current_token_);

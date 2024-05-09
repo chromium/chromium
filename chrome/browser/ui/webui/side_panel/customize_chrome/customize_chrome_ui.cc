@@ -49,7 +49,7 @@ namespace {
 
 int64_t RandInt64() {
   int64_t number;
-  base::RandBytes(&number, sizeof(number));
+  base::RandBytes(base::byte_span_from_ref(number));
   return number;
 }
 

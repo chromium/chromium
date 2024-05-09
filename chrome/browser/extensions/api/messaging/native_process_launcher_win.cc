@@ -204,7 +204,7 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   }
 
   uint64_t pipe_name_token;
-  crypto::RandBytes(&pipe_name_token, sizeof(pipe_name_token));
+  crypto::RandBytes(base::byte_span_from_ref(pipe_name_token));
   const std::wstring pipe_name_token_str =
       base::ASCIIToWide(base::StringPrintf("%llx", pipe_name_token));
   const std::wstring out_pipe_name =

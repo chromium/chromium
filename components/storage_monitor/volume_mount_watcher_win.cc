@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -55,7 +56,7 @@ enum DeviceType {
 // on either floppy or removable volumes. The DRIVE_CDROM type is handled
 // as a floppy, as are DRIVE_UNKNOWN and DRIVE_NO_ROOT_DIR, as there are
 // reports that some floppy drives don't report as DRIVE_REMOVABLE.
-DeviceType GetDeviceType(const std::wstring& mount_point) {
+DeviceType GetDeviceType(base::wcstring_view mount_point) {
   UINT drive_type = GetDriveType(mount_point.c_str());
   if (drive_type == DRIVE_FIXED || drive_type == DRIVE_REMOTE ||
       drive_type == DRIVE_RAMDISK) {
@@ -66,9 +67,9 @@ DeviceType GetDeviceType(const std::wstring& mount_point) {
 
   // Check device strings of the form "X:" and "\\.\X:"
   // For floppy drives, these will return strings like "/Device/Floppy0"
-  std::wstring device = mount_point;
+  auto device = std::wstring(mount_point);
   if (base::EndsWith(mount_point, L"\\", base::CompareCase::INSENSITIVE_ASCII))
-    device = mount_point.substr(0, mount_point.length() - 1);
+    device.resize(device.size() - 1u);
   std::wstring device_path;
   std::wstring device_path_slash;
   DWORD dos_device = QueryDosDevice(

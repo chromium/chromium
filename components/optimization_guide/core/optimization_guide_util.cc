@@ -55,7 +55,7 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
   // non-zero ID to differentiate the case where no ID is set versus the ID is
   // 0. We offset by a positive number to return a non-zero client-id.
   int64_t number;
-  base::RandBytes(&number, sizeof(number));
+  base::RandBytes(base::byte_span_from_ref(number));
   client_id = number;
   if (client_id == 0) {
     // Reassign client_id to a non-zero number.

@@ -32,7 +32,7 @@ void MarkMailboxAsSharedImage(bool is_shared_image, int8_t* name) {
 Mailbox GenerateMailbox(bool is_shared_image) {
   Mailbox result;
   // Generates cryptographically-secure bytes.
-  base::RandBytes(result.name, sizeof(result.name));
+  base::RandBytes(base::as_writable_byte_span(result.name));
   MarkMailboxAsSharedImage(is_shared_image, result.name);
 #if !defined(NDEBUG)
   int8_t value = 1;

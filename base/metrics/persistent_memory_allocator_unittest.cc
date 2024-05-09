@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -923,8 +924,8 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
   local.MakeIterable(local.Allocate(1, 1));
   local.MakeIterable(local.Allocate(11, 11));
   const size_t minsize = local.used();
-  std::unique_ptr<char[]> garbage(new char[minsize]);
-  RandBytes(garbage.get(), minsize);
+  auto garbage = HeapArray<uint8_t>::Uninit(minsize);
+  RandBytes(garbage);
 
   std::unique_ptr<MemoryMappedFile> mmfile;
   char filename[100];
@@ -988,7 +989,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     {
       File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
       ASSERT_TRUE(writer.IsValid());
-      writer.Write(0, (const char*)garbage.get(), filesize);
+      writer.Write(0, garbage.first(filesize));
     }
     ASSERT_TRUE(PathExists(file_path));
 

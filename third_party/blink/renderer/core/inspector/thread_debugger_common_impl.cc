@@ -1039,7 +1039,7 @@ void ThreadDebuggerCommonImpl::cancelTimer(void* data) {
 
 int64_t ThreadDebuggerCommonImpl::generateUniqueId() {
   int64_t result;
-  base::RandBytes(&result, sizeof result);
+  base::RandBytes(base::byte_span_from_ref(result));
   return result;
 }
 

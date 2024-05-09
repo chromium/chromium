@@ -26,7 +26,7 @@ AndroidAccessoryDevice::AndroidAccessoryDevice(
     : device_(std::move(device)),
       in_endpoint_(in_endpoint),
       out_endpoint_(out_endpoint) {
-  base::RandBytes(id_, sizeof(id_));
+  base::RandBytes(id_);
 }
 
 AndroidAccessoryDevice::~AndroidAccessoryDevice() = default;

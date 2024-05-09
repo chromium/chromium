@@ -131,6 +131,11 @@ TEST(ExtendTest, ExtendWithSpan) {
   // Selects overload for span<uint8_t, dynamic_extent>.
   Extend(dst, span(kMutVector));
   EXPECT_THAT(dst, ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11, 9, 10, 11));
+
+  // Input is convertible to span.
+  Extend(dst, kRawArray);
+  EXPECT_THAT(dst,
+              ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11, 9, 10, 11, 3, 4, 5));
 }
 
 }  // namespace base

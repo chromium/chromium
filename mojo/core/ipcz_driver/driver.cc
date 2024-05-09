@@ -299,7 +299,10 @@ IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
   if (!buffer || !num_bytes) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  base::RandBytes(buffer, num_bytes);
+  base::RandBytes(
+      // SAFETY: This requires the caller to provide a valid pointer/size pair.
+      // The function API is a C API so can't use a span.
+      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(buffer), num_bytes)));
   return IPCZ_RESULT_OK;
 }
 

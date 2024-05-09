@@ -106,7 +106,7 @@ TEST(Convolver, Halve) {
   output.resize(dest_byte_count);
 
   // First fill the array with a bunch of random data.
-  base::RandBytes(input.data(), input.size());
+  base::RandBytes(input);
 
   // Compute the filters.
   ConvolutionFilter1D filter_x, filter_y;

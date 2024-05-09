@@ -58,7 +58,7 @@ String MakeComplexString(size_t size) {
   Vector<char> data(size, 'a');
   // This string should not be compressed too much, but also should not
   // be compressed failed. So make only some parts of this random.
-  base::RandBytes(data.data(), data.size() / 10);
+  base::RandBytes(base::as_writable_byte_span(data).first(size / 10u));
   return String(data.data(), data.size()).ReleaseImpl();
 }
 
@@ -236,7 +236,7 @@ TEST_P(ParkableStringTest, DontCompressRandomString) {
   // gzip's header). Mersenne-Twister implementation is specified, making the
   // test deterministic.
   Vector<unsigned char> data(kSizeKb * 1000);
-  base::RandBytes(data.data(), data.size());
+  base::RandBytes(data);
   ParkableString parkable(String(data.data(), data.size()).ReleaseImpl());
 
   EXPECT_TRUE(
@@ -806,7 +806,7 @@ TEST_P(ParkableStringTest, SynchronousCompression) {
 TEST_P(ParkableStringTest, CompressionFailed) {
   const size_t kSize = 20000;
   Vector<char> data(kSize);
-  base::RandBytes(data.data(), data.size());
+  base::RandBytes(base::as_writable_byte_span(data));
   ParkableString parkable(String(data.data(), data.size()).ReleaseImpl());
   WaitForDelayedParking();
   EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());

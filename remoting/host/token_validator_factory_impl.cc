@@ -115,9 +115,8 @@ void TokenValidatorImpl::StartValidateRequest(const std::string& token) {
 
 std::string TokenValidatorImpl::CreateScope(const std::string& local_jid,
                                             const std::string& remote_jid) {
-  std::string nonce_bytes;
-  crypto::RandBytes(base::WriteInto(&nonce_bytes, kNonceLength + 1),
-                    kNonceLength);
+  std::array<uint8_t, kNonceLength> nonce_bytes;
+  crypto::RandBytes(nonce_bytes);
   std::string nonce = base::Base64Encode(nonce_bytes);
   // Note that because of how FTL signaling IDs are managed, |local_jid| will
   // not change between connections to a given host instance. We do expect that

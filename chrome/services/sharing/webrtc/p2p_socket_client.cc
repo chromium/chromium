@@ -35,7 +35,7 @@ P2PSocketClient::P2PSocketClient(
       random_socket_id_(0),
       next_packet_id_(0) {
   DCHECK(socket_manager_.is_bound());
-  crypto::RandBytes(&random_socket_id_, sizeof(random_socket_id_));
+  crypto::RandBytes(base::byte_span_from_ref(random_socket_id_));
 }
 
 P2PSocketClient::~P2PSocketClient() {

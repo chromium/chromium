@@ -70,7 +70,7 @@ __stack_chk_fail() {
 
 void NO_STACK_PROTECTOR ResetStackCanaryIfPossible() {
   uintptr_t canary;
-  base::RandBytes(as_writable_bytes(make_span(&canary, 1u)));
+  base::RandBytes(base::byte_span_from_ref(canary));
   // First byte should be the null byte for string functions.
   canary &= ~static_cast<uintptr_t>(0xff);
 

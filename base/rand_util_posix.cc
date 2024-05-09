@@ -181,7 +181,7 @@ bool UseBoringSSLForRandBytes() {
 
 namespace {
 
-void RandBytes(span<uint8_t> output, bool avoid_allocation) {
+void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
 #if !BUILDFLAG(IS_NACL)
   // The BoringSSL experiment takes priority over everything else.
   if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
@@ -228,8 +228,7 @@ namespace internal {
 
 double RandDoubleAvoidAllocation() {
   uint64_t number;
-  RandBytes(as_writable_bytes(make_span(&number, 1u)),
-            /*avoid_allocation=*/true);
+  RandBytesInternal(byte_span_from_ref(number), /*avoid_allocation=*/true);
   // This transformation is explained in rand_util.cc.
   return (number >> 11) * 0x1.0p-53;
 }
@@ -237,11 +236,7 @@ double RandDoubleAvoidAllocation() {
 }  // namespace internal
 
 void RandBytes(span<uint8_t> output) {
-  RandBytes(output, /*avoid_allocation=*/false);
-}
-
-void RandBytes(void* output, size_t output_length) {
-  RandBytes(make_span(static_cast<uint8_t*>(output), output_length));
+  RandBytesInternal(output, /*avoid_allocation=*/false);
 }
 
 int GetUrandomFD() {

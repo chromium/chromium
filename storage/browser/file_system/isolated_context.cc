@@ -507,11 +507,11 @@ bool IsolatedContext::UnregisterFileSystem(const std::string& filesystem_id) {
 std::string IsolatedContext::GetNewFileSystemId() const {
   // Returns an arbitrary random string which must be unique in the map.
   lock_.AssertAcquired();
-  uint32_t random_data[4];
+  uint8_t random_data[16];
   std::string id;
   do {
-    base::RandBytes(random_data, sizeof(random_data));
-    id = base::HexEncode(random_data, sizeof(random_data));
+    base::RandBytes(random_data);
+    id = base::HexEncode(random_data);
   } while (base::Contains(instance_map_, id));
   return id;
 }

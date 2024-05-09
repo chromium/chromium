@@ -220,7 +220,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
     const std::vector<uint8_t>& last_trusted_vault_key) {
   base::AutoLock autolock(lock_);
   std::vector<uint8_t> new_trusted_vault_key(kSharedKeyLength);
-  base::RandBytes(new_trusted_vault_key.data(), kSharedKeyLength);
+  base::RandBytes(new_trusted_vault_key);
 
   state_.current_epoch++;
   state_.trusted_vault_keys.push_back(new_trusted_vault_key);

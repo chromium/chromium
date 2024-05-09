@@ -51,7 +51,7 @@ void RunTest(const char* hash_name,
   TimeDelta total_test_time;
   {
     std::vector<uint8_t> buf(len);
-    RandBytes(buf.data(), len);
+    RandBytes(buf);
 
     for (int i = 0; i < kNumRuns; ++i) {
       const auto start = TimeTicks::Now();

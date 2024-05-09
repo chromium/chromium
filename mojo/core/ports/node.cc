@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -24,12 +25,6 @@
 #include "mojo/core/ports/node_delegate.h"
 #include "mojo/core/ports/port_locker.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-
-#if !BUILDFLAG(IS_NACL)
-#include "crypto/random.h"
-#else
-#include "base/rand_util.h"
-#endif
 
 namespace mojo {
 namespace core {
@@ -58,11 +53,7 @@ class RandomNameGenerator {
   PortName GenerateRandomPortName() {
     base::AutoLock lock(lock_);
     if (cache_index_ == kRandomNameCacheSize) {
-#if BUILDFLAG(IS_NACL)
-      base::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
-#else
-      crypto::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
-#endif
+      base::RandBytes(base::as_writable_byte_span(cache_));
       cache_index_ = 0;
     }
     return cache_[cache_index_++];
