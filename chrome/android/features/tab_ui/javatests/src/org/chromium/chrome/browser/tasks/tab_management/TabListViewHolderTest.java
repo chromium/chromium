@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -1095,6 +1096,25 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                         ColorPickerUtils.getTabGroupColorPickerItemColor(
                                 getActivity(), colorId2, false)),
                 drawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testActionButton_overflowMenu() {
+        // Create a new tab group info object that indicates isTabGroup is true.
+        mGridModel.set(TabProperties.TAB_GROUP_INFO, new TabGroupInfo(true, true));
+
+        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
+        Assert.assertNotNull(listActionButton.getDrawable());
+        // Assert that clicking the action button does not close the tab.
+        Assert.assertFalse(mCloseClicked.get());
+        listActionButton.performClick();
+        Assert.assertFalse(mCloseClicked.get());
     }
 
     private void testFaviconFetcher(

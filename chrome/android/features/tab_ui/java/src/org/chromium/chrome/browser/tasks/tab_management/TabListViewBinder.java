@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -27,6 +29,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -120,6 +123,53 @@ class TabListViewBinder {
                                     int tabId = model.get(TabProperties.TAB_ID);
                                     model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER).run(tabId);
                                 });
+            }
+        } else if (TabProperties.TAB_GROUP_INFO == propertyKey
+                || TabProperties.TAB_ID == propertyKey) {
+            @Nullable TabGroupInfo tabGroupInfo = model.get(TabProperties.TAB_GROUP_INFO);
+            ImageView actionButton = (ImageView) view.findViewById(R.id.end_button);
+            Resources res = view.getResources();
+
+            // Only change the drawable if the property key in question is for tab groups.
+            if (TabProperties.TAB_GROUP_INFO == propertyKey) {
+                if (tabGroupInfo.getIsTabGroup()) {
+                    actionButton.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    res,
+                                    R.drawable.ic_more_vert_24dp,
+                                    view.getContext().getTheme()));
+                } else {
+                    int closeButtonSize =
+                            (int) res.getDimension(R.dimen.tab_grid_close_button_size);
+                    Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.btn_close);
+                    Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
+                    actionButton.setImageBitmap(bitmap);
+                }
+            }
+
+            // Note: TAB_ID changes are NOT flag guarded, so this code will still be used.
+            // However, TAB_GROUP_INFO will never be set since it is flag guarded and will be
+            // defaulted to null so in theory this should never cause problems. If the flag is
+            // set ensure that this specific click listener is only set for tab groups.
+            if (tabGroupInfo != null && tabGroupInfo.getIsTabGroup()) {
+                actionButton.setOnClickListener(
+                        TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(
+                                model.get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK),
+                                model.get(TabProperties.TAB_ID),
+                                model.get(TabProperties.IS_INCOGNITO),
+                                tabGroupInfo.getShouldShowDeleteTabGroup()));
+            } else {
+                if (model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER) == null) {
+                    view.findViewById(R.id.end_button).setOnClickListener(null);
+                } else {
+                    view.findViewById(R.id.end_button)
+                            .setOnClickListener(
+                                    v -> {
+                                        int tabId = model.get(TabProperties.TAB_ID);
+                                        model.get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
+                                                .run(tabId);
+                                    });
+                }
             }
         }
     }

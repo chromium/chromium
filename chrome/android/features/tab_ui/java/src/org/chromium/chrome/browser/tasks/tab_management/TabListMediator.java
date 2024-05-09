@@ -326,7 +326,7 @@ class TabListMediator {
     }
 
     /** A class that stores shared info regarding a tab group's state. */
-    public class TabGroupInfo {
+    static class TabGroupInfo {
         private boolean mShouldShowDeleteTabGroup;
         private boolean mIsTabGroup;
 
