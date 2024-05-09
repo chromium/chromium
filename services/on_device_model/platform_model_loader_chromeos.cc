@@ -27,9 +27,7 @@
 //
 // 6c2d5dc9-32c3-4642-9ea3-3dc9cdf3854d:
 //   model.json
-//   model.pb
 //   weights.bin
-//   spm.model
 //
 // The model.json content:
 // {
@@ -70,7 +68,6 @@ constexpr char kMaxTokensKey[] = "max_tokens";
 constexpr char kAdaptationRanksKey[] = "adaptation_ranks";
 constexpr char kModelPathKey[] = "model_path";
 constexpr char kWeightPathKey[] = "weight_path";
-constexpr char kSpModelPathKey[] = "sp_model_path";
 constexpr char kTsDataPathKey[] = "ts_data_path";
 constexpr char kTsSpModelPathKey[] = "ts_sp_model_path";
 constexpr char kTsDimensionKey[] = "ts_dimension";
@@ -300,8 +297,6 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
     return;
   }
 
-  const std::string* sp_model = model_dict->FindString(kSpModelPathKey);
-
   std::optional<int> max_tokens = model_dict->FindInt(kMaxTokensKey);
 
   const base::Value::List* ada_list = model_dict->FindList(kAdaptationRanksKey);
@@ -320,12 +315,6 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
   std::optional<int> ts_dimension = model_dict->FindInt(kTsDimensionKey);
 
   on_device_model::ModelAssetPaths model_paths;
-  if (sp_model) {
-    model_paths.sp_model = dlc_root.Append(*sp_model);
-  }
-  if (model_path) {
-    model_paths.model = dlc_root.Append(*model_path);
-  }
   model_paths.weights = dlc_root.Append(*weight_path);
   if (ts_data) {
     model_paths.ts_data = dlc_root.Append(*ts_data);

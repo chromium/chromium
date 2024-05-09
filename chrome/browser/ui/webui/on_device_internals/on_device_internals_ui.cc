@@ -32,8 +32,6 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   // model and crash the service. Hence we omit TS model assets for now.
   on_device_model::ModelAssetPaths model_paths;
   if (base::DirectoryExists(model_path)) {
-    model_paths.sp_model = model_path.Append(optimization_guide::kSpModelFile);
-    model_paths.model = model_path.Append(optimization_guide::kModelFile);
     model_paths.weights = model_path.Append(optimization_guide::kWeightsFile);
   } else {
     model_paths.weights = model_path;

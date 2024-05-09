@@ -39,10 +39,6 @@ const base::FilePath::CharType kOldOptimizationGuidePredictionModelDownloads[] =
 const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
     FILE_PATH_LITERAL("optimization_guide_model_store");
 
-const base::FilePath::CharType kSpModelFile[] = FILE_PATH_LITERAL("spm.model");
-
-const base::FilePath::CharType kModelFile[] = FILE_PATH_LITERAL("model.pb");
-
 const base::FilePath::CharType kWeightsFile[] =
     FILE_PATH_LITERAL("weights.bin");
 

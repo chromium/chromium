@@ -62,14 +62,6 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
   PrefetchFile(paths.weights);
 
   ModelAssets assets;
-  if (!paths.sp_model.empty()) {
-    assets.sp_model = base::File(paths.sp_model,
-                                 base::File::FLAG_OPEN | base::File::FLAG_READ);
-  }
-  if (!paths.model.empty()) {
-    assets.model =
-        base::File(paths.model, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  }
 
   if (paths.HasSafetyFiles()) {
     assets.ts_data = base::File(paths.ts_data,

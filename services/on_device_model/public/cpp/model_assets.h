@@ -22,8 +22,6 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssetPaths {
     return !ts_data.empty() && !ts_sp_model.empty();
   }
 
-  base::FilePath sp_model;
-  base::FilePath model;
   base::FilePath weights;
   base::FilePath ts_data;
   base::FilePath ts_sp_model;
@@ -38,8 +36,6 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssets {
   ModelAssets& operator=(ModelAssets&&);
   ~ModelAssets();
 
-  base::File sp_model;
-  base::File model;
   base::File weights;
   base::File ts_data;
   base::File ts_sp_model;

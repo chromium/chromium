@@ -62,10 +62,6 @@ extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
 
 // Files expected to be in the on device model bundle.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kSpModelFile[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType kModelFile[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kWeightsFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];

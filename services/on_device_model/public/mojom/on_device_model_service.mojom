@@ -13,9 +13,6 @@ import "services/on_device_model/public/mojom/on_device_model.mojom";
 
 // Opened file resources needed to define the model.
 struct ModelAssets {
-  mojo_base.mojom.ReadOnlyFile? sp_model;
-  mojo_base.mojom.ReadOnlyFile? model;
-
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
 

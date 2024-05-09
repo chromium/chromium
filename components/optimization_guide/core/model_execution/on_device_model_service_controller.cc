@@ -147,8 +147,6 @@ OnDeviceModelServiceController::CreateSession(
 
   CHECK(model_metadata_);
   on_device_model::ModelAssetPaths model_paths;
-  model_paths.sp_model = model_metadata_->model_path().Append(kSpModelFile);
-  model_paths.model = model_metadata_->model_path().Append(kModelFile);
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
   // TODO(b:336356889): Move the text safety and language detection model config

@@ -510,21 +510,6 @@ LoadModelResult OnDeviceModelExecutor::Init(
     return LoadModelResult::kGpuBlocked;
   }
   on_device_model::ModelAssets assets = std::move(params->assets);
-  if (assets.sp_model.IsValid()) {
-    sentencepiece_model_proto_ = std::make_unique<base::MemoryMappedFile>();
-    if (!sentencepiece_model_proto_->Initialize(std::move(assets.sp_model))) {
-      LOG(ERROR) << "Unable to load sentencepiece model";
-      return LoadModelResult::kFailedToLoadLibrary;
-    }
-  }
-
-  if (assets.model.IsValid()) {
-    model_proto_ = std::make_unique<base::MemoryMappedFile>();
-    if (!model_proto_->Initialize(std::move(assets.model))) {
-      LOG(ERROR) << "Unable to load model";
-      return LoadModelResult::kFailedToLoadLibrary;
-    }
-  }
 
   if (assets.ts_data.IsValid()) {
     if (!ts_data_.Initialize(std::move(assets.ts_data)) ||
