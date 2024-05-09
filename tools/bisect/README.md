@@ -62,11 +62,18 @@ Add `sudo` if you hit permission issues.
 Proceed by following the instructions (you can pass in 0 for project id),
 use google.com account.
 
-3.  Use this commandline to download the script to the depot_tools folder.
+3.  Download the script to the depot_tools folder.
+
+Linux and MacOS:
 
 `depot_tools$ curl -s --basic -n
 "https://chromium.googlesource.com/chromium/src/+/main/tools/bisect/bisect_builds.py?format=TEXT"
 | base64 -d > bisect_builds.py`
+
+Windows:
+
+`depot_tools> curl -s --basic -n "https://chromium.googlesource.com/chromium/src/+/main/tools/bisect/bisect_builds.py?format=TEXT" > tmp.b64`
+`depot_tools> certutil -decode tmp.b64 bisect_builds.py`
 
 4.  Start bisection
 
@@ -79,6 +86,10 @@ commit. If official build doesn't work for you, please file a bug.
 
 * If a regression happens to both x64 and arm, using x64 would have a higher
 chance to bisect to a single commit for official build.
+
+* For Googlers on corp machines, you might need to follow the
+[internal Chrome build instructions](http://go/building-chrome) for permission
+stuff.
 
 ## Modify the script
 Please don't add dependencies. There are people who need to only checkout the
