@@ -250,6 +250,7 @@ crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtens
 # Extensions not available on Fuchsia
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 [ fuchsia ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+[ fuchsia ] WebglExtension_EXT_float_blend [ Skip ]
 [ fuchsia web-engine-shell ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 [ fuchsia web-engine-shell ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 [ fuchsia web-engine-shell passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
@@ -257,6 +258,7 @@ crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtens
 [ fuchsia web-engine-shell passthrough angle-vulkan ] WebglExtension_WEBGL_blend_func_extended [ Skip ]
 
 # Disabling as they cannot pass with protected memory.
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Skip ]
 crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
 crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
 crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
