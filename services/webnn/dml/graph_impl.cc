@@ -2568,6 +2568,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   const NodeOutput* indices = GetNodeOutputForOperand(
       id_to_node_output_map, gather->indices_operand_id);
   auto indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(indices_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_UINT32 ||
+        indices_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_INT64);
   size_t indices_rank = indices_tensor_desc.GetDimensions().size();
   if (!base::MakeCheckedNum(indices_rank).IsValid<uint32_t>()) {
     return base::unexpected(

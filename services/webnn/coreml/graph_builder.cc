@@ -1584,6 +1584,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGather(
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
+  CHECK(indices_operand_info.mil_data_type ==
+            CoreML::Specification::MILSpec::DataType::UINT32 ||
+        indices_operand_info.mil_data_type ==
+            CoreML::Specification::MILSpec::DataType::INT64);
+
   // TODO: crbug.com/338640913 - figure out what data type should be allowed for
   // WebNN.
   static constexpr auto kSupportedGatherIndicesTypes =
@@ -1595,6 +1600,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGather(
           indices_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported indices datatype.");
   }
+
   static constexpr char kParamIndices[] = "indices";
   static constexpr char kParamValidateIndices[] = "validate_indices";
 
