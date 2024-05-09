@@ -710,6 +710,10 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsSliderV2) {
   RunSettingsTest("controls/v2/settings_slider_v2_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsToggleV2) {
+  RunSettingsTest("controls/v2/settings_toggle_v2_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageBruschettaSubpage) {
   RunSettingsTest("crostini_page/bruschetta_subpage_test.js");
