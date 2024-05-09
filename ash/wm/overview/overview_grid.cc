@@ -1142,14 +1142,16 @@ void OverviewGrid::RearrangeDuringDrag(
 
 void OverviewGrid::SetSplitViewDragIndicatorsDraggedWindow(
     aura::Window* dragged_window) {
-  DCHECK(split_view_drag_indicators_);
-  split_view_drag_indicators_->SetDraggedWindow(dragged_window);
+  if (split_view_drag_indicators_) {
+    split_view_drag_indicators_->SetDraggedWindow(dragged_window);
+  }
 }
 
 void OverviewGrid::SetSplitViewDragIndicatorsWindowDraggingState(
     SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
-  DCHECK(split_view_drag_indicators_);
-  split_view_drag_indicators_->SetWindowDraggingState(window_dragging_state);
+  if (split_view_drag_indicators_) {
+    split_view_drag_indicators_->SetWindowDraggingState(window_dragging_state);
+  }
 }
 
 bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {

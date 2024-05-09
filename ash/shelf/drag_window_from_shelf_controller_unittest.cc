@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -687,6 +688,26 @@ TEST_F(DragWindowFromShelfControllerTest,
             drag_indicators->current_window_dragging_state());
 
   EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
+}
+
+// Tests no crash on dragging from shelf from the split view drag indicators.
+// Regression test for http://b/339071708.
+TEST_F(DragWindowFromShelfControllerTest, NoCrashOnSplitViewDragIndicators) {
+  UpdateDisplay("500x400");
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  auto window = CreateTestWindow();
+
+  // Drag just enough to show the shelf.
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  Drag(gfx::Point(200, 200), 0.f,
+       DragWindowFromShelfController::kShowOverviewThreshold + 1);
+  ASSERT_FALSE(OverviewController::Get()->InOverviewSession());
+
+  // Enable chromevox to destroy the drag indicators.
+  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
+
+  // Continue dragging to the top.
+  Drag(gfx::Point(10, 399), 0.5f, 0.5f);
 }
 
 // Test there is no black backdrop behind the dragged window if we're doing the
