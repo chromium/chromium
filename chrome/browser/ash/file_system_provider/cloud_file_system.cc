@@ -246,21 +246,12 @@ AbortCallback CloudFileSystem::ReadFile(int file_handle,
   // `StartReadBytes` succeeds, an actual read of the underlying FD will be
   // kicked off, for the purposes of this method it has finished successfully.
   const OpenedCloudFile& opened_cloud_file = it->second;
-  if (content_cache_->StartReadBytes(
-          opened_cloud_file, buffer, offset, length,
-          base::BindRepeating(&CloudFileSystem::OnReadFileFromCacheCompleted,
-                              weak_ptr_factory_.GetWeakPtr(), file_handle,
-                              buffer, offset, length, callback))) {
-    return AbortCallback();
-  }
-
-  // The file doesn't exist in the cache, we need to make a cloud request
-  // first and write the result into the cache upon successful return.
-  return file_system_->ReadFile(
-      file_handle, buffer, offset, length,
-      base::BindRepeating(&CloudFileSystem::OnReadFileCompleted,
+  content_cache_->ReadBytes(
+      opened_cloud_file, buffer, offset, length,
+      base::BindRepeating(&CloudFileSystem::OnReadFileFromCacheCompleted,
                           weak_ptr_factory_.GetWeakPtr(), file_handle, buffer,
                           offset, length, callback));
+  return AbortCallback();
 }
 
 void CloudFileSystem::OnReadFileFromCacheCompleted(
@@ -276,6 +267,17 @@ void CloudFileSystem::OnReadFileFromCacheCompleted(
     // If the cached read file was successful, ensure that is passed to the
     // caller.
     callback.Run(bytes_read, has_more, result);
+    return;
+  }
+
+  if (result == base::File::FILE_ERROR_NOT_FOUND) {
+    // The file doesn't exist in the cache, we need to make a cloud request
+    // first and write the result into the cache upon successful return.
+    file_system_->ReadFile(
+        file_handle, buffer, offset, length,
+        base::BindRepeating(&CloudFileSystem::OnReadFileCompleted,
+                            weak_ptr_factory_.GetWeakPtr(), file_handle, buffer,
+                            offset, length, callback));
     return;
   }
 
@@ -306,14 +308,11 @@ void CloudFileSystem::OnReadFileCompleted(int file_handle,
       std::move(callback), bytes_read, has_more, base::File::FILE_OK);
 
   const OpenedCloudFile& opened_cloud_file = it->second;
-  if (!content_cache_->StartWriteBytes(
-          opened_cloud_file, buffer, offset, bytes_read,
-          base::BindOnce(&CloudFileSystem::OnBytesWrittenToCache,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         opened_cloud_file.file_path,
-                         readchunk_success_callback))) {
-    readchunk_success_callback.Run();
-  }
+  content_cache_->WriteBytes(
+      opened_cloud_file, buffer, offset, bytes_read,
+      base::BindOnce(&CloudFileSystem::OnBytesWrittenToCache,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     opened_cloud_file.file_path, readchunk_success_callback));
 }
 
 void CloudFileSystem::OnBytesWrittenToCache(

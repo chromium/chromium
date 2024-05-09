@@ -46,7 +46,7 @@ class ContentCache {
   // when the bytes exist in the content cache and can be read (the actual bytes
   // will be stored in the `buffer` and `callback` invoked on finish) and false
   // if the bytes don't exist.
-  virtual bool StartReadBytes(
+  virtual void ReadBytes(
       const OpenedCloudFile& file,
       net::IOBuffer* buffer,
       int64_t offset,
@@ -60,11 +60,11 @@ class ContentCache {
   //     contiguous chunk to be written.
   //   - No other writer must be writing to the file at the moment
   // If any conditions are not satisfied, return false.
-  virtual bool StartWriteBytes(const OpenedCloudFile& file,
-                               net::IOBuffer* buffer,
-                               int64_t offset,
-                               int length,
-                               FileErrorCallback callback) = 0;
+  virtual void WriteBytes(const OpenedCloudFile& file,
+                          net::IOBuffer* buffer,
+                          int64_t offset,
+                          int length,
+                          FileErrorCallback callback) = 0;
 
   // Reads and writes are performed in "chunks". An attempt is made to re-use
   // open file descriptors to avoid opening/closing them on every chunk request.

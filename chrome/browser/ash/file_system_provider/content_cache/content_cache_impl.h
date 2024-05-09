@@ -39,18 +39,18 @@ class ContentCacheImpl : public ContentCache {
 
   void SetMaxCacheItems(size_t max_cache_items) override;
 
-  bool StartReadBytes(
+  void ReadBytes(
       const OpenedCloudFile& file,
       net::IOBuffer* buffer,
       int64_t offset,
       int length,
       ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) override;
 
-  bool StartWriteBytes(const OpenedCloudFile& file,
-                       net::IOBuffer* buffer,
-                       int64_t offset,
-                       int length,
-                       FileErrorCallback callback) override;
+  void WriteBytes(const OpenedCloudFile& file,
+                  net::IOBuffer* buffer,
+                  int64_t offset,
+                  int length,
+                  FileErrorCallback callback) override;
 
   void CloseFile(const OpenedCloudFile& file) override;
 

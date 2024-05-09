@@ -252,7 +252,7 @@ void ContentCacheImpl::EvictItems() {
   }
 }
 
-bool ContentCacheImpl::StartReadBytes(
+void ContentCacheImpl::ReadBytes(
     const OpenedCloudFile& file,
     net::IOBuffer* buffer,
     int64_t offset,
@@ -267,24 +267,32 @@ bool ContentCacheImpl::StartReadBytes(
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
     VLOG(1) << "Cache miss: entire file is not in cache";
-    return false;
+    callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
+                 base::File::FILE_ERROR_NOT_FOUND);
+    return;
   }
 
+  auto local_file_it = local_files_.find(file.request_id);
+  bool already_opened = local_file_it != local_files_.end();
   const CacheFileContext& ctx = it->second;
-  if (ctx.pending_removal()) {
+  if (!already_opened && ctx.pending_removal()) {
     VLOG(1) << "Cache miss: file evicted";
-    return false;
+    callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
+                 base::File::FILE_ERROR_NOT_FOUND);
+    return;
   }
 
   if (ctx.version_tag() != file.version_tag) {
     VLOG(1) << "Cache miss: file is not up to date";
-    return false;
+    callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
+                 base::File::FILE_ERROR_NOT_FOUND);
+    return;
   }
 
   if (offset == ctx.bytes_on_disk() && offset == file.bytes_in_cloud) {
     VLOG(1) << "Ignored request: offset is at EOF";
     callback.Run(0, false, base::File::FILE_OK);
-    return true;
+    return;
   }
 
   // In the event the offset exceeds the known `bytes_on_disk` then we can't
@@ -294,7 +302,9 @@ bool ContentCacheImpl::StartReadBytes(
             << "', length = '" << length
             << "'} not available {bytes_on_disk = '" << ctx.bytes_on_disk()
             << "'}";
-    return false;
+    callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
+                 base::File::FILE_ERROR_NOT_FOUND);
+    return;
   }
 
   // It's possible that the file on disk can't entirely fulfill the offset +
@@ -312,8 +322,6 @@ bool ContentCacheImpl::StartReadBytes(
                        base::BindOnce(&ContentCacheImpl::OnBytesRead,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       file.file_path, std::move(callback)));
-
-  return true;
 }
 
 void ContentCacheImpl::OnBytesRead(
@@ -347,16 +355,17 @@ void ContentCacheImpl::OnBytesRead(
   callback.Run(bytes_read, /*has_more=*/false, base::File::FILE_OK);
 }
 
-bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
-                                       net::IOBuffer* buffer,
-                                       int64_t offset,
-                                       int length,
-                                       FileErrorCallback callback) {
+void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
+                                  net::IOBuffer* buffer,
+                                  int64_t offset,
+                                  int length,
+                                  FileErrorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (file.version_tag.empty()) {
     VLOG(1) << "Empty version tag can't be written to cache";
-    return false;
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
   }
 
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
@@ -371,19 +380,22 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
   CacheFileContext& ctx = it->second;
   if (ctx.pending_removal()) {
     VLOG(1) << "Cache miss: file evicted";
-    return false;
+    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+    return;
   }
 
   if (ctx.bytes_on_disk() != offset) {
     VLOG(1) << "Unsupported write offset supplied {bytes_on_disk = '"
             << ctx.bytes_on_disk() << "', offset = '" << offset << "'}";
-    return false;
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
   }
 
   if (ctx.has_writer()) {
     VLOG(1)
         << "Writer is in progress already, multi offset writers not supported";
-    return false;
+    std::move(callback).Run(base::File::FILE_ERROR_IN_USE);
+    return;
   }
   ctx.set_has_writer(true);
 
@@ -411,8 +423,6 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
     local_file.WriteBytes(base::WrapRefCounted(buffer), offset, length,
                           std::move(on_bytes_written_callback));
   }
-
-  return true;
 }
 
 void ContentCacheImpl::CloseFile(const OpenedCloudFile& file) {
