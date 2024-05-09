@@ -9,7 +9,6 @@ mfacey@chromium.org
 mpearson@chromium.org
 orinj@chromium.org
 pnoland@chromium.org
-tommycli@chromium.org
 yoangela@chromium.org
 
 per-file *.mojom=set noparent
