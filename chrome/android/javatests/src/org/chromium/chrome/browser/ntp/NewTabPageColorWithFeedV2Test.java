@@ -114,7 +114,7 @@ public class NewTabPageColorWithFeedV2Test {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testTextBoxBackgroundColor_SurfacePolishOmniboxColorEnabled() throws Exception {
+    public void testTextBoxBackgroundColor_SurfacePolishEnabled() throws Exception {
         RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
         Context context = mActivityTestRule.getActivity();

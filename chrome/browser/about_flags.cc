@@ -2416,23 +2416,16 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kSurfacePolish_mvp[] = {
-    {"scrollable_mvt", "true"},
-    {"move_down_logo", "true"}};
+    {"scrollable_mvt", "true"}};
 
 const FeatureEntry::FeatureParam kSurfacePolish_less_brand_space[] = {
     {"scrollable_mvt", "true"},
-    {"move_down_logo", "true"},
     {"less_brand_space", "true"}};
-
-const FeatureEntry::FeatureParam kSurfacePolish_mvp_2row_mvt[] = {
-    {"move_down_logo", "true"}};
 
 const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
     {"Arm 1: MVP", kSurfacePolish_mvp, std::size(kSurfacePolish_mvp), nullptr},
     {"Arm 2: Less brand space", kSurfacePolish_less_brand_space,
      std::size(kSurfacePolish_less_brand_space), nullptr},
-    {"Arm 3: MVP with 2 row MVT", kSurfacePolish_mvp_2row_mvt,
-     std::size(kSurfacePolish_mvp_2row_mvt), nullptr},
 };
 
 const FeatureEntry::FeatureParam kLogoPolish_large[] = {

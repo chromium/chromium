@@ -935,10 +935,9 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testInitializeLogoWhenSurfacePolishedMoveDownLogoEnabled() {
+    public void testInitializeLogoWhenSurfacePolished() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
-        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(true);
         Assert.assertTrue(ReturnToChromeUtil.moveDownLogo());
 
         StartSurfaceMediator mediator =
@@ -948,22 +947,6 @@ public class StartSurfaceMediatorUnitTest {
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
         verify(mLogoBridge).getCurrentLogo(anyLong(), any(), any());
         Assert.assertTrue(mediator.isLogoVisible());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testNotInitializeLogoWhenSurfacePolishedMoveDownLogoDisabled() {
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(false);
-        Assert.assertFalse(ReturnToChromeUtil.moveDownLogo());
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(/* hadWarmStart= */ false, /* useMagicStack= */ false);
-        showHomepageAndVerify(mediator);
-
-        verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
-        Assert.assertFalse(mediator.isLogoVisible());
     }
 
     @Test
@@ -1085,9 +1068,7 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testDefaultSearchEngineChanged() {
-        boolean isMoveDownLogoEnabled =
-                ChromeFeatureList.sSurfacePolish.isEnabled()
-                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
+        boolean isMoveDownLogoEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mProfileSupplier = new ObservableSupplierImpl<>();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* hadWarmStart= */ false, /* useMagicStack= */ false);

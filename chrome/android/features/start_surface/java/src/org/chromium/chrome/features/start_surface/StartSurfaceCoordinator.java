@@ -606,8 +606,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         }
 
-        if (mIsSurfacePolishEnabled
-                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
+        if (mIsSurfacePolishEnabled) {
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
                 return LogoUtils.getLogoTotalHeightPolishedShort(resources);
             }

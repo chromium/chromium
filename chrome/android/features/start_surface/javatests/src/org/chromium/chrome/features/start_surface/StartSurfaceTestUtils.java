@@ -499,8 +499,7 @@ public class StartSurfaceTestUtils {
             logoInSurfaceHeight =
                     LogoUtils.getLogoTotalHeightForLogoPolish(
                             resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
-        } else if (isSurfacePolishEnabled
-                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
+        } else if (isSurfacePolishEnabled) {
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
                 logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolishedShort(resources);
             } else {

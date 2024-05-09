@@ -62,7 +62,6 @@ public class StartSurfaceToolbarCoordinator {
     private CallbackController mCallbackController = new CallbackController();
     private boolean mIsNativeInitialized;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishMoveDownLogoEnabled;
     private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
     // This is used for 2 cases for the surface polish project, one is when the logo is moved down
     // from the toolbar, and the other is when the logo is moved down from the toolbar with less
@@ -86,11 +85,8 @@ public class StartSurfaceToolbarCoordinator {
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mStub = startSurfaceToolbarStub;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishMoveDownLogoEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
         mIsSurfacePolishLessBrandSpaceEnabled =
-                mIsSurfacePolishMoveDownLogoEnabled
+                mIsSurfacePolishEnabled
                         && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
 
         if (mIsSurfacePolishEnabled) {
@@ -261,7 +257,7 @@ public class StartSurfaceToolbarCoordinator {
         int fakeSearchBoxMarginToScreenTop;
         if (mIsSurfacePolishEnabled) {
             fakeSearchBoxMarginToScreenTop =
-                    isBigLogoShownInContent && mIsSurfacePolishMoveDownLogoEnabled
+                    isBigLogoShownInContent
                             ? mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo
                             : mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar;
         } else {
@@ -354,15 +350,12 @@ public class StartSurfaceToolbarCoordinator {
                             + LogoUtils.getLogoTotalHeightForLogoPolish(
                                     resources,
                                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
+        } else if (mIsSurfacePolishLessBrandSpaceEnabled) {
+            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+                    toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolishedShort(resources);
         } else {
-            if (mIsSurfacePolishLessBrandSpaceEnabled) {
-                mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
-                        toolbarPlaceholderHeight
-                                + LogoUtils.getLogoTotalHeightPolishedShort(resources);
-            } else if (mIsSurfacePolishMoveDownLogoEnabled) {
-                mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
-                        toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolished(resources);
-            }
+            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+                    toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolished(resources);
         }
         mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar =
                 toolbarPlaceholderHeight

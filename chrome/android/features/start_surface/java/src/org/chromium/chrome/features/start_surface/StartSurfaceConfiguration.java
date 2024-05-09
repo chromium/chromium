@@ -92,11 +92,6 @@ public class StartSurfaceConfiguration {
                     START_SURFACE_RETURN_TIME_USE_MODEL_PARAM,
                     false);
 
-    private static final String SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM = "move_down_logo";
-    public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_MOVE_DOWN_LOGO =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_MOVE_DOWN_LOGO_PARAM, true);
-
     private static final String SURFACE_POLISH_LESS_BRAND_SPACE_PARAM = "less_brand_space";
     public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_LESS_BRAND_SPACE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
