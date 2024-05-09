@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -33,6 +35,9 @@ using PipelineBlock = void (^)(void (^completion)(BOOL));
 using PipelineCompletionBlock = void (^)(NSUInteger index);
 
 namespace {
+
+// Point size of the SF Symbol used for default icons.
+const CGFloat kSymbolPointSize = 17.0f;
 
 // Struct that describes suggestion state.
 struct AutofillSuggestionState {
@@ -81,6 +86,17 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
       RunSearchPipeline(blocks, on_complete, from_index + 1);
     }
   });
+}
+
+// Returns the default icon for the suggestion type.
+NSString* defaultIconForType(autofill::SuggestionType type) {
+  switch (type) {
+    case autofill::SuggestionType::kGeneratePasswordEntry:
+      return kPasswordManagerSymbol;
+    case autofill::SuggestionType::kAutocompleteEntry:
+    default:
+      return nil;
+  }
 }
 
 }  // namespace
@@ -275,7 +291,7 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
   }
 
   _provider = provider;
-  _suggestionState->suggestions = [suggestions copy];
+  _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
   [self updateKeyboard:_suggestionState.get()];
 }
 
@@ -349,6 +365,43 @@ void RunSearchPipeline(NSArray<PipelineBlock>* blocks,
 }
 
 #pragma mark - Private
+
+// Copies the incoming suggestions, making adjustments if necessary.
+- (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
+    (NSArray<FormSuggestion*>*)suggestions {
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return [suggestions copy];
+  }
+
+  NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
+  for (FormSuggestion* suggestion : suggestions) {
+    NSString* defaultIcon = defaultIconForType(suggestion.popupItemId);
+    // If there are no icons, but we have a default icon for this suggestion,
+    // copy the suggestion and add the default icon.
+    if (!suggestion.icon && defaultIcon) {
+      // If we ever get suggestions with metadata here, we'll need to use a
+      // different [FormSuggestion suggestionWithValue:...] to perform the copy.
+      CHECK(!suggestion.metadata.is_single_username_form);
+
+      UIImage* icon = MakeSymbolMulticolor(
+          CustomSymbolWithPointSize(defaultIcon, kSymbolPointSize));
+      [suggestionsCopy
+          addObject:[FormSuggestion
+                               suggestionWithValue:suggestion.value
+                                        minorValue:suggestion.minorValue
+                                displayDescription:suggestion.displayDescription
+                                              icon:icon
+                                       popupItemId:suggestion.popupItemId
+                                 backendIdentifier:suggestion.backendIdentifier
+                                    requiresReauth:suggestion.requiresReauth
+                        acceptanceA11yAnnouncement:
+                            suggestion.acceptanceA11yAnnouncement]];
+    } else {
+      [suggestionsCopy addObject:suggestion];
+    }
+  }
+  return suggestionsCopy;
+}
 
 // Performs the suggestion selection based on the provided suggestion state.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion

@@ -103,19 +103,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     AddSameConstraints(stackView, self);
 
     if (suggestion.icon) {
-      UIImage* icon = suggestion.icon;
-      if (IsKeyboardAccessoryUpgradeEnabled()) {
-        if (icon && (icon.size.width > 0) &&
-            (icon.size.width < kSuggestionIconWidth)) {
-          // For a simple image resize, we can keep the same underlying image
-          // and only adjust the ratio.
-          CGFloat ratio = icon.size.width / kSuggestionIconWidth;
-          icon = [UIImage imageWithCGImage:[icon CGImage]
-                                     scale:icon.scale * ratio
-                               orientation:icon.imageOrientation];
-        }
-      }
-      UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+      UIImageView* iconView = [[UIImageView alloc]
+          initWithImage:[self resizeIconIfNecessary:suggestion.icon]];
       // If we have an icon, we want to see the icon and let the text be
       // truncated rather than expanding the text area and hiding the icon.
       [iconView
@@ -250,6 +239,28 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
 - (CGFloat)borderWidth {
   return IsKeyboardAccessoryUpgradeEnabled() ? kSmallBorderWidth : kBorderWidth;
+}
+
+// Returns whether this label is for a credit card suggestion.
+- (BOOL)isCreditCardSuggestion {
+  return (_suggestion.popupItemId ==
+          autofill::SuggestionType::kCreditCardEntry) ||
+         (_suggestion.popupItemId ==
+          autofill::SuggestionType::kVirtualCreditCardEntry);
+}
+
+// Resize the icon if it's a credit card icon which requires an upscaling.
+- (UIImage*)resizeIconIfNecessary:(UIImage*)icon {
+  if (IsKeyboardAccessoryUpgradeEnabled() && [self isCreditCardSuggestion] &&
+      icon && icon.size.width > 0 && icon.size.width < kSuggestionIconWidth) {
+    // For a simple image resize, we can keep the same underlying image
+    // and only adjust the ratio.
+    CGFloat ratio = icon.size.width / kSuggestionIconWidth;
+    icon = [UIImage imageWithCGImage:[icon CGImage]
+                               scale:icon.scale * ratio
+                         orientation:icon.imageOrientation];
+  }
+  return icon;
 }
 
 // Computes the suggestion label's maximum width.
