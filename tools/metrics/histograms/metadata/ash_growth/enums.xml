@@ -33,6 +33,42 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Notification"/>
 </enum>
 
+<enum name="CampaignsManagerError">
+  <int value="0" label="Loading campaigns component failed"/>
+  <int value="1" label="Loading campaigns file failed"/>
+  <int value="2" label="Parsing campaigns file failed"/>
+  <int value="3" label="User pref is not available at campaigns matching"/>
+  <int value="4" label="Invalid campaign"/>
+  <int value="5" label="Invalid targeting"/>
+  <int value="6" label="Invalid scheduling targeting"/>
+  <int value="7" label="Invalid scheduling"/>
+  <int value="8" label="Demo Mode app version is not available at matching"/>
+  <int value="9" label="Serializing Demo Mode payload failed"/>
+  <int value="10" label="Parsing open url params failed"/>
+  <int value="11" label="Missing action type"/>
+  <int value="12" label="Invalid app targeting"/>
+  <int value="13" label="Invalid anchor type"/>
+  <int value="14" label="Unrecognized built in icon"/>
+  <int value="15" label="Missing campaign ID"/>
+  <int value="16" label="Invalid action"/>
+  <int value="17" label="Perofrm action failed"/>
+  <int value="18" label="Invalid event targeting condition"/>
+  <int value="19" label="Invalid event targeting condition param"/>
+  <int value="20" label="No opened window to anchor"/>
+  <int value="21" label="No opened window widget to anchor"/>
+  <int value="22" label="No root view to get anchor view"/>
+  <int value="23" label="Invalid image config in nudge payload"/>
+  <int value="24" label="Missing body in nudge payload"/>
+  <int value="25" label="Anchor view not found for anchoring nudge"/>
+  <int value="26" label="Missing icon config in notification payload"/>
+  <int value="27" label="Invalid icon config in notification payload"/>
+  <int value="28" label="Invalid button config in notification payload"/>
+  <int value="29" label="Missing button label in notification payload"/>
+  <int value="30" label="Invalid button action in notification payload"/>
+  <int value="31" label="Invalid notification payload"/>
+  <int value="32" label="Invalid trigger targeting"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
