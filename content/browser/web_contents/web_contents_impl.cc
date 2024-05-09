@@ -2894,11 +2894,11 @@ void WebContentsImpl::AttachInnerWebContents(
                                render_frame_host_impl);
 
   // Create a proxy in top-level RenderFrameHostManager, pointing to the
-  // SiteInstance of the outer WebContents. The proxy will be used to send
+  // SiteInstanceGroup of the outer WebContents. The proxy will be used to send
   // postMessage to the inner WebContents.
   auto* proxy =
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
-          render_frame_host_impl->GetSiteInstance(),
+          render_frame_host_impl->GetSiteInstance()->group(),
           inner_main_frame->frame_tree_node(), blink::RemoteFrameToken());
   if (remote_frame && remote_frame_host_receiver) {
     proxy->BindRemoteFrameInterfaces(std::move(remote_frame),
@@ -8811,11 +8811,12 @@ void WebContentsImpl::EnsureOpenerProxiesExist(
       // process but we intentionally do not expose the embedder's opener chain
       // to it.
       source_web_contents->GetRenderManager()->CreateRenderFrameProxy(
-          GetSiteInstance(),
+          GetSiteInstance()->group(),
           source_web_contents->GetPrimaryMainFrame()->browsing_context_state());
     } else {
       source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
-          GetSiteInstance(), nullptr, source_rfh->browsing_context_state());
+          GetSiteInstance()->group(), nullptr,
+          source_rfh->browsing_context_state());
     }
   }
 }

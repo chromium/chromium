@@ -117,7 +117,7 @@ void BrowsingContextState::DeleteRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     const scoped_refptr<RenderViewHostImpl>& rvh,
     FrameTreeNode* frame_tree_node,
     ProxyAccessMode proxy_access_mode,
@@ -125,7 +125,7 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
   TRACE_EVENT_BEGIN(
       "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
       ChromeTrackEvent::kBrowsingContextState, this,
-      ChromeTrackEvent::kSiteInstanceGroup, site_instance->group(),
+      ChromeTrackEvent::kSiteInstanceGroup, site_instance_group,
       ChromeTrackEvent::kRenderViewHost, rvh ? rvh.get() : nullptr,
       ChromeTrackEvent::kFrameTreeNodeInfo, frame_tree_node);
 
@@ -142,16 +142,16 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
       proxy_access_mode == ProxyAccessMode::kRegular) {
     // See comments in GetRenderFrameProxyHost for why this check is needed.
     CHECK_EQ(coop_related_group_token_.value(),
-             site_instance->coop_related_group_token());
+             site_instance_group->coop_related_group_token());
   }
 
-  auto site_instance_group_id = site_instance->group()->GetId();
+  auto site_instance_group_id = site_instance_group->GetId();
   CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
       << "A proxy already existed for this SiteInstanceGroup.";
   RenderFrameProxyHost* proxy_host = new RenderFrameProxyHost(
-      site_instance, std::move(rvh), frame_tree_node, frame_token);
+      site_instance_group, std::move(rvh), frame_tree_node, frame_token);
   proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
-  site_instance->group()->AddObserver(this);
+  site_instance_group->AddObserver(this);
 
   TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost,
                   proxy_host);
@@ -159,11 +159,11 @@ RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
 }
 
 RenderFrameProxyHost* BrowsingContextState::CreateOuterDelegateProxy(
-    SiteInstanceImpl* outer_contents_site_instance,
+    SiteInstanceGroup* outer_contents_site_instance_group,
     FrameTreeNode* frame_tree_node,
     const blink::RemoteFrameToken& frame_token) {
   // We only get here when Delegate for this manager is an inner delegate.
-  return CreateRenderFrameProxyHost(outer_contents_site_instance,
+  return CreateRenderFrameProxyHost(outer_contents_site_instance_group,
                                     /*rvh=*/nullptr, frame_tree_node,
                                     ProxyAccessMode::kAllowOuterDelegate,
                                     frame_token);

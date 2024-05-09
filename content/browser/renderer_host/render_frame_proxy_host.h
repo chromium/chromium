@@ -111,7 +111,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
       const blink::RemoteFrameToken& frame_token);
   static bool IsFrameTokenInUse(const blink::RemoteFrameToken& frame_token);
 
-  RenderFrameProxyHost(SiteInstanceImpl* site_instance,
+  RenderFrameProxyHost(SiteInstanceGroup* site_instance_group,
                        scoped_refptr<RenderViewHostImpl> render_view_host,
                        FrameTreeNode* frame_tree_node,
                        const blink::RemoteFrameToken& frame_token);
@@ -137,11 +137,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
-  // TODO(crbug.com/40176090): Remove GetSiteInstanceDeprecated() in favor of
-  // site_instance_group().
-  SiteInstanceImpl* GetSiteInstanceDeprecated() const {
-    return site_instance_deprecated_.get();
-  }
   SiteInstanceGroup* site_instance_group() const {
     return site_instance_group_.get();
   }
@@ -327,10 +322,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // This RenderFrameProxyHost's routing id.
   int routing_id_;
-
-  // The SiteInstance this proxy is associated with.
-  // TODO(crbug.com/40176090): Remove this in favor of site_instance_group_.
-  scoped_refptr<SiteInstanceImpl> site_instance_deprecated_;
 
   // The SiteInstanceGroup this RenderFrameProxyHost belongs to, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.

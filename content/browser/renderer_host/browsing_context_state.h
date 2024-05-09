@@ -36,7 +36,6 @@ CONTENT_EXPORT BrowsingContextStateImplementationType GetBrowsingContextMode();
 namespace content {
 
 class RenderFrameHostImpl;
-class SiteInstanceImpl;
 
 // BrowsingContextState is intended to store all state associated with a given
 // browsing context (BrowsingInstance in the code, as defined in the HTML spec
@@ -227,23 +226,24 @@ class CONTENT_EXPORT BrowsingContextState
                                        const blink::FramePolicy& frame_policy);
 
   // Create a RenderFrameProxyHost owned by this object. This
-  // RenderFrameProxyHost represents the browsing context in this site instance.
+  // RenderFrameProxyHost represents the browsing context in this
+  // SiteInstanceGroup.
   // TODO(crbug.com/40205442): Currently we pass a FrameTreeNode because it is
   // required for the constructor to RenderFrameProxyHost. However, the stored
   // reference to FrameTreeNode should be replaced by a BrowsingContextState
   // instead; FrameTreeNode will need to be removed from here as well.
   RenderFrameProxyHost* CreateRenderFrameProxyHost(
-      SiteInstanceImpl* site_instance,
+      SiteInstanceGroup* site_instance_group,
       const scoped_refptr<RenderViewHostImpl>& rvh,
       FrameTreeNode* frame_tree_node,
       ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular,
       const blink::RemoteFrameToken& frame_token = blink::RemoteFrameToken());
 
   // Called on the RFHM of the inner WebContents to create a
-  // RenderFrameProxyHost in its outer WebContents's SiteInstance,
-  // |outer_contents_site_instance|.
+  // RenderFrameProxyHost in its outer WebContents' SiteInstanceGroup,
+  // |outer_contents_site_instance_group|.
   RenderFrameProxyHost* CreateOuterDelegateProxy(
-      SiteInstanceImpl* outer_contents_site_instance,
+      SiteInstanceGroup* outer_contents_site_instance_group,
       FrameTreeNode* frame_tree_node,
       const blink::RemoteFrameToken& frame_token);
 

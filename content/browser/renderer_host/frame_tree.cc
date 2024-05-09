@@ -491,22 +491,21 @@ void FrameTree::RemoveFrame(FrameTreeNode* child) {
   parent->RemoveChild(child);
 }
 
-void FrameTree::CreateProxiesForSiteInstance(
+void FrameTree::CreateProxiesForSiteInstanceGroup(
     FrameTreeNode* source,
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     const scoped_refptr<BrowsingContextState>&
         source_new_browsing_context_state) {
-  SiteInstanceGroup* group = site_instance->group();
-
   // Will be instantiated with the root proxy later and passed to
   // `CreateRenderFrameProxy()` to batch create proxies for child frames.
   std::unique_ptr<BatchedProxyIPCSender> batched_proxy_ipc_sender;
 
   if (!source || !source->IsMainFrame()) {
-    RenderViewHostImpl* render_view_host = GetRenderViewHost(group).get();
+    RenderViewHostImpl* render_view_host =
+        GetRenderViewHost(site_instance_group).get();
     if (render_view_host) {
-      root()->render_manager()->EnsureRenderViewInitialized(render_view_host,
-                                                            group);
+      root()->render_manager()->EnsureRenderViewInitialized(
+          render_view_host, site_instance_group);
     } else {
       // Due to the check above, we are creating either an opener proxy (when
       // source is null) or a main frame proxy due to a subframe navigation
@@ -514,7 +513,7 @@ void FrameTree::CreateProxiesForSiteInstance(
       // root's current BrowsingContextState, while in the latter case we should
       // use BrowsingContextState from the main RenderFrameHost of the subframe
       // being navigated. We want to ensure that the `blink::WebView` is created
-      // in the right SiteInstance if it doesn't exist, before creating the
+      // in the right SiteInstanceGroup if it doesn't exist, before creating the
       // other proxies; if the `blink::WebView` doesn't exist, the only way to
       // do this is to also create a proxy for the main frame as well.
       const scoped_refptr<BrowsingContextState>& root_browsing_context_state =
@@ -524,56 +523,61 @@ void FrameTree::CreateProxiesForSiteInstance(
       // TODO(crbug.com/40248300): Batch main frame proxy creation and
       // pass an instance of `BatchedProxyIPCSender` here instead of nullptr.
       root()->render_manager()->CreateRenderFrameProxy(
-          site_instance, root_browsing_context_state,
+          site_instance_group, root_browsing_context_state,
           /*batched_proxy_ipc_sender=*/nullptr);
 
       // We only need to use `BatchedProxyIPCSender` when navigating to a new
-      // `SiteInstance`. Proxies do not need to be created when navigating to a
-      // `SiteInstance` that has already been encountered, because site
+      // SiteInstanceGroup. Proxies do not need to be created when navigating to
+      // a SiteInstanceGroup that has already been encountered, because site
       // isolation would guarantee that all nodes already have either proxies
       // or real frames. Due to the check above, the `render_view_host` does
-      // not exist here, which means we have not seen this `SiteInstance`
+      // not exist here, which means we have not seen this SiteInstanceGroup
       // before, so we instantiate `batched_proxy_ipc_sender` to consolidate
       // IPCs for proxy creation.
       base::SafeRef<RenderFrameProxyHost> root_proxy =
           root_browsing_context_state
-              ->GetRenderFrameProxyHost(site_instance->group())
+              ->GetRenderFrameProxyHost(site_instance_group)
               ->GetSafeRef();
       batched_proxy_ipc_sender =
           std::make_unique<BatchedProxyIPCSender>(std::move(root_proxy));
     }
   }
 
-  // Check whether we're in an inner delegate and the group |site_instance| is
-  // in corresponds to the outer delegate.  Subframe proxies aren't needed if
-  // this is the case.
+  // Check whether we're in an inner delegate and the |site_instance_group|
+  // corresponds to the outer delegate. Subframe proxies aren't needed if this
+  // is the case.
   bool is_site_instance_group_for_outer_delegate = false;
   RenderFrameProxyHost* outer_delegate_proxy =
       root()->render_manager()->GetProxyToOuterDelegate();
   if (outer_delegate_proxy) {
     is_site_instance_group_for_outer_delegate =
-        (site_instance->group() == outer_delegate_proxy->site_instance_group());
+        (site_instance_group == outer_delegate_proxy->site_instance_group());
   }
 
   // Proxies are created in the FrameTree in response to a node navigating to a
-  // new SiteInstance. Since |source|'s navigation will replace the currently
-  // loaded document, the entire subtree under |source| will be removed, and
-  // thus proxy creation is skipped for all nodes in that subtree.
+  // new SiteInstanceGroup. Since |source|'s navigation will replace the
+  // currently loaded document, the entire subtree under |source| will be
+  // removed, and thus proxy creation is skipped for all nodes in that subtree.
   //
-  // However, a proxy *is* needed for the |source| node itself.  This lets
-  // cross-process navigations in |source| start with a proxy and follow a
-  // remote-to-local transition, which avoids race conditions in cases where
-  // other navigations need to reference |source| before it commits. See
-  // https://crbug.com/756790 for more background.  Therefore,
-  // NodesExceptSubtree(source) will include |source| in the nodes traversed
-  // (see NodeIterator::operator++).
+  // However, a proxy *is* needed for the |source| node if it is
+  // cross-SiteInstanceGroup from the current node. This lets cross-process
+  // navigations in |source| start with a proxy and follow a remote-to-local
+  // transition, which avoids race conditions in cases where other navigations
+  // need to reference |source| before it commits. See https://crbug.com/756790
+  // for more background. Therefore, NodesExceptSubtree(source) will include
+  // |source| in the nodes traversed (see NodeIterator::operator++).
   for (FrameTreeNode* node : NodesExceptSubtree(source)) {
-    // If a new frame is created in the current SiteInstance, other frames in
-    // that SiteInstance don't need a proxy for the new frame.
+    // If a new frame is created in the current SiteInstanceGroup, other frames
+    // in that SiteInstanceGroup don't need a proxy for the new frame.
     RenderFrameHostImpl* current_host =
         node->render_manager()->current_frame_host();
-    SiteInstanceImpl* current_instance = current_host->GetSiteInstance();
-    if (current_instance != site_instance) {
+    SiteInstanceGroup* current_group = current_host->GetSiteInstance()->group();
+
+    // Check that the proxy is for a different SiteInstanceGroup. This ensures
+    // that a navigation within a SiteInstanceGroup does not cause proxies to be
+    // created. That then allows the Blink side to do a local to local frame
+    // transition within the same process.
+    if (current_group != site_instance_group) {
       if (node == source && !current_host->IsRenderFrameLive()) {
         // We don't create a proxy at |source| when the current RenderFrameHost
         // isn't live.  This is because either (1) the speculative
@@ -602,7 +606,7 @@ void FrameTree::CreateProxiesForSiteInstance(
       // cross-BrowsingInstance navigations). Otherwise, we should use the
       // |node|'s current BrowsingContextState.
       node->render_manager()->CreateRenderFrameProxy(
-          site_instance,
+          site_instance_group,
           node == source ? source_new_browsing_context_state
                          : node->current_frame_host()->browsing_context_state(),
           batched_proxy_ipc_sender.get());

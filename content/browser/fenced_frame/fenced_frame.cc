@@ -263,7 +263,7 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
       inner_root->current_frame_host()
           ->browsing_context_state()
           ->CreateOuterDelegateProxy(
-              owner_render_frame_host_->GetSiteInstance(), inner_root,
+              owner_render_frame_host_->GetSiteInstance()->group(), inner_root,
               frame_token);
 
   proxy_host->BindRemoteFrameInterfaces(

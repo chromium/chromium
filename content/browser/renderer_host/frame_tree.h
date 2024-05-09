@@ -382,19 +382,25 @@ class CONTENT_EXPORT FrameTree {
   // node cannot be removed this way.
   void RemoveFrame(FrameTreeNode* child);
 
-  // This method walks the entire frame tree and creates a RenderFrameProxyHost
-  // for the given |site_instance| in each node except the |source| one --
-  // the source will have a RenderFrameHost.  |source| may be null if there is
-  // no node navigating in this frame tree (such as when this is called
-  // for an opener's frame tree), in which case no nodes are skipped for
-  // RenderFrameProxyHost creation. |source_new_browsing_context_state| is the
-  // BrowsingContextState used by the speculative frame host, which may differ
-  // from the BrowsingContextState in |source| during cross-origin cross-
-  // browsing-instance navigations.
-  void CreateProxiesForSiteInstance(FrameTreeNode* source,
-                                    SiteInstanceImpl* site_instance,
-                                    const scoped_refptr<BrowsingContextState>&
-                                        source_new_browsing_context_state);
+  // This method walks the entire frame tree and creates RenderFrameProxyHosts
+  // as needed. Proxies are not created if suitable proxies already exist. See
+  // below for special handling of |source|. Otherwise proxies are created for
+  // the given |site_instance_group| in each node.
+  //
+  // |source| may be null if there is no node navigating in this frame tree
+  // (such as when this is called for an opener's frame tree), in which case no
+  // nodes are skipped for RenderFrameProxyHost creation. Otherwise, a proxy is
+  // temporarily created for |source| in cross-SiteInstanceGroup cases (to allow
+  // a remote-to-local swap to the new RenderFrameHost in |source|), but the
+  // subtree rooted at source is skipped.
+  // |source_new_browsing_context_state| is the BrowsingContextState used by the
+  // speculative frame host, which may differ from the BrowsingContextState in
+  // |source| during cross-origin cross- browsing-instance navigations.
+  void CreateProxiesForSiteInstanceGroup(
+      FrameTreeNode* source,
+      SiteInstanceGroup* site_instance_group,
+      const scoped_refptr<BrowsingContextState>&
+          source_new_browsing_context_state);
 
   // Convenience accessor for the main frame's RenderFrameHostImpl.
   RenderFrameHostImpl* GetMainFrame() const;

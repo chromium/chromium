@@ -358,16 +358,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // case where `batched_proxy_ipc_sender` is not null is when called by
   // `FrameTree::CreateProxiesForSiteInstance()`.
   void CreateRenderFrameProxy(
-      SiteInstanceImpl* instance,
+      SiteInstanceGroup* group,
       const scoped_refptr<BrowsingContextState>& browsing_context_state,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   // Similar to `CreateRenderFrameProxy` but also creates the minimal ancestor
-  // chain of proxies in `instance` to support a subframe. This only exists to
+  // chain of proxies in `group` to support a subframe. This only exists to
   // support CoopRelatedGroup proxy creation and should not be used for other
-  // cases.
-  void CreateRenderFrameProxyAndAncestorChainIfNeeded(
-      SiteInstanceImpl* instance);
+  // cases. It is CHECKed that `group` must be cross-BrowsingInstance.
+  void CreateRenderFrameProxyAndAncestorChainIfNeeded(SiteInstanceGroup* group);
 
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
   // SiteInstances for which the current frame has proxies.  This method is
@@ -482,17 +481,17 @@ class CONTENT_EXPORT RenderFrameHostManager {
                                    SiteInstanceGroup* group);
 
   // Creates RenderFrameProxies and inactive RenderViewHosts for this frame's
-  // FrameTree and for its opener chain in the given SiteInstance. This allows
-  // other tabs to send cross-process JavaScript calls to their opener(s) and
-  // to any other frames in the opener's FrameTree (e.g., supporting calls like
-  // window.opener.opener.frames[x][y]).  Does not create proxies for the
+  // FrameTree and for its opener chain in the given SiteInstanceGroup. This
+  // allows other tabs to send cross-process JavaScript calls to their opener(s)
+  // and to any other frames in the opener's FrameTree (e.g., supporting calls
+  // like window.opener.opener.frames[x][y]).  Does not create proxies for the
   // subtree rooted at |skip_this_node| (e.g., if a node is being navigated, it
   // can be passed here to prevent proxies from being created for it, in
   // case it is in the same FrameTree as another node on its opener chain).
   // |browsing_context_state| is the BrowsingContextState that is used in the
   // speculative RenderFrameHost for cross browsing-instance navigations.
   void CreateOpenerProxies(
-      SiteInstanceImpl* instance,
+      SiteInstanceGroup* group,
       FrameTreeNode* skip_this_node,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -869,17 +868,21 @@ class CONTENT_EXPORT RenderFrameHostManager {
                                         bool use_current_rfh);
 
   // Ensure that we have created all needed proxies for a new RFH with
-  // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for
-  // the new RFH's opener chain if we are staying in the same BrowsingInstance;
-  // (2) Create proxies for the new RFH's SiteInstance in its own frame tree.
+  // SiteInstance in |new_group|:
+  // (1) create RVHs and proxies for the new RFH's opener chain if we are
+  // staying in the same BrowsingInstance;
+  // (2) Create proxies for the new RFH's SiteInstance's group in its own frame
+  // tree.
   // |recovering_without_early_commit| is true if we are reviving a crashed
   // render frame by creating a proxy and committing later rather than doing an
-  // immediate commit. |browsing_context_state| is the BrowsingContextState that
-  // is used in the speculative RenderFrameHost for cross browsing-instance
-  // navigations.
+  // immediate commit.
+  // |browsing_context_state| is the BrowsingContextState that is used in the
+  // speculative RenderFrameHost for cross browsing-instance navigations.
+  // TODO(https://crbug.com/40202433): Formalize an invariant that this function
+  // is a no-op if |old_group| and |new_group| are the same.
   void CreateProxiesForNewRenderFrameHost(
-      SiteInstanceImpl* old_instance,
-      SiteInstanceImpl* new_instance,
+      SiteInstanceGroup* old_group,
+      SiteInstanceGroup* new_group,
       bool recovering_without_early_commit,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
@@ -904,14 +907,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
       std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers);
 
   // Create RenderFrameProxies and inactive RenderViewHosts in the given
-  // SiteInstance for the current node's FrameTree.  Used as a helper function
-  // in CreateOpenerProxies for creating proxies in each FrameTree on the
-  // opener chain.  Don't create proxies for the subtree rooted at
+  // SiteInstanceGroup for the current node's FrameTree. Used as a helper
+  // function in CreateOpenerProxies for creating proxies in each FrameTree on
+  // the opener chain. Don't create proxies for the subtree rooted at
   // |skip_this_node|. |browsing_context_state| is the BrowsingContextState that
   // is used in the speculative RenderFrameHost for cross browsing-instance
   // navigations.
   void CreateOpenerProxiesForFrameTree(
-      SiteInstanceImpl* instance,
+      SiteInstanceGroup* group,
       FrameTreeNode* skip_this_node,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
