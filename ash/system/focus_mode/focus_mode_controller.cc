@@ -10,6 +10,9 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -32,6 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -166,7 +170,12 @@ FocusModeController::FocusModeController(
 
 FocusModeController::~FocusModeController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  ResetFocusSession();
+
+  // TODO(b/338694884): Move this to startup.
+  if (IsQuietModeOnSetByFocusMode()) {
+    message_center::MessageCenter::Get()->SetQuietMode(
+        false, message_center::QuietModeSourceType::kFocusMode);
+  }
 
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -273,6 +282,9 @@ void FocusModeController::ResetFocusSession() {
   HideEndingMomentNudge();
 
   SetFocusTrayVisibility(false);
+  if (media_widget_) {
+    CloseMediaWidget();
+  }
 
   if (IsQuietModeOnSetByFocusMode()) {
     message_center::MessageCenter::Get()->SetQuietMode(
@@ -460,6 +472,13 @@ void FocusModeController::StartFocusSession(
   SetFocusTrayVisibility(true);
   HideEndingMomentNudge();
 
+  // TODO: Check that there is a selected playlist. Eventually we also want to
+  // call CreateMediaWidget/CloseMediaWidget when a playlist is toggled during
+  // a session.
+  if (focus_mode_sounds_controller_->selected_playlist() && !media_widget_) {
+    CreateMediaWidget();
+  }
+
   for (auto& observer : observers_) {
     observer.OnFocusModeChanged(/*in_focus_session=*/true);
   }
@@ -558,6 +577,42 @@ bool FocusModeController::IsFocusTrayBubbleVisible() const {
     }
   }
   return false;
+}
+
+void FocusModeController::CreateMediaWidget() {
+  CHECK(in_focus_session());
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.name = "FocusModeMediaWidget";
+  params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                      kShellWindowId_OverlayContainer);
+  params.child = true;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+
+  // The media window should be hidden.
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  // The media window does not receive any events.
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  params.accept_events = false;
+
+  media_widget_ = std::make_unique<views::Widget>();
+  media_widget_->Init(std::move(params));
+
+  AshWebView::InitParams web_view_params;
+  web_view_params.suppress_navigation = true;
+  web_view_params.enable_wake_locks = false;
+  focus_mode_media_view_ = media_widget_->SetContentsView(
+      AshWebViewFactory::Get()->Create(web_view_params));
+  focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));
+}
+
+void FocusModeController::CloseMediaWidget() {
+  CHECK(media_widget_);
+  focus_mode_media_view_.ClearAndDelete();
+  focus_mode_media_view_ = nullptr;
+  media_widget_.reset();
 }
 
 }  // namespace ash

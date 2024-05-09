@@ -8,7 +8,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 
-namespace ash::focus_mode {
+namespace ash {
 
 // The WebUI for chrome://focus-mode-media
 class FocusModeUI : public content::WebUIController {
@@ -30,6 +30,6 @@ class FocusModeUIConfig : public content::WebUIConfig {
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-}  // namespace ash::focus_mode
+}  // namespace ash
 
 #endif  // ASH_WEBUI_FOCUS_MODE_FOCUS_MODE_UI_H_

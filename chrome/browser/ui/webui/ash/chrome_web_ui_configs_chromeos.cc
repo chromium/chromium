@@ -245,7 +245,7 @@ void RegisterAshChromeWebUIConfigs() {
                                       file_manager::FileManagerUI,
                                       ChromeFileManagerUIDelegate>());
   map.AddWebUIConfig(std::make_unique<FirmwareUpdateAppUIConfig>());
-  map.AddWebUIConfig(std::make_unique<focus_mode::FocusModeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<FocusModeUIConfig>());
   map.AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<HelpAppUIConfig, HelpAppUI,

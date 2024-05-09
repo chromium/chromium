@@ -52,6 +52,8 @@ class ASH_EXPORT FocusModeSoundsController {
     return youtube_music_playlists_;
   }
 
+  bool selected_playlist() const { return selected_playlist_; }
+
   // Download images by providing urls. `update_sounds_view_callback` will be
   // called only when finishing downloading all non-empty thumbnails for the
   // Soundscape type or the YouTube Music type of playlists; however, if
@@ -76,6 +78,9 @@ class ASH_EXPORT FocusModeSoundsController {
 
   std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
+
+  // TODO: Replace this with actual selected playlist information.
+  bool selected_playlist_ = false;
 
   base::WeakPtrFactory<FocusModeSoundsController> weak_factory_{this};
 };

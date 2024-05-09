@@ -19,12 +19,17 @@
 
 class PrefRegistrySimple;
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 namespace youtube_music {
 class YouTubeMusicController;
 }  //  namespace youtube_music
 
+class AshWebView;
 class FocusModeSoundsController;
 
 // Controls starting and ending a Focus Mode session and its behavior. Also
@@ -198,6 +203,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // displays.
   bool IsFocusTrayBubbleVisible() const;
 
+  void CreateMediaWidget();
+  void CloseMediaWidget();
+
   // Gives Focus Mode access to the Google Tasks API.
   FocusModeTasksProvider tasks_provider_;
 
@@ -236,6 +244,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // Controller for YouTube Music API integration.
   std::unique_ptr<youtube_music::YouTubeMusicController>
       youtube_music_controller_;
+
+  // The media widget and its contents view.
+  std::unique_ptr<views::Widget> media_widget_;
+  raw_ptr<AshWebView> focus_mode_media_view_ = nullptr;
 
   std::unique_ptr<FocusModeDelegate> delegate_;
 

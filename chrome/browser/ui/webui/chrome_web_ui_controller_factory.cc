@@ -167,10 +167,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/url_constants.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/files_internals/url_constants.h"
-#include "ash/webui/focus_mode/url_constants.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/print_preview_cros/url_constants.h"
@@ -1029,7 +1029,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(ash::kChromeUIFilesInternalsURL),
     GURL(ash::kChromeUIHelpAppURL),
     GURL(ash::kChromeUIPrintPreviewCrosURL),
-    GURL(ash::focus_mode::kChromeUIFocusModeMediaURL),
     GURL(ash::multidevice::kChromeUIProximityAuthURL),
     GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),
     GURL(chrome::kChromeUIAccountManagerErrorURL),
@@ -1056,6 +1055,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIEmojiPickerURL),
     GURL(chrome::kChromeUIEnterpriseReportingURL),
     GURL(chrome::kChromeUIFirmwareUpdaterAppURL),
+    GURL(chrome::kChromeUIFocusModeMediaURL),
     GURL(chrome::kChromeUIHealthdInternalsURL),
     GURL(chrome::kChromeUIHumanPresenceInternalsURL),
     GURL(chrome::kChromeUIInternetConfigDialogURL),

@@ -5,8 +5,8 @@
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
-#include "ash/webui/focus_mode/url_constants.h"
 #include "ash/webui/grit/ash_focus_mode_resources.h"
 #include "ash/webui/grit/ash_focus_mode_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -15,14 +15,14 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 
-namespace ash::focus_mode {
+namespace ash {
 
 FocusModeUI::FocusModeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   // Set up the chrome://focus-mode-media source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      kChromeUIFocusModeMediaHost);
+      chrome::kChromeUIFocusModeMediaHost);
 
   // Setup chrome://focus-mode-media main page.
   source->AddResourcePath("", IDR_ASH_FOCUS_MODE_FOCUS_MODE_HTML);
@@ -36,7 +36,8 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
 FocusModeUI::~FocusModeUI() = default;
 
 FocusModeUIConfig::FocusModeUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, kChromeUIFocusModeMediaHost) {}
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIFocusModeMediaHost) {}
 
 FocusModeUIConfig::~FocusModeUIConfig() = default;
 
@@ -51,4 +52,4 @@ bool FocusModeUIConfig::IsWebUIEnabled(
   return ash::features::IsFocusModeEnabled();
 }
 
-}  // namespace ash::focus_mode
+}  // namespace ash

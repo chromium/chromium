@@ -8,7 +8,6 @@ assert(is_chromeos_ash, "Focus Mode is ash-chrome only")
 
 static_library("focus_mode") {
   sources = [
-    "url_constants.h",
     "focus_mode_ui.cc",
     "focus_mode_ui.h",
   ]
