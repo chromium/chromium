@@ -59,11 +59,13 @@ const base::Value::Dict& GetUserEnrollmentEligibilityDict(
       prefs::kContentNotificationsEnrollmentEligibility);
 }
 
-}  // namespace
+bool IsPromoEligible(bool user_signed_in,
+                     bool default_search_engine,
+                     PrefService* pref_service) {
+  if (!pref_service) {
+    return false;
+  }
 
-bool IsContentNotificationPromoEnabled(bool user_signed_in,
-                                       bool default_search_engine,
-                                       PrefService* pref_service) {
   if (IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
@@ -79,13 +81,16 @@ bool IsContentNotificationPromoEnabled(bool user_signed_in,
     // 2. The user has feed activities.
     return false;
   }
-
-  return IsContentPushNotificationsPromoEnabled();
+  return true;
 }
 
-bool IsContentNotificationProvisionalEnabled(bool user_signed_in,
-                                             bool default_search_engine,
-                                             PrefService* pref_service) {
+bool IsProvisionalEligible(bool user_signed_in,
+                           bool default_search_engine,
+                           PrefService* pref_service) {
+  if (!pref_service) {
+    return false;
+  }
+
   if (IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
@@ -101,13 +106,16 @@ bool IsContentNotificationProvisionalEnabled(bool user_signed_in,
     // 2. The user is not new to Chrome.
     return false;
   }
-
-  return IsContentPushNotificationsProvisionalEnabled();
+  return true;
 }
 
-bool IsContentNotificationSetUpListEnabled(bool user_signed_in,
-                                           bool default_search_engine,
-                                           PrefService* pref_service) {
+bool IsSetUpListEligible(bool user_signed_in,
+                         bool default_search_engine,
+                         PrefService* pref_service) {
+  if (!pref_service) {
+    return false;
+  }
+
   if (IsClientEligible(user_signed_in, default_search_engine)) {
     return false;
   }
@@ -118,6 +126,85 @@ bool IsContentNotificationSetUpListEnabled(bool user_signed_in,
     // The user should be new to Chrome to be eligible to enroll.
     return false;
   }
+  return true;
+}
 
-  return IsContentPushNotificationsSetUpListEnabled();
+}  // namespace
+
+bool IsContentNotificationEnabled(bool user_signed_in,
+                                  bool default_search_engine,
+                                  PrefService* pref_service) {
+  // Make sure all enabled types are checked since more than one types can be
+  // enabled, and the UMA will only be active after checking the pref.
+  bool promo_enabled = IsContentNotificationPromoEnabled(
+      user_signed_in, default_search_engine, pref_service);
+  bool provisional_enabled = IsContentNotificationProvisionalEnabled(
+      user_signed_in, default_search_engine, pref_service);
+  bool set_up_list_enabled = IsContentNotificationSetUpListEnabled(
+      user_signed_in, default_search_engine, pref_service);
+
+  return promo_enabled || provisional_enabled || set_up_list_enabled ||
+         IsContentPushNotificationsProvisionalBypass();
+}
+
+bool IsContentNotificationRegistered(bool user_signed_in,
+                                     bool default_search_engine,
+                                     PrefService* pref_service) {
+  // Make sure all registration only types are checked since more than one types
+  // can be enabled, and the UMA will only be active after checking the pref.
+  bool promo_register_only = IsContentNotificationPromoRegistered(
+      user_signed_in, default_search_engine, pref_service);
+  bool provisional_register_only = IsContentNotificationProvisionalRegistered(
+      user_signed_in, default_search_engine, pref_service);
+  bool set_up_list_register_only = IsContentNotificationSetUpListRegistered(
+      user_signed_in, default_search_engine, pref_service);
+
+  return promo_register_only || provisional_register_only ||
+         set_up_list_register_only;
+}
+
+bool IsContentNotificationPromoEnabled(bool user_signed_in,
+                                       bool default_search_engine,
+                                       PrefService* pref_service) {
+  return IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
+         IsContentPushNotificationsPromoEnabled();
+}
+
+bool IsContentNotificationProvisionalEnabled(bool user_signed_in,
+                                             bool default_search_engine,
+                                             PrefService* pref_service) {
+  return IsProvisionalEligible(user_signed_in, default_search_engine,
+                               pref_service) &&
+         IsContentPushNotificationsProvisionalEnabled();
+}
+
+bool IsContentNotificationSetUpListEnabled(bool user_signed_in,
+                                           bool default_search_engine,
+                                           PrefService* pref_service) {
+  return IsSetUpListEligible(user_signed_in, default_search_engine,
+                             pref_service) &&
+         IsContentPushNotificationsSetUpListEnabled();
+}
+
+bool IsContentNotificationPromoRegistered(bool user_signed_in,
+                                          bool default_search_engine,
+                                          PrefService* pref_service) {
+  return IsPromoEligible(user_signed_in, default_search_engine, pref_service) &&
+         IsContentPushNotificationsPromoRegistrationOnly();
+}
+
+bool IsContentNotificationProvisionalRegistered(bool user_signed_in,
+                                                bool default_search_engine,
+                                                PrefService* pref_service) {
+  return IsProvisionalEligible(user_signed_in, default_search_engine,
+                               pref_service) &&
+         IsContentPushNotificationsProvisionalRegistrationOnly();
+}
+
+bool IsContentNotificationSetUpListRegistered(bool user_signed_in,
+                                              bool default_search_engine,
+                                              PrefService* pref_service) {
+  return IsSetUpListEligible(user_signed_in, default_search_engine,
+                             pref_service) &&
+         IsContentPushNotificationsSetUpListRegistrationOnly();
 }
