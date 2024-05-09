@@ -1351,12 +1351,11 @@ class ComputedStyle final : public ComputedStyleBase {
     return BorderImage().Outset() == o.BorderImage().Outset();
   }
 
-  CORE_EXPORT void AdjustDiffForClipPath(const ComputedStyle& o,
-                                         StyleDifference& diff) const;
+  void AdjustDiffForClipPath(const ComputedStyle& o,
+                             StyleDifference& diff) const;
 
-  CORE_EXPORT void AdjustDiffForBackgroundVisuallyEqual(
-      const ComputedStyle& o,
-      StyleDifference& diff) const;
+  void AdjustDiffForBackgroundVisuallyEqual(const ComputedStyle& o,
+                                            StyleDifference& diff) const;
 
   bool CanRenderBorderImage() const;
 
@@ -2561,8 +2560,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
                                                const ComputedStyle& other,
                                                const Document&) const;
-  CORE_EXPORT void UpdatePropertySpecificDifferences(const ComputedStyle& other,
-                                                     StyleDifference&) const;
+  void UpdatePropertySpecificDifferences(const ComputedStyle& other,
+                                         StyleDifference&) const;
   bool PotentialCompositingReasonsFor3DTransformChanged(
       const ComputedStyle& other) const;
 
@@ -2649,63 +2648,9 @@ class ComputedStyle final : public ComputedStyleBase {
   // Derived flags:
   bool CalculateIsStackingContextWithoutContainment() const;
 
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesRespectsTransformAnimation);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsTransform);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesRespectsScaleAnimation);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesRespectsRotateAnimation);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesRespectsTranslateAnimation);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsOpacity);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsFilter);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsBackdropFilter);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsInlineTransform);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsWillChange);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsUsedStylePreserve3D);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsOverflow);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsContainsPaint);
-  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
-                           UpdatePropertySpecificDifferencesHasAlpha);
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, CustomPropertiesEqual_Values);
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, CustomPropertiesEqual_Data);
-  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest, InitialVariableNames);
-  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
-                           InitialAndInheritedAndNonInheritedVariableNames);
-  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
-                           GetVariableNamesWithInitialData_Invalidation);
   FRIEND_TEST_ALL_PREFIXES(StyleCascadeTest, ForcedVisitedBackgroundColor);
-  FRIEND_TEST_ALL_PREFIXES(
-      ComputedStyleTest,
-      TextDecorationEqualDoesNotRequireRecomputeInkOverflow);
-  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
-                           TextDecorationNotEqualRequiresRecomputeInkOverflow);
   FRIEND_TEST_ALL_PREFIXES(StyleEngineTest, ScrollbarStyleNoExcessiveCaching);
   FRIEND_TEST_ALL_PREFIXES(PermissionShadowElementTest,
                            PropagateCSSPropertyInnerElement);

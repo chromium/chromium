@@ -53,8 +53,12 @@ namespace blink {
 class ComputedStyleTest : public testing::Test {
  protected:
   void SetUp() override {
+    dummy_page_holder_ =
+        std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
     initial_style_ = ComputedStyle::GetInitialStyleSingleton();
   }
+
+  Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
   const ComputedStyle* InitialComputedStyle() { return initial_style_; }
 
@@ -69,6 +73,7 @@ class ComputedStyleTest : public testing::Test {
 
  private:
   test::TaskEnvironment task_environment_;
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   Persistent<const ComputedStyle> initial_style_;
 };
 
@@ -220,8 +225,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentTransformAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.TransformChanged());
 }
 
@@ -242,8 +246,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentTransformAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_FALSE(diff.TransformChanged());
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
@@ -255,8 +258,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentScaleAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.TransformChanged());
 }
 
@@ -267,8 +269,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentRotateAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.TransformChanged());
 }
 
@@ -279,8 +280,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentTranslateAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.TransformChanged());
 }
 
@@ -291,8 +291,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentOpacityAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -303,8 +302,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentFilterAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -315,8 +313,7 @@ TEST_F(ComputedStyleTest,
   builder.SetHasCurrentBackdropFilterAnimation(true);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -327,8 +324,7 @@ TEST_F(ComputedStyleTest,
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -340,8 +336,7 @@ TEST_F(ComputedStyleTest,
   builder.SetWillChangeProperties({CSSPropertyID::kOpacity});
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -356,8 +351,7 @@ TEST_F(ComputedStyleTest,
   builder.SetOpacity(0.5);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -368,8 +362,7 @@ TEST_F(ComputedStyleTest,
   builder.SetOverflowX(EOverflow::kHidden);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -381,8 +374,7 @@ TEST_F(ComputedStyleTest,
   builder.SetContain(kContainsPaint);
   const ComputedStyle* other = builder.TakeStyle();
 
-  StyleDifference diff;
-  style->UpdatePropertySpecificDifferences(*other, diff);
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
@@ -543,40 +535,38 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   EXPECT_FALSE(style->HasBorder());
 }
 
-#define TEST_ANIMATION_FLAG(flag, inherited)                      \
-  do {                                                            \
-    auto builder = CreateComputedStyleBuilder();                  \
-    builder.Set##flag(true);                                      \
-    const auto* style = builder.TakeStyle();                      \
-    EXPECT_TRUE(style->flag());                                   \
-    const auto* other = InitialComputedStyle();                   \
-    EXPECT_FALSE(other->flag());                                  \
-    EXPECT_EQ(ComputedStyle::Difference::inherited,               \
-              ComputedStyle::ComputeDifference(style, other));    \
-    auto diff = style->VisualInvalidationDiff(*document, *other); \
-    EXPECT_TRUE(diff.HasDifference());                            \
-    EXPECT_TRUE(diff.CompositingReasonsChanged());                \
+#define TEST_ANIMATION_FLAG(flag, inherited)                     \
+  do {                                                           \
+    auto builder = CreateComputedStyleBuilder();                 \
+    builder.Set##flag(true);                                     \
+    const auto* style = builder.TakeStyle();                     \
+    EXPECT_TRUE(style->flag());                                  \
+    const auto* other = InitialComputedStyle();                  \
+    EXPECT_FALSE(other->flag());                                 \
+    EXPECT_EQ(ComputedStyle::Difference::inherited,              \
+              ComputedStyle::ComputeDifference(style, other));   \
+    auto diff = style->VisualInvalidationDiff(document, *other); \
+    EXPECT_TRUE(diff.HasDifference());                           \
+    EXPECT_TRUE(diff.CompositingReasonsChanged());               \
   } while (false)
 
-#define TEST_ANIMATION_FLAG_NO_DIFF(flag)                         \
-  do {                                                            \
-    auto builder = CreateComputedStyleBuilder();                  \
-    builder.Set##flag(true);                                      \
-    const auto* style = builder.TakeStyle();                      \
-    EXPECT_TRUE(style->flag());                                   \
-    const auto* other = InitialComputedStyle();                   \
-    EXPECT_FALSE(other->flag());                                  \
-    EXPECT_EQ(ComputedStyle::Difference::kEqual,                  \
-              ComputedStyle::ComputeDifference(style, other));    \
-    auto diff = style->VisualInvalidationDiff(*document, *other); \
-    EXPECT_FALSE(diff.HasDifference());                           \
-    EXPECT_FALSE(diff.CompositingReasonsChanged());               \
+#define TEST_ANIMATION_FLAG_NO_DIFF(flag)                        \
+  do {                                                           \
+    auto builder = CreateComputedStyleBuilder();                 \
+    builder.Set##flag(true);                                     \
+    const auto* style = builder.TakeStyle();                     \
+    EXPECT_TRUE(style->flag());                                  \
+    const auto* other = InitialComputedStyle();                  \
+    EXPECT_FALSE(other->flag());                                 \
+    EXPECT_EQ(ComputedStyle::Difference::kEqual,                 \
+              ComputedStyle::ComputeDifference(style, other));   \
+    auto diff = style->VisualInvalidationDiff(document, *other); \
+    EXPECT_FALSE(diff.HasDifference());                          \
+    EXPECT_FALSE(diff.CompositingReasonsChanged());              \
   } while (false)
 
 TEST_F(ComputedStyleTest, AnimationFlags) {
-  ScopedNullExecutionContext execution_context;
-  Persistent<Document> document =
-      Document::CreateForTest(execution_context.GetExecutionContext());
+  Document& document = GetDocument();
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
@@ -595,9 +585,8 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
-  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
-  css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
-                                     "0px", false);
+  css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "0px",
+                                     false);
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -629,9 +618,8 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
-  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
-  css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
-                                     "0px", false);
+  css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "0px",
+                                     false);
 
   const ComputedStyle* style1;
   const ComputedStyle* style2;
@@ -664,9 +652,8 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
-  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
-  css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
-                                     "0px", true);
+  css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "0px",
+                                     true);
 
   ComputedStyleBuilder old_builder = CreateComputedStyleBuilder();
   ComputedStyleBuilder new_builder = CreateComputedStyleBuilder();
@@ -744,9 +731,8 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
-  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
-  css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
-                                     "0px", true);
+  css_test_helpers::RegisterProperty(GetDocument(), "--x", "<length>", "0px",
+                                     true);
 
   ComputedStyleBuilder old_builder = CreateComputedStyleBuilder();
   ComputedStyleBuilder new_builder = CreateComputedStyleBuilder();
@@ -816,9 +802,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 }
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -853,9 +837,7 @@ TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
 TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -903,9 +885,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkColor) {
 TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -945,9 +925,7 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
 }
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -981,7 +959,6 @@ TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
 TEST_F(ComputedStyleTest, InitialVariableNames) {
   using css_test_helpers::CreateLengthRegistration;
 
-  ScopedNullExecutionContext execution_context;
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty(AtomicString("--x"),
                              *CreateLengthRegistration("--x", 1));
@@ -989,9 +966,7 @@ TEST_F(ComputedStyleTest, InitialVariableNames) {
                              *CreateLengthRegistration("--y", 2));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.SetInitialData(StyleInitialData::Create(
-      *Document::CreateForTest(execution_context.GetExecutionContext()),
-      *registry));
+  builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
   const ComputedStyle* style = builder.TakeStyle();
 
   EXPECT_EQ(2u, style->GetVariableNames().size());
@@ -1057,7 +1032,6 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   using css_test_helpers::CreateLengthRegistration;
   using css_test_helpers::CreateVariableData;
 
-  ScopedNullExecutionContext execution_context;
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty(AtomicString("--b"),
                              *CreateLengthRegistration("--b", 1));
@@ -1065,9 +1039,7 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
                              *CreateLengthRegistration("--e", 2));
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.SetInitialData(StyleInitialData::Create(
-      *Document::CreateForTest(execution_context.GetExecutionContext()),
-      *registry));
+  builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
 
   const bool inherited = true;
   builder.SetVariableData(AtomicString("--a"), CreateVariableData("foo"),
@@ -1140,15 +1112,12 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 
   const ComputedStyle* style;
 
-  ScopedNullExecutionContext execution_context;
   {
     ComputedStyleBuilder builder = CreateComputedStyleBuilder();
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty(AtomicString("--x"),
                                *CreateLengthRegistration("--x", 1));
-    builder.SetInitialData(StyleInitialData::Create(
-        *Document::CreateForTest(execution_context.GetExecutionContext()),
-        *registry));
+    builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
     style = builder.TakeStyle();
   }
   EXPECT_EQ(style->GetVariableNames().size(), 1u);
@@ -1162,9 +1131,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
                                *CreateLengthRegistration("--y", 2));
     registry->RegisterProperty(AtomicString("--z"),
                                *CreateLengthRegistration("--z", 3));
-    builder.SetInitialData(StyleInitialData::Create(
-        *Document::CreateForTest(execution_context.GetExecutionContext()),
-        *registry));
+    builder.SetInitialData(StyleInitialData::Create(GetDocument(), *registry));
     style = builder.TakeStyle();
   }
   EXPECT_EQ(style->GetVariableNames().size(), 2u);
@@ -1173,9 +1140,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 }
 
 TEST_F(ComputedStyleTest, BorderWidthZoom) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -1231,9 +1196,7 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
   // Tests that Border, Outline and Column Rule Widths
   // are converted as expected.
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -1306,9 +1269,7 @@ TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
   // Tests that Border Widths
   // are converted as expected when Zoom is applied.
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -1376,9 +1337,7 @@ TEST_F(ComputedStyleTest,
        TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -1403,22 +1362,18 @@ TEST_F(ComputedStyleTest,
 
   EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
-  StyleDifference diff1;
-  style->UpdatePropertySpecificDifferences(*clone, diff1);
+  StyleDifference diff1 = style->VisualInvalidationDiff(GetDocument(), *clone);
   EXPECT_FALSE(diff1.NeedsRecomputeVisualOverflow());
 
   // Different color, should not invalidate.
-  StyleDifference diff2;
-  style->UpdatePropertySpecificDifferences(*other, diff2);
+  StyleDifference diff2 = style->VisualInvalidationDiff(GetDocument(), *other);
   EXPECT_FALSE(diff2.NeedsRecomputeVisualOverflow());
 }
 
 TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <style>
       div {
@@ -1451,29 +1406,28 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
       document.getElementById(AtomicString("position"))->GetComputedStyle();
 
   // Change decoration style
-  StyleDifference diff_decoration_style;
-  style->UpdatePropertySpecificDifferences(*wavy, diff_decoration_style);
+  StyleDifference diff_decoration_style =
+      style->VisualInvalidationDiff(GetDocument(), *wavy);
   EXPECT_TRUE(diff_decoration_style.NeedsRecomputeVisualOverflow());
 
   // Change decoration line
-  StyleDifference diff_decoration_line;
-  style->UpdatePropertySpecificDifferences(*overline, diff_decoration_line);
+  StyleDifference diff_decoration_line =
+      style->VisualInvalidationDiff(GetDocument(), *overline);
   EXPECT_TRUE(diff_decoration_line.NeedsRecomputeVisualOverflow());
 
   // Change decoration thickness
-  StyleDifference diff_decoration_thickness;
-  style->UpdatePropertySpecificDifferences(*thickness,
-                                           diff_decoration_thickness);
+  StyleDifference diff_decoration_thickness =
+      style->VisualInvalidationDiff(GetDocument(), *thickness);
   EXPECT_TRUE(diff_decoration_thickness.NeedsRecomputeVisualOverflow());
 
   // Change underline offset
-  StyleDifference diff_underline_offset;
-  style->UpdatePropertySpecificDifferences(*offset, diff_underline_offset);
+  StyleDifference diff_underline_offset =
+      style->VisualInvalidationDiff(GetDocument(), *offset);
   EXPECT_TRUE(diff_underline_offset.NeedsRecomputeVisualOverflow());
 
   // Change underline position
-  StyleDifference diff_underline_position;
-  style->UpdatePropertySpecificDifferences(*position, diff_underline_position);
+  StyleDifference diff_underline_position =
+      style->VisualInvalidationDiff(GetDocument(), *position);
   EXPECT_TRUE(diff_underline_position.NeedsRecomputeVisualOverflow());
 }
 
@@ -1520,9 +1474,7 @@ TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 }
 
 TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -1540,18 +1492,18 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   EXPECT_FALSE(state.StyleBuilder().Transitions());
 }
 
-#define TEST_STYLE_VALUE_NO_DIFF(field_name)                        \
-  {                                                                 \
-    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();   \
-    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();   \
-    builder1.Set##field_name(                                       \
-        ComputedStyleInitialValues::Initial##field_name());         \
-    builder2.Set##field_name(                                       \
-        ComputedStyleInitialValues::Initial##field_name());         \
-    const ComputedStyle* style1 = builder1.TakeStyle();             \
-    const ComputedStyle* style2 = builder2.TakeStyle();             \
-    auto diff = style1->VisualInvalidationDiff(*document, *style2); \
-    EXPECT_FALSE(diff.HasDifference());                             \
+#define TEST_STYLE_VALUE_NO_DIFF(field_name)                       \
+  {                                                                \
+    ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();  \
+    ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();  \
+    builder1.Set##field_name(                                      \
+        ComputedStyleInitialValues::Initial##field_name());        \
+    builder2.Set##field_name(                                      \
+        ComputedStyleInitialValues::Initial##field_name());        \
+    const ComputedStyle* style1 = builder1.TakeStyle();            \
+    const ComputedStyle* style2 = builder2.TakeStyle();            \
+    auto diff = style1->VisualInvalidationDiff(document, *style2); \
+    EXPECT_FALSE(diff.HasDifference());                            \
   }
 
 // Ensures ref-counted values are compared by their values, not by pointers.
@@ -1565,14 +1517,12 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
     builder2.Set##field_name(value2);                                      \
     const ComputedStyle* style1 = builder1.TakeStyle();                    \
     const ComputedStyle* style2 = builder2.TakeStyle();                    \
-    auto diff = style1->VisualInvalidationDiff(*document, *style2);        \
+    auto diff = style1->VisualInvalidationDiff(document, *style2);         \
     EXPECT_FALSE(diff.HasDifference());                                    \
   }
 
 TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
-  ScopedNullExecutionContext execution_context;
-  Persistent<Document> document =
-      Document::CreateForTest(execution_context.GetExecutionContext());
+  Document& document = GetDocument();
   TEST_STYLE_VALUE_NO_DIFF(StrokeOpacity);
   TEST_STYLE_VALUE_NO_DIFF(StrokeMiterLimit);
   TEST_STYLE_VALUE_NO_DIFF(StrokeWidth);
@@ -1584,9 +1534,7 @@ TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
 }
 
 TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
-  ScopedNullExecutionContext execution_context;
-  Persistent<Document> document =
-      Document::CreateForTest(execution_context.GetExecutionContext());
+  Document& document = GetDocument();
   TEST_STYLE_VALUE_NO_DIFF(FloodColor);
   TEST_STYLE_VALUE_NO_DIFF(FloodOpacity);
   TEST_STYLE_VALUE_NO_DIFF(LightingColor);
@@ -1594,9 +1542,7 @@ TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
 }
 
 TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
 
   auto* html = document.documentElement();
   auto* body = document.body();
@@ -1962,9 +1908,7 @@ TEST_F(ComputedStyleTest, ContainerNameNoDiff) {
 }
 
 TEST_F(ComputedStyleTest, BackgroundRepeat) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -1989,9 +1933,7 @@ TEST_F(ComputedStyleTest, BackgroundRepeat) {
 }
 
 TEST_F(ComputedStyleTest, MaskRepeat) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -2016,9 +1958,7 @@ TEST_F(ComputedStyleTest, MaskRepeat) {
 }
 
 TEST_F(ComputedStyleTest, MaskMode) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -2055,9 +1995,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
             "dynamic-range-limit-mix(standard, constrained-high, 70%)");
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -2091,9 +2029,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
             "dynamic-range-limit-mix(standard, high, 60%)");
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -2127,9 +2063,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
             "dynamic-range-limit-mix(constrained-high, high, 45%)");
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
@@ -2164,9 +2098,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
             "dynamic-range-limit-mix(standard, "
             "dynamic-range-limit-mix(constrained-high, high, 25%), 80%)");
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
-  Document& document = dummy_page_holder->GetDocument();
+  Document& document = GetDocument();
   const ComputedStyle* initial =
       document.GetStyleResolver().InitialStyleForElement();
 
