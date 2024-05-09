@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -13,11 +14,17 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 namespace extensions {
 
 namespace {
+
+// Hashed ID for 'aaaa...a'.
+constexpr char kTestHashedIdA[] = "68F84A59A3CA2D0E5CB1646FBB164DA409B5D8F2";
+// Hashed ID for 'bbbb...b'.
+constexpr char kTestHashedIdB[] = "142E27CA6D179970507F4076E2AC96FEC5834F82";
 
 // The setting of the MV2 policy to use.
 enum class MV2PolicyLevel {
@@ -206,9 +213,40 @@ MV2DeprecationImpactCheckerUnitTest::MV2DeprecationImpactCheckerUnitTest()
     : experiment_stage_(std::get<0>(GetParam())),
       mv2_policy_level_(std::get<1>(GetParam())) {}
 
+class MV2DeprecationImpactCheckerUnitTestWithAllowlist
+    : public MV2DeprecationImpactCheckerUnitTest {
+ public:
+  MV2DeprecationImpactCheckerUnitTestWithAllowlist() {
+    std::string params =
+        base::StringPrintf("%s,%s", kTestHashedIdA, kTestHashedIdB);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        extensions_features::kExtensionManifestV2ExceptionList,
+        {{extensions_features::kExtensionManifestV2ExceptionListParam.name,
+          params}});
+  }
+  ~MV2DeprecationImpactCheckerUnitTestWithAllowlist() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTest,
+    testing::Combine(
+        testing::Values(MV2ExperimentStage::kNone,
+                        MV2ExperimentStage::kWarning),
+        testing::Values(MV2PolicyLevel::kUnset,
+                        MV2PolicyLevel::kAllowed,
+                        MV2PolicyLevel::kDisallowed,
+                        MV2PolicyLevel::kAllowedForAdminInstalledOnly)),
+    [](const testing::TestParamInfo<TestVariant>& info) {
+      return DescribeTestVariant(info.param);
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MV2DeprecationImpactCheckerUnitTestWithAllowlist,
     testing::Combine(
         testing::Values(MV2ExperimentStage::kNone,
                         MV2ExperimentStage::kWarning),
@@ -428,6 +466,41 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest, NonExtensionsAreNotAffected) {
 
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*platform_app));
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*hosted_app));
+}
+
+// Tests the allowlist is taken into account.
+TEST_P(MV2DeprecationImpactCheckerUnitTestWithAllowlist, AllowlistWorks) {
+  scoped_refptr<const Extension> ext_a =
+      ExtensionBuilder("ext-a")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .SetID(std::string(32, 'a'))
+          .Build();
+  scoped_refptr<const Extension> ext_b =
+      ExtensionBuilder("ext-b")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .SetID(std::string(32, 'b'))
+          .Build();
+  scoped_refptr<const Extension> ext_c =
+      ExtensionBuilder("ext-c")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .SetID(std::string(32, 'c'))
+          .Build();
+
+  // User-facing MV2 extensions would be affected if the experiment is active
+  // and the policy is anything other than set to "Allowed" (which allows all
+  // MV2 extensions).
+  bool expected_affected =
+      ExperimentIsActive() && policy_level() != MV2PolicyLevel::kAllowed;
+
+  // `ext_a` and `ext_b` are in the allowlist, so aren't affected.
+  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*ext_a));
+  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*ext_b));
+  // `ext_c` is not in the allowlist, so is affected if the experiment is active
+  // and the policy isn't set.
+  EXPECT_EQ(expected_affected, impact_checker()->IsExtensionAffected(*ext_c));
 }
 
 }  // namespace extensions

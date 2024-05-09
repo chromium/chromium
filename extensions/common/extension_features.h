@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace extensions_features {
 
@@ -91,6 +92,11 @@ BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 // Controls displaying a warning that affected MV2 extensions may no longer be
 // supported.
 BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);
+
+// Allows server-side configuration of a temporary exception list.
+BASE_DECLARE_FEATURE(kExtensionManifestV2ExceptionList);
+extern const base::FeatureParam<std::string>
+    kExtensionManifestV2ExceptionListParam;
 
 // Side panel API availability.
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);

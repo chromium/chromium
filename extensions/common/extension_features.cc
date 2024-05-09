@@ -69,6 +69,15 @@ BASE_FEATURE(kExtensionManifestV2DeprecationWarning,
              "ExtensionManifestV2DeprecationWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionManifestV2ExceptionList,
+             "ExtensionManifestV2ExceptionList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
+    &kExtensionManifestV2ExceptionList,
+    /*name=*/"mv2_exception_list",
+    /*default_value=*/"");
+
 BASE_FEATURE(kExtensionSidePanelIntegration,
              "ExtensionSidePanelIntegration",
              base::FEATURE_ENABLED_BY_DEFAULT);
