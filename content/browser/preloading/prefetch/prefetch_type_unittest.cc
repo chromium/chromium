@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 

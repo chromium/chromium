@@ -160,6 +160,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPermissionElement);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPermissionElementDialogPositioning;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPersistentOriginTrials);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowserInitiatedTriggers);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRedirects);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIsOverride);
