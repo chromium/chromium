@@ -1062,6 +1062,9 @@ class AuthenticatorRequestDialogController
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
   content::AuthenticatorRequestClientDelegate::Hints hints_;
 
+  // True when the priority mechanism was determined to be the enclave.
+  bool enclave_was_priority_mechanism_ = false;
+
 #if BUILDFLAG(IS_MAC)
   // did_record_macos_start_histogram_ is set to true if a histogram record of
   // starting the current request was made. Any later successful completion will

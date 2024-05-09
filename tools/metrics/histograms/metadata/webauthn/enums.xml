@@ -190,6 +190,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="MagicArch provided the security domain secret"/>
   <int value="5" label="A create() request was sent to the enclave"/>
   <int value="6" label="A get() request was sent to the enclave"/>
+  <int value="7"
+      label="The enclave create passkey dialog was shown as the priority
+             mechanism"/>
+  <int value="8"
+      label="User backed out of create passkey priority mechanism screen"/>
 </enum>
 
 <enum name="WebAuthenticationFidoTransport">

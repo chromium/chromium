@@ -606,6 +606,8 @@ void ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
+  registry->RegisterIntegerPref(
+      webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
 #if BUILDFLAG(IS_WIN)
   LocalCredentialManagementWin::RegisterProfilePrefs(registry);
 #endif

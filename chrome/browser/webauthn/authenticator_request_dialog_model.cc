@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/metrics.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
@@ -73,6 +74,8 @@
 #endif
 
 namespace {
+
+constexpr int kMaxPriorityGPMCredentialCreations = 2;
 
 // StepUiType enumerates the different types of UI that can be displayed.
 enum class StepUIType {
@@ -655,6 +658,20 @@ void AuthenticatorRequestDialogController::StartFlow(
 }
 
 void AuthenticatorRequestDialogController::StartOver() {
+  if (enclave_was_priority_mechanism_) {
+    auto* pref_service = Profile::FromBrowserContext(
+                             model_->GetRenderFrameHost()->GetBrowserContext())
+                             ->GetPrefs();
+    int current_gpm_decline_count = pref_service->GetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount);
+    pref_service->SetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount,
+        std::min(current_gpm_decline_count + 1,
+                 kMaxPriorityGPMCredentialCreations));
+    device::enclave::RecordEvent(
+        device::enclave::Event::kMakeCredentialPriorityDeclined);
+    enclave_was_priority_mechanism_ = false;
+  }
   ResetEphemeralState();
 
   for (auto& observer : model_->observers) {
@@ -728,6 +745,13 @@ void AuthenticatorRequestDialogController::
                transport_availability_.request_type !=
                    device::FidoRequestType::kGetAssertion ||
                !StartGuidedFlowForGetAssertionFromHint(*hints_.transport)) {
+      if (absl::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
+        device::enclave::RecordEvent(
+            device::enclave::Event::kMakeCredentialPriorityShown);
+        enclave_was_priority_mechanism_ = true;
+      } else {
+        enclave_was_priority_mechanism_ = false;
+      }
       mechanism.callback.Run();
     }
   } else {
@@ -2423,8 +2447,14 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     CHECK_EQ(transport_availability_.request_type,
              device::FidoRequestType::kMakeCredential);
 
+    Profile* profile = Profile::FromBrowserContext(
+        model_->GetRenderFrameHost()->GetBrowserContext());
+    const bool enclave_decline_limit_reached =
+        profile->GetPrefs()->GetInteger(
+            webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
+        kMaxPriorityGPMCredentialCreations;
     if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        enclave_enabled_ &&
+        !enclave_decline_limit_reached && enclave_enabled_ &&
         *transport_availability_.make_credential_attachment ==
             device::AuthenticatorAttachment::kPlatform) {
       priority_list.emplace_back(Mechanism::Enclave());
@@ -2433,11 +2463,11 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     if (windows_handles_hybrid) {
       // If Windows supports hybrid and the enclave is not available, we defer
       // to the platform.
-      bool enclave_available = base::ranges::any_of(
+      const bool enclave_available = base::ranges::any_of(
           model_->mechanisms, [](const Mechanism& m) -> bool {
             return absl::holds_alternative<Mechanism::Enclave>(m.type);
           });
-      if (!enclave_available) {
+      if (!enclave_available || enclave_decline_limit_reached) {
         priority_list.emplace_back(Mechanism::WindowsAPI());
       }
     }
