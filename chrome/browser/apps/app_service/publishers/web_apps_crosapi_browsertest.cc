@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -401,3 +402,79 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppsPreventCloseCrosapiBrowserTest,
                          ::testing::Bool());
+
+class IsolatedWebAppCrosapiBrowserTest : public WebAppsCrosapiBrowserTest {
+ public:
+  void SetUp() override {
+    app_ = web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+               .BuildBundle();
+    crosapi::AshRequiresLacrosBrowserTestBase::SetUp();
+  }
+
+  webapps::AppId InstallIsolatedWebAppOnLacros() {
+    base::test::TestFuture<crosapi::mojom::InstallWebAppResultPtr>
+        result_future;
+    GetStandaloneBrowserTestController()->InstallIsolatedWebApp(
+        crosapi::mojom::IsolatedWebAppLocation::NewBundlePath(app()->path()),
+        /*dev_mode=*/false, result_future.GetCallback());
+
+    crosapi::mojom::InstallWebAppResultPtr install_restult =
+        result_future.Take();
+
+    CHECK(install_restult->is_app_id())
+        << "Isolated web app installation failed with error: "
+        << install_restult->get_error_message();
+    webapps::AppId app_id = install_restult->get_app_id();
+    apps::AppReadinessWaiter(GetAshProfile(), app_id).Await();
+    return app_id;
+  }
+
+  std::unique_ptr<ui::SimpleMenuModel> GetContextMenuForAppId(
+      const webapps::AppId& app_id) {
+    ash::ShelfItemDelegate* delegate =
+        ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(app_id));
+
+    base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+    delegate->GetContextMenu(
+        /*display_id=*/0, future.GetCallback());
+
+    return future.Take();
+  }
+
+  web_app::ScopedBundledIsolatedWebApp* app() { return app_.get(); }
+
+ private:
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppCrosapiBrowserTest,
+                       ContextMenuOnlyHasLaunchNew) {
+  if (!HasLacrosArgument()) {
+    return;
+  }
+
+  webapps::AppId app_id = InstallIsolatedWebAppOnLacros();
+
+  EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
+
+  {
+    AppInstanceWaiter waiter(AppServiceProxy()->InstanceRegistry(), app_id);
+    AppServiceProxy()->Launch(app_id, /*event_flags=*/0,
+                              apps::LaunchSource::kFromAppListGrid);
+    waiter.Await();
+  }
+
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
+
+  {
+    std::unique_ptr<ui::SimpleMenuModel> menu_model =
+        GetContextMenuForAppId(app_id);
+    ASSERT_TRUE(menu_model);
+
+    // Isolated web apps context menu should have an "Open in new Window"
+    // command instead of a open mode selector submenu.
+    EXPECT_NE(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
+    EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+    EXPECT_EQ(menu_model->GetCommandIdAt(0), ash::LAUNCH_NEW);
+  }
+}
