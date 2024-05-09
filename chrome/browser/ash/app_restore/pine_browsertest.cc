@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoWithinLimit) {
 
   // Create four more urls in addition to the default "about:blank" tab. That
   // tab will be last in the tab strip.
-  std::vector<const GURL> urls{
+  const std::vector<GURL> urls{
       GURL("https://www.youtube.com/"), GURL("https://www.google.com/"),
       GURL("https://www.waymo.com/"), GURL("https://x.company/")};
   for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_TabInfoOutsideLimit) {
 
   // Create six more urls in addition to the default "about:blank" tab. That tab
   // will be last in the tab strip.
-  std::vector<const GURL> urls{
+  const std::vector<GURL> urls{
       GURL("https://www.youtube.com/"), GURL("https://www.google.com/"),
       GURL("https://www.waymo.com/"),   GURL("https://x.company/"),
       GURL("https://docs.google.com/"), GURL("https://www.chromium.org/")};
