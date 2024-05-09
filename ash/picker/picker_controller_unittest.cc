@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
@@ -20,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -179,6 +181,19 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
       controller.widget_for_testing());
   controller.ToggleWidget();
   widget_destroyed_waiter.Wait();
+
+  controller.ToggleWidget();
+
+  EXPECT_TRUE(controller.widget_for_testing());
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetShowsWidgetForDogfoodWhenClientAllowed) {
+  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(client, IsFeatureAllowedForDogfood).WillOnce(Return(true));
 
   controller.ToggleWidget();
 

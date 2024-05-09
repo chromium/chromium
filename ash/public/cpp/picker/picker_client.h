@@ -77,6 +77,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
 
   virtual void GetSuggestedLinkResults(SuggestedLinksCallback callback) = 0;
 
+  virtual bool IsFeatureAllowedForDogfood() = 0;
+
  protected:
   PickerClient();
   virtual ~PickerClient();

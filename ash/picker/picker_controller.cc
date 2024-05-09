@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -289,6 +290,12 @@ bool PickerController::IsFeatureKeyMatched() {
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood)) {
+    // This flag allows PickerController to be created, but ToggleWidget will
+    // still check if the feature is allowed by the client.
+    return true;
+  }
+
   if (MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kNone) {
     LOG(ERROR) << "Provided feature key does not match with the expected one.";
     return false;
@@ -317,6 +324,11 @@ void PickerController::SetClient(PickerClient* client) {
 void PickerController::ToggleWidget(
     const base::TimeTicks trigger_event_timestamp) {
   CHECK(client_);
+  if (base::FeatureList::IsEnabled(ash::features::kPickerDogfood) &&
+      !client_->IsFeatureAllowedForDogfood()) {
+    LOG(ERROR) << "Picker feature is blocked";
+    return;
+  }
 
   if (widget_) {
     session_metrics_->SetOutcome(

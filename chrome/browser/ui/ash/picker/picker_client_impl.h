@@ -76,6 +76,7 @@ class PickerClientImpl
   void GetRecentLocalFileResults(RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;
+  bool IsFeatureAllowedForDogfood() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

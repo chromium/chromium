@@ -49,6 +49,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -416,6 +417,10 @@ void PickerClientImpl::GetSuggestedLinkResults(
       base::BindRepeating(
           &PickerClientImpl::OnZeroStateLinksSearchResultsUpdated,
           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool PickerClientImpl::IsFeatureAllowedForDogfood() {
+  return gaia::IsGoogleInternalAccountEmail(profile_->GetProfileUserName());
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {

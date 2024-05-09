@@ -2383,6 +2383,11 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Dogfood for picker.
+BASE_FEATURE(kPickerDogfood,
+             "PickerDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the new picker flip feature.
 BASE_FEATURE(kPickerFlip, "PickerFlip", base::FEATURE_DISABLED_BY_DEFAULT);
 
