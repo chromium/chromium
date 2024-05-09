@@ -648,9 +648,6 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     case ax::mojom::Event::kLocationChanged:
       event_name = "LocationChanged";
       break;
-    case ax::mojom::Event::kMenuListValueChanged:
-      event_name = "MenuListValueChanged";
-      break;
     case ax::mojom::Event::kRowCollapsed:
       event_name = "RowCollapsed";
       break;
@@ -696,6 +693,7 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     case ax::mojom::Event::kMediaStartedPlaying:
     case ax::mojom::Event::kMediaStoppedPlaying:
     case ax::mojom::Event::kMenuEnd:
+    case ax::mojom::Event::kMenuListValueChangedDeprecated:
     case ax::mojom::Event::kMenuPopupEnd:
     case ax::mojom::Event::kMenuPopupStart:
     case ax::mojom::Event::kMenuStart:

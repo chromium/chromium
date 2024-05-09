@@ -838,7 +838,6 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kMediaStartedPlaying:
       case ax::mojom::Event::kMediaStoppedPlaying:
       case ax::mojom::Event::kMenuEnd:
-      case ax::mojom::Event::kMenuListValueChanged:
       case ax::mojom::Event::kMenuPopupEnd:
       case ax::mojom::Event::kMenuPopupStart:
       case ax::mojom::Event::kMenuStart:
@@ -865,6 +864,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kValueChanged:
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
+      case ax::mojom::Event::kMenuListValueChangedDeprecated:
         NOTREACHED_NORETURN();
     }
   }

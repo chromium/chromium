@@ -4491,7 +4491,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kHover:
     case ax::mojom::blink::Event::kLoadComplete:
     case ax::mojom::blink::Event::kLoadStart:
-    case ax::mojom::blink::Event::kMenuListValueChanged:
     case ax::mojom::blink::Event::kRowExpanded:
     case ax::mojom::blink::Event::kScrolledToAnchor:
     case ax::mojom::blink::Event::kSelectedChildrenChanged:
@@ -4525,6 +4524,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kMediaStartedPlaying:
     case ax::mojom::blink::Event::kMediaStoppedPlaying:
     case ax::mojom::blink::Event::kMenuEnd:
+    case ax::mojom::blink::Event::kMenuListValueChangedDeprecated:
     case ax::mojom::blink::Event::kMenuPopupEnd:
     case ax::mojom::blink::Event::kMenuPopupStart:
     case ax::mojom::blink::Event::kMenuStart:

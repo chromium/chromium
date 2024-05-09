@@ -71,8 +71,8 @@ const char* ToString(ax::mojom::Event event) {
       return "mediaStoppedPlaying";
     case ax::mojom::Event::kMenuEnd:
       return "menuEnd";
-    case ax::mojom::Event::kMenuListValueChanged:
-      return "menuListValueChanged";
+    case ax::mojom::Event::kMenuListValueChangedDeprecated:
+      return "menuListValueChangedDeprecated";
     case ax::mojom::Event::kMenuPopupEnd:
       return "menuPopupEnd";
     case ax::mojom::Event::kMenuPopupStart:

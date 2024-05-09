@@ -237,7 +237,6 @@ AX_TEST_F(
         mediaStoppedPlaying: true,
         menuEnd: true,
         menuItemSelected: false,
-        menuListValueChanged: false,
         menuPopupEnd: false,
         menuPopupStart: true,
         menuStart: true,

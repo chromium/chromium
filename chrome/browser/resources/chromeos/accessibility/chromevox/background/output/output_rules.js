@@ -395,12 +395,12 @@ OutputRule.RULES = {
           @describe_index($posInSet, $setSize)`,
     },
     [RoleType.MENU_LIST_OPTION]: {
-      speak: `$name $role @describe_index($posInSet, $setSize) $state
-          $nif($selected, @aria_selected_false)
-          $restriction $description`,
-      braille: `$name $role @describe_index($posInSet, $setSize) $state
-          $if($selected, @aria_selected_true, @aria_selected_false)
-          $restriction $description`,
+      speak: `$state $name $role @describe_index($posInSet, $setSize)
+          $description $restriction
+          $nif($selected, @aria_selected_false)`,
+      braille: `$state $name $role @describe_index($posInSet, $setSize)
+          $description $restriction
+          $if($selected, @aria_selected_true, @aria_selected_false)`,
     },
     [RoleType.PARAGRAPH]: {speak: `$nameOrDescendants $roleDescription`},
     [RoleType.RADIO_BUTTON]: {
@@ -489,13 +489,6 @@ OutputRule.RULES = {
   },
   [EventType.MENU_END]: {
     [CustomRole.DEFAULT]: {speak: `@chrome_menu_closed $earcon(OBJECT_CLOSE)`},
-  },
-  [EventType.MENU_LIST_VALUE_CHANGED]: {
-    [CustomRole.DEFAULT]: {
-      speak: `$value $name
-          $find({"state": {"selected": true, "invisible": false}},
-          @describe_index($posInSet, $setSize)) `,
-    },
   },
   [EventType.ALERT]: {
     [CustomRole.DEFAULT]:

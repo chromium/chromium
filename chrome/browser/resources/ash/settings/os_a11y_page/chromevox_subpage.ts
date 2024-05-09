@@ -300,7 +300,7 @@ export class SettingsChromeVoxSubpageElement extends
             'mediaStoppedPlaying',
             'menuEnd',
             'menuItemSelected',
-            'menuListValueChanged',
+            'menuListValueChangedDeprecated',
             'menuPopupEnd',
             'menuPopupStart',
             'menuStart',

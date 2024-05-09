@@ -85,7 +85,7 @@ chrome.automation.EventType = {
   MEDIA_STOPPED_PLAYING: 'mediaStoppedPlaying',
   MENU_END: 'menuEnd',
   MENU_ITEM_SELECTED: 'menuItemSelected',
-  MENU_LIST_VALUE_CHANGED: 'menuListValueChanged',
+  MENU_LIST_VALUE_CHANGED_DEPRECATED: 'menuListValueChangedDeprecated',
   MENU_POPUP_END: 'menuPopupEnd',
   MENU_POPUP_START: 'menuPopupStart',
   MENU_START: 'menuStart',
