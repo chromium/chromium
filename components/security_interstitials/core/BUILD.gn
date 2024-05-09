@@ -53,6 +53,7 @@ static_library("core") {
     "//base",
     "//base:i18n",
     "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/metrics",

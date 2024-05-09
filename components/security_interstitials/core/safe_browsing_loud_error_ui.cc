@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -377,6 +378,9 @@ void SafeBrowsingLoudErrorUI::UpdateInterstitialInteractionData(
 }
 
 int SafeBrowsingLoudErrorUI::GetHTMLTemplateId() const {
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedSafeBrowsingPromo)) {
+    return IDR_SECURITY_INTERSTITIAL_WITHOUT_PROMO_HTML;
+  }
   return IDR_SECURITY_INTERSTITIAL_HTML;
 }
 
