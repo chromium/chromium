@@ -11,10 +11,14 @@ static_library("internal") {
   ]
 
   sources = [
+    "history_url_visit_data_fetcher.cc",
+    "history_url_visit_data_fetcher.h",
     "session_url_visit_data_fetcher.cc",
     "session_url_visit_data_fetcher.h",
     "transformer/bookmarks_url_visit_aggregates_transformer.cc",
     "transformer/bookmarks_url_visit_aggregates_transformer.h",
+    "url_visit_util.cc",
+    "url_visit_util.h",
     "visited_url_ranking_service_impl.cc",
     "visited_url_ranking_service_impl.h",
   ]
@@ -22,6 +26,7 @@ static_library("internal") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/history/core/browser",
     "//components/sessions",
     "//components/sync_sessions",
     "//components/visited_url_ranking/public",
@@ -50,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "history_url_visit_data_fetcher_unittest.cc",
     "session_url_visit_data_fetcher_unittest.cc",
     "transformer/bookmarks_url_visit_aggregates_transformer_unittest.cc",
     "visited_url_ranking_service_impl_unittest.cc",
@@ -61,6 +67,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser:browser",
+    "//components/history/core/browser",
     "//components/sessions",
     "//components/sync_sessions",
     "//components/visited_url_ranking/public",

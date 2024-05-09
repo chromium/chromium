@@ -37,14 +37,14 @@ URLVisitAggregate& URLVisitAggregate::operator=(URLVisitAggregate&& other) =
 std::set<const GURL*> URLVisitAggregate::GetAssociatedURLs() const {
   std::set<const GURL*> urls = {};
   for (const auto& fetcher_entry : fetcher_data_map) {
-    std::visit(
-        URLVisitVariantHelper{
-            [&urls](const URLVisitAggregate::TabData& tab_data) {
-              urls.insert(&tab_data.last_active_tab.visit.url);
-            }},
-        fetcher_entry.second);
-    // TODO(crbug.com/330580109): Add support for additional fetcher data types
-    // (e.g., TabModel, History).
+    std::visit(URLVisitVariantHelper{
+                   [&urls](const URLVisitAggregate::TabData& tab_data) {
+                     urls.insert(&tab_data.last_active_tab.visit.url);
+                   },
+                   [&urls](const URLVisitAggregate::HistoryData& history_data) {
+                     urls.insert(&history_data.last_visited.url_row.url());
+                   }},
+               fetcher_entry.second);
   }
   return urls;
 }
@@ -69,5 +69,15 @@ URLVisitAggregate::TabData::TabData(const URLVisitAggregate::TabData&) =
     default;
 
 URLVisitAggregate::TabData::~TabData() = default;
+
+URLVisitAggregate::HistoryData::HistoryData(
+    history::AnnotatedVisit annotated_visit)
+    : last_visited(std::move(annotated_visit)) {
+  visit_count = 1;
+  total_foreground_duration =
+      last_visited.context_annotations.total_foreground_duration;
+}
+
+URLVisitAggregate::HistoryData::~HistoryData() = default;
 
 }  // namespace visited_url_ranking

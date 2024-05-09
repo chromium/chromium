@@ -12,6 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/sync_device_info/device_info.h"
 #include "url/gurl.h"
 
@@ -97,6 +99,27 @@ struct URLVisitAggregate {
     size_t tab_count = 0;
   };
 
+  struct HistoryData {
+    explicit HistoryData(history::AnnotatedVisit annotated_visit);
+    ~HistoryData();
+
+    // The last annotated visit associated with the given URL visit in a given
+    // time period.
+    history::AnnotatedVisit last_visited;
+
+    // Whether any of the annotated visits for the given URL visit aggregate are
+    // part of a cluster.
+    bool in_cluster = false;
+
+    // The total duration in the foreground for all visits associated with the
+    // aggregate in a time period.
+    base::TimeDelta total_foreground_duration = base::Seconds(0);
+
+    // The number of history visits associated with the URL visit aggregate in a
+    // time period.
+    size_t visit_count = 0;
+  };
+
   URLVisitAggregate();
   URLVisitAggregate(const URLVisitAggregate&) = delete;
   URLVisitAggregate(URLVisitAggregate&& other);
@@ -109,7 +132,8 @@ struct URLVisitAggregate {
 
   // A map of aggregate tab related characteristics associated with the visit as
   // provided by a given source.
-  using URLVisitVariant = std::variant<URLVisitAggregate::TabData>;
+  using URLVisitVariant =
+      std::variant<URLVisitAggregate::TabData, URLVisitAggregate::HistoryData>;
   std::map<Fetcher, URLVisitVariant> fetcher_data_map;
 
   // Whether the visit is bookmarked or not.

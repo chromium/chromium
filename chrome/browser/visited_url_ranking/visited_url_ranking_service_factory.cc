@@ -16,7 +16,9 @@
 #include "chrome/common/channel_info.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
@@ -50,6 +52,7 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
               .Build()) {
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() = default;
@@ -65,6 +68,14 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
   if (sss) {
     data_fetchers.emplace(Fetcher::kSession,
                           std::make_unique<SessionURLVisitDataFetcher>(sss));
+  }
+  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
+  if (hs) {
+    data_fetchers.emplace(
+        Fetcher::kHistory,
+        std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(
+            hs->AsWeakPtr()));
   }
 
   // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,

@@ -17,6 +17,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/sync_device_info",
     "//url",

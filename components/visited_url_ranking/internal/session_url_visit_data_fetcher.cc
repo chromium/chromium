@@ -16,19 +16,15 @@
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/visited_url_ranking/internal/url_visit_util.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "url/gurl.h"
 
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
 using URLVisitVariant = URLVisitAggregate::URLVisitVariant;
-
-// TODO(crbug.com/335200723): Integrate client configurable merging and
-// deduplication logic to produce "merge" keys for provided URLs.
-URLMergeKey GetURLMergeKey(GURL url) {
-  return url.spec();
-}
 
 void AddAggregateVisitDataFromSession(
     const sync_sessions::SyncedSession* session,
@@ -50,7 +46,7 @@ void AddAggregateVisitDataFromSession(
           continue;
         }
 
-        auto url_key = GetURLMergeKey(tab_url);
+        auto url_key = ComputeURLMergeKey(tab_url);
         if (url_visit_tab_data_map.find(url_key) ==
             url_visit_tab_data_map.end()) {
           auto last_active_tab = URLVisitAggregate::Tab(
