@@ -639,9 +639,7 @@ crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-i
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 crbug.com/339041262 [ bigsur nvidia-0xfe9 angle-opengl graphite-disabled passthrough ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 
@@ -786,11 +784,7 @@ crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-rende
 # failing.
 crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
-# Need to investigate failure on basically all devices with passthrough on Android.
-crbug.com/angleproject/5038 [ android passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-# Failure on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # TODO(kbr): flakiness is seen on this configuration with the
 # passthrough command decoder across many different WebGL conformance
