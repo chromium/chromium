@@ -89,8 +89,9 @@ PointerEvent::PointerEvent(const AtomicString& type,
         PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_),
         PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
   }
-  device_properties_ = initializer->getDevicePropertiesOr(
-      DeviceProperties::Create(DevicePropertiesInit::Create()));
+  if (initializer->hasDeviceProperties()) {
+    device_properties_ = initializer->deviceProperties();
+  }
 }
 
 bool PointerEvent::IsMouseEvent() const {

@@ -17,7 +17,7 @@ dictionary PointerEventInit : MouseEventInit {
     long      twist = 0;
     DOMString pointerType = "";
     boolean   isPrimary = false;
-    DeviceProperties      deviceProperties;
+    DeviceProperties?      deviceProperties = null;
 
     // https://w3c.github.io/pointerevents/extension.html#extensions-to-the-pointerevent-interface
     sequence<PointerEvent> coalescedEvents = [];
