@@ -56,7 +56,7 @@
               collapse-icon="cr:arrow-drop-up">
             <div class="section-title">[[section.title]]</div>
           </cr-expand-button>
-          <iron-collapse opened="[[section.expanded]]">
+          <cr-collapse opened="[[section.expanded]]">
             <template is="dom-repeat" items="[[section.entries]]">
               <cr-url-list-item class="dropdown-item" size="medium"
                   url="[[item.url]]" title="[[item.title]]"
@@ -67,7 +67,7 @@
             <!-- Add spacer instead of adding margin or padding to the -->
             <!-- parent for smooth expand/collapse transitions. -->
             <div class="dropdown-spacer"></div>
-          </iron-collapse>
+          </cr-collapse>
         </template>
         <div id="empty" hidden="[[sections]]">$i18n{emptyMenu}</div>
       </div>
