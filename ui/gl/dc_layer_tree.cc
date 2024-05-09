@@ -1244,6 +1244,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
 
   const bool status = visual_tree_->BuildTree(overlays);
 
+  ink_renderer_->ReportPointsDrawn();
+
   // Clean up excess surfaces so the pool will not grow unbounded.
   solid_color_surface_pool_->TrimAfterCommit();
 

@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/win/hidden_window.h"
@@ -431,6 +432,48 @@ TEST_F(DelegatedInkPointRendererGpuTest, MaximumPointerIds) {
             kMaxNumberOfPointerIds);
   EXPECT_FALSE(
       ink_renderer()->CheckForPointerIdForTesting(kEarlyTimestampPointerId));
+}
+
+// Verify that the `points_to_be_drawn_` is set correctly when points are
+// added to the API's trail, and that the TimeToDrawPointsMillis histogram is
+// reported correctly on draw.
+TEST_F(DelegatedInkPointRendererGpuTest, ReportTimeToDraw) {
+  if (!presenter() || !presenter()->SupportsDelegatedInk()) {
+    return;
+  }
+  const std::string kHistogramName =
+      "Renderer.DelegatedInkTrail.OS.TimeToDrawPointsMillis";
+  const base::HistogramTester histogram_tester;
+  constexpr int32_t kPointerId = 1u;
+
+  EXPECT_TRUE(ink_renderer()->PointstoBeDrawnForTesting().empty());
+  ink_renderer()->ReportPointsDrawn();
+  // No histogram should be fired if `points_to_be_drawn_` is empty.
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  const base::TimeTicks timestamp = base::TimeTicks::Now();
+  SendDelegatedInkPoint(
+      gfx::DelegatedInkPoint(gfx::PointF(20, 20), timestamp, kPointerId));
+  SendMetadataBasedOnStoredPoint(0);
+
+  // `DrawDelegatedInkPoint` should've added the point's timestamp to
+  // `points_to_be_drawn_`.
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting().size(), 1u);
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting()[0], timestamp);
+
+  // Send another point and expect that the new point's timestamp is added to
+  // `points_to_be_drawn_`.
+  SendDelegatedInkPointBasedOnPrevious(kPointerId);
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting().size(), 2u);
+  EXPECT_EQ(ink_renderer()->PointstoBeDrawnForTesting()[1],
+            timestamp + base::Microseconds(kMicrosecondsBetweenEachPoint));
+
+  ink_renderer()->ReportPointsDrawn();
+  // Two histograms should've been fired with the delta between the point's
+  // creation times and the function call, and `points_to_be_drawn_` should've
+  // been cleared.
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
+  EXPECT_TRUE(ink_renderer()->PointstoBeDrawnForTesting().empty());
 }
 
 }  // namespace

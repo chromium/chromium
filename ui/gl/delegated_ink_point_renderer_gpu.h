@@ -96,9 +96,19 @@ class GL_EXPORT DelegatedInkPointRendererGpu
     return wait_for_new_trail_to_draw_;
   }
 
+  std::vector<base::TimeTicks> PointstoBeDrawnForTesting() const {
+    CHECK_IS_TEST();
+    return points_to_be_drawn_;
+  }
+
   uint64_t GetMaximumNumberOfPointerIdsForTesting() const;
 
   void InitializeForTesting(IDCompositionDevice2* dcomp_device2);
+
+  // This function is called after Delegated Ink's points are submitted to be
+  // drawn on screen, and fires a histogram with the time between points' event
+  // creation and the points' draw submission to the OS.
+  void ReportPointsDrawn();
 
  private:
   bool Initialize(IDCompositionDevice2* dcomp_device2,
@@ -163,6 +173,10 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   bool force_new_ink_trail_ = false;
 
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
+
+  // Holds the timestamp of points added to the Delegated Ink's Trail to measure
+  // the time between point creation and draw operation called.
+  std::vector<base::TimeTicks> points_to_be_drawn_;
 };
 
 }  // namespace gl

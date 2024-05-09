@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -97,6 +98,18 @@ bool DelegatedInkPointRendererGpu::DelegatedInkIsSupported(
 uint64_t DelegatedInkPointRendererGpu::GetMaximumNumberOfPointerIdsForTesting()
     const {
   return kMaximumNumberOfPointerIds;
+}
+
+void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
+  if (points_to_be_drawn_.empty()) {
+    return;
+  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  for (const auto& timestamp : points_to_be_drawn_) {
+    UMA_HISTOGRAM_TIMES("Renderer.DelegatedInkTrail.OS.TimeToDrawPointsMillis",
+                        now - timestamp);
+  }
+  points_to_be_drawn_.clear();
 }
 
 void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
@@ -458,6 +471,11 @@ bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
                          "- Point added to trail",
                          TRACE_ID_GLOBAL(point.trace_id()),
                          TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
+
+  if (point.timestamp().IsHighResolution() &&
+      point.timestamp().IsConsistentAcrossProcesses()) {
+    points_to_be_drawn_.push_back(point.timestamp());
+  }
   delegated_ink_points_[point.pointer_id()][point] = token;
   return true;
 }

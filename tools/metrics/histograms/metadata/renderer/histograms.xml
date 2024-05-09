@@ -300,6 +300,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Renderer.DelegatedInkTrail.{Renderer}.TimeToDrawPointsMillis"
+    units="ms" expires_after="2025-04-01">
+  <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Span of time in milliseconds between the creation of pointer events in the
+    browser process and sending the draw operation to the OS.
+  </summary>
+  <token key="Renderer">
+    <variant name="OS" summary="OS backed DelegatedInk renderer."/>
+    <variant name="Skia" summary="Skia backed DelegatedInk renderer."/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
     expires_after="2024-11-03">
   <owner>kojii@chromium.org</owner>

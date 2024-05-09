@@ -116,8 +116,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // to hardware overlays in these platforms will benefit power consumption.
     int allowed_yuv_overlay_count = 1;
     // True if the OS supports delegated ink trails.
-    // This is currently only implemented on Win10 with DirectComposition on the
-    // SkiaRenderer.
+    // This is currently only implemented on Win10 and Win11 with
+    // DirectComposition on the SkiaRenderer.
     bool supports_delegated_ink = false;
     // True if the OutputSurface can resize to match the size of the root
     // surface. E.g. Wayland protocol allows this.
