@@ -40,7 +40,8 @@ public class TabGroupTitleUtils {
      *
      * @param tabRootId The tab root ID whose related tab group title will be deleted.
      */
-    static void deleteTabGroupTitle(int tabRootId) {
+    // Package Private.
+    public static void deleteTabGroupTitle(int tabRootId) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         getSharedPreferences().edit().remove(String.valueOf(tabRootId)).apply();
     }
