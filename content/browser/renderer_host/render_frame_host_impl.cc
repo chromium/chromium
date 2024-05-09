@@ -8016,12 +8016,6 @@ void RenderFrameHostImpl::ShowPopupMenu(
     return;
   }
 
-  if (show_popup_menu_callback_for_testing_) {
-    std::move(show_popup_menu_callback_for_testing_).Run(bounds);
-    send_did_cancel(std::move(popup_client));
-    return;
-  }
-
   auto* view = render_view_host()->delegate_->GetDelegateView();
   if (!view) {
     send_did_cancel(std::move(popup_client));

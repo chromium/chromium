@@ -641,23 +641,60 @@ CreateNewPopupWidgetInterceptor::GetForwardingInterface() {
   return swapped_impl_.old_impl();
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenuInterceptor(
+    RenderFrameHostImpl* rfh,
+    base::OnceCallback<void(const gfx::Rect&)> did_show_popup_menu_callback)
+    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
+      did_show_popup_menu_callback_(std::move(did_show_popup_menu_callback)) {}
+
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::~ShowPopupMenuInterceptor() =
+    default;
+
+void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
+    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+    const gfx::Rect& bounds,
+    int32_t item_height,
+    double font_size,
+    int32_t selected_item,
+    std::vector<blink::mojom::MenuItemPtr> menu_items,
+    bool right_aligned,
+    bool allow_multiple_selection) {
+  if (did_show_popup_menu_callback_) {
+    std::move(did_show_popup_menu_callback_).Run(bounds);
+    mojo::Remote<blink::mojom::PopupMenuClient>(std::move(popup_client))
+        ->DidCancel();
+    return;
+  }
+
+  GetForwardingInterface()->ShowPopupMenu(
+      std::move(popup_client), bounds, item_height, font_size, selected_item,
+      std::move(menu_items), right_aligned, allow_multiple_selection);
+}
+
+blink::mojom::LocalFrameHost*
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::GetForwardingInterface() {
+  return swapped_impl_.old_impl();
+}
+#endif
+
 ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
     : create_new_popup_widget_interceptor_(
           frame_host,
           base::BindOnce(&ShowPopupWidgetWaiter::DidCreatePopupWidget,
                          base::Unretained(this))),
-      frame_host_(frame_host) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  frame_host->set_show_popup_menu_callback_for_testing(base::BindOnce(
-      &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
+      show_popup_menu_interceptor_(
+          frame_host,
+          base::BindOnce(&ShowPopupWidgetWaiter::DidShowPopupMenu,
+                         base::Unretained(this))),
 #endif
+
+      frame_host_(frame_host) {
 }
 
 ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  frame_host_->set_show_popup_menu_callback_for_testing(base::NullCallback());
-#endif
   if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
     std::ignore =
         rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
@@ -692,7 +729,7 @@ void ShowPopupWidgetWaiter::DidCreatePopupWidget(
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
+void ShowPopupWidgetWaiter::DidShowPopupMenu(const gfx::Rect& bounds) {
   initial_rect_ = bounds;
   run_loop_.Quit();
 }
