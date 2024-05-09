@@ -402,5 +402,51 @@ suite('manager tests', function() {
         assertTrue(itemList[0]!.showEsbPromotion);
         assertFalse(itemList[1]!.showEsbPromotion);
       });
+
+  test(
+      'calls logsEsbPromotionRowViewed when promo row is in first 5 downloads',
+      async () => {
+        document.body.removeChild(manager);
+        loadTimeData.overrideValues({esbDownloadRowPromo: true});
+        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        manager = document.createElement('downloads-manager');
+        document.body.appendChild(manager);
+        const dangerousDownload = createDownload({
+          dangerType: DangerType.kDangerousFile,
+          state: State.kDangerous,
+          isDangerous: true,
+          id: 'dangerousdownload',
+        });
+        const downloadTwo = createDownload({
+          dangerType: DangerType.kNoApplicableDangerType,
+          state: State.kComplete,
+          id: 'download2',
+        });
+        const downloadThree = createDownload({
+          dangerType: DangerType.kNoApplicableDangerType,
+          state: State.kComplete,
+          id: 'download3',
+        });
+        const downloadFour = createDownload({
+          dangerType: DangerType.kNoApplicableDangerType,
+          state: State.kComplete,
+          id: 'download4',
+        });
+        const downloadFive = createDownload({
+          dangerType: DangerType.kNoApplicableDangerType,
+          state: State.kComplete,
+          id: 'download5',
+        });
+        callbackRouterRemote.insertItems(0, [
+          downloadTwo,
+          downloadThree,
+          downloadFour,
+          downloadFive,
+          dangerousDownload,
+        ]);
+        await callbackRouterRemote.$.flushForTesting();
+        flush();
+        await testBrowserProxy.handler.whenCalled('logEsbPromotionRowViewed');
+      });
   // </if>
 });

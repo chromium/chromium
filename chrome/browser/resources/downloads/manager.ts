@@ -228,7 +228,24 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     if (!this.firstDangerousItemId_ && item.isDangerous) {
       this.firstDangerousItemId_ = item.id;
     }
-    return this.firstDangerousItemId_ === item.id;
+
+    if (this.firstDangerousItemId_ !== item.id) {
+      return false;
+    }
+
+    // Currently logs the ESB promotion as viewed if the most recent dangerous
+    // download is within the the first 5 items.
+    // TODO(awado): Change this to log the ESB promo as viewed when the user
+    // scrolls the download into view.
+    if (this.items_.slice(0, 5).some(download => download.id === item.id)) {
+      this.logEsbPromotionRowViewed();
+    }
+    return true;
+  }
+
+  private logEsbPromotionRowViewed() {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.logEsbPromotionRowViewed();
   }
   // </if>
 

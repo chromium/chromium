@@ -26,8 +26,9 @@ class FakePageHandler implements PageHandlerInterface {
   private eligibleForEsbPromo_: boolean = false;
   private callbackRouterRemote_: PageRemote;
   private callTracker_: TestBrowserProxy = new TestBrowserProxy([
-    'openEsbSettings',
     'isEligibleForEsbPromo',
+    'logEsbPromotionRowViewed',
+    'openEsbSettings',
     'recordCancelBypassWarningPrompt',
     'recordOpenBypassWarningPrompt',
     'remove',
@@ -75,6 +76,10 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('openEsbSettings');
   }
 
+  logEsbPromotionRowViewed() {
+    this.callTracker_.methodCalled('logEsbPromotionRowViewed');
+  }
+
   getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
@@ -92,7 +97,6 @@ class FakePageHandler implements PageHandlerInterface {
   reviewDangerousRequiringGesture(_id: string) {}
   deepScan(_id: string) {}
   bypassDeepScanRequiringGesture(_id: string) {}
-  logEsbPromotionRowViewed() {}
   async isEligibleForEsbPromo(): Promise<{result: boolean}> {
     this.callTracker_.methodCalled('isEligibleForEsbPromo');
     return {result: this.eligibleForEsbPromo_};
