@@ -172,7 +172,7 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  const raw_ptr<ui::ContextFactory> context_factory_;
+  raw_ptr<ui::ContextFactory> context_factory_;
 
   // Determines if new buffers should be processed. If false, any newly received
   // buffers are immediately released.

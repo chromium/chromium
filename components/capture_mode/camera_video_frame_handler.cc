@@ -750,6 +750,13 @@ void CameraVideoFrameHandler::Close(base::OnceClosure close_complete_callback) {
   // `delegate_` might be freed any time after this point, so nullify it to
   // reflect that.
   delegate_ = nullptr;
+
+  // Since the destruction of `this` is postponed till `close_complete_callback`
+  // is invoked, there is a chance where `this` might outlive
+  // `context_factory_`. This is why we need to reset it.
+  buffer_map_.clear();
+  context_factory_ = nullptr;
+
   camera_video_stream_subsciption_remote_->Close(
       std::move(close_complete_callback));
 }
@@ -759,6 +766,10 @@ void CameraVideoFrameHandler::OnCaptureConfigurationChanged() {}
 void CameraVideoFrameHandler::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
+  if (!active_) {
+    return;
+  }
+
   const auto pair = buffer_map_.emplace(
       buffer_id,
       BufferHandleHolder::Create(
@@ -807,7 +818,7 @@ void CameraVideoFrameHandler::OnFrameReadyInBuffer(
 }
 
 void CameraVideoFrameHandler::OnBufferRetired(int buffer_id) {
-  DCHECK(buffer_map_.contains(buffer_id));
+  DCHECK(buffer_map_.contains(buffer_id) || !active_);
   buffer_map_.erase(buffer_id);
 }
 
