@@ -2432,7 +2432,10 @@ class TabListMediator {
         List<Integer> relatedTabIds = getRelatedTabsIds(tabId);
         if (!relatedTabIds.isEmpty()) {
             for (int i = 0; i < mModel.size(); i++) {
-                int modelTabId = mModel.get(i).model.get(TAB_ID);
+                PropertyModel model = mModel.get(i).model;
+                if (model.get(CARD_TYPE) != TAB) continue;
+
+                int modelTabId = model.get(TAB_ID);
                 if (relatedTabIds.contains(modelTabId)) {
                     return i;
                 }
