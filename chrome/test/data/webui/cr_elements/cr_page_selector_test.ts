@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('cr-page-selector', () => {
@@ -36,5 +36,25 @@ suite('cr-page-selector', () => {
     assertFalse(isVisible(document.body.querySelector('#a')));
     assertFalse(isVisible(document.body.querySelector('#b')));
     assertTrue(isVisible(document.body.querySelector('#c')));
+  });
+
+  test('Click does not select', async () => {
+    element.selected = 'a';
+    await element.updateComplete;
+
+    const pageA = document.body.querySelector<HTMLElement>('#a');
+    assertTrue(!!pageA);
+
+    const whenClicked = new Promise<void>(resolve => {
+      pageA.addEventListener('click', () => {
+        element.selected = 'b';
+        resolve();
+      });
+    });
+    pageA.click();
+
+    await whenClicked;
+    await element.updateComplete;
+    assertEquals('b', element.selected);
   });
 });

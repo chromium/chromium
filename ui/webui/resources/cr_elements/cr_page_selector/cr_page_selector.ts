@@ -22,6 +22,15 @@ export class CrPageSelectorElement extends CrPageSelectorElementBase {
   override render() {
     return getHtml.bind(this)();
   }
+
+  constructor() {
+    super();
+
+    // Overridden from CrSelectableMixin, since selecting pages on click does
+    // not make sense (only one page is visible at a time, and this can undo
+    // a selection set elsewhere).
+    this.selectOnClick = false;
+  }
 }
 
 declare global {

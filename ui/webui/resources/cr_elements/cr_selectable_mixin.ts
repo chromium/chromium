@@ -81,13 +81,20 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     selectable?: string;
     selected?: string|number;
     selectedAttribute: string|null = null;
+
+    // Whether to select items when they or their children are clicked. Note:
+    // value is only checked in firstUpdated().
+    selectOnClick: boolean = true;
+
     private items_: Element[] = [];
     private observer_: MutationObserver;
     private selectedItem_: Element|null = null;
 
     override firstUpdated(changedProperties: PropertyValues<this>) {
       super.firstUpdated(changedProperties);
-      this.addEventListener('click', e => this.onClick_(e));
+      if (this.selectOnClick) {
+        this.addEventListener('click', e => this.onClick_(e));
+      }
       this.observeItems();
     }
 
@@ -281,6 +288,7 @@ export interface CrSelectableMixinInterface {
   selected?: string|number;
   selectable?: string;
   readonly selectedItem: Element|null;
+  selectOnClick: boolean;
 
   getItemsForTest(): Element[];
   itemsChanged(): void;
