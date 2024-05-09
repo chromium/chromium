@@ -84,7 +84,7 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingWebUIToolbar, features::kReadAnythingReadAloud},
-        {features::kReadAnythingWithScreen2x});
+        {features::kReadAnythingWithScreen2x, features::kPdfOcr});
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));

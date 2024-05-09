@@ -13,6 +13,8 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -293,6 +295,12 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             base::BindOnce(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
+  }
+  if (features::IsPdfOcrEnabled()) {
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+        browser_->profile())
+        ->GetServiceStateAsync(screen_ai::ScreenAIServiceRouter::Service::kOCR,
+                               base::DoNothing());
   }
 
   OnActiveWebContentsChanged();
@@ -677,18 +685,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   if (inner_contents.size() == 1 &&
       IsPdfExtensionOrigin(
           inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    // TODO(crbug.com/41485800): Improve PDF OCR support for Reading Mode. Maybe
-    // it would make it easy to read and maintain the code if setting the AXMode
-    // for PDF OCR (i.e. `ui::AXMode::kPDFOcr`) is handled by
-    // `PdfOcrController`. Enable accessibility to receive events (data) from
-    // PDF. Set kPDFOcr only when the PDF OCR feature flag is enabled to support
-    // inaccessible PDFs. Reset accessibility to get the new updated trees.
-    ui::AXMode ax_mode = kReadAnythingAXMode;
-    if (features::IsPdfOcrEnabled()) {
-      ax_mode |= ui::AXMode::kPDFOcr;
-    }
     pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
-        weak_factory_.GetSafeRef(), inner_contents[0], ax_mode);
+        weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
+    screen_ai::PdfOcrControllerFactory::GetForProfile(browser_->profile())
+        ->Activate();
   }
 }
 

@@ -66,6 +66,8 @@ class PdfOcrController : public KeyedService,
 
   void set_ocr_ready_for_testing() { ocr_service_ready_ = true; }
 
+  void Activate();
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;

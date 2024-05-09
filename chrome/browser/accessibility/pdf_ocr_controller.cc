@@ -45,25 +45,6 @@ namespace {
 
 constexpr char kHtmlMimeType[] = "text/html";
 
-// Returns true if a screen reader is present or (on Chrome OS only) if
-// select-to-speak is enabled.
-bool IsAccessibilityEnabled() {
-  // Active if a screen reader is present.
-  if (accessibility_state_utils::IsScreenReaderEnabled()) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Conditionally active if select-to-speak is enabled.
-  if (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
-      accessibility_state_utils::IsSelectToSpeakEnabled()) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return false;
-}
-
 // For a PDF tab, there are two associated processes (and two WebContentses):
 // (i) PDF Viewer Mimehandler (mime type = text/html) and (ii) PDF renderer
 // process (mime type = application/pdf). This helper function returns all PDF-
@@ -104,6 +85,35 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
     result.push_back(web_contents);
   }
   return result;
+}
+
+// Returns true if a screen reader is present, if the screen reader AXMode is
+// enabled on any PDF web contents, or (on Chrome OS only) if select-to-speak is
+// enabled.
+bool IsAccessibilityEnabled(Profile* profile) {
+  // Active if a screen reader is present.
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Conditionally active if select-to-speak is enabled.
+  if (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
+      accessibility_state_utils::IsSelectToSpeakEnabled()) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Check all web contentses. If any of them have screen reader mode enabled,
+  // return true.
+  auto contentses = GetPdfHtmlWebContentses(profile);
+  for (auto contents : contentses) {
+    if (contents->GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // Invoke screen reader alert to notify the user of the state.
@@ -219,7 +229,7 @@ void PdfOcrController::OnAccessibilityStatusEvent(
 
 void PdfOcrController::OnActivationChanged() {
   const bool is_always_active =
-      IsAccessibilityEnabled() &&
+      IsAccessibilityEnabled(profile_) &&
       profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
 
   if (is_always_active == IsEnabled()) {
@@ -299,6 +309,10 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE);
       break;
   }
+}
+
+void PdfOcrController::Activate() {
+  OnActivationChanged();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
