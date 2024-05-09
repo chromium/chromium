@@ -76,7 +76,7 @@
   font-weight: 500;
 }
 
-.group-item iron-icon {
+.group-item cr-icon {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
   margin-inline-start: auto;
@@ -106,7 +106,7 @@
   }
 }
 
-.item iron-icon {
+.item cr-icon {
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
   flex-shrink: 0;
@@ -114,7 +114,7 @@
   margin-inline-end: 8px;
 }
 
-.item[selected] iron-icon {
+.item[selected] cr-icon {
   visibility: visible;
 }
 

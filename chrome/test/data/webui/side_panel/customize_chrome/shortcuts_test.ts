@@ -12,8 +12,8 @@ import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-ch
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -93,7 +93,7 @@ suite('ShortcutsTest', () => {
     customizeShortcutsElement.$.showShortcutsToggle.click();
     const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     const selector =
-        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse');
+        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
 
     assertTrue(!!selector);
     assertEquals(true, selector.opened);
@@ -108,7 +108,7 @@ suite('ShortcutsTest', () => {
     customizeShortcutsElement.$.showShortcutsToggle.click();
     const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     const selector =
-        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse');
+        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
 
     assertTrue(!!selector);
     assertEquals(false, selector.opened);
@@ -142,11 +142,11 @@ suite('ShortcutsTest', () => {
     customizeShortcutsElement =
         document.createElement('customize-chrome-shortcuts');
     document.body.appendChild(customizeShortcutsElement);
-    const ironCollapse =
-        customizeShortcutsElement.shadowRoot!.querySelector('iron-collapse')!;
+    const crCollapse =
+        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse')!;
 
     // No animation before initialize.
-    assertTrue(ironCollapse.noAnimation!);
+    assertTrue(crCollapse.noAnimation!);
 
     // Initialize.
     callbackRouterRemote.setMostVisitedSettings(
@@ -154,7 +154,7 @@ suite('ShortcutsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Animation after initialize.
-    assertFalse(ironCollapse.noAnimation!);
+    assertFalse(crCollapse.noAnimation!);
 
     // Update.
     callbackRouterRemote.setMostVisitedSettings(
@@ -162,14 +162,14 @@ suite('ShortcutsTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Still animation after update.
-    assertFalse(ironCollapse.noAnimation!);
+    assertFalse(crCollapse.noAnimation!);
   });
 
   suite('Metrics', () => {
     test('Clicking show shortcuts toggle sets metric', async () => {
       customizeShortcutsElement.$.showShortcutsToggle.click();
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(customizeShortcutsElement);
+      await microtasksFinished();
 
       assertEquals(
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));

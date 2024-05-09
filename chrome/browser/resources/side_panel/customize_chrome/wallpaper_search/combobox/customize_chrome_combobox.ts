@@ -4,8 +4,8 @@
 
 import '../../check_mark_wrapper.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons_lit.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';

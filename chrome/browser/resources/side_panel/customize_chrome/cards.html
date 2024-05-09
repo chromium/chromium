@@ -9,7 +9,7 @@
   </cr-toggle>
 </div>
 <div id="cards">
-  <iron-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
+  <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
     ${this.modules_.map((item, index) => html`
       <div class="card">
@@ -44,5 +44,5 @@
         </div>
       ` : ''}
     `)}
-  </iron-collapse>
+  </cr-collapse>
 </div>

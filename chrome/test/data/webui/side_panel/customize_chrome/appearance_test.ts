@@ -14,9 +14,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
 
@@ -93,10 +92,10 @@ suite('AppearanceTest', () => {
     theme.backgroundManagedByPolicy = true;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(appearanceElement);
+    await microtasksFinished();
 
     appearanceElement.$.editThemeButton.click();
-    await waitAfterNextRender(appearanceElement);
+    await microtasksFinished();
 
     const managedDialog =
         $$<ManagedDialogElement>(appearanceElement, 'managed-dialog');
@@ -109,10 +108,10 @@ suite('AppearanceTest', () => {
     theme.backgroundManagedByPolicy = true;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(appearanceElement);
+    await microtasksFinished();
 
     appearanceElement.$.setClassicChromeButton.click();
-    await waitAfterNextRender(appearanceElement);
+    await microtasksFinished();
 
     const managedDialog =
         $$<ManagedDialogElement>(appearanceElement, 'managed-dialog');
@@ -442,10 +441,10 @@ suite('AppearanceTest', () => {
       theme.backgroundManagedByPolicy = true;
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
-      await waitAfterNextRender(appearanceElement);
+      await microtasksFinished();
 
       $$<HTMLElement>(appearanceElement, '#wallpaperSearchButton')!.click();
-      await waitAfterNextRender(appearanceElement);
+      await microtasksFinished();
 
       const managedDialog =
           $$<ManagedDialogElement>(appearanceElement, 'managed-dialog');

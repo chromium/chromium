@@ -357,7 +357,7 @@ suite('ComboboxTest', () => {
         1, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
 
     const groupLabel = getGroup(0).querySelector('label')!;
-    const groupLabelIcon = groupLabel.querySelector('iron-icon')!;
+    const groupLabelIcon = groupLabel.querySelector('cr-icon')!;
     assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
 

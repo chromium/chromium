@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';

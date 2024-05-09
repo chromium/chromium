@@ -3,11 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
 import './strings.m.js';

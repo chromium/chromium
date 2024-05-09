@@ -14,7 +14,6 @@ import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/windo
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -227,7 +226,7 @@ suite('ThemesTest', () => {
     theme.backgroundImage = backgroundImage;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(themesElement);
+    await microtasksFinished();
 
     // Check that nothing is selected.
     let checkedThemes =
@@ -239,7 +238,7 @@ suite('ThemesTest', () => {
     theme.backgroundImage = backgroundImage;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(themesElement);
+    await microtasksFinished();
 
     // Check that 1 theme is selected.
     checkedThemes =
@@ -254,7 +253,7 @@ suite('ThemesTest', () => {
     theme.backgroundImage.dailyRefreshEnabled = true;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(themesElement);
+    await microtasksFinished();
 
     // Check that nothing is selected.
     checkedThemes =
@@ -269,7 +268,7 @@ suite('ThemesTest', () => {
     theme.backgroundImage.dailyRefreshEnabled = false;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(themesElement);
+    await microtasksFinished();
 
     // Check that nothing is selected.
     checkedThemes =

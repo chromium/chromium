@@ -14,7 +14,6 @@ import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -57,8 +56,8 @@ suite('CardsTest', () => {
     return customizeCards.$['showToggleContainer']!.querySelector('cr-toggle')!;
   }
 
-  function getCollapseElement(): IronCollapseElement {
-    return customizeCards.shadowRoot!.querySelector('iron-collapse')!;
+  function getCollapseElement() {
+    return customizeCards.shadowRoot!.querySelector('cr-collapse')!;
   }
 
   function getCardsMap(): Map<string, HTMLElement> {

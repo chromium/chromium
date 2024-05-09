@@ -48,7 +48,7 @@
   margin-inline-start: 40px;
 }
 
-iron-collapse {
+cr-collapse {
   --iron-collapse-transition-duration: 300ms;
   width: 100%;
 }

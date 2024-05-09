@@ -1,4 +1,4 @@
-<iron-pages id="container"
+<cr-page-selector id="container"
     class="sp-scroller sp-scroller-top-of-page sp-scroller-bottom-of-page"
     selected="${this.page_}" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
@@ -18,7 +18,7 @@
         <sp-heading hide-back-button id="toolbar-customization-heading">
           <h2 slot="heading">$i18n{toolbarHeader}</h2>
         </sp-heading>
-        <iron-icon icon="cr:chevron-right" slot="suffix-icon"> </iron-icon>
+        <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
       </cr-button>
     ` : ''}
     <hr class="sp-cards-separator">
@@ -84,4 +84,4 @@
     <customize-chrome-toolbar @back-click="${this.onBackClick_}"
       page-name="toolbar" id="toolbarPage"></customize-chrome-toolbar>
   ` : ''}
-</iron-pages>
+</cr-page-selector>

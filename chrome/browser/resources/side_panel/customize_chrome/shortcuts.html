@@ -5,7 +5,7 @@
   </cr-toggle>
 </div>
 <div id="options">
-  <iron-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
+  <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
     <cr-radio-group id="shortcutsRadioSelection" ?disabled="${!this.show_}"
         .selected="${this.shortcutsRadioSelection_}"
@@ -36,5 +36,5 @@
         </cr-radio-button>
       </div>
     </cr-radio-group>
-  </iron-collapse>
+  </cr-collapse>
 </div>

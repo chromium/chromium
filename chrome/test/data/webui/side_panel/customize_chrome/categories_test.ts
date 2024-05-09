@@ -15,9 +15,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -160,7 +159,7 @@ suite('CategoriesTest', () => {
     const theme = createTheme();
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(categoriesElement);
+    await microtasksFinished();
 
     // Check that classic chrome is selected.
     let checkedCategories =
@@ -177,7 +176,7 @@ suite('CategoriesTest', () => {
     theme.backgroundImage = backgroundImage;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(categoriesElement);
+    await microtasksFinished();
 
     // Check that upload image is selected.
     checkedCategories =
@@ -194,7 +193,7 @@ suite('CategoriesTest', () => {
     theme.backgroundImage = backgroundImage;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(categoriesElement);
+    await microtasksFinished();
 
     // Check that collection is selected.
     checkedCategories =
@@ -213,7 +212,7 @@ suite('CategoriesTest', () => {
     };
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(categoriesElement);
+    await microtasksFinished();
 
     // Check that no category is selected.
     checkedCategories =
@@ -272,7 +271,7 @@ suite('CategoriesTest', () => {
         theme.backgroundImage = backgroundImage;
         callbackRouterRemote.setTheme(theme);
         await callbackRouterRemote.$.flushForTesting();
-        await waitAfterNextRender(categoriesElement);
+        await microtasksFinished();
 
         // Check that wallpaper search is selected if flag is enabled and
         // nothing is selected if flag is disabled.

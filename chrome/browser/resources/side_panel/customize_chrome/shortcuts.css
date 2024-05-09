@@ -29,7 +29,7 @@
   margin: 0;
 }
 
-iron-collapse {
+cr-collapse {
   --iron-collapse-transition-duration: 300ms;
   width: 100%;
 }

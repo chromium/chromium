@@ -7,12 +7,12 @@ import './combobox/customize_chrome_combobox.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './button_label.js';
 
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';

@@ -167,7 +167,7 @@ ${this.inspirationCardEnabled_ ? html`
       <div class="cr-icon ${this.inspirationToggleIcon_}" slot="buttons">
       </div>
     </sp-heading>
-    <iron-collapse .opened="${this.openInspirations_}">
+    <cr-collapse .opened="${this.openInspirations_}">
       <div class="inspirations-content">
         ${this.inspirationGroups_.map((item, groupIndex) => html`
           <h3>
@@ -197,7 +197,7 @@ ${this.inspirationCardEnabled_ ? html`
           </cr-grid>
         `)}
       </div>
-    </iron-collapse>
+    </cr-collapse>
   </div>
 ` : ''}
 <hr class="sp-cards-separator" ?hidden="${!this.shouldShowHistory_}">
