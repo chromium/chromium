@@ -21089,6 +21089,45 @@
        {}
       ]
      ],
+     "page-box-001-print.html": [
+      "35c2f06c93bfa3f5f162d945393d7acbea1250dc",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-001-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-box-002-print.html": [
+      "3b87b6903dd321b1c56df812b6ef1458c3c4a8ce",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-002-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-box-003-print.html": [
+      "44cc13555b543b8a4d9db28dcac6282438f74c51",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-003-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-left-right-001-print.html": [
       "044696fcca27ec7ebe18edab3053dfbb65af6bbc",
       [
@@ -290270,6 +290309,10 @@
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
      []
     ],
+    "idb-binary-key-detached-expected.txt": [
+     "a5ea97e69ddc4152a1b429e244d0ea3cbfc14a2a",
+     []
+    ],
     "idb-binary-key-roundtrip-expected.txt": [
      "3c11fd4d135b6a5a44a7e3877efcb001ed7b3186",
      []
@@ -327279,6 +327322,18 @@
      ],
      "page-box-000-print-ref.html": [
       "d39bd738507490b5590afa7a4eb6cce9766b63bc",
+      []
+     ],
+     "page-box-001-print-ref.html": [
+      "d9ab323877f7144062ce908345d32e57900cc2d6",
+      []
+     ],
+     "page-box-002-print-ref.html": [
+      "e1ee4ab5d148662f6ea6af9f906caed7e821b207",
+      []
+     ],
+     "page-box-003-print-ref.html": [
+      "e1ee4ab5d148662f6ea6af9f906caed7e821b207",
       []
      ],
      "page-left-right-001-print-ref.html": [
@@ -390709,6 +390764,10 @@
       "d304669ea19186b4fde0b105c37725d7a628e8bd",
       []
      ],
+     "shared-storage-writable-fetch-request-in-sandboxed-iframe-inner.https.sub.html": [
+      "ef8b2459f3cc386473a38d9ff651925a5f7c4850",
+      []
+     ],
      "shared-storage-writable-iframe-in-fenced-inner.https.sub.html": [
       "87dbe81a2b5294d8b7bc62dcc0e438d3f5ef830a",
       []
@@ -390719,6 +390778,10 @@
      ],
      "shared-storage-writable-iframe-request-in-sandboxed-iframe-inner.https.sub.html": [
       "4d1b7ab198d7f0e85f3d3dcc8681264c2d05c56a",
+      []
+     ],
+     "shared-storage-writable-img-request-in-sandboxed-iframe-inner.https.sub.html": [
+      "8842a4689d823ab0b767eb14ec3f18a22deb2b19",
       []
      ],
      "shared-storage-writable-pixel-write.png": [
@@ -406278,7 +406341,7 @@
      ]
     ],
     "idb-binary-key-detached.htm": [
-     "ac6fc2ef98021be045338302b08151bd13535575",
+     "a4ce3fbce00917b747c4dd40655cb2d6aa55c63d",
      [
       null,
       {}
@@ -461401,6 +461464,13 @@
        ]
       ]
      },
+     "position-relative.html": [
+      "e3da0013101983e28cc2f1e59aa15a2e03a563db",
+      [
+       null,
+       {}
+      ]
+     ],
      "rt-display-blockified.html": [
       "b2b7989fddc2f18add83fd342aa75c44261d0b07",
       [
@@ -638960,6 +639030,13 @@
       {}
      ]
     ],
+    "shared-storage-writable-fetch-request-in-sandboxed-frame.tentative.https.html": [
+     "de935b22fe080ee5822c5ea868b15c870227550a",
+     [
+      null,
+      {}
+     ]
+    ],
     "shared-storage-writable-forbidden-header-tentative.https.html": [
      "896fb7924040459069b32e3c9918d88756608fe1",
      [
@@ -639025,6 +639102,13 @@
     ],
     "shared-storage-writable-img-idl-attribute-not-included.tentative.https.sub.html": [
      "56badca311b1b9e9f88a4d129ffc5760ed49a606",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-writable-img-request-in-sandboxed-frame.tentative.https.html": [
+     "a901500d66a4e46eeb722b5420d8d7c2235adccb",
      [
       null,
       {}
@@ -681279,7 +681363,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "184e8033e6624cfd433494d7c01f917195c5b65d",
+      "95bd074adc01aa5467be19652b335f172a2989e3",
       [
        "webnn/validation_tests/gather.https.any.html",
        {
@@ -682076,7 +682160,7 @@
       ]
      ],
      "reduction.https.any.js": [
-      "60f0978678870e8e78fc68b8dc6120041015556d",
+      "7da6b24dcf058383e12d2fbfe7f1f5dab4721350",
       [
        "webnn/validation_tests/reduction.https.any.html",
        {

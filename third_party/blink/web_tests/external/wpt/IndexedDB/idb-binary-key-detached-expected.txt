@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Detached ArrayBuffer
+  assert_throws_dom: function "() => { store.put('', buffer); }" threw object "TypeError: Failed to execute 'put' on 'IDBObjectStore': The ArrayBuffer is detached." that is not a DOMException DataError: property "code" is equal to undefined, expected 0
+[FAIL] Detached TypedArray
+  assert_throws_dom: function "() => { store.put('', array); }" threw object "TypeError: Failed to execute 'put' on 'IDBObjectStore': The viewed ArrayBuffer is detached." that is not a DOMException DataError: property "code" is equal to undefined, expected 0
+Harness: the test ran to completion.
+
