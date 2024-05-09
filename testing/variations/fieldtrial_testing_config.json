@@ -724,7 +724,19 @@
             ],
             "experiments": [
                 {
+                    "name": "Counterfactual",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "AppsCollections"
+                    ]
+                },
+                {
                     "name": "Enabled",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
                     "enable_features": [
                         "AppsCollections"
                     ]

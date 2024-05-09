@@ -560,19 +560,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.AppsCollections.AppLaunchesByCategory"
-    enum="AppListAppCollections" expires_after="2025-03-18">
-  <owner>anasalazar@google.com</owner>
-  <owner>anooshree@google.com</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The number of apps launched from Apps Collection divided by category. This
-    is incremented each time an app is launched. Each bucket represents a
-    different category.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.AppsCollections.DismissedReason"
     enum="AppsCollectionsDismissedReason" expires_after="2025-03-15">
   <owner>anasalazar@google.com</owner>
@@ -1745,7 +1732,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity"
+<histogram
+    name="Apps.AppListBubble.{AppListPage}.AppLaunchesByCategory{ExperimentalArm}"
+    enum="AppListAppCollections" expires_after="2025-03-18">
+  <owner>anasalazar@google.com</owner>
+  <owner>anooshree@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of apps launched from Apps Collection divided by category. This
+    is incremented each time an app is launched. Each bucket represents a
+    different category.
+  </summary>
+  <token key="AppListPage">
+    <variant name="AppCollectionsPage" summary=""/>
+    <variant name="AppsPage" summary=""/>
+  </token>
+  <token key="ExperimentalArm">
+    <variant name="" summary=""/>
+    <variant name=".Counterfactual" summary=""/>
+    <variant name=".Enabled" summary=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity{ExperimentalArm}"
     enum="AppListEntity" expires_after="2025-03-18">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
@@ -1759,6 +1770,11 @@ chromium-metrics-reviews@google.com.
   <token key="AppListPage">
     <variant name="AppCollectionsPage" summary=""/>
     <variant name="AppsPage" summary=""/>
+  </token>
+  <token key="ExperimentalArm">
+    <variant name="" summary=""/>
+    <variant name=".Counterfactual" summary=""/>
+    <variant name=".Enabled" summary=""/>
   </token>
 </histogram>
 

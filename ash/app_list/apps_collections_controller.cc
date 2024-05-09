@@ -40,10 +40,6 @@ AppsCollectionsController* AppsCollectionsController::Get() {
 }
 
 bool AppsCollectionsController::ShouldShowAppsCollection() {
-  if (!app_list_features::IsAppsCollectionsEnabled()) {
-    return false;
-  }
-
   if (apps_collections_was_dissmissed_) {
     return false;
   }
@@ -87,9 +83,18 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
       client_->IsNewUser(session_controller->GetActiveAccountId());
 
   // If it is not known whether the user is "new" or "existing" when this code
-  // is reached, the user is treated as "existing" since the Welcome Tour
-  // cannot be delayed and we want to err on the side of being conservative.
-  return is_new_user.value_or(false);
+  // is reached, the user is treated as "existing" we want to err on the side of
+  // being conservative.
+  if (!is_new_user || !is_new_user.value()) {
+    return false;
+  }
+
+  // To ensure the population number of the experiment groups (Counterfactual
+  // and Enabled) are similar sized, query the finch experiment state here.
+  // The counterfactual arm will serve as control group, so it should not show
+  // Apps Collections even if it belong to the experiment.
+  return app_list_features::IsAppsCollectionsEnabled() &&
+         !app_list_features::IsAppsCollectionsEnabledCounterfactually();
 }
 
 void AppsCollectionsController::SetAppsCollectionDismissed(
