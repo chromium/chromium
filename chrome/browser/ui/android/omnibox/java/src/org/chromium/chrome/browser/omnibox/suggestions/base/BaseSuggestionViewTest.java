@@ -17,9 +17,7 @@ import android.view.View.MeasureSpec;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,17 +25,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Tests for {@link BaseSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseSuggestionViewTest {
-    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.
     private int mActionIconWidthPx;
@@ -595,18 +589,10 @@ public class BaseSuggestionViewTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testRevamp_smallestMargins() {
-        View contentView = new View(mActivity);
-        contentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
-        BaseSuggestionViewForTest suggestionViewForTest =
-                new BaseSuggestionViewForTest(contentView);
-
-        Assert.assertEquals(mDecorationIconWidthPx, suggestionViewForTest.mDecorationIconWidthPx);
-        Assert.assertEquals(
-                mSemicompactSuggestionViewHeight, suggestionViewForTest.mContentHeightPx);
-        Assert.assertEquals(
-                mCompactSuggestionViewHeight, suggestionViewForTest.mCompactContentHeightPx);
+    public void layout_dimensions() {
+        Assert.assertEquals(mDecorationIconWidthPx, mView.mDecorationIconWidthPx);
+        Assert.assertEquals(mSemicompactSuggestionViewHeight, mView.mContentHeightPx);
+        Assert.assertEquals(mCompactSuggestionViewHeight, mView.mCompactContentHeightPx);
     }
 
     @Test
