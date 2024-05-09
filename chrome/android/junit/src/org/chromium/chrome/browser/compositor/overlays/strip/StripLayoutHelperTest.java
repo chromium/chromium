@@ -1209,46 +1209,60 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
-    public void testInReorderMode_SkipTabGroupMarginAndAutoScroll_TabGroupIndicators() {
+    public void testInReorderMode_StripStartMargin_TabGroupIndicators() {
         // Initialize.
         initializeTest(false, false, 5);
         groupTabs(0, 2);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
 
         // Update layout.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Start reorder mode on the third tab.
+        mStripLayoutHelper.disableAnimationsForTesting();
         mStripLayoutHelper.startReorderModeAtIndexForTesting(2);
 
         // Verify that we enter reorder mode.
         assertTrue("Should in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
 
-        // offsetXLeft(10) + groupTitle(46) + deltaOffset(-4)
-        float initialPosition = 52.f;
-        float delta = views[1].getWidth() - TAB_OVERLAP_WIDTH;
-
-        // Assert: tab position should not changed.
-        for (int i = 1; i < views.length; i++) {
-            if (views[i] instanceof StripLayoutTab tab) {
-                assertEquals(
-                        "Tab position should not changed.", initialPosition, tab.getIdealX(), 0.f);
-            }
-            initialPosition += delta;
-        }
-
-        // Assert: ScrollOffset should not changed.
+        // Assert: StripStartMargin is about 1/4 tab width to create space for dragging first tab
+        // out of group on strip.
+        // tabWidth(159.2) - tabOverlap(28) * (0.53(ReorderOverlapSwitchPercentage) * 2) = 36.8f
         assertEquals(
-                "scrollOffset should not changed.", 0.f, mStripLayoutHelper.getScrollOffset(), 0.f);
-
-        // Assert: StripStartMargin should not changed.
-        assertEquals(
-                "StripStartMargin should not changed.",
-                0.f,
+                "StripStartMargin is incorrect",
+                36.8f,
                 mStripLayoutHelper.getStripStartMarginForReorderForTesting(),
-                0.f);
+                0.1f);
+
+        // Assert: There should be a scroll offset equal to counter the stripStartMargin, so that
+        // the interacting tab would remain visually stationary.
+        assertEquals(
+                "scrollOffset is incorrect", -36.8f, mStripLayoutHelper.getScrollOffset(), 0.1f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testInReorderMode_StripEndMargin_TabGroupIndicators() {
+        // Initialize.
+        initializeTest(false, false, 4);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        groupTabs(3, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Update layout.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Start reorder mode on the fourth tab.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(3);
+
+        // Verify that we enter reorder mode.
+        assertTrue("Should in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
+
+        // Assert: Last tab's trailingMargin should be about 1/4 tab width to create space for
+        // dragging last tab out of group on strip.
+        assertEquals("Strip end margin is incorrect", 36.8f, tabs[4].getTrailingMargin(), 0.1f);
     }
 
     @Test

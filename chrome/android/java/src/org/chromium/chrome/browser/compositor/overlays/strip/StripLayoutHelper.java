@@ -3571,6 +3571,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 setTabGroupBackgroundContainersVisible(tab.getRootId(), true);
             }
             computeAndUpdateTabGroupMargins(true, animationList);
+        } else {
+            computeAndUpdateStartAndEndMargins(true, animationList);
         }
 
         return animationList;
@@ -3693,7 +3695,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      *
      * @param startMarginDelta The change in start margin for the tab strip.
      * @param numMarginsToSlide The number of margins to slide to make it appear as through the
-     *         interacting tab does not move.
+     *     interacting tab does not move.
      * @param animationList The list to add the animation to, or {@code null} if not animating.
      */
     private void autoScrollForTabGroupMargins(
@@ -3790,6 +3792,43 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 4. Begin slide-out and scroll animation. Update tab positions.
         if (animationList == null) computeTabInitialPositions();
+    }
+
+    private void computeAndUpdateStartAndEndMargins(
+            boolean autoScroll, List<Animator> animationList) {
+        // 1. Set the starting and trailing margin for the tab strip.
+        boolean firstTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(getTabById(mStripTabs[0].getId()));
+        boolean lastTabIsInGroup =
+                mTabGroupModelFilter.isTabInTabGroup(
+                        getTabById(mStripTabs[mStripTabs.length - 1].getId()));
+        float startMargin =
+                firstTabIsInGroup ? mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE : 0f;
+
+        float startMarginDelta = startMargin - mStripStartMarginForReorder;
+        mStripStartMarginForReorder = startMargin;
+        mStripTabs[mStripTabs.length - 1].setTrailingMargin(
+                (lastTabIsInGroup || mReorderingForTabDrop)
+                        ? calculateTabGroupThreshold(mStripTabs.length - 1, true, true)
+                        : 0f);
+
+        // As the tab being dragged into the group from the tab group's end immediately swaps
+        // positions with the second-to-last tab, we need to manually clear the tab's trailing
+        // margin.
+        if (mStripTabs.length > 1) {
+            mStripTabs[mStripTabs.length - 2].setTrailingMargin(0.f);
+        }
+
+        // 2. Adjust the scroll offset accordingly to prevent the interacting tab from shifting away
+        // from where the user long-pressed.
+        if (autoScroll && !mAnimationsDisabledForTesting) {
+            autoScrollForTabGroupMargins(startMarginDelta, 0, animationList);
+        } else {
+            if (mCachedTabWidth == mMaxTabWidth) {
+                mReorderExtraMinScrollOffset = mStripStartMarginForReorder;
+            }
+            mScrollOffset = mScrollOffset - startMarginDelta;
+        }
     }
 
     private void resetTabGroupMargins(ArrayList<Animator> animationList) {
@@ -4338,6 +4377,15 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             float oldOffset = mScrollOffset;
             if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
                 computeAndUpdateTabGroupMargins(false, null);
+            } else {
+                // Update strip start and end margins to create more space for first tab or last tab
+                // to drag out of group.
+                // TODO(crbug.com/339705781) Clear last tab trailing margin when removing the group.
+                if ((curIndex == 0 || curIndex >= mStripTabs.length - 2)
+                        && mTabGroupModelFilter.isTabInTabGroup(
+                                getTabById(mInteractingTab.getId()))) {
+                    computeAndUpdateStartAndEndMargins(false, null);
+                }
             }
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
@@ -4391,11 +4439,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
         }
         if (curIndex == mStripTabs.length - 1) {
-            limit =
-                    (indicatorsEnabled && isStripTabInTabGroup(mStripTabs[mStripTabs.length - 1]))
-                            ? calculateTabGroupThreshold(mStripTabs.length - 1, true, true)
-                            : mStripTabs[curIndex].getTrailingMargin();
-            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
+            offset =
+                    LocalizationUtils.isLayoutRtl()
+                            ? Math.max(-mStripTabs[curIndex].getTrailingMargin(), offset)
+                            : Math.min(mStripTabs[curIndex].getTrailingMargin(), offset);
         }
 
         // 5. Set the new offset.
