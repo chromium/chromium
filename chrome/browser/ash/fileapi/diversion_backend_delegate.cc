@@ -691,6 +691,57 @@ void DiversionBackendDelegate::OnDiversionFinished(
                                file_size));
       };
 
+  static constexpr auto on_get_file_info =
+      [](base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+         OnDiversionFinishedCallSite call_site,
+         std::unique_ptr<storage::FileSystemOperationContext> context,
+         base::ScopedFD scoped_fd, const storage::FileSystemURL& src_url,
+         const storage::FileSystemURL& dest_url,
+         storage::AsyncFileUtil::StatusCallback callback,
+         DiversionFileManager::StoppedReason stopped_reason, int64_t file_size,
+         base::File::Error result, const base::File::Info& file_info) {
+        if (result == base::File::FILE_ERROR_NOT_FOUND) {
+          // No-op. Every other if-else branch returns.
+        } else if (result != base::File::FILE_OK) {
+          if (callback) {
+            std::move(callback).Run(result);
+          }
+          return;
+        } else if (file_info.is_directory) {
+          if (callback) {
+            std::move(callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
+          }
+          return;
+        } else if (file_info.size != 0) {
+          on_ensure_file_exists(std::move(weak_ptr), call_site,
+                                std::move(context), std::move(scoped_fd),
+                                src_url, dest_url, std::move(callback),
+                                stopped_reason, file_size, base::File::FILE_OK,
+                                /*created=*/false);
+          return;
+        } else {
+          on_truncated(std::move(weak_ptr), call_site, std::move(context),
+                       std::move(scoped_fd), src_url, dest_url,
+                       std::move(callback), stopped_reason, file_size,
+                       base::File::FILE_OK);
+          return;
+        }
+
+        std::unique_ptr<storage::FileSystemOperationContext> fsoc0 =
+            DuplicateFileSystemOperationContext(*context);
+        std::unique_ptr<storage::FileSystemOperationContext> fsoc1 =
+            std::move(context);
+
+        FileSystemBackendDelegate* wrappee = weak_ptr->wrappee_.get();
+        wrappee->GetAsyncFileUtil(dest_url.type())
+            ->EnsureFileExists(
+                std::move(fsoc0), dest_url,
+                base::BindOnce(on_ensure_file_exists, std::move(weak_ptr),
+                               call_site, std::move(fsoc1),
+                               std::move(scoped_fd), src_url, dest_url,
+                               std::move(callback), stopped_reason, file_size));
+      };
+
   std::unique_ptr<storage::FileSystemOperationContext> fsoc0 =
       DuplicateFileSystemOperationContext(*context);
   std::unique_ptr<storage::FileSystemOperationContext> fsoc1 =
@@ -698,9 +749,11 @@ void DiversionBackendDelegate::OnDiversionFinished(
 
   FileSystemBackendDelegate* wrappee = weak_ptr->wrappee_.get();
   wrappee->GetAsyncFileUtil(dest_url.type())
-      ->EnsureFileExists(
+      ->GetFileInfo(
           std::move(fsoc0), dest_url,
-          base::BindOnce(on_ensure_file_exists, std::move(weak_ptr), call_site,
+          {storage::FileSystemOperation::GetMetadataField::kSize,
+           storage::FileSystemOperation::GetMetadataField::kIsDirectory},
+          base::BindOnce(on_get_file_info, std::move(weak_ptr), call_site,
                          std::move(fsoc1), std::move(scoped_fd), src_url,
                          dest_url, std::move(callback), stopped_reason,
                          file_size));
