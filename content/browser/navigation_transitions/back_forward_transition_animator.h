@@ -19,6 +19,7 @@
 
 namespace cc::slim {
 class SolidColorLayer;
+class SurfaceLayer;
 class UIResourceLayer;
 }
 
@@ -265,6 +266,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
 
+  void CloneOldSurfaceLayer(RenderWidgetHostViewBase* old_main_frame_view);
+
   void UnregisterNewFrameActivationObserver();
 
   const BackForwardTransitionAnimationManager::NavigationDirection
@@ -294,6 +297,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // New layer for `screenshot_`.
   scoped_refptr<cc::slim::UIResourceLayer> ui_resource_layer_;
+
+  // A copy of old surface, covering the entire old page from when the
+  // navigation commits to the end of the invoke animation (where the old page
+  // is completely out of the viewport).
+  scoped_refptr<cc::slim::SurfaceLayer> old_surface_clone_;
 
   // The pre-captured screenshot used for previewing. The ownership of the
   // screenshot is transferred from the cache to this manager when the gesture

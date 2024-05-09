@@ -212,7 +212,7 @@ class WebContentsViewAndroid : public WebContentsView,
   //   |                |- Overscroll
   //   |                |- SelectionHandle
   //   |
-  //   |- `NavigationEntryScreenshot`  // TODO(crbug.com/41482490)
+  //   |- `NavigationEntryScreenshot`
   //
   // ViewAndroid hierarchy:
   // `view_`

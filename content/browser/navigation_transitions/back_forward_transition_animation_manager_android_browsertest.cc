@@ -187,9 +187,18 @@ float GetProgress(GestureType gesture, SwipeEdge edge) {
   }
 }
 
-void ExpectedLayerTransforms(WebContentsImpl* web_contents,
-                             const LayerTransforms& transforms,
-                             bool testing_crossfade = false) {
+// Assert that the layers directly owned by the WebContents's native view have
+// the transform `transforms`.
+enum class CrossFadeOrOldSurfaceClone {
+  kNoCrossfadeNoSurfaceClone,
+  kCrossfade,
+  kSurfaceClone,
+};
+void ExpectedLayerTransforms(
+    WebContentsImpl* web_contents,
+    const LayerTransforms& transforms,
+    CrossFadeOrOldSurfaceClone crossfade_or_clone =
+        CrossFadeOrOldSurfaceClone::kNoCrossfadeNoSurfaceClone) {
   const auto& layers =
       static_cast<WebContentsViewAndroid*>(web_contents->GetView())
           ->GetNativeView()
@@ -205,10 +214,30 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
         << "Active page: actual " << actual.ToString() << " expected "
         << transforms.active_page.ToString();
   } else {
-    ASSERT_EQ(layers.size(), 2u);
-    size_t screenshot_index = (testing_crossfade ? 1u : 0u);
-    size_t active_page_index = (testing_crossfade ? 0u : 1u);
-
+    size_t screenshot_index = 0u;
+    size_t active_page_index = 0u;
+    size_t old_surface_clone_index = 0u;
+    switch (crossfade_or_clone) {
+      case CrossFadeOrOldSurfaceClone::kNoCrossfadeNoSurfaceClone: {
+        ASSERT_EQ(layers.size(), 2u);
+        screenshot_index = 0u;
+        active_page_index = 1u;
+        break;
+      }
+      case CrossFadeOrOldSurfaceClone::kCrossfade: {
+        ASSERT_EQ(layers.size(), 2u);
+        screenshot_index = 1u;
+        active_page_index = 0u;
+        break;
+      }
+      case CrossFadeOrOldSurfaceClone::kSurfaceClone: {
+        ASSERT_EQ(layers.size(), 3u);
+        screenshot_index = 0u;
+        active_page_index = 1u;
+        old_surface_clone_index = 2u;
+        break;
+      }
+    }
     ASSERT_EQ(layers[active_page_index].get(),
               GetAnimationManager(web_contents)
                   ->web_contents_view_android()
@@ -223,6 +252,10 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
                           kFloatTolerance)
         << "Active page: actual " << actual_active_page.ToString()
         << " expected " << transforms.active_page.ToString();
+    if (crossfade_or_clone == CrossFadeOrOldSurfaceClone::kSurfaceClone) {
+      EXPECT_TRANSFORM_NEAR(layers[old_surface_clone_index]->transform(),
+                            transforms.active_page, kFloatTolerance);
+    }
   }
 }
 
@@ -266,7 +299,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     if (state() == State::kDisplayingCrossFadeAnimation) {
       ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
-                              /*testing_crossfade=*/true);
+                              CrossFadeOrOldSurfaceClone::kCrossfade);
     }
   }
   void OnAnimate(base::TimeTicks frame_begin_time) override {
@@ -274,7 +307,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
         !seen_first_on_animate_for_cross_fade_) {
       seen_first_on_animate_for_cross_fade_ = true;
       ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
-                              /*testing_crossfade=*/true);
+                              CrossFadeOrOldSurfaceClone::kCrossfade);
       const auto& layers = GetChildrenLayersOfWebContentsView();
       // The first OnAnimate for the cross-fade animation will set the scrim
       // to 0.3, and opacity to 1.
@@ -320,10 +353,17 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     static LayerTransforms on_invoked{
         .active_page = gfx::Transform::MakeTranslation(width, 0.f),
         .screenshot = gfx::Transform::MakeTranslation(0.f, 0.f)};
-    ExpectedLayerTransforms(wcva_->web_contents(), on_invoked);
+    // There won't be a old surface clone if the navigation is from a crashed
+    // page.
+    if (navigating_from_a_crashed_page_) {
+      ExpectedLayerTransforms(wcva_->web_contents(), on_invoked);
+    } else {
+      ExpectedLayerTransforms(wcva_->web_contents(), on_invoked,
+                              CrossFadeOrOldSurfaceClone::kSurfaceClone);
+    }
 
     const auto& layers = GetChildrenLayersOfWebContentsView();
-    ASSERT_EQ(layers.size(), 2U);
+    ASSERT_EQ(layers.size(), navigating_from_a_crashed_page_ ? 2U : 3U);
     ASSERT_EQ(layers.at(0)->children().size(), 1U);
     // Scrim should be at the end of the first timeline.
     EXPECT_EQ(layers.at(0)->children().at(0)->background_color().fA, 0.3f);
@@ -332,7 +372,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     if (state() == State::kDisplayingCrossFadeAnimation) {
       ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
-                              /*testing_crossfade=*/true);
+                              CrossFadeOrOldSurfaceClone::kCrossfade);
     }
   }
   void OnCrossFadeAnimationDisplayed() override {
@@ -342,7 +382,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     // Both layers are centered to display the cross-fade.
     ExpectedLayerTransforms(wcva_->web_contents(), kBothLayersCentered,
-                            /*testing_crossfade=*/true);
+                            CrossFadeOrOldSurfaceClone::kCrossfade);
 
     const auto& layers = GetChildrenLayersOfWebContentsView();
     ASSERT_EQ(layers.size(), 2U);
@@ -458,6 +498,9 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   void set_duration_between_frames(base::TimeDelta duration) {
     duration_between_frames_ = duration;
   }
+  void set_navigating_from_a_crashed_page(bool navigating_from_a_crashed_page) {
+    navigating_from_a_crashed_page_ = navigating_from_a_crashed_page;
+  }
 
  private:
   void ExpectState(State expected) const {
@@ -485,6 +528,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   bool intercept_render_frame_metadata_changed_ = false;
 
   bool seen_first_on_animate_for_cross_fade_ = false;
+
+  bool navigating_from_a_crashed_page_ = false;
 
   std::optional<State> pause_on_animate_at_state_;
 
@@ -1468,6 +1513,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   expected.push_back({.gesture = GestureType::kStart});
   expected.push_back({.gesture = GestureType::k60ViewportWidth});
   HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->set_navigating_from_a_crashed_page(true);
 
   TestFrameNavigationObserver back_to_red(web_contents());
   base::RunLoop cross_fade_displayed;

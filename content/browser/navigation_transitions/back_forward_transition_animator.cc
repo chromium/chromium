@@ -6,6 +6,7 @@
 
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
+#include "cc/slim/surface_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -156,6 +157,11 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
     ui_resource_layer_->RemoveFromParent();
     ui_resource_layer_.reset();
+  }
+
+  if (old_surface_clone_) {
+    old_surface_clone_->RemoveFromParent();
+    old_surface_clone_.reset();
   }
 
   CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
@@ -631,6 +637,12 @@ void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
 }
 
 void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
+  // There is no `old_surface_clone_` when navigating from a crashed page.
+  if (old_surface_clone_) {
+    old_surface_clone_->RemoveFromParent();
+    old_surface_clone_.reset();
+  }
+
   // The first scrim timeline is a function of the top layer's position. At the
   // end of the invoke animation, the top layer is completely out of the
   // viewport, so the `KeyFrameModel` for the scrim should also be exhausted and
@@ -837,9 +849,6 @@ void BackForwardTransitionAnimator::ProcessState() {
       // No-op. Waiting for `OnRenderFrameMetadataChangedAfterActivation()`.
       break;
     case State::kDisplayingCrossFadeAnimation: {
-      // TODO(crbug.com/40283503):
-      // - Dismiss the old page's visual copy.
-
       // Before we start displaying the crossfade animation,
       // `parent_for_web_page_widgets()` is completely out of the viewport. This
       // layer is reused for new content. For this reason, before we can start
@@ -905,6 +914,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   //
   // `WebContentsViewAndroid::view_->GetLayer()`
   //            |
+  //            |- `old_surface_clone_` (only set during the invoke animation).
   //            |- `parent_for_web_page_widgets_` (RWHVAndroid, Overscroll etc).
   //            |
   //            |- `NavigationEntryScreenshot`
@@ -1015,10 +1025,19 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
     const PhysicsModel::Result& result) {
   ui_resource_layer_->SetTransform(
       gfx::Transform::MakeTranslation(result.background_offset_physical, 0.f));
+
+  const auto foreground_transform =
+      gfx::Transform::MakeTranslation(result.foreground_offset_physical, 0.f);
   animation_manager_->web_contents_view_android()
       ->parent_for_web_page_widgets()
-      ->SetTransform(gfx::Transform::MakeTranslation(
-          result.foreground_offset_physical, 0.f));
+      ->SetTransform(foreground_transform);
+
+  if (old_surface_clone_) {
+    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+    CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
+    old_surface_clone_->SetTransform(foreground_transform);
+  }
+
   float screenshot_layer_progress =
       result.foreground_offset_physical /
       animation_manager_->web_contents_view_android()
@@ -1047,13 +1066,7 @@ void BackForwardTransitionAnimator::
     // drawn by `old_view`. We need to address as part of "navigating from NTP"
     // animation.
   } else {
-    // TODO(crbug.com/40283503): There might be a visual glitch if the
-    // old page is unloaded while we are still displaying the invoke animation.
-    // For now, make a deep copy of the old surface layer from `old_rwhva` and
-    // put the deep copy on top of the `WCVA::parent_for_web_page_widgets_`.
-    //
-    // Ideally, we need a way to preserve a minimal visual state of the old
-    // page.
+    CloneOldSurfaceLayer(old_host->GetView());
   }
   CHECK(new_host);
   auto* new_widget_host = new_host->GetRenderWidgetHost();
@@ -1102,6 +1115,36 @@ void BackForwardTransitionAnimator::
   new_render_widget_host_ = RenderWidgetHostImpl::From(new_widget_host);
   new_render_widget_host_->AddObserver(this);
   new_render_widget_host_->render_frame_metadata_provider()->AddObserver(this);
+}
+
+void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
+    RenderWidgetHostViewBase* old_main_frame_view) {
+  // The old View must be still alive (and its renderer).
+  CHECK(old_main_frame_view);
+
+  CHECK(!old_surface_clone_);
+
+  old_surface_clone_ = cc::slim::SurfaceLayer::Create();
+  const auto* old_surface_layer =
+      static_cast<RenderWidgetHostViewAndroid*>(old_main_frame_view)
+          ->GetSurfaceLayer();
+  // Use a zero deadline because this is a copy of a surface being actively
+  // shown. The surface textures are ready (i.e. won't be GC'ed) because
+  // `old_surface_clone_` references to them.
+  old_surface_clone_->SetSurfaceId(old_surface_layer->surface_id(),
+                                   cc::DeadlinePolicy::UseSpecifiedDeadline(0));
+  old_surface_clone_->SetPosition(old_surface_layer->position());
+  old_surface_clone_->SetBounds(old_surface_layer->bounds());
+  old_surface_clone_->SetTransform(old_surface_layer->transform());
+  old_surface_clone_->SetIsDrawable(true);
+  auto* parent_for_web_widgets = animation_manager_->web_contents_view_android()
+                                     ->parent_for_web_page_widgets();
+  CHECK_EQ(animation_manager_->web_contents_view_android()
+               ->GetNativeView()
+               ->GetLayer(),
+           parent_for_web_widgets->parent());
+
+  parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
 }
 
 void BackForwardTransitionAnimator::UnregisterNewFrameActivationObserver() {
