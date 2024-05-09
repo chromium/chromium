@@ -319,8 +319,7 @@ suite('TabDiscardExceptionList', function() {
     assertTrue(exceptionList.$.noSitesAdded.hidden);
   });
 
-  // TODO(crbug.com/337336425): Flaky on Windows and Linux.
-  test.skip('testManagedExceptionList', async () => {
+  test('testManagedExceptionList', async () => {
     const userRules = 3;
     const managedRules = 3;
     setupExceptionListEntries(
@@ -337,7 +336,9 @@ suite('TabDiscardExceptionList', function() {
     const tooltip = exceptionList.$.tooltip.$.tooltip;
     assertTrue(!!tooltip);
     assertTrue(tooltip.hidden);
+    const onShowTooltip = eventToPromise('show-tooltip', exceptionList);
     indicator.dispatchEvent(new Event('focus'));
+    await onShowTooltip;
     await microtasksFinished();
     assertEquals(
         CrPolicyStrings.controlledSettingPolicy,
