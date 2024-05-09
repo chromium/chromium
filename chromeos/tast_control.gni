@@ -110,6 +110,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
+  # b/339349824, temporarily until LKGM uprev with crrev.com/c/5516014
+  "arc.Print.container_p",
+  "inputs.PhysicalKeyboardKoreanTyping",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
