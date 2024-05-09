@@ -22,7 +22,7 @@ The following will, for each supported host architecture,
 * Fetch the corresponding clang-format package from the specified clang roll
 * Extract and copy the clang-format binary to the proper directory
 * Upload the binary into a publicly accessible google storage bucket, also
-  updating the corresponding `.sha1` files in the local checkout of Chrome
+  updating the deps entries in DEPS files in the local checkout of Chrome
 
 ```shell
 cd $SRC/chromium/src
@@ -48,11 +48,39 @@ gsutil cp $GS_PATH/Mac_arm64/clang-format-$CLANG_REV.tgz /tmp
 tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
 mv buildtools/mac/clang-format buildtools/mac/clang-format.arm64
 
-echo 'Uploading to GCS and creating sha1 files'
+# TODO(crbug.com/339490714): Remove sha1 file creation once all downstream repos that
+# use clang-format are migrated over to recursedeps into buildtools.
+echo '(Legacy) Uploading to GCS and creating sha1 files'
 upload_to_google_storage.py --bucket=chromium-clang-format buildtools/linux64/clang-format
 upload_to_google_storage.py --bucket=chromium-clang-format buildtools/win/clang-format.exe
 upload_to_google_storage.py --bucket=chromium-clang-format buildtools/mac/clang-format.x64
 upload_to_google_storage.py --bucket=chromium-clang-format buildtools/mac/clang-format.arm64
+
+echo 'Uploading to GCS and updating DEPS files'
+# helper function to set deps entries in DEPS file using `gclient setdep`
+# first argument relative DEPS path.
+# second argument object_info
+function set_deps {
+  gclient setdep -r src/buildtools/$1@$2
+  gclient setdep -r $1@$2 --deps-file=buildtools/DEPS
+}
+# helper function to upload content to GCS and set DEPS
+# first argument: google storage path
+# second argument: relative DEPS path
+# This function parses out the object info outputted by upload_to_google_storage_first_class.py
+# and formats it into a format that gclient setdep understands
+function upload_and_set {
+	object_info=$(upload_to_google_storage_first_class.py --bucket=chromium-clang-format $1 | jq -r .path.objects[0][] | sed -z 's/\n/,/g;s/,$/\n/')',clang-format'
+	if [[ $2 == 'win/format' ]]; then
+		object_info+='.exe'
+	fi;
+	set_deps $2 $object_info
+}
+
+upload_and_set buildtools/linux64/clang-format linux64/format
+upload_and_set buildtools/win/clang-format.exe win/format
+upload_and_set buildtools/mac/clang-format.x64 mac/format
+upload_and_set buildtools/mac/clang-format.arm64 mac_arm64/format
 
 # Clean up
 rm /tmp/clang-format-$CLANG_REV.tgz
@@ -72,7 +100,7 @@ clang-format differences by choosing patchset 1 as the base for the gerrit diff.
 ```shell
 ## New gerrit CL with results of old clang-format.
 # use old clang-format
-find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/format/clang-format -i
 git commit -a
 git cl upload --bypass-hooks
 ## New patchset on gerrit CL with results of new clang-format.
@@ -104,3 +132,13 @@ binaries directly. The change should **always** update `README.chromium`
 
 clang-format binaries should weigh in at 1.5MB or less. Watch out for size
 regressions.
+
+## Clean up downloaded binaries
+Delete the binaries that were just extracted. To use the new binaries that were
+updated in the DEPS files, run gclient sync.
+```shell
+rm buildtools/linux64/clang-format
+rm buildtools/win/clang-format.exe
+rm buildtools/mac/clang-format.x64
+rm buildtools/mac/clang-format.arm64
+```
