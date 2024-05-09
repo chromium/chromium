@@ -990,7 +990,7 @@ void UpdateRubyColumnInlinePositions(
     // TODO(crbug.com/324111880): Handle overhang.
     column->annotation_items->MoveInInlineDirection(inline_offset);
     UpdateRubyColumnInlinePositions(*column->annotation_items, inline_size,
-                                    column->ruby_column_list);
+                                    column->RubyColumnList());
   }
 }
 
@@ -1068,7 +1068,7 @@ void RubyBlockPositionCalculator::HandleRubyLine(
           create_level_and_update_depth(current_level, depth_stack.back());
       RubyLine& annotation_line = EnsureRubyLine(annotation_level);
       annotation_line.Append(*closing_depth.column);
-      HandleRubyLine(annotation_line, closing_depth.column->ruby_column_list);
+      HandleRubyLine(annotation_line, closing_depth.column->RubyColumnList());
       annotation_line.MaybeRecordBaseIndexes(*closing_depth.column);
 
       depth_stack.pop_back();

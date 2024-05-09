@@ -491,8 +491,6 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
       line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);
 
   logical_column.annotation_items = line_items;
-  logical_column.ruby_column_list =
-      logical_column.state_stack.TakeRubyColumnList();
 }
 
 // Place a list marker.

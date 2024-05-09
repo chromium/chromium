@@ -201,12 +201,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
     return ruby_column_list_;
   }
-  // Returns `ruby_column_list_`. The data member becomes unusable after
-  // calling this functions.
-  // This function should be called after finishing to fill LogicalLineItems.
-  HeapVector<Member<LogicalRubyColumn>> TakeRubyColumnList() {
-    return std::move(ruby_column_list_);
-  }
+  void ClearRubyColumnList() { ruby_column_list_.Shrink(0); }
 
   bool HasBoxFragments() const { return !box_data_list_.empty(); }
 
@@ -235,7 +230,9 @@ class CORE_EXPORT InlineLayoutStateStack {
   // CreateBoxFragments().
   void MoveBoxDataInBlockDirection(LayoutUnit diff);
 
-  void ApplyRelativePositioning(const ConstraintSpace&, LogicalLineItems*);
+  void ApplyRelativePositioning(const ConstraintSpace&,
+                                LogicalLineItems*,
+                                const LogicalOffset* parent_offset);
   // Create box fragments. This function turns a flat list of children into
   // a box tree.
   void CreateBoxFragments(const ConstraintSpace&,
@@ -373,9 +370,6 @@ struct CORE_EXPORT LogicalRubyColumn
 
   Member<LogicalLineItems> annotation_items;
 
-  // Nested <ruby>s in `annotation_items`.
-  HeapVector<Member<LogicalRubyColumn>> ruby_column_list;
-
   // `ruby-position` property value.
   RubyPosition ruby_position = RubyPosition::kOver;
 
@@ -383,6 +377,10 @@ struct CORE_EXPORT LogicalRubyColumn
 
   void Trace(Visitor* visitor) const;
   unsigned EndIndex() const { return start_index + size; }
+  // Nested <ruby>s in `annotation_items`.
+  HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
+    return state_stack.RubyColumnList();
+  }
 };
 
 }  // namespace blink

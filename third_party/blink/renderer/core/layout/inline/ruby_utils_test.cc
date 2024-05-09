@@ -101,7 +101,7 @@ TEST(RubyBlockPositionCalculatorTest, GroupLinesAnnotationForAnnotation) {
   column_list.back()->ruby_position = RubyPosition::kOver;
   // An annotation for the above annotation line.
   auto* sub_column = MakeGarbageCollected<LogicalRubyColumn>();
-  column_list.back()->ruby_column_list.push_back(sub_column);
+  column_list.back()->RubyColumnList().push_back(sub_column);
   sub_column->start_index = 2;
   sub_column->size = 3;
   sub_column->ruby_position = RubyPosition::kUnder;

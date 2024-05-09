@@ -238,26 +238,6 @@ void PlaceRelativePositionedItems(const ConstraintSpace& constraint_space,
   }
 }
 
-void FinalizeAnnotationLines(
-    const ConstraintSpace& constraint_space,
-    const HeapVector<Member<LogicalRubyColumn>>& column_list) {
-  for (auto& logical_column : column_list) {
-    // Create deeper box fragments earlier because CreateBoxFragments() below
-    // depends on descendant box fragments.
-    FinalizeAnnotationLines(constraint_space, logical_column->ruby_column_list);
-
-    LogicalLineItems* line_items = logical_column->annotation_items;
-    InlineLayoutStateStack& state_stack = logical_column->state_stack;
-    PlaceRelativePositionedItems(constraint_space, line_items);
-    state_stack.ApplyRelativePositioning(constraint_space, line_items);
-
-    if (state_stack.HasBoxFragments()) {
-      state_stack.CreateBoxFragments(constraint_space, line_items,
-                                     /* is_opaque */ false);
-    }
-  }
-}
-
 }  // namespace
 
 InlineLayoutAlgorithm::InlineLayoutAlgorithm(
@@ -484,16 +464,14 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   if (UNLIKELY(Node().HasRuby() && !line_info->IsEmptyLine())) {
     std::optional<FontHeight> annotation_metrics;
     if (!box_states_->RubyColumnList().empty()) {
-      HeapVector<Member<LogicalRubyColumn>> column_list(
-          box_states_->TakeRubyColumnList());
+      HeapVector<Member<LogicalRubyColumn>>& column_list =
+          box_states_->RubyColumnList();
       UpdateRubyColumnInlinePositions(*line_box, inline_size, column_list);
       RubyBlockPositionCalculator calculator;
       calculator.GroupLines(column_list)
           .PlaceLines(*line_box, line_box_metrics)
           .AddLinesTo(*line_container);
       annotation_metrics = calculator.AnnotationMetrics();
-
-      FinalizeAnnotationLines(GetConstraintSpace(), column_list);
     }
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));
@@ -554,19 +532,23 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   if (line_builder.HasRelativePositionedItems()) {
     PlaceRelativePositionedItems(GetConstraintSpace(), line_box);
   }
+  for (auto annotation_line : line_container->AnnotationLineList()) {
+    PlaceRelativePositionedItems(GetConstraintSpace(),
+                                 annotation_line.line_items);
+  }
 
   // Apply any relative positioned offsets to any boxes (and their children).
-  box_states_->ApplyRelativePositioning(GetConstraintSpace(), line_box);
+  box_states_->ApplyRelativePositioning(GetConstraintSpace(), line_box,
+                                        nullptr);
 
   // Create box fragments if needed. After this point forward, |line_box| is a
   // tree structure.
   // The individual children don't move position within the |line_box|, rather
   // the children have their layout_result, fragment, (or similar) set to null,
   // creating a "hole" in the array.
-  if (box_states_->HasBoxFragments()) {
-    box_states_->CreateBoxFragments(GetConstraintSpace(), line_box,
-                                    line_info->IsBlockInInline());
-  }
+  box_states_->CreateBoxFragments(GetConstraintSpace(), line_box,
+                                  line_info->IsBlockInInline());
+  box_states_->ClearRubyColumnList();
 
   // Update item index of the box states in the context.
   context_->SetItemIndex(line_info->ItemsData().items,

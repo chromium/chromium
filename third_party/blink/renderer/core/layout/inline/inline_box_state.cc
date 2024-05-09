@@ -42,7 +42,6 @@ FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
 
 void LogicalRubyColumn::Trace(Visitor* visitor) const {
   visitor->Trace(annotation_items);
-  visitor->Trace(ruby_column_list);
   visitor->Trace(state_stack);
 }
 
@@ -785,15 +784,24 @@ void InlineLayoutStateStack::MoveBoxDataInBlockDirection(LayoutUnit diff) {
 
 void InlineLayoutStateStack::ApplyRelativePositioning(
     const ConstraintSpace& space,
-    LogicalLineItems* line_box) {
-  if (box_data_list_.empty())
+    LogicalLineItems* line_box,
+    const LogicalOffset* parent_offset) {
+  if (box_data_list_.empty() && ruby_column_list_.empty() && !parent_offset) {
     return;
+  }
 
   // The final position of any inline boxes, (<span>, etc) are stored on
   // |BoxData::rect|. As we don't have a mapping from |LogicalLineItem| to
   // |BoxData| we store the accumulated relative offsets, and then apply the
   // final adjustment at the end of this function.
   Vector<LogicalOffset, 32> accumulated_offsets(line_box->size());
+
+  if (parent_offset) {
+    for (unsigned index = 0; index < line_box->size(); ++index) {
+      (*line_box)[index].rect.offset += *parent_offset;
+      accumulated_offsets[index] = *parent_offset;
+    }
+  }
 
   for (BoxData& box_data : box_data_list_) {
     unsigned start = box_data.fragment_start;
@@ -812,12 +820,25 @@ void InlineLayoutStateStack::ApplyRelativePositioning(
   // Apply the final accumulated relative position offset for each box.
   for (BoxData& box_data : box_data_list_)
     box_data.rect.offset += accumulated_offsets[box_data.fragment_start];
+
+  for (auto& logical_column : ruby_column_list_) {
+    logical_column->state_stack.ApplyRelativePositioning(
+        space, logical_column->annotation_items,
+        &accumulated_offsets[logical_column->start_index]);
+  }
 }
 
 void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
                                                 LogicalLineItems* line_box,
                                                 bool is_opaque) {
-  DCHECK(!box_data_list_.empty());
+  for (auto& logical_column : ruby_column_list_) {
+    logical_column->state_stack.CreateBoxFragments(
+        space, logical_column->annotation_items, /* is_opaque */ false);
+  }
+
+  if (!HasBoxFragments()) {
+    return;
+  }
 
   for (BoxData& box_data : box_data_list_) {
     unsigned start = box_data.fragment_start;
