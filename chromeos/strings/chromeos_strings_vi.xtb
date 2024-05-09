@@ -79,7 +79,7 @@
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">hoa phong lan</translation>
-<translation id="142228117786570094">Tôi có một cặp khóa</translation>
+<translation id="142228117786570094">Tôi có một cặp khoá</translation>
 <translation id="1423591390236870726">Chưa nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="1432110487435300883">Để biết kết quả gần đúng, hãy lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
@@ -853,7 +853,7 @@
 <translation id="5930669310554144537">Cảnh huyền ảo</translation>
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
-<translation id="594552776027197022">Tạo cặp khóa ngẫu nhiên</translation>
+<translation id="594552776027197022">Tạo cặp khoá ngẫu nhiên</translation>
 <translation id="5946538341867151940">Bạn chưa kết nối mạng. Nếu nhà mạng di động đề xuất thêm APN tuỳ chỉnh, hãy nhập thông tin APN bằng cách chọn "+ APN mới"</translation>
 <translation id="5947266287934282605">Nếu ngày cuối tháng đến trước ngày này, thì dữ liệu sẽ được đặt lại vào ngày cuối tháng</translation>
 <translation id="5948460390109837040">chó</translation>
@@ -1400,7 +1400,7 @@
 <translation id="8930521118335213258">Ứng dụng ngang hàng</translation>
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8933650076320258356">Phím được chọn là <ph name="KEYS" /> cho <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" /></translation>
-<translation id="8936793075252196307">Địa chỉ IP khách hàng</translation>
+<translation id="8936793075252196307">Địa chỉ IP máy khách</translation>
 <translation id="8944651180182756621">Màu trình chạy</translation>
 <translation id="8945308580158685341">ong</translation>
 <translation id="894617464444543719">Thiết bị là điện thoại.</translation>
