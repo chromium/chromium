@@ -266,7 +266,7 @@ void QuickStartController::UpdateUiState(UiState ui_state) {
   ui_state_ = ui_state;
   MaybeRecordQuickStartScreenOpened(ui_state);
 
-  CHECK(!ui_delegates_.empty());
+  CHECK(!ui_delegates_.empty()) << "ui_delegates_ is empty";
   for (auto& delegate : ui_delegates_) {
     delegate.OnUiUpdateRequested(ui_state_.value());
   }
@@ -312,7 +312,7 @@ void QuickStartController::DetermineEntryPointVisibility(
 }
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {
-  CHECK(bootstrap_controller_);
+  CHECK(bootstrap_controller_) << "Missing bootstrap_controller_";
   QuickStartMetrics::RecordAbortFlowReason(reason);
 
   // Screen is closed when flow aborts on these screens.
@@ -346,7 +346,8 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
   // Triggers a screen exit if there is a UiDelegate driving the UI.
   if (!ui_delegates_.empty()) {
     CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
-          current_screen_ == NetworkScreenHandler::kScreenId);
+          current_screen_ == NetworkScreenHandler::kScreenId)
+        << "Unexpected current_screen_.";
     ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
   }
 }
@@ -378,8 +379,8 @@ void QuickStartController::RecordFlowFinished() {
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
-  CHECK(LoginDisplayHost::default_host());
-  CHECK(!bootstrap_controller_);
+  CHECK(LoginDisplayHost::default_host()) << "Missing LoginDisplayHost";
+  CHECK(!bootstrap_controller_) << "Expected to not have bootstrap_controller_";
 
   if (should_resume_quick_start_after_update_) {
     LoginDisplayHost::default_host()
@@ -417,7 +418,8 @@ void QuickStartController::OnStatusChanged(
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
-      CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload));
+      CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload))
+          << "Missing expected QR Code data";
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
       return;
@@ -425,7 +427,8 @@ void QuickStartController::OnStatusChanged(
       UpdateUiState(UiState::CONNECTING_TO_PHONE);
       return;
     case Step::PIN_VERIFICATION:
-      CHECK(absl::holds_alternative<PinString>(status.payload));
+      CHECK(absl::holds_alternative<PinString>(status.payload))
+          << "Missing expected PIN string";
       pin_ = *absl::get<PinString>(status.payload);
       CHECK_EQ(pin_.value().length(), 4UL);
       UpdateUiState(UiState::SHOWING_PIN);
@@ -438,7 +441,8 @@ void QuickStartController::OnStatusChanged(
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
       return;
     case Step::WIFI_CREDENTIALS_RECEIVED:
-      CHECK(absl::holds_alternative<mojom::WifiCredentials>(status.payload));
+      CHECK(absl::holds_alternative<mojom::WifiCredentials>(status.payload))
+          << "Missing expected WifiCredentials";
 
       LoginDisplayHost::default_host()
           ->GetWizardContext()
@@ -451,7 +455,8 @@ void QuickStartController::OnStatusChanged(
     case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
       return;
     case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
-      CHECK(absl::holds_alternative<EmailString>(status.payload));
+      CHECK(absl::holds_alternative<EmailString>(status.payload))
+          << "Missing expected EmailString";
       // If there aren't any accounts on the phone, the flow is aborted.
       if (absl::get<EmailString>(status.payload)->empty()) {
         QS_LOG(ERROR) << "No account on Android phone. No email received.";
@@ -499,7 +504,8 @@ void QuickStartController::OnStatusChanged(
           OnOAuthTokenReceived(gaia_creds);
         } else {
           QS_LOG(INFO) << "QuickStart flow will continue via fallback URL";
-          CHECK(!gaia_creds.fallback_url_path->empty());
+          CHECK(!gaia_creds.fallback_url_path->empty())
+              << "Fallback URL path empty";
           fallback_url_ = gaia_creds.fallback_url_path.value();
           QuickStartMetrics::RecordGaiaTransferResult(
               /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
@@ -508,7 +514,8 @@ void QuickStartController::OnStatusChanged(
           UpdateUiState(UiState::FALLBACK_URL_FLOW);
         }
       } else {
-        CHECK(absl::holds_alternative<ErrorCode>(status.payload));
+        CHECK(absl::holds_alternative<ErrorCode>(status.payload))
+            << "Missing expected ErrorCode";
         QS_LOG(ERROR) << "Error receiving FIDO assertion. Error Code = "
                       << static_cast<int>(absl::get<ErrorCode>(status.payload));
         QuickStartMetrics::RecordGaiaTransferResult(
@@ -597,13 +604,14 @@ void QuickStartController::OnOAuthTokenReceived(
 }
 
 void QuickStartController::StartObservingScreenTransitions() {
-  CHECK(LoginDisplayHost::default_host());
-  CHECK(LoginDisplayHost::default_host()->GetOobeUI());
+  CHECK(LoginDisplayHost::default_host()) << "Missing LoginDisplayHost";
+  CHECK(LoginDisplayHost::default_host()->GetOobeUI()) << "Missing Oobe UI";
   observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
 }
 
 void QuickStartController::HandleTransitionToQuickStartScreen() {
-  CHECK(current_screen_ == QuickStartScreenHandler::kScreenId);
+  CHECK(current_screen_ == QuickStartScreenHandler::kScreenId)
+      << "Unexpected current_screen_";
 
   // No ongoing setup. Entering the screen via entry point.
   if (!IsSetupOngoing()) {
@@ -682,7 +690,8 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 
     CHECK(LoginDisplayHost::default_host()
               ->GetWizardContext()
-              ->quick_start_setup_ongoing);
+              ->quick_start_setup_ongoing)
+        << "Expected quick_start_setup_ongoing";
     StartAccountTransfer();
   }
 }
@@ -715,7 +724,7 @@ void QuickStartController::OnPhoneConnectionEstablished() {
 }
 
 void QuickStartController::SavePhoneInstanceID() {
-  CHECK(bootstrap_controller_);
+  CHECK(bootstrap_controller_) << "Missing bootstrap_controller_";
   std::string phone_instance_id = bootstrap_controller_->GetPhoneInstanceId();
   if (phone_instance_id.empty()) {
     return;
@@ -730,9 +739,9 @@ void QuickStartController::SavePhoneInstanceID() {
 }
 
 void QuickStartController::FinishAccountCreation() {
-  CHECK(!gaia_creds_.email.empty());
-  CHECK(!gaia_creds_.gaia_id.empty());
-  CHECK(!gaia_creds_.auth_code.empty());
+  CHECK(!gaia_creds_.email.empty()) << "Missing Gaia email";
+  CHECK(!gaia_creds_.gaia_id.empty()) << "Missing Gaia ID";
+  CHECK(!gaia_creds_.auth_code.empty()) << "Missing Gaia auth code";
 
   UpdateUiState(UiState::CREATING_ACCOUNT);
   controller_state_ = ControllerState::SETUP_COMPLETE;
@@ -831,7 +840,8 @@ void QuickStartController::OnBluetoothPermissionGranted() {
   controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_ACTIVATION;
 
   if (IsBluetoothDisabled()) {
-    CHECK(cros_bluetooth_config_remote_);
+    CHECK(cros_bluetooth_config_remote_)
+        << "Missing cros_bluetooth_config_remote_";
     cros_bluetooth_config_remote_->SetBluetoothEnabledWithoutPersistence();
     // Advertising will start once we are notified that bluetooth is enabled.
   }

@@ -274,7 +274,8 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
-  CHECK(status == FeatureSupportStatus::kSupported);
+  CHECK(status == FeatureSupportStatus::kSupported)
+      << "FeatureSupportStatus is not supported.";
 
   if (!bluetooth_adapter_->IsPowered()) {
     QS_LOG(ERROR)
@@ -411,7 +412,8 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo()
 
 void TargetDeviceConnectionBrokerImpl::StartNearbyConnectionsAdvertising(
     ResultCallback callback) {
-  CHECK(quick_start_connectivity_service_);
+  CHECK(quick_start_connectivity_service_)
+      << "Missing quick_start_connectivity_service_";
   QS_LOG(INFO) << "Starting Nearby Connections Advertising";
   // TODO(b/234655072): PowerLevel::kHighPower implies using Bluetooth classic,
   // but we should also advertise over BLE. Nearby Connections does not yet
@@ -490,12 +492,13 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
                << endpoint_id
                << " use_pin_authentication=" << use_pin_authentication_;
 
-  CHECK(connection_lifecycle_listener_);
+  CHECK(connection_lifecycle_listener_)
+      << "Missing connection_lifecycle_listener_";
   if (use_pin_authentication_) {
     std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
-    CHECK(auth_token);
+    CHECK(auth_token) << "Missing auth_token";
     std::string pin = DerivePin(*auth_token);
     QS_LOG(INFO) << "Incoming Nearby Connection Initiated: pin=" << pin;
     connection_lifecycle_listener_->OnPinVerificationRequested(pin);
@@ -535,7 +538,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
-    CHECK(auth_token);
+    CHECK(auth_token) << "Missing auth_token";
     connection_->InitiateHandshake(
         *auth_token,
         base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted,
@@ -544,7 +547,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 }
 
 void TargetDeviceConnectionBrokerImpl::OnHandshakeCompleted(bool success) {
-  CHECK(connection_);
+  CHECK(connection_) << "Missing connection_";
   if (!success) {
     QS_LOG(ERROR) << "Handshake failed! Dropping the connection.";
     connection_->Close(ConnectionClosedReason::kAuthenticationFailed);

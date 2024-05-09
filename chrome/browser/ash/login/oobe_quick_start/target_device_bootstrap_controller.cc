@@ -146,7 +146,8 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
     const std::string& pin) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::ADVERTISING_WITH_QR_CODE};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
+  CHECK(base::Contains(kPossibleSteps, status_.step))
+      << "Unexpected status step: " << status_.step;
 
   UpdateStatus(/*step=*/Step::PIN_VERIFICATION, /*payload=*/PinString(pin));
 }
@@ -157,7 +158,8 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
+  CHECK(base::Contains(kPossibleSteps, status_.step))
+      << "Unexpected status step: " << status_.step;
   authenticated_connection_ = authenticated_connection;
 
   if (session_context_.is_resume_after_update()) {
@@ -242,7 +244,8 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::ADVERTISING_WITHOUT_QR_CODE};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
+  CHECK(base::Contains(kPossibleSteps, status_.step))
+      << "Unexpected status step: " << status_.step;
   if (success) {
     return;
   }
@@ -266,7 +269,7 @@ void TargetDeviceBootstrapController::OnStopAdvertising() {
 
 void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     bool ack_successful) {
-  CHECK(authenticated_connection_);
+  CHECK(authenticated_connection_) << "Missing authenticated_connection_";
 
   if (ack_successful) {
     QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
@@ -329,7 +332,7 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
 }
 
 void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
-  CHECK(authenticated_connection_);
+  CHECK(authenticated_connection_) << "Missing authenticated_connection_";
 
   UpdateStatus(/*step=*/Step::REQUESTING_GOOGLE_ACCOUNT_INFO,
                /*payload=*/absl::monostate());
@@ -346,13 +349,13 @@ void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived(
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
-  CHECK(authenticated_connection_);
+  CHECK(authenticated_connection_) << "Missing authenticated_connection_";
 
   UpdateStatus(/*step=*/Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
                /*payload=*/absl::monostate());
 
   // Request the challenge bytes from Gaia to be sent to the phone.
-  CHECK(auth_broker_);
+  CHECK(auth_broker_) << "Missing auth_broker_";
   auth_broker_->FetchChallengeBytes(
       base::BindOnce(&TargetDeviceBootstrapController::OnChallengeBytesReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -364,7 +367,7 @@ void TargetDeviceBootstrapController::Cleanup() {
 }
 
 void TargetDeviceBootstrapController::OnSetupComplete() {
-  CHECK(authenticated_connection_);
+  CHECK(authenticated_connection_) << "Missing authenticated_connection_";
   UpdateStatus(/*step=*/Step::SETUP_COMPLETE, /*payload=*/absl::monostate());
   authenticated_connection_->NotifyPhoneSetupComplete();
 }

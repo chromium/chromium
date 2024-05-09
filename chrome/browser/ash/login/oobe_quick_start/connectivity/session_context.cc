@@ -126,12 +126,14 @@ void SessionContext::FetchPersistedSessionContext() {
 
   const std::string* session_id_str =
       session_info.FindString(kPrepareForUpdateSessionIdKey);
-  CHECK(session_id_str);
+  CHECK(session_id_str)
+      << "kPrepareForUpdateSessionIdKey missing in session info.";
   base::StringToUint64(*session_id_str, &session_id_);
 
   const std::string* advertising_id_str =
       session_info.FindString(kPrepareForUpdateAdvertisingIdKey);
-  CHECK(advertising_id_str);
+  CHECK(advertising_id_str)
+      << "kPrepareForUpdateAdvertisingIdKey missing in session info.";
   std::optional<AdvertisingId> maybe_advertising_id =
       AdvertisingId::ParseFromBase64(*advertising_id_str);
   if (!maybe_advertising_id.has_value()) {
@@ -144,7 +146,8 @@ void SessionContext::FetchPersistedSessionContext() {
 
   const std::string* secondary_shared_secret_str =
       session_info.FindString(kPrepareForUpdateSecondarySharedSecretKey);
-  CHECK(secondary_shared_secret_str);
+  CHECK(secondary_shared_secret_str)
+      << "kPrepareForUpdateSecondarySharedSecretKey missing in session info.";
   DecodeSharedSecret(*secondary_shared_secret_str);
 
   std::optional<bool> did_transfer_wifi =

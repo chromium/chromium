@@ -38,14 +38,16 @@ void TargetDeviceConnectionBroker::MaybeNotifyFeatureStatus() {
 
 void TargetDeviceConnectionBroker::OnConnectionAuthenticated(
     base::WeakPtr<AuthenticatedConnection> authenticated_connection) {
-  CHECK(connection_lifecycle_listener_);
+  CHECK(connection_lifecycle_listener_)
+      << "Missing connection_lifecycle_listener_";
   connection_lifecycle_listener_->OnConnectionAuthenticated(
       authenticated_connection);
 }
 
 void TargetDeviceConnectionBroker::OnConnectionClosed(
     ConnectionClosedReason reason) {
-  CHECK(connection_lifecycle_listener_);
+  CHECK(connection_lifecycle_listener_)
+      << "Missing connection_lifecycle_listener_";
   QS_LOG(INFO) << "Connection closed: " << reason;
   connection_lifecycle_listener_->OnConnectionClosed(reason);
 }

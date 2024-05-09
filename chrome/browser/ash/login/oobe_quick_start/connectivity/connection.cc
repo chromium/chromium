@@ -283,7 +283,8 @@ void Connection::SendMessageAndDecodeResponse(
     base::TimeDelta timeout) {
   std::string json_serialized_payload;
   CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
-                                &json_serialized_payload));
+                                &json_serialized_payload))
+      << "Failed to write JSON.";
 
   SendBytesAndReadResponse(
       std::vector<uint8_t>(json_serialized_payload.begin(),
@@ -301,7 +302,8 @@ void Connection::SendMessageAndDiscardResponse(
     base::TimeDelta timeout) {
   std::string json_serialized_payload;
   CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
-                                &json_serialized_payload));
+                                &json_serialized_payload))
+      << "Failed to write JSON.";
 
   SendBytesAndReadResponse(
       std::vector<uint8_t>(json_serialized_payload.begin(),
@@ -317,7 +319,8 @@ void Connection::SendMessageWithoutResponse(
     QuickStartResponseType message_type) {
   std::string json_serialized_payload;
   CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
-                                &json_serialized_payload));
+                                &json_serialized_payload))
+      << "Failed to write JSON.";
   quick_start_metrics_->RecordMessageSent(
       QuickStartMetrics::MapResponseToMessageType(message_type));
   nearby_connection_->Write(std::vector<uint8_t>(
