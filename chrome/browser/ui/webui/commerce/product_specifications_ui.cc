@@ -9,6 +9,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -37,8 +38,11 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
           kProductSpecifications, kProductSpecificationsRegionLaunched)) {
     return;
   }
-  // Add ThemeSource to serve chrome logo.
+  // Add ThemeSource to serve the chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+  // Add SanitizedImageSource to embed images in WebUI.
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
 
   // Set up the chrome://compare source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
