@@ -7,12 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -21,6 +27,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -41,6 +48,14 @@ void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
       gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginBottom, 0)));
   illustration->SetSize(header_size);
   illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+}
+
+const gfx::VectorIcon& GooglePasswordManagerIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return vector_icons::kGooglePasswordManagerIcon;
+#else
+  return kKeyIcon;
+#endif
 }
 
 }  // namespace
@@ -165,6 +180,39 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
       BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+  if (model()->has_gpm_banner()) {
+    auto container = std::make_unique<views::View>();
+    container->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0,
+                          views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0)));
+    container->SetLayoutManager(std::make_unique<BoxLayout>(
+        BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+        views::LayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
+    auto image_view = std::make_unique<NonAccessibleImageView>();
+    constexpr int kIconSize = 18;
+    // The icon is vertically centered within this size. The addition of
+    // `kIconSize / 8` adds enough margin at the top so that the icon is better
+    // centered with the text.
+    image_view->SetPreferredSize(
+        gfx::Size(kIconSize, kIconSize + kIconSize / 8));
+    image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        GooglePasswordManagerIcon(), gfx::kPlaceholderColor, kIconSize));
+    container->AddChildView(image_view.release());
+
+    auto gpm_label = std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER),
+        views::style::CONTEXT_DIALOG_BODY_TEXT);
+    gpm_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    gpm_label->SetVerticalAlignment(gfx::ALIGN_TOP);
+    container->AddChildView(gpm_label.release());
+
+    label_container->AddChildView(container.release());
+  }
 
   const std::u16string title = model()->GetStepTitle();
   if (!title.empty()) {
