@@ -5,9 +5,11 @@
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 
 namespace performance_manager::policies {
@@ -15,12 +17,11 @@ namespace performance_manager::policies {
 namespace {
 MemorySaverModePolicy* g_memory_saver_mode_policy = nullptr;
 
-MemorySaverModePolicy::MemorySaverMode GetCurrentMode() {
-  int mode_value = performance_manager::features::kModalMemorySaverMode.Get();
-  CHECK_GE(mode_value, 0);
-  CHECK_LE(mode_value,
-           static_cast<int>(MemorySaverModePolicy::MemorySaverMode::kMaxValue));
-  return static_cast<MemorySaverModePolicy::MemorySaverMode>(mode_value);
+using user_tuning::prefs::MemorySaverModeAggressiveness;
+
+MemorySaverModeAggressiveness GetCurrentMode() {
+  // TODO(crbug.com/332357755): Replace this with a pref.
+  return MemorySaverModeAggressiveness::kMedium;
 }
 }  // namespace
 
@@ -209,33 +210,29 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
 
 base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode()
     const {
-  if (base::FeatureList::IsEnabled(features::kModalMemorySaver)) {
-    MemorySaverMode mode = GetCurrentMode();
+  MemorySaverModeAggressiveness mode = GetCurrentMode();
 
-    if (mode == MemorySaverMode::kConservative) {
-      return base::Hours(6);
-    } else if (mode == MemorySaverMode::kMedium) {
-      return base::Hours(4);
-    } else if (mode == MemorySaverMode::kAggressive) {
-      return base::Hours(2);
-    }
+  if (mode == MemorySaverModeAggressiveness::kConservative) {
+    return base::Hours(6);
+  } else if (mode == MemorySaverModeAggressiveness::kMedium) {
+    return base::Hours(4);
+  } else if (mode == MemorySaverModeAggressiveness::kAggressive) {
+    return base::Hours(2);
   }
-
-  return time_before_discard_;
+  NOTREACHED_NORETURN();
 }
 
 int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
-  MemorySaverMode mode = GetCurrentMode();
+  MemorySaverModeAggressiveness mode = GetCurrentMode();
 
-  if (mode == MemorySaverMode::kConservative) {
+  if (mode == MemorySaverModeAggressiveness::kConservative) {
     return 15;
-  } else if (mode == MemorySaverMode::kMedium) {
+  } else if (mode == MemorySaverModeAggressiveness::kMedium) {
     return 15;
-  } else if (mode == MemorySaverMode::kAggressive) {
+  } else if (mode == MemorySaverModeAggressiveness::kAggressive) {
     return 5;
   }
-
-  return std::numeric_limits<int>::max();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace performance_manager::policies

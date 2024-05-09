@@ -22,14 +22,6 @@ class MemorySaverModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl,
                                  public TabPageObserverDefaultImpl {
  public:
-  enum class MemorySaverMode {
-    kUserSpecified = 0,  // The user has selected the time value
-    kConservative,
-    kMedium,
-    kAggressive,
-    kMaxValue = kAggressive,
-  };
-
   MemorySaverModePolicy();
   ~MemorySaverModePolicy() override;
 

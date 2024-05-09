@@ -138,16 +138,6 @@ BASE_FEATURE(kPMLoadingPageVoter,
              "PMLoadingPageVoter",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kModalMemorySaver,
-             "ModalMemorySaver",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kModalMemorySaverMode{
-    &kModalMemorySaver,
-    "modal_memory_saver_mode",
-    2,
-};
-
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);

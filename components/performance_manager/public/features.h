@@ -139,13 +139,6 @@ extern const base::FeatureParam<bool> kDownvoteAdFrames;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
-// When enabled, Memory Saver supports the different modes defined in the
-// `ModalMemorySaverMode` enum.
-BASE_DECLARE_FEATURE(kModalMemorySaver);
-
-// When set, makes Memory Saver behave as the specified mode if it's  enabled.
-extern const base::FeatureParam<int> kModalMemorySaverMode;
-
 // Policy that evicts the BFCache of pages that become non visible or the
 // BFCache of all pages when the system is under memory pressure.
 BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);

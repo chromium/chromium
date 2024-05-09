@@ -44,6 +44,7 @@ enum class MemorySaverModeAggressiveness {
   kConservative = 0,
   kMedium = 1,
   kAggressive = 2,
+  kMaxValue = kAggressive,
 };
 
 inline constexpr char kMemorySaverModeAggressiveness[] =
