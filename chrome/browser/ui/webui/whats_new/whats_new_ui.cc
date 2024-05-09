@@ -55,7 +55,6 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
 // static
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
-  registry->RegisterBooleanPref(prefs::kHasShownRefreshWhatsNew, false);
 }
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)

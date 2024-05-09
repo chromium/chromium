@@ -3922,10 +3922,6 @@ inline constexpr char kDesktopSharingHubEnabled[] =
 // Pref name for the last major version where the What's New page was
 // successfully shown.
 inline constexpr char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
-// Pref name for the whether whats new refresh page has been shown
-// successfully.
-inline constexpr char kHasShownRefreshWhatsNew[] =
-    "browser.has_shown_refresh_2023_whats_new";
 // A boolean indicating whether the Lens Region search feature should be enabled
 // if supported.
 inline constexpr char kLensRegionSearchEnabled[] =

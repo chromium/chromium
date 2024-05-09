@@ -1067,6 +1067,14 @@ inline constexpr char kSearchEnginesStudyGroup[] =
     "search_engines.client_side_study_group";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 05/2024
+// Pref name for the whether whats new refresh page has been shown
+// successfully.
+inline constexpr char kHasShownRefreshWhatsNew[] =
+    "browser.has_shown_refresh_2023_whats_new";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1198,6 +1206,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   // Deprecated 05/2024.
   registry->RegisterStringPref(kSearchEnginesStudyGroup, std::string());
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 05/2024.
+  registry->RegisterBooleanPref(kHasShownRefreshWhatsNew, false);
 #endif
 }
 
@@ -2450,6 +2463,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   // Added 05/2024.
   local_state->ClearPref(kSearchEnginesStudyGroup);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 05/2024.
+  local_state->ClearPref(kHasShownRefreshWhatsNew);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
