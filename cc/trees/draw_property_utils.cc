@@ -1353,13 +1353,6 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
         LayerDrawableContentRect(layer, visible_bounds_in_target_space,
                                  layer->draw_properties().clip_rect);
   }
-
-  // Make sure that the layers push their properties. This isn't necessary for
-  // picture layers that always push their properties, but is important for
-  // other layers to invalidate the active tree.
-  for (LayerImpl* layer : *layer_list) {
-    layer->SetNeedsPushProperties();
-  }
 }
 
 #if DCHECK_IS_ON()

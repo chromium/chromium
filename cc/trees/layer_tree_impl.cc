@@ -660,6 +660,8 @@ void LayerTreeImpl::PullPropertiesFrom(
   unsafe_state.mutator_host->PushPropertiesTo(mutator_host(),
                                               unsafe_state.property_trees);
 
+  // Make sure that property tree based changes are moved to layers
+  // and draw properties are invalidated.
   MoveChangeTrackingToLayers();
 
   lifecycle().AdvanceTo(LayerTreeLifecycle::kNotSyncing);
@@ -892,6 +894,10 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   for (auto& request : TakeViewTransitionRequests())
     target_tree->AddViewTransitionRequest(std::move(request));
+
+  // Make sure that property tree based changes are moved to layers
+  // and draw properties are invalidated.
+  target_tree->MoveChangeTrackingToLayers();
 }
 
 void LayerTreeImpl::HandleTickmarksVisibilityChange() {
