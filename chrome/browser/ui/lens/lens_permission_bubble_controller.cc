@@ -47,9 +47,6 @@ void LogUserAction(LensPermissionBubbleController::UserAction user_action) {
 std::unique_ptr<LensPermissionBubbleController>
 LensPermissionBubbleController::CreateInstance(Browser* browser,
                                                PrefService* pref_service) {
-  if (!browser || !pref_service) {
-    return nullptr;
-  }
   return std::make_unique<LensPermissionBubbleController>(browser,
                                                           pref_service);
 }
