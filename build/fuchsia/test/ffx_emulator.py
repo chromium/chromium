@@ -4,15 +4,14 @@
 """Provide helpers for running Fuchsia's `ffx emu`."""
 
 import argparse
-import ast
 import logging
 import os
-import json
 import random
 
 from contextlib import AbstractContextManager
 
-from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, SDK_ROOT
+from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, \
+                   DIR_SRC_ROOT
 from compatible_utils import get_host_arch
 
 
@@ -60,6 +59,7 @@ class FfxEmulator(AbstractContextManager):
         if not os.path.isdir(image_dir):
             image_dir = os.path.join(INTERNAL_IMAGES_ROOT, prod, board)
         emu_command = ['emu', 'start', image_dir, '--name', self._node_name]
+        configs = ['emu.start.timeout=300']
         if not self._enable_graphics:
             emu_command.append('-H')
         if self._hardware_gpu:
@@ -76,52 +76,20 @@ class FfxEmulator(AbstractContextManager):
         if self._device_spec:
             emu_command.extend(['--device', self._device_spec])
 
-        # TODO(https://fxbug.dev/99321): remove when ffx has native support
-        # for starting emulator on arm64 host.
+        # fuchsia-sdk does not carry arm64 qemu binaries, so use overrides to
+        # allow it using the qemu-arm64 being downloaded separately.
         if get_host_arch() == 'arm64':
-
-            arm64_qemu_dir = os.path.join(SDK_ROOT, 'tools', 'arm64',
-                                          'qemu_internal')
-
-            # The arm64 emulator binaries are downloaded separately, so add
-            # a symlink to the expected location inside the SDK.
-            if not os.path.isdir(arm64_qemu_dir):
-                os.symlink(
-                    os.path.join(SDK_ROOT, '..', '..', 'qemu-linux-arm64'),
-                    arm64_qemu_dir)
-
-            # Add the arm64 emulator binaries to the SDK's manifest.json file.
-            sdk_manifest = os.path.join(SDK_ROOT, 'meta', 'manifest.json')
-            with open(sdk_manifest, 'r+') as f:
-                data = json.load(f)
-                for part in data['parts']:
-                    if part['meta'] == 'tools/x64/qemu_internal-meta.json':
-                        part['meta'] = 'tools/arm64/qemu_internal-meta.json'
-                        break
-                f.seek(0)
-                json.dump(data, f)
-                f.truncate()
-
-            # Generate a meta file for the arm64 emulator binaries using its
-            # x64 counterpart.
-            qemu_arm64_meta_file = os.path.join(SDK_ROOT, 'tools', 'arm64',
-                                                'qemu_internal-meta.json')
-            qemu_x64_meta_file = os.path.join(SDK_ROOT, 'tools', 'x64',
-                                              'qemu_internal-meta.json')
-            with open(qemu_x64_meta_file) as f:
-                data = str(json.load(f))
-            qemu_arm64_meta = data.replace(r'tools/x64', 'tools/arm64')
-            with open(qemu_arm64_meta_file, "w+") as f:
-                json.dump(ast.literal_eval(qemu_arm64_meta), f)
+            configs.append(
+                'sdk.overrides.qemu_internal=' +
+                os.path.join(DIR_SRC_ROOT, 'third_party', 'qemu-linux-arm64',
+                             'bin', 'qemu-system-aarch64'))
 
         # Always use qemu for arm64 images, no matter it runs on arm64 hosts or
         # x64 hosts with simulation.
         if self._product.endswith('arm64'):
             emu_command.extend(['--engine', 'qemu'])
 
-        run_ffx_command(cmd=emu_command,
-                        timeout=310,
-                        configs=['emu.start.timeout=300'])
+        run_ffx_command(cmd=emu_command, timeout=310, configs=configs)
 
         return self._node_name
 
