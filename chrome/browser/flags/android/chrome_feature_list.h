@@ -89,6 +89,7 @@ BASE_DECLARE_FEATURE(kDynamicTopChrome);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);
 BASE_DECLARE_FEATURE(kFeedPositionAndroid);
 BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kForceListTabSwitcher);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);
 BASE_DECLARE_FEATURE(kGridTabSwitcherAndroidAnimations);

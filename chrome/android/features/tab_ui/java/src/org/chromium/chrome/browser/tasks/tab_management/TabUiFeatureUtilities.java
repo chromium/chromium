@@ -116,7 +116,7 @@ public class TabUiFeatureUtilities {
     /** Returns whether the Grid Tab Switcher UI should use list mode. */
     public static boolean shouldUseListMode() {
         // Low-end forces list mode.
-        return SysUtils.isLowEndDevice();
+        return SysUtils.isLowEndDevice() || ChromeFeatureList.sForceListTabSwitcher.isEnabled();
     }
 
     /**

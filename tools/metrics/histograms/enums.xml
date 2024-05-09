@@ -16510,6 +16510,7 @@ from previous Chrome versions.
   <int value="-2098294029" label="PageInfoStoreInfo:enabled"/>
   <int value="-2098243118" label="OmniboxTailSuggestions:disabled"/>
   <int value="-2098234759" label="kScrollableTabStripOverflow:disabled"/>
+  <int value="-2098150649" label="ForceListTabSwitcher:enabled"/>
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097737027" label="SkiaGraphite:disabled"/>
@@ -17107,6 +17108,7 @@ from previous Chrome versions.
   <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
   <int value="-1851980281" label="TabGroupsCollapse:enabled"/>
   <int value="-1850988416" label="(Obsolete) ExplicitLanguageAsk:disabled"/>
+  <int value="-1850193460" label="ForceListTabSwitcher:disabled"/>
   <int value="-1850155382" label="EnablePerfettoSystemTracing:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
   <int value="-1849100017" label="DataSharingAndroid:disabled"/>

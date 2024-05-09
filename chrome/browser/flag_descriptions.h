@@ -2448,6 +2448,9 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kFetchGaiaHashOnSignInName[];
 extern const char kFetchGaiaHashOnSignInDescription[];
 
+extern const char kForceListTabSwitcherName[];
+extern const char kForceListTabSwitcherDescription[];
+
 extern const char kFullscreenInsetsApiMigrationName[];
 extern const char kFullscreenInsetsApiMigrationDescription[];
 

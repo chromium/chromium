@@ -298,6 +298,7 @@ public abstract class ChromeFeatureList {
             "FocusOmniboxInIncognitoTabIntents";
     public static final String FORCE_DISABLE_EXTENDED_SYNC_PROMOS =
             "ForceDisableExtendedSyncPromos";
+    public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
     public static final String FORCE_STARTUP_SIGNIN_PROMO = "ForceStartupSigninPromo";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
     public static final String FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION =
@@ -568,6 +569,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             newCachedFlag(FEED_LOADING_PLACEHOLDER, false);
+    public static final CachedFlag sForceListTabSwitcher =
+            newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sFriendlierSafeBrowsingSettingsEnhancedProtection =
             newCachedFlag(FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION, false);
     public static final CachedFlag sFriendlierSafeBrowsingSettingsStandardProtection =
@@ -699,6 +702,7 @@ public abstract class ChromeFeatureList {
                     sDrawWebEdgeToEdge,
                     sDynamicTopChrome,
                     sFeedLoadingPlaceholder,
+                    sForceListTabSwitcher,
                     sFriendlierSafeBrowsingSettingsEnhancedProtection,
                     sFriendlierSafeBrowsingSettingsStandardProtection,
                     sFullscreenInsetsApiMigration,

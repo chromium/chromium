@@ -4620,6 +4620,11 @@
     "expiry_milestone": 120
   },
   {
+     "name": "force-list-tab-switcher",
+     "owners": ["ckitagawa@chromium.org", "skym@chromium.org"],
+     "expiry_milestone": 136
+  },
+  {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir@chromium.org" ],
     "expiry_milestone": 124

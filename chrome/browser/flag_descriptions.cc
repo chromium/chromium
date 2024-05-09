@@ -4147,6 +4147,12 @@ const char kFetchGaiaHashOnSignInDescription[] =
     "Enable retrieving email, salt, and hashed password from SharedPreferences "
     "for password reuse detection when a user signs in.";
 
+const char kForceListTabSwitcherName[] =
+    "Force list tab switcher for low-end devices";
+const char kForceListTabSwitcherDescription[] =
+    "Forces the list mode of the tab switcher intended for low-end devices. "
+    "This flag is intended for debugging only.";
+
 const char kFullscreenInsetsApiMigrationName[] =
     "Migrate to the new fullscreen insets APIs";
 const char kFullscreenInsetsApiMigrationDescription[] =
