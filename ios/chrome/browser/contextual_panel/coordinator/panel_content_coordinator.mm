@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 
 #import "ios/chrome/browser/contextual_panel/coordinator/panel_block_modulator.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/sample/coordinator/sample_block_modulator.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_view_controller.h"
+#import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -38,13 +41,11 @@
   NSMutableArray<PanelBlockData*>* panelBlocks = [[NSMutableArray alloc] init];
   for (base::WeakPtr<ContextualPanelItemConfiguration> configuration :
        configurations) {
-    if (!configuration) {
+    PanelBlockModulator* modulator =
+        [self modulatorForConfiguration:configuration];
+    if (!modulator) {
       continue;
     }
-    PanelBlockModulator* modulator =
-        [[SampleBlockModulator alloc] initWithBaseViewController:_viewController
-                                                         browser:self.browser
-                                               itemConfiguration:configuration];
     [modulator start];
     PanelBlockData* panelBlockData = [modulator panelBlockData];
     if (!panelBlockData) {
@@ -64,6 +65,26 @@
   AddSameConstraints(self.baseViewController.view, _viewController.view);
 
   [_viewController didMoveToParentViewController:self.baseViewController];
+}
+
+- (PanelBlockModulator*)modulatorForConfiguration:
+    (base::WeakPtr<ContextualPanelItemConfiguration>)configuration {
+  if (!configuration) {
+    return nil;
+  }
+
+  switch (configuration->item_type) {
+    case ContextualPanelItemType::SamplePanelItem:
+      return [[SampleBlockModulator alloc]
+          initWithBaseViewController:_viewController
+                             browser:self.browser
+                   itemConfiguration:configuration];
+    case ContextualPanelItemType::PriceInsightsItem:
+      return [[PriceInsightsModulator alloc]
+          initWithBaseViewController:_viewController
+                             browser:self.browser
+                   itemConfiguration:configuration];
+  }
 }
 
 @end

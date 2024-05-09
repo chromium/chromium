@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("price_insights_coordinator") {
+source_set("coordinator") {
   sources = [
     "price_insights_modulator.h",
     "price_insights_modulator.mm",
@@ -13,6 +13,7 @@ source_set("price_insights_coordinator") {
     "//components/image_fetcher/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/coordinator:public",
     "//ios/chrome/browser/price_insights/ui:price_insights_ui",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
