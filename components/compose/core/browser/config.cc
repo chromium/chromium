@@ -59,7 +59,7 @@ Config::Config() {
       base::FeatureList::IsEnabled(features::kComposeAutoSubmit);
 
   saved_state_nudge_enabled =
-      base::FeatureList::IsEnabled(features::kEnableComposeNudge);
+      base::FeatureList::IsEnabled(features::kEnableComposeSavedStateNudge);
 
   proactive_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge);

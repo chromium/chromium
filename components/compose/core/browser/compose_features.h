@@ -26,8 +26,7 @@ BASE_DECLARE_FEATURE(kComposeAutoSubmit);
 BASE_DECLARE_FEATURE(kComposeEligible);
 
 // Controls whether or not the saved state nudge is enabled.
-// TODO(b/334158978): Rename to kEnableComposeSavedStateNudge
-BASE_DECLARE_FEATURE(kEnableComposeNudge);
+BASE_DECLARE_FEATURE(kEnableComposeSavedStateNudge);
 
 // Controls whether or not the proactive nudge is enabled.
 BASE_DECLARE_FEATURE(kEnableComposeProactiveNudge);

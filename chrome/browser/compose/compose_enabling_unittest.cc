@@ -132,7 +132,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     // Note: individual tests may reset flags to their default state.
     ResetFeaturesAndConfig(
         {compose::features::kEnableCompose,
-         compose::features::kEnableComposeNudge,
+         compose::features::kEnableComposeSavedStateNudge,
          compose::features::kEnableComposeLanguageBypass,
          compose::features::kEnableComposeSavedStateNotification},
         {compose::features::kEnableComposeProactiveNudge});
@@ -342,7 +342,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
   // We intentionally disable the feature.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableComposeNudge},
+      {compose::features::kEnableComposeSavedStateNudge},
       {compose::features::kEnableCompose});
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
@@ -507,8 +507,9 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDefaultTest) {
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   // We intentionally disable the feature.
-  ResetFeaturesAndConfig({}, {// Disable saved state nudge.
-                              compose::features::kEnableComposeNudge});
+  ResetFeaturesAndConfig({},
+                         {// Disable saved state nudge.
+                          compose::features::kEnableComposeSavedStateNudge});
 
   std::string autocomplete_attribute;
 
@@ -666,7 +667,8 @@ TEST_F(ComposeEnablingTest, ComposeSavedStateNotificationEnabledByDefault) {
 }
 
 TEST_F(ComposeEnablingTest, SavedStateNotificationWithSavedStateNudgeDisabled) {
-  ResetFeaturesAndConfig({}, {compose::features::kEnableComposeNudge});
+  ResetFeaturesAndConfig({},
+                         {compose::features::kEnableComposeSavedStateNudge});
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();

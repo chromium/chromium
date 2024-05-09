@@ -363,7 +363,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
 
   UserEducationService::MaybeNotifyPromoFeatureUsed(
       web_contents_->GetBrowserContext(),
-      compose::features::kEnableComposeNudge);
+      compose::features::kEnableComposeSavedStateNudge);
 
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the

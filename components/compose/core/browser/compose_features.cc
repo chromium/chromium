@@ -25,7 +25,7 @@ BASE_FEATURE(kComposeEligible,
              "ComposeEligible",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableComposeNudge,
+BASE_FEATURE(kEnableComposeSavedStateNudge,
              "ComposeNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 

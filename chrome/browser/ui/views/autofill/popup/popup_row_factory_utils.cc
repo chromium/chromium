@@ -482,7 +482,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kCompose: {
       const bool show_new_badge = UserEducationService::MaybeShowNewBadge(
           controller->GetWebContents()->GetBrowserContext(),
-          compose::features::kEnableComposeNudge);
+          compose::features::kEnableComposeSavedStateNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));

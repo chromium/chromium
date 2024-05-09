@@ -1275,7 +1275,8 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableCompose, user_education::Metadata()));
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      compose::features::kEnableComposeNudge, user_education::Metadata()));
+      compose::features::kEnableComposeSavedStateNudge,
+      user_education::Metadata()));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
