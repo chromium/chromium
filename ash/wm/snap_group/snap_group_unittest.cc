@@ -6303,7 +6303,8 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
 
 // Tests that when moving snap group to another display with snap group, the
 // windows will be moved to the destination display properly.
-TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupToAnotherDisplayWithSnapGroup) {
+TEST_F(SnapGroupMultiDisplayTest,
+       MoveSnapGroupToAnotherDisplayWithSnapGroupInOverview) {
   UpdateDisplay("800x700,801+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   const auto& displays = display_manager->active_display_list();
@@ -6356,6 +6357,70 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupToAnotherDisplayWithSnapGroup) {
   EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w4.get()).id());
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
   EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+}
+
+// Tests that dragging an `OverviewGroupItem` to a different desk in another
+// display will properly move the windows to the destination desk and display.
+TEST_F(SnapGroupMultiDisplayTest,
+       MoveSnapGroupToADifferentDeskInAnotherDisplayInOverview) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2U, root_windows.size());
+  auto* root2 = root_windows[1].get();
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  // Create Snap Group on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  VerifySnapGroupOnDisplay(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
+      displays[0].id());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(root2);
+  ASSERT_TRUE(overview_grid);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto& desks_mini_views = desks_bar_view->mini_views();
+  ASSERT_EQ(desks_mini_views.size(), 2u);
+
+  // Drag `group_item` to the middle of the `desks_mini_views[1]` and drop.
+  auto* event_generator = GetEventGenerator();
+  const auto drop_point =
+      desks_mini_views[1]->GetBoundsInScreen().CenterPoint();
+  DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), drop_point,
+                       event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/true);
+
+  // Activate `desks_mini_views[1]` to switch to a different desk.
+  event_generator->MoveMouseTo(drop_point);
+  DeskSwitchAnimationWaiter waiter;
+  event_generator->ClickLeftButton();
+  waiter.Wait();
+  ASSERT_FALSE(IsInOverviewSession());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(w1->parent()));
+  EXPECT_TRUE(desks_util::IsActiveDeskContainer(w2->parent()));
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+  VerifySnapGroupOnDisplay(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
+      displays[1].id());
 }
 
 // Tests that mirrored mode works correctly.
