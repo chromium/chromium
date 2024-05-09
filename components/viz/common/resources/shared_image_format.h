@@ -114,6 +114,23 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   }
 #endif
 
+  // Clears this format as needing external sampling. Note that with MappableSI,
+  // the type of underlying buffer (native or shared memory) is not known until
+  // the shared image is created. This is problematic for clients which needs to
+  // call SharedImageFormat::SetPrefersExternalSampler() before creating a
+  // shared image. In those cases clients will unconditionally call
+  // SharedImageFormat::SetPrefersExternalSampler() before creating a
+  // mappableSI. SI will internally take care of clearing it back to false by
+  // using this method in case it is determined that the it's backed by shared
+  // memory. https://issues.chromium.org/339546249.
+  void ClearPrefersExternalSampler() {
+#if BUILDFLAG(IS_OZONE)
+    CHECK(is_multi_plane() &&
+          format_.multiplanar_format.prefers_external_sampler);
+    format_.multiplanar_format.prefers_external_sampler = false;
+#endif
+  }
+
   // Returns whether the resource format can be used as a software bitmap for
   // export to the display compositor.
   bool IsBitmapFormatSupported() const;

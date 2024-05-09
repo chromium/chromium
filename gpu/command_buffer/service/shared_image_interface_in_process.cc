@@ -342,9 +342,19 @@ SharedImageInterfaceInProcess::CreateSharedImage(
         {});
   }
 
+  auto handle_info = GetGpuMemoryBufferHandleInfo(mailbox);
+  SharedImageInfo si_info_copy = si_info;
+
+  // Clear the external sampler prefs for shared memory case if it is set.
+  // https://issues.chromium.org/339546249.
+  if (si_info_copy.meta.format.PrefersExternalSampler() &&
+      (handle_info.handle.type ==
+       gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
+    si_info_copy.meta.format.ClearPrefersExternalSampler();
+  }
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(),
-      GetGpuMemoryBufferHandleInfo(mailbox), holder_);
+      mailbox, si_info_copy.meta, GenUnverifiedSyncToken(),
+      std::move(handle_info), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(

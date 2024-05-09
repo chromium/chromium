@@ -504,6 +504,11 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(buffer_usage) &&
         gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
             size, buffer_format)) {
+      // Clear the external sampler prefs for shared memory case if it is set.
+      // https://issues.chromium.org/339546249.
+      if (format.PrefersExternalSampler()) {
+        format.ClearPrefersExternalSampler();
+      }
       auto* factory =
           GetFactoryByUsage(usage, format, size,
                             /*pixel_data=*/{}, gfx::SHARED_MEMORY_BUFFER);

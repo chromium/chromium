@@ -131,17 +131,21 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage)) << si_info.meta.usage;
   gfx::GpuMemoryBufferHandle buffer_handle;
+
+  // Copy which can be modified.
+  SharedImageInfo si_info_copy = si_info;
   auto mailbox =
-      proxy_->CreateSharedImage(si_info, buffer_usage, &buffer_handle);
+      proxy_->CreateSharedImage(si_info_copy, buffer_usage, &buffer_handle);
   if (mailbox.IsZero()) {
     return nullptr;
   }
 
   CHECK(!buffer_handle.is_null());
   return base::MakeRefCounted<ClientSharedImage>(
-      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(buffer_handle), si_info.meta.format,
-                                si_info.meta.size, buffer_usage),
+      AddMailbox(mailbox), si_info_copy.meta, GenUnverifiedSyncToken(),
+      GpuMemoryBufferHandleInfo(std::move(buffer_handle),
+                                si_info_copy.meta.format,
+                                si_info_copy.meta.size, buffer_usage),
       holder_);
 }
 

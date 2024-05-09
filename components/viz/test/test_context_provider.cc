@@ -203,8 +203,16 @@ TestSharedImageInterface::CreateSharedImage(const gpu::SharedImageInfo& si_info,
     auto gpu_memory_buffer = test_gmb_manager_->CreateGpuMemoryBuffer(
         si_info.meta.size, buffer_format, buffer_usage, surface_handle,
         nullptr);
+
+    // Since the |gpu_memory_buffer| here is always a shared memory, clear the
+    // external sampler prefs if it is already set by client.
+    // https://issues.chromium.org/339546249.
+    gpu::SharedImageInfo si_info_copy = si_info;
+    if (si_info_copy.meta.format.PrefersExternalSampler()) {
+      si_info_copy.meta.format.ClearPrefersExternalSampler();
+    }
     return gpu::ClientSharedImage::CreateForTesting(
-        mailbox, si_info.meta, sync_token, std::move(gpu_memory_buffer),
+        mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
         holder_);
   }
 

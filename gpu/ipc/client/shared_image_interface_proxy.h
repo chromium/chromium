@@ -62,7 +62,7 @@ class SharedImageInterfaceProxy {
   };
 
   Mailbox CreateSharedImage(const SharedImageInfo& si_info);
-  Mailbox CreateSharedImage(const SharedImageInfo& si_info,
+  Mailbox CreateSharedImage(SharedImageInfo& si_info,
                             gfx::BufferUsage buffer_usage,
                             gfx::GpuMemoryBufferHandle* handle_to_populate);
   Mailbox CreateSharedImage(const SharedImageInfo& si_info,

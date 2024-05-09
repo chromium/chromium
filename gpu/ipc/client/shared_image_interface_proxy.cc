@@ -115,7 +115,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    const SharedImageInfo& si_info,
+    SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle* handle_to_populate) {
   // Create a GMB here first on IO thread via sync IPC. Then create a mailbox
@@ -129,6 +129,16 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   if (handle_to_populate->is_null()) {
     LOG(ERROR) << "Buffer handle is null. Not creating a mailbox from it.";
     return Mailbox();
+  }
+
+  // Clear the external sampler prefs for shared memory case if it is set. Note
+  // that the |si_info.meta.format| is a reference, so any modifications to it
+  // will also be reflected at the place from which this method is called from.
+  // https://issues.chromium.org/339546249.
+  if (si_info.meta.format.PrefersExternalSampler() &&
+      (handle_to_populate->type ==
+       gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)) {
+    si_info.meta.format.ClearPrefersExternalSampler();
   }
 
   // Call existing SI method to create a SI from handle. Note that we are doing
