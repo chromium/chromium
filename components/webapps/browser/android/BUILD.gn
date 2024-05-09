@@ -161,9 +161,8 @@ source_set("unit_tests") {
     "add_to_homescreen_data_fetcher_unittest.cc",
     "install_prompt_prefs_unittest.cc",
     "shortcut_info_unittest.cc",
-    "webapk/webapk_icons_hasher_unittest.cc",
+    "webapk/webapk_icon_hasher_unittest.cc",
     "webapk/webapk_proto_builder_unittest.cc",
-    "webapk/webapk_single_icon_hasher_unittest.cc",
     "webapp_icon_unittest.cc",
     "webapps_utils_unittest.cc",
   ]

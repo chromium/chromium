@@ -12,7 +12,7 @@
 
 #include "components/webapk/webapk.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "url/gurl.h"
 
@@ -21,8 +21,6 @@ class FilePath;
 }
 
 namespace webapps {
-
-class WebappIcon;
 
 // Populates webapk::WebApk and returns it.
 // Must be called on a worker thread because it encodes an SkBitmap.
@@ -36,7 +34,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
+    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons);
@@ -50,7 +48,8 @@ void BuildProto(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     base::OnceCallback<void(std::unique_ptr<std::string>)> callback);
@@ -66,7 +65,7 @@ bool StoreUpdateRequestToFileInBackground(
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
-    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
+    std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
     bool is_app_identity_update_supported,
     std::vector<WebApkUpdateReason> update_reasons);

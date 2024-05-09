@@ -167,7 +167,7 @@ class UpdateRequestStorer {
     quit_closure_ = run_loop.QuitClosure();
     WebApkInstaller::StoreUpdateRequestToFile(
         update_request_path, webapps::ShortcutInfo((GURL())), GURL(), "", "",
-        "", "", std::map<GURL, std::unique_ptr<webapps::WebappIcon>>(), false,
+        "", "", std::map<std::string, webapps::WebApkIconHasher::Icon>(), false,
         false, {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
@@ -259,17 +259,14 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
   }
 
   std::unique_ptr<std::string> DefaultSerializedWebApk() {
-    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> webapk_icons;
-    GURL icon_url_1 = embedded_test_server()->GetURL("/icon1.png");
-    auto icon_1 = std::make_unique<webapps::WebappIcon>(icon_url_1);
-    icon_1->SetData("data1");
-    icon_1->set_hash("1");
-    webapk_icons.emplace(icon_url_1, std::move(icon_1));
-    GURL icon_url_2 = embedded_test_server()->GetURL("/icon2.png");
-    auto icon_2 = std::make_unique<webapps::WebappIcon>(icon_url_2);
-    icon_2->SetData("data2");
-    icon_2->set_hash("2");
-    webapk_icons.emplace(icon_url_2, std::move(icon_2));
+    std::string icon_url_1 =
+        embedded_test_server()->GetURL("/icon1.png").spec();
+    std::string icon_url_2 =
+        embedded_test_server()->GetURL("/icon2.png").spec();
+    std::map<std::string, webapps::WebApkIconHasher::Icon>
+        icon_url_to_murmur2_hash;
+    icon_url_to_murmur2_hash[icon_url_1] = {"data1", "1"};
+    icon_url_to_murmur2_hash[icon_url_2] = {"data2", "2"};
 
     std::string primary_icon_data = "data3";
     std::string splash_icon_data = "data4";
@@ -278,8 +275,8 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
 
     return webapps::BuildProtoInBackground(
         info, info.manifest_id, primary_icon_data, splash_icon_data,
-        /*package_name*/ "", /*version*/ "", std::move(webapk_icons),
-        true /* is_manifest_stale */,
+        /*package_name*/ "", /*version*/ "",
+        std::move(icon_url_to_murmur2_hash), true /* is_manifest_stale */,
         true /* is_app_identity_update_supported */,
         std::vector<webapps::WebApkUpdateReason>());
   }
@@ -385,9 +382,9 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
   EXPECT_EQ(webapps::WebApkInstallResult::ICON_HASHER_ERROR, runner.result());
 }
 
-// Test that installation doesn't fails if fetching the bitmap at the best
-// splash icon URL returns no content but fetching primary URL is successful.
-// WebAPK will fallback to use primary icon for splash screen.
+// Test that installation fails if fetching the bitmap at the best splash icon
+// URL returns no content. In a perfect world the fetch would always succeed
+// because the fetch for the same icon succeeded recently.
 IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
                        BestSplashIconUrlDownloadTimesOut) {
   webapps::ShortcutInfo shortcut_info = DefaultShortcutInfo();
@@ -396,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           shortcut_info);
-  EXPECT_EQ(webapps::WebApkInstallResult::SUCCESS, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::ICON_HASHER_ERROR, runner.result());
 }
 
 // Test that installation fails if the WebAPK server url is invalid.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/webapps/browser/android/webapk/webapk_single_icon_hasher.h"
+#include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
 
 #include <utility>
 
@@ -28,6 +28,9 @@ namespace {
 // The seed to use when taking the murmur2 hash of the icon.
 const uint64_t kMurmur2HashSeed = 0;
 
+// The default number of milliseconds to wait for the icon download to complete.
+const int kDownloadTimeoutInMilliseconds = 60000;
+
 // Computes Murmur2 hash of |raw_image_data|.
 std::string ComputeMurmur2Hash(const std::string& raw_image_data) {
   // WARNING: We are running in the browser process. |raw_image_data| is the
@@ -39,54 +42,98 @@ std::string ComputeMurmur2Hash(const std::string& raw_image_data) {
   return base::NumberToString(hash);
 }
 
+void OnMurmur2Hash(WebApkIconHasher::Icon* result,
+                   base::OnceClosure done_closure,
+                   WebApkIconHasher::Icon icon) {
+  *result = std::move(icon);
+  std::move(done_closure).Run();
+}
+
+void OnAllMurmur2Hashes(
+    std::unique_ptr<std::map<std::string, WebApkIconHasher::Icon>> icons,
+    WebApkIconHasher::Murmur2HashMultipleCallback callback) {
+  for (const auto& icon_pair : *icons) {
+    if (icon_pair.second.hash.empty()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+  }
+
+  std::move(callback).Run(std::move(*icons));
+}
+
 }  // anonymous namespace
 
 // static
-void WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
+void WebApkIconHasher::DownloadAndComputeMurmur2Hash(
     network::mojom::URLLoaderFactory* url_loader_factory,
     base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
+    const std::vector<WebappIcon>& webapk_icons,
+    Murmur2HashMultipleCallback callback) {
+  auto icons_ptr = std::make_unique<std::map<std::string, Icon>>();
+  auto& icons = *icons_ptr;
+
+  auto barrier_closure = base::BarrierClosure(
+      webapk_icons.size(),
+      base::BindOnce(&OnAllMurmur2Hashes, std::move(icons_ptr),
+                     std::move(callback)));
+  for (const auto& webapk_icon : webapk_icons) {
+    // |hashes| is owned by |barrier_closure|.
+    DownloadAndComputeMurmur2HashWithTimeout(
+        url_loader_factory, web_contents, request_initiator, webapk_icon,
+        kDownloadTimeoutInMilliseconds,
+        base::BindOnce(&OnMurmur2Hash, &icons[webapk_icon.url().spec()],
+                       barrier_closure));
+  }
+}
+
+// static
+void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    base::WeakPtr<content::WebContents> web_contents,
+    const url::Origin& request_initiator,
+    const WebappIcon& webapk_icon,
     int timeout_ms,
-    WebappIcon* webapk_icon,
-    base::OnceClosure callback) {
-  if (!webapk_icon->url().is_valid()) {
+    Murmur2HashCallback callback) {
+  if (!webapk_icon.url().is_valid()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
+        FROM_HERE, base::BindOnce(std::move(callback), Icon{}));
     return;
   }
 
-  if (webapk_icon->url().SchemeIs(url::kDataScheme)) {
+  if (webapk_icon.url().SchemeIs(url::kDataScheme)) {
     std::string mime_type, char_set, data;
-    if (net::DataURL::Parse(webapk_icon->url(), &mime_type, &char_set, &data) &&
+    Icon icon;
+    if (net::DataURL::Parse(webapk_icon.url(), &mime_type, &char_set, &data) &&
         !data.empty()) {
-      webapk_icon->set_hash(ComputeMurmur2Hash(data));
-      webapk_icon->SetData(std::move(data));
+      icon.hash = ComputeMurmur2Hash(data);
+      icon.unsafe_data = std::move(data);
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(icon)));
     return;
   }
 
   // The icon hasher will delete itself when it is done.
-  new WebApkSingleIconHasher(url_loader_factory, std::move(web_contents),
-                       request_initiator, timeout_ms, webapk_icon,
+  new WebApkIconHasher(url_loader_factory, std::move(web_contents),
+                       request_initiator, webapk_icon, timeout_ms,
                        std::move(callback));
 }
 
-WebApkSingleIconHasher::WebApkSingleIconHasher(
+WebApkIconHasher::WebApkIconHasher(
     network::mojom::URLLoaderFactory* url_loader_factory,
     base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
+    const WebappIcon& webapk_icon,
     int timeout_ms,
-    WebappIcon* webapk_icon,
-    base::OnceClosure callback)
+    Murmur2HashCallback callback)
     : callback_(std::move(callback)) {
   DCHECK(url_loader_factory);
 
-  icon_ = webapk_icon;
   download_timeout_timer_.Start(
       FROM_HERE, base::Milliseconds(timeout_ms),
-      base::BindOnce(&WebApkSingleIconHasher::OnDownloadTimedOut,
+      base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
                      base::Unretained(this)));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -95,20 +142,20 @@ WebApkSingleIconHasher::WebApkSingleIconHasher(
       net::IsolationInfo::RequestType::kOther, request_initiator,
       request_initiator, net::SiteForCookies());
   resource_request->request_initiator = request_initiator;
-  resource_request->url = icon_->url();
+  resource_request->url = webapk_icon.url();
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),
       TRAFFIC_ANNOTATION_WITHOUT_PROTO("webapk icon hasher"));
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
-      base::BindOnce(&WebApkSingleIconHasher::OnSimpleLoaderComplete,
+      base::BindOnce(&WebApkIconHasher::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(web_contents),
-                     icon_->GetIdealSizeInPx(), timeout_ms));
+                     webapk_icon.GetIdealSizeInPx(), timeout_ms));
 }
 
-WebApkSingleIconHasher::~WebApkSingleIconHasher() {}
+WebApkIconHasher::~WebApkIconHasher() {}
 
-void WebApkSingleIconHasher::OnSimpleLoaderComplete(
+void WebApkIconHasher::OnSimpleLoaderComplete(
     base::WeakPtr<content::WebContents> web_contents,
     int ideal_icon_size,
     int timeout_ms,
@@ -117,7 +164,7 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
 
   // Check for non-empty body in case of HTTP 204 (no content) response.
   if (!response_body || response_body->empty()) {
-    RunCallbackAndFinish();
+    RunCallback({});
     return;
   }
 
@@ -132,20 +179,21 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
     // image's raw, unsanitized bytes from the web. |*response_body| may contain
     // malicious data. Decoding unsanitized bitmap data to an SkBitmap in the
     // browser process is a security bug.
-    icon_->SetData(std::move(*response_body));
-    icon_->set_hash(ComputeMurmur2Hash(icon_->unsafe_data()));
-    RunCallbackAndFinish();
+    Icon icon;
+    icon.unsafe_data = std::move(*response_body);
+    icon.hash = ComputeMurmur2Hash(icon.unsafe_data);
+    RunCallback(std::move(icon));
     return;
   }
 
   if (!web_contents) {
-    RunCallbackAndFinish();
+    RunCallback({});
     return;
   }
 
   download_timeout_timer_.Start(
       FROM_HERE, base::Milliseconds(timeout_ms),
-      base::BindOnce(&WebApkSingleIconHasher::OnDownloadTimedOut,
+      base::BindOnce(&WebApkIconHasher::OnDownloadTimedOut,
                      base::Unretained(this)));
 
   const gfx::Size preferred_size(ideal_icon_size, ideal_icon_size);
@@ -155,11 +203,11 @@ void WebApkSingleIconHasher::OnSimpleLoaderComplete(
       preferred_size,
       std::numeric_limits<int>::max(),  // max size
       false,                            // normal cache policy
-      base::BindOnce(&WebApkSingleIconHasher::OnImageDownloaded,
+      base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(response_body)));
 }
 
-void WebApkSingleIconHasher::OnImageDownloaded(
+void WebApkIconHasher::OnImageDownloaded(
     std::unique_ptr<std::string> response_body,
     int id,
     int http_status_code,
@@ -167,27 +215,29 @@ void WebApkSingleIconHasher::OnImageDownloaded(
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
   download_timeout_timer_.Stop();
+
   if (bitmaps.empty()) {
-    RunCallbackAndFinish();
+    RunCallback({});
     return;
   }
 
   std::vector<unsigned char> png_bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[0], false, &png_bytes);
 
-  icon_->SetData(std::string(png_bytes.begin(), png_bytes.end()));
-  icon_->set_hash(ComputeMurmur2Hash(*response_body));
-
-  RunCallbackAndFinish();
+  Icon icon;
+  icon.unsafe_data = std::string(png_bytes.begin(), png_bytes.end());
+  icon.hash = ComputeMurmur2Hash(*response_body);
+  RunCallback(std::move(icon));
 }
 
-void WebApkSingleIconHasher::OnDownloadTimedOut() {
+void WebApkIconHasher::OnDownloadTimedOut() {
   simple_url_loader_.reset();
-  RunCallbackAndFinish();
+
+  RunCallback({});
 }
 
-void WebApkSingleIconHasher::RunCallbackAndFinish() {
-  std::move(callback_).Run();
+void WebApkIconHasher::RunCallback(Icon icon) {
+  std::move(callback_).Run(std::move(icon));
   delete this;
 }
 
