@@ -245,9 +245,8 @@
         id="ipProtectionToggle"
         pref="{{prefs.tracking_protection.ip_protection_enabled}}"
         label="$i18n{trackingProtectionIpProtectionToggleLabel}"
-        sub-label-with-link="
+        sub-label="
           $i18n{trackingProtectionIpProtectionToggleSubLabel}"
-        on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
         on-settings-boolean-control-change="onIpProtectionChanged_"
         hidden="[[!isIpProtectionAvailable_]]"
         icon="settings:location-disabled">
@@ -255,6 +254,9 @@
     <settings-toggle-button
         id="fingerprintingProtectionToggle"
         pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
+        label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
+        sub-label="
+          $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
         on-settings-boolean-control-change="onFingerprintingProtectionChanged_"
         hidden="[[!isFingerprintingProtectionAvailable_]]"
         icon="settings:fingerprint-off">
