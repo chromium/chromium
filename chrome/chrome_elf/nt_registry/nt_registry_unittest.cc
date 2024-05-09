@@ -9,10 +9,9 @@
 #include <rpc.h>
 #include <stddef.h>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/test/test_reg_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -330,8 +329,7 @@ TEST_F(NtRegistryTest, ApiDword) {
                                &key_handle));
   ASSERT_NE(key_handle, INVALID_HANDLE_VALUE);
   ASSERT_NE(key_handle, nullptr);
-  base::ScopedClosureRunner key_closer(
-      base::BindOnce(&nt::CloseRegKey, key_handle));
+  absl::Cleanup key_closer = [key_handle] { nt::CloseRegKey(key_handle); };
 
   DWORD get_dword = 0;
   EXPECT_FALSE(nt::QueryRegValueDWORD(key_handle, dword_val_name, &get_dword));
@@ -367,8 +365,7 @@ TEST_F(NtRegistryTest, ApiSz) {
                                &key_handle));
   ASSERT_NE(key_handle, INVALID_HANDLE_VALUE);
   ASSERT_NE(key_handle, nullptr);
-  base::ScopedClosureRunner key_closer(
-      base::BindOnce(&nt::CloseRegKey, key_handle));
+  absl::Cleanup key_closer = [key_handle] { nt::CloseRegKey(key_handle); };
 
   std::wstring get_sz;
   EXPECT_FALSE(nt::QueryRegValueSZ(key_handle, sz_val_name, &get_sz));
@@ -419,8 +416,7 @@ TEST_F(NtRegistryTest, ApiMultiSz) {
                                &key_handle));
   ASSERT_NE(key_handle, INVALID_HANDLE_VALUE);
   ASSERT_NE(key_handle, nullptr);
-  base::ScopedClosureRunner key_closer(
-      base::BindOnce(&nt::CloseRegKey, key_handle));
+  absl::Cleanup key_closer = [key_handle] { nt::CloseRegKey(key_handle); };
 
   // Test 1 - Success
   // ------------------------------
