@@ -206,9 +206,6 @@ crbug.com/338071088 [ mac amd-0x67ef angle-opengl graphite-disabled passthrough 
 # Flaky 3rd GPU crash
 crbug.com/338570701 [ win angle-d3d11 graphite-enabled passthrough qualcomm-0x41333430 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
 
-# Flaky Devtools detects GPU Crash as failure
-crbug.com/338574390 [ mac angle-metal asan intel-0x3e9b passthrough ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

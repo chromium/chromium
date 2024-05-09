@@ -130,6 +130,8 @@ class GpuIntegrationTest(
   # flakiness workaround. See crbug.com/323927831.
   _is_first_browser_start = True
 
+  _is_asan = False
+
   tab: Optional[ct.Tab] = None
 
   def __init__(self, *args, **kwargs):
@@ -926,6 +928,7 @@ class GpuIntegrationTest(
     if system_info:
       gpu_tags = []
       gpu_info = system_info.gpu
+      cls._is_asan = gpu_info.aux_attributes.get('is_asan', False)
       # On the dual-GPU MacBook Pros, surface the tags of the secondary GPU if
       # it's the discrete GPU, so that test expectations can be written that
       # target the discrete GPU.

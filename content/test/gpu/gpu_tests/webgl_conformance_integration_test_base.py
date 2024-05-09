@@ -74,7 +74,6 @@ class WebGLConformanceIntegrationTestBase(
     gpu_integration_test.GpuIntegrationTest):
 
   _webgl_version: Optional[int] = None
-  is_asan = False
   _crash_count = 0
   _gl_backend = ''
   _angle_backend = ''
@@ -397,7 +396,7 @@ class WebGLConformanceIntegrationTestBase(
     # Parallel jobs increase load and can slow down test execution, so scale
     # based on the number of jobs. Target 2x increase with 4 jobs.
     multiplier = 1 + (self.child.jobs - 1) / 3.0
-    if self.is_asan:
+    if self._is_asan:
       multiplier *= ASAN_MULTIPLIER
     if self._finder_options.browser_type == 'web-engine-shell':
       multiplier *= WEBENGINE_MULTIPLIER
@@ -459,7 +458,7 @@ class WebGLConformanceIntegrationTestBase(
 
   def _GetTestTimeout(self) -> int:
     timeout = 300
-    if self.is_asan:
+    if self._is_asan:
       # Asan runs much slower and needs a longer timeout
       timeout *= 2
     return timeout
@@ -637,13 +636,6 @@ class WebGLConformanceIntegrationTestBase(
   def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     assert cls._webgl_version is not None
     tags = super().GetPlatformTags(browser)
-
-    system_info = browser.GetSystemInfo()
-    gpu_info = None
-    if system_info:
-      gpu_info = system_info.gpu
-      cls.is_asan = gpu_info.aux_attributes.get('is_asan', False)
-
     return tags
 
   @classmethod

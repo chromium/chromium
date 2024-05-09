@@ -286,14 +286,34 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
   def testWebGlConformanceTimeoutNoAsan(self) -> None:
     instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
         '_RunConformanceTest')
-    instance.is_asan = False
+    instance._is_asan = False
     self.assertEqual(instance._GetTestTimeout(), 300)
 
   def testWebGlConformanceTimeoutAsan(self) -> None:
     instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
         '_RunConformanceTest')
-    instance.is_asan = True
+    instance._is_asan = True
     self.assertEqual(instance._GetTestTimeout(), 600)
+
+  def testAsanClassMemberSetCorrectly(self):
+    test_class = gpu_integration_test.GpuIntegrationTest
+    platform = fakes.FakePlatform('win', 'win10')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser = typing.cast(ct.Browser, browser)
+
+    browser._returned_system_info = _GetSystemInfo(is_asan=True)
+    with mock.patch.object(test_class,
+                           'ExpectationsFiles',
+                           return_value=['exp.txt']):
+      test_class.GetPlatformTags(browser)
+    self.assertTrue(test_class._is_asan)
+
+    browser._returned_system_info = _GetSystemInfo(is_asan=False)
+    with mock.patch.object(test_class,
+                           'ExpectationsFiles',
+                           return_value=['exp.txt']):
+      test_class.GetPlatformTags(browser)
+    self.assertFalse(test_class._is_asan)
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
   def testGenerateNvidiaExampleTags(self, _) -> None:

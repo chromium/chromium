@@ -92,7 +92,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   page_loaded = False
 
   _test_timeout = DEFAULT_TEST_TIMEOUT
-  _is_asan = False
   _enable_dawn_backend_validation = False
   _use_webgpu_adapter: Optional[str] = None  # use the default
   _original_environ: Optional[collections.abc.Mapping] = None
@@ -614,10 +613,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
 
     # No need to tag _use_webgpu_power_preference here,
     # since Telemetry already reports the GPU vendorID
-
-    system_info = browser.GetSystemInfo()
-    if system_info:
-      cls._is_asan = system_info.gpu.aux_attributes.get('is_asan', False)
 
     return tags
 

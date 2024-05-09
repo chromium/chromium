@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
+import functools
 import logging
 import os
 import sys
 import time
-from typing import Any, List, Set, Tuple
+from typing import Any, List, Optional, Set, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -19,8 +18,6 @@ from gpu_tests import gpu_helper
 import gpu_path_util
 
 from telemetry.core import exceptions
-
-wait_timeout = 60  # seconds
 
 harness_script = r"""
   var domAutomationController = {};
@@ -195,10 +192,28 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.StartBrowser()
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
+  # Can be changed to functools.cache on Python 3.9+.
+  @functools.lru_cache(maxsize=None)
+  def _GetWaitTimeout(self):
+    timeout = 60
+    if self._is_asan:
+      timeout *= 2
+    return timeout
+
+  def _WaitForPageToFinish(self, tab, timeout: Optional[int] = None) -> bool:
+    timeout = timeout or self._GetWaitTimeout()
+    try:
+      tab.WaitForJavaScriptCondition('window.domAutomationController._finished',
+                                     timeout=timeout)
+      return True
+    except exceptions.TimeoutException:
+      return False
+
   def _KillGPUProcess(self,
                       number_of_gpu_process_kills: int,
                       check_crash_count: bool,
-                      timeout: int = wait_timeout) -> None:
+                      timeout: Optional[int] = None) -> None:
+    timeout = timeout or self._GetWaitTimeout()
     tab = self.tab
     # Doing the GPU process kill operation cooperatively -- in the
     # same page's context -- is much more stressful than restarting
@@ -225,7 +240,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # process was chosen.
       tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
 
-      completed = _WaitForPageToFinish(tab, timeout=timeout)
+      completed = self._WaitForPageToFinish(tab, timeout=timeout)
 
       if check_crash_count:
         self._CheckCrashCount(tab, expected_kills)
@@ -299,9 +314,10 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.Close()
     return vid
 
-  def _WaitForTabAndCheckCompletion(self, timeout: int = wait_timeout) -> None:
+  def _WaitForTabAndCheckCompletion(self,
+                                    timeout: Optional[int] = None) -> None:
     tab = self.tab
-    completed = _WaitForPageToFinish(tab, timeout=timeout)
+    completed = self._WaitForPageToFinish(tab, timeout=timeout)
     if not completed:
       self.fail("Test didn't complete (no context lost / restored event?)")
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
@@ -438,14 +454,16 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Kill the GPU process.
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
     # Wait for the WebGL context to be restored.
-    tab.WaitForJavaScriptCondition('window.restored', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.restored',
+                                   timeout=self._GetWaitTimeout())
     # Kill the GPU process again. This will cause WebGL to be blocked.
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
     # The original tab will navigate to a new page. Wait for it to
     # finish running its onload handler.
     # TODO(kbr): figure out when it's OK to evaluate this JavaScript.
     # Seems racy to do it immediately after crashing the GPU process.
-    tab.WaitForJavaScriptCondition('window.initFinished', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.initFinished',
+                                   timeout=self._GetWaitTimeout())
     # Make sure the page failed to get a GL context.
     if tab.EvaluateJavaScript('window.gotGL'):
       self.fail(
@@ -464,12 +482,12 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
     # Wait for the page to receive context loss and restoration events.
     tab.WaitForJavaScriptCondition('window.contextRestored',
-                                   timeout=wait_timeout)
+                                   timeout=self._GetWaitTimeout())
     # Kill the GPU process again. This will cause WebGL to be blocked.
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
     # Make sure WebGL is blocked.
-    tab.WaitForJavaScriptCondition(
-        'window.contextLostReceived', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.contextLostReceived',
+                                   timeout=self._GetWaitTimeout())
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('WebGL should have been blocked after a second context loss')
     # Reload the page via Telemetry / DevTools. This is treated as a
@@ -502,7 +520,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     tab.EvaluateJavaScript(
         'chrome.gpuBenchmarking.terminateGpuProcessNormally()')
-    tab.WaitForJavaScriptCondition('window.contextLost', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.contextLost',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('window.testNewWebGLContext()')
 
     self._WaitForTabAndCheckCompletion()
@@ -709,17 +728,21 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Two times: wait for the page to get a device, and kill the GPU
     # process. The first time, wait for device lost. The second time,
     # WebGPU will be blocked. The loop is unrolled for easier debugging.
-    tab.WaitForJavaScriptCondition('window.gotDevice', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.gotDevice',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
-    tab.WaitForJavaScriptCondition('window.deviceLost', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.deviceLost',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('proceed = true;')
 
-    tab.WaitForJavaScriptCondition('window.gotDevice', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.gotDevice',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
 
     # The original tab will navigate to a new page. Wait for it to
     # finish running its onload handler.
-    tab.WaitForJavaScriptCondition('window.initFinished', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.initFinished',
+                                   timeout=self._GetWaitTimeout())
 
     ## Make sure the page failed to get a WebGPU adapter.
     if tab.EvaluateJavaScript('window.gotAdapter'):
@@ -749,12 +772,15 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Two times: wait for the page to get a device, and kill the GPU
     # process. The first time, wait for device lost. The second time,
     # WebGPU will be blocked. The loop is unrolled for easier debugging.
-    tab.WaitForJavaScriptCondition('window.gotDevice', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.gotDevice',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
-    tab.WaitForJavaScriptCondition('window.deviceLost', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.deviceLost',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('proceed = true;')
 
-    tab.WaitForJavaScriptCondition('window.gotDevice', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.gotDevice',
+                                   timeout=self._GetWaitTimeout())
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
 
     # Verify that WebGPU is now blocked.
@@ -764,7 +790,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # user-initiated navigation, so WebGPU is unblocked, and we should be able
     # to get a new WebGPU device on load.
     self._NavigateAndWaitForLoad(test_path)
-    tab.WaitForJavaScriptCondition('window.gotDevice', timeout=wait_timeout)
+    tab.WaitForJavaScriptCondition('window.gotDevice',
+                                   timeout=self._GetWaitTimeout())
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _GpuNormalTermination_WebGPUNotBlocked(self, test_path: str) -> None:
@@ -789,15 +816,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
             'context_lost_expectations.txt')
     ]
-
-
-def _WaitForPageToFinish(tab, timeout: int = wait_timeout) -> bool:
-  try:
-    tab.WaitForJavaScriptCondition('window.domAutomationController._finished',
-                                   timeout=timeout)
-    return True
-  except exceptions.TimeoutException:
-    return False
 
 
 def load_tests(loader: unittest.TestLoader, tests: Any,
