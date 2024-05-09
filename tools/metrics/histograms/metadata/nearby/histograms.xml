@@ -22,19 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="Mediums">
-  <variant name="" summary="all mediums"/>
-  <variant name=".Ble" summary="BLE"/>
-  <variant name=".BleL2Cap" summary="BLE L2CAP"/>
+<variants name="TransferMediums">
+  <variant name="" summary="all transfer mediums"/>
   <variant name=".Bluetooth" summary="Bluetooth"/>
-  <variant name=".Mdns" summary="mDNS"/>
-  <variant name=".Nfc" summary="NFC"/>
-  <variant name=".Unknown" summary="unknown medium"/>
-  <variant name=".Usb" summary="USB"/>
   <variant name=".WebRtc" summary="WebRTC"/>
-  <variant name=".WifiAware" summary="Wi-Fi Aware"/>
   <variant name=".WifiDirect" summary="Wi-Fi Direct"/>
-  <variant name=".WifiHotspot" summary="Wi-Fi Hotspot"/>
   <variant name=".WifiLan" summary="Wi-Fi LAN"/>
 </variants>
 
@@ -1756,16 +1748,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Nearby.Share.TransferDuration.Receiver.BandwidthUpgradeToAllFilesReceived{Medium}"
+    name="Nearby.Share.TransferDuration.Receiver.BandwidthUpgradeToAllFilesReceived2{TransferMedium}"
     units="ms" expires_after="2024-09-15">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when the first bandwidth upgrade occurs to when all
-    files are successfully transferred for {Medium}.
+    files are successfully transferred for {TransferMedium}.
   </summary>
-  <token key="Medium" variants="Mediums"/>
+  <token key="TransferMedium" variants="TransferMediums"/>
 </histogram>
 
 <histogram
@@ -1781,22 +1773,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Nearby.Share.TransferDuration.Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade{Medium}"
+    name="Nearby.Share.TransferDuration.Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2{TransferMedium}"
     units="ms" expires_after="2024-09-15">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when a high-visibility receiver decodes an endpoint
-    to when the first bandwidth upgrade occurs for {Medium}. In high-visibility
-    mode, the receiver will attempt a bandwidth upgrade immediately upon
-    decoding the endpoint.
+    to when the first bandwidth upgrade occurs for {TransferMedium}. In
+    high-visibility mode, the receiver will attempt a bandwidth upgrade
+    immediately upon decoding the endpoint.
   </summary>
-  <token key="Medium" variants="Mediums"/>
+  <token key="TransferMedium" variants="TransferMediums"/>
 </histogram>
 
 <histogram
-    name="Nearby.Share.TransferDuration.Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade{Medium}"
+    name="Nearby.Share.TransferDuration.Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2{TransferMedium}"
     units="ms" expires_after="2024-09-15">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
@@ -1804,11 +1796,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time between when a non-high-visibility receiver completes the
     paired key handshake to when the first bandwidth upgrade occurs for
-    {Medium}. In non-high-visibility mode, the receiver will attempt a bandwidth
-    upgrade after a successful paired key handshake. This metric captures how
-    long it takes to successfully complete that bandwidth upgrade.
+    {TransferMedium}. In non-high-visibility mode, the receiver will attempt a
+    bandwidth upgrade after a successful paired key handshake. This metric
+    captures how long it takes to successfully complete that bandwidth upgrade.
   </summary>
-  <token key="Medium" variants="Mediums"/>
+  <token key="TransferMedium" variants="TransferMediums"/>
 </histogram>
 
 <histogram
@@ -1825,29 +1817,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent{Medium}"
+    name="Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent2{TransferMedium}"
     units="ms" expires_after="2024-09-15">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when the first bandwidth upgrade occurs to when all
-    files are successfully transferred for {Medium}.
+    files are successfully transferred for {TransferMedium}.
   </summary>
-  <token key="Medium" variants="Mediums"/>
+  <token key="TransferMedium" variants="TransferMediums"/>
 </histogram>
 
 <histogram
-    name="Nearby.Share.TransferDuration.Sender.ConnectionEstablishedToBandwidthUpgrade{Medium}"
+    name="Nearby.Share.TransferDuration.Sender.ConnectionEstablishedToBandwidthUpgrade2{TransferMedium}"
     units="ms" expires_after="2024-09-15">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when the sender establishes a connection to when
-    the first bandwidth upgrade occurs for {Medium}.
+    the first bandwidth upgrade occurs for {TransferMedium}.
   </summary>
-  <token key="Medium" variants="Mediums"/>
+  <token key="TransferMedium" variants="TransferMediums"/>
 </histogram>
 
 <histogram

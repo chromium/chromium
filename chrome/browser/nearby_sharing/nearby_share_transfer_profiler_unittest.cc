@@ -113,12 +113,12 @@ TEST_F(NearbyShareTransferProfilerTest, Sender_FlowCompleteWithUpgrade) {
   subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
-  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade", 100);
-  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade.WifiLan",
+  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade2", 100);
+  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade2.WifiLan",
                    100);
   ExpectTimeMetric("Sender.InitiatedToSentIntroductionFrame", 300);
-  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent", 300);
-  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent.WifiLan", 300);
+  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent2", 300);
+  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent2.WifiLan", 300);
   ExpectTimeMetric("Sender.StartSendFilesToAllFilesSent", 100);
   ExpectTimeMetric("Sender.InitiatedToAllFilesSent", 500);
 }
@@ -183,12 +183,12 @@ TEST_F(NearbyShareTransferProfilerTest, Sender_MultipleBandwidthUpgrades) {
   subject.OnSendComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Sender.DiscoveredToConnectionEstablished", 300);
-  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade", 100);
-  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade.WifiLan",
+  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade2", 100);
+  ExpectTimeMetric("Sender.ConnectionEstablishedToBandwidthUpgrade2.WifiLan",
                    100);
   ExpectTimeMetric("Sender.InitiatedToSentIntroductionFrame", 300);
-  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent", 400);
-  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent.WifiLan", 400);
+  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent2", 400);
+  ExpectTimeMetric("Sender.BandwidthUpgradeToAllFilesSent2.WifiLan", 400);
   ExpectTimeMetric("Sender.StartSendFilesToAllFilesSent", 200);
   ExpectTimeMetric("Sender.InitiatedToAllFilesSent", 600);
 }
@@ -229,14 +229,14 @@ TEST_F(NearbyShareTransferProfilerTest,
   subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
-  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",
+  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2",
                    100);
   ExpectTimeMetric(
-      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade.WifiLan", 100);
+      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2.WifiLan", 100);
   ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 100);
   ExpectTimeMetric("Receiver.ReceivedIntroductionFrameToAllFilesReceived", 200);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived", 400);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 400);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2", 400);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2.WifiLan", 400);
 }
 
 TEST_F(NearbyShareTransferProfilerTest, Receiver_MultipleBandwidthUpgrades) {
@@ -256,14 +256,14 @@ TEST_F(NearbyShareTransferProfilerTest, Receiver_MultipleBandwidthUpgrades) {
   subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
-  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",
+  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2",
                    200);
   ExpectTimeMetric(
-      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade.WifiLan", 200);
+      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2.WifiLan", 200);
   ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 100);
   ExpectTimeMetric("Receiver.ReceivedIntroductionFrameToAllFilesReceived", 200);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived", 300);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 300);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2", 300);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2.WifiLan", 300);
 }
 
 TEST_F(NearbyShareTransferProfilerTest,
@@ -285,14 +285,14 @@ TEST_F(NearbyShareTransferProfilerTest,
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 200);
   ExpectTimeMetric(
-      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade", 300);
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2", 300);
   ExpectTimeMetric(
-      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade.WifiLan",
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2.WifiLan",
       300);
   ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 200);
   ExpectTimeMetric("Receiver.ReceivedIntroductionFrameToAllFilesReceived", 300);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived", 100);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 100);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2", 100);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2.WifiLan", 100);
 }
 
 // Regression test for b/301132314
@@ -320,12 +320,12 @@ TEST_F(NearbyShareTransferProfilerTest,
   // Bandwidth upgrade metrics should not be emitted if the bandwidth upgrade
   // completes after the transfer has ended.
   ExpectTotalCount(
-      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade", 0);
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2", 0);
   ExpectTotalCount(
-      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade.WifiLan",
+      "Receiver.NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2.WifiLan",
       0);
-  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived", 0);
-  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 0);
+  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived2", 0);
+  ExpectTotalCount("Receiver.BandwidthUpgradeToAllFilesReceived2.WifiLan", 0);
 }
 
 TEST_F(NearbyShareTransferProfilerTest,
@@ -349,12 +349,12 @@ TEST_F(NearbyShareTransferProfilerTest,
   subject.OnReceiveComplete(kEndpointId, TransferMetadata::Status::kComplete);
 
   ExpectTimeMetric("Receiver.EndpointDecodedToReceivedIntroductionFrame", 300);
-  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade",
+  ExpectTimeMetric("Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2",
                    200);
   ExpectTimeMetric(
-      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade.WifiLan", 200);
+      "Receiver.HighVisibilityEndpointDecodedToBandwidthUpgrade2.WifiLan", 200);
   ExpectTimeMetric("Receiver.AcceptedTransferToAllFilesReceived", 200);
   ExpectTimeMetric("Receiver.ReceivedIntroductionFrameToAllFilesReceived", 300);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived", 400);
-  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived.WifiLan", 400);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2", 400);
+  ExpectTimeMetric("Receiver.BandwidthUpgradeToAllFilesReceived2.WifiLan", 400);
 }

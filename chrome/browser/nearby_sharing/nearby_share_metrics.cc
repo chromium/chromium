@@ -428,6 +428,31 @@ bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
       file_manager::util::GetShareCacheFilePath(profile).value());
 }
 
+// Returns true if |medium| is one that the transfer is completed
+// over. This is in contrast to a discovery medium, such as BLE,
+// which performs discovery but not transfer. This should reflect
+// the TransferMedium variants described in
+// tools/metrics/histograms/metadata/nearby/histograms.xml on as-needed basis so
+// we don't create blank metrics.
+bool IsTransferMedium(nearby::connections::mojom::Medium medium) {
+  switch (medium) {
+    case nearby::connections::mojom::Medium::kBluetooth:
+    case nearby::connections::mojom::Medium::kWebRtc:
+    case nearby::connections::mojom::Medium::kWifiLan:
+    case nearby::connections::mojom::Medium::kWifiDirect:
+      return true;
+    case nearby::connections::mojom::Medium::kUnknown:
+    case nearby::connections::mojom::Medium::kMdns:
+    case nearby::connections::mojom::Medium::kWifiHotspot:
+    case nearby::connections::mojom::Medium::kBle:
+    case nearby::connections::mojom::Medium::kWifiAware:
+    case nearby::connections::mojom::Medium::kNfc:
+    case nearby::connections::mojom::Medium::kBleL2Cap:
+    case nearby::connections::mojom::Medium::kUsb:
+      return false;
+  }
+}
+
 }  // namespace
 
 std::string GetMediumName(nearby::connections::mojom::Medium medium) {
@@ -836,13 +861,14 @@ void RecordNearbyShareEndpointDecodedToReceivedIntroductionFrameDuration(
 void RecordNearbyShareConnectionEstablishedToBandwidthUpgradeDuration(
     nearby::connections::mojom::Medium medium,
     base::TimeDelta delta) {
+  CHECK(IsTransferMedium(medium));
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Sender."
-      "ConnectionEstablishedToBandwidthUpgrade",
+      "ConnectionEstablishedToBandwidthUpgrade2",
       delta);
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Sender."
-      "ConnectionEstablishedToBandwidthUpgrade." +
+      "ConnectionEstablishedToBandwidthUpgrade2." +
           GetMediumName(medium),
       delta);
 }
@@ -850,13 +876,14 @@ void RecordNearbyShareConnectionEstablishedToBandwidthUpgradeDuration(
 void RecordNearbyShareHighVisibilityEndpointDecodedToBandwidthUpgradeDuration(
     nearby::connections::mojom::Medium medium,
     base::TimeDelta delta) {
+  CHECK(IsTransferMedium(medium));
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "HighVisibilityEndpointDecodedToBandwidthUpgrade",
+      "HighVisibilityEndpointDecodedToBandwidthUpgrade2",
       delta);
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "HighVisibilityEndpointDecodedToBandwidthUpgrade." +
+      "HighVisibilityEndpointDecodedToBandwidthUpgrade2." +
           GetMediumName(medium),
       delta);
 }
@@ -864,13 +891,14 @@ void RecordNearbyShareHighVisibilityEndpointDecodedToBandwidthUpgradeDuration(
 void RecordNearbyShareNonHighVisibilityPairedKeyCompleteToBandwidthUpgradeDuration(
     nearby::connections::mojom::Medium medium,
     base::TimeDelta delta) {
+  CHECK(IsTransferMedium(medium));
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade",
+      "NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2",
       delta);
   base::UmaHistogramMediumTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade." +
+      "NonHighVisibilityPairedKeyCompleteToBandwidthUpgrade2." +
           GetMediumName(medium),
       delta);
 }
@@ -878,13 +906,14 @@ void RecordNearbyShareNonHighVisibilityPairedKeyCompleteToBandwidthUpgradeDurati
 void RecordNearbyShareBandwidthUpgradeToAllFilesReceivedDuration(
     nearby::connections::mojom::Medium medium,
     base::TimeDelta delta) {
+  CHECK(IsTransferMedium(medium));
   base::UmaHistogramLongTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "BandwidthUpgradeToAllFilesReceived",
+      "BandwidthUpgradeToAllFilesReceived2",
       delta);
   base::UmaHistogramLongTimes(
       "Nearby.Share.TransferDuration.Receiver."
-      "BandwidthUpgradeToAllFilesReceived." +
+      "BandwidthUpgradeToAllFilesReceived2." +
           GetMediumName(medium),
       delta);
 }
@@ -908,11 +937,13 @@ void RecordNearbyShareReceivedIntroductionFrameToAllFilesReceivedDuration(
 void RecordNearbyShareBandwidthUpgradeToAllFilesSentDuration(
     nearby::connections::mojom::Medium medium,
     base::TimeDelta delta) {
+  CHECK(IsTransferMedium(medium));
   base::UmaHistogramLongTimes(
-      "Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent",
+      "Nearby.Share.TransferDuration.Sender."
+      "BandwidthUpgradeToAllFilesSent2",
       delta);
   base::UmaHistogramLongTimes(
-      "Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent." +
+      "Nearby.Share.TransferDuration.Sender.BandwidthUpgradeToAllFilesSent2." +
           GetMediumName(medium),
       delta);
 }
