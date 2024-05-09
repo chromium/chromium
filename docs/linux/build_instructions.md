@@ -67,6 +67,12 @@ dependencies.
 $ fetch --nohooks chromium
 ```
 
+*** note
+**NixOS users:** tools like `fetch` won’t work without a Nix shell. Clone [the
+tools repo](https://chromium.googlesource.com/chromium/src/tools) with `git`,
+then run `nix-shell tools/nix/shell.nix`.
+***
+
 If you don't want the full repo history, you can save a lot of time by
 adding the `--no-history` flag to `fetch`.
 
@@ -549,6 +555,27 @@ For the optional packages:
 ### Gentoo
 
 You can just run `emerge www-client/chromium`.
+
+### NixOS
+
+To get a shell with the dev environment:
+
+```sh
+$ nix-shell tools/nix/shell.nix
+```
+
+To run a command in the dev environment:
+
+```sh
+$ NIX_SHELL_RUN='autoninja -C out/Default chrome' nix-shell tools/nix/shell.nix
+```
+
+To set up clangd with remote indexing support, run the command below, then copy
+the path into your editor config:
+
+```sh
+$ NIX_SHELL_RUN='readlink /usr/bin/clangd' nix-shell tools/nix/shell.nix
+```
 
 ### OpenSUSE
 
