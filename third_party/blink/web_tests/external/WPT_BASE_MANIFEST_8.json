@@ -296641,6 +296641,10 @@
        "a40fc100eee697ed7dcd451626409af18606442e",
        []
       ],
+      "manifest_check_disclosure_shown_false.json": [
+       "47ca63edc4fc96f4d563beba7e872ae5d47461c1",
+       []
+      ],
       "manifest_check_same_site_strict.json": [
        "d7304159834804c417f498acebc45f59e588dcbb",
        []
@@ -296735,6 +296739,10 @@
       ],
       "token.py": [
        "7ec81c390a9ea116e0a1809e08159a1d1c40e5a1",
+       []
+      ],
+      "token_check_disclosure_shown_false.py": [
+       "f4b732053ff0f2d5545c3602d701d92702e111af",
        []
       ],
       "token_check_same_site_strict.py": [
@@ -440191,6 +440199,15 @@
        }
       ]
      ],
+     "fedcm-disclosure-text-shown.https.html": [
+      "e3f303ec4c9ff5b34960373bc90f4fb258b268c6",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "fedcm-userinfo-after-resolve.https.html": [
       "0521f4a2ab5d82aeaca1f603b297e1199b886af8",
       [
@@ -583588,6 +583605,15 @@
         null,
         {}
        ]
+      ],
+      "no-focus.tentative.html": [
+       "6e81a20962c26051aa0f1f6f9d458eb7d24fc88e",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
       ]
      },
      "popovers": {
@@ -613279,7 +613305,7 @@
       ]
      ],
      "pointer-event-has-device-properties-uniqueid-from-pointer-event-init.tentative.html": [
-      "a37df4b4214501d4f7e5e7803ecfd3672c91b591",
+      "33b2354ec63935cd9cfc0320de022df7b2be163c",
       [
        null,
        {}
@@ -615453,6 +615479,13 @@
     ],
     "shared-storage-surface-failure.https.html": [
      "9dc62b1bb714b0a4c119b913bbf8611282680450",
+     [
+      null,
+      {}
+     ]
+    ],
+    "shared-storage-surface-filtering-id.https.html": [
+     "53ed3a109bc1a025446072e1399f1859053c3d68",
      [
       null,
       {}
@@ -636150,7 +636183,7 @@
       ]
      ],
      "navigation-timing-sizes.https.html": [
-      "a960cd57f3c73a8cfaa37f2c1278ad8b7dbf32b8",
+      "e726a31f17060f7c37ad07d15c1de4ab88bf4c44",
       [
        null,
        {}
@@ -653258,7 +653291,7 @@
      ]
     ],
     "Element-setAttribute-respects-Elements-node-documents-globals-CSP.html": [
-     "c0f72bb36ac09c19b779ca5da114080a46c96c7a",
+     "aafe3c70313cb420a1efede51891f949d7aa33b8",
      [
       null,
       {}
