@@ -13,7 +13,7 @@
 namespace ash {
 
 // Defines a textfield styled so when it's not focused, it looks like a normal
-// label. It can be focused and activated by the `OverviewFocusCycler`.
+// label. It can be focused and activated by the `OverviewFocusCyclerOld`.
 class ASH_EXPORT DeskTextfield : public SystemTextfield,
                                  public OverviewFocusableView {
   METADATA_HEADER(DeskTextfield, SystemTextfield)

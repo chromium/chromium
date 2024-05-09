@@ -12,7 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
@@ -158,8 +158,10 @@ void SavedDeskGridView::AddOrUpdateEntries(
 
 void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                       bool delete_animation) {
-  OverviewFocusCycler* focus_cycler =
-      Shell::Get()->overview_controller()->overview_session()->focus_cycler();
+  OverviewFocusCyclerOld* focus_cycler = Shell::Get()
+                                             ->overview_controller()
+                                             ->overview_session()
+                                             ->focus_cycler_old();
   CHECK(focus_cycler);
 
   for (const base::Uuid& uuid : uuids) {

@@ -25,7 +25,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -447,8 +447,10 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
   icon_container_view_->layer()->SetOpacity(1.0f);
 
   // Move the overview focus ring to `name_view_`.
-  auto* focus_cycler =
-      Shell::Get()->overview_controller()->overview_session()->focus_cycler();
+  auto* focus_cycler = Shell::Get()
+                           ->overview_controller()
+                           ->overview_session()
+                           ->focus_cycler_old();
   if (focus_cycler->IsFocusVisible()) {
     focus_cycler->MoveFocusToView(name_view_);
 

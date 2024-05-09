@@ -160,7 +160,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   static void SetImmediateCloseForTests(bool immediate);
 
  private:
-  friend class OverviewFocusCyclerTest;
+  friend class OverviewFocusCyclerOldTest;
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;

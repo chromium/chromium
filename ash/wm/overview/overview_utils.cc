@@ -19,7 +19,7 @@
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
@@ -362,10 +362,10 @@ void MoveFocusToView(OverviewFocusableView* target_view) {
     return;
   }
 
-  auto* focus_cycler = overview_session->focus_cycler();
-  CHECK(focus_cycler);
+  auto* focus_cycler_old = overview_session->focus_cycler_old();
+  CHECK(focus_cycler_old);
 
-  focus_cycler->MoveFocusToView(target_view);
+  focus_cycler_old->MoveFocusToView(target_view);
 }
 
 void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,

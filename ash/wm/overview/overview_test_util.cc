@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "ash/utility/forest_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
@@ -62,7 +62,7 @@ bool FocusOverviewWindow(const aura::Window* window) {
 
 const aura::Window* GetOverviewFocusedWindow() {
   OverviewItemBase* item =
-      GetOverviewSession()->focus_cycler()->GetFocusedItem();
+      GetOverviewSession()->focus_cycler_old()->GetFocusedItem();
   return item ? item->GetWindow() : nullptr;
 }
 

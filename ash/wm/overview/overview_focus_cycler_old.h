@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_H_
-#define ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_H_
+#ifndef ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_OLD_H_
+#define ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_OLD_H_
 
 #include <memory>
 #include <optional>
@@ -42,12 +42,12 @@ class ScopedA11yOverrideWindowSetter;
 //    0, 1, 2, 3, 4, 5, 6
 // The focus ring is switched to the next window grid (if available) or wrapped
 // if it reaches the end of its movement sequence.
-class ASH_EXPORT OverviewFocusCycler {
+class ASH_EXPORT OverviewFocusCyclerOld {
  public:
-  explicit OverviewFocusCycler(OverviewSession* overview_session);
-  OverviewFocusCycler(const OverviewFocusCycler&) = delete;
-  OverviewFocusCycler& operator=(const OverviewFocusCycler&) = delete;
-  ~OverviewFocusCycler();
+  explicit OverviewFocusCyclerOld(OverviewSession* overview_session);
+  OverviewFocusCyclerOld(const OverviewFocusCyclerOld&) = delete;
+  OverviewFocusCyclerOld& operator=(const OverviewFocusCyclerOld&) = delete;
+  ~OverviewFocusCyclerOld();
 
   OverviewFocusableView* focused_view() { return focused_view_; }
 
@@ -133,4 +133,4 @@ class ASH_EXPORT OverviewFocusCycler {
 
 }  // namespace ash
 
-#endif  // ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_H_
+#endif  // ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_OLD_H_

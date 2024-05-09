@@ -56,7 +56,7 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/overview/overview_item.h"
@@ -988,7 +988,7 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   // still needs to be in `item_list_` to compute the corresponding index.
   if (overview_session_) {
     for (auto* focusable_view : overview_item->GetFocusableViews()) {
-      overview_session_->focus_cycler()->OnViewDestroyingOrDisabling(
+      overview_session_->focus_cycler_old()->OnViewDestroyingOrDisabling(
           focusable_view);
     }
   }
@@ -3327,9 +3327,10 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
   if (!window_util::IsInFasterSplitScreenSetupSession(root_window_)) {
     // If we weren't started by faster splitview, don't show the widget.
     if (auto* faster_split_view = GetFasterSplitView()) {
-      auto* focus_cycler = overview_session_->focus_cycler();
-      focus_cycler->OnViewDestroyingOrDisabling(faster_split_view->GetToast());
-      focus_cycler->OnViewDestroyingOrDisabling(
+      auto* focus_cycler_old = overview_session_->focus_cycler_old();
+      focus_cycler_old->OnViewDestroyingOrDisabling(
+          faster_split_view->GetToast());
+      focus_cycler_old->OnViewDestroyingOrDisabling(
           faster_split_view->settings_button());
     }
     faster_splitview_widget_.reset();

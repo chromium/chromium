@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
@@ -38,16 +38,16 @@
 
 namespace ash {
 
-class OverviewFocusCyclerTest : public OverviewTestBase,
+class OverviewFocusCyclerOldTest : public OverviewTestBase,
                                 public testing::WithParamInterface<bool> {
  public:
-  OverviewFocusCyclerTest() = default;
-  OverviewFocusCyclerTest(const OverviewFocusCyclerTest&) = delete;
-  OverviewFocusCyclerTest& operator=(const OverviewFocusCyclerTest&) = delete;
-  ~OverviewFocusCyclerTest() override = default;
+  OverviewFocusCyclerOldTest() = default;
+  OverviewFocusCyclerOldTest(const OverviewFocusCyclerOldTest&) = delete;
+  OverviewFocusCyclerOldTest& operator=(const OverviewFocusCyclerOldTest&) = delete;
+  ~OverviewFocusCyclerOldTest() override = default;
 
-  OverviewFocusCycler* GetFocusCycler() {
-    return GetOverviewSession()->focus_cycler();
+  OverviewFocusCyclerOld* GetFocusCycler() {
+    return GetOverviewSession()->focus_cycler_old();
   }
 
   // Helper to make tests more readable.
@@ -68,7 +68,7 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
 };
 
 // Tests traversing some windows in overview mode with the tab key.
-TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
+TEST_P(OverviewFocusCyclerOldTest, BasicTabKeyNavigation) {
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
 
@@ -88,7 +88,7 @@ TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
 }
 
 // Same as above but for tablet mode. Regression test for crbug.com/1036140.
-TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
+TEST_P(OverviewFocusCyclerOldTest, BasicTabKeyNavigationTablet) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window3(CreateTestWindow());
@@ -108,7 +108,7 @@ TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
 }
 
 // Tests that pressing Ctrl+W while a window is selected in overview closes it.
-TEST_P(OverviewFocusCyclerTest, CloseWindowWithKey) {
+TEST_P(OverviewFocusCyclerOldTest, CloseWindowWithKey) {
   std::unique_ptr<views::Widget> widget(CreateTestWidget());
   ToggleOverview();
 
@@ -120,7 +120,7 @@ TEST_P(OverviewFocusCyclerTest, CloseWindowWithKey) {
 
 // Tests traversing some windows in overview mode with the arrow keys in every
 // possible direction.
-TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
+TEST_P(OverviewFocusCyclerOldTest, BasicArrowKeyNavigation) {
   const size_t test_windows = 9;
   UpdateDisplay("800x600");
   std::vector<std::unique_ptr<aura::Window>> windows;
@@ -164,7 +164,7 @@ TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
 
 // Tests that when an item is removed while focused, the focus ring disappears,
 // and when we tab again we pick up where we left off.
-TEST_P(OverviewFocusCyclerTest, ItemClosed) {
+TEST_P(OverviewFocusCyclerOldTest, ItemClosed) {
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
   auto widget3 = CreateTestWidget();
@@ -188,7 +188,7 @@ TEST_P(OverviewFocusCyclerTest, ItemClosed) {
 }
 
 // Tests basic selection across multiple monitors.
-TEST_P(OverviewFocusCyclerTest, BasicMultiMonitorArrowKeyNavigation) {
+TEST_P(OverviewFocusCyclerOldTest, BasicMultiMonitorArrowKeyNavigation) {
   UpdateDisplay("500x400,500x400");
   const gfx::Rect bounds1(100, 100);
   const gfx::Rect bounds2(550, 0, 100, 100);
@@ -215,7 +215,7 @@ TEST_P(OverviewFocusCyclerTest, BasicMultiMonitorArrowKeyNavigation) {
 
 // Tests first monitor when display order doesn't match left to right screen
 // positions.
-TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
+TEST_P(OverviewFocusCyclerOldTest, MultiMonitorReversedOrder) {
   UpdateDisplay("500x400,500x400");
   Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
@@ -245,7 +245,7 @@ TEST_P(OverviewFocusCyclerTest, MultiMonitorReversedOrder) {
 }
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
-TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
+TEST_P(OverviewFocusCyclerOldTest, ThreeMonitors) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3(
@@ -283,7 +283,7 @@ TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
 }
 
 // Tests selecting a window in overview mode with the return key.
-TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
+TEST_P(OverviewFocusCyclerOldTest, FocusOverviewWindowWithReturnKey) {
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   ToggleOverview();
@@ -310,7 +310,7 @@ TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
 
 // Tests that the location of the overview focus ring is as expected while
 // dragging an overview item.
-TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
+TEST_P(OverviewFocusCyclerOldTest, FocusLocationWhileDragging) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window3(CreateTestWindow(gfx::Rect(200, 200)));
@@ -347,21 +347,21 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
 }
 
 // ----------------------------------------------------------------------------
-// DesksOverviewFocusCyclerTest:
+// DesksOverviewFocusCyclerOldTest:
 
-class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
+class DesksOverviewFocusCyclerOldTest : public OverviewFocusCyclerOldTest {
  public:
-  DesksOverviewFocusCyclerTest() = default;
+  DesksOverviewFocusCyclerOldTest() = default;
 
-  DesksOverviewFocusCyclerTest(const DesksOverviewFocusCyclerTest&) = delete;
-  DesksOverviewFocusCyclerTest& operator=(const DesksOverviewFocusCyclerTest&) =
+  DesksOverviewFocusCyclerOldTest(const DesksOverviewFocusCyclerOldTest&) = delete;
+  DesksOverviewFocusCyclerOldTest& operator=(const DesksOverviewFocusCyclerOldTest&) =
       delete;
 
-  ~DesksOverviewFocusCyclerTest() override = default;
+  ~DesksOverviewFocusCyclerOldTest() override = default;
 
-  // OverviewFocusCyclerTest:
+  // OverviewFocusCyclerOldTest:
   void SetUp() override {
-    OverviewFocusCyclerTest::SetUp();
+    OverviewFocusCyclerOldTest::SetUp();
 
     // All tests in this suite require the desks bar to be visible in overview,
     // which requires at least two desks.
@@ -399,7 +399,7 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
 // Tests that we can tab through the desk mini views, new desk button and
 // overview items in the correct order. Overview items will have the overview
 // focus ring shown when focused, but desks items will not.
-TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
+TEST_P(DesksOverviewFocusCyclerOldTest, TabbingBasic) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
 
@@ -467,7 +467,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
 
 // Tests that we can reverse tab through the desk mini views, new desk button
 // and overview items in the correct order.
-TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
+TEST_P(DesksOverviewFocusCyclerOldTest, TabbingReverse) {
   std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
 
@@ -548,7 +548,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
 
 // Tests that we can tab and chromevox interchangeably through the desk mini
 // views and new desk button in the correct order.
-TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
+TEST_P(DesksOverviewFocusCyclerOldTest, TabbingChromevox) {
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   ToggleOverview();
   const auto* desk_bar_view =
@@ -585,7 +585,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingChromevox) {
 }
 
 // Tests that tabbing with desk items and multiple displays works as expected.
-TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
+TEST_P(DesksOverviewFocusCyclerOldTest, TabbingMultiDisplay) {
   UpdateDisplay("600x400,600x400,600x400");
   std::vector<raw_ptr<aura::Window, VectorExperimental>> roots =
       Shell::GetAllRootWindows();
@@ -726,7 +726,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingMultiDisplay) {
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnMiniView) {
+TEST_P(DesksOverviewFocusCyclerOldTest, ActivateHighlightOnMiniView) {
   // We are initially on desk 1.
   const auto* desks_controller = DesksController::Get();
   auto& desks = desks_controller->desks();
@@ -752,7 +752,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnMiniView) {
   EXPECT_EQ(desks_controller->active_desk(), desks[1].get());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
+TEST_P(DesksOverviewFocusCyclerOldTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());
   auto* desk1 = desks_controller->GetDeskAtIndex(0);
@@ -782,7 +782,7 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   EXPECT_FALSE(desk_bar_view->mini_views().empty());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
+TEST_P(DesksOverviewFocusCyclerOldTest, ActivateDeskNameView) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -831,7 +831,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
+TEST_P(DesksOverviewFocusCyclerOldTest, RemoveDeskWhileNameIsHighlighted) {
   ToggleOverview();
   const auto* desk_bar_view =
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
@@ -858,7 +858,7 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
 
 // Tests the overview focus cycler behavior when a user uses the new desk
 // button.
-TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
+TEST_P(DesksOverviewFocusCyclerOldTest, ActivateCloseHighlightOnNewDeskButton) {
   // Make sure the display is large enough to hold the max number of desks.
   UpdateDisplay("1200x800");
   ToggleOverview();
@@ -903,7 +903,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
             desks_controller->desks().size());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
+TEST_P(DesksOverviewFocusCyclerOldTest, ZeroStateOfDesksBar) {
   ToggleOverview();
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desks_bar_view->IsZeroState());
@@ -948,7 +948,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ZeroStateOfDesksBar) {
             GetHighlightedView());
 }
 
-TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnViewFocused) {
+TEST_P(DesksOverviewFocusCyclerOldTest, ActivateHighlightOnViewFocused) {
   // Set up an overview with 2 mini desk items.
   ToggleOverview();
   const auto* desk_bar_view =
@@ -977,7 +977,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnViewFocused) {
 
 // Tests that there is no crash when tabbing after we switch to the zero state
 // desks bar. Regression test for https://crbug.com/1301134.
-TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
+TEST_P(DesksOverviewFocusCyclerOldTest, SwitchingToZeroStateWhileTabbing) {
   ToggleOverview();
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desks_bar_view->IsZeroState());
@@ -1003,7 +1003,7 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
   SendKey(ui::VKEY_TAB);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, OverviewFocusCyclerTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, DesksOverviewFocusCyclerTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, OverviewFocusCyclerOldTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, DesksOverviewFocusCyclerOldTest, testing::Bool());
 
 }  // namespace ash

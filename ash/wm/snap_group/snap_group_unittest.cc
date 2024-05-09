@@ -39,7 +39,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_group_item.h"
@@ -1507,20 +1507,21 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
       GetOverviewItemsForRoot(0);
   EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
 
-  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+  OverviewFocusCyclerOld* focus_cycler_old =
+      GetOverviewSession()->focus_cycler_old();
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
 
   // Tab to the toast dismiss button.
   PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(IsInOverviewSession());
   EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
-            focus_cycler->focused_view()->GetView());
+            focus_cycler_old->focused_view()->GetView());
 
   // Tab to the settings button.
   PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_TRUE(IsInOverviewSession());
   EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
-            focus_cycler->focused_view());
+            focus_cycler_old->focused_view());
 
   // Note we use `PressKeyAndModifierKeys()` to send modifier and key separately
   // to simulate real user input.
@@ -1530,7 +1531,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(IsInOverviewSession());
   EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
-            focus_cycler->focused_view()->GetView());
+            focus_cycler_old->focused_view()->GetView());
 
   // Shift + Tab reverse tabs to the overview item.
   event_generator->PressKeyAndModifierKeys(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -1556,9 +1557,10 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
   // Tab to the dismiss button.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
-  OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+  OverviewFocusCyclerOld* focus_cycler_old =
+      GetOverviewSession()->focus_cycler_old();
   EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
-            focus_cycler->focused_view()->GetView());
+            focus_cycler_old->focused_view()->GetView());
 
   // Enter tablet mode to destroy the toast.
   SwitchToTabletMode();
@@ -1600,15 +1602,16 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
     event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
                                              ui::EF_COMMAND_DOWN);
     OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-    OverviewFocusCycler* focus_cycler = GetOverviewSession()->focus_cycler();
+    OverviewFocusCyclerOld* focus_cycler_old =
+        GetOverviewSession()->focus_cycler_old();
     EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
-              focus_cycler->focused_view()->GetView());
+              focus_cycler_old->focused_view()->GetView());
 
     // Search + Right moves to the settings button.
     event_generator->PressKeyAndModifierKeys(ui::VKEY_RIGHT,
                                              ui::EF_COMMAND_DOWN);
     EXPECT_EQ(grid->GetFasterSplitView()->settings_button(),
-              focus_cycler->focused_view());
+              focus_cycler_old->focused_view());
 
     if (test_case == TestCase::kSettingsButton) {
       // Search + Space activates the settings button.
@@ -1620,7 +1623,7 @@ TEST_F(FasterSplitScreenTest, TabbingChromevox) {
       event_generator->PressKeyAndModifierKeys(ui::VKEY_LEFT,
                                                ui::EF_COMMAND_DOWN);
       EXPECT_EQ(grid->GetFasterSplitView()->GetDismissButton(),
-                focus_cycler->focused_view()->GetView());
+                focus_cycler_old->focused_view()->GetView());
 
       // Search + Space activates the dismiss button.
       event_generator->PressKeyAndModifierKeys(ui::VKEY_SPACE,
@@ -3754,7 +3757,7 @@ TEST_F(SnapGroupOverviewTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
   ASSERT_TRUE(GetOverviewItemForWindow(w0.get()));
 
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
-  EXPECT_TRUE(overview_session->focus_cycler()->GetFocusedItem());
+  EXPECT_TRUE(overview_session->focus_cycler_old()->GetFocusedItem());
 
   // Since the window will be deleted in overview, release the ownership to
   // avoid double deletion.

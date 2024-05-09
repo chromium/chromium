@@ -51,7 +51,7 @@ namespace ash {
 class BirchBarController;
 class OverviewDelegate;
 class OverviewGrid;
-class OverviewFocusCycler;
+class OverviewFocusCyclerOld;
 class OverviewItem;
 class OverviewItemBase;
 class OverviewWindowDragController;
@@ -396,7 +396,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return hide_windows_for_saved_desks_grid_.get();
   }
 
-  OverviewFocusCycler* focus_cycler() { return focus_cycler_.get(); }
+  OverviewFocusCyclerOld* focus_cycler_old() { return focus_cycler_old_.get(); }
 
   SavedDeskPresenter* saved_desk_presenter() {
     return saved_desk_presenter_.get();
@@ -519,7 +519,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // windows are not shown via other events for saved desks grid.
   std::unique_ptr<ScopedOverviewHideWindows> hide_windows_for_saved_desks_grid_;
 
-  std::unique_ptr<OverviewFocusCycler> focus_cycler_;
+  std::unique_ptr<OverviewFocusCyclerOld> focus_cycler_old_;
 
   // The object responsible to talking to the desk model.
   std::unique_ptr<SavedDeskPresenter> saved_desk_presenter_;

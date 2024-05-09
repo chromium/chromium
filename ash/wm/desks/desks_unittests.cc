@@ -79,7 +79,7 @@
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
@@ -7392,7 +7392,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
   // Focus the second desk.
-  overview_controller->overview_session()->focus_cycler()->MoveFocusToView(
+  overview_controller->overview_session()->focus_cycler_old()->MoveFocusToView(
       mini_view_1->desk_preview());
 
   // Swap the positions of the second desk and the third desk by pressing Ctrl +
@@ -7513,7 +7513,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   event_generator->ReleaseTouch();
 
   // Swap the positions of `desk_0` and `desk_2` by keyboard. Focus `desk_0`.
-  overview_controller->overview_session()->focus_cycler()->MoveFocusToView(
+  overview_controller->overview_session()->focus_cycler_old()->MoveFocusToView(
       mini_view_0->desk_preview());
 
   // Swap the positions of the |desk_0| and the |desk_2| by pressing Ctrl + ->.
@@ -8639,7 +8639,7 @@ TEST_P(DesksCloseAllTest, ShortcutCloseAll) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   ASSERT_EQ(mini_view->desk_preview(),
-            overview_session->focus_cycler()->focused_view());
+            overview_session->focus_cycler_old()->focused_view());
 
   // Tests that after hitting Ctrl + Shift + W, the desk is destroyed along with
   // all it's app windows.
@@ -10887,7 +10887,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
         ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
                                                      ->overview_controller()
                                                      ->overview_session()
-                                                     ->focus_cycler()
+                                                     ->focus_cycler_old()
                                                      ->focused_view());
       }
 
@@ -10904,7 +10904,7 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
         ASSERT_EQ(mini_views[0]->desk_preview(), Shell::Get()
                                                      ->overview_controller()
                                                      ->overview_session()
-                                                     ->focus_cycler()
+                                                     ->focus_cycler_old()
                                                      ->focused_view());
       }
 

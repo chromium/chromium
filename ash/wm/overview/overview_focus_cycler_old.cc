@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
@@ -81,14 +81,14 @@ void AddDesksBarTraversableViews(
 
 }  // namespace
 
-OverviewFocusCycler::OverviewFocusCycler(OverviewSession* overview_session)
+OverviewFocusCyclerOld::OverviewFocusCyclerOld(OverviewSession* overview_session)
     : overview_session_(overview_session),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {}
 
-OverviewFocusCycler::~OverviewFocusCycler() = default;
+OverviewFocusCyclerOld::~OverviewFocusCyclerOld() = default;
 
-void OverviewFocusCycler::MoveFocus(bool reverse) {
+void OverviewFocusCyclerOld::MoveFocus(bool reverse) {
   const std::vector<OverviewFocusableView*> traversable_views =
       GetTraversableViews();
   const int count = static_cast<int>(traversable_views.size());
@@ -134,13 +134,13 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   UpdateFocus(traversable_views[index]);
 }
 
-void OverviewFocusCycler::UpdateA11yFocusWindow(
+void OverviewFocusCyclerOld::UpdateA11yFocusWindow(
     OverviewFocusableView* name_view) {
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
       name_view->GetView()->GetWidget()->GetNativeWindow());
 }
 
-void OverviewFocusCycler::MoveFocusToView(OverviewFocusableView* target_view,
+void OverviewFocusCyclerOld::MoveFocusToView(OverviewFocusableView* target_view,
                                           bool suppress_accessibility_event) {
   const std::vector<OverviewFocusableView*> traversable_views =
       GetTraversableViews();
@@ -149,7 +149,7 @@ void OverviewFocusCycler::MoveFocusToView(OverviewFocusableView* target_view,
   UpdateFocus(target_view, suppress_accessibility_event);
 }
 
-void OverviewFocusCycler::OnViewDestroyingOrDisabling(
+void OverviewFocusCyclerOld::OnViewDestroyingOrDisabling(
     OverviewFocusableView* view) {
   DCHECK(view);
 
@@ -183,17 +183,17 @@ void OverviewFocusCycler::OnViewDestroyingOrDisabling(
   focused_view_ = nullptr;
 }
 
-void OverviewFocusCycler::SetFocusVisibility(bool visible) {
+void OverviewFocusCyclerOld::SetFocusVisibility(bool visible) {
   if (focused_view_) {
     focused_view_->SetFocused(visible);
   }
 }
 
-bool OverviewFocusCycler::IsFocusVisible() const {
+bool OverviewFocusCyclerOld::IsFocusVisible() const {
   return focused_view_ && focused_view_->is_focused();
 }
 
-bool OverviewFocusCycler::MaybeActivateFocusedView() {
+bool OverviewFocusCyclerOld::MaybeActivateFocusedView() {
   if (DesksController::Get()
           ->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast()) {
     return true;
@@ -207,7 +207,7 @@ bool OverviewFocusCycler::MaybeActivateFocusedView() {
   return true;
 }
 
-bool OverviewFocusCycler::MaybeCloseFocusedView(bool primary_action) {
+bool OverviewFocusCyclerOld::MaybeCloseFocusedView(bool primary_action) {
   if (!focused_view_) {
     return false;
   }
@@ -216,7 +216,7 @@ bool OverviewFocusCycler::MaybeCloseFocusedView(bool primary_action) {
   return true;
 }
 
-bool OverviewFocusCycler::MaybeSwapFocusedView(bool right) {
+bool OverviewFocusCyclerOld::MaybeSwapFocusedView(bool right) {
   if (!focused_view_) {
     return false;
   }
@@ -225,16 +225,16 @@ bool OverviewFocusCycler::MaybeSwapFocusedView(bool right) {
   return true;
 }
 
-bool OverviewFocusCycler::MaybeActivateFocusedViewOnOverviewExit() {
+bool OverviewFocusCyclerOld::MaybeActivateFocusedViewOnOverviewExit() {
   return focused_view_ && focused_view_->MaybeActivateFocusedViewOnOverviewExit(
                               overview_session_);
 }
 
-OverviewItemBase* OverviewFocusCycler::GetFocusedItem() const {
+OverviewItemBase* OverviewFocusCyclerOld::GetFocusedItem() const {
   return focused_view_ ? focused_view_->GetOverviewItem() : nullptr;
 }
 
-void OverviewFocusCycler::ResetFocusedView() {
+void OverviewFocusCyclerOld::ResetFocusedView() {
   if (!focused_view_) {
     return;
   }
@@ -244,7 +244,7 @@ void OverviewFocusCycler::ResetFocusedView() {
   focused_view_ = nullptr;
 }
 
-std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
+std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews()
     const {
   std::vector<OverviewFocusableView*> traversable_views;
   traversable_views.reserve(32);  // Conservative default.
@@ -297,7 +297,7 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
   return traversable_views;
 }
 
-void OverviewFocusCycler::UpdateFocus(OverviewFocusableView* view_to_be_focused,
+void OverviewFocusCyclerOld::UpdateFocus(OverviewFocusableView* view_to_be_focused,
                                       bool suppress_accessibility_event) {
   if (focused_view_ == view_to_be_focused) {
     return;

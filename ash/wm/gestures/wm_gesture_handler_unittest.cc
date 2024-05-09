@@ -20,7 +20,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_focus_cycler.h"
+#include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -452,7 +452,7 @@ TEST_F(WmGestureHandlerTest, ActivateFocusedDeskWithVerticalScroll) {
           ->desks_bar_view()
           ->mini_views()[1];
 
-  overview_session->focus_cycler()->MoveFocusToView(
+  overview_session->focus_cycler_old()->MoveFocusToView(
       mini_view_1->desk_preview());
   EXPECT_TRUE(mini_view_1->desk_preview()->is_focused());
 
