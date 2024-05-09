@@ -213,6 +213,23 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   return result;
 }
 
+bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
+                             SkBitmap ref_bitmap,
+                             const PixelComparator& comparator) {
+  RenderReadbackTargetAndAreaToResultBitmap(pass_list, pass_list->back().get(),
+                                            nullptr);
+
+  bool result = comparator.Compare(*result_bitmap_, ref_bitmap);
+  if (!result) {
+    std::string res_bmp_data_url = GetPNGDataUrl(*result_bitmap_);
+    std::string ref_bmp_data_url = GetPNGDataUrl(ref_bitmap);
+    LOG(ERROR) << "Pixels do not match!";
+    LOG(ERROR) << "Actual: " << res_bmp_data_url;
+    LOG(ERROR) << "Expected: " << ref_bmp_data_url;
+  }
+  return result;
+}
+
 void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());

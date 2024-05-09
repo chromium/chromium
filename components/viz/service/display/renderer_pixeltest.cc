@@ -2679,6 +2679,37 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRect) {
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
+TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithYV12) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  CompositorRenderPassId id{1};
+  auto pass = CreateTestRootRenderPass(id, rect);
+
+  // YUV of (84,114,224) should be crimson red (220,20,60) in RGB.
+  CreateTestMultiplanarVideoDrawQuad_Solid(
+      media::PIXEL_FORMAT_YV12, gfx::ColorSpace::CreateJpeg(), false,
+      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), 84, 114, 224, pass.get(),
+      this->video_resource_updater_.get(), rect, rect,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
+
+  AggregatedRenderPassId new_id{1};
+  auto copy_pass = cc::CopyToAggregatedRenderPass(
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(copy_pass));
+
+  SkBitmap ref_bitmap;
+  ref_bitmap.allocPixels(
+      SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
+  ref_bitmap.eraseColor(SkColor4f::FromColor(SkColorSetARGB(255, 220, 20, 60)));
+
+  EXPECT_TRUE(
+      this->RunPixelTest(&pass_list, ref_bitmap,
+                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+}
+
 TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
   gfx::Rect rect(this->device_viewport_size_);
 

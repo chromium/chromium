@@ -71,6 +71,10 @@ class PixelTest : public testing::Test {
                     std::vector<SkColor>* ref_pixels,
                     const PixelComparator& comparator);
 
+  bool RunPixelTest(viz::AggregatedRenderPassList* pass_list,
+                    SkBitmap ref_bitmap,
+                    const PixelComparator& comparator);
+
   bool RunPixelTestWithReadbackTarget(viz::AggregatedRenderPassList* pass_list,
                                       viz::AggregatedRenderPass* target,
                                       const base::FilePath& ref_file,
