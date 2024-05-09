@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 
+// #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "ios_promo_constants.h"
-#include "ios_promo_types.h"
+#include "chrome/browser/ui/views/promos/ios_promo_constants.h"
 
 namespace views {
 class PageActionIconView;
@@ -15,6 +15,8 @@ class View;
 }  // namespace views
 
 class Browser;
+
+enum class IOSPromoType;
 
 // A view for the iOS bubble promo which displays a QR code.
 class IOSPromoBubble {
