@@ -28,6 +28,22 @@ public class GoogleBottomBarViewCreator {
      * @return empty view. TODO: build view dynamically based on config
      */
     public View createGoogleBottomBarView() {
-        return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
+        if (mConfig.getSpotlightId() != null) {
+            return createGoogleBottomBarSpotlightLayoutView();
+        } else {
+            return createGoogleBottomBarEvenLayoutView();
+        }
+    }
+
+    private View createGoogleBottomBarEvenLayoutView() {
+        return
+            LayoutInflater.from(mContext)
+                .inflate(R.layout.google_bottom_bar_even, null);
+    }
+
+    private View createGoogleBottomBarSpotlightLayoutView() {
+        return
+            LayoutInflater.from(mContext)
+                .inflate(R.layout.google_bottom_bar_spotlight, null);
     }
 }
