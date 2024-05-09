@@ -436,8 +436,9 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
 // Tests that when an event is "late" in being acked (not acked within a certain
 // time) that we emit failure metrics for it.
+// TODO(crbug.com/338378835): test is flaky across platforms.
 IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
-                       ServiceWorkerLateEventAckMetricTest) {
+                       DISABLED_ServiceWorkerLateEventAckMetricTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   static constexpr char kManifest[] =
       R"({
