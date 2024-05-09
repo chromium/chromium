@@ -26,6 +26,15 @@
 -AutofillAgentTests.showAutofillPopup_ShowIconForCreditCardSuggestionsOnly
 -AutofillAgentTests.showAutofillPopup_ShowVirtualCards
 
+# TODO(crbug.com/339492594): The below tests have been failing since
+# https://crrev.com/c/5496051. It looks like it's missing a
+# content::BrowserTaskEnvironment member in your fixture.
+-AutofillAgentTests.DidSelectSuggestion_AutocompleteEntry
+-AutofillAgentTests.DidSelectSuggestion_ClearFormEntry
+-AutofillAgentTests.FillData_UnknowFieldIdInResults
+-AutofillAgentTests.FillData_UpdateWithResults
+-SharedPasswordControllerTest.DidFillField
+
 # TODO(crbug.com/332933545): Test currently fails on iOS Blink.
 -LanguageDetectionJavascriptTest.DetectLanguageWithNoTranslateMeta
 -LanguageDetectionJavascriptTest.DetectLanguageWithoutNoTranslateMeta
