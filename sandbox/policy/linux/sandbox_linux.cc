@@ -22,7 +22,6 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
@@ -59,6 +58,7 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/sandbox_buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(USING_SANITIZER)
 #include <sanitizer/common_interface_defs.h>
@@ -375,14 +375,11 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
 
   // We need to make absolutely sure that our sandbox is "sealed" before
   // returning.
-  // Unretained() since the current object is a Singleton.
-  base::ScopedClosureRunner sandbox_sealer(
-      base::BindOnce(&SandboxLinux::SealSandbox, base::Unretained(this)));
+  absl::Cleanup sandbox_sealer = [this] { SealSandbox(); };
   // Make sure that this function enables sandboxes as promised by GetStatus().
-  // Unretained() since the current object is a Singleton.
-  base::ScopedClosureRunner sandbox_promise_keeper(
-      base::BindOnce(&SandboxLinux::CheckForBrokenPromises,
-                     base::Unretained(this), sandbox_type));
+  absl::Cleanup sandbox_promise_keeper = [this, sandbox_type] {
+    CheckForBrokenPromises(sandbox_type);
+  };
 
   const bool has_threads = !IsSingleThreaded();
 
