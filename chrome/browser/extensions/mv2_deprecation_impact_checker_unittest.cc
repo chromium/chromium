@@ -31,28 +31,54 @@ enum class MV2PolicyLevel {
   kAllowedForAdminInstalledOnly,
 };
 
-// Describes the current level; used in describing parameterized tests.
-const char* DescribeMV2PolicyLevel(MV2PolicyLevel level) {
-  switch (level) {
+// A test variant that allows parameterization of both the experiment stage and
+// the policy level.
+using TestVariant = std::tuple<MV2ExperimentStage, MV2PolicyLevel>;
+
+// Describes the current test variants; used in describing parameterized tests.
+std::string DescribeTestVariant(const TestVariant& test_variant) {
+  const MV2ExperimentStage experiment_stage = std::get<0>(test_variant);
+  const MV2PolicyLevel policy_level = std::get<1>(test_variant);
+
+  std::string description;
+
+  switch (policy_level) {
     case MV2PolicyLevel::kUnset:
-      return "Unset";
+      description += "PolicyUnset";
+      break;
     case MV2PolicyLevel::kAllowed:
-      return "MV2Allowed";
+      description += "MV2AllowedByPolicy";
+      break;
     case MV2PolicyLevel::kDisallowed:
-      return "MV2Disallowed";
+      description += "MV2DisallowedByPolicy";
+      break;
     case MV2PolicyLevel::kAllowedForAdminInstalledOnly:
-      return "MV2ForAdminInstalledOnly";
+      description += "MV2ForAdminInstalledOnly";
+      break;
   }
+
+  description += "And";
+
+  switch (experiment_stage) {
+    case MV2ExperimentStage::kNone:
+      description += "ExperimentIsDisabled";
+      break;
+    case MV2ExperimentStage::kWarning:
+      description += "WarningExperiment";
+      break;
+  }
+
+  return description;
 }
 
 }  // namespace
 
-class MV2DeprecationImpactCheckerUnitTestBase
-    : public ExtensionServiceTestBase {
+class MV2DeprecationImpactCheckerUnitTest
+    : public ExtensionServiceTestBase,
+      public testing::WithParamInterface<TestVariant> {
  public:
-  MV2DeprecationImpactCheckerUnitTestBase(MV2ExperimentStage experiment_stage,
-                                          MV2PolicyLevel mv2_policy_level);
-  ~MV2DeprecationImpactCheckerUnitTestBase() override = default;
+  MV2DeprecationImpactCheckerUnitTest();
+  ~MV2DeprecationImpactCheckerUnitTest() override = default;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
@@ -128,9 +154,15 @@ class MV2DeprecationImpactCheckerUnitTestBase
                                        "allowed");
   }
 
+  // Returns true if the MV2 deprecation experiment is active in any stage.
+  bool ExperimentIsActive() const {
+    return experiment_stage_ != MV2ExperimentStage::kNone;
+  }
+
   MV2DeprecationImpactChecker* impact_checker() {
     return impact_checker_.get();
   }
+  MV2PolicyLevel policy_level() const { return mv2_policy_level_; }
 
  private:
   // Helper function to add a policy extension entry.
@@ -170,51 +202,22 @@ class MV2DeprecationImpactCheckerUnitTestBase
   std::unique_ptr<MV2DeprecationImpactChecker> impact_checker_;
 };
 
-MV2DeprecationImpactCheckerUnitTestBase::
-    MV2DeprecationImpactCheckerUnitTestBase(MV2ExperimentStage experiment_stage,
-                                            MV2PolicyLevel mv2_policy_level)
-    : experiment_stage_(experiment_stage),
-      mv2_policy_level_(mv2_policy_level) {}
-
-class MV2DeprecationImpactCheckerUnitTest
-    : public MV2DeprecationImpactCheckerUnitTestBase,
-      public testing::WithParamInterface<MV2PolicyLevel> {
- public:
-  MV2DeprecationImpactCheckerUnitTest()
-      : MV2DeprecationImpactCheckerUnitTestBase(MV2ExperimentStage::kWarning,
-                                                GetParam()) {}
-  ~MV2DeprecationImpactCheckerUnitTest() override = default;
-};
-
-class MV2DeprecationImpactCheckerDisabledUnitTest
-    : public MV2DeprecationImpactCheckerUnitTestBase,
-      public testing::WithParamInterface<MV2PolicyLevel> {
- public:
-  MV2DeprecationImpactCheckerDisabledUnitTest()
-      : MV2DeprecationImpactCheckerUnitTestBase(MV2ExperimentStage::kNone,
-                                                GetParam()) {}
-  ~MV2DeprecationImpactCheckerDisabledUnitTest() override = default;
-};
+MV2DeprecationImpactCheckerUnitTest::MV2DeprecationImpactCheckerUnitTest()
+    : experiment_stage_(std::get<0>(GetParam())),
+      mv2_policy_level_(std::get<1>(GetParam())) {}
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTest,
-    testing::Values(MV2PolicyLevel::kUnset,
-                    MV2PolicyLevel::kAllowed,
-                    MV2PolicyLevel::kDisallowed,
-                    MV2PolicyLevel::kAllowedForAdminInstalledOnly),
-    [](const testing::TestParamInfo<MV2PolicyLevel>& info) {
-      return DescribeMV2PolicyLevel(info.param);
-    });
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    MV2DeprecationImpactCheckerDisabledUnitTest,
-    testing::Values(MV2PolicyLevel::kUnset,
-                    MV2PolicyLevel::kAllowed,
-                    MV2PolicyLevel::kDisallowed,
-                    MV2PolicyLevel::kAllowedForAdminInstalledOnly),
-    [](const testing::TestParamInfo<MV2PolicyLevel>& info) {
-      return DescribeMV2PolicyLevel(info.param);
+    testing::Combine(
+        testing::Values(MV2ExperimentStage::kNone,
+                        MV2ExperimentStage::kWarning),
+        testing::Values(MV2PolicyLevel::kUnset,
+                        MV2PolicyLevel::kAllowed,
+                        MV2PolicyLevel::kDisallowed,
+                        MV2PolicyLevel::kAllowedForAdminInstalledOnly)),
+    [](const testing::TestParamInfo<TestVariant>& info) {
+      return DescribeTestVariant(info.param);
     });
 
 // Tests that user-visible MV2 extensions are properly considered affected by
@@ -242,9 +245,11 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest,
           .SetManifestVersion(2)
           .Build();
 
-  // These user-facing MV2 extensions would be affected if the policy is
-  // anything other than set to "Allowed" (which allows all MV2 extensions).
-  bool expected_affected = GetParam() != MV2PolicyLevel::kAllowed;
+  // These user-facing MV2 extensions would be affected if the experiment is
+  // active and the policy is anything other than set to "Allowed" (which
+  // allows all MV2 extensions).
+  bool expected_affected =
+      ExperimentIsActive() && policy_level() != MV2PolicyLevel::kAllowed;
   EXPECT_EQ(expected_affected,
             impact_checker()->IsExtensionAffected(*user_installed));
   EXPECT_EQ(expected_affected,
@@ -269,6 +274,7 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest, ComponentExtensionsAreNotAffected) {
           .SetManifestVersion(2)
           .Build();
 
+  // Component extensions are never affected by the experiment.
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*component));
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*external_component));
 }
@@ -324,10 +330,14 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest,
           mojom::ManifestLocation::kExternalPolicyDownload, 2);
 
   bool policy_installed_mv2_extensions_allowed =
-      GetParam() == MV2PolicyLevel::kAllowed ||
-      GetParam() == MV2PolicyLevel::kAllowedForAdminInstalledOnly;
+      policy_level() == MV2PolicyLevel::kAllowed ||
+      policy_level() == MV2PolicyLevel::kAllowedForAdminInstalledOnly;
 
-  bool policy_installs_affected = !policy_installed_mv2_extensions_allowed;
+  // Policy installs are affected if they are not exempt by policy and if the
+  // experiment is active.
+  bool policy_installs_affected =
+      ExperimentIsActive() && !policy_installed_mv2_extensions_allowed;
+
   EXPECT_EQ(policy_installs_affected,
             impact_checker()->IsExtensionAffected(*forced_policy));
   EXPECT_EQ(policy_installs_affected,
@@ -349,8 +359,12 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest,
           "allowed policy download",
           mojom::ManifestLocation::kExternalPolicyDownload, 2);
 
-  bool all_mv2_extensions_allowed = GetParam() == MV2PolicyLevel::kAllowed;
-  bool allowed_installs_affected = !all_mv2_extensions_allowed;
+  // "allowed" policy installs (as opposed to recommend or force-installed
+  // installs) are affected if the experiment is on and the policy does not
+  // allow *all* MV2 extensions.
+  bool all_mv2_extensions_allowed = policy_level() == MV2PolicyLevel::kAllowed;
+  bool allowed_installs_affected =
+      ExperimentIsActive() && !all_mv2_extensions_allowed;
   EXPECT_EQ(allowed_installs_affected,
             impact_checker()->IsExtensionAffected(*allowed_policy));
   EXPECT_EQ(allowed_installs_affected,
@@ -414,37 +428,6 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest, NonExtensionsAreNotAffected) {
 
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*platform_app));
   EXPECT_FALSE(impact_checker()->IsExtensionAffected(*hosted_app));
-}
-
-// Tests that we won't warn about any MV2 extensions when the experiment is
-// disabled.
-TEST_P(MV2DeprecationImpactCheckerDisabledUnitTest,
-       DontWarnAboutMV2ExtensionsWhenExperimentIsDisabled) {
-  scoped_refptr<const Extension> user_installed =
-      ExtensionBuilder("user installed")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .SetManifestVersion(2)
-          .Build();
-  scoped_refptr<const Extension> external_registry =
-      ExtensionBuilder("external registry")
-          .SetLocation(mojom::ManifestLocation::kExternalRegistry)
-          .SetManifestVersion(2)
-          .Build();
-  scoped_refptr<const Extension> external_pref =
-      ExtensionBuilder("external pref")
-          .SetLocation(mojom::ManifestLocation::kExternalPref)
-          .SetManifestVersion(2)
-          .Build();
-  scoped_refptr<const Extension> external_pref_download =
-      ExtensionBuilder("external pref download")
-          .SetLocation(mojom::ManifestLocation::kExternalPrefDownload)
-          .SetManifestVersion(2)
-          .Build();
-
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*user_installed));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*external_registry));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*external_pref));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*external_pref_download));
 }
 
 }  // namespace extensions
