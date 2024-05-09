@@ -1306,11 +1306,11 @@ BASE_FEATURE(kCanvas2DReclaimUnusedResources,
 // further by using metrics data from the field.
 const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
                                                "max_recorded_op_kb",
-                                               4 * 1024);
+                                               2 * 1024);
 
 const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
                                                 "max_pinned_image_kb",
-                                                64 * 1024);
+                                                32 * 1024);
 
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
