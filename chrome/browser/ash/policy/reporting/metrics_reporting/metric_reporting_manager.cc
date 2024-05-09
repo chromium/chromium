@@ -806,12 +806,12 @@ void MetricReportingManager::InitDeviceActivityCollector() {
 }
 
 void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!kiosk_heartbeat_telemetry_report_queue_) {
     LOG(WARNING) << "No report queue created for KioskHeartbeatEvents. No "
                     "TelemetryCollector created.";
     return;
   }
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto heartbeat_sampler = std::make_unique<KioskHeartbeatTelemetrySampler>();
   InitPeriodicTelemetryCollector(
       /*collector_name=*/kKioskHeartbeatTelemetry,
