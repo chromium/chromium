@@ -100,23 +100,39 @@ std::string getCurrentAbi() {
 #endif
 }
 
-void AddWebApkIcon(webapk::WebAppManifest* web_app_manifest,
-                   const WebappIcon* webapk_icon) {
-  CHECK(webapk_icon);
+void AddIcon(webapk::WebAppManifest* web_app_manifest,
+             GURL icon_url,
+             const std::string& icon_data,
+             std::map<GURL, std::unique_ptr<WebappIcon>>& icons,
+             webapk::Image::Usage icon_usage,
+             bool is_maskable) {
+  if (!icon_url.is_valid() && icon_data.empty()) {
+    return;
+  }
+
   webapk::Image* icon_image = web_app_manifest->add_icons();
-  if (webapk_icon->url().is_valid()) {
-    icon_image->set_src(webapk_icon->url().spec());
+  if (icon_url.is_valid()) {
+    icon_image->set_src(icon_url.spec());
+
+    auto it = icons.find(icon_url);
+    if (it != icons.end()) {
+      icon_image->set_hash(it->second->hash());
+      icon_image->set_image_data(it->second->unsafe_data());
+      for (auto usage : it->second->usages()) {
+        icon_image->add_usages(usage);
+      }
+      icon_image->add_purposes(it->second->purpose());
+    }
   }
-  if (!webapk_icon->hash().empty()) {
-    icon_image->set_hash(webapk_icon->hash());
+  if (!icon_data.empty()) {
+    icon_image->set_image_data(icon_data);
   }
-  if (webapk_icon->has_unsafe_data()) {
-    icon_image->set_image_data(webapk_icon->unsafe_data());
+  icon_image->add_usages(icon_usage);
+  if (is_maskable) {
+    icon_image->add_purposes(webapk::Image::MASKABLE);
+  } else {
+    icon_image->add_purposes(webapk::Image::ANY);
   }
-  for (auto usage : webapk_icon->usages()) {
-    icon_image->add_usages(usage);
-  }
-  icon_image->add_purposes(webapk_icon->purpose());
 }
 
 void AddShortcutIcon(webapk::Image* icon_image,
@@ -157,8 +173,8 @@ void AddOtherWebApkImage(webapk::WebAppManifest* web_app_manifest,
 std::unique_ptr<std::string> BuildProtoInBackground(
     const ShortcutInfo& shortcut_info,
     const GURL& app_key,
-    std::unique_ptr<webapps::WebappIcon> primary_icon,
-    std::unique_ptr<webapps::WebappIcon> splash_icon,
+    const std::string& primary_icon_data,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<GURL, std::unique_ptr<WebappIcon>> icons,
@@ -178,9 +194,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   webapk->set_app_identity_update_supported(is_app_identity_update_supported);
   webapk->set_android_version(base::SysInfo::OperatingSystemVersion());
 
-  for (auto update_reason : update_reasons) {
+  for (auto update_reason : update_reasons)
     webapk->add_update_reasons(ConvertUpdateReasonToProtoEnum(update_reason));
-  }
 
   webapk::WebAppManifest* web_app_manifest = webapk->mutable_manifest();
   web_app_manifest->set_has_custom_name(shortcut_info.has_custom_title);
@@ -246,26 +261,15 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     }
   }
 
-  if (primary_icon) {
-    AddWebApkIcon(web_app_manifest, primary_icon.get());
-  } else if (shortcut_info.best_primary_icon_url.is_valid()) {
-    auto icon_it = icons.find(shortcut_info.best_primary_icon_url);
-    if (icon_it != icons.end()) {
-      // Pass the pointer instead of move the unique_ptr, the same icon may be
-      // used for shortcuts.
-      AddWebApkIcon(web_app_manifest, icon_it->second.get());
-    }
-  }
+  AddIcon(web_app_manifest, shortcut_info.best_primary_icon_url,
+          primary_icon_data, icons, webapk::Image::PRIMARY_ICON,
+          shortcut_info.is_primary_icon_maskable);
 
-  if (splash_icon) {
-    AddWebApkIcon(web_app_manifest, splash_icon.get());
-  } else if (shortcut_info.splash_image_url.is_valid() &&
-             shortcut_info.splash_image_url !=
-                 shortcut_info.best_primary_icon_url) {
-    auto icon_it = icons.find(shortcut_info.splash_image_url);
-    if (icon_it != icons.end()) {
-      AddWebApkIcon(web_app_manifest, icon_it->second.get());
-    }
+  if (shortcut_info.splash_image_url.is_empty() ||
+      shortcut_info.splash_image_url != shortcut_info.best_primary_icon_url) {
+    AddIcon(web_app_manifest, shortcut_info.splash_image_url, splash_icon_data,
+            icons, webapk::Image::SPLASH_ICON,
+            shortcut_info.is_splash_image_maskable);
   }
 
   for (const std::string& icon_url : shortcut_info.icon_urls) {
@@ -306,8 +310,8 @@ scoped_refptr<base::TaskRunner> GetBackgroundTaskRunner() {
 void BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
-    std::unique_ptr<webapps::WebappIcon> primary_icon,
-    std::unique_ptr<webapps::WebappIcon> splash_icon,
+    const std::string& primary_icon_data,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<GURL, std::unique_ptr<WebappIcon>> icons,
@@ -317,8 +321,8 @@ void BuildProto(
   GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info, app_key,
-                     std::move(primary_icon), std::move(splash_icon),
-                     package_name, version, std::move(icons), is_manifest_stale,
+                     primary_icon_data, splash_icon_data, package_name, version,
+                     std::move(icons), is_manifest_stale,
                      is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
@@ -331,8 +335,8 @@ bool StoreUpdateRequestToFileInBackground(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
-    std::unique_ptr<webapps::WebappIcon> primary_icon,
-    std::unique_ptr<webapps::WebappIcon> splash_icon,
+    const std::string& primary_icon_data,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<GURL, std::unique_ptr<WebappIcon>> icons,
@@ -343,8 +347,8 @@ bool StoreUpdateRequestToFileInBackground(
                                                 base::BlockingType::MAY_BLOCK);
 
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
-      shortcut_info, app_key, std::move(primary_icon), std::move(splash_icon),
-      package_name, version, std::move(icons), is_manifest_stale,
+      shortcut_info, app_key, primary_icon_data, splash_icon_data, package_name,
+      version, std::move(icons), is_manifest_stale,
       is_app_identity_update_supported, std::move(update_reasons));
 
   // Create directory if it does not exist.

@@ -23,11 +23,12 @@ class WebappIcon {
   WebappIcon& operator=(const WebappIcon&) = delete;
   ~WebappIcon();
 
-  int GetIdealSizeInPx() const;
-
   const GURL url() const { return url_; }
 
   void AddUsage(webapk::Image::Usage);
+
+  int GetIdealSizeInPx() const;
+
   const std::set<webapk::Image::Usage>& usages() const { return usages_; }
 
   webapk::Image::Purpose purpose() const { return purpose_; }
