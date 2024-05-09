@@ -79,7 +79,7 @@ BASE_FEATURE(kOpenXRSharedImages,
 // present.
 BASE_FEATURE(kAllowOpenXrWithImmersiveFeature,
              "AllowOpenXrWithImmersiveFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper for enabling a feature if either the base flag is enabled or if the
 // device has an immersive feature that we will allow to override the default
