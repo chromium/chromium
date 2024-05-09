@@ -7,6 +7,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 
 namespace ash {
 
@@ -19,6 +20,11 @@ void RecordPartialOverviewMetrics(OverviewItemBase* item) {
       base::UmaHistogramCounts1000(kPartialOverviewSelectedWindowIndex, i);
     }
   }
+}
+
+void ReportSnapGroupsCountHistogram(int count) {
+  UMA_HISTOGRAM_EXACT_LINEAR(kSnapGroupsCountHistogramName, count,
+                             /*exclusive_max=*/101);
 }
 
 }  // namespace ash

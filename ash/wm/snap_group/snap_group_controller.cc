@@ -13,6 +13,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_constants.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -72,7 +73,8 @@ bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
 }
 
 SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
-                                             aura::Window* window2) {
+                                             aura::Window* window2,
+                                             bool replace) {
   // We should only allow snap group to be created for windows that have the
   // same parent.
   if (window1->parent() != window2->parent()) {
@@ -104,10 +106,14 @@ SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
   snap_group_ptr->UpdateGroupWindowsBounds(
       /*account_for_divider_width=*/true);
 
+  if (!replace) {
+    ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
+  }
+
   return snap_group_ptr;
 }
 
-bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
+bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
   CHECK(snap_group);
   aura::Window* window1 = snap_group->window1();
   aura::Window* window2 = snap_group->window2();
@@ -123,6 +129,10 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   group_to_remove->Shutdown();
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(group_to_remove));
+
+  if (!replace) {
+    ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
+  }
 
   return true;
 }
@@ -216,9 +226,9 @@ bool SnapGroupController::OnSnappingWindow(
 
   // TODO(b/331470570): Consider directly replacing the `to_be_snapped_window`
   // within the `snap_group`.
-  RemoveSnapGroup(group_to_replace);
+  RemoveSnapGroup(group_to_replace, /*replace=*/true);
   SnapGroup* new_snap_group =
-      AddSnapGroup(new_primary_window, new_secondary_window);
+      AddSnapGroup(new_primary_window, new_secondary_window, /*replace=*/true);
 
   // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
   // snap ratio of the `group_to_replace` is preserved.

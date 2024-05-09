@@ -15,9 +15,15 @@ inline constexpr char kPartialOverviewSelectedWindowIndex[] =
 inline constexpr char kPartialOverviewWindowListSize[] =
     "Ash.SplitViewOverviewSession.WindowListSize";
 
+inline constexpr char kSnapGroupsCountHistogramName[] =
+    "Ash.SnapGroups.SnapGroupsCount";
+
 // Records the partial overview metrics for `item`. Should only be called while
 // overview is in session.
 void RecordPartialOverviewMetrics(OverviewItemBase* item);
+
+// Records the number of snap groups, up to 101.
+void ReportSnapGroupsCountHistogram(int count);
 
 }  // namespace ash
 

@@ -6660,4 +6660,52 @@ TEST_F(SnapGroupHistogramTest, SnapActionSourcePipeline) {
   MaximizeToClearTheSession(window1.get());
 }
 
+TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
+  UpdateDisplay("800x600");
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kSnapGroupsCountHistogramName, 0);
+
+  // Create and test we record 1 group.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
+  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
+                                     /*sample=*/1,
+                                     /*expected_count=*/1);
+
+  // Create a maximized window to occlude the snapped windows so we can start
+  // partial overview and create a 2nd snap group.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 800, 600)));
+
+  // Create and test we record 2 groups.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapTwoTestWindows(w3.get(), w4.get());
+  ASSERT_EQ(2u, snap_group_controller->snap_groups_for_testing().size());
+  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
+                                     /*sample=*/2,
+                                     /*expected_count=*/1);
+
+  // Close `w3` so we remove the 2nd snap group. Test we record 1 group.
+  w3.reset();
+  ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
+  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
+                                     /*sample=*/1,
+                                     /*expected_count=*/2);
+
+  // Snap to replace `w5` in the 1st snap group. Test we don't record.
+  std::unique_ptr<aura::Window> w5(CreateAppWindow());
+  SnapOneTestWindow(w5.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_EQ(1u, snap_group_controller->snap_groups_for_testing().size());
+  histogram_tester.ExpectBucketCount(kSnapGroupsCountHistogramName,
+                                     /*sample=*/1,
+                                     /*expected_count=*/2);
+
+  histogram_tester.ExpectTotalCount(kSnapGroupsCountHistogramName, 3);
+}
+
 }  // namespace ash
