@@ -344,6 +344,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeGemm(*op.get_gemm()));
       break;
     }
+    case mojom::Operation::Tag::kHardSigmoid:
+      operator_offset = SerializeHardSigmoid(*op.get_hard_sigmoid());
+      break;
     case mojom::Operation::Tag::kHardSwish:
       operator_offset = SerializeHardSwish(*op.get_hard_swish());
       break;
@@ -423,8 +426,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kGruCell:
       return base::unexpected("gruCell is not implemented");
-    case mojom::Operation::Tag::kHardSigmoid:
-      return base::unexpected("hardSigmoid is not implemented");
     case mojom::Operation::Tag::kLayerNormalization:
       return base::unexpected("layerNormalization is not implemented");
     case mojom::Operation::Tag::kInstanceNormalization:
@@ -532,9 +533,19 @@ int32_t GraphBuilder::SerializeTemporaryTensor(
 }
 
 uint32_t GraphBuilder::GetOperatorCodeIndex(::tflite::BuiltinOperator code) {
+  // New builtin operators, whose operator code is larger than 127, can not be
+  // assigned to the `deprecated_code` field. In such cases, the value of the
+  // `code` field should be used for the builtin operator code, the value 127
+  // will be the value of the `deprecated_code`.
+  const ::tflite::BuiltinOperator deprecated_code = std::min(
+      code, ::tflite::BuiltinOperator_PLACEHOLDER_FOR_GREATER_OP_CODES);
+
   auto operator_code_index =
       base::checked_cast<uint32_t>(operator_codes_.size());
-  operator_codes_.push_back(::tflite::CreateOperatorCode(builder_, code));
+  operator_codes_.push_back(::tflite::CreateOperatorCode(
+      builder_, base::checked_cast<int8_t>(deprecated_code),
+      /*custom_code=*/0, /*version=*/1, code));
+
   // The type of operation is determined by the index into the list of the valid
   // OperatorCodes.
   return operator_code_index;
@@ -594,6 +605,32 @@ auto GraphBuilder::SerializeBinaryOperation(::tflite::BuiltinOperator code,
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs));
+}
+
+auto GraphBuilder::SerializeLinearOperation(
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType input_tensor_type,
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
+    float alpha,
+    float beta) -> OperatorOffset {
+  // Emulate a linear operation whose calculation follows the expression `alpha
+  // * x + beta`.
+  const int32_t alpha_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{alpha},
+      /*dimensions=*/{});
+  const int32_t output_tensor_index_of_mul =
+      SerializeTemporaryTensor(input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_MUL, input_tensor_index, alpha_tensor_index,
+      output_tensor_index_of_mul));
+
+  const int32_t beta_tensor_index = SerializeTensorWithBuffer<float>(
+      /*buffer=*/std::array<float, 1>{beta},
+      /*dimensions=*/{});
+  return SerializeBinaryOperation(::tflite::BuiltinOperator_ADD,
+                                  beta_tensor_index, output_tensor_index_of_mul,
+                                  output_tensor_index);
 }
 
 auto GraphBuilder::SerializeTransposeOperation(
@@ -1174,6 +1211,36 @@ auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
                                   builder_.CreateVector<int32_t>(op_outputs));
 }
 
+auto GraphBuilder::SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid)
+    -> OperatorOffset {
+  // Emulate the hardSigmoid operation with function `y = max(0, min(1, alpha *
+  // x + beta))` that is applied to the input tensor element-wise.
+  //
+  // The subset expression `alpha * x + beta` is considered a linear operation.
+  const mojom::Operand& input_operand =
+      GetOperand(hard_sigmoid.input_operand_id);
+  CHECK(input_operand.data_type == mojom::Operand::DataType::kFloat16 ||
+        input_operand.data_type == mojom::Operand::DataType::kFloat32);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t output_tensor_index_of_linear =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeLinearOperation(
+      *signed_input_dimensions, input_tensor_type,
+      operand_to_index_map_.at(hard_sigmoid.input_operand_id),
+      output_tensor_index_of_linear, hard_sigmoid.alpha, hard_sigmoid.beta));
+
+  // The expression `max(0, min(1, linear))` can be implemented with TFLite
+  // RELU_0_TO_1 operator.
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_RELU_0_TO_1, output_tensor_index_of_linear,
+      operand_to_index_map_.at(hard_sigmoid.output_operand_id));
+}
+
 auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
     -> OperatorOffset {
   return SerializeUnaryOperation(
@@ -1196,30 +1263,17 @@ auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
 
 auto GraphBuilder::SerializeLinear(const mojom::Linear& linear)
     -> OperatorOffset {
-  // Emulate a linear operation whose calculation follows the expression `alpha
-  // * x + beta`.
-  const int32_t alpha_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{linear.alpha},
-      /*dimensions=*/{});
-  const mojom::Operand& input_operand = GetOperand(linear.input_operand_id);
+  const auto& input_operand = GetOperand(linear.input_operand_id);
   // The input shape has been validated to not overflow before creating tensor.
   const auto signed_input_dimensions =
       ToSignedDimensions(input_operand.dimensions);
   CHECK(signed_input_dimensions.has_value());
-  const int32_t output_tensor_index_of_mul = SerializeTemporaryTensor(
+  return SerializeLinearOperation(
       *signed_input_dimensions,
-      MojoOperandTypeToTFLite(input_operand.data_type));
-  operators_.emplace_back(SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_MUL,
-      operand_to_index_map_.at(linear.input_operand_id), alpha_tensor_index,
-      output_tensor_index_of_mul));
-
-  const int32_t beta_tensor_index = SerializeTensorWithBuffer<float>(
-      /*buffer=*/std::array<float, 1>{linear.beta},
-      /*dimensions=*/{});
-  return SerializeBinaryOperation(
-      ::tflite::BuiltinOperator_ADD, output_tensor_index_of_mul,
-      beta_tensor_index, operand_to_index_map_.at(linear.output_operand_id));
+      MojoOperandTypeToTFLite(input_operand.data_type),
+      operand_to_index_map_.at(linear.input_operand_id),
+      operand_to_index_map_.at(linear.output_operand_id), linear.alpha,
+      linear.beta);
 }
 
 auto GraphBuilder::SerializeLogicalNot(

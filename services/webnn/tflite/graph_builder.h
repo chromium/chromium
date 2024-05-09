@@ -135,6 +135,16 @@ class GraphBuilder final {
                                           int32_t rhs_tensor_index,
                                           int32_t output_tensor_index);
 
+  // This function is called by `SerializeLinear` to serialize WebNN linear or
+  // used to emulate WebNN operation that isn't supported in TFLite schema.
+  OperatorOffset SerializeLinearOperation(
+      base::span<const int32_t> input_dimensions,
+      ::tflite::TensorType input_tensor_type,
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
+      float alpha,
+      float beta);
+
   // This function is called by `SerializeTranspose` to serialize WebNN
   // transpose operator or used to insert a tempary operator to transpose
   // different layout.
@@ -174,6 +184,7 @@ class GraphBuilder final {
       const mojom::Gather& gather);
   base::expected<OperatorOffset, std::string> SerializeGemm(
       const mojom::Gemm& gemm);
+  OperatorOffset SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid);
   OperatorOffset SerializeHardSwish(const mojom::HardSwish& hard_swish);
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   OperatorOffset SerializeLinear(const mojom::Linear& linear);

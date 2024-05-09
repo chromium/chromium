@@ -164,6 +164,8 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_RELU_N1_TO_1,
              ::tflite::ops::builtin::Register_RELU_N1_TO_1());
+  AddBuiltin(::tflite::BuiltinOperator_RELU_0_TO_1,
+             ::tflite::ops::builtin::Register_RELU_0_TO_1());
   AddBuiltin(::tflite::BuiltinOperator_RELU6,
              ::tflite::ops::builtin::Register_RELU6(), /* min_version = */ 1,
              /* max_version = */ 2);
