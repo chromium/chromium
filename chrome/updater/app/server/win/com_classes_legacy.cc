@@ -425,6 +425,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   // For backward-compatibility purposes, the `CheckForUpdate` call assumes
   // foreground priority and disallows same version updates.
   HRESULT CheckForUpdate() {
+    current_operation_ = CurrentOperation::kCheckingForUpdates;
     AppWebImplPtr obj(this);
     UpdateService::StateChangeCallback state_change_callback =
         base::BindRepeating(
@@ -461,7 +462,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return S_OK;
   }
 
-  HRESULT UpdateOrInstall() { return is_install_ ? Install() : Update(); }
+  HRESULT UpdateOrInstall() {
+    current_operation_ = CurrentOperation::kUpdatingOrInstalling;
+    return is_install_ ? Install() : Update();
+  }
 
   HRESULT Install() {
     AppWebImplPtr obj(this);
@@ -669,8 +673,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_value = STATE_CHECKING_FOR_UPDATE;
           break;
         case UpdateService::UpdateState::State::kUpdateAvailable:
-          state_value = set_ready_to_install_ ? STATE_READY_TO_INSTALL
-                                              : STATE_UPDATE_AVAILABLE;
+          state_value =
+              set_ready_to_install_ ? STATE_READY_TO_INSTALL
+              : current_operation_ == CurrentOperation::kCheckingForUpdates
+                  ? (result_ ? STATE_UPDATE_AVAILABLE
+                             : STATE_CHECKING_FOR_UPDATE)
+                  : STATE_UPDATE_AVAILABLE;
           break;
         case UpdateService::UpdateState::State::kDownloading:
           state_value = STATE_DOWNLOADING;
@@ -679,10 +687,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           state_value = STATE_INSTALLING;
           break;
         case UpdateService::UpdateState::State::kUpdated:
-          state_value = STATE_INSTALL_COMPLETE;
+          state_value = result_ ? STATE_INSTALL_COMPLETE : STATE_INSTALLING;
           break;
         case UpdateService::UpdateState::State::kNoUpdate:
-          state_value = STATE_NO_UPDATE;
+          state_value = result_ ? STATE_NO_UPDATE : STATE_CHECKING_FOR_UPDATE;
           break;
         case UpdateService::UpdateState::State::kUpdateError:
           state_value = STATE_ERROR;
@@ -753,6 +761,16 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
  private:
   using AppWebImplPtr = Microsoft::WRL::ComPtr<AppWebImpl>;
+
+  enum class CurrentOperation {
+    kUnknown = 0,
+
+    // The COM client has started an update check.
+    kCheckingForUpdates = 1,
+
+    // The COM client has started an update or install.
+    kUpdatingOrInstalling = 2,
+  };
 
   ~AppWebImpl() override {
     // If a new install has not happened, the app id registered in
@@ -829,6 +847,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   mutable base::Lock lock_;
   std::optional<UpdateService::UpdateState> state_update_;
   std::optional<UpdateService::Result> result_;
+  CurrentOperation current_operation_ = CurrentOperation::kUnknown;
 };
 
 // This class implements the legacy Omaha3 IAppBundleWeb interface as expected
