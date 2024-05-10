@@ -19,6 +19,8 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -1410,6 +1412,36 @@ TEST_P(CookieControlsUserBypassTest, StatefulBounce) {
 
   NavigateAndCommit(GURL("https://example.com"));
   page_specific_content_settings()->IncrementStatefulBounceCount();
+
+  EXPECT_CALL(
+      *mock(),
+      OnStatusChanged(/*controls_visible=*/true, /*protections_on=*/true,
+                      CookieControlsEnforcement::kNoEnforcement,
+                      CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/true, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
+  cookie_controls()->Update(web_contents());
+}
+
+TEST_P(CookieControlsUserBypassTest, SubresourceBlocked) {
+  if (!GetParam()) {
+    return;
+  }
+  base::test::ScopedFeatureList fingerprinting_protection_feature_list;
+  fingerprinting_protection_feature_list.InitAndEnableFeature(
+      fingerprinting_protection_filter::features::
+          kEnableFingerprintingProtectionFilter);
+  fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
+            CreateForWebContents(web_contents(),
+                           /*tracking_protection_settings=*/nullptr);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
+      FromWebContents(web_contents())
+          ->NotifyOnBlockedResources();
 
   EXPECT_CALL(
       *mock(),
