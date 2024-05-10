@@ -43,6 +43,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private final int mMinIconSize;
     private final int mDisplayedIconSize;
     private final int mEndPadding;
+    private final int mChipLeadingPadding;
 
     private boolean mIsItemRemoved;
     private BooleanSupplier mShowSourceApp;
@@ -54,8 +55,9 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mIconGenerator = FaviconUtils.createCircularIconGenerator(context);
-        mEndPadding =
-                context.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
+        mEndPadding = getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
+        mChipLeadingPadding =
+                getResources().getDimensionPixelSize(R.dimen.history_item_leading_padding);
     }
 
     @Override
@@ -139,6 +141,11 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                     var sourceApp =
                             getResources()
                                     .getString(R.string.history_app_attribution, appInfo.label);
+                    mChipView.setPaddingRelative(
+                            mChipLeadingPadding,
+                            mChipView.getPaddingTop(),
+                            mChipView.getPaddingEnd(),
+                            mChipView.getPaddingBottom());
                     mChipView.getPrimaryTextView().setText(sourceApp);
                     mChipView.setIcon(appInfo.icon, false);
                     showChipView = true;

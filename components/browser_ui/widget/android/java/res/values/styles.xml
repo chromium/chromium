@@ -158,7 +158,7 @@ found in the LICENSE file.
         <item name="cornerRadius">@dimen/chip_default_height</item>
         <item name="iconWidth">16dp</item>
         <item name="iconHeight">16dp</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Primary</item>
         <item name="solidColorChip">true</item>
         <item name="chipColor">@macro/history_chip_bg_color</item>
     </style>

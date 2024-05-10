@@ -278,6 +278,7 @@ found in the LICENSE file.
     <dimen name="legacy_sync_promo_view_padding">16dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
+    <dimen name="history_item_leading_padding">2dp</dimen>
 
     <!-- Context Menu Dimensions -->
     <!-- Prevent the chip from reaching the edges of the screen for long translations. -->
