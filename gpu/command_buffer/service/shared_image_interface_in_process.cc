@@ -27,6 +27,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
@@ -421,9 +422,7 @@ void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(
     gfx::Size* size,
     gfx::BufferUsage* buffer_usage,
     base::WaitableEvent* completion) {
-  base::ScopedClosureRunner completion_runner(base::BindOnce(
-      [](base::WaitableEvent* completion) { completion->Signal(); },
-      completion));
+  absl::Cleanup completion_runner = [completion] { completion->Signal(); };
 
   DCHECK(shared_image_factory_);
   // Note that we are not making |context_state_| current here as of now since
