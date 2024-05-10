@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/test/launcher/unit_test_launcher.h"
@@ -17,9 +16,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/test/unit_test_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -163,8 +163,7 @@ void MaybeIncreaseTestTimeouts(int argc, char** argv) {
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
-  base::ScopedClosureRunner reset_command_line(
-      base::BindOnce(&base::CommandLine::Reset));
+  absl::Cleanup reset_command_line = &base::CommandLine::Reset;
 
   // Change the test timeout defaults if the command line arguments to override
   // them are not present.

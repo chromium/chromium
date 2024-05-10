@@ -29,7 +29,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -64,6 +63,7 @@
 #include "components/zucchini/zucchini_integration.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace installer {
 
@@ -655,8 +655,7 @@ base::Time GetConsoleSessionStartTime() {
                                     &buffer_size)) {
     return base::Time();
   }
-  base::ScopedClosureRunner wts_deleter(
-      base::BindOnce(&::WTSFreeMemory, base::Unretained(buffer)));
+  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
 
   WTSINFO* wts_info = nullptr;
   if (buffer_size < sizeof(*wts_info))

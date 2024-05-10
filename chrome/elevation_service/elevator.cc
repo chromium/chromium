@@ -6,15 +6,12 @@
 
 #include <dpapi.h>
 #include <oleauto.h>
-
 #include <stdint.h>
 
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
@@ -27,6 +24,7 @@
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/install_static/install_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/elevation_service/internal/elevation_service_internal.h"
@@ -97,8 +95,7 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
   DATA_BLOB intermediate = {};
   {
-    base::ScopedClosureRunner revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
+    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
     const auto calling_process = GetCallingProcess();
     if (!calling_process.IsValid())
@@ -185,8 +182,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   std::string plaintext_str;
   {
     DATA_BLOB output = {};
-    base::ScopedClosureRunner revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
+    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
     // Decrypt using the user store.
     if (!::CryptUnprotectData(&intermediate, nullptr, nullptr, nullptr, nullptr,
                               0, &output)) {

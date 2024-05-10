@@ -30,7 +30,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -70,6 +69,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
 #include "components/base32/base32.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using base::win::RegKey;
 
@@ -1350,9 +1350,9 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
 
   // Ensure that the shell is notified of the mutations below. Specific exit
   // points may disable this if no mutations are made.
-  base::ScopedClosureRunner notify_on_exit(base::BindOnce([] {
+  absl::Cleanup notify_on_exit = [] {
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-  }));
+  };
 
   // Do the full registration at user-level or if the user is an admin.
   if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
@@ -1373,7 +1373,7 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
   // localization issues (see https://crbug.com/717913#c18). It likely is not,
   // so return success to allow Chrome to be made default.
   if (!user_level) {
-    notify_on_exit.Release().Reset();
+    std::move(notify_on_exit).Cancel();
     return true;
   }
   // Try to elevate and register if requested for per-user installs if the user
