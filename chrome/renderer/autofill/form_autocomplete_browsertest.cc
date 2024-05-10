@@ -125,7 +125,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SelectOrSelectListFieldOptionsDidChange(
       const autofill::FormData& form) override {}
 
-  // Records whether FocusOnNonFormField() get called.
+  // Records whether FocusOnNonFormField() got called.
   bool did_unfocus_form_{false};
 
   // Records value of `had_interacted_form` on last call to

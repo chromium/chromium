@@ -14,8 +14,10 @@ import "url/mojom/url.mojom";
 // There is one instance of this interface per RenderFrameHost in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillDriver {
-  // Notification that forms have been seen that are candidates for
-  // filling/submitting by the AutofillManager.
+  // Notification that changes of the forms have been detected: the forms in
+  // `updated_forms` are either new or have changed, and the forms in
+  // `removed_forms` have been removed from the DOM (but may be re-added to the
+  // DOM later).
   FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
 
   // Notification that a form has been submitted. The `known_success` indicates
@@ -25,10 +27,25 @@ interface AutofillDriver {
                 bool known_success,
                 SubmissionSource source);
 
-  // Notification that a form field's value has changed.
+  // Notification that a form field's value has changed by a user edit.
+  //
+  // Similarly to JavaScript's "input" event, and unlike JavaScript's "change"
+  // event, it's fired for each individual alteration of the field.
+  //
+  // Fired (only) for text-type input elements, except if
+  // - kAutofillTextAreaChangeEvents is enabled: then also for textareas;
+  // - kAutofillContentEditableChangeEvents is enabled: then also for
+  //   contenteditables.
   TextFieldDidChange(FormData form,
                      FormFieldData field,
                      mojo_base.mojom.TimeTicks timestamp);
+
+  // Notification that editing a text-type input element ended.
+  //
+  // Fired (only) on element blur or document unload events.
+  //
+  // TODO(crbug.com/339820079): Eliminate in favour of FocusNoLongerOnForm()?
+  DidEndTextFieldEditing();
 
   // Notification that a form field has scrolled.
   TextFieldDidScroll(FormData form,
@@ -40,15 +57,6 @@ interface AutofillDriver {
 
   // Notification that a select or selectlist element's options were modified.
   SelectOrSelectListFieldOptionsDidChange(FormData form);
-
-  // Queries the browser for Autofill suggestions for a form input field.
-  // For autofill this means asking the user which values to fill.
-  AskForValuesToFill(FormData form,
-                     FormFieldData field,
-                     AutofillSuggestionTriggerSource trigger_source);
-
-  // Instructs the browser to hide the Autofill popup if it is open.
-  HidePopup();
 
   // `FocusOnFormField()` xor `FocusOnNonFormField()` is fired when the focused
   // element changes (https://html.spec.whatwg.org/#focused):
@@ -62,22 +70,33 @@ interface AutofillDriver {
   FocusOnFormField(FormData form, FormFieldData field);
   FocusOnNonFormField(bool had_interacted_form);
 
+  // Queries the browser for Autofill suggestions for a form input field.
+  // For autofill this means asking the user which values to fill.
+  AskForValuesToFill(FormData form,
+                     FormFieldData field,
+                     AutofillSuggestionTriggerSource trigger_source);
+
+  // Instructs the browser to hide the Autofill popup if it is open.
+  HidePopup();
+
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
 
-  // Sent when a text field is done editing.
-  DidEndTextFieldEditing();
-
   // Sent when `field` was in autofilled state but JavaScript modified the
-  // value. Note that from a renderer's perspective, modifying the value with
+  // value.
+  //
+  // Note that from a renderer's perspective, modifying the value with
   // JavaScript leads to a state where the field is not considered autofilled
   // anymore. So this notification won't be sent again until the field gets
-  // autofilled again. `formatting_only` is true if JavaScript only modified
-  // whitespaces, symbols and capitalization.
+  // autofilled again.
+  //
+  // `formatting_only` is true if JavaScript only modified whitespaces, symbols
+  // and capitalization, and in that case, the field is still considered
+  // autofilled.
   JavaScriptChangedAutofilledValue(FormData form,
-                     FormFieldData field,
-                     mojo_base.mojom.String16 old_value,
-                     bool formatting_only);
+                                   FormFieldData field,
+                                   mojo_base.mojom.String16 old_value,
+                                   bool formatting_only);
 };
 
 // There is one instance of this interface per web contents in the browser

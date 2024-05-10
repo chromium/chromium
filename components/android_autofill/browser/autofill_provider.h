@@ -32,41 +32,35 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   static bool is_crowdsourcing_manager_disabled_for_testing();
   static void set_is_crowdsourcing_manager_disabled_for_testing();
 
+  // These events come from AutofillDriver.
+  // See autofill_driver.mojom for documentation.
   virtual void OnAskForValuesToFill(
       AndroidAutofillManager* manager,
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) = 0;
-
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field,
                                     const base::TimeTicks timestamp) = 0;
-
   virtual void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field) = 0;
-
   virtual void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                         const FormData& form,
                                         const FormFieldData& field) = 0;
-
   virtual void OnFormSubmitted(AndroidAutofillManager* manager,
                                const FormData& form,
                                bool known_success,
                                mojom::SubmissionSource source) = 0;
-
   virtual void OnFocusOnNonFormField(AndroidAutofillManager* manager,
                                      bool had_interacted_form) = 0;
-
   virtual void OnFocusOnFormField(AndroidAutofillManager* manager,
                                   const FormData& form,
                                   const FormFieldData& field) = 0;
-
   virtual void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                          const FormData& form,
                                          base::TimeTicks timestamp) = 0;
-
   virtual void OnHidePopup(AndroidAutofillManager* manager) = 0;
 
   virtual void OnServerPredictionsAvailable(AndroidAutofillManager& manager,

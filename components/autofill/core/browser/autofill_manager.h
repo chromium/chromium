@@ -206,86 +206,38 @@ class AutofillManager
   virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
 
   // Events triggered by the renderer.
-
-  // Invoked when the value of textfield is changed.
-  // |bounding_box| are viewport coordinates.
-  // Virtual for testing.
+  // See autofill_driver.mojom for documentation.
+  // Some functions are virtual for testing.
+  virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
+                           const std::vector<FormGlobalId>& removed_forms);
+  virtual void OnFormSubmitted(const FormData& form,
+                               bool known_success,
+                               mojom::SubmissionSource source);
   virtual void OnTextFieldDidChange(const FormData& form,
                                     const FormFieldData& field,
                                     const base::TimeTicks timestamp);
-
-  // Invoked when the textfield is scrolled.
-  // |bounding_box| are viewport coordinates.
+  void OnDidEndTextFieldEditing();
   void OnTextFieldDidScroll(const FormData& form, const FormFieldData& field);
-
-  // Invoked when the value of select is changed.
-  // |bounding_box| are viewport coordinates.
   void OnSelectControlDidChange(const FormData& form,
                                 const FormFieldData& field);
-
-  // Invoked when the |form| needs to be autofilled, the |bounding_box| is
-  // a window relative value of |field|.
-  // |bounding_box| are viewport coordinates.
-  // Virtual for testing.
+  void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
+  void OnFocusOnFormField(const FormData& form, const FormFieldData& field);
+  void OnFocusOnNonFormField(bool had_interacted_form);
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source);
-
-  // Invoked when |form|'s |field| has focus.
-  // |bounding_box| are viewport coordinates.
-  void OnFocusOnFormField(const FormData& form, const FormFieldData& field);
-
-  // Invoked when |form| has been submitted.
-  // Processes the submitted |form|, saving any new Autofill data to the user's
-  // personal profile.
-  // Virtual for testing.
-  virtual void OnFormSubmitted(const FormData& form,
-                               bool known_success,
-                               mojom::SubmissionSource source);
-
-  // Invoked when |form| has been filled with the value given by
-  // FillOrPreviewForm.
-  // Virtual for testing.
+  void OnHidePopup();
   virtual void OnDidFillAutofillFormData(const FormData& form,
                                          const base::TimeTicks timestamp);
-
-  // Invoked when changes of the forms have been detected: the forms in
-  // |updated_forms| are either new or have changed, and the forms in
-  // |removed_forms| have been removed from the DOM (but may be re-added to the
-  // DOM later).
-  // Virtual for testing.
-  virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                           const std::vector<FormGlobalId>& removed_forms);
-
-  // Invoked when focus is no longer on form. |had_interacted_form| indicates
-  // whether focus was previously on a form with which the user had interacted.
-  void OnFocusOnNonFormField(bool had_interacted_form);
-
-  // Invoked when textfield editing ended
-  void OnDidEndTextFieldEditing();
-
-  // Invoked when the suggestions should be hidden.
-  void OnHidePopup();
-
-  // Invoked when the suggestions are actually hidden.
-  void OnSuggestionsHidden();
-
-  // Invoked when the options of a select element in the |form| changed.
-  void OnSelectOrSelectListFieldOptionsDidChange(const FormData& form);
-
-  // Invoked after JavaScript set the value of |field| in |form|. Only called
-  // if |field| was in autofilled state. Note that from a renderer's
-  // perspective, modifying the value with JavaScript leads to a state where
-  // the field is not considered autofilled anymore. So this notification won't
-  // be sent again until the field gets autofilled again. `formatting_only` is
-  // true if JavaScript only modified whitespaces, symbols and capitalization,
-  // and in that case, the field is still considered autofilled.
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,
       const std::u16string& old_value,
       bool formatting_only);
+
+  // Invoked when the suggestions are actually hidden.
+  void OnSuggestionsHidden();
 
   // Other events.
 
@@ -365,41 +317,32 @@ class AutofillManager
   // constructing or resetting the manager.
   AutofillClient& unsafe_client() { return driver_->GetAutofillClient(); }
 
+  // OnFooImpl() is called, potentially asynchronously after parsing the form,
+  // by the renderer event OnFoo().
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
                                    mojom::SubmissionSource source) = 0;
-
   virtual void OnTextFieldDidChangeImpl(const FormData& form,
                                         const FormFieldData& field,
                                         const base::TimeTicks timestamp) = 0;
-
+  virtual void OnDidEndTextFieldEditingImpl() = 0;
   virtual void OnTextFieldDidScrollImpl(const FormData& form,
                                         const FormFieldData& field) = 0;
-
+  virtual void OnSelectControlDidChangeImpl(const FormData& form,
+                                            const FormFieldData& field) = 0;
+  virtual void OnSelectOrSelectListFieldOptionsDidChangeImpl(
+      const FormData& form) = 0;
+  virtual void OnFocusOnFormFieldImpl(const FormData& form,
+                                      const FormFieldData& field) = 0;
+  virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
   virtual void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source) = 0;
-
-  virtual void OnFocusOnFormFieldImpl(const FormData& form,
-                                      const FormFieldData& field) = 0;
-
-  virtual void OnSelectControlDidChangeImpl(const FormData& form,
-                                            const FormFieldData& field) = 0;
-
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,
       const base::TimeTicks timestamp) = 0;
-
-  virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
-
-  virtual void OnDidEndTextFieldEditingImpl() = 0;
-
   virtual void OnHidePopupImpl() = 0;
-
-  virtual void OnSelectOrSelectListFieldOptionsDidChangeImpl(
-      const FormData& form) = 0;
-
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,
       const FormFieldData& field,
