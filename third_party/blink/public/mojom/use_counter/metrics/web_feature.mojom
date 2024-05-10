@@ -4364,6 +4364,7 @@ enum WebFeature {
   kHTMLInputInSelect = 4968,
 
   kCanvas2DMesh = 4969,
+  kCaretPositionFromPoint = 4970,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

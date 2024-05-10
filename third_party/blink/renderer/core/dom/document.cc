@@ -1757,7 +1757,10 @@ Range* Document::caretRangeFromPoint(int x, int y) {
   return CreateRangeAdjustedToTreeScope(*this, range_compliant_position);
 }
 
-CaretPosition* Document::caretPositionFromPoint(float x, float y) {
+CaretPosition* Document::caretPositionFromPoint(
+    float x,
+    float y,
+    const HeapVector<Member<ShadowRoot>>& shadow_roots) {
   if (!GetLayoutView()) {
     return nullptr;
   }
@@ -1768,8 +1771,19 @@ CaretPosition* Document::caretPositionFromPoint(float x, float y) {
     return nullptr;
   }
 
-  return CreateCaretPosition(
-      position_with_affinity.GetPosition().ParentAnchoredEquivalent());
+  Node* anchor_node = position_with_affinity.AnchorNode();
+  bool adjust_position = false;
+  while (anchor_node->IsInShadowTree() &&
+         !shadow_roots.Contains(anchor_node->GetTreeScope())) {
+    anchor_node = anchor_node->OwnerShadowHost();
+    adjust_position = true;
+  }
+  Position adjusted_position = adjust_position
+                                   ? Position::InParentBeforeNode(*anchor_node)
+                                   : position_with_affinity.GetPosition();
+  CHECK(!adjusted_position.IsNull());
+
+  return CreateCaretPosition(adjusted_position.ParentAnchoredEquivalent());
 }
 
 Element* Document::scrollingElement() {

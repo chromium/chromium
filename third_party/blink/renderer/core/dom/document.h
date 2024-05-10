@@ -487,7 +487,15 @@ class CORE_EXPORT Document : public ContainerNode,
                             const CreateElementFlags = CreateElementFlags());
 
   Range* caretRangeFromPoint(int x, int y);
-  CaretPosition* caretPositionFromPoint(float x, float y);
+
+  // Returns a |CaretPosition| from given point. If the point is inside a shadow
+  // tree, then |CaretPosition| only points inside the shadow tree if it's
+  // provided in the |shadow_roots| argument.
+  // https://drafts.csswg.org/cssom-view/#ref-for-dom-document-caretpositionfrompoint
+  CaretPosition* caretPositionFromPoint(
+      float x,
+      float y,
+      const HeapVector<Member<ShadowRoot>>& shadow_roots);
   Element* scrollingElement();
 
   // When calling from C++ code, use this method. scrollingElement() is

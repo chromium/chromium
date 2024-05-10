@@ -11542,6 +11542,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4967" label="PrivateAggregationApiFilteringIds"/>
   <int value="4968" label="HTMLInputInSelect"/>
   <int value="4969" label="Canvas2DMesh"/>
+  <int value="4970" label="CaretPositionFromPoint"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
