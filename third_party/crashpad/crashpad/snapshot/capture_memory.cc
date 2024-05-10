@@ -25,6 +25,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "snapshot/memory_snapshot.h"
 
 namespace crashpad {
