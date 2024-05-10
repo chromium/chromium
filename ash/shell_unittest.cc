@@ -597,12 +597,15 @@ TEST_F(ShellTest, NoWindowTabFocus) {
 class ShellPickerIncorrectKeyTest : public AshTestBase {
  public:
   ShellPickerIncorrectKeyTest() {
+    feature_list_.InitWithFeatures({features::kPicker},
+                                   {features::kPickerDogfood});
+
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kPickerFeatureKey, "hello");
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kPicker};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ShellPickerIncorrectKeyTest, NoPickerControllerIfFeatureKeyIsWrong) {

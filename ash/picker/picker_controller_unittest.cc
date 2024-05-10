@@ -144,6 +144,7 @@ class TestPickerClient : public MockPickerClient {
     ON_CALL(*this, GetSharedURLLoaderFactory)
         .WillByDefault(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
+    ON_CALL(*this, IsFeatureAllowedForDogfood).WillByDefault(Return(true));
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
@@ -198,6 +199,19 @@ TEST_F(PickerControllerTest,
   controller.ToggleWidget();
 
   EXPECT_TRUE(controller.widget_for_testing());
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetDoesNotShowWidgetWhenClientDisallowsDogfood) {
+  base::test::ScopedFeatureList features(ash::features::kPickerDogfood);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(client, IsFeatureAllowedForDogfood).WillOnce(Return(false));
+
+  controller.ToggleWidget();
+
+  EXPECT_FALSE(controller.widget_for_testing());
 }
 
 TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
