@@ -28,6 +28,7 @@
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 using base::TimeTicks;
@@ -955,16 +956,13 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
   // Attempt writing to a temporary file first and at the end, swap the files.
   const base::FilePath new_filename = TemporaryFileForFilename(store_path_);
 
-  base::ScopedClosureRunner cleanup_on_error(base::BindOnce(
-      [](const base::FilePath& new_filename, const base::FilePath& store_path,
-         V4StoreFileFormat* file_format) {
-        base::DeleteFile(new_filename);
-        for (const auto& hash_file : file_format->hash_files()) {
-          base::DeleteFile(
-              MmapHashPrefixMap::GetPath(store_path, hash_file.extension()));
-        }
-      },
-      new_filename, store_path_, base::Unretained(file_format)));
+  absl::Cleanup cleanup_on_error = [&new_filename, this, file_format] {
+    base::DeleteFile(new_filename);
+    for (const auto& hash_file : file_format->hash_files()) {
+      base::DeleteFile(
+          MmapHashPrefixMap::GetPath(store_path_, hash_file.extension()));
+    }
+  };
 
   int64_t written = 0;
   // `write_session` must remain alive until `file_format` is committed to disk.
@@ -994,8 +992,8 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
   for (const auto& hash_file : file_format->hash_files())
     file_size_ += hash_file.file_size();
 
-  // No cleanup needed, reset the closure.
-  std::ignore = cleanup_on_error.Release();
+  // No cleanup needed, cancel the cleanup.
+  std::move(cleanup_on_error).Cancel();
   CleanupExtraFiles(store_path_, *file_format);
 
   return WRITE_SUCCESS;
