@@ -7,11 +7,11 @@
  * 'files-settings-card' is the card element containing files settings.
  */
 
-import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
-import '../controls/settings_toggle_button.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 import '../controls/controlled_button.js';
+import '../controls/settings_toggle_button.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
@@ -56,6 +56,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
       },
 
       bulkPinningPrefEnabled_: Boolean,
+      mirrorSyncPrefEnabled_: Boolean,
 
       driveDisabled_: Boolean,
 
@@ -63,6 +64,14 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         type: Boolean,
         value: () => {
           return loadTimeData.getBoolean('enableDriveFsBulkPinning');
+        },
+        readOnly: true,
+      },
+
+      isMirrorSyncEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableDriveFsMirrorSync');
         },
         readOnly: true,
       },
@@ -140,14 +149,17 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
        * Observe the state of `prefs.gdata.disabled` if it gets changed from
        * another location (e.g. enterprise policy).
        */
-      'updateDriveDisabled_(prefs.gdata.disabled.*)',
-      'updateBulkPinningPrefEnabled_(prefs.drivefs.bulk_pinning_enabled.*)',
+      'updateDriveDisabled_(prefs.gdata.disabled.value)',
+      'updateBulkPinningPrefEnabled_(prefs.drivefs.bulk_pinning_enabled.value)',
+      'updateMirrorSyncPrefEnabled_(prefs.drivefs.enable_mirror_sync.value)',
     ];
   }
 
   private bulkPinningPrefEnabled_: boolean;
+  private mirrorSyncPrefEnabled_: boolean;
   private driveDisabled_: boolean;
   private isBulkPinningEnabled_: boolean;
+  private isMirrorSyncEnabled_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|undefined;
   private oneDriveConnectionState_: OneDriveConnectionState;
@@ -218,14 +230,16 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     this.oneDriveConnectionState_ = oneDriveConnectionState;
   }
 
-  private updateDriveDisabled_(): void {
-    const disabled = this.getPref('gdata.disabled').value;
+  private updateDriveDisabled_(disabled: boolean): void {
     this.driveDisabled_ = disabled;
   }
 
-  private updateBulkPinningPrefEnabled_(): void {
-    const enabled = this.getPref('drivefs.bulk_pinning_enabled').value;
+  private updateBulkPinningPrefEnabled_(enabled: boolean): void {
     this.bulkPinningPrefEnabled_ = enabled;
+  }
+
+  private updateMirrorSyncPrefEnabled_(enabled: boolean): void {
+    this.mirrorSyncPrefEnabled_ = enabled;
   }
 
   private getGoogleDriveSubLabelInnerHtml_(): TrustedHTML {
@@ -233,11 +247,8 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
       return this.i18nAdvanced('googleDriveNotSignedInSublabel');
     }
 
-    if (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) {
-      return this.i18nAdvanced('googleDriveFileSyncOnSublabel');
-    }
-
-    return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
+    return ((this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ||
+            (this.isMirrorSyncEnabled_ && this.mirrorSyncPrefEnabled_)) ?
         this.i18nAdvanced('googleDriveFileSyncOnSublabel') :
         this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
   }

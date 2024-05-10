@@ -48,6 +48,11 @@ suite('<files-settings-card>', () => {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      {
+        key: 'drivefs.enable_mirror_sync',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
       // The OneDrive preferences that are required when navigating to the
       // officeFiles page route.
       {
@@ -366,6 +371,62 @@ suite('<files-settings-card>', () => {
       assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
 
       filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', true);
+      flush();
+      assertEquals('File sync on', googleDriveRowSubLabel.innerText);
+    });
+  });
+
+  suite('with enableDriveFsMirrorSync set to true', () => {
+    setup(async () => {
+      loadTimeData.overrideValues({
+        enableDriveFsMirrorSync: true,
+      });
+    });
+
+    test(
+        'with gdata.disabled set to true, text shows appropriately',
+        async () => {
+          await createFilesSettingsCard();
+          filesSettingsCard.setPrefValue('gdata.disabled', true);
+          flush();
+          assertEquals('Not signed in', getGoogleDriveRowSubLabel().innerText);
+        });
+
+    test(
+        'with gdata.disabled set to false, but mirror sync disabled',
+        async () => {
+          await createFilesSettingsCard();
+          filesSettingsCard.setPrefValue('drivefs.enable_mirror_sync', false);
+          flush();
+
+          assertTrue(
+              getGoogleDriveRowSubLabel().innerText.startsWith('Signed in as'));
+        });
+
+    test(
+        'with gdata.disabled set to false, and mirror sync enabled',
+        async () => {
+          await createFilesSettingsCard();
+          filesSettingsCard.setPrefValue('drivefs.enable_mirror_sync', true);
+          flush();
+
+          assertEquals('File sync on', getGoogleDriveRowSubLabel().innerText);
+        });
+
+    test('cycling through the prefs updates the sublabel texts', async () => {
+      await createFilesSettingsCard();
+      filesSettingsCard.setPrefValue('gdata.disabled', true);
+      filesSettingsCard.setPrefValue('drivefs.enable_mirror_sync', false);
+      flush();
+
+      const googleDriveRowSubLabel = getGoogleDriveRowSubLabel();
+      assertEquals('Not signed in', googleDriveRowSubLabel.innerText);
+
+      filesSettingsCard.setPrefValue('gdata.disabled', false);
+      flush();
+      assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
+
+      filesSettingsCard.setPrefValue('drivefs.enable_mirror_sync', true);
       flush();
       assertEquals('File sync on', googleDriveRowSubLabel.innerText);
     });

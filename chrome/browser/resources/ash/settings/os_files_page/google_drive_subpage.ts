@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/action_link.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
@@ -110,6 +110,15 @@ export class SettingsGoogleDriveSubpageElement extends
         type: Boolean,
         readonly: true,
         value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
+      },
+
+      /**
+       * Indicates whether the `DriveFsMirroring` flag is enabled.
+       */
+      isDriveFsMirrorSyncEnabled_: {
+        type: Boolean,
+        readonly: true,
+        value: () => loadTimeData.getBoolean('enableDriveFsMirrorSync'),
       },
     };
   }

@@ -193,6 +193,10 @@ bool IsOobeDrivePinningScreenEnabled() {
          ash::features::IsOobeChoobeEnabled();
 }
 
+bool IsDriveFsMirrorSyncAvailable(const Profile* const profile) {
+  return base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring);
+}
+
 std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
   switch (status) {
 #define PRINT(s)               \

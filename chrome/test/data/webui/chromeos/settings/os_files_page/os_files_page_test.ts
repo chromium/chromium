@@ -40,6 +40,11 @@ suite('<os-settings-files-page>', () => {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
+      {
+        key: 'drivefs.enable_mirror_sync',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
       // The OneDrive preferences that are required when navigating to the
       // officeFiles page route.
       {

@@ -3,6 +3,15 @@
   #driveAccountEmail {
     font: var(--cros-button-2-font);
   }
+  .subsection-header {
+    height: 24px;
+    padding-inline-start: var(--cr-section-padding);
+    padding-top: 12px;
+  }
+  .subsection {
+    margin-bottom: 8px;
+    padding-inline-start: var(--cr-section-indent-width);
+  }
 </style>
 
 <div class="settings-box two-line first">
@@ -158,4 +167,20 @@
       pref="{{prefs.gdata.cellular.disabled}}"
       label="$i18n{googleDriveEnabledOnMeteredNetworkLabel}">
   </settings-toggle-button>
+
+  <template is="dom-if"
+      if="[[isDriveFsMirrorSyncEnabled_]]"
+      restamp>
+    <div class="hr"></div>
+    <h2>$i18n{googleDriveFileSyncSectionTitle}</h2>
+    <!-- TODO(b/338154540): Move Bulk pinning into File Sync section. -->
+    <div class="subsection">
+      <settings-toggle-button
+          id="driveFsMirrorSync"
+          pref="{{prefs.drivefs.enable_mirror_sync}}"
+          label="$i18n{googleDriveMirrorSyncLabel}"
+          sub-label="$i18n{googleDriveMirrorSyncDescription}">
+      </settings-toggle-button>
+    </div>
+  </template>
 </template>

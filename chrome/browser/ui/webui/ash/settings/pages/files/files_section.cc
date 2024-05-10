@@ -249,7 +249,13 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"alwaysMoveToOneDrivePreferenceLabel",
        IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL},
       {"smbSharesTitleDescription",
-       IDS_OS_SETTINGS_REVAMP_DOWNLOADS_SMB_SHARES_DESCRIPTION}};
+       IDS_OS_SETTINGS_REVAMP_DOWNLOADS_SMB_SHARES_DESCRIPTION},
+      {"googleDriveFileSyncSectionTitle",
+       IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SECTION_TITLE},
+      {"googleDriveMirrorSyncLabel",
+       IDS_SETTINGS_GOOGLE_DRIVE_MIRROR_SYNC_TOGGLE_LABEL},
+      {"googleDriveMirrorSyncDescription",
+       IDS_SETTINGS_GOOGLE_DRIVE_MIRROR_SYNC_TOGGLE_DESCRIPTION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   smb_dialog::AddLocalizedStrings(html_source);
@@ -298,6 +304,9 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "enableSkyVault",
       base::FeatureList::IsEnabled(::features::kSkyVault) &&
           base::FeatureList::IsEnabled(::features::kSkyVaultV2));
+
+  html_source->AddBoolean("enableDriveFsMirrorSync",
+                          drive::util::IsDriveFsMirrorSyncAvailable(profile()));
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {

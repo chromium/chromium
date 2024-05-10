@@ -1238,6 +1238,16 @@
   <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always copy/move files to OneDrive without asking for confirmation.">
     Ask before copying or moving Microsoft files to Microsoft OneDrive
   </message>
+  <!--TODO(b/247049860): Finalize strings for MirrorSync. -->
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_SECTION_TITLE" desc="Label for section title which includs options to allow user tweak file sync configurations." translateable="false">
+    File Sync
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_MIRROR_SYNC_TOGGLE_LABEL" desc="Label for backup mode which allow user to toggle of Mirror Sync." translateable="false">
+    Backup your local files to Drive
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_MIRROR_SYNC_TOGGLE_DESCRIPTION" desc="Description for backup mode which allow user to toggle of Mirror Sync." translateable="false">
+    Backup all your files under My files to Google Drive.
+  </message>
 
   <!-- Accessibility -->
   <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL" desc="The name of a setting within accessibility settings that controls whether ChromeOS system shelf navigation buttons (for going back, home, or to overview) should be shown when the device is in tablet mode.">
