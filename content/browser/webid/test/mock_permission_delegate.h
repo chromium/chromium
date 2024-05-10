@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_PERMISSION_DELEGATE_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_PERMISSION_DELEGATE_H_
 
+#include "base/functional/callback.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -61,6 +62,8 @@ class MockPermissionDelegate
   MOCK_METHOD1(RegisterIdP, void(const ::GURL&));
   MOCK_METHOD1(UnregisterIdP, void(const ::GURL&));
   MOCK_METHOD0(GetRegisteredIdPs, std::vector<GURL>());
+  MOCK_METHOD2(OnSetRequiresUserMediation,
+               void(const url::Origin&, base::OnceClosure));
 };
 
 }  // namespace content

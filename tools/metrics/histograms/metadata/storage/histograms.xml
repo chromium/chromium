@@ -70,6 +70,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="API.StorageAccess.AutograntViaFedCmOutcome"
+    enum="AutograntViaFedCmOutcome" expires_after="2024-12-31">
+  <owner>cfredric@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <summary>
+    Records the outcomes when deciding whether to allow a Storage Access API
+    autogrant via FedCM permission.
+
+    Recorded in the browser process exactly once for each storage-access
+    permissions request that has autogrants via FedCM permission enabled.
+  </summary>
+</histogram>
+
 <histogram name="API.StorageAccess.DocumentInheritedStorageAccess"
     enum="BooleanInherited" expires_after="2024-09-15">
   <owner>cfredric@chromium.org</owner>

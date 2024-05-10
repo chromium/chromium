@@ -387,7 +387,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Check if the site requires user mediation due to a previous
   // `preventSilentAccess` call.
   bool RequiresUserMediation();
-  void SetRequiresUserMediation(bool requires_user_mediation);
+  void SetRequiresUserMediation(bool requires_user_mediation,
+                                base::OnceClosure callback);
 
   // Trigger a dialog to prompt the user to login to the IdP. `can_append_hints`
   // is true if the caller allows the login url to be augmented with login and

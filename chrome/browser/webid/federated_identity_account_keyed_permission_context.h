@@ -101,6 +101,10 @@ class FederatedIdentityAccountKeyedPermissionContext
       const net::SchemefulSite& identity_provider,
       base::OnceClosure callback);
 
+  // Handles updates when an origin's "requires user mediation" status changes.
+  void OnSetRequiresUserMediation(const url::Origin& relying_party,
+                                  base::OnceClosure callback);
+
   // permissions::ObjectPermissionContextBase:
   std::string GetKeyForObject(const base::Value::Dict& object) override;
 

@@ -96,6 +96,8 @@ class ShellFederatedPermissionContext
   void RegisterIdP(const ::GURL&) override;
   void UnregisterIdP(const ::GURL&) override;
   std::vector<GURL> GetRegisteredIdPs() override;
+  void OnSetRequiresUserMediation(const url::Origin& relying_party,
+                                  base::OnceClosure callback) override;
 
   void SetIdpStatusClosureForTesting(base::RepeatingClosure closure) {
     idp_signin_status_closure_ = std::move(closure);

@@ -76,6 +76,8 @@ class FederatedIdentityPermissionContext
   std::vector<GURL> GetRegisteredIdPs() override;
   void RegisterIdP(const GURL& url) override;
   void UnregisterIdP(const GURL& url) override;
+  void OnSetRequiresUserMediation(const url::Origin& relying_party,
+                                  base::OnceClosure callback) override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsInCookieUpdated(

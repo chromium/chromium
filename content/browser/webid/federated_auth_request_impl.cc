@@ -2536,7 +2536,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
             account_id_);
       }
 
-      SetRequiresUserMediation(false);
+      SetRequiresUserMediation(false, base::DoNothing());
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           idp_config_url, id_assertion_response_time_ - select_account_time_,
@@ -3093,9 +3093,16 @@ bool FederatedAuthRequestImpl::RequiresUserMediation() {
 }
 
 void FederatedAuthRequestImpl::SetRequiresUserMediation(
-    bool requires_user_mediation) {
+    bool requires_user_mediation,
+    base::OnceClosure callback) {
   auto_reauthn_permission_delegate_->SetRequiresUserMediation(
       origin(), requires_user_mediation);
+  if (permission_delegate_) {
+    permission_delegate_->OnSetRequiresUserMediation(origin(),
+                                                     std::move(callback));
+  } else {
+    std::move(callback).Run();
+  }
 }
 
 void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
@@ -3150,14 +3157,11 @@ void FederatedAuthRequestImpl::MaybeShowButtonModeModalDialog(
 
 void FederatedAuthRequestImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
-  SetRequiresUserMediation(true);
+  SetRequiresUserMediation(true, std::move(callback));
   if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
     RecordPreventSilentAccess(render_frame_host(), origin(),
                               GetEmbeddingOrigin());
   }
-
-  // Send acknowledge response back.
-  std::move(callback).Run();
 }
 
 void FederatedAuthRequestImpl::Disconnect(

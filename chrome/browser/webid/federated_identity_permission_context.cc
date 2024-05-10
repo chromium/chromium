@@ -85,6 +85,13 @@ void FederatedIdentityPermissionContext::MarkStorageAccessEligible(
       relying_party_embedder, identity_provider, std::move(callback));
 }
 
+void FederatedIdentityPermissionContext::OnSetRequiresUserMediation(
+    const url::Origin& relying_party,
+    base::OnceClosure callback) {
+  sharing_context_->OnSetRequiresUserMediation(relying_party,
+                                               std::move(callback));
+}
+
 void FederatedIdentityPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

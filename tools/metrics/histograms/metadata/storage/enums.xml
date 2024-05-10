@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AutograntViaFedCmOutcome">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Denied by permissions policy"/>
+  <int value="2" label="Denied by permission"/>
+  <int value="3" label="Denied by preventSilentAccess"/>
+</enum>
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>

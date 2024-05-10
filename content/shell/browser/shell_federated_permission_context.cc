@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "content/public/common/content_features.h"
 #include "content/shell/common/shell_switches.h"
 
@@ -83,11 +84,18 @@ void ShellFederatedPermissionContext::SetRequiresUserMediation(
   } else {
     require_user_mediation_sites_.erase(net::SchemefulSite(rp_origin));
   }
+  OnSetRequiresUserMediation(rp_origin, base::DoNothing());
 }
 
 bool ShellFederatedPermissionContext::RequiresUserMediation(
     const url::Origin& rp_origin) {
   return require_user_mediation_sites_.contains(net::SchemefulSite(rp_origin));
+}
+
+void ShellFederatedPermissionContext::OnSetRequiresUserMediation(
+    const url::Origin& relying_party,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(

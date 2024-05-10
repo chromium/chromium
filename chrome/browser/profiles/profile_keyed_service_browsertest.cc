@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "base/containers/to_vector.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
@@ -108,7 +109,8 @@ std::string DisplaySetDifference(
 void TestKeyedProfileServicesActives(
     Profile* profile,
     const std::set<std::string>& expected_active_services_names,
-    bool force_create_services = false) {
+    bool force_create_services = false,
+    const base::Location& location = FROM_HERE) {
   const std::vector<KeyedServiceBaseFactory*> keyedServiceFactories =
       GetKeyedServiceBaseFactories();
 
@@ -127,7 +129,8 @@ void TestKeyedProfileServicesActives(
 
   EXPECT_EQ(active_services_names, expected_active_services_names)
       << DisplaySetDifference(expected_active_services_names,
-                              active_services_names);
+                              active_services_names)
+      << ", expected at " << location.ToString();
 }
 
 }  // namespace
@@ -257,6 +260,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
+    "FederatedIdentityAutoReauthnPermissionContext",
     "FeedbackPrivateAPI",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileChangeServiceBridge",
@@ -280,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
+    "PermissionDecisionAutoBlocker",
     "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PredictionModelHandlerProvider",
@@ -425,6 +430,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "ExtensionWebUIOverrideRegistrar",
     "FederatedIdentityPermissionContext",
+    "FederatedIdentityAutoReauthnPermissionContext",
     "FeedbackPrivateAPI",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileChangeServiceBridge",
@@ -488,6 +494,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
+    "PermissionDecisionAutoBlocker",
     "PermissionHelper",
     "PermissionsManager",
     "PermissionsUpdaterShutdownFactory",

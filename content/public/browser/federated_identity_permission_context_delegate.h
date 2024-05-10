@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "url/origin.h"
 
@@ -99,6 +100,11 @@ class FederatedIdentityPermissionContextDelegate {
 
   // Unregisters an IdP.
   virtual void UnregisterIdP(const GURL& url) = 0;
+
+  // Updates internal state when an origin's "requires user mediation" status
+  // changes.
+  virtual void OnSetRequiresUserMediation(const url::Origin& relying_party,
+                                          base::OnceClosure callback) = 0;
 };
 
 }  // namespace content
