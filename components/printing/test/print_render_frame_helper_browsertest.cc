@@ -640,6 +640,31 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     EXPECT_EQ(1, result) << "afterprint event should be dispatched once.";
   }
 
+  // Count the number of pixels with `target_color` in the selected area, and
+  // the number of the remaining pixels that aren't white.
+  struct PixelCount {
+    unsigned with_target_color = 0;
+    unsigned unknown_nonwhite = 0;
+  };
+  PixelCount CheckPixels(const Image& image,
+                         uint32_t target_color,
+                         int width,
+                         int top,
+                         int bottom) {
+    PixelCount count;
+    for (int y = top; y < bottom; y++) {
+      for (int x = 0; x < width; x++) {
+        uint32_t pixel = image.pixel_at(x, y);
+        if (pixel == target_color) {
+          count.with_target_color++;
+        } else if (pixel != 0xffffffU) {
+          count.unknown_nonwhite++;
+        }
+      }
+    }
+    return count;
+  }
+
   TestPrintManagerHost* print_manager(content::RenderFrame* frame = nullptr) {
     if (!frame)
       frame = content::RenderFrame::FromWebFrame(GetMainFrame());
@@ -993,6 +1018,222 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, RoundingAndHeadersAndFooters) {
   // Bottom left corner:
   EXPECT_EQ(image.pixel_at(2, 13), 0xffffffU);
   EXPECT_EQ(image.pixel_at(3, 12), 0x0000ffU);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooter) {
+  // The headers and footers template has a padding of 15pt. To fit something
+  // that's 9pt tall, we need 24pt. Also note that all pt values used here are
+  // divisble by 3, so that they convert nicely to CSS pixels (this is what the
+  // layout engine uses) and back.
+  const float kPageWidth = 450;
+  const float kPageHeight = 450;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 450pt;
+        margin: 24pt 0;
+      }
+      @page second {
+        margin-bottom: 21pt;
+      }
+      @page third {
+        margin-top: 21pt;
+      }
+      body {
+        line-height: 2em;
+        background: red;
+      }
+    </style>
+    <div>Page 1</div>
+    <div style="page:second;">Page 2</div>
+    <div style="page:third;">Page 3</div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='height:9pt; border-left:9pt solid #00f;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  // First page.
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  PixelCount pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Second page.
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. It will be missing, because
+  // the margin isn't large enough.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 21, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Third page.
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. It will be missing, because
+  // the margin isn't large enough.
+  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 21);
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
+  const float kPageWidth = 612;
+  const float kPageHeight = 792;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        /* A large square-sized page will be scaled down (and centered). Since
+           the printer is in portrait mode, it means that there will be
+           additional space above and below the page border-box, which in turn
+           means that the requested margins can be honored. */
+        size: 900pt;
+        margin: 24pt 0;
+      }
+      @page second {
+        /* When the requested page box size needs to be scaled down to fit on
+           "paper", margins will also be scaled down, which may mean that
+            headers and footers no longer fit. */
+        size: 600pt 900pt;
+        margin-top: 60pt;
+      }
+      @page third {
+        /* The requested size is way smaller than the printer size, and the page
+           is centered on "paper". Even if margins are specified as 0, there's
+           still plenty of room for headers and footers. */
+        size: 300px;
+        margin: 0;
+      }
+      body {
+        line-height: 2em;
+        background: red;
+      }
+    </style>
+    <div>Page 1</div>
+    <div style="page:second;">Page 2</div>
+    <div style="page:third;">Page 3</div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+  // Fit content to the printer size (which is US letter).
+  params.print_scaling_option =
+      mojom::PrintScalingOption::kCenterShrinkToFitPaper;
+  params.prefer_css_page_size = false;
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #00f;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  PixelCount pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. The margin-top on this
+  // particular page is extral large, so there should be room for the header,
+  // even if the margins have been scaled down along with the rest of the page
+  // box.
+  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. It shouldn't be there, since
+  // there isn't enough room for it.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  // Due to the margin downscaling, the red body background will intersect with
+  // this area.
+  EXPECT_GT(pixel_count.unknown_nonwhite, 0u);
+
+  // Third page:
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. Even if the specified margins
+  // on this particular page are 0, the page is small and centered on the page,
+  // leaving plenty of space for headers and footers.
+  pixel_count = CheckPixels(*image, 0x0000ffU, kPageWidth, 0, 24);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. Even if the specified
+  // margins on this particular page are 0, the page is small and centered on
+  // the page, leaving plenty of space for headers and footers.
+  pixel_count =
+      CheckPixels(*image, 0xffff00U, kPageWidth, kPageHeight - 24, kPageHeight);
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 }
 
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
