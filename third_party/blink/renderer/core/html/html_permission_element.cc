@@ -355,6 +355,17 @@ bool HTMLPermissionElement::SupportsFocus(UpdateBehavior) const {
   return !permission_descriptors_.empty();
 }
 
+int HTMLPermissionElement::DefaultTabIndex() const {
+  // The permission element behaves similarly to a button and therefore is
+  // focusable via keyboard by default.
+  return 0;
+}
+
+CascadeFilter HTMLPermissionElement::GetCascadeFilter() const {
+  // Reject all properties for which 'kValidForPermissionElement' is false.
+  return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
+}
+
 // static
 Vector<PermissionDescriptorPtr>
 HTMLPermissionElement::ParsePermissionDescriptorsForTesting(

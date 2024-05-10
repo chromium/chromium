@@ -51,6 +51,8 @@ class CORE_EXPORT HTMLPermissionElement final
   void DetachLayoutTree(bool performing_reattach) override;
   void Focus(const FocusParams& params) override;
   bool SupportsFocus(UpdateBehavior) const override;
+  int DefaultTabIndex() const override;
+  CascadeFilter GetCascadeFilter() const override;
 
   bool granted() const { return permissions_granted_; }
 
@@ -61,11 +63,6 @@ class CORE_EXPORT HTMLPermissionElement final
 
   const Member<HTMLSpanElement>& permission_text_span_for_testing() const {
     return permission_text_span_;
-  }
-
-  CascadeFilter GetCascadeFilter() const override {
-    // Reject all properties for which 'kValidForPermissionElement' is false.
-    return CascadeFilter(CSSProperty::kValidForPermissionElement, false);
   }
 
   bool IsFullyVisibleForTesting() const { return is_fully_visible_; }
