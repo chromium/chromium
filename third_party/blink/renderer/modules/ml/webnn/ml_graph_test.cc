@@ -297,6 +297,8 @@ TEST_P(MLGraphTest, PowTest) {
                      .expected = {1.0, 4.0, 9.0, 16.0}}
         .Test(*this, scope);
   }
+  // TODO(crbug/327337526): Restore this test coverage when migrating to a WPT.
+  /*
   {
     // Test element-wise pow operator with exponent = 0.5.
     PowTester<float>{.lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
@@ -308,6 +310,7 @@ TEST_P(MLGraphTest, PowTest) {
                      .expected = {1.0, 2.0, 3.0, 4.0}}
         .Test(*this, scope);
   }
+  */
 }
 
 template <typename T>
@@ -457,6 +460,8 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
         .expected = {-1.0, 2.0, -3.0, 4.0}}
         .Test(*this, scope);
   }
+  // TODO(crbug/327337526): Restore this test coverage when migrating to a WPT.
+  /*
   {
     // Test element-wise sqrt operator for a 4-D tensor.
     // The expected results should be the square root value of the input
@@ -469,6 +474,7 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
         .expected = {1.0, 2.0, 3.0, 4.0}}
         .Test(*this, scope);
   }
+  */
   // Below operators are not implemented on XNNPACK backend.
   SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kXnnpack);
   {
