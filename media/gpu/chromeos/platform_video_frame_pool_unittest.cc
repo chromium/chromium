@@ -41,13 +41,15 @@ CroStatus::Or<scoped_refptr<FrameResource>> CreateGpuMemoryBufferFrameResource(
   std::optional<gfx::BufferFormat> gfx_format =
       VideoPixelFormatToGfxBufferFormat(format);
   DCHECK(gfx_format);
-  const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+  scoped_refptr<gpu::ClientSharedImage>
+      empty_shared_images[VideoFrame::kMaxPlanes];
   return static_cast<scoped_refptr<FrameResource>>(
       VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
           visible_rect, natural_size,
           std::make_unique<FakeGpuMemoryBuffer>(coded_size, *gfx_format,
                                                 modifier),
-          mailbox_holders, base::NullCallback(), timestamp)));
+          empty_shared_images, gpu::SyncToken(), /*texture_target=*/0,
+          base::NullCallback(), timestamp)));
 }
 
 CroStatus::Or<scoped_refptr<FrameResource>>

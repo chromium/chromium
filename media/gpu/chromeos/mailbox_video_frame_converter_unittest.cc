@@ -221,12 +221,14 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // Let's now feed each of the |gmb_frames| to the MailboxVideoFrameConverter
   // and verify that the GpuDelegate gets used correctly.
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
-    gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
+    scoped_refptr<gpu::ClientSharedImage>
+        empty_shared_images[media::VideoFrame::kMaxPlanes];
     scoped_refptr<VideoFrame> video_frame =
         VideoFrame::WrapExternalGpuMemoryBuffer(
             kVisibleRect, kNaturalSize,
             std::make_unique<FakeGpuMemoryBuffer>(kCodedSize, kBufferFormat),
-            empty_mailboxes, base::NullCallback(),
+            empty_shared_images, gpu::SyncToken(), /*texture_target=*/0,
+            base::NullCallback(),
             /*timestamp=*/base::TimeDelta());
     ASSERT_TRUE(video_frame);
     video_frame->metadata().needs_detiling = needs_detiling;

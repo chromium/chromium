@@ -123,12 +123,13 @@ scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
     return nullptr;
   }
 
-  gpu::MailboxHolder dummy_mailbox[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage>
+      dummy_shared_images[media::VideoFrame::kMaxPlanes];
   scoped_refptr<media::FrameResource> gmb_frame =
       VideoFrameResource::Create(media::VideoFrame::WrapExternalGpuMemoryBuffer(
           mojo_frame->visible_rect, mojo_frame->natural_size,
-          std::move(gpu_memory_buffer), dummy_mailbox, base::NullCallback(),
-          mojo_frame->timestamp));
+          std::move(gpu_memory_buffer), dummy_shared_images, gpu::SyncToken(),
+          0, base::NullCallback(), mojo_frame->timestamp));
   if (!gmb_frame) {
     VLOGF(2) << "Could not create a GpuMemoryBuffer-backed VideoFrame";
     return nullptr;

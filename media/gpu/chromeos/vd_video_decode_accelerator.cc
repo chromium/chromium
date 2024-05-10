@@ -567,15 +567,15 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     return;
   }
 
-  const gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes] = {};
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
   // FrameResource::CreateWrappingFrame() will check whether the updated
   // visible_rect is sub rect of the original visible_rect. Therefore we set
   // visible_rect as large as coded_size to guarantee this condition.
   scoped_refptr<FrameResource> origin_frame =
       VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(layout_->coded_size()), layout_->coded_size(),
-          std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
-          base::TimeDelta()));
+          std::move(gpu_memory_buffer), shared_images, gpu::SyncToken(), 0,
+          base::NullCallback(), base::TimeDelta()));
 
   // This passes because GetFrameStorageType() is hard coded to match the
   // storage type of frames produced by

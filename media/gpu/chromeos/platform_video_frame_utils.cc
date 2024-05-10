@@ -371,11 +371,14 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     frame = WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
         visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
   } else {
-    // The empty mailbox is ok because this VideoFrame is not rendered.
-    const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+    // The empty shared image array is ok because this VideoFrame is not
+    // rendered.
+    scoped_refptr<gpu::ClientSharedImage>
+        empty_shared_images[VideoFrame::kMaxPlanes];
     frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer),
-        mailbox_holders, base::NullCallback(), timestamp);
+        empty_shared_images, gpu::SyncToken(), /*texture_target=*/0,
+        base::NullCallback(), timestamp);
   }
 
   if (!frame)
