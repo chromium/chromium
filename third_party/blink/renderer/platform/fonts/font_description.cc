@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 #include "base/memory/values_equivalent.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -715,21 +714,6 @@ String FontDescription::ToString(FontVariantPosition variant_position) {
   return "Unknown";
 }
 
-String FontDescription::ToString(FontVariantEmoji variant_emoji) {
-  switch (variant_emoji) {
-    case FontVariantEmoji::kNormalVariantEmoji:
-      return "Normal";
-    case FontVariantEmoji::kTextVariantEmoji:
-      return "Text";
-    case FontVariantEmoji::kEmojiVariantEmoji:
-      return "Emoji";
-    case FontVariantEmoji::kUnicodeVariantEmoji:
-      return "Unicode";
-  }
-  NOTREACHED();
-  return "Unknown";
-}
-
 static const char* ToBooleanString(bool value) {
   return value ? "true" : "false";
 }
@@ -786,7 +770,7 @@ String FontDescription::ToString() const {
       FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str(),
       FontDescription::ToString(GetFontSynthesisSmallCaps()).Ascii().c_str(),
       FontDescription::ToString(VariantPosition()).Ascii().c_str(),
-      FontDescription::ToString(VariantEmoji()).Ascii().c_str());
+      blink::ToString(VariantEmoji()).Ascii().c_str());
 }
 
 }  // namespace blink

@@ -280,8 +280,7 @@ void FontBuilder::SetVariantPosition(
   font_description_.SetVariantPosition(variant_position);
 }
 
-void FontBuilder::SetVariantEmoji(
-    FontDescription::FontVariantEmoji variant_emoji) {
+void FontBuilder::SetVariantEmoji(FontVariantEmoji variant_emoji) {
   Set(PropertySetFlag::kVariantEmoji);
 
   font_description_.SetVariantEmoji(variant_emoji);

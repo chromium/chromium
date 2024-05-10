@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_east_asian.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/fonts/font_width_variant.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
@@ -124,14 +125,6 @@ class PLATFORM_EXPORT FontDescription {
     kSuperVariantPosition
   };
   static String ToString(FontVariantPosition);
-
-  enum FontVariantEmoji {
-    kNormalVariantEmoji,
-    kTextVariantEmoji,
-    kEmojiVariantEmoji,
-    kUnicodeVariantEmoji
-  };
-  static String ToString(FontVariantEmoji);
 
   FontDescription();
   FontDescription(const FontDescription&);

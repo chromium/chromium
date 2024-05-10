@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -87,7 +88,7 @@ class CORE_EXPORT FontBuilder {
   void SetFontSmoothing(FontSmoothingMode);
   void SetVariationSettings(scoped_refptr<const FontVariationSettings>);
   void SetVariantPosition(FontDescription::FontVariantPosition);
-  void SetVariantEmoji(FontDescription::FontVariantEmoji);
+  void SetVariantEmoji(FontVariantEmoji);
 
   // FIXME: These need to just vend a Font object eventually.
   // UpdateFontDescription() returns true if any properties were actually
@@ -161,9 +162,7 @@ class CORE_EXPORT FontBuilder {
   static FontDescription::FontVariantPosition InitialVariantPosition() {
     return FontDescription::kNormalVariantPosition;
   }
-  static FontDescription::FontVariantEmoji InitialVariantEmoji() {
-    return FontDescription::kNormalVariantEmoji;
-  }
+  static FontVariantEmoji InitialVariantEmoji() { return kNormalVariantEmoji; }
 
  private:
   void SetFamilyDescription(FontDescription&,

@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/style/style_reflection.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
@@ -176,9 +177,8 @@ class StyleBuilderConverter {
   static FontDescription::FontVariantPosition ConvertFontVariantPosition(
       StyleResolverState&,
       const CSSValue&);
-  static FontDescription::FontVariantEmoji ConvertFontVariantEmoji(
-      StyleResolverState&,
-      const CSSValue&);
+  static FontVariantEmoji ConvertFontVariantEmoji(StyleResolverState&,
+                                                  const CSSValue&);
   static FontDescription::Kerning ConvertFontKerning(StyleResolverState&,
                                                      const CSSValue&);
   static OpticalSizing ConvertFontOpticalSizing(StyleResolverState&,

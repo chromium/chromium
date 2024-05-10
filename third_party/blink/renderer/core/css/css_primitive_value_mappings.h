@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -1041,20 +1042,19 @@ inline FontSmoothingMode CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(
-    FontDescription::FontVariantEmoji variant_emoji)
+inline CSSIdentifierValue::CSSIdentifierValue(FontVariantEmoji variant_emoji)
     : CSSValue(kIdentifierClass) {
   switch (variant_emoji) {
-    case FontDescription::kNormalVariantEmoji:
+    case kNormalVariantEmoji:
       value_id_ = CSSValueID::kNormal;
       return;
-    case FontDescription::kTextVariantEmoji:
+    case kTextVariantEmoji:
       value_id_ = CSSValueID::kText;
       return;
-    case FontDescription::kEmojiVariantEmoji:
+    case kEmojiVariantEmoji:
       value_id_ = CSSValueID::kEmoji;
       return;
-    case FontDescription::kUnicodeVariantEmoji:
+    case kUnicodeVariantEmoji:
       value_id_ = CSSValueID::kUnicode;
       return;
   }
@@ -1064,22 +1064,22 @@ inline CSSIdentifierValue::CSSIdentifierValue(
 }
 
 template <>
-inline FontDescription::FontVariantEmoji CSSIdentifierValue::ConvertTo() const {
+inline FontVariantEmoji CSSIdentifierValue::ConvertTo() const {
   switch (value_id_) {
     case CSSValueID::kNormal:
-      return FontDescription::kNormalVariantEmoji;
+      return kNormalVariantEmoji;
     case CSSValueID::kText:
-      return FontDescription::kTextVariantEmoji;
+      return kTextVariantEmoji;
     case CSSValueID::kEmoji:
-      return FontDescription::kEmojiVariantEmoji;
+      return kEmojiVariantEmoji;
     case CSSValueID::kUnicode:
-      return FontDescription::kUnicodeVariantEmoji;
+      return kUnicodeVariantEmoji;
     default:
       break;
   }
 
   NOTREACHED();
-  return FontDescription::kNormalVariantEmoji;
+  return kNormalVariantEmoji;
 }
 
 template <>

@@ -689,6 +689,8 @@ component("platform") {
     "fonts/font_variant_alternates.h",
     "fonts/font_variant_east_asian.cc",
     "fonts/font_variant_east_asian.h",
+    "fonts/font_variant_emoji.cc",
+    "fonts/font_variant_emoji.h",
     "fonts/font_variant_numeric.cc",
     "fonts/font_variant_numeric.h",
     "fonts/font_vertical_position_type.h",

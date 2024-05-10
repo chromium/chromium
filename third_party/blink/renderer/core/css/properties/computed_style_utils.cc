@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -1535,8 +1536,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();
   FontDescription::FontVariantPosition variant_position =
       style.GetFontDescription().VariantPosition();
-  FontDescription::FontVariantEmoji variant_emoji =
-      style.GetFontDescription().VariantEmoji();
+  FontVariantEmoji variant_emoji = style.GetFontDescription().VariantEmoji();
   OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
 
   if (kerning != FontDescription::kAutoKerning ||
@@ -1545,7 +1545,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
        style.GetFontDescription().HasSizeAdjust()) ||
       variant_position != FontDescription::kNormalVariantPosition ||
       (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
-       variant_emoji != FontDescription::kNormalVariantEmoji)) {
+       variant_emoji != kNormalVariantEmoji)) {
     return nullptr;
   }
 
