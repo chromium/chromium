@@ -64,7 +64,9 @@ class AuthenticatorRequestBubbleDelegate
   AuthenticatorRequestBubbleDelegate(views::View* anchor_view,
                                      AuthenticatorRequestDialogModel* model)
       : BubbleDialogDelegateView(anchor_view,
-                                 views::BubbleBorder::Arrow::TOP_RIGHT),
+                                 views::BubbleBorder::Arrow::TOP_RIGHT,
+                                 views::BubbleBorder::DIALOG_SHADOW,
+                                 true),
         model_(model),
         step_(model_->step()),
         bubble_contents_(GetContents(step_)) {
@@ -153,7 +155,6 @@ class AuthenticatorRequestBubbleDelegate
     step_ = model_->step();
     bubble_contents_ = GetContents(step_);
     ConfigureView();
-    SizeToContents();
   }
 
  private:
