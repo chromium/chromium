@@ -21,7 +21,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {minOverflowLengthToScroll, openMenu, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
@@ -127,6 +127,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       textStyleOptions_: Array,
       textStyleToggles_: Array,
       paused: Boolean,
+      speechActuallyPlaying: Boolean,
       isReadAloudPlayable: Boolean,
       selectedVoice: Object,
       voicePackInstallStatus: Map,
@@ -136,6 +137,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       previewVoicePlaying: Object,
       areFontsLoaded_: Boolean,
     };
+  }
+
+  static get observers() {
+    return ['onSpeechPlayingStateChanged_(paused, speechActuallyPlaying)'];
   }
 
   // This function has to be static because it's called from the ResizeObserver
@@ -357,6 +362,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
+
+  private hideSpinner: boolean = true;
+
+  private debouncer_: Debouncer|null = null;
 
   // If Read Aloud is playable. Certain states, such as when Read Anything does
   // not have content or when the speech engine is loading should disable
@@ -949,6 +958,28 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
     this.updateFocus_(focusableElements, newIndex);
   }
+
+
+  private onSpeechPlayingStateChanged_(
+      paused: boolean, speechActuallyPlaying: boolean) {
+    // Use a debouncer to reduce glitches. Even when audio is fast to respond to
+    // the play button, there are still milliseconds of delay. To prevent the
+    // spinner from quickly appearing and disappearing, we use a debouncer. If
+    // either the values of `paused` or `speechActuallyPlaying` change, the
+    // previously scheduled callback is canceled and a new callback is
+    // scheduled.
+    // TODO (b/339860819) improve debouncer logic so that the spinner disappears
+    // immediately when speech starts playing, or when the paused button is hit.
+    this.debouncer_ =
+        Debouncer.debounce(this.debouncer_, timeOut.after(150), () => {
+          if (paused) {
+            this.hideSpinner = true;
+          } else {
+            this.hideSpinner = speechActuallyPlaying;
+          }
+        });
+  }
+
 
   private updateFocus_(focusableElements: HTMLElement[], newIndex: number) {
     // Close the overflow menu if the next button is not in the menu.

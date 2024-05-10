@@ -203,9 +203,18 @@ export enum WordBoundaryMode {
 }
 
 export interface SpeechPlayingState {
+  // Did the user press play or pause
   paused: boolean;
   pauseSource?: PauseActionSource;
+  // Has the user pressed `play` on this page.
+  // TODO rename `speechStarted`, `paused` and `speechActuallyPlaying` to be
+  // clearer.
   speechStarted: boolean;
+  // Indicates that speech is currently playing. This differs from `paused`.
+  // When a user presses the play button, paused becomes false, but
+  // `speechActuallyPlaying` will tell us whether audio actually started playing
+  // yet.
+  speechActuallyPlaying: boolean;
 }
 
 export interface WordBoundaryState {
@@ -343,6 +352,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     paused: true,
     pauseSource: PauseActionSource.DEFAULT,
     speechStarted: false,
+    speechActuallyPlaying: false,
   };
 
   maxSpeechLength = 175;
@@ -1187,6 +1197,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.speechPlayingState = {
       ...this.speechPlayingState,
       paused: true,
+      speechActuallyPlaying: false,
       pauseSource,
     };
 
@@ -1275,7 +1286,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.highlightAndPlayInterruptedMessage();
       }
 
-      this.speechPlayingState = {paused: false, speechStarted: true};
+      this.speechPlayingState = {
+        paused: false,
+        speechStarted: true,
+        speechActuallyPlaying: this.speechPlayingState.speechActuallyPlaying,
+      };
 
       // Hide links when speech resumes. We only hide links when the page was
       // paused from the play/pause button.
@@ -1297,7 +1312,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     if (container.textContent) {
-      this.speechPlayingState = {paused: false, speechStarted: true};
+      this.speechPlayingState = {
+        paused: false,
+        speechStarted: true,
+        speechActuallyPlaying: this.speechPlayingState.speechActuallyPlaying,
+      };
       // Hide links when speech begins playing.
       if (chrome.readingMode.linksEnabled) {
         this.updateLinks();
@@ -1507,6 +1526,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // We've gotten the signal that the speech engine has loaded, therefore
       // we can enable the Read Aloud buttons.
       this.speechEngineLoaded = true;
+
+      if (!this.speechPlayingState.speechActuallyPlaying) {
+        this.speechPlayingState = {
+          ...this.speechPlayingState,
+          speechActuallyPlaying: true,
+        };
+      }
     };
 
     message.onend = () => {
@@ -1718,6 +1744,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       paused: true,
       pauseSource: PauseActionSource.DEFAULT,
       speechStarted: false,
+      speechActuallyPlaying: false,
     };
     this.previousHighlight_ = [];
     this.resetToDefaultWordBoundaryState();

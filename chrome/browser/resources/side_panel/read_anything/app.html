@@ -110,6 +110,7 @@
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
       paused="[[speechPlayingState.paused]]"
+      speech-actually-playing="[[speechPlayingState.speechActuallyPlaying]]"
       is-read-aloud-playable=
       "[[isReadAloudPlayable(
         hasContent_, speechEngineLoaded, willDrawAgainSoon_)]]"
