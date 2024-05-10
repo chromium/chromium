@@ -865,8 +865,16 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
                 ->transform_tree_index());
 }
 
-class CompositingSimTest : public PaintTestConfigurations, public SimTest {
+constexpr unsigned kFillScrollingContentsLayer = 1 << 10;
+
+class CompositingSimTest : public PaintTestConfigurations,
+                           public SimTest,
+                           private ScopedFillScrollingContentsLayerForTest {
  public:
+  CompositingSimTest()
+      : ScopedFillScrollingContentsLayerForTest(GetParam() &
+                                                kFillScrollingContentsLayer) {}
+
   void InitializeWithHTML(const String& html) {
     SimRequest request("https://example.com/test.html", "text/html");
     LoadURL("https://example.com/test.html");
@@ -936,7 +944,11 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(CompositingSimTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CompositingSimTest,
+                         ::testing::Values(PAINT_TEST_SUITE_P_VALUES,
+                                           kHitTestOpaqueness |
+                                               kFillScrollingContentsLayer));
 
 TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
   InitializeWithHTML(R"HTML(
@@ -3350,7 +3362,10 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
                                                     ->GetScrollableArea()
                                                     ->GetScrollElementId()));
   ASSERT_TRUE(layer);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() ||
+      // This will make a difference when UseRecordedBoundsForTiling is enabled
+      // by default.
+      RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
     EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
               layer->GetRecordingSourceForTesting()->recorded_bounds());

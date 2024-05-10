@@ -17,13 +17,11 @@
 
 namespace blink {
 
-enum {
-  kUnderInvalidationChecking = 1 << 0,
-  kUsedColorSchemeRootScrollbars = 1 << 1,
-  kFluentScrollbar = 1 << 2,
-  kHitTestOpaqueness = 1 << 4,
-  kElementCapture = 1 << 5,
-};
+inline constexpr unsigned kUnderInvalidationChecking = 1 << 0;
+inline constexpr unsigned kUsedColorSchemeRootScrollbars = 1 << 1;
+inline constexpr unsigned kFluentScrollbar = 1 << 2;
+inline constexpr unsigned kHitTestOpaqueness = 1 << 4;
+inline constexpr unsigned kElementCapture = 1 << 5;
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,

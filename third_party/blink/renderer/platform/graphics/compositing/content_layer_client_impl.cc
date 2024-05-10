@@ -30,6 +30,9 @@ namespace {
 bool DrawingShouldFillScrollingContentsLayer(
     const PropertyTreeState& layer_state,
     const cc::PictureLayer& layer) {
+  if (!RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
+    return false;
+  }
   if (!layer.draws_content()) {
     return false;
   }
@@ -143,6 +146,10 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
       paint_chunks, layer_state, layer_offset,
       base::OptionalToPtr(raster_under_invalidation_params),
       *cc_display_item_list_);
+
+  // DrawingShouldFillScrollingContentsLayer() depends on this.
+  cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
+
   if (is_mask_layer || DrawingShouldFillScrollingContentsLayer(
                            layer_state, *cc_picture_layer_)) {
     cc_display_item_list_->StartPaint();
@@ -150,8 +157,6 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
     cc_display_item_list_->EndPaintOfUnpaired(gfx::Rect(layer_bounds));
   }
   cc_display_item_list_->Finalize();
-
-  cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
 
   cc_picture_layer_->SetBackgroundColor(pending_layer.ComputeBackgroundColor());
   bool contents_opaque =
