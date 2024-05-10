@@ -410,8 +410,13 @@ export class ImageRequestTask {
                   video.addEventListener('loadeddata', () => resolve());
                 }
               });
-              const halfDuration = video.duration / 2;
-              video.currentTime = halfDuration;
+              // For videos with longer duration (>= 6 seconds), consider the
+              // frame at 3rd second, or use the frame at midpoint otherwise.
+              // This ensures the target position is always close to the
+              // beginning of the video. Seek operations may be costly if the
+              // video doesn't contain keyframes for referencing.
+              const thumbnailPosition = Math.min(video.duration / 2, 3);
+              video.currentTime = thumbnailPosition;
             });
             video.addEventListener('error', reject);
             video.preload = 'metadata';
