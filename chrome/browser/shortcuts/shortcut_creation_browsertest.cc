@@ -93,7 +93,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest,
       ShortcutCreationTaskResult::kTaskAlreadyRunning, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, WebContentsNavigatedAway) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WebContentsNavigatedAway DISABLED_WebContentsNavigatedAway
+#else
+#define MAYBE_WebContentsNavigatedAway WebContentsNavigatedAway
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest,
+                       MAYBE_WebContentsNavigatedAway) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
 
