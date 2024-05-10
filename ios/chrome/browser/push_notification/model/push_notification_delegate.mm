@@ -12,16 +12,22 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/prepopulated_engines.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_prepopulate_data.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -202,11 +208,29 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   config.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
 
-  if (IsContentPushNotificationsEnabled() && browserState) {
+  if (browserState) {
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(browserState);
-    if (authService &&
-        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    BOOL isSignedIn = authService && authService->HasPrimaryIdentity(
+                                         signin::ConsentLevel::kSignin);
+    const TemplateURL* defaultSearchURLTemplate =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+            ->GetDefaultSearchProvider();
+    bool isDefaultSearchEngine = defaultSearchURLTemplate &&
+                                 defaultSearchURLTemplate->prepopulate_id() ==
+                                     TemplateURLPrepopulateData::google.id;
+    PrefService* prefService = browserState->GetPrefs();
+    // Created the local variables to make sure all experimental types have been
+    // checked, because multiple experimental types can be enabled at the same
+    // time, and the UMA will be active after the feature check.
+    bool contentNotificationEnabled = IsContentNotificationEnabled(
+        isSignedIn, isDefaultSearchEngine, prefService);
+    bool contentNotificationRegistered = IsContentNotificationRegistered(
+        isSignedIn, isDefaultSearchEngine, prefService);
+    config.shouldRegisterContentNotification =
+        contentNotificationEnabled || contentNotificationRegistered;
+
+    if (config.shouldRegisterContentNotification) {
       id<SystemIdentity> identity =
           authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       config.primaryAccount = identity;

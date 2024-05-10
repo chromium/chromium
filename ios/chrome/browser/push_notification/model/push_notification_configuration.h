@@ -45,6 +45,9 @@ using GaiaIdToPushNotificationPreferenceMap =
 // The primary account's identity. Used for Content Notification registration.
 @property(nonatomic, strong) id<SystemIdentity> primaryAccount;
 
+// `YES` if the user should be registered to Content Notification.
+@property(nonatomic, assign) BOOL shouldRegisterContentNotification;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CONFIGURATION_H_
