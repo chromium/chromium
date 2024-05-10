@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/lens/lens_features.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,19 +38,6 @@ class LensWebUIBrowserTest : public WebUIMochaBrowserTest {
   void SetUpOnMainThread() override {
     WebUIMochaBrowserTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
-
-    // Permits sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
-  }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    WebUIMochaBrowserTest::TearDownOnMainThread();
-
-    // Disallow sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   }
 
  private:

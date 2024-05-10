@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
-#include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -249,25 +248,10 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
     return;
   }
 
-  // Request user permission before grabbing a screenshot.
-  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
-  CHECK(tab_browser);
-  CHECK(pref_service_);
-  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_)) {
-    if (!permission_bubble_controller_) {
-      permission_bubble_controller_ =
-          lens::LensPermissionBubbleController::CreateInstance(tab_browser,
-                                                               pref_service_);
-    }
-    permission_bubble_controller_->RequestPermission(
-        tab_->GetContents(),
-        base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source));
-    return;
-  }
-
   // Create the results side panel coordinator when showing the UI if it does
   // not already exist for this tab's web contents.
+  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
+  CHECK(tab_browser);
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
         std::make_unique<lens::LensOverlaySidePanelCoordinator>(
@@ -339,8 +323,6 @@ void LensOverlayController::CloseUI() {
       permission_request_manager->CanRestorePrompt()) {
     permission_request_manager->RestorePrompt();
   }
-
-  permission_bubble_controller_.reset();
 
   results_side_panel_coordinator_.reset();
 

@@ -5,18 +5,15 @@
 // This class runs CUJ tests for lens overlay. These tests simulate input events
 // and cannot be run in parallel.
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -40,19 +37,11 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
-
-    // Permits sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   }
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
-
-    // Disallow sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   }
 
   InteractiveTestApi::MultiStep OpenLensOverlay() {
