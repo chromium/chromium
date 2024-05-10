@@ -84,45 +84,41 @@ suite('UpdateVoicePack', () => {
       };
     }
 
-    // TODO: crbug.com/337149357 - Fix flakiness of this specific test on Mac.
-    // test('downloaded if voices not updated yet', () => {
-    //   const lang = 'fr';
-
-    //   app.updateVoicePackStatus(lang, 'kInstalled');
-
-    //   assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
-    // });
-
-    test('downloaded if natural voices are added for a different lang', () => {
-      const lang = 'fr';
-      addNaturalVoicesForLang('it');
-
-      app.updateVoicePackStatus(lang, 'kInstalled');
-
-      assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
-    });
-
     test(
-        'downloaded if non-natural voices are added for a different lang',
+        'downloaded if natural voices are in the list for a different lang',
         () => {
-          const lang = 'de';
-          app.synth = new FakeSpeechSynthesis();
+          const lang = 'fr';
+          addNaturalVoicesForLang('it');
 
           app.updateVoicePackStatus(lang, 'kInstalled');
 
           assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
         });
 
-    test('installed if non-natural voices added for this lang', () => {
-      const lang = 'en';
-      app.synth = new FakeSpeechSynthesis();
+    test(
+        'downloaded if non-natural voices are in the list for a different lang',
+        () => {
+          const lang = 'de';
+          app.synth = new FakeSpeechSynthesis();
 
-      app.updateVoicePackStatus(lang, 'kInstalled');
+          // Installed 'de' language pack, but the fake available voice list
+          // only has english voices.
+          app.updateVoicePackStatus(lang, 'kInstalled');
 
-      assertEquals(getInstallStatus(lang), VoicePackStatus.INSTALLED);
-    });
+          assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
+        });
 
-    test('installed if natural voices are added for this lang', () => {
+    test(
+        'installed if non-natural voices are in the list for this lang', () => {
+          const lang = 'en';
+          app.synth = new FakeSpeechSynthesis();
+
+          app.updateVoicePackStatus(lang, 'kInstalled');
+
+          assertEquals(getInstallStatus(lang), VoicePackStatus.INSTALLED);
+        });
+
+    test('installed if natural voices are in the list for this lang', () => {
       const lang = 'en';
       addNaturalVoicesForLang(lang);
 
