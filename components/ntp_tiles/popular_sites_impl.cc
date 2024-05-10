@@ -356,10 +356,6 @@ PopularSitesImpl::sections() const {
   return sections_;
 }
 
-GURL PopularSitesImpl::GetLastURLFetched() const {
-  return GURL(prefs_->GetString(prefs::kPopularSitesURLPref));
-}
-
 GURL PopularSitesImpl::GetURLToFetch() {
   const std::string directory = GetDirectoryToFetch();
   const std::string country = GetCountryToFetch();
