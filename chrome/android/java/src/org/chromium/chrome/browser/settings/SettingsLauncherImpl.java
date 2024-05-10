@@ -12,6 +12,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -24,6 +26,12 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 
 /** Implementation class for launching a {@link SettingsActivity}. */
 public class SettingsLauncherImpl implements SettingsLauncher {
+    /** Can be used by native code to inject SettingsLauncher in modularized Java code. */
+    @CalledByNative
+    private static SettingsLauncher create() {
+        return new SettingsLauncherImpl();
+    }
+
     public SettingsLauncherImpl() {}
 
     @Override
