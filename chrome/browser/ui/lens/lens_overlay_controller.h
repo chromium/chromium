@@ -24,8 +24,9 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace lens {
-class LensOverlaySidePanelCoordinator;
 class LensOverlayQueryController;
+class LensOverlaySidePanelCoordinator;
+class LensPermissionBubbleController;
 }  // namespace lens
 
 namespace views {
@@ -350,6 +351,11 @@ class LensOverlayController : public LensSearchboxClient,
     return initialization_data_->currently_loaded_search_query_;
   }
 
+  lens::LensPermissionBubbleController*
+  GetLensPermissionBubbleControllerForTesting() {
+    return permission_bubble_controller_.get();
+  }
+
  protected:
   // Override these methods to stub out network requests for testing.
   virtual std::unique_ptr<lens::LensOverlayQueryController>
@@ -537,6 +543,10 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // Controller for showing the page screenshot permission bubble.
+  std::unique_ptr<lens::LensPermissionBubbleController>
+      permission_bubble_controller_;
 
   // Pointer to the overlay widget.
   views::UniqueWidgetPtr overlay_widget_;
