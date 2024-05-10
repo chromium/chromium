@@ -130,12 +130,24 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Boolean,
         value: false,
       },
+
+      isConnectedToCloudAuthenticator_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isDisconnectCloudAuthenticatorInProgress_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   static get observers() {
     return [
       'updateIsPasswordManagerPinAvailable_(isSyncingPasswords)',
+      // TODO(b/338959659):
+      //'updateIsCloudAuthenticatorConnected_(isSyncingPasswords)',
     ];
   }
 
@@ -149,6 +161,10 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private movePasswordsLabel_: string;
   private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[] = [];
   private isPasswordManagerPinAvailable_: boolean = false;
+  private isConnectedToCloudAuthenticator_: boolean = false;
+  private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
+  private toastMessage_: string = '';
+
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -196,6 +212,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     // TODO(crbug.com/331611435): add listener for enclave availability and
     // trigger `updateIsPasswordManagerPinAvailable_`.
     this.updateIsPasswordManagerPinAvailable_();
+    // Checks if the Chrome client is connected to / registered with the
+    // Cloud Authenticator. If the client is connected, then a button to
+    // disconnect the client is displayed.
+    this.updateIsCloudAuthenticatorConnected_();
+
     // <if expr="is_win or is_macosx">
     PasskeysBrowserProxyImpl.getInstance().hasPasskeys().then(hasPasskeys => {
       this.hasPasskeys_ = hasPasskeys;
@@ -396,10 +417,32 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         this.showToastForPasswordChange_.bind(this));
   }
 
+  private updateIsCloudAuthenticatorConnected_() {
+    PasswordManagerImpl.getInstance().isConnectedToCloudAuthenticator().then(
+        connected => this.isConnectedToCloudAuthenticator_ = connected);
+  }
+
+  private onDisconnectCloudAuthenticatorClick_() {
+    this.isDisconnectCloudAuthenticatorInProgress_ = true;
+    PasswordManagerImpl.getInstance().disconnectCloudAuthenticator().then(
+        this.processDisconnectCloudAuthenticatorResponse_.bind(this));
+  }
+
+  private processDisconnectCloudAuthenticatorResponse_(success: boolean): void {
+    this.isDisconnectCloudAuthenticatorInProgress_ = false;
+    if (!success) {
+      return;
+    }
+    this.updateIsCloudAuthenticatorConnected_;
+    this.toastMessage_ = this.i18n('disconnectCloudAuthenticatorToastMessage');
+    this.$.toast.show();
+  }
+
   private showToastForPasswordChange_(success: boolean): void {
     if (!success) {
       return;
     }
+    this.toastMessage_ = this.i18n('passwordManagerPinChanged');
     this.$.toast.show();
   }
 }

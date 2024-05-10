@@ -135,6 +135,27 @@
         pref="{{prefs.webauthn.create_in_icloud_keychain}}">
     </pref-toggle-button>
   </if>
+  <template is="dom-if" if="[[isConnectedToCloudAuthenticator_]]" restamp>
+    <cr-link-row id="disconnectCloudAuthenticatorRow"
+        class="cr-row settings-cr-link-row"
+        label="$i18n{disconnectCloudAuthenticatorTitle}"
+        sub-label="$i18n{disconnectCloudAuthenticatorDescription}"
+        hide-icon non-clickable>
+      <template is="dom-if"
+          if="[[!isDisconnectCloudAuthenticatorInProgress_]]" restamp>
+        <cr-button id="disconnectCloudAuthenticatorButton"
+            class="cr-row-action-button"
+            on-click="onDisconnectCloudAuthenticatorClick_">
+          $i18n{disconnectCloudAuthenticatorButton}
+        </cr-button>
+      </template>
+      <template is="dom-if"
+          if="[[isDisconnectCloudAuthenticatorInProgress_]]" restamp>
+        <paper-spinner-lite active id="progressSpinner">
+        </paper-spinner-lite>
+      </template>
+    </cr-link-row>
+  </template>
   <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
     <cr-link-row id="changePasswordManagerPinRow"
         class="cr-row settings-cr-link-row"
@@ -184,5 +205,5 @@
   </move-passwords-dialog>
 </template>
 <cr-toast id="toast" duration="5000">
-  <span id="toast-message">$i18n{passwordManagerPinChanged}</span>
+  <span id="toast-message">[[toastMessage_]]</span>
 </cr-toast>

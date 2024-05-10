@@ -25,9 +25,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     isAccountStorageDefault: boolean,
     passwords: chrome.passwordsPrivate.PasswordUiEntry[],
     isPasswordManagerPinAvailable: boolean,
+    isCloudAuthenticatorConnected: boolean,
     changePasswordManagerPinSuccesful: boolean|null,
     disconnectCloudAuthenticatorSuccessful: boolean|null,
-    isConnectedToCloudAuthenticator: boolean,
+    isConnectedToCloudAuthenticator: boolean|null,
   };
 
   listeners: {
@@ -108,9 +109,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       isAccountStorageDefault: false,
       passwords: [],
       isPasswordManagerPinAvailable: false,
+      isCloudAuthenticatorConnected: false,
       changePasswordManagerPinSuccesful: null,
       disconnectCloudAuthenticatorSuccessful: null,
-      isConnectedToCloudAuthenticator: false,
+      isConnectedToCloudAuthenticator: null,
     };
 
     // Holds listeners so they can be called when needed.
@@ -404,7 +406,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   disconnectCloudAuthenticator(): Promise<boolean> {
     this.methodCalled('disconnectCloudAuthenticator');
-    if (this.data.disconnectCloudAuthenticatorSuccessful !== null) {
+    if (this.data.isConnectedToCloudAuthenticator !== null &&
+        this.data.disconnectCloudAuthenticatorSuccessful !== null) {
+      this.data.isConnectedToCloudAuthenticator = false;
       return Promise.resolve(this.data.disconnectCloudAuthenticatorSuccessful);
     }
     return Promise.reject(new Error());
@@ -412,6 +416,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   isConnectedToCloudAuthenticator(): Promise<boolean> {
     this.methodCalled('isConnectedToCloudAuthenticator');
-    return Promise.resolve(this.data.isConnectedToCloudAuthenticator);
+    if (this.data.isConnectedToCloudAuthenticator !== null) {
+      return Promise.resolve(this.data.isConnectedToCloudAuthenticator);
+    }
+
+    return Promise.reject(new Error());
   }
 }

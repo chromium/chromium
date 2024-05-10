@@ -110,3 +110,9 @@ cr-input.password-input::part(input) {
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 0;
 }
+
+.cr-row-action-button {
+  height: auto;
+  margin-inline-start: 16px;
+  padding: 3px 16px;
+}
