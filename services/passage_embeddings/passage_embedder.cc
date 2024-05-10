@@ -25,12 +25,15 @@ PassageEmbedder::PassageEmbedder(
 
 PassageEmbedder::~PassageEmbedder() = default;
 
-bool PassageEmbedder::LoadModels(base::File* embeddings_model_file,
-                                 base::File* sp_file) {
+bool PassageEmbedder::LoadModels(
+    base::File* embeddings_model_file,
+    base::File* sp_file,
+    std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
   UnloadModelFiles();
 
   base::ElapsedTimer embeddings_timer;
-  bool embeddings_load_success = LoadEmbeddingsModelFile(embeddings_model_file);
+  bool embeddings_load_success =
+      LoadEmbeddingsModelFile(embeddings_model_file, std::move(tflite_engine));
   base::UmaHistogramBoolean(
       "History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded",
       embeddings_load_success);
@@ -78,7 +81,9 @@ bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
   return true;
 }
 
-bool PassageEmbedder::LoadEmbeddingsModelFile(base::File* embeddings_file) {
+bool PassageEmbedder::LoadEmbeddingsModelFile(
+    base::File* embeddings_file,
+    std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
   embeddings_model_buffer_ =
       base::HeapArray<uint8_t>::Uninit(embeddings_file->GetLength());
   std::optional<size_t> bytes_read =
@@ -87,9 +92,11 @@ bool PassageEmbedder::LoadEmbeddingsModelFile(base::File* embeddings_file) {
     return false;
   }
 
-  std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine =
-      std::make_unique<tflite::task::core::TfLiteEngine>(
-          std::make_unique<optimization_guide::TFLiteOpResolver>());
+  if (!tflite_engine) {
+    // Use default TFLite engine if not already passed in.
+    tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
+        std::make_unique<optimization_guide::TFLiteOpResolver>());
+  }
   absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
       reinterpret_cast<const char*>(embeddings_model_buffer_.data()),
       embeddings_model_buffer_.size());
@@ -97,12 +104,7 @@ bool PassageEmbedder::LoadEmbeddingsModelFile(base::File* embeddings_file) {
     return false;
   }
 
-  auto compute_settings = tflite::proto::ComputeSettings();
-  compute_settings.mutable_tflite_settings()
-      ->mutable_cpu_settings()
-      ->set_num_threads(kNumThreads);
-  absl::Status interpreter_status =
-      tflite_engine->InitInterpreter(compute_settings);
+  absl::Status interpreter_status = tflite_engine->InitInterpreter(kNumThreads);
   if (!interpreter_status.ok()) {
     return false;
   }

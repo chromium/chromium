@@ -26,7 +26,12 @@ class PassageEmbedder : public mojom::PassageEmbedder {
 
   // Loads the given text embeddings model and the sentencepiece file for text
   // embedding generation. Return true if successful.
-  bool LoadModels(base::File* embeddings_model_file, base::File* sp_file);
+  //
+  // A TfLiteEngine can be provided to override any defaults.
+  bool LoadModels(base::File* embeddings_model_file,
+                  base::File* sp_file,
+                  std::unique_ptr<tflite::task::core::TfLiteEngine>
+                      tflite_engine = nullptr);
 
   // Sets the input window size that the loaded embeddings model expects. Needs
   // to be called before the model can be executed.
@@ -39,7 +44,9 @@ class PassageEmbedder : public mojom::PassageEmbedder {
  private:
   // Loads the text embeddings tflite model from the bytes in the given file.
   // Return true if successful.
-  bool LoadEmbeddingsModelFile(base::File* embeddings_file);
+  bool LoadEmbeddingsModelFile(
+      base::File* embeddings_file,
+      std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine);
 
   // Loads the sentencepiece model for tokenization, from the bytes in the given
   // file. Returns true if successful.
