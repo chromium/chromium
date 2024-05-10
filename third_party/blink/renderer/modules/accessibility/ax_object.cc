@@ -4362,8 +4362,9 @@ String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
   // Initialize |name_from|, as TextAlternative() might never set it in some
   // cases.
   name_from = ax::mojom::blink::NameFrom::kNone;
-  String text = TextAlternative(false, nullptr, visited, name_from,
-                                &related_objects, nullptr);
+  String text = TextAlternative(
+      /*recursive=*/false, /*aria_label_or_description_root=*/nullptr, visited,
+      name_from, &related_objects, /*name_sources=*/nullptr);
 
   if (name_objects) {
     name_objects->clear();

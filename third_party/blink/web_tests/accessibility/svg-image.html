@@ -9,8 +9,11 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
-<image tabindex="0" id="svgimage" alt="TestImage" x="20" y="20" width="298" height="65" xlink:href="resources/cake.png"/>
+<image tabindex="0" id="svgimage" x="20" y="20" width="298" height="65" xlink:href="resources/cake.png">
 
+  <title>TestImage</title>
+
+</image>
 </svg>
 
 <p id="description"></p>
@@ -18,7 +21,7 @@
 
 <script>
 
-    description("This tests that SVG images are accessible elements and they have the same attributes as real images.");
+      description("This tests that SVG images are accessible elements and they have accessible names as real images.");
 
     if (window.accessibilityController) {
         document.getElementById("realimage").focus();
@@ -28,7 +31,7 @@
         var svgImage = accessibilityController.focusedElement;
         shouldBe("svgImage.role", "realImage.role");
         shouldBe("svgImage.name", "realImage.name");
-       
+
         debug("SVG Image Role: " + svgImage.role);
         debug("SVG Image Description: " + svgImage.name);
     }

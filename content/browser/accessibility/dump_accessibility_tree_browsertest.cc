@@ -3926,6 +3926,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, TableWithPseudoElements) {
   RunHtmlTest(FILE_PATH_LITERAL("table-with-pseudo-elements.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, SvgImageNameFromTitle) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-image-name-from-title.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, IgnoreDuplicateRelationIds) {
   RunRelationsTest(FILE_PATH_LITERAL("ignore-duplicate-relation-ids.html"));
 }

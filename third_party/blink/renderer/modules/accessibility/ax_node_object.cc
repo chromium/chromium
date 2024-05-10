@@ -6302,7 +6302,7 @@ String AXNodeObject::TextAlternativeFromTitleAttribute(
 }
 
 // Based on
-// http://rawgit.com/w3c/aria/master/html-aam/html-aam.html#accessible-name-and-description-calculation
+// https://www.w3.org/TR/html-aam-1.0/#accessible-name-and-description-computation
 String AXNodeObject::NativeTextAlternative(
     AXObjectSet& visited,
     ax::mojom::blink::NameFrom& name_from,
@@ -6576,8 +6576,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // 5.8 img or area Element
-  if (IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(GetNode()) ||
-      (GetLayoutObject() && GetLayoutObject()->IsSVGImage())) {
+  if (IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(GetNode())) {
     // alt
     const AtomicString& alt = GetAttribute(kAltAttr);
     const bool is_empty = alt.empty() && !alt.IsNull();
@@ -6671,15 +6670,17 @@ String AXNodeObject::NativeTextAlternative(
         *container_node, HasTagName(svg_names::kTitleTag));
 
     if (title) {
-      // TODO(accessibility): In most cases <desc> and <title> can participate
-      // in the recursive text alternative calculation. However when the <desc>
-      // or <title> is the child of a <use>, |AXObjectCache::GetOrCreate| will
-      // fail when |AXObject::ComputeNonARIAParent| returns null because the
-      // <use> element's subtree isn't visited by LayoutTreeBuilderTraversal. In
-      // addition, while aria-label and other text alternative sources are are
-      // technically valid on SVG <desc> and <title>, it is not clear if user
-      // agents must expose their values. Therefore until we hear otherwise,
-      // just use the inner text. See https://github.com/w3c/svgwg/issues/867
+      // TODO(accessibility): In most cases <desc> and <title> can
+      // participate in the recursive text alternative calculation. However
+      // when the <desc> or <title> is the child of a <use>,
+      // |AXObjectCache::GetOrCreate| will fail when
+      // |AXObject::ComputeNonARIAParent| returns null because the <use>
+      // element's subtree isn't visited by LayoutTreeBuilderTraversal. In
+      // addition, while aria-label and other text alternative sources are
+      // are technically valid on SVG <desc> and <title>, it is not clear if
+      // user agents must expose their values. Therefore until we hear
+      // otherwise, just use the inner text. See
+      // https://github.com/w3c/svgwg/issues/867
       text_alternative = title->GetInnerTextWithoutUpdate();
       if (!text_alternative.empty()) {
         if (name_sources) {

@@ -1,0 +1,5 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++svgRoot
+++++++++image name='foo' nameFrom=relatedElement
