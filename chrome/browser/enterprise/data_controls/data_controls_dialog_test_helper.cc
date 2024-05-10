@@ -12,7 +12,12 @@ namespace data_controls {
 
 DataControlsDialogTestHelper::DataControlsDialogTestHelper(
     DataControlsDialog::Type expected_dialog_type)
-    : expected_dialog_type_(expected_dialog_type) {}
+    : expected_dialog_type_(expected_dialog_type) {
+  dialog_init_loop_ = std::make_unique<base::RunLoop>();
+  dialog_close_loop_ = std::make_unique<base::RunLoop>();
+  dialog_init_callback_ = dialog_init_loop_->QuitClosure();
+  dialog_close_callback_ = dialog_close_loop_->QuitClosure();
+}
 
 DataControlsDialogTestHelper::~DataControlsDialogTestHelper() = default;
 
@@ -21,11 +26,6 @@ void DataControlsDialogTestHelper::OnConstructed(DataControlsDialog* dialog) {
                            "time for a test using this helper class.";
   dialog_ = dialog;
   ASSERT_EQ(dialog->type(), expected_dialog_type_);
-
-  dialog_init_loop_ = std::make_unique<base::RunLoop>();
-  dialog_close_loop_ = std::make_unique<base::RunLoop>();
-  dialog_init_callback_ = dialog_init_loop_->QuitClosure();
-  dialog_close_callback_ = dialog_close_loop_->QuitClosure();
 }
 
 void DataControlsDialogTestHelper::OnWidgetInitialized(

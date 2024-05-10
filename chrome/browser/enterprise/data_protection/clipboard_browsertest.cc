@@ -78,6 +78,23 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetTextInClipboardAndWritePermission(const std::u16string& text) {
+    {
+      ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+      writer.WriteText(text);
+    }
+    base::RunLoop().RunUntilIdle();
+
+    // This permission is required to use `readText()` without user input.
+    content::PermissionController* permission_controller =
+        rfh()->GetBrowserContext()->GetPermissionController();
+    SetPermissionControllerOverrideForDevTools(
+        permission_controller, url::Origin::Create(url()),
+        blink::PermissionType::CLIPBOARD_READ_WRITE,
+        blink::mojom::PermissionStatus::GRANTED);
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_features_;
 };
@@ -219,6 +236,117 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), u"Allowed");
+}
+
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       PasteBlockedByDataControls) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "destinations": { "urls": ["*"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+  SetTextInClipboardAndWritePermission(u"Blocked");
+
+  // This is required because pasting fails if it's attempted by JS while the
+  // page is not focused.
+  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  content::ExecuteScriptAsync(
+      rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
+
+  helper.WaitForDialogToInitialize();
+  helper.CancelDialog();
+  helper.WaitForDialogToClose();
+
+  // No data should have been read from the clipboard after closing the dialog
+  // since the verdict was "block".
+  EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "");
+}
+
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       PasteWarnedByDataControls_Cancel) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "destinations": { "urls": ["*"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+  SetTextInClipboardAndWritePermission(u"Warned_Cancel");
+
+  // This is required because pasting fails if it's attempted by JS while the
+  // page is not focused.
+  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  content::ExecuteScriptAsync(
+      rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
+
+  helper.WaitForDialogToInitialize();
+  helper.CancelDialog();
+  helper.WaitForDialogToClose();
+
+  // No data should have been read from the clipboard after closing the dialog
+  // since the verdict was "block".
+  EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "");
+}
+
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       PasteWarnedByDataControls_Bypass) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "destinations": { "urls": ["*"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+  SetTextInClipboardAndWritePermission(u"Warned_Bypassed");
+
+  // This is required because pasting fails if it's attempted by JS while the
+  // page is not focused.
+  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  content::ExecuteScriptAsync(
+      rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
+
+  helper.WaitForDialogToInitialize();
+  helper.AcceptDialog();
+  helper.WaitForDialogToClose();
+
+  // Data should be pasted in the page after closing the dialog since it was
+  // bypassed.
+  EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "Warned_Bypassed");
+}
+
+IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
+                       PasteAllowedByDataControls) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "destinations": { "urls": ["google.com"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
+  SetTextInClipboardAndWritePermission(u"Allowed");
+
+  // This is required because pasting fails if it's attempted by JS while the
+  // page is not focused.
+  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  content::ExecuteScriptAsync(
+      rfh(), R"(var pasted_text = navigator.clipboard.readText();)");
+
+  ASSERT_FALSE(helper.dialog());
+  EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "Allowed");
 }
 
 }  // namespace enterprise_data_protection
