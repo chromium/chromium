@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
@@ -90,11 +93,31 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel != null;
     }
 
+    /**
+     * Checks whether the toggle is allowed to switch states. Whenever AwG is the active provider
+     * and there is no override, it should not be available to switch over. Switching away from 3P
+     * mode when AwG is active is allowed but should never be required since Chrome resets that
+     * setting automatically.
+     *
+     * @return true if the toggle should be read-only.
+     */
+    boolean should3pToggleBeReadOnly() {
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
+                "skip_compatibility_check",
+                false)) {
+            return false;
+        }
+        return !prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)
+                && !AutofillClientProviderUtils.isAllowedToUseAndroidAutofillFramework();
+    }
+
     void updateToggleStateFromPref() {
         assert isInitialized();
         mModel.set(
                 THIRD_PARTY_AUTOFILL_ENABLED,
                 prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE));
+        mModel.set(THIRD_PARTY_TOGGLE_IS_READ_ONLY, should3pToggleBeReadOnly());
     }
 
     void onThirdPartyToggleChanged(boolean optIntoThirdPartyFilling) {

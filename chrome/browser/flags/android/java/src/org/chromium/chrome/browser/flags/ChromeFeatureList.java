@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.flags;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
@@ -197,6 +198,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSyncingOfPixBankAccounts";
     public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
             "AutofillEnableVirtualCardMetadata";
+    public static final String AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID =
+            "AutofillVirtualViewStructureAndroid";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
     public static final String AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB =

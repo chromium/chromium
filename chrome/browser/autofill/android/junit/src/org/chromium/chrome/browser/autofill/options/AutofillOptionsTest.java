@@ -43,14 +43,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -95,6 +98,7 @@ public class AutofillOptionsTest {
     @Before
     public void setUp() {
         mCloseableMocks = MockitoAnnotations.openMocks(this);
+        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(true);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
@@ -134,6 +138,66 @@ public class AutofillOptionsTest {
                         .initializeNow();
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void optionDisabledForAwgUpdatesOnResume() {
+        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        AutofillOptionsCoordinator autofillOptions =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail);
+        PropertyModel model = autofillOptions.initializeNow();
+        LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(mFragment);
+        autofillOptions.observeLifecycle(lifecycleRegistry);
+
+        // On construction (assuming Awg is set), the setting is turned off and can't change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertFalse(getRadioButtonComponent().isEnabled());
+
+        // On resume, check again whether AwG isn't used anymore — e.g. coming back from Settings.
+        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(true);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+        lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
+
+        assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void optionEnabledWithOverrideForAwg() {
+        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        addFeatureOverrideForAwG();
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
+
+        // On construction (assuming Awg is set), the setting is turned off but may change.
+        assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void optionEnabledToSwitchOffAwg() {
+        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
+
+        // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                        .initializeNow();
+
+        // On construction (assuming Awg is set), the setting is turned off but may change.
+        assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertTrue(getRadioButtonComponent().isEnabled());
     }
 
     @Test
@@ -371,5 +435,16 @@ public class AutofillOptionsTest {
     private RadioButtonGroupThirdPartyPreference getRadioButtonComponent() {
         assertNotNull(mFragment);
         return mFragment.getThirdPartyFillingOption();
+    }
+
+    private void addFeatureOverrideForAwG() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
+                "skip_compatibility_check",
+                Boolean.toString(true));
+        FeatureList.setTestValues(testValues);
     }
 }

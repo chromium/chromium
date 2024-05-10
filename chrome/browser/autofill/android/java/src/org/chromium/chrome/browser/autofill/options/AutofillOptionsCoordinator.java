@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -104,6 +105,7 @@ public class AutofillOptionsCoordinator {
                                 THIRD_PARTY_AUTOFILL_ENABLED,
                                 UserPrefs.get(mFragment.getProfile())
                                         .getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE))
+                        .with(THIRD_PARTY_TOGGLE_IS_READ_ONLY, mMediator.should3pToggleBeReadOnly())
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, mMediator::onThirdPartyToggleChanged)
                         .build();
         mMediator.initialize(model, mFragment.getReferrer());

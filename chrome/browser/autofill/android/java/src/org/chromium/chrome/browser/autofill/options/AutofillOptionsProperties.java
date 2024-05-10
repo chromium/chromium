@@ -13,12 +13,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 class AutofillOptionsProperties {
     static final WritableBooleanPropertyKey THIRD_PARTY_AUTOFILL_ENABLED =
             new WritableBooleanPropertyKey("third_party_autofill_enabled");
+    static final WritableBooleanPropertyKey THIRD_PARTY_TOGGLE_IS_READ_ONLY =
+            new WritableBooleanPropertyKey("third_party_toggle_is_read_only");
     static final ReadableObjectPropertyKey<Callback<Boolean>> ON_THIRD_PARTY_TOGGLE_CHANGED =
             new ReadableObjectPropertyKey<>("on_third_party_toggle_changed");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                THIRD_PARTY_AUTOFILL_ENABLED, ON_THIRD_PARTY_TOGGLE_CHANGED,
+                THIRD_PARTY_AUTOFILL_ENABLED,
+                THIRD_PARTY_TOGGLE_IS_READ_ONLY,
+                ON_THIRD_PARTY_TOGGLE_CHANGED,
             };
 
     /**

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,6 +45,9 @@ class AutofillOptionsViewBinder {
                                         .onResult(optedIntoOtherProviders);
                                 return true;
                             });
+        } else if (key == THIRD_PARTY_TOGGLE_IS_READ_ONLY) {
+            view.getThirdPartyFillingOption()
+                    .setEnabled(!model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
         } else {
             assert false : "Unhandled property: " + key;
         }
