@@ -158,15 +158,6 @@ class ConciergeClientImpl : public ConciergeClient {
                       std::move(callback));
   }
 
-  void StartVmWithFds(
-      std::vector<base::ScopedFD> fds,
-      const vm_tools::concierge::StartVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-          callback) override {
-    CallMethodWithFds(concierge::kStartVmMethod, request, std::move(fds),
-                      std::move(callback));
-  }
-
   void StopVm(const concierge::StopVmRequest& request,
               chromeos::DBusMethodCallback<concierge::StopVmResponse> callback)
       override {

@@ -169,16 +169,6 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) = 0;
 
-  // Starts a Termina VM if there is not already one running.
-  // |fds| contains any number of file descriptors to be passed to concierge in
-  // |the order they appear in the vector.
-  // |callback| is called after the method call finishes.
-  virtual void StartVmWithFds(
-      std::vector<base::ScopedFD> fds,
-      const vm_tools::concierge::StartVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-          callback) = 0;
-
   // Stops the named Termina VM if it is running.
   // |callback| is called after the method call finishes.
   virtual void StopVm(
