@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/tab_search_frame_caption_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
@@ -170,20 +169,13 @@ BrowserNonClientFrameViewChromeOS* BrowserNonClientFrameViewChromeOS::Get(
 void BrowserNonClientFrameViewChromeOS::Init() {
   Browser* browser = browser_view()->browser();
 
-  std::unique_ptr<TabSearchFrameCaptionButton> tab_search_button;
-  if (TabSearchFrameCaptionButton::IsTabSearchCaptionButtonEnabled(browser)) {
-    tab_search_button =
-        std::make_unique<TabSearchFrameCaptionButton>(browser->profile());
-    tab_search_bubble_host_ = tab_search_button->tab_search_bubble_host();
-  }
-
   const bool is_close_button_enabled =
       !(browser->app_controller() &&
         browser->app_controller()->IsPreventCloseEnabled());
 
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
-          frame(), is_close_button_enabled, std::move(tab_search_button)));
+          frame(), is_close_button_enabled));
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {

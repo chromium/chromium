@@ -485,12 +485,6 @@ BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
 #endif
 );
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kChromeOSTabSearchCaptionButton,
-             "ChromeOSTabSearchCaptionButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC)
 // Enabled an experiment which increases the prominence to grant MacOS system
 // location permission to Chrome when location permissions have already been

@@ -208,11 +208,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kChromeOSTabSearchCaptionButton))
-    return;
-#endif
-
   if (browser && tab_search_container &&
       !WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser) &&
       !render_tab_search_before_tab_strip_) {

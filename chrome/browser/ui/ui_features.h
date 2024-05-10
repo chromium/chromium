@@ -299,10 +299,6 @@ BASE_DECLARE_FEATURE(kWebUITabStrip);
 // tap gesture on the WebUI Tab Strip.
 BASE_DECLARE_FEATURE(kWebUITabStripContextMenuAfterTap);
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kChromeOSTabSearchCaptionButton);
-#endif
-
 // Cocoa to views migration.
 #if BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kLocationPermissionsExperiment);

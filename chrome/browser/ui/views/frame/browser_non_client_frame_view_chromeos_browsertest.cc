@@ -1455,44 +1455,6 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
-namespace {
-
-class TabSearchFrameCaptionButtonTest
-    : public TopChromeMdParamTest<ChromeOSBrowserUITest> {
- public:
-  TabSearchFrameCaptionButtonTest() = default;
-  TabSearchFrameCaptionButtonTest(const TabSearchFrameCaptionButtonTest&) =
-      delete;
-  TabSearchFrameCaptionButtonTest& operator=(
-      const TabSearchFrameCaptionButtonTest&) = delete;
-  ~TabSearchFrameCaptionButtonTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kChromeOSTabSearchCaptionButton);
-    TopChromeMdParamTest<ChromeOSBrowserUITest>::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
-                       TabSearchBubbleHostTest) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view =
-      GetFrameViewChromeOS(browser_view);
-  ASSERT_TRUE(browser()->is_type_normal());
-
-  chromeos::FrameCaptionButtonContainerView::TestApi test(
-      frame_view->caption_button_container());
-  EXPECT_TRUE(test.custom_button());
-  EXPECT_EQ(browser_view->GetTabSearchBubbleHost()->button(),
-            test.custom_button());
-}
-
 // TODO(crbug.com/40286309): Port this kiosk test to Lacros?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
@@ -1870,7 +1832,6 @@ INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserNonClientFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(TabSearchFrameCaptionButtonTest);
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewChromeOSTest);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
