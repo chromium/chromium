@@ -10996,6 +10996,21 @@
             ]
         }
     ],
+    "LinkCrossDeviceDogFoodFeedback": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LinkCrossDeviceDogFoodFeedback"
+                    ]
+                }
+            ]
+        }
+    ],
     "LinkPreview": [
         {
             "platforms": [
