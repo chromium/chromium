@@ -936,6 +936,22 @@
             ]
         }
     ],
+    "ArcVmS2Idle": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcS2Idle"
+                    ],
+                    "min_os_version": "15880.0.0"
+                }
+            ]
+        }
+    ],
     "ArcVmmSwap": [
         {
             "platforms": [
