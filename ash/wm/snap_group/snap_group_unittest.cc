@@ -6679,6 +6679,65 @@ TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
   event_generator->ReleaseLeftButton();
 }
 
+// Verify that an Overview group item remains interactive after being dragged to
+// a different display and back without releasing the mouse. See
+// http://b/339088510 for more details.
+TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2U, root_windows.size());
+
+  const gfx::Point point_in_display1(100, 10);
+  EXPECT_TRUE(displays[0].bounds().Contains(point_in_display1));
+  EXPECT_FALSE(displays[1].bounds().Contains(point_in_display1));
+
+  const gfx::Point point_in_display2(1000, 100);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  // Create Snap Group on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  VerifySnapGroupOnDisplay(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
+      displays[0].id());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  auto* overview_group_item = GetOverviewItemForWindow(w1.get());
+  ASSERT_TRUE(overview_group_item);
+
+  // Drag `overview_group_item` to display #2 w/o releasing mouse and drag back
+  // then drop.
+  auto* event_generator = GetEventGenerator();
+  DragGroupItemToPoint(overview_group_item, point_in_display2, event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/false);
+  DragGroupItemToPoint(overview_group_item, point_in_display1, event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/true);
+
+  // Verify that Overview exits on mouse click, and both windows remaining on
+  // the display they were originally on.
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(overview_group_item->target_bounds().CenterPoint()) +
+      gfx::Vector2d(10, 0));
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(IsInOverviewSession());
+
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  VerifySnapGroupOnDisplay(
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get()),
+      displays[0].id());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 
