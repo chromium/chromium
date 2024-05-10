@@ -166,9 +166,10 @@ class UpdateRequestStorer {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     WebApkInstaller::StoreUpdateRequestToFile(
-        update_request_path, webapps::ShortcutInfo((GURL())), GURL(), "", "",
-        "", "", std::map<GURL, std::unique_ptr<webapps::WebappIcon>>(), false,
-        false, {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
+        update_request_path, webapps::ShortcutInfo((GURL())), GURL(),
+        /*primary_icon=*/nullptr, /*splash_icon=*/nullptr, "", "",
+        std::map<GURL, std::unique_ptr<webapps::WebappIcon>>(), false, false,
+        {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
     run_loop.Run();
@@ -271,13 +272,15 @@ class WebApkInstallerBrowserTest : public AndroidBrowserTest {
     icon_2->set_hash("2");
     webapk_icons.emplace(icon_url_2, std::move(icon_2));
 
-    std::string primary_icon_data = "data3";
-    std::string splash_icon_data = "data4";
+    auto primary_icon = std::make_unique<webapps::WebappIcon>(GURL());
+    primary_icon->SetData("data3");
+    auto splash_icon = std::make_unique<webapps::WebappIcon>(GURL());
+    splash_icon->SetData("data4");
 
     webapps::ShortcutInfo info{GURL()};
 
     return webapps::BuildProtoInBackground(
-        info, info.manifest_id, primary_icon_data, splash_icon_data,
+        info, info.manifest_id, std::move(primary_icon), std::move(splash_icon),
         /*package_name*/ "", /*version*/ "", std::move(webapk_icons),
         true /* is_manifest_stale */,
         true /* is_app_identity_update_supported */,

@@ -183,8 +183,8 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
-    const std::string& primary_icon_data,
-    const std::string& splash_icon_data,
+    std::unique_ptr<webapps::WebappIcon> primary_icon,
+    std::unique_ptr<webapps::WebappIcon> splash_icon,
     const std::string& package_name,
     const std::string& version,
     std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons,
@@ -194,11 +194,12 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     base::OnceCallback<void(bool)> callback) {
   GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &webapps::StoreUpdateRequestToFileInBackground, update_request_path,
-          shortcut_info, app_key, primary_icon_data, splash_icon_data,
-          package_name, version, std::move(icons), is_manifest_stale,
-          is_app_identity_update_supported, std::move(update_reasons)),
+      base::BindOnce(&webapps::StoreUpdateRequestToFileInBackground,
+                     update_request_path, shortcut_info, app_key,
+                     std::move(primary_icon), std::move(splash_icon),
+                     package_name, version, std::move(icons), is_manifest_stale,
+                     is_app_identity_update_supported,
+                     std::move(update_reasons)),
       std::move(callback));
 }
 
@@ -459,16 +460,16 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
 
   DCHECK(install_shortcut_info_);
 
-  // Using empty string for |primary_icon_data| and |splash_icon_data| here
-  // because in WebApk installs, we are using the icon data from |hashes|.
-  webapps::BuildProto(
-      *install_shortcut_info_, install_shortcut_info_->manifest_id,
-      std::string() /* primary_icon_data */,
-      std::string() /* splash_icon_data */, "" /* package_name */,
-      "" /* version */, std::move(icons), false /* is_manifest_stale */,
-      false /* is_app_identity_update_supported */,
-      base::BindOnce(&WebApkInstaller::OnInstallProtoBuilt,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // New WebAPK installs uses icon data from |icons|. |primary_icon| and
+  // |splash_icon| are for updates only.
+  webapps::BuildProto(*install_shortcut_info_,
+                      install_shortcut_info_->manifest_id,
+                      nullptr /* primary_icon */, nullptr /* splash_icon */,
+                      "" /* package_name */, "" /* version */, std::move(icons),
+                      false /* is_manifest_stale */,
+                      false /* is_app_identity_update_supported */,
+                      base::BindOnce(&WebApkInstaller::OnInstallProtoBuilt,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebApkInstaller::OnInstallProtoBuilt(
