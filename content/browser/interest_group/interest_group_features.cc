@@ -30,7 +30,7 @@ BASE_FEATURE(kEnableUpdatingUserBiddingSignals,
 // Enable write ahead logging for interest group storage.
 BASE_FEATURE(kFledgeEnableWALForInterestGroupStorage,
              "FledgeEnableWALForInterestGroupStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
              "FledgeFacilitatedTestingSignalsHeaders",
