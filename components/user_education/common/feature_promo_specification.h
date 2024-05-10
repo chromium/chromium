@@ -357,6 +357,9 @@ class FeaturePromoSpecification {
   // is almost always better to e.g. improve the promo trigger logic so it
   // doesn't interrupt user workflow than it is to disable bubble auto-focus.
   //
+  // For rotating promos, also sets the override on all sub-promos that are not
+  // already explicitly set.
+  //
   // You should document calls to this method with a reason and ideally a bug
   // describing why the default a11y behavior needs to be overridden and what
   // can be done to fix it.

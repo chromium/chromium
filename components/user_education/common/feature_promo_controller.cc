@@ -849,7 +849,11 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
           current_promo_->promo_type() ==
               FeaturePromoSpecification::PromoType::kRotating) {
         bubble_params.buttons = CreateRotatingToastButtons(*spec.feature());
-        bubble_params.focus_on_show_hint = false;
+        // If no hint is set, promos with buttons take focus. However, toasts do
+        // not take focus by default. So if the hint isn't already set, set the
+        // promo not to take focus.
+        bubble_params.focus_on_show_hint =
+            bubble_params.focus_on_show_hint.value_or(false);
       }
       break;
     }
