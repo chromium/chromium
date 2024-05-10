@@ -155,6 +155,7 @@ def _build_supported_extended_attributes():
         E("NewObject", applicable_to=[T.OPERATION]),
         E("NoAllocDirectCall", applicable_to=[T.OPERATION]),
         E("NotEnumerable", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
+        E("PassAsSpan", applicable_to=[T.TYPE]),
         E("PermissiveDictionaryConversion", applicable_to=[T.DICTIONARY]),
         E("PerWorldBindings", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
         E("PutForwards",

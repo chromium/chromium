@@ -1815,6 +1815,118 @@ struct NativeValueTraits<IDLNullable<IDLOnBeforeUnloadEventHandler>>;
 template <>
 struct NativeValueTraits<IDLNullable<IDLOnErrorEventHandler>>;
 
+// This is a marker class for differentiating [PassAsSpan] argument conversions.
+// The actual type returned is `SpanWithInlineStorage`, however, unlike the
+// returned type, the marker carries additional information for conversion
+// (whether shared array buffers should be allowed).
+struct PassAsSpanMarkerBase {
+  enum class AllowSharedFlag { kAllowShared, kDoNotAllowShared };
+};
+
+template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared>
+struct PassAsSpan : public PassAsSpanMarkerBase {
+  static constexpr bool allow_shared =
+      AllowShared == AllowSharedFlag::kAllowShared;
+};
+
+namespace internal {
+
+class CORE_EXPORT SpanWithInlineStorage {
+  STACK_ALLOCATED();
+
+ public:
+  SpanWithInlineStorage() = default;
+  SpanWithInlineStorage(const SpanWithInlineStorage& r) { *this = r; }
+
+  SpanWithInlineStorage& operator=(const SpanWithInlineStorage& r);
+
+  template <typename T>
+  static SpanWithInlineStorage GetArrayData(v8::Local<T> array) {
+    return SpanWithInlineStorage(base::make_span(
+        reinterpret_cast<const uint8_t*>(array->Data()), array->ByteLength()));
+  }
+
+  static SpanWithInlineStorage GetViewData(v8::Local<v8::ArrayBufferView> view);
+
+  // This class allows implicit conversion to span, because it's an internal
+  // class tightly coupled to the bindings generator that knows how to use it.
+  // Note rvalue conversion is explicitly disabled.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator base::span<const uint8_t>() const& { return span_; }
+  operator base::span<const uint8_t>() const&& = delete;
+  const base::span<const uint8_t> as_span() const { return span_; }
+
+ private:
+  explicit SpanWithInlineStorage(base::span<const uint8_t> span)
+      : span_(span) {}
+  explicit SpanWithInlineStorage(size_t size)
+      : SpanWithInlineStorage(base::make_span(inline_storage_, size)) {
+    DCHECK_LE(size, sizeof inline_storage_);
+  }
+
+  base::span<const uint8_t> span_;
+  uint8_t inline_storage_[64];
+};
+
+}  // namespace internal
+
+template <typename T>
+  requires std::derived_from<T, PassAsSpanMarkerBase>
+struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
+  static void NativeValue(v8::Isolate* isolate,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) = delete;
+
+  static internal::SpanWithInlineStorage ArgumentValue(
+      v8::Isolate* isolate,
+      int argument_index,
+      v8::Local<v8::Value> value,
+      ExceptionState& exception_state) {
+    if (value->IsArrayBuffer()) {
+      return internal::SpanWithInlineStorage::GetArrayData(
+          value.As<v8::ArrayBuffer>());
+    }
+    if (T::allow_shared && value->IsSharedArrayBuffer()) {
+      return internal::SpanWithInlineStorage::GetArrayData(
+          value.As<v8::SharedArrayBuffer>());
+    }
+    if (value->IsArrayBufferView()) {
+      v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
+      if (!T::allow_shared && view->HasBuffer() &&
+          view->Buffer()->GetBackingStore()->IsShared()) {
+        exception_state.ThrowTypeError(
+            "The provided ArrayBufferView value must not be shared.");
+        return {};
+      }
+      return internal::SpanWithInlineStorage::GetViewData(view);
+    }
+    exception_state.ThrowTypeError(
+        ExceptionMessages::ArgumentNotOfType(argument_index, "ArrayBuffer"));
+    return {};
+  }
+};
+
+template <typename T>
+  requires std::derived_from<T, PassAsSpanMarkerBase>
+struct NativeValueTraits<IDLOptional<T>> : public NativeValueTraitsBase<T> {
+  // PassAsSpan is only applicable to arguments.
+  static void NativeValue(v8::Isolate* isolate,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) = delete;
+
+  static std::optional<internal::SpanWithInlineStorage> ArgumentValue(
+      v8::Isolate* isolate,
+      int argument_index,
+      v8::Local<v8::Value> value,
+      ExceptionState& exception_state) {
+    if (value->IsUndefined()) {
+      return std::nullopt;
+    }
+    return NativeValueTraits<T>::ArgumentValue(isolate, argument_index, value,
+                                               exception_state);
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_NATIVE_VALUE_TRAITS_IMPL_H_

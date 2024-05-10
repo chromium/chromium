@@ -37,5 +37,6 @@
     readonly attribute DOMString encoding;
     readonly attribute boolean fatal;
     readonly attribute boolean ignoreBOM;
-    [RaisesException, MeasureAs=TextDecoderDecode] DOMString decode(optional BufferSource input, optional TextDecodeOptions options = {});
+    // TODO(40102463): investigate support of SharedArrayBuffers.
+    [RaisesException, MeasureAs=TextDecoderDecode] DOMString decode(optional [PassAsSpan] BufferSource input, optional TextDecodeOptions options = {});
 };
