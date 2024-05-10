@@ -934,7 +934,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();
       // If the more options menu has not been rendered yet, render it and wait
       // for it to be drawn so we can get the number of elements in the menu.
-      if (!moreOptionsRendered) {
+      if (!moreOptionsRendered || !moreOptionsRendered.open) {
         openMenu(this.$.moreOptionsMenu.get(), this.$.more);
         requestAnimationFrame(() => {
           const moreOptions = this.getMoreOptionsButtons_();
@@ -951,14 +951,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private updateFocus_(focusableElements: HTMLElement[], newIndex: number) {
-    // Open the overflow menu if the next button is in that menu. Close it
-    // otherwise.
+    // Close the overflow menu if the next button is not in the menu.
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus, 'no element to focus');
     if (elementToFocus.className !== moreOptionsClass.slice(1)) {
       this.$.moreOptionsMenu.getIfExists()?.close();
-    } else if (!this.$.moreOptionsMenu.getIfExists()?.open) {
-      openMenu(this.$.moreOptionsMenu.get(), this.$.more);
     }
 
     // When the user tabs away from the toolbar and then tabs back, we want to
