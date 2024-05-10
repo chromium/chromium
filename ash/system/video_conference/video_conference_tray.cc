@@ -27,11 +27,11 @@
 #include "ash/system/video_conference/bubble/linux_apps_bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -194,8 +194,7 @@ void VideoConferenceTrayButton::UpdateCapturingState() {
 
   // Always call `UpdateTooltip()` because even if `show_privacy_indicator_`
   // doesn't change, `is_capturing_` may have.
-  base::ScopedClosureRunner scoped_closure(base::BindOnce(
-      &VideoConferenceTrayButton::UpdateTooltip, base::Unretained(this)));
+  absl::Cleanup scoped_tooltip_update = [this] { UpdateTooltip(); };
 
   if (show_privacy_indicator_ == show_privacy_indicator) {
     return;

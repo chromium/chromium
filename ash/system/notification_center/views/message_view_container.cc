@@ -11,6 +11,7 @@
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/notification_center/views/notification_swipe_control_view.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
@@ -140,8 +141,9 @@ void MessageViewContainer::ChildPreferredSizeChanged(views::View* child) {
 
   // PreferredSizeChanged will trigger
   // NotificationListView::ChildPreferredSizeChanged.
-  base::ScopedClosureRunner defer_preferred_size_changed(base::BindOnce(
-      &MessageViewContainer::PreferredSizeChanged, base::Unretained(this)));
+  absl::Cleanup defer_preferred_size_changed = [this] {
+    PreferredSizeChanged();
+  };
 
   // Ignore non-user triggered expand/collapses.
   if (expanding_by_system_) {

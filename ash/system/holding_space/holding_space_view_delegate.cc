@@ -23,11 +23,11 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/mime_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -291,10 +291,9 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMousePressed(
   // Note that this is performed in a scoped closure runner in order to give
   // `SetSelectedRange()` a chance to run and clean up any previous range-based
   // selection.
-  base::ScopedClosureRunner set_selected_range_end(base::BindOnce(
-      [](HoldingSpaceItemView** selected_range_end,
-         HoldingSpaceItemView* view) { *selected_range_end = view; },
-      &selected_range_end_, view));
+  absl::Cleanup set_selected_range_end = [this, view] {
+    selected_range_end_ = view;
+  };
 
   // If the SHIFT key is down, the user is attempting a range-based selection.
   // Remove from the selection the previously selected range and instead add
