@@ -7,6 +7,7 @@
 #include <dispatch/dispatch.h>
 
 #import "base/base64.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/feed/core/common/pref_names.h"
@@ -15,6 +16,14 @@
 #import "components/prefs/scoped_user_pref_update.h"
 
 namespace ios_feed {
+
+// Strings for building histogram names for info card tracking.
+constexpr char kInfoCardTrackingHistogramName[] =
+    "ContentSuggestions.Feed.InfoCard";
+constexpr char kInfoCardTrackingHistogramBucketViewed[] = ".Viewed";
+constexpr char kInfoCardTrackingHistogramBucketClicked[] = ".Clicked";
+constexpr char kInfoCardTrackingHistogramBucketDismissed[] = ".Dismissed";
+constexpr char kInfoCardTrackingHistogramBucketReset[] = ".Reset";
 
 InfoCardTracker::InfoCardTracker(PrefService* browser_state_prefs)
     : browser_state_prefs_(browser_state_prefs) {
@@ -28,7 +37,10 @@ void InfoCardTracker::OnTrackInfoCardCommand(
     int tracking_type,
     int view_fraction_threshold,
     int minimum_seconds_between_views) {
-  switch (static_cast<TrackingType>(tracking_type)) {
+  TrackingType tracking_type_enum = static_cast<TrackingType>(tracking_type);
+  base::UmaHistogramSparse(GetHistogramForTrackingType(tracking_type_enum),
+                           info_card_type);
+  switch (tracking_type_enum) {
     case TrackingType::kExplicitDismissal:
       OnExplicitDismissal(info_card_type);
       break;
@@ -137,6 +149,25 @@ void InfoCardTracker::SetInfoCardTrackingStateToPref(
                               feed::prefs::kInfoCardTrackingStateDict);
   update->Set(base::NumberToString(tracking_state_type),
               base::Base64Encode(bytes));
+}
+
+// static
+std::string InfoCardTracker::GetHistogramForTrackingType(
+    TrackingType tracking_type) {
+  std::string histogram_prefix(kInfoCardTrackingHistogramName);
+  switch (tracking_type) {
+    case TrackingType::kExplicitDismissal:
+      return histogram_prefix + kInfoCardTrackingHistogramBucketDismissed;
+    case TrackingType::kView:
+    case TrackingType::kReportView:
+      return histogram_prefix + kInfoCardTrackingHistogramBucketViewed;
+    case TrackingType::kClick:
+      return histogram_prefix + kInfoCardTrackingHistogramBucketClicked;
+    case TrackingType::kResetState:
+      return histogram_prefix + kInfoCardTrackingHistogramBucketReset;
+  }
+  NOTREACHED() << "Tracking type is not supported.";
+  return nullptr;
 }
 
 }  // namespace ios_feed
