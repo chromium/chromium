@@ -351,18 +351,18 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(5);
 
-  if (input_queue_) {
-    if (input_queue_->FreeBufferCount() == 0) {
-      DVLOGF(2) << "No free |input_queue_| buffers.";
-      return nullptr;
-    }
-  } else {
+  if (!input_queue_) {
     VLOGF(2) << "|input_queue_| has not been created yet. The queue should "
                 "have been setup as part of the resolution change.";
     return nullptr;
   }
 
-  if (output_queue_ && output_queue_->FreeBufferCount() == 0) {
+  if (!input_queue_->BuffersAvailable()) {
+    DVLOGF(2) << "No free |input_queue_| buffers.";
+    return nullptr;
+  }
+
+  if (output_queue_ && !output_queue_->BuffersAvailable()) {
     DVLOGF(2) << "No free |output_queue_| buffers.";
     return nullptr;
   }
