@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,9 +22,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.content_settings.CookieControlsBridgeJni;
 
 /** Test for Tracking Protection Snackbar controller for WebApk. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -34,9 +37,15 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Mock private SnackbarManager mSnackbarManagerMock;
 
+    @Rule public JniMocker mocker = new JniMocker();
+
+    private FakeCookieControlsBridge mFakeCookieControlsBridge;
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mFakeCookieControlsBridge = new FakeCookieControlsBridge();
+        mocker.mock(CookieControlsBridgeJni.TEST_HOOKS, mFakeCookieControlsBridge);
     }
 
     @Test
@@ -45,9 +54,10 @@ public class TrackingProtectionSnackbarControllerTest {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
-                new TrackingProtectionSnackbarController(null, mSnackbarManagerSupplierMock);
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
 
-        controller.showSnackbar(ActivityType.WEB_APK);
+        controller.showSnackbar();
         verify(mSnackbarManagerMock, times(1)).showSnackbar(any());
     }
 
@@ -56,14 +66,26 @@ public class TrackingProtectionSnackbarControllerTest {
     public void testShowSnackbarForNonWebApk() {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
-        TrackingProtectionSnackbarController controller =
-                new TrackingProtectionSnackbarController(null, mSnackbarManagerSupplierMock);
 
-        controller.showSnackbar(ActivityType.TRUSTED_WEB_ACTIVITY);
-        controller.showSnackbar(ActivityType.CUSTOM_TAB);
-        controller.showSnackbar(ActivityType.PRE_FIRST_TAB);
-        controller.showSnackbar(ActivityType.TABBED);
-        controller.showSnackbar(ActivityType.WEBAPP);
+        new TrackingProtectionSnackbarController(
+                        null,
+                        mSnackbarManagerSupplierMock,
+                        null,
+                        null,
+                        ActivityType.TRUSTED_WEB_ACTIVITY)
+                .showSnackbar();
+        new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.CUSTOM_TAB)
+                .showSnackbar();
+        new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.PRE_FIRST_TAB)
+                .showSnackbar();
+        new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.TABBED)
+                .showSnackbar();
+        new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEBAPP)
+                .showSnackbar();
 
         verifyNoInteractions(mSnackbarManagerMock);
         verifyNoInteractions(mSnackbarManagerSupplierMock);
@@ -75,9 +97,10 @@ public class TrackingProtectionSnackbarControllerTest {
         doNothing().when(mSnackbarManagerMock).showSnackbar(any());
         doReturn(mSnackbarManagerMock).when(mSnackbarManagerSupplierMock).get();
         TrackingProtectionSnackbarController controller =
-                new TrackingProtectionSnackbarController(null, mSnackbarManagerSupplierMock);
+                new TrackingProtectionSnackbarController(
+                        null, mSnackbarManagerSupplierMock, null, null, ActivityType.WEB_APK);
 
-        controller.showSnackbar(ActivityType.WEB_APK);
+        controller.showSnackbar();
 
         verifyNoInteractions(mSnackbarManagerMock);
         verifyNoInteractions(mSnackbarManagerSupplierMock);

@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -115,11 +116,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
     private @Nullable CustomTabHistoryIPHController mCustomTabHistoryIPHController;
     private @Nullable ReadAloudIPHController mReadAloudIPHController;
-
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
     private @Nullable ContextualSearchObserver mContextualSearchObserver;
-
     private @Nullable GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
+    private @Nullable TrackingProtectionSnackbarController mTrackingProtectionSnackbarController;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -357,6 +357,26 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 /* showAppMenuTextBubble= */ false);
                             }
                         }));
+
+        SupplierUtils.waitForAll(
+                this::initializeTrackingProtectionSnackbarController,
+                mActivityTabProvider,
+                mProfileSupplier);
+    }
+
+    private void initializeTrackingProtectionSnackbarController() {
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
+                && mActivityType == ActivityType.WEB_APK) {
+
+            mTrackingProtectionSnackbarController =
+                    new TrackingProtectionSnackbarController(
+                            getPageInfoSnackbarOnAction(),
+                            mSnackbarManagerSupplier,
+                            mActivityTabProvider.get().getWebContents(),
+                            mProfileSupplier.get(),
+                            mActivityType);
+        }
     }
 
     @Override
@@ -730,11 +750,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                     && ChromeFeatureList.isEnabled(
                                             ChromeFeatureList
                                                     .TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
-                                    && mActivityType == ActivityType.WEB_APK) {
-                                new TrackingProtectionSnackbarController(
-                                                getPageInfoSnackbarOnAction(),
-                                                mSnackbarManagerSupplier)
-                                        .showSnackbar(mActivityType);
+                                    && mActivityType == ActivityType.WEB_APK
+                                    && mTrackingProtectionSnackbarController != null) {
+                                mTrackingProtectionSnackbarController.showSnackbar();
                             }
                         }));
     }
