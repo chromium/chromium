@@ -2239,24 +2239,24 @@ class TabListMediator {
 
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, faviconFetcher);
                 return;
-            }
+            } else if (mMode == TabListMode.LIST && relatedTabList.size() > 1) {
+                // The order of the url list matches the multi-thumbnail.
+                List<GURL> urls = new ArrayList<>();
+                urls.add(pseudoTab.getUrl());
+                for (int i = 0; urls.size() < 4 && i < relatedTabList.size(); i++) {
+                    if (pseudoTab.getId() == relatedTabList.get(i).getId()) continue;
+                    urls.add(relatedTabList.get(i).getUrl());
+                }
 
-            // The order of the url list matches the multi-thumbnail.
-            List<GURL> urls = new ArrayList<>();
-            urls.add(pseudoTab.getUrl());
-            for (int i = 0; urls.size() < 4 && i < relatedTabList.size(); i++) {
-                if (pseudoTab.getId() == relatedTabList.get(i).getId()) continue;
-                urls.add(relatedTabList.get(i).getUrl());
+                // For tab group card in list tab switcher, the favicon is the composed favicon.
+                mModel.get(modelIndex)
+                        .model
+                        .set(
+                                TabProperties.FAVICON_FETCHER,
+                                mTabListFaviconProvider.getComposedFaviconImageFetcher(
+                                        urls, pseudoTab.isIncognito()));
+                return;
             }
-
-            // For tab group card in list tab switcher, the favicon is the composed favicon.
-            mModel.get(modelIndex)
-                    .model
-                    .set(
-                            TabProperties.FAVICON_FETCHER,
-                            mTabListFaviconProvider.getComposedFaviconImageFetcher(
-                                    urls, pseudoTab.isIncognito()));
-            return;
         }
         if (!mTabListFaviconProvider.isInitialized()) {
             return;

@@ -674,7 +674,9 @@ public class TabListMediatorUnitTest {
 
         mTabObserver.onFaviconUpdated(mTab1, mFaviconBitmap, mFaviconUrl);
 
-        verify(mTabListFaviconProvider).getComposedFaviconImageFetcher(eq(urls), anyBoolean());
+        // Don't use the composed fetcher if there is only a single tab.
+        verify(mTabListFaviconProvider, never())
+                .getComposedFaviconImageFetcher(eq(urls), anyBoolean());
         assertNotNull(mModel.get(0).model.get(TabProperties.FAVICON_FETCHER));
     }
 
