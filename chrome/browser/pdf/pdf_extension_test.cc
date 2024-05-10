@@ -3896,7 +3896,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                                 1);
 }
 
-class PDFExtensionOopifBlockNonPdfNavigationTest
+class PDFExtensionOopifBlockPdfFrameNavigationTest
     : public PDFExtensionOopifTest {
  public:
   // Override PDFExtensionTestBase::SetUpCommandLine() to enable
@@ -3913,8 +3913,9 @@ class PDFExtensionOopifBlockNonPdfNavigationTest
         /*disabled_features=*/{});
   }
 
-  // Test that non-PDF navigations fail in the extension host.
-  void TestBlockNonPdfNavigationInExtensionHost() {
+  // Test that navigating to `url` fails in the extension host. If `url` is
+  // empty, navigates to the same URL.
+  void TestBlockNavigationInExtensionHost(const GURL& url) {
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(
             GetActiveWebContents());
@@ -3923,12 +3924,10 @@ class PDFExtensionOopifBlockNonPdfNavigationTest
     int frame_tree_node_id = extension_host->GetFrameTreeNodeId();
     content::RenderFrameHost* embedder_host = extension_host->GetParent();
 
-    // Navigate to a different HTML page.
+    // Navigate to `url`.
     content::TestFrameNavigationObserver extension_nav_observer(extension_host);
-    ASSERT_TRUE(content::ExecJs(
-        extension_host,
-        content::JsReplace("location = $1",
-                           embedded_test_server()->GetURL("/simple.html"))));
+    ASSERT_TRUE(content::ExecJs(extension_host,
+                                content::JsReplace("location = $1", url)));
     extension_nav_observer.Wait();
 
     EXPECT_FALSE(extension_nav_observer.last_navigation_succeeded());
@@ -3945,8 +3944,9 @@ class PDFExtensionOopifBlockNonPdfNavigationTest
     EXPECT_FALSE(GetPdfViewerStreamManager());
   }
 
-  // Test that non-PDF navigations fail in the content host.
-  void TestBlockNonPdfNavigationInContentHost() {
+  // Test that navigating to `url` fails in the content host.  If `url` is
+  // empty, navigates to the same URL.
+  void TestBlockNavigationInContentHost(const GURL& url) {
     content::RenderFrameHost* content_host =
         pdf_extension_test_util::GetOnlyPdfPluginFrame(GetActiveWebContents());
     ASSERT_TRUE(content_host);
@@ -3954,12 +3954,10 @@ class PDFExtensionOopifBlockNonPdfNavigationTest
     int frame_tree_node_id = content_host->GetFrameTreeNodeId();
     content::RenderFrameHost* extension_host = content_host->GetParent();
 
-    // Navigate to a different HTML page.
+    // Navigate to `url`.
     content::TestFrameNavigationObserver content_nav_observer(content_host);
-    ASSERT_TRUE(content::ExecJs(
-        content_host,
-        content::JsReplace("location = $1",
-                           embedded_test_server()->GetURL("/simple.html"))));
+    ASSERT_TRUE(content::ExecJs(content_host,
+                                content::JsReplace("location = $1", url)));
     content_nav_observer.Wait();
 
     EXPECT_FALSE(content_nav_observer.last_navigation_succeeded());
@@ -3982,41 +3980,47 @@ class PDFExtensionOopifBlockNonPdfNavigationTest
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in a full page PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, FullPage) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       NonPdfNavigationFullPage) {
   // Load a direct PDF URL full page.
   const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  const GURL other_url = embedded_test_server()->GetURL("/simple.html");
 
   ASSERT_TRUE(LoadPdf(pdf_url));
-  TestBlockNonPdfNavigationInExtensionHost();
+  TestBlockNavigationInExtensionHost(other_url);
 
   ASSERT_TRUE(LoadPdf(pdf_url));
-  TestBlockNonPdfNavigationInContentHost();
+  TestBlockNavigationInContentHost(other_url);
 }
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in an embed-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, Embed) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       NonPdfNavigationEmbed) {
   // Load the HTML containing an embed embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
+  const GURL other_url = embedded_test_server()->GetURL("/simple.html");
 
   ASSERT_TRUE(LoadPdfInFirstChild(url));
-  TestBlockNonPdfNavigationInExtensionHost();
+  TestBlockNavigationInExtensionHost(other_url);
 
   ASSERT_TRUE(LoadPdfInFirstChild(url));
-  TestBlockNonPdfNavigationInContentHost();
+  TestBlockNavigationInContentHost(other_url);
 }
 
 // Test that navigations in the inner PDF frames fail if they aren't for PDF
 // viewer setup in an iframe-embedded PDF.
-IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockNonPdfNavigationTest, Iframe) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       NonPdfNavigationIframe) {
   // Load the HTML containing an iframe embedding a PDF.
   const GURL url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
+  const GURL other_url = embedded_test_server()->GetURL("/simple.html");
 
   ASSERT_TRUE(LoadPdfInFirstChild(url));
-  TestBlockNonPdfNavigationInExtensionHost();
+  TestBlockNavigationInExtensionHost(other_url);
 
   ASSERT_TRUE(LoadPdfInFirstChild(url));
-  TestBlockNonPdfNavigationInContentHost();
+  TestBlockNavigationInContentHost(other_url);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
