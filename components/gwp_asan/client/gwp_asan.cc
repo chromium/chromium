@@ -209,30 +209,28 @@ bool SampleProcess(const base::Feature& feature, bool boost_sampling) {
 }
 
 // Returns the allocation sampling frequency, or 0 on error.
-size_t AllocationSamplingFrequency(const base::Feature& feature) {
-  int multiplier =
-      GetFieldTrialParamByFeatureAsInt(feature, "AllocationSamplingMultiplier",
-                                       kDefaultAllocationSamplingMultiplier);
-  if (multiplier < 1) {
-    DLOG(ERROR) << feature.name
-                << " AllocationSamplingMultiplier is out-of-range: "
-                << multiplier;
+size_t AllocationSamplingFrequency(const base::Feature& feature,
+                                   std::string_view process_type) {
+  std::optional<int> multiplier =
+      GetIntParam(feature, "AllocationSamplingMultiplier",
+                  kDefaultAllocationSamplingMultiplier, process_type,
+                  [](int /*unused*/) { return false; });
+  if (!multiplier.has_value()) {
     return 0;
   }
 
-  int range = GetFieldTrialParamByFeatureAsInt(
-      feature, "AllocationSamplingRange", kDefaultAllocationSamplingRange);
-  if (range < 1) {
-    DLOG(ERROR) << feature.name
-                << " AllocationSamplingRange is out-of-range: " << range;
+  std::optional<int> range = GetIntParam(
+      feature, "AllocationSamplingRange", kDefaultAllocationSamplingRange,
+      process_type, [](int _unused) { return false; });
+  if (!range.has_value()) {
     return 0;
   }
 
-  base::CheckedNumeric<size_t> frequency = multiplier;
-  frequency *= std::pow(range, base::RandDouble());
+  base::CheckedNumeric<size_t> frequency = multiplier.value();
+  frequency *= std::pow(range.value(), base::RandDouble());
   if (!frequency.IsValid()) {
-    DLOG(ERROR) << feature.name << "Out-of-range multiply " << multiplier << " "
-                << range;
+    DLOG(ERROR) << feature.name << "Out-of-range multiply "
+                << multiplier.value() << " " << range.value();
     return 0;
   }
 
@@ -310,7 +308,8 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
     return std::nullopt;
   }
 
-  size_t alloc_sampling_freq = AllocationSamplingFrequency(feature);
+  size_t alloc_sampling_freq =
+      AllocationSamplingFrequency(feature, process_type);
   if (!alloc_sampling_freq)
     return std::nullopt;
 
@@ -450,7 +449,13 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
         return false;
       }
 
-      size_t alloc_sampling_freq = AllocationSamplingFrequency(feature);
+      // LUD (currently) does not vary its sampling frequency by process
+      // type, so we should avoid passing a valid process type to
+      // `AllocationSamplingFrequency()` (to force it not to fetch
+      // process-specific parameters).
+      constexpr std::string_view kDummyProcessType = "invalid process type";
+      size_t alloc_sampling_freq =
+          AllocationSamplingFrequency(feature, kDummyProcessType);
       if (!alloc_sampling_freq) {
         return false;
       }

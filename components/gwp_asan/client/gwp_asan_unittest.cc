@@ -170,5 +170,75 @@ TEST(GwpAsanTest, GetProcessSpecificAllocatorSettings) {
   EXPECT_EQ(renderer_settings->max_allocated_pages, 22ul);
 }
 
+TEST(GwpAsanTest, GetProcessSpecificAllocationSamplingMultiplier) {
+  std::map<std::string, std::string> parameters;
+
+  // This parameter is never overridden, hence common to all processes.
+  parameters["AllocationSamplingRange"] = "1";
+
+  // Since the range is set to 1, the multiplier fully determines
+  // the sampling frequency:
+  // 2 * (1 ** RandDouble()) == 2
+  parameters["AllocationSamplingMultiplier"] = "2";
+
+  // Set browser-specific sampling frequency:
+  // 2000 * (1 ** RandDouble()) == 2000
+  parameters["BrowserAllocationSamplingMultiplier"] = "2000";
+
+  // Set renderer-specific sampling frequency:
+  // 300 * (1 ** RandDouble()) == 300
+  parameters["RendererAllocationSamplingMultiplier"] = "300";
+
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(kTestFeature3, parameters);
+
+  const auto generic_settings = GetAllocatorSettingsImpl(
+      kTestFeature3, false, "invalid process type to force generic params");
+  EXPECT_TRUE(generic_settings.has_value());
+  EXPECT_EQ(generic_settings->sampling_frequency, 2ul);
+
+  const auto renderer_settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, "renderer");
+  EXPECT_TRUE(renderer_settings.has_value());
+  EXPECT_EQ(renderer_settings->sampling_frequency, 300ul);
+
+  // The empty `process_type` string denotes the browser process.
+  const auto browser_settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, "");
+  EXPECT_TRUE(browser_settings.has_value());
+  EXPECT_EQ(browser_settings->sampling_frequency, 2000ul);
+}
+
+TEST(GwpAsanTest, GetProcessSpecificAllocationSamplingRange) {
+  std::map<std::string, std::string> parameters;
+
+  // This parameter is never overridden, hence common to all processes.
+  parameters["AllocationSamplingMultiplier"] = "1";
+
+  // The default sampling frequency, then, is
+  // 1 * (1048576 ** RandDouble()) >= 1
+  // ...and will _most likely_ not equal 1.
+  parameters["AllocationSamplingRange"] = "1048576";
+
+  // Set browser-specific sampling frequency:
+  // 1 * (1 ** RandDouble()) == 1
+  parameters["BrowserAllocationSamplingRange"] = "1";
+
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(kTestFeature3, parameters);
+
+  const auto generic_settings = GetAllocatorSettingsImpl(
+      kTestFeature3, false, "invalid process type to force generic params");
+  EXPECT_TRUE(generic_settings.has_value());
+  EXPECT_GE(generic_settings->sampling_frequency, 1ul);
+  EXPECT_LE(generic_settings->sampling_frequency, 1ul << 20);
+
+  // The empty `process_type` string denotes the browser process.
+  const auto browser_settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, "");
+  EXPECT_TRUE(browser_settings.has_value());
+  EXPECT_EQ(browser_settings->sampling_frequency, 1ul);
+}
+
 }  // namespace internal
 }  // namespace gwp_asan
