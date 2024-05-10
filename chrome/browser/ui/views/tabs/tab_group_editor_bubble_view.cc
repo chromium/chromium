@@ -360,9 +360,16 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     move_menu_item_ptr = AddChildView(std::move(move_menu_item));
   }
 
-  // Add a separator
+  // Add a separator.
   if (is_saved) {
-    AddChildView(std::make_unique<views::Separator>());
+    // The amount of vertical padding in dips the separator should have to
+    // prevent menu items from being visually too close to each other.
+    constexpr int kSeparatorPadding = 8;
+    views::View* separator = AddChildView(std::make_unique<views::Separator>());
+    separator->SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(kSeparatorPadding, 0));
+
+    // Add delete group menu item.
     menu_items_.push_back(AddChildView(CreateMenuItem(
         IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
