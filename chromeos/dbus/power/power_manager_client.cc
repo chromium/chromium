@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -39,6 +38,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chromeos {
 
@@ -992,8 +992,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
   void OnGetPowerSupplyPropertiesMethod(dbus::Response* response) {
     // This is the last callback to run after all the initialization in |Init|.
     // Notify all observers that the initialization is complete.
-    base::ScopedClosureRunner notify_runner(base::BindOnce(
-        &PowerManagerClientImpl::NotifyInitialization, base::Unretained(this)));
+    absl::Cleanup notify_runner = [this] { NotifyInitialization(); };
 
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
