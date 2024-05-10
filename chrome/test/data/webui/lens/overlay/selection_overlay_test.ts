@@ -201,15 +201,16 @@ suite('SelectionOverlay', function() {
       });
 
     test(
-      `verify that only objects respond to taps, even when text overlaps`,
+      `verify that text respond to taps, even when an object is underneath`,
       async () => {
         await Promise.all([addWords(), addObjects()]);
 
         await simulateClick(selectionOverlayElement, {x: 80, y: 20});
 
-        const rect =
-            await testBrowserProxy.handler.whenCalled('issueLensRequest');
-        assertBoxesWithinThreshold(objects[0]!.geometry.boundingBox, rect);
+        const textQuery =
+            await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+        assertDeepEquals('test', textQuery);
+        assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
       });
 
   test(

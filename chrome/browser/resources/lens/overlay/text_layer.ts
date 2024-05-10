@@ -183,6 +183,8 @@ export class TextLayerElement extends PolymerElement {
     }
 
     this.selectionStartIndex = wordIndex;
+    this.selectionEndIndex = wordIndex;
+    this.isSelectingText = true;
     return true;
   }
 
@@ -198,9 +200,6 @@ export class TextLayerElement extends PolymerElement {
     }
 
     this.selectionEndIndex = this.renderedWords.indexOf(hit);
-
-    // Set the background of this layer to the text cursor when selection.
-    this.isSelectingText = true;
   }
 
   handleUpGesture() {
@@ -223,7 +222,7 @@ export class TextLayerElement extends PolymerElement {
           },
         }));
 
-    // On drag complete, send the selected text to C++.
+    // On selection complete, send the selected text to C++.
     BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
         highlightedText, this.selectionStartIndex, this.selectionEndIndex);
   }

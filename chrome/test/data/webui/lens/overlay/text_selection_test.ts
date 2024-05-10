@@ -308,28 +308,84 @@ suite('TextSelection', function() {
         0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
   });
 
-  test('verify that clicking on a word unhighlights words', async () => {
-    const wordsOnPage = getRenderedWords();
-    const firstWord = wordsOnPage[0]!.getBoundingClientRect();
-    const secondWord = wordsOnPage[1]!.getBoundingClientRect();
+  test(
+    'verify that clicking on a word highlights the clicked word',
+    async () => {
+      const wordsOnPage = getRenderedWords();
+      const word = wordsOnPage[0]!.getBoundingClientRect();
 
-    // Highlight some words.
-    await simulateDrag(
-        selectionOverlayElement,
-        {x: getCenterX(firstWord), y: getCenterY(firstWord)},
-        {x: getCenterX(secondWord), y: getCenterY(secondWord)});
-    let highlightedLines = getHighlightedLines();
-    assertEquals(1, highlightedLines.length);
+      let highlightedLines = getHighlightedLines();
+      assertEquals(0, highlightedLines.length);
 
-    // Click on a word.
-    await simulateClick(
-        selectionOverlayElement,
-        {x: getCenterX(firstWord), y: getCenterY(firstWord)});
+      // Click on a word.
+      await simulateClick(
+          selectionOverlayElement,
+          {x: getCenterX(word), y: getCenterY(word)});
 
-    // Verify words unhighlight.
-    highlightedLines = getHighlightedLines();
-    assertEquals(0, highlightedLines.length);
-  });
+      // Verify words unhighlight, except for the tapped word.
+      highlightedLines = getHighlightedLines();
+      assertEquals(1, highlightedLines.length);
+
+      const highlightedLineBoundingBox =
+          highlightedLines[0]!.getBoundingClientRect();
+      assertSameRenderedPixel(
+        word.left, highlightedLineBoundingBox.left);
+      assertSameRenderedPixel(
+        word.top, highlightedLineBoundingBox.top);
+      assertSameRenderedPixel(
+        word.right, highlightedLineBoundingBox.right);
+      assertSameRenderedPixel(
+        word.bottom, highlightedLineBoundingBox.bottom);
+    });
+
+  test(
+    `verify that clicking on a word unhighlights words except
+    for the clicked word`,
+    async () => {
+      const wordsOnPage = getRenderedWords();
+      const firstWord = wordsOnPage[0]!.getBoundingClientRect();
+      const secondWord = wordsOnPage[1]!.getBoundingClientRect();
+
+      // Highlight some words.
+      await simulateDrag(
+          selectionOverlayElement,
+          {x: getCenterX(firstWord), y: getCenterY(firstWord)},
+          {x: getCenterX(secondWord), y: getCenterY(secondWord)});
+      let highlightedLines = getHighlightedLines();
+      assertEquals(1, highlightedLines.length);
+
+      let highlightedLineBoundingBox =
+          highlightedLines[0]!.getBoundingClientRect();
+      assertSameRenderedPixel(
+        firstWord.left, highlightedLineBoundingBox.left);
+      assertSameRenderedPixel(
+        firstWord.top, highlightedLineBoundingBox.top);
+      assertSameRenderedPixel(
+        secondWord.right, highlightedLineBoundingBox.right);
+      assertSameRenderedPixel(
+        secondWord.bottom, highlightedLineBoundingBox.bottom);
+
+      // Click on a word.
+      await simulateClick(
+          selectionOverlayElement,
+          {x: getCenterX(firstWord), y: getCenterY(firstWord)});
+
+      // Verify words unhighlight, except for the clicked word.
+      highlightedLines = getHighlightedLines();
+      assertEquals(1, highlightedLines.length);
+
+      highlightedLineBoundingBox =
+          highlightedLines[0]!.getBoundingClientRect();
+      assertEquals(1, highlightedLines.length);
+      assertSameRenderedPixel(
+        firstWord.left, highlightedLineBoundingBox.left);
+      assertSameRenderedPixel(
+        firstWord.top, highlightedLineBoundingBox.top);
+      assertSameRenderedPixel(
+        firstWord.right, highlightedLineBoundingBox.right);
+      assertSameRenderedPixel(
+        firstWord.bottom, highlightedLineBoundingBox.bottom);
+    });
 
   test('verify that clicking off a word unhighlights words', async () => {
     const wordsOnPage = getRenderedWords();
