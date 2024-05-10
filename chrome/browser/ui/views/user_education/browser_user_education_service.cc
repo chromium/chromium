@@ -42,6 +42,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_handle.h"
@@ -1275,6 +1276,11 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       compose::features::kEnableComposeSavedStateNudge,
       user_education::Metadata()));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      lens::features::kLensOverlay,
+      user_education::Metadata(126, "jdonnelly@google.com, dfried@google.com",
+                               "Shown in app and web context menus.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(

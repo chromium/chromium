@@ -27,6 +27,8 @@ chromium-metrics-reviews@google.com.
       summary="For Compose feature; shown in web context menu."/>
   <variant name="ComposeNudge"
       summary="For Compose feature; shown on autofill popup."/>
+  <variant name="LensOverlay"
+      summary="Lens Overlay entry points in app and web context menus."/>
   <variant name="NewBadgeTestFeature"
       summary="Used for testing purposes only."/>
 </variants>

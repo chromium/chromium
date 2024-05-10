@@ -129,6 +129,7 @@
 #include "components/find_in_page/find_types.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/buildflags.h"
+#include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"  // nogncheck
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -2233,6 +2234,7 @@ void ExecLensOverlay(Browser* browser) {
       LensOverlayController::GetController(web_contents);
   CHECK(controller);
   controller->ShowUI(LensOverlayController::kAppMenu);
+  browser->window()->NotifyPromoFeatureUsed(lens::features::kLensOverlay);
 }
 
 void ExecLensRegionSearch(Browser* browser) {

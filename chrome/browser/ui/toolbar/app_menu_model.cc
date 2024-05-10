@@ -130,6 +130,10 @@
 #include "base/feature_list.h"
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/lens/lens_features.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -1765,9 +1769,12 @@ void AppMenuModel::Build() {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_CONTENT_CONTEXT_LENS_OVERLAY, IDS_SHOW_LENS_OVERLAY,
         vector_icons::kGoogleLensMonochromeLogoIcon);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value(),
-        kShowLensOverlay);
+    const int lens_command_index =
+        GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value();
+    SetElementIdentifierAt(lens_command_index, kShowLensOverlay);
+    SetIsNewFeatureAt(lens_command_index,
+                      browser()->window()->MaybeShowNewBadgeFor(
+                          lens::features::kLensOverlay));
   } else if (companion::IsCompanionFeatureEnabled() &&
              !browser()->profile()->IsIncognitoProfile()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SEARCH_COMPANION,

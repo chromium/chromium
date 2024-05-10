@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -2669,12 +2670,13 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
         IDS_CONTENT_CONTEXT_LENS_OVERLAY, ui::ImageModel::FromVectorIcon(icon));
-
-    menu_model_.SetElementIdentifierAt(
+    const int command_index =
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
-            .value(),
-        kRegionSearchItem);
-
+            .value();
+    menu_model_.SetElementIdentifierAt(command_index, kRegionSearchItem);
+    menu_model_.SetIsNewFeatureAt(
+        command_index, UserEducationService::MaybeShowNewBadge(
+                           GetBrowserContext(), lens::features::kLensOverlay));
     return;
   }
 
@@ -4256,6 +4258,8 @@ void RenderViewContextMenu::ExecRegionSearch(
         LensOverlayController::GetController(source_web_contents_);
     CHECK(controller);
     controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
+    UserEducationService::MaybeNotifyPromoFeatureUsed(
+        GetBrowserContext(), lens::features::kLensOverlay);
     return;
   }
 
