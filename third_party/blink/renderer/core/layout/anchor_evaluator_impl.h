@@ -318,8 +318,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
 
- private:
   const LogicalAnchorQuery* AnchorQuery() const;
+
+ private:
   const LogicalAnchorReference* ResolveAnchorReference(
       const AnchorSpecifierValue& anchor_specifier,
       const ScopedCSSName* position_anchor) const;

@@ -177,7 +177,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // positioned nodes are set.
   void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
 
-  const Vector<NonOverflowingScrollRange>* NonOverflowingScrollRanges() const {
+  const HeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
+      const {
     return rare_data_ ? rare_data_->NonOverflowingScrollRanges() : nullptr;
   }
 
@@ -525,7 +526,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     void SetNonOverflowingScrollRanges(
-        const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
+        const HeapVector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       if (layout_result_->rare_data_ || !non_overflowing_ranges.empty()) {
         layout_result_->EnsureRareData()->SetNonOverflowingScrollRanges(
             non_overflowing_ranges);
@@ -854,10 +855,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     void SetNonOverflowingScrollRanges(
-        const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
+        const HeapVector<NonOverflowingScrollRange>& non_overflowing_ranges) {
       non_overflowing_scroll_ranges = non_overflowing_ranges;
     }
-    const Vector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
+    const HeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
         const {
       if (non_overflowing_scroll_ranges.empty()) {
         return nullptr;
@@ -903,7 +904,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
-    Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
+    HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
     // Only valid if oof_positioned_offset_is_set
     LogicalOffset oof_positioned_offset;

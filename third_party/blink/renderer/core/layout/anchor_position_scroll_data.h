@@ -66,11 +66,20 @@ class AnchorPositionScrollData
     return default_anchor_adjustment_data_.needs_scroll_adjustment_in_y;
   }
 
-  gfx::Vector2dF TotalOffset() const {
-    return default_anchor_adjustment_data_.accumulated_adjustment +
-           default_anchor_adjustment_data_
-               .anchored_element_container_scroll_offset;
-  }
+  // Returns the total offset of the anchored element from the layout location
+  // due to scroll and other adjustments from the containers between the given
+  // `anchor_object` and the anchored element and the scroll container of the
+  // anchored element itself. There are two cases:
+  // 1. If `anchor_object` is the anchor object used to create the snapshot,
+  //    The result will be from the last snapshotted result.
+  // 2. Otherwise the result will be calculated on the fly, which may use stale
+  //    layout data if this is called during layout.
+  // ValidateSnapshot() (called after the first layout during a lifecycle
+  // update) will reschedule layout, or ShouldScheduleNextService() (called at
+  // the end of a lifecycle update) will schedule another lifecycle update,
+  // if the final layout data may cause layout changes.
+  gfx::Vector2dF TotalOffset(const LayoutObject& anchor_object) const;
+
   gfx::Vector2dF AccumulatedAdjustment() const {
     return default_anchor_adjustment_data_.accumulated_adjustment;
   }
@@ -127,6 +136,9 @@ class AnchorPositionScrollData
   struct AdjustmentData {
     DISALLOW_NEW();
 
+    // The anchor object used when calculating this data.
+    Member<const LayoutObject> anchor_object;
+
     // Compositor element ids of the ancestor scroll adjustment containers
     // (see the class documentation) of some element (anchor), up to the
     // containing block of `anchored_element_` (exclusively), along the
@@ -159,6 +171,12 @@ class AnchorPositionScrollData
     bool needs_scroll_adjustment_in_y = false;
 
     bool has_chained_anchor = false;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(anchor_object); }
+
+    gfx::Vector2dF TotalOffset() const {
+      return accumulated_adjustment + anchored_element_container_scroll_offset;
+    }
   };
 
   AdjustmentData ComputeAdjustmentContainersData(
@@ -167,16 +185,10 @@ class AnchorPositionScrollData
   // Takes an up-to-date snapshot, and compares it with the existing one.
   // If `update` is true, also rewrites the existing snapshot.
   SnapshotDiff TakeAndCompareSnapshot(bool update);
-  bool IsFallbackPositionValid(
-      const gfx::Vector2dF& new_accumulated_adjustment,
-      const gfx::Vector2dF& new_anchored_element_container_scroll_offset) const;
+  bool IsFallbackPositionValid(const AdjustmentData& new_adjustment_data) const;
 
   void InvalidateLayoutAndPaint();
   void InvalidatePaint();
-
-  // ValidateSnapshot is called every frame, but AnchorPositionScrollData only
-  // needs to perform the validation once (during the frame it was created).
-  bool is_snapshot_validated_ = false;
 
   // The anchor-positioned element.
   Member<Element> anchored_element_;

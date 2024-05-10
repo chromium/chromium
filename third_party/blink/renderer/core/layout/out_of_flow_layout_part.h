@@ -207,7 +207,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // This field is set only if this |OffsetInfo| is calculated from a
     // position-try-options style, either from a @position-try rule or a tactic,
     // or the anchored element has position-visibility: no-overflow.
-    Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
+    HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
     // This field is set when we're calculating |OffsetInfo| with
     // try_fit_available_space=true, e.g. when we have a non-empty
@@ -322,7 +322,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   std::optional<OffsetInfo> TryCalculateOffset(
       const NodeInfo& node_info,
       const ComputedStyle& style,
-      AnchorEvaluatorImpl*,
+      AnchorEvaluatorImpl&,
       bool try_fit_available_space,
       NonOverflowingScrollRange* out_scroll_range);
 
