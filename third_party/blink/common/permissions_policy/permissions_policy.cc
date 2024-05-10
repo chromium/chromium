@@ -205,7 +205,6 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     const url::Origin& origin) const {
   DCHECK(base::Contains(*feature_list_, feature));
 
-  disallow_updates_ = true;
   if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return false;
   }
@@ -292,7 +291,6 @@ PermissionsPolicy::GetAllowlistForFeatureIfExists(
     return std::nullopt;
 
   // Only return allowlist if actually in `allowlists_`.
-  disallow_updates_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end())
     return allowlist->second;
@@ -515,7 +513,6 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   //    1. If the allowlist for feature in policy’s declared policy matches
   //       origin, then return "Enabled".
   //    2. Otherwise return "Disabled".
-  disallow_updates_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return allowlist->second.Contains(origin);
