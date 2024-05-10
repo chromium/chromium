@@ -4301,7 +4301,6 @@ IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 void RenderProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
-  filter->RegisterAssociatedInterfaces(channel_.get());
   channel_->AddFilter(filter->GetFilter());
 }
 #endif

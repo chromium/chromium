@@ -250,7 +250,6 @@ void AgentSchedulingGroupHost::AddFilter(BrowserMessageFilter* filter) {
     return;
   }
 
-  filter->RegisterAssociatedInterfaces(channel_.get());
   channel_->AddFilter(filter->GetFilter());
 }
 #endif
