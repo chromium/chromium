@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_model.h"
+#include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -50,6 +51,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   // Show a context menu for the chip which is right clicked by the user.
   void ShowChipContextMenu(BirchChipButton* chip,
+                           BirchSuggestionType chip_type,
                            const gfx::Point& point,
                            ui::MenuSourceType source_type);
 
@@ -61,6 +63,12 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   // Gets if the user allows the suggestions to show.
   bool GetShowBirchSuggestions() const;
+
+  // Called if the user shows/hides the given type of suggestions.
+  void SetShowSuggestionType(BirchSuggestionType type, bool show);
+
+  // Gets if the user allows to show the given type of suggestions.
+  bool GetShowSuggestionType(BirchSuggestionType type) const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

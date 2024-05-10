@@ -7,14 +7,17 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
+#include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -48,6 +51,22 @@ void RecordTimeOfDayRankingHistogram(
     base::UmaHistogramCounts100(now_histogram, ranking_int);
     // Also record an aggregate for the day.
     base::UmaHistogramCounts100("Ash.Birch.Ranking.Total", ranking_int);
+  }
+}
+
+std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
+  switch (type) {
+    case BirchSuggestionType::kWeather:
+      return prefs::kBirchUseWeather;
+    case BirchSuggestionType::kCalendar:
+      return prefs::kBirchUseCalendar;
+    case BirchSuggestionType::kDrive:
+      return prefs::kBirchUseFileSuggest;
+    case BirchSuggestionType::kTab:
+      return prefs::kBirchUseRecentTabs;
+    case BirchSuggestionType::kExplore:
+    case BirchSuggestionType::kUndefined:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -123,11 +142,12 @@ void BirchBarController::OnBarDestroying(BirchBarView* bar_view) {
 }
 
 void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
+                                             BirchSuggestionType chip_type,
                                              const gfx::Point& point,
                                              ui::MenuSourceType source_type) {
   chip_menu_model_adapter_ = std::make_unique<BirchBarMenuModelAdapter>(
-      std::make_unique<BirchBarContextMenuModel>(
-          /*delegate=*/chip, BirchBarContextMenuModel::Type::kChipMenu),
+      std::make_unique<BirchChipContextMenuModel>(
+          /*delegate=*/chip, chip_type),
       chip->GetWidget(), source_type,
       base::BindOnce(&BirchBarController::OnChipContextMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
@@ -167,6 +187,17 @@ void BirchBarController::SetShowBirchSuggestions(bool show) {
 bool BirchBarController::GetShowBirchSuggestions() const {
   return show_suggestions_pref_registrar_.prefs()->GetBoolean(
       prefs::kBirchShowSuggestions);
+}
+
+void BirchBarController::SetShowSuggestionType(BirchSuggestionType type,
+                                               bool show) {
+  customize_suggestions_pref_registrar_.prefs()->SetBoolean(
+      GetPrefNameFromSuggestionType(type), show);
+}
+
+bool BirchBarController::GetShowSuggestionType(BirchSuggestionType type) const {
+  return customize_suggestions_pref_registrar_.prefs()->GetBoolean(
+      GetPrefNameFromSuggestionType(type));
 }
 
 void BirchBarController::ExecuteCommand(int command_id, int event_flags) {

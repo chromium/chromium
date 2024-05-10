@@ -12,6 +12,8 @@
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace aura {
 class Window;
@@ -98,6 +100,9 @@ void MoveFocusToView(OverviewFocusableView* target_view);
 void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
                                          bool visible,
                                          bool animate);
+
+// Generates and stylizes the icon for menu item.
+ui::ImageModel CreateIconForMenuItem(const gfx::VectorIcon& icon);
 
 }  // namespace ash
 

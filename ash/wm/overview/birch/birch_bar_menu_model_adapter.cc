@@ -5,7 +5,6 @@
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 
 #include "ash/app_menu/app_menu_model_adapter.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/style/checkbox.h"
 #include "ash/style/switch.h"
@@ -22,12 +21,9 @@
 
 namespace ash {
 
-namespace {
+using CommandId = BirchBarContextMenuModel::CommandId;
 
-// Returns the pref service to use for Birch bar prefs.
-PrefService* GetPrefService() {
-  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-}
+namespace {
 
 // Creates a switch button to control showing/hiding the birch bar.
 std::unique_ptr<Switch> CreateShowSuggestionSwitch() {
@@ -48,21 +44,17 @@ std::unique_ptr<Switch> CreateShowSuggestionSwitch() {
   return switch_button;
 }
 
-// Get suggestion pref name from the given command Id.
-std::string CommandIdToSuggestionPrefName(int command_id) {
+// Get suggestion type from the given command Id.
+BirchSuggestionType CommandIdToSuggestionType(int command_id) {
   switch (command_id) {
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kCalendarSuggestions):
-      return prefs::kBirchUseCalendar;
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kWeatherSuggestions):
-      return prefs::kBirchUseWeather;
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kDriveSuggestions):
-      return prefs::kBirchUseFileSuggest;
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions):
-      return prefs::kBirchUseRecentTabs;
+    case base::to_underlying(CommandId::kCalendarSuggestions):
+      return BirchSuggestionType::kCalendar;
+    case base::to_underlying(CommandId::kWeatherSuggestions):
+      return BirchSuggestionType::kWeather;
+    case base::to_underlying(CommandId::kDriveSuggestions):
+      return BirchSuggestionType::kDrive;
+    case base::to_underlying(CommandId::kOtherDeviceSuggestions):
+      return BirchSuggestionType::kTab;
     default:
       break;
   }
@@ -73,7 +65,7 @@ std::string CommandIdToSuggestionPrefName(int command_id) {
 }  // namespace
 
 BirchBarMenuModelAdapter::BirchBarMenuModelAdapter(
-    std::unique_ptr<BirchBarContextMenuModel> birch_menu_model,
+    std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
     views::Widget* widget_owner,
     ui::MenuSourceType source_type,
     base::OnceClosure on_menu_closed_callback,
@@ -101,22 +93,17 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
   const std::u16string label = model->GetLabelAt(index);
 
   switch (command_id) {
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kShowSuggestions): {
+    case base::to_underlying(CommandId::kShowSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id, label);
       auto* switch_button =
           item_view->AddChildView(CreateShowSuggestionSwitch());
       switch_button->SetAccessibleName(label);
       return item_view;
     }
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kWeatherSuggestions):
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kCalendarSuggestions):
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kDriveSuggestions):
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions): {
+    case base::to_underlying(CommandId::kWeatherSuggestions):
+    case base::to_underlying(CommandId::kCalendarSuggestions):
+    case base::to_underlying(CommandId::kDriveSuggestions):
+    case base::to_underlying(CommandId::kOtherDeviceSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We
@@ -142,16 +129,19 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
                       views::MenuController::ExitType::kAll);
                 }
 
-                auto* pref_service = GetPrefService();
-                const std::string pref_name =
-                    CommandIdToSuggestionPrefName(command_id);
-                pref_service->SetBoolean(pref_name,
-                                         !pref_service->GetBoolean(pref_name));
+                auto* birch_bar_controller = BirchBarController::Get();
+                const BirchSuggestionType suggestion_type =
+                    CommandIdToSuggestionType(command_id);
+                const bool current_show_status =
+                    birch_bar_controller->GetShowSuggestionType(
+                        suggestion_type);
+                birch_bar_controller->SetShowSuggestionType(
+                    suggestion_type, !current_show_status);
               },
               command_id, close_menu_on_customizing_suggestions_),
           model->GetLabelAt(index)));
-      checkbox->SetSelected(GetPrefService()->GetBoolean(
-          CommandIdToSuggestionPrefName(command_id)));
+      checkbox->SetSelected(BirchBarController::Get()->GetShowSuggestionType(
+          CommandIdToSuggestionType(command_id)));
       checkbox->set_delegate(this);
       checkbox->SetAccessibleName(label);
       return item_view;

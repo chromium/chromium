@@ -23,7 +23,7 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
                                             public Checkbox::Delegate {
  public:
   BirchBarMenuModelAdapter(
-      std::unique_ptr<BirchBarContextMenuModel> birch_menu_model,
+      std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
       views::Widget* widget_owner,
       ui::MenuSourceType source_type,
       base::OnceClosure on_menu_closed_callback,

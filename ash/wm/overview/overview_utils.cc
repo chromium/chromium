@@ -36,6 +36,7 @@
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -386,6 +387,12 @@ void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
       layer->SetOpacity(new_opacity);
     }
   }
+}
+
+ui::ImageModel CreateIconForMenuItem(const gfx::VectorIcon& icon) {
+  constexpr ui::ColorId kMenuIconColorId = cros_tokens::kCrosSysOnSurface;
+  constexpr int kMenuIconSize = 20;
+  return ui::ImageModel::FromVectorIcon(icon, kMenuIconColorId, kMenuIconSize);
 }
 
 }  // namespace ash

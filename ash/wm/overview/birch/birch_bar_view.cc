@@ -244,6 +244,8 @@ void BirchBarView::Clear() {
     auto secondary_row = RemoveChildViewT(secondary_row_);
     secondary_row_ = nullptr;
   }
+
+  Relayout(RelayoutReason::kAddRemoveChip);
 }
 
 int BirchBarView::GetMaximumHeight() const {

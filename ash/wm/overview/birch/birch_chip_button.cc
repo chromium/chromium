@@ -10,8 +10,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
-#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -106,6 +107,24 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
   }
 }
 
+BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
+  switch (item_type) {
+    case BirchItemType::kWeather:
+      return BirchSuggestionType::kWeather;
+    case BirchItemType::kCalendar:
+    case BirchItemType::kAttachment:
+      return BirchSuggestionType::kCalendar;
+    case BirchItemType::kFile:
+      return BirchSuggestionType::kDrive;
+    case BirchItemType::kTab:
+      return BirchSuggestionType::kTab;
+    case BirchItemType::kReleaseNotes:
+      return BirchSuggestionType::kExplore;
+    default:
+      return BirchSuggestionType::kUndefined;
+  }
+}
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -124,7 +143,9 @@ class BirchChipButton::ChipMenuController
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override {
     if (auto* birch_bar_controller_ = BirchBarController::Get()) {
-      birch_bar_controller_->ShowChipContextMenu(chip_, point, source_type);
+      birch_bar_controller_->ShowChipContextMenu(
+          chip_, GetSuggestionTypeFromItemType(chip_->GetItem()->GetType()),
+          point, source_type);
     }
   }
 
@@ -236,15 +257,36 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   auto* birch_bar_controller = BirchBarController::Get();
   CHECK(birch_bar_controller);
 
+  if (command_id ==
+      base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {
+    birch_bar_controller->ExecuteCommand(command_id, event_flags);
+    return;
+  }
+
+  using CommandId = BirchChipContextMenuModel::CommandId;
+
   switch (command_id) {
-    case base::to_underlying(
-        BirchBarContextMenuModel::CommandId::kHideSuggestion):
-        birch_bar_controller->OnItemHiddenByUser(item_);
-        break;
-    case base::to_underlying(BirchBarContextMenuModel::CommandId::kReset):
-      birch_bar_controller->ExecuteCommand(command_id, event_flags);
+    case base::to_underlying(CommandId::kHideSuggestion):
+      birch_bar_controller->OnItemHiddenByUser(item_);
       break;
-    case base::to_underlying(BirchBarContextMenuModel::CommandId::kFeedback):
+    case base::to_underlying(CommandId::kHideWeatherSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kWeather,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideCalendarSuggestions):
+      birch_bar_controller->SetShowSuggestionType(
+          BirchSuggestionType::kCalendar,
+          /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideDriveSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kDrive,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideOtherDeviceSuggestions):
+      birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kTab,
+                                                  /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kFeedback):
       Shell::Get()->shell_delegate()->OpenFeedbackDialog(
           ShellDelegate::FeedbackSource::kBirch,
           /*description_template=*/std::string(), /*category_tag=*/"fromBirch");
