@@ -131,6 +131,10 @@ class TabStripModelDelegate {
   // |group|.
   virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
 
+  // Called on group creation after the group has been added to the tabstrip and
+  // all tabs have been added.
+  virtual void GroupAdded(const tab_groups::TabGroupId& group) = 0;
+
   // Notifies the delegate that a group is about to be closed, and allows it
   // to perform any preparation neccessary.
   virtual void WillCloseGroup(const tab_groups::TabGroupId& group) = 0;

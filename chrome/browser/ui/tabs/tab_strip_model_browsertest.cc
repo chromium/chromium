@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -31,6 +33,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -205,4 +208,31 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Tab.Organization.TabContextMenu.Clicked",
                                       true, 1);
+}
+
+class SavedTabGroupV2TabStripModelBrowserTest : public InProcessBrowserTest {
+ public:
+  SavedTabGroupV2TabStripModelBrowserTest() {
+    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveV2}, {});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupV2TabStripModelBrowserTest,
+                       GroupAutoSaveOnCreate) {
+  // Create a group, expect it to be saved.
+  tab_groups::SavedTabGroupKeyedService* const service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(service, nullptr);
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+
+  // Create a group.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0});
+
+  // With the V2 flag the group should be saved.
+  EXPECT_TRUE(service->model()->Contains(group));
 }

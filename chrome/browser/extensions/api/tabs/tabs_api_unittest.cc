@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -562,7 +563,11 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
       tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
           browser()->profile());
   ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    // The group is not saved by default if we enter here. Manually save it.
+    saved_service->SaveGroup(group);
+  }
+
   EXPECT_TRUE(ExtensionTabUtil::TabIsInSavedTabGroup(
       raw_contents, browser()->tab_strip_model()));
 

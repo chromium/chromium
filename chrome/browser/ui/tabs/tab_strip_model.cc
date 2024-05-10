@@ -1215,6 +1215,9 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   const tab_groups::TabGroupId new_group =
       tab_groups::TabGroupId::GenerateNew();
   AddToNewGroupImpl(indices, new_group);
+  // TODO(crbug.com/339858272) : Consolidate all default save logic to
+  // TabStripModel::AddToNewGroupImpl.
+  delegate_->GroupAdded(new_group);
   return new_group;
 }
 
@@ -1276,6 +1279,11 @@ void TabStripModel::UpdateGroupForDragRevert(
       group_model_->AddTabGroup(group_id.value(), group_data);
     }
     GroupTab(index, group_id.value(), GetTabGroupForTab(index));
+    if (!group_exists) {
+      // TODO(crbug.com/339858272) : Consolidate all default save logic to
+      // TabStripModel::AddToNewGroupImpl.
+      delegate_->GroupAdded(group_id.value());
+    }
   } else {
     UngroupTab(index, GetTabGroupForTab(index));
   }

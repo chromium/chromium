@@ -241,6 +241,26 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
   }
 }
 
+void BrowserTabStripModelDelegate::GroupAdded(
+    const tab_groups::TabGroupId& group) {
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return;
+  }
+
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!saved_tab_group_service) {
+    return;
+  }
+
+  if (saved_tab_group_service->model()->Contains(group)) {
+    return;
+  }
+
+  saved_tab_group_service->SaveGroup(group, true);
+}
+
 void BrowserTabStripModelDelegate::WillCloseGroup(
     const tab_groups::TabGroupId& group) {
   // First the saved group must be stored in tab restore so that it keeps the
