@@ -956,10 +956,11 @@ std::string GetPathDisplayTextForSettings(Profile* const profile,
 
   bool is_odfs_mounted = ash::cloud_upload::IsODFSMounted(profile);
 
-  if (ReplacePrefix(&result, "/home/chronos/user/MyFiles", "My files")) {
+  if (ReplacePrefix(&result, "/home/chronos/user/MyFiles",
+                    GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL))) {
   } else if (ReplacePrefix(
                  &result, profile->GetPath().Append(kFolderNameMyFiles).value(),
-                 "My files")) {
+                 GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL))) {
   } else if (service &&
              ReplacePrefix(
                  &result,
