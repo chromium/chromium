@@ -181,7 +181,8 @@ static void JNI_WebApkSyncService_FetchRestorableApps(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& java_callback) {
-  if (profile == nullptr) {
+  if (profile == nullptr ||
+      !base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
 
