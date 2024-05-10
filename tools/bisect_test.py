@@ -5,6 +5,7 @@
 import unittest
 import subprocess
 import sys
+import optparse
 
 bisect_builds = __import__('bisect-builds')
 
@@ -56,14 +57,24 @@ class BisectTest(unittest.TestCase):
     archive = 'linux'
     asan = False
     use_local_cache = False
-    context = bisect_builds.PathContext(base_url, archive, good_rev, bad_rev,
-                                        asan, use_local_cache)
-    (minrev, maxrev, _) = bisect_builds.Bisect(
-        context=context,
-        evaluate=evaluate,
-        num_runs=num_runs,
-        profile=None,
-        try_args=[])
+    options = optparse.Values
+    options.good = good_rev
+    options.bad = bad_rev
+    options.archive = 'linux64'
+    options.release_builds = False
+    options.official_builds = False
+    options.asan = False
+    options.use_local_cache = False
+    options.blink = False
+    options.apk = None
+    options.signed = False
+    options.times = num_runs
+    context = bisect_builds.PathContext(options)
+    (minrev, maxrev, _) = bisect_builds.Bisect(context=context,
+                                               evaluate=evaluate,
+                                               num_runs=num_runs,
+                                               profile=None,
+                                               try_args=[])
     return (minrev, maxrev)
 
   def testBisectConsistentAnswer(self):

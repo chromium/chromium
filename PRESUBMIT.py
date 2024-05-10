@@ -3816,7 +3816,7 @@ def CheckPythonDevilInit(input_api, output_api):
         affected_file,
         files_to_skip=(_EXCLUDED_PATHS + input_api.DEFAULT_FILES_TO_SKIP + (
             r'^build/android/devil_chromium\.py',
-            r'^tools/bisect/.*',
+            r'^tools/bisect-builds\.py',
             r'^third_party/.*',
         )),
         files_to_check=[r'.*\.py$'])
