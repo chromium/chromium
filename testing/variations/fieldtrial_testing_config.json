@@ -19369,6 +19369,22 @@
             ]
         }
     ],
+    "TabGroupSyncAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupPaneAndroid",
+                        "TabGroupSyncAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGroupsCollapseFreezing": [
         {
             "platforms": [

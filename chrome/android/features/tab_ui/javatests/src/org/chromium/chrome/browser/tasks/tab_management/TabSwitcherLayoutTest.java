@@ -399,6 +399,7 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1667,6 +1668,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoGroupClosureInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -2690,6 +2692,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoClosure_UndoGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -2747,6 +2750,7 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoClosure_AcceptGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
