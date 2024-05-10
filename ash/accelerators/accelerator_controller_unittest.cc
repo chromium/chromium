@@ -95,6 +95,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
@@ -1918,15 +1919,17 @@ INSTANTIATE_TEST_SUITE_P(
          std::make_pair<std::string, std::string>(kVolumeButtonRegionScreen,
                                                   kVolumeButtonSideBottom)}));
 
-TEST_F(AcceleratorControllerTest, ToggleCpasLockAcceleratorsWithFunctionKey) {
+TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kModifierSplit, features::kShortcutStateMachines,
-       features::kPeripheralNotification, features::kPeripheralCustomization,
-       features::kInputDeviceSettingsSplit},
+       features::kPeripheralCustomization, features::kInputDeviceSettingsSplit},
       {});
-
   auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();
   ASSERT_TRUE(nudge_manager);

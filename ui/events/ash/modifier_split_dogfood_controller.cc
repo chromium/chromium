@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/events/ash/modifier_split_dogfood_controller.h"
+
+#include "ash/constants/ash_features.h"
+#include "base/strings/string_util.h"
+#include "components/user_manager/user_manager.h"
+
+namespace ui {
+
+namespace {
+constexpr char kGoogleDomain[] = "@google.com";
+}
+
+ModifierSplitDogfoodController::ModifierSplitDogfoodController() {
+  modifier_split_enabled_ = ash::features::IsModifierSplitEnabled() &&
+                            !ash::features::IsModifierSplitDogfoodEnabled();
+
+  if (user_manager::UserManager::IsInitialized() &&
+      ash::features::IsModifierSplitEnabled()) {
+    user_manager::UserManager::Get()->AddObserver(this);
+  }
+}
+
+ModifierSplitDogfoodController::~ModifierSplitDogfoodController() {
+  if (user_manager::UserManager::IsInitialized() &&
+      ash::features::IsModifierSplitEnabled()) {
+    user_manager::UserManager::Get()->RemoveObserver(this);
+  }
+}
+
+void ModifierSplitDogfoodController::OnUserLoggedIn(
+    const user_manager::User& user) {
+  if (modifier_split_enabled_) {
+    return;
+  }
+
+  if (!::ash::features::IsModifierSplitDogfoodEnabled()) {
+    return;
+  }
+
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user) {
+    return;
+  }
+
+  modifier_split_enabled_ = base::EndsWith(
+      primary_user->GetAccountId().GetUserEmail(), kGoogleDomain);
+}
+
+}  // namespace ui

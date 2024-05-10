@@ -1901,6 +1901,11 @@ BASE_FEATURE(kModifierSplit,
              "ModifierSplit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables to split left and right modifiers in settings for dogfood.
+BASE_FEATURE(kModifierSplitDogfood,
+             "ModifierSplitDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kMouseImposterCheck,
              "MouseImposterCheck",
@@ -4083,8 +4088,14 @@ bool IsOobeJellyEnabled() {
 }
 
 bool IsModifierSplitEnabled() {
-  return base::FeatureList::IsEnabled(kModifierSplit) &&
-         switches::IsModifierSplitSecretKeyMatched();
+  return IsInputDeviceSettingsSplitEnabled() &&
+         base::FeatureList::IsEnabled(kModifierSplit) &&
+         (IsModifierSplitDogfoodEnabled() ||
+          switches::IsModifierSplitSecretKeyMatched());
+}
+
+bool IsModifierSplitDogfoodEnabled() {
+  return base::FeatureList::IsEnabled(kModifierSplitDogfood);
 }
 
 bool IsMouseImposterCheckEnabled() {

@@ -1,5 +1,7 @@
 include_rules = [
   "+ash/constants",
+  "+components/account_id",
+  "+components/user_manager",
   "+device/udev_linux",
   "+ui/base",
 ]

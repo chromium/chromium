@@ -881,6 +881,11 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
   keyboard_devices.emplace_back(
@@ -904,6 +909,11 @@ TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
   keyboard_devices.emplace_back(

@@ -2622,9 +2622,9 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
 }
 
 TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsWithFunction) {
-  scoped_feature_list_.InitAndEnableFeature(features::kModifierSplit);
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
-  Preferences::RegisterProfilePrefs(prefs()->registry());
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
 
   // On devices with custom layouts, scan codes that match the layout
   // map get mapped to F-Keys based only on the scan code. The search
@@ -4805,9 +4805,9 @@ TEST_P(EventRewriterTest, SixPackRemappingsFnBased) {
 }
 
 TEST_P(EventRewriterTest, NotifySixPackRewriteBlockedByFnKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
 
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();

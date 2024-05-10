@@ -221,7 +221,9 @@ TEST_F(AcceleratorAliasConverterTest, UpdateSixPackKeyAliasWithFkey) {
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-  mojom::Keyboard split_modifier_keyboard;
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -240,7 +242,9 @@ TEST_F(AcceleratorAliasConverterTest, UpdateTopRowKeysAliasWithFkey) {
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-  mojom::Keyboard split_modifier_keyboard;
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
@@ -277,7 +281,9 @@ TEST_F(AcceleratorAliasConverterTest, UpdateFunctionAlias) {
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
       ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-  mojom::Keyboard split_modifier_keyboard;
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
 
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();

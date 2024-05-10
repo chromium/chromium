@@ -852,7 +852,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // For official builds, only add the real string if the feature is enabled.
-  if (features::IsModifierSplitEnabled()) {
+  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
     html_source->AddLocalizedString("perDeviceKeyboardKeyRightAlt",
                                     IDS_KEYBOARD_RIGHT_ALT_LABEL);
   } else {
@@ -866,8 +866,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT);
 #endif
 
-  html_source->AddBoolean("enableModifierSplit",
-                          ash::features::IsModifierSplitEnabled());
+  html_source->AddBoolean(
+      "enableModifierSplit",
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled());
 
   if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
     html_source->AddLocalizedString(
