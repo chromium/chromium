@@ -67,9 +67,6 @@ CookiePartitionKey::CookiePartitionKey(
     std::optional<base::UnguessableToken> nonce,
     AncestorChainBit ancestor_chain_bit)
     : site_(site), nonce_(nonce), ancestor_chain_bit_(ancestor_chain_bit) {
-  if (nonce.has_value()) {
-    CHECK_EQ(ancestor_chain_bit, AncestorChainBit::kCrossSite);
-  }
 }
 
 CookiePartitionKey::CookiePartitionKey(bool from_script)
@@ -126,7 +123,8 @@ CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in) {
 std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key,
     SiteForCookies site_for_cookies,
-    SchemefulSite request_site) {
+    SchemefulSite request_site,
+    bool main_frame_navigation) {
   if (cookie_util::PartitionedCookiesDisabledByCommandLine()) {
     return std::nullopt;
   }
@@ -146,11 +144,20 @@ std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     return std::nullopt;
   }
 
-  const auto ancestor_chain_bit =
-      (nonce || site_for_cookies.IsNull())
-          ? AncestorChainBit::kCrossSite
-          : BoolToAncestorChainBit(
-                !site_for_cookies.IsFirstParty(request_site.GetURL()));
+  // When a main_frame_navigation occurs, the ancestor chain bit value should
+  // always be kSameSite, unless there is a nonce, since a main frame has no
+  // ancestor, context: crbug.com/(337206302).
+  AncestorChainBit ancestor_chain_bit;
+  if (nonce) {
+    ancestor_chain_bit = AncestorChainBit::kCrossSite;
+  } else if (main_frame_navigation) {
+    ancestor_chain_bit = AncestorChainBit::kSameSite;
+  } else if (site_for_cookies.IsNull()) {
+    ancestor_chain_bit = AncestorChainBit::kCrossSite;
+  } else {
+    ancestor_chain_bit = BoolToAncestorChainBit(
+        !site_for_cookies.IsFirstParty(request_site.GetURL()));
+  }
 
   return CookiePartitionKey(*partition_key_site, nonce, ancestor_chain_bit);
 }

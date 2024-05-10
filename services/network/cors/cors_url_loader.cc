@@ -1141,7 +1141,8 @@ void CorsURLLoader::StartNetworkRequest() {
         *cache_key, request_, net_log_,
         net::CookiePartitionKey::FromNetworkIsolationKey(
             isolation_info_.network_isolation_key(), request_.site_for_cookies,
-            net::SchemefulSite(request_.url)),
+            net::SchemefulSite(request_.url),
+            isolation_info_.IsMainFrameRequest()),
         network_client_receiver_.BindNewPipeAndPassRemote());
     memory_cache_was_used_ = true;
   } else if (sync_network_loader_factory_) {

@@ -470,6 +470,17 @@ void URLRequest::set_site_for_cookies(const SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
 }
 
+void URLRequest::set_isolation_info(const IsolationInfo& isolation_info) {
+  isolation_info_ = isolation_info;
+
+  bool is_main_frame_navigation = isolation_info.IsMainFrameRequest() ||
+                                  force_main_frame_for_same_site_cookies();
+
+  cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info.network_isolation_key(), isolation_info.site_for_cookies(),
+      net::SchemefulSite(original_url()), is_main_frame_navigation);
+}
+
 void URLRequest::set_isolation_info_from_network_anonymization_key(
     const NetworkAnonymizationKey& network_anonymization_key) {
   set_isolation_info(URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(

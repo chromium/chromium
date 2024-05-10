@@ -100,7 +100,8 @@ class NET_EXPORT CookiePartitionKey {
   static std::optional<CookiePartitionKey> FromNetworkIsolationKey(
       const NetworkIsolationKey& network_isolation_key,
       SiteForCookies site_for_cookies,
-      SchemefulSite request_site);
+      SchemefulSite request_site,
+      bool main_frame_navigation);
 
   // Create a new CookiePartitionKey from the site of an existing
   // CookiePartitionKey. This should only be used for sites of partition keys

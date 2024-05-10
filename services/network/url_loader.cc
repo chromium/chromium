@@ -2524,6 +2524,9 @@ void URLLoader::DispatchOnRawRequest(
 
   emitted_devtools_raw_request_ = true;
 
+  bool is_main_frame_navigation =
+      url_request_->isolation_info().IsMainFrameRequest() ||
+      url_request_->force_main_frame_for_same_site_cookies();
   // TODO when crbug.com/40093296 "Don't trust |site_for_cookies| provided by
   // the renderer" is fixed. Update the FromNetworkIsolationKey method to use
   // url_request_->isolation_info().site_for_cookies() instead of
@@ -2534,7 +2537,8 @@ void URLLoader::DispatchOnRawRequest(
           net::CookiePartitionKey::FromNetworkIsolationKey(
               url_request_->isolation_info().network_isolation_key(),
               url_request_->site_for_cookies(),
-              net::SchemefulSite(url_request_->url())));
+              net::SchemefulSite(url_request_->url()),
+              is_main_frame_navigation));
   network::mojom::OtherPartitionInfoPtr other_partition_info = nullptr;
   if (site_has_cookie_in_other_partition.has_value()) {
     other_partition_info = network::mojom::OtherPartitionInfo::New();

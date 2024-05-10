@@ -240,7 +240,7 @@ class CookieRetrieverNetworkService
           net::CookiePartitionKeyCollection::FromOptional(
               net::CookiePartitionKey::FromNetworkIsolationKey(
                   network_isolation_key, site_for_cookies,
-                  net::SchemefulSite(url))),
+                  net::SchemefulSite(url), /*main_frame_navigation=*/false)),
           base::BindOnce(&CookieRetrieverNetworkService::GotCookies, self));
     }
   }

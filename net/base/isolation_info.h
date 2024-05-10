@@ -147,6 +147,10 @@ class NET_EXPORT IsolationInfo {
 
   RequestType request_type() const { return request_type_; }
 
+  bool IsMainFrameRequest() const {
+    return RequestType::kMainFrame == request_type_;
+  }
+
   bool IsEmpty() const { return !top_frame_origin_; }
 
   // These may only be nullopt if created by the empty constructor. If one is

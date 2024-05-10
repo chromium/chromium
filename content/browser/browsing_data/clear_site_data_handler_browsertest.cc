@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
       if (mask & (1 << i))
         delegate()->ExpectClearSiteDataCookiesCall(
             storage_partition_config(), url::Origin::Create(urls[i]),
-            /*cookie_partition_key_third_party=*/i != 0);
+            /*cookie_partition_key_third_party=*/false);
     }
 
     // Set up redirects between urls 0 --> 1 --> 2.

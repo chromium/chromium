@@ -284,16 +284,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Sets IsolationInfo for the request, which affects whether SameSite cookies
   // are sent, what NetworkAnonymizationKey is used for cached resources, and
   // how that behavior changes when following redirects. This may only be
-  // changed before Start() is called.
+  // changed before Start() is called. Setting this value causes the
+  // cookie_partition_key_ to be recalculated.
   //
   // TODO(crbug.com/40122112): This isn't actually used yet for SameSite
   // cookies. Update consumers and fix that.
-  void set_isolation_info(const IsolationInfo& isolation_info) {
-    isolation_info_ = isolation_info;
-    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
-        isolation_info.network_isolation_key(),
-        isolation_info_.site_for_cookies(), net::SchemefulSite(original_url()));
-  }
+  void set_isolation_info(const IsolationInfo& isolation_info);
 
   // This will convert the passed NetworkAnonymizationKey to an IsolationInfo.
   // This IsolationInfo mmay be assigned an inaccurate frame origin because the
