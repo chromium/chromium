@@ -263,7 +263,7 @@ class AutofillManager
 
   // Invoked when focus is no longer on form. |had_interacted_form| indicates
   // whether focus was previously on a form with which the user had interacted.
-  void OnFocusNoLongerOnForm(bool had_interacted_form);
+  void OnFocusOnNonFormField(bool had_interacted_form);
 
   // Invoked when textfield editing ended
   void OnDidEndTextFieldEditing();
@@ -394,7 +394,7 @@ class AutofillManager
       const FormData& form,
       const base::TimeTicks timestamp) = 0;
 
-  virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;
+  virtual void OnFocusOnNonFormFieldImpl(bool had_interacted_form) = 0;
 
   virtual void OnDidEndTextFieldEditingImpl() = 0;
 

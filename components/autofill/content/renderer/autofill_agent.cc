@@ -188,8 +188,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
              trigger_source);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
-  void FocusNoLongerOnForm(bool had_interacted_form) override {
-    DeferMsg(&mojom::AutofillDriver::FocusNoLongerOnForm, had_interacted_form);
+  void FocusOnNonFormField(bool had_interacted_form) override {
+    DeferMsg(&mojom::AutofillDriver::FocusOnNonFormField, had_interacted_form);
   }
   void FocusOnFormField(const FormData& form,
                         const FormFieldData& field) override {
@@ -408,7 +408,7 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
     // Focus moved away from the last interacted form (if any) to somewhere else
     // on the page.
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusNoLongerOnForm(!last_focused_form.IsNull());
+      autofill_driver->FocusOnNonFormField(!last_focused_form.IsNull());
     }
     return;
   }
@@ -423,7 +423,7 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
     // The focused element is not part of the last interacted form (could be
     // in a different form).
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusNoLongerOnForm(/*had_interacted_form=*/true);
+      autofill_driver->FocusOnNonFormField(/*had_interacted_form=*/true);
     }
     focus_moved_to_new_form = true;
   }
@@ -535,7 +535,7 @@ void AutofillAgent::FocusedElementChanged(
   }
 
   if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->FocusNoLongerOnForm(true);
+    autofill_driver->FocusOnNonFormField(true);
     handle_focus_change();
   }
 }

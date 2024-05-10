@@ -410,7 +410,7 @@ Autofill votes are theoretically uploaded
 * when a the user **removes focus** from a form (this could happen because the
   user clicks on a custom autofill dropdown rendered by the website or if the
   user just clicks on the background).
-  (`BrowserAutofillManager::OnFocusNoLongerOnFormImpl()` ->
+  (`BrowserAutofillManager::OnFocusOnNonFormFieldImpl()` ->
   `BrowserAutofillManager::ProcessPendingFormForUpload()`).
 
   `observed_submission=false` is passed.

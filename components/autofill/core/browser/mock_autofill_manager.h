@@ -32,7 +32,7 @@ class MockAutofillManager : public AutofillManager {
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
-              OnFocusNoLongerOnFormImpl,
+              OnFocusOnNonFormFieldImpl,
               (bool had_interacted_form),
               (override));
   MOCK_METHOD(void,

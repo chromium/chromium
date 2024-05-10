@@ -1456,7 +1456,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
                                   /*is_refill=*/false);
 }
 
-void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
+void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
     bool had_interacted_form) {
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.

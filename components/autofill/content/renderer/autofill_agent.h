@@ -246,11 +246,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
-  // This function fires `FocusOnFormField()` xor `FocusNoLongerOnForm()`:
+  // This function fires `FocusOnFormField()` xor `FocusOnNonFormField()`:
   // - It calls `FocusOnFormField()` iff the newly focused element is a non-null
   //   `WebFormControlElement` or a non-null contenteditable whose `FormData`
   //   can be extracted.
-  // - It calls `FocusNoLongerOnForm()` iff it does not call
+  // - It calls `FocusOnNonFormField()` iff it does not call
   //   `FocusOnFormField()`.
   // See crbug.com/337690061 for details.
   void FocusedElementChanged(

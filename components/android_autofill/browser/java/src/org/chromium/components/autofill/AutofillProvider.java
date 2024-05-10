@@ -514,7 +514,7 @@ public class AutofillProvider {
             float width,
             float height,
             boolean causedByValueChange) {
-        // Check focusField inside short value? FocusNoLongerOnForm is called after form
+        // Check focusField inside short value? FocusOnNonFormField is called after form
         // submitted.
         if (mRequest == null) return;
         FocusField prev = mRequest.getFocusField();

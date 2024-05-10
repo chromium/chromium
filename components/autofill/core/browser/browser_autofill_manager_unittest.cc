@@ -3057,7 +3057,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Receiving a notification that focus is no longer on the form *without* the
   // renderer having a previously-interacted form should not result in
   // any changes to the pending form.
-  browser_autofill_manager_->OnFocusNoLongerOnForm(
+  browser_autofill_manager_->OnFocusOnNonFormField(
       /*had_interacted_form=*/false);
   EXPECT_TRUE(test_api(*browser_autofill_manager_)
                   .pending_form_data()
@@ -5395,7 +5395,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
                                                   base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
 }
 
 // Test that navigating with a filled form sends an upload with types matching
@@ -5494,7 +5494,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
                                                        base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
 }
 
 // Test that suggestions are returned for credit card fields with an
@@ -7590,7 +7590,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 2. Simulate removing focus from the form, which triggers a blur vote.
   FormSignature first_form_signature = CalculateFormSignature(form_);
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
 
   // 3. Simulate typing into second field
   form_.fields[1].set_value(u"Presley");
@@ -7612,7 +7612,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                        FieldType::NAME_LAST_SECOND})),
               ObservedSubmissionIs(false))),
           _, _, _));
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
 
   // 5. Grow the form by one field, which changes the form signature.
   form_.fields.push_back(CreateTestFormField(
@@ -7654,7 +7654,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(false))),
                   _, _, _));
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
 
   // Simulate a navigation. This is when the vote is sent.
   browser_autofill_manager_->Reset();
@@ -7667,7 +7667,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
 
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
-  browser_autofill_manager_->OnFocusNoLongerOnForm(true);
+  browser_autofill_manager_->OnFocusOnNonFormField(true);
   EXPECT_CALL(*crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(

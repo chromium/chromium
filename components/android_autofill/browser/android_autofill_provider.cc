@@ -459,7 +459,7 @@ void AndroidAutofillProvider::OnFormSubmitted(AndroidAutofillManager* manager,
   pending_submission_source_ = source;
 }
 
-void AndroidAutofillProvider::OnFocusNoLongerOnForm(
+void AndroidAutofillProvider::OnFocusOnNonFormField(
     AndroidAutofillManager* manager,
     bool had_interacted_form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

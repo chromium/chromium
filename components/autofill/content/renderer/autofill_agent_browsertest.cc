@@ -1206,7 +1206,7 @@ class AutofillAgentTestFocus : public AutofillAgentTest {
 };
 
 // Tests that when the focus moves from field to field, FocusedElementChanged()
-// fires FocusOnFormField() and FocusNoLongerOnForm().
+// fires FocusOnFormField() and FocusOnNonFormField().
 TEST_F(AutofillAgentTestFocus, FireFocusEventsWhenCyclingThroughFields) {
   testing::MockFunction<void(std::string_view)> checkpoint;
   {
@@ -1214,7 +1214,7 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsWhenCyclingThroughFields) {
     // Moves the focus one field to another.
     for (std::string_view id : kPermutationOfFields) {
       EXPECT_CALL(checkpoint, Call(id));
-      EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm).Times(0);
+      EXPECT_CALL(autofill_driver(), FocusOnNonFormField).Times(0);
       EXPECT_CALL(autofill_driver(),
                   FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id))));
     }
@@ -1227,7 +1227,7 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsWhenCyclingThroughFields) {
 
 // Tests that when the focus switches between an uneditable <div> and
 // a field, FocusedElementChanged() fires FocusOnFormField() and
-// FocusNoLongerOnForm().
+// FocusOnNonFormField().
 TEST_F(AutofillAgentTestFocus,
        FireFocusEventsWhenSwitchingBetweenFieldAndNonField) {
   testing::MockFunction<void(std::string_view)> checkpoint;
@@ -1235,10 +1235,10 @@ TEST_F(AutofillAgentTestFocus,
     testing::InSequence s;
     for (std::string_view id : kPermutationOfFields) {
       EXPECT_CALL(checkpoint, Call("uneditable"));
-      EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm);
+      EXPECT_CALL(autofill_driver(), FocusOnNonFormField);
       EXPECT_CALL(autofill_driver(), FocusOnFormField).Times(0);
       EXPECT_CALL(checkpoint, Call(id));
-      EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm).Times(0);
+      EXPECT_CALL(autofill_driver(), FocusOnNonFormField).Times(0);
       EXPECT_CALL(autofill_driver(),
                   FocusOnFormField(_, HasFieldId(GetFieldRendererIdById(id))));
     }
@@ -1259,11 +1259,11 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsForNullElement) {
     EXPECT_CALL(checkpoint, Call("owned_field"));
     EXPECT_CALL(autofill_driver(), FocusOnFormField);
     EXPECT_CALL(checkpoint, Call("null"));
-    EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm);
+    EXPECT_CALL(autofill_driver(), FocusOnNonFormField);
     EXPECT_CALL(checkpoint, Call("contenteditable"));
     EXPECT_CALL(autofill_driver(), FocusOnFormField);
     EXPECT_CALL(checkpoint, Call("null"));
-    EXPECT_CALL(autofill_driver(), FocusNoLongerOnForm);
+    EXPECT_CALL(autofill_driver(), FocusOnNonFormField);
   }
   checkpoint.Call("owned_field");
   FocusedElementChanged("owned_field");

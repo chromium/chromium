@@ -80,7 +80,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (override));
   MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void,
-              FocusNoLongerOnForm,
+              FocusOnNonFormField,
               (bool had_interacted_form),
               (override));
   MOCK_METHOD(void,

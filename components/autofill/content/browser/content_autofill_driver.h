@@ -239,7 +239,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:
   void DidEndTextFieldEditing() override;
-  void FocusNoLongerOnForm(bool had_interacted_form) override;
+  void FocusOnNonFormField(bool had_interacted_form) override;
   void HidePopup() override;
 
   // Group (2b): renderer -> browser events, routed (see comment above).

@@ -50,16 +50,17 @@ interface AutofillDriver {
   // Instructs the browser to hide the Autofill popup if it is open.
   HidePopup();
 
-  // Sent when either (a) focus moves off of any form element, or (b) focus
-  // moves off of the form that the user had previously interacted with to a
-  // different form. `had_interacted_form` indicates whether there was such a
-  // previously-interacted form.
-  // TODO(crbug.com/40726656): Remove need to pass `had_interacted_form`.
-  FocusNoLongerOnForm(bool had_interacted_form);
-
-  // Notification that a form field is focused.
-  FocusOnFormField(FormData form,
-                   FormFieldData field);
+  // `FocusOnFormField()` xor `FocusOnNonFormField()` is fired when the focused
+  // element changes (https://html.spec.whatwg.org/#focused):
+  //
+  // - `FocusOnFormField()` iff the newly focused element is a non-null form
+  //   control element or contenteditable whose `FormData` can be extracted.
+  // - `FocusOnNonFormField()` iff it does not call `FocusOnFormField()`.
+  //
+  // TODO(crbug.com/40726656): Remove `had_interacted_form` when cleaning up
+  // `kAutofillNewFocusEvents`.
+  FocusOnFormField(FormData form, FormFieldData field);
+  FocusOnNonFormField(bool had_interacted_form);
 
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);

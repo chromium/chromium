@@ -109,7 +109,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void HidePopup() override {}
 
-  void FocusNoLongerOnForm(bool had_interacted_form) override {
+  void FocusOnNonFormField(bool had_interacted_form) override {
     did_unfocus_form_ = true;
     had_interacted_form_ = had_interacted_form;
   }
@@ -125,11 +125,11 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SelectOrSelectListFieldOptionsDidChange(
       const autofill::FormData& form) override {}
 
-  // Records whether FocusNoLongerOnForm() get called.
+  // Records whether FocusOnNonFormField() get called.
   bool did_unfocus_form_{false};
 
   // Records value of `had_interacted_form` on last call to
-  // FocusNoLongerOnForm(). Meaningless if `did_unfocus_form_` is false.
+  // FocusOnNonFormField(). Meaningless if `did_unfocus_form_` is false.
   bool had_interacted_form_{false};
 
   // Records the form data received via FormSubmitted() call.
@@ -572,10 +572,10 @@ class FormAutocompleteTestFocus : public FormAutocompleteTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that a FocusNoLongerOnForm message is sent if focus goes from a
+// Test that a FocusOnNonFormField message is sent if focus goes from a
 // focused but uninteracted form to a null element.
 TEST_F(FormAutocompleteTestFocus,
-       UninteractedFormFocusChangesToNull_FocusNoLongerOnForm) {
+       UninteractedFormFocusChangesToNull_FocusOnNonFormField) {
   // Load a form.
   LoadHTML(
       "<html><input type='text' id='different'/>"
@@ -600,10 +600,10 @@ TEST_F(FormAutocompleteTestFocus,
   EXPECT_FALSE(fake_driver_.had_interacted_form());
 }
 
-// Test that a FocusNoLongerOnForm message is sent if focus goes from an
+// Test that a FocusOnNonFormField message is sent if focus goes from an
 // interacted form to a null element.
 TEST_F(FormAutocompleteTestFocus,
-       InteractedFormFocusChangesToNull_FocusNoLongerOnForm) {
+       InteractedFormFocusChangesToNull_FocusOnNonFormField) {
   // Load a form.
   LoadHTML(
       "<html><input type='text' id='different'/>"
@@ -630,10 +630,10 @@ TEST_F(FormAutocompleteTestFocus,
   EXPECT_TRUE(fake_driver_.had_interacted_form());
 }
 
-// Test that a FocusNoLongerOnForm message is sent if focus goes from an
+// Test that a FocusOnNonFormField message is sent if focus goes from an
 // interacted form to an element outside the form.
 TEST_F(FormAutocompleteTestFocus,
-       InteractedFormFocusChangesToExternalElement_FocusNoLongerOnForm) {
+       InteractedFormFocusChangesToExternalElement_FocusOnNonFormField) {
   // Load a form.
   LoadHTML(
       "<html><input type='text' id='different'/>"
@@ -662,10 +662,10 @@ TEST_F(FormAutocompleteTestFocus,
   EXPECT_TRUE(fake_driver_.had_interacted_form());
 }
 
-// Test that a FocusNoLongerOnForm message is sent if focus goes from one
+// Test that a FocusOnNonFormField message is sent if focus goes from one
 // interacted form to another.
 TEST_F(FormAutocompleteTestFocus,
-       InteractingInDifferentForms_FocusNoLongerOnForm) {
+       InteractingInDifferentForms_FocusOnNonFormField) {
   // Load a form.
   LoadHTML(
       "<html><form id='myForm' action='http://example.com/blade.php'>"

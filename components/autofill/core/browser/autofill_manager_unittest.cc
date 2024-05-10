@@ -290,7 +290,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), ShouldParseForms)
       .Times(AtLeast(0))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(manager(), OnFocusNoLongerOnFormImpl).Times(AtLeast(0));
+  EXPECT_CALL(manager(), OnFocusOnNonFormFieldImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnDidFillAutofillFormDataImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnDidEndTextFieldEditingImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnSelectOrSelectListFieldOptionsDidChangeImpl)

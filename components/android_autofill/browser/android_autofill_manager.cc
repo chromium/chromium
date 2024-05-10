@@ -117,10 +117,10 @@ bool AndroidAutofillManager::ShouldParseForms() {
   return true;
 }
 
-void AndroidAutofillManager::OnFocusNoLongerOnFormImpl(
+void AndroidAutofillManager::OnFocusOnNonFormFieldImpl(
     bool had_interacted_form) {
   if (auto* provider = GetAutofillProvider())
-    provider->OnFocusNoLongerOnForm(this, had_interacted_form);
+    provider->OnFocusOnNonFormField(this, had_interacted_form);
 }
 
 void AndroidAutofillManager::OnDidFillAutofillFormDataImpl(

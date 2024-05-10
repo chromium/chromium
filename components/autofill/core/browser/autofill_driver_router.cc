@@ -271,23 +271,23 @@ void AutofillDriverRouter::HidePopup(AutofillDriver* source,
   ForEachFrame(form_forest_, callback);
 }
 
-void AutofillDriverRouter::FocusNoLongerOnForm(
+void AutofillDriverRouter::FocusOnNonFormField(
     AutofillDriver* source,
     bool had_interacted_form,
     void (*callback)(AutofillDriver* target, bool had_interacted_form)) {
-  // Suppresses FocusNoLongerOnForm() if the focus has already moved to a
+  // Suppresses FocusOnNonFormField() if the focus has already moved to a
   // different frame.
   if (focused_frame_ != source->GetFrameToken()) {
     return;
   }
 
-  // Prevents FocusOnFormField() from calling FocusNoLongerOnForm().
+  // Prevents FocusOnFormField() from calling FocusOnNonFormField().
   focus_no_longer_on_form_has_fired_ = true;
 
   TriggerFormExtractionExcept(source);
 
   // The last-focused form is not known at this time. Even if
-  // FocusNoLongerOnForm() had a FormGlobalId parameter, we couldn't call
+  // FocusOnNonFormField() had a FormGlobalId parameter, we couldn't call
   // `form_forest_.GetBrowserForm()` because this is admissible only after a
   // `form_forest_.UpdateTreeOfRendererForm()` for the same form.
   //
@@ -308,14 +308,14 @@ void AutofillDriverRouter::FocusOnFormField(
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
-  // Calls FocusNoLongerOnForm() if the focus has already moved from a
-  // different frame and FocusNoLongerOnForm() hasn't been called yet.
+  // Calls FocusOnNonFormField() if the focus has already moved from a
+  // different frame and FocusOnNonFormField() hasn't been called yet.
   if (focused_frame_ != source->GetFrameToken() &&
       !focus_no_longer_on_form_has_fired_) {
     ForEachFrame(form_forest_, focus_no_longer_on_form);
   }
 
-  // Suppresses late FocusNoLongerOnForm().
+  // Suppresses late FocusOnNonFormField().
   focused_frame_ = source->GetFrameToken();
   focus_no_longer_on_form_has_fired_ = false;
 

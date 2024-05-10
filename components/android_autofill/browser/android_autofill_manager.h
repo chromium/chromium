@@ -41,7 +41,7 @@ class AndroidAutofillManager : public AutofillManager,
 
   bool ShouldClearPreviewedForm() override;
 
-  void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
+  void OnFocusOnNonFormFieldImpl(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormDataImpl(const FormData& form,
                                      const base::TimeTicks timestamp) override;
