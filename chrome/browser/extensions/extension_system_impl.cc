@@ -125,13 +125,14 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  policy::DeviceLocalAccount::Type device_local_account_type;
-  if (user &&
-      policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
-                                       &device_local_account_type)) {
-    device_local_account_management_policy_provider_ =
-        std::make_unique<chromeos::DeviceLocalAccountManagementPolicyProvider>(
-            device_local_account_type);
+  if (user) {
+    auto device_local_account_type =
+        policy::GetDeviceLocalAccountType(user->GetAccountId().GetUserEmail());
+    if (device_local_account_type.has_value()) {
+      device_local_account_management_policy_provider_ = std::make_unique<
+          chromeos::DeviceLocalAccountManagementPolicyProvider>(
+          device_local_account_type.value());
+    }
   }
 #endif
 }

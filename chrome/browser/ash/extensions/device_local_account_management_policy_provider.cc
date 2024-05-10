@@ -20,7 +20,7 @@ namespace chromeos {
 
 DeviceLocalAccountManagementPolicyProvider::
     DeviceLocalAccountManagementPolicyProvider(
-        policy::DeviceLocalAccount::Type account_type)
+        policy::DeviceLocalAccountType account_type)
     : account_type_(account_type) {}
 
 DeviceLocalAccountManagementPolicyProvider::
@@ -38,31 +38,36 @@ DeviceLocalAccountManagementPolicyProvider::GetDebugPolicyProviderName() const {
 bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     const extensions::Extension* extension,
     std::u16string* error) const {
-  if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
-      account_type_ == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
-    // For Managed Guest Sessions, allow component & force-installed extensions.
-    if (extension->location() == ManifestLocation::kExternalComponent ||
-        extension->location() == ManifestLocation::kComponent ||
-        extension->location() == ManifestLocation::kExternalPolicyDownload ||
-        extension->location() == ManifestLocation::kExternalPolicy) {
-      return true;
-    }
+  switch (account_type_) {
+    case policy::DeviceLocalAccountType::kPublicSession:
+    case policy::DeviceLocalAccountType::kSamlPublicSession:
+      // For Managed Guest Sessions, allow component & force-installed
+      // extensions.
+      if (extension->location() == ManifestLocation::kExternalComponent ||
+          extension->location() == ManifestLocation::kComponent ||
+          extension->location() == ManifestLocation::kExternalPolicyDownload ||
+          extension->location() == ManifestLocation::kExternalPolicy) {
+        return true;
+      }
 
-    // Allow extension IDs in the MGS allowlist.
-    if (extensions::IsAllowlistedForManagedGuestSession(extension->id())) {
-      return true;
-    }
-  }
-
-  if (account_type_ == policy::DeviceLocalAccount::TYPE_KIOSK_APP ||
-      account_type_ == policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
-    // For single-app kiosk sessions, allow platform apps, extensions and shared
-    // modules.
-    if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||
-        extension->GetType() == extensions::Manifest::TYPE_SHARED_MODULE ||
-        extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
-      return true;
-    }
+      // Allow extension IDs in the MGS allowlist.
+      if (extensions::IsAllowlistedForManagedGuestSession(extension->id())) {
+        return true;
+      }
+      break;
+    case policy::DeviceLocalAccountType::kKioskApp:
+    case policy::DeviceLocalAccountType::kWebKioskApp:
+      // For single-app kiosk sessions, allow platform apps, extensions and
+      // shared modules.
+      if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||
+          extension->GetType() == extensions::Manifest::TYPE_SHARED_MODULE ||
+          extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
+        return true;
+      }
+      break;
+    case policy::DeviceLocalAccountType::kArcKioskApp:
+      // Unexpected case.
+      break;
   }
 
   // Disallow all other extensions.
