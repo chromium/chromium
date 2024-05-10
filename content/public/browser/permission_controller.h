@@ -104,6 +104,7 @@ class CONTENT_EXPORT PermissionController
       blink::PermissionType permission,
       RenderProcessHost* render_process_host,
       const url::Origin& requesting_origin,
+      bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) = 0;
 
   virtual void UnsubscribeFromPermissionStatusChange(

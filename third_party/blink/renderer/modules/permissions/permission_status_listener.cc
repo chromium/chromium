@@ -49,6 +49,7 @@ void PermissionStatusListener::StartListening() {
   ConnectToPermissionService(GetExecutionContext(),
                              service.BindNewPipeAndPassReceiver(task_runner));
   service->AddPermissionObserver(descriptor_->Clone(), status_,
+                                 /*should_include_device_status=*/false,
                                  std::move(observer));
 }
 

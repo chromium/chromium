@@ -34,13 +34,14 @@ PermissionController::SubscriptionId SubscribeToPermissionStatusChange(
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     const base::RepeatingCallback<void(PermissionStatus)>& callback) {
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);
 
   return permission_controller_impl->SubscribeToPermissionStatusChange(
       permission, render_process_host, render_frame_host, requesting_origin,
-      callback);
+      should_include_device_status, callback);
 }
 
 }  // namespace content

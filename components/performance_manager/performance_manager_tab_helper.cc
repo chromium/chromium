@@ -467,6 +467,7 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
           blink::PermissionType::NOTIFICATIONS,
           web_contents()->GetPrimaryMainFrame()->GetProcess(),
           url::Origin::Create(web_contents()->GetLastCommittedURL()),
+          /*should_include_device_status=*/false,
           base::BindRepeating(&PerformanceManagerTabHelper::
                                   OnNotificationPermissionStatusChange,
                               // Unretained is safe because the subscription

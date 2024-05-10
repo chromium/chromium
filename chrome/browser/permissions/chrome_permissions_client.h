@@ -130,6 +130,9 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       permissions::PermissionPrompt::Delegate* delegate) override;
 #endif
 
+  bool HasDevicePermission(ContentSettingsType type) const override;
+  bool CanRequestDevicePermission(ContentSettingsType type) const override;
+
  private:
   friend base::NoDestructor<ChromePermissionsClient>;
 

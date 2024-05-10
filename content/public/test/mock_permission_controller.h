@@ -83,6 +83,7 @@ class MockPermissionController : public PermissionController {
       (blink::PermissionType permission,
        RenderProcessHost* render_process_host,
        const url::Origin& requesting_origin,
+       bool should_include_device_status,
        const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
            callback));
   MOCK_METHOD(void,

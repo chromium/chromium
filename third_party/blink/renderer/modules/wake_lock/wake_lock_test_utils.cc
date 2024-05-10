@@ -254,6 +254,7 @@ void MockPermissionService::RevokePermission(PermissionDescriptorPtr permission,
 void MockPermissionService::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
+    bool should_include_device_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
   NOTREACHED();
 }

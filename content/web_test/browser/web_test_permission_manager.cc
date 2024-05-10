@@ -302,6 +302,7 @@ WebTestPermissionManager::SubscribeToPermissionStatusChange(
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

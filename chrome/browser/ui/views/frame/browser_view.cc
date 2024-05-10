@@ -2412,6 +2412,7 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   window_management_subscription_id_ =
       controller->SubscribeToPermissionStatusChange(
           blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), origin,
+          /*should_include_device_status=*/false,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
 }

@@ -423,12 +423,13 @@ TEST_F(PermissionControllerImplTest,
 
   base::MockCallback<PermissionStatusCallback> geo_callback;
   permission_controller()->SubscribeToPermissionStatusChange(
-      PermissionType::GEOLOCATION, nullptr, nullptr, kUrl, geo_callback.Get());
+      PermissionType::GEOLOCATION, nullptr, nullptr, kUrl,
+      /*should_include_device_status=*/false, geo_callback.Get());
 
   base::MockCallback<PermissionStatusCallback> sync_callback;
   permission_controller()->SubscribeToPermissionStatusChange(
       PermissionType::BACKGROUND_SYNC, nullptr, nullptr, kUrl,
-      sync_callback.Get());
+      /*should_include_device_status=*/false, sync_callback.Get());
 
   // Geolocation should change status, so subscriber is updated.
   EXPECT_CALL(geo_callback, Run(PermissionStatus::ASK));

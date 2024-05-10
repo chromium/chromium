@@ -71,6 +71,7 @@ class CONTENT_EXPORT PermissionServiceContext
       const url::Origin& origin,
       PermissionStatus current_status,
       PermissionStatus last_known_status,
+      bool should_include_device_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 
   // Called when the connection to a PermissionObserver has an error.

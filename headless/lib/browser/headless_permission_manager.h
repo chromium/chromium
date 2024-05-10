@@ -70,6 +70,7 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
+      bool should_include_device_status,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
   void UnsubscribeFromPermissionStatusChange(

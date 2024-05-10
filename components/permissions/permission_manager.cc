@@ -162,6 +162,7 @@ struct PermissionManager::Subscription {
   int render_process_id = -1;
   base::RepeatingCallback<void(ContentSetting)> callback;
   ContentSetting current_value;
+  bool should_include_device_status;
 };
 
 PermissionManager::PermissionManager(content::BrowserContext* browser_context,
@@ -323,7 +324,8 @@ PermissionStatus PermissionManager::GetPermissionStatus(
   return GetPermissionStatusInternal(
              PermissionUtil::PermissionTypeToContentSettingType(permission),
              /*render_process_host=*/nullptr,
-             /*render_frame_host=*/nullptr, requesting_origin, embedding_origin)
+             /*render_frame_host=*/nullptr, requesting_origin, embedding_origin,
+             /*should_include_device_status=*/false)
       .status;
 }
 
@@ -337,7 +339,7 @@ PermissionManager::GetPermissionResultForOriginWithoutContext(
       PermissionUtil::PermissionTypeToContentSettingType(permission),
       /*render_process_host=*/nullptr,
       /*render_frame_host=*/nullptr, requesting_origin.GetURL(),
-      embedding_origin.GetURL());
+      embedding_origin.GetURL(), /*should_include_device_status=*/false);
 }
 
 PermissionStatus PermissionManager::GetPermissionStatusForCurrentDocument(
@@ -360,10 +362,10 @@ PermissionManager::GetPermissionResultForCurrentDocument(
   const GURL embedding_origin =
       GetEmbeddingOrigin(render_frame_host, requesting_origin);
 
-  return GetPermissionStatusInternal(type,
-                                     /*render_process_host=*/nullptr,
-                                     render_frame_host, requesting_origin,
-                                     embedding_origin);
+  return GetPermissionStatusInternal(
+      type,
+      /*render_process_host=*/nullptr, render_frame_host, requesting_origin,
+      embedding_origin, /*should_include_device_status=*/false);
 }
 
 PermissionStatus PermissionManager::GetPermissionStatusForWorker(
@@ -375,7 +377,8 @@ PermissionStatus PermissionManager::GetPermissionStatusForWorker(
       PermissionUtil::PermissionTypeToContentSettingType(permission);
   return GetPermissionStatusInternal(type, render_process_host,
                                      /*render_frame_host=*/nullptr,
-                                     worker_origin, worker_origin)
+                                     worker_origin, worker_origin,
+                                     /*should_include_device_status=*/false)
       .status;
 }
 
@@ -393,7 +396,8 @@ PermissionStatus PermissionManager::GetPermissionStatusForEmbeddedRequester(
   return GetPermissionStatusInternal(
              type,
              /*render_process_host=*/nullptr, render_frame_host,
-             requesting_origin.GetURL(), embedding_origin)
+             requesting_origin.GetURL(), embedding_origin,
+             /*should_include_device_status=*/false)
       .status;
 }
 
@@ -417,6 +421,7 @@ PermissionManager::SubscribeToPermissionStatusChange(
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     base::RepeatingCallback<void(PermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!render_frame_host || !render_process_host);
@@ -446,12 +451,14 @@ PermissionManager::SubscribeToPermissionStatusChange(
     embedding_origin = GetEmbeddingOrigin(render_frame_host, requesting_origin);
     subscription->render_frame_id = render_frame_host->GetRoutingID();
     subscription->render_process_id = render_frame_host->GetProcess()->GetID();
+    subscription->should_include_device_status = should_include_device_status;
     subscription->current_value =
         PermissionUtil::PermissionStatusToContentSetting(
             GetPermissionStatusInternal(content_type,
                                         /*render_process_host=*/nullptr,
                                         render_frame_host, requesting_origin,
-                                        embedding_origin)
+                                        embedding_origin,
+                                        should_include_device_status)
                 .status);
 
   } else {
@@ -459,11 +466,13 @@ PermissionManager::SubscribeToPermissionStatusChange(
     subscription->render_frame_id = -1;
     subscription->render_process_id =
         render_process_host ? render_process_host->GetID() : -1;
+    subscription->should_include_device_status = should_include_device_status;
     subscription->current_value =
         PermissionUtil::PermissionStatusToContentSetting(
             GetPermissionStatusInternal(content_type, render_process_host,
                                         /*render_frame_host=*/nullptr,
-                                        requesting_origin, embedding_origin)
+                                        requesting_origin, embedding_origin,
+                                        should_include_device_status)
                 .status);
   }
 
@@ -565,9 +574,9 @@ void PermissionManager::OnPermissionChanged(
                   subscription->render_process_id);
 
     ContentSetting new_value = PermissionUtil::PermissionStatusToContentSetting(
-        GetPermissionStatusInternal(subscription->permission, rph, rfh,
-                                    subscription->requesting_origin,
-                                    embedding_origin)
+        GetPermissionStatusInternal(
+            subscription->permission, rph, rfh, subscription->requesting_origin,
+            embedding_origin, subscription->should_include_device_status)
             .status);
 
     if (subscription->current_value == new_value)
@@ -589,7 +598,8 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
-    const GURL& embedding_origin) {
+    const GURL& embedding_origin,
+    bool should_include_device_status) {
   DCHECK(!render_process_host || !render_frame_host);
 
   // TODO(crbug.com/40218610): Move this to PermissionContextBase.
@@ -608,8 +618,14 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
   content::PermissionResult result = context->GetPermissionStatus(
       render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
       embedding_origin.DeprecatedGetOriginAsURL());
-  result = context->UpdatePermissionStatusWithDeviceStatus(
-      result, requesting_origin, embedding_origin);
+  if (should_include_device_status || context->AlwaysIncludeDeviceStatus()) {
+    result = context->UpdatePermissionStatusWithDeviceStatus(
+        result, requesting_origin, embedding_origin);
+  } else {
+    // Give the context an opportunity to still check the device status and
+    // maybe notify observers.
+    context->MaybeUpdatePermissionStatusWithDeviceStatus();
+  }
   DCHECK(result.status == PermissionStatus::GRANTED ||
          result.status == PermissionStatus::ASK ||
          result.status == PermissionStatus::DENIED);

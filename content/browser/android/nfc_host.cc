@@ -77,6 +77,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
             render_frame_host->GetMainFrame()
                 ->GetLastCommittedOrigin()
                 .GetURL(),
+            /*should_include_device_status=*/false,
             base::BindRepeating(&NFCHost::OnPermissionStatusChange,
                                 base::Unretained(this)));
   }

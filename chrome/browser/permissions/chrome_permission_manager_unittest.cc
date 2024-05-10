@@ -172,6 +172,7 @@ TEST_F(ChromePermissionManagerTest, SubscribeWithPermissionDelegation) {
       content::SubscribeToPermissionStatusChange(
           permission_controller, blink::PermissionType::GEOLOCATION,
           /*render_process_host=*/nullptr, child, url2,
+          /*should_include_device_status=*/false,
           base::BindRepeating(&ChromePermissionManagerTest::OnPermissionChange,
                               base::Unretained(this)));
   EXPECT_FALSE(callback_called());

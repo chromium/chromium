@@ -5756,7 +5756,8 @@ void AXObjectCacheImpl::AddPermissionStatusListener() {
   permission_service_->AddPermissionObserver(
       CreatePermissionDescriptor(
           mojom::blink::PermissionName::ACCESSIBILITY_EVENTS),
-      accessibility_event_permission_, std::move(observer));
+      accessibility_event_permission_, /*should_include_device_status=*/false,
+      std::move(observer));
 }
 
 void AXObjectCacheImpl::OnPermissionStatusChange(

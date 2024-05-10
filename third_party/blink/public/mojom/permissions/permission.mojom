@@ -153,6 +153,7 @@ interface PermissionService {
   // access to |permission|. Closing the pipe will cancel the subscription.
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
+                        bool should_include_device_status,
                         pending_remote<PermissionObserver> observer);
   // Notifies when an event listener with `event_type` was added to
   // PermissionStatus.

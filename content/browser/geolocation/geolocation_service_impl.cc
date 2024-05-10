@@ -129,6 +129,7 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
               blink::PermissionType::GEOLOCATION,
               /*render_process_host=*/nullptr, render_frame_host_,
               requesting_url,
+              /*should_include_device_status=*/false,
               base::BindRepeating(
                   &GeolocationServiceImpl::HandlePermissionStatusChange,
                   weak_factory_.GetWeakPtr()));

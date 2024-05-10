@@ -122,11 +122,15 @@ class PermissionContextBase : public content_settings::Observer {
   virtual content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::PermissionResult result,
       const GURL& requesting_origin,
-      const GURL& embedding_origin) const;
+      const GURL& embedding_origin);
 
   // Resets the permission to its default value.
   virtual void ResetPermission(const GURL& requesting_origin,
                                const GURL& embedding_origin);
+
+  // Whether the permission status should take into account the device status
+  // which can be provided by |UpdatePermissionStatusWithDeviceStatus|.
+  virtual bool AlwaysIncludeDeviceStatus() const;
 
   // Whether the kill switch has been enabled for this permission.
   // public for permissions that do not use RequestPermission, like
@@ -135,6 +139,8 @@ class PermissionContextBase : public content_settings::Observer {
 
   void AddObserver(permissions::Observer* permission_observer);
   void RemoveObserver(permissions::Observer* permission_observer);
+
+  void MaybeUpdatePermissionStatusWithDeviceStatus();
 
   ContentSettingsType content_settings_type() const {
     return content_settings_type_;

@@ -266,10 +266,10 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
         .WillOnce(testing::DoAll(
             testing::SaveArg<1>(&rfh_arg),
             testing::Return(blink::mojom::PermissionStatus::ASK)));
-    EXPECT_CALL(
-        *permission_controller,
-        SubscribeToPermissionStatusChange(blink::PermissionType::NOTIFICATIONS,
-                                          testing::_, testing::_, testing::_))
+    EXPECT_CALL(*permission_controller,
+                SubscribeToPermissionStatusChange(
+                    blink::PermissionType::NOTIFICATIONS, testing::_,
+                    testing::_, testing::_, testing::_))
         .WillOnce(testing::DoAll(testing::SaveArg<1>(&rph_arg),
                                  testing::Return(kFirstSubscriptionId)));
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -294,12 +294,12 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
             testing::Return(blink::mojom::PermissionStatus::GRANTED)));
     EXPECT_CALL(*permission_controller,
                 UnsubscribeFromPermissionStatusChange(kFirstSubscriptionId));
-    EXPECT_CALL(
-        *permission_controller,
-        SubscribeToPermissionStatusChange(blink::PermissionType::NOTIFICATIONS,
-                                          testing::_, testing::_, testing::_))
+    EXPECT_CALL(*permission_controller,
+                SubscribeToPermissionStatusChange(
+                    blink::PermissionType::NOTIFICATIONS, testing::_,
+                    testing::_, testing::_, testing::_))
         .WillOnce(testing::DoAll(testing::SaveArg<1>(&rph_arg),
-                                 testing::SaveArg<3>(&callback_arg),
+                                 testing::SaveArg<4>(&callback_arg),
                                  testing::Return(kSecondSubscriptionId)));
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kCousinFreddyUrl));

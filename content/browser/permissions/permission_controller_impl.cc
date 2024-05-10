@@ -715,6 +715,7 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     const base::RepeatingCallback<void(PermissionStatus)>& callback) {
   DCHECK(!render_process_host || !render_frame_host);
   auto subscription = std::make_unique<Subscription>();
@@ -743,7 +744,7 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
     subscription->delegate_subscription_id =
         delegate->SubscribeToPermissionStatusChange(
             permission, render_process_host, render_frame_host,
-            requesting_origin,
+            requesting_origin, should_include_device_status,
             base::BindRepeating(
                 &PermissionControllerImpl::OnDelegatePermissionStatusChange,
                 base::Unretained(this), id));
@@ -757,10 +758,12 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
     PermissionType permission,
     RenderProcessHost* render_process_host,
     const url::Origin& requesting_origin,
+    bool should_include_device_status,
     const base::RepeatingCallback<void(PermissionStatus)>& callback) {
   return SubscribeToPermissionStatusChange(
       permission, render_process_host,
-      /*render_frame_host=*/nullptr, requesting_origin.GetURL(), callback);
+      /*render_frame_host=*/nullptr, requesting_origin.GetURL(),
+      should_include_device_status, callback);
 }
 
 void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(

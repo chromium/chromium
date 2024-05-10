@@ -114,6 +114,7 @@ WebEnginePermissionDelegate::SubscribeToPermissionStatusChange(
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
   // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.

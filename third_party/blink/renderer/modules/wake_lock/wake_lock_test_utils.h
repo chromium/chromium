@@ -134,6 +134,7 @@ class MockPermissionService final : public mojom::blink::PermissionService {
   void AddPermissionObserver(
       mojom::blink::PermissionDescriptorPtr permission,
       mojom::blink::PermissionStatus last_known_status,
+      bool should_include_device_status,
       mojo::PendingRemote<mojom::blink::PermissionObserver>) override;
 
   void NotifyEventListener(mojom::blink::PermissionDescriptorPtr permission,

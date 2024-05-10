@@ -70,6 +70,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
   void AddPermissionObserver(
       blink::mojom::PermissionDescriptorPtr permission,
       blink::mojom::PermissionStatus last_known_status,
+      bool should_include_device_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer) override;
   void NotifyEventListener(blink::mojom::PermissionDescriptorPtr permission,
                            const std::string& event_type,

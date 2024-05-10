@@ -146,6 +146,7 @@ class PermissionManager : public KeyedService,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
+      bool should_include_device_status,
       base::RepeatingCallback<void(PermissionStatus)> callback) override;
   void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
@@ -175,7 +176,8 @@ class PermissionManager : public KeyedService,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
-      const GURL& embedding_origin);
+      const GURL& embedding_origin,
+      bool should_include_device_status);
 
   raw_ptr<content::BrowserContext> browser_context_;
 

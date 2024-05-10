@@ -2011,7 +2011,8 @@ ImageCapture::ImageCapture(ExecutionContext* context,
       context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   permission_service_->AddPermissionObserver(
       CreateVideoCapturePermissionDescriptor(/*pan_tilt_zoom=*/true),
-      pan_tilt_zoom_permission_, std::move(observer));
+      pan_tilt_zoom_permission_,
+      /*should_include_device_status=*/false, std::move(observer));
 }
 
 // TODO(crbug.com/708723): Integrate image capture constraints processing with
