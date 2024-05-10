@@ -30,8 +30,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/aura/env.h"
 #include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/event.h"
@@ -375,6 +377,55 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
   return rewritten_events;
 }
 
+// TODO(b/339754921): Add integration test for when the display is rotated and
+// adjusted via overscan boundaries.
+gfx::PointF GetCurrentCursorLocation() {
+  auto* screen = display::Screen::GetScreen();
+  CHECK(screen);
+  const display::Display display =
+      screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
+
+  // Returns the physical point on the display not considering display
+  // orientation.
+  gfx::PointF physical_screen_location =
+      gfx::PointF(screen->GetCursorScreenPoint() -
+                  display.bounds().origin().OffsetFromOrigin());
+
+  // Transpose/flip the point based on the orientation of device.
+  auto& display_size = display.size();
+  switch (display.rotation()) {
+    case display::Display::ROTATE_0:
+      break;
+    case display::Display::ROTATE_90:
+      physical_screen_location.Transpose();
+      physical_screen_location.set_x(display_size.height() -
+                                     physical_screen_location.x());
+      break;
+    case display::Display::ROTATE_180: {
+      physical_screen_location.set_x(display_size.width() -
+                                     physical_screen_location.x());
+      physical_screen_location.set_y(display_size.height() -
+                                     physical_screen_location.y());
+      break;
+    }
+    case display::Display::ROTATE_270:
+      physical_screen_location.Transpose();
+      physical_screen_location.set_y(display_size.width() -
+                                     physical_screen_location.y());
+      break;
+  }
+  // Scale the location to match the users chosen scaling factor then apply
+  // overscan insets. Overscan insets are stored as post-scaled values so they
+  // must be applied after scaling the original location.
+  auto scaled_location =
+      gfx::ScalePoint(physical_screen_location, display.device_scale_factor());
+  auto overscan_insets =
+      Shell::Get()->display_manager()->GetOverscanInsets(display.id());
+  scaled_location.set_x(scaled_location.x() + overscan_insets.left());
+  scaled_location.set_y(scaled_location.y() + overscan_insets.top());
+  return scaled_location;
+}
+
 std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
     const ui::Event& event,
     mojom::StaticShortcutAction action) {
@@ -388,14 +439,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
   CHECK(flag_iter != kStaticActionToMouseButtonFlag.end());
   const int characteristic_flag = flag_iter->second;
 
-  auto* screen = display::Screen::GetScreen();
-  CHECK(screen);
-  auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
-  const gfx::PointF location =
-      gfx::ScalePoint(gfx::PointF(screen->GetCursorScreenPoint() -
-                                  display.bounds().origin().OffsetFromOrigin()),
-                      display.device_scale_factor());
-
+  const gfx::PointF location = GetCurrentCursorLocation();
   const ui::EventType type =
       (should_press_and_release || event.type() == ui::ET_MOUSE_PRESSED ||
        event.type() == ui::ET_KEY_PRESSED)
