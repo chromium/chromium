@@ -103,10 +103,10 @@ class FileIndexServiceTest : public testing::Test {
     return outcome;
   }
 
-  OpResults UpdateFile(const std::vector<Term> terms, const GURL& url) {
+  OpResults UpdateTerms(const std::vector<Term> terms, const GURL& url) {
     base::RunLoop run_loop;
     OpResults outcome;
-    index_service_->UpdateFile(
+    index_service_->UpdateTerms(
         terms, url, base::BindLambdaForTesting([&](OpResults results) {
           outcome = results;
           run_loop.Quit();
@@ -115,10 +115,10 @@ class FileIndexServiceTest : public testing::Test {
     return outcome;
   }
 
-  OpResults AugmentFile(const std::vector<Term> terms, const GURL& url) {
+  OpResults AugmentTerms(const std::vector<Term> terms, const GURL& url) {
     base::RunLoop run_loop;
     OpResults outcome;
-    index_service_->AugmentFile(
+    index_service_->AugmentTerms(
         terms, url, base::BindLambdaForTesting([&](OpResults results) {
           outcome = results;
           run_loop.Quit();
@@ -169,7 +169,7 @@ TEST_F(FileIndexServiceTest, EmptySearch) {
 
   FileInfo file_info(foo_url_, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({pinned_}, file_info.file_url), OpResults::kSuccess);
 
   // Empty query on an non-empty index.
   EXPECT_THAT(Search(Query({})), ContainsFiles(FileInfoList{}));
@@ -179,7 +179,7 @@ TEST_F(FileIndexServiceTest, SimpleMatch) {
   FileInfo file_info(foo_url_, 1024, base::Time());
 
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({pinned_}, file_info.file_url), OpResults::kSuccess);
   EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
 }
 
@@ -188,7 +188,7 @@ TEST_F(FileIndexServiceTest, MultiTermMatch) {
 
   // Label file_info as pinned and starred.
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({pinned_, starred_}, file_info.file_url),
+  EXPECT_EQ(UpdateTerms({pinned_, starred_}, file_info.file_url),
             OpResults::kSuccess);
 
   EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
@@ -205,7 +205,8 @@ TEST_F(FileIndexServiceTest, AugmentTerms) {
 
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
   // Label file_info as pinned and starred.
-  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({downloaded_}, file_info.file_url),
+            OpResults::kSuccess);
 
   // Can find by downloaded.
   EXPECT_THAT(Search(Query({downloaded_})),
@@ -213,7 +214,7 @@ TEST_F(FileIndexServiceTest, AugmentTerms) {
   // Cannot find by starred.
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
 
-  EXPECT_EQ(AugmentFile({starred_}, foo_url_), OpResults::kSuccess);
+  EXPECT_EQ(AugmentTerms({starred_}, foo_url_), OpResults::kSuccess);
   // Can find by downloaded.
   EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
@@ -230,13 +231,14 @@ TEST_F(FileIndexServiceTest, ReplaceTerms) {
 
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
   // Start with the single label: downloaded.
-  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({downloaded_}, file_info.file_url),
+            OpResults::kSuccess);
   EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
 
   // Just adding more labels: both downloaded and starred.
-  EXPECT_EQ(UpdateFile({downloaded_, starred_}, file_info.file_url),
+  EXPECT_EQ(UpdateTerms({downloaded_, starred_}, file_info.file_url),
             OpResults::kSuccess);
   EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
@@ -244,13 +246,14 @@ TEST_F(FileIndexServiceTest, ReplaceTerms) {
               ContainsFiles(FileInfoList{file_info}));
 
   // Remove the original "downloaded" label.
-  EXPECT_EQ(UpdateFile({starred_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({starred_}, file_info.file_url), OpResults::kSuccess);
   EXPECT_THAT(Search(Query({downloaded_})), ContainsFiles(FileInfoList{}));
   EXPECT_THAT(Search(Query({starred_})),
               ContainsFiles(FileInfoList{file_info}));
 
   // Remove the "starred" label and add back "downloaded".
-  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({downloaded_}, file_info.file_url),
+            OpResults::kSuccess);
   EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList({})));
@@ -260,13 +263,13 @@ TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
   FileInfo foo_file_info(foo_url_, 1024, base::Time());
 
   EXPECT_EQ(PutFileInfo(foo_file_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({downloaded_}, foo_file_info.file_url),
+  EXPECT_EQ(UpdateTerms({downloaded_}, foo_file_info.file_url),
             OpResults::kSuccess);
 
   GURL bar_drive_url = MakeDriveURL("bar.txt");
   FileInfo bar_file_info(bar_drive_url, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(bar_file_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({downloaded_}, bar_file_info.file_url),
+  EXPECT_EQ(UpdateTerms({downloaded_}, bar_file_info.file_url),
             OpResults::kSuccess);
 
   EXPECT_THAT(Search(Query({downloaded_})),
@@ -277,7 +280,7 @@ TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
   FileInfo file_info(foo_url_, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
 
-  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({pinned_}, file_info.file_url), OpResults::kSuccess);
 
   EXPECT_THAT(Search(Query({downloaded_})), ContainsFiles(FileInfoList{}));
 }
@@ -287,9 +290,9 @@ TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
   EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
 
   // Insert into the index with pinned label.
-  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({pinned_}, file_info.file_url), OpResults::kSuccess);
   // Verify that passing empty terms is disallowed.
-  EXPECT_EQ(UpdateFile({}, file_info.file_url), OpResults::kArgumentError);
+  EXPECT_EQ(UpdateTerms({}, file_info.file_url), OpResults::kArgumentError);
 
   EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
 }
@@ -299,13 +302,13 @@ TEST_F(FileIndexServiceTest, FieldSeparator) {
   FileInfo foo_info(foo_url_, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
 
-  EXPECT_EQ(UpdateFile({colon_in_field}, foo_info.file_url),
+  EXPECT_EQ(UpdateTerms({colon_in_field}, foo_info.file_url),
             OpResults::kSuccess);
 
   Term colon_in_text("foo", u":one");
   FileInfo bar_info(bar_url_, 1024, base::Time());
   EXPECT_EQ(PutFileInfo(bar_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({colon_in_text}, bar_info.file_url),
+  EXPECT_EQ(UpdateTerms({colon_in_text}, bar_info.file_url),
             OpResults::kSuccess);
 
   EXPECT_THAT(Search(Query({colon_in_field})),
@@ -327,9 +330,9 @@ TEST_F(FileIndexServiceTest, GlobalSearch) {
   EXPECT_EQ(PutFileInfo(labeled_info), OpResults::kSuccess);
   EXPECT_EQ(PutFileInfo(content_info), OpResults::kSuccess);
 
-  EXPECT_EQ(UpdateFile({label_term}, labeled_info.file_url),
+  EXPECT_EQ(UpdateTerms({label_term}, labeled_info.file_url),
             OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({content_term}, content_info.file_url),
+  EXPECT_EQ(UpdateTerms({content_term}, content_info.file_url),
             OpResults::kSuccess);
 
   // Searching with empty field name means global space search.
@@ -354,9 +357,10 @@ TEST_F(FileIndexServiceTest, MixedSearch) {
   EXPECT_EQ(PutFileInfo(tax_label_info), OpResults::kSuccess);
   EXPECT_EQ(PutFileInfo(tax_content_info), OpResults::kSuccess);
 
-  EXPECT_EQ(UpdateFile({starred_, tax_content_term}, tax_content_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({starred_, tax_label_term}, tax_label_info.file_url),
+  EXPECT_EQ(
+      UpdateTerms({starred_, tax_content_term}, tax_content_info.file_url),
+      OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({starred_, tax_label_term}, tax_label_info.file_url),
             OpResults::kSuccess);
 
   // Searching with "starred tax" should return both files.
@@ -378,7 +382,7 @@ TEST_F(FileIndexServiceTest, RemoveFile) {
   EXPECT_EQ(RemoveFile(foo_info.file_url), OpResults::kSuccess);
   // Add foo_info to the index.
   EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({starred_}, foo_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(UpdateTerms({starred_}, foo_info.file_url), OpResults::kSuccess);
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{foo_info}));
   EXPECT_EQ(RemoveFile(foo_info.file_url), OpResults::kSuccess);
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
@@ -391,7 +395,7 @@ TEST_F(FileIndexServiceTest, RemoveTerms) {
 
   // Add terms for foo_info.
   EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
-  EXPECT_EQ(UpdateFile({starred_, downloaded_}, foo_info.file_url),
+  EXPECT_EQ(UpdateTerms({starred_, downloaded_}, foo_info.file_url),
             OpResults::kSuccess);
   EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{foo_info}));
   EXPECT_THAT(Search(Query({downloaded_})),
@@ -412,8 +416,8 @@ TEST_F(FileIndexServiceTest, RemoveTerms) {
 }
 
 TEST_F(FileIndexServiceTest, AddOrUpdateBeforePut) {
-  EXPECT_EQ(UpdateFile({starred_}, foo_url_), OpResults::kFileMissing);
-  EXPECT_EQ(AugmentFile({starred_}, foo_url_), OpResults::kFileMissing);
+  EXPECT_EQ(UpdateTerms({starred_}, foo_url_), OpResults::kFileMissing);
+  EXPECT_EQ(AugmentTerms({starred_}, foo_url_), OpResults::kFileMissing);
 }
 
 }  // namespace

@@ -54,16 +54,16 @@ typedef base::OnceCallback<void(OpResults)> IndexingOperationCallback;
 //                      base::BindOnce([](OpResults results) {
 //                        if (results != OpResults::kSuccess) { ... }
 //                      }));
-// service->UpdateFile({Term("label", "pinned")},
-//                     pinned_file_info.file_url,
-//                     base::BindOnce([](OpResults results) {
-//                       if (results != OpResults::kSuccess) { ... }
-//                     }));
-// service->UpdateFile({Term("label", "downloaded")},
-//                     downloaded_file_info.file_url,
-//                     base::BindOnce([](OpResults results) {
-//                       if (results != OpResults::kSuccess) { ... }
-//                     }));
+// service->UpdateTerms({Term("label", "pinned")},
+//                      pinned_file_info.file_url,
+//                      base::BindOnce([](OpResults results) {
+//                        if (results != OpResults::kSuccess) { ... }
+//                      }));
+// service->UpdateTerms({Term("label", "downloaded")},
+//                      downloaded_file_info.file_url,
+//                      base::BindOnce([](OpResults results) {
+//                        if (results != OpResults::kSuccess) { ... }
+//                      }));
 // ...
 // std::vector<FileInfo> downloaded_files = service->Search(
 //     Query({Term("label", "downloaded")},
@@ -86,6 +86,11 @@ class FileIndexService : public KeyedService {
   // the matching URL.
   void PutFileInfo(const FileInfo& info, IndexingOperationCallback callback);
 
+  // Removes the file uniquely identified by the URL from this index. This is
+  // preferred way of removing files over calling the UpdateFile method with an
+  // empty terms vector. Returns true if the file was found and removed.
+  void RemoveFile(const GURL& url, IndexingOperationCallback callback);
+
   // Updates terms associated with the file. If the term vector is empty
   // this removes the file info from the index. Otherwise, the given `file_info`
   // is associated with the specified terms. Please note that only the passed
@@ -94,33 +99,23 @@ class FileIndexService : public KeyedService {
   // say, Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
   // pass both terms in a single call.
-  void UpdateFile(const std::vector<Term>& terms,
-                  const GURL& url,
-                  IndexingOperationCallback callback);
+  void UpdateTerms(const std::vector<Term>& terms,
+                   const GURL& url,
+                   IndexingOperationCallback callback);
 
   // Augments terms associated with the file with the `terms` given as the first
   // argument. Once this operation is finished, the file can be retrieved by any
   // existing terms that were associated with it, or any new terms this call
   // added.
-  void AugmentFile(const std::vector<Term>& terms,
-                   const GURL& url,
-                   IndexingOperationCallback callback);
-
-  // Removes the file uniquely identified by the URL from this index. This is
-  // preferred way of removing files over calling the UpdateFile method with an
-  // empty terms vector. Returns true if the file was found and removed.
-  void RemoveFile(const GURL& url, IndexingOperationCallback callback);
+  void AugmentTerms(const std::vector<Term>& terms,
+                    const GURL& url,
+                    IndexingOperationCallback callback);
 
   // Removes the specified terms from list of terms associated with the given
   // `url`.
   void RemoveTerms(const std::vector<Term>& terms,
                    const GURL& url,
                    IndexingOperationCallback callback);
-
-  // Adds specified terms to terms associated with the file. The file must
-  // already exist for this operation to succeed.
-  // TODO(b:327535200): Implement and add tests.
-  // void AddToFile(const std::vector<Term>& terms, const FileInfo& info);
 
   // Searches the index for file info matching the specified query.
   void Search(const Query& query, SearchResultsCallback callback);

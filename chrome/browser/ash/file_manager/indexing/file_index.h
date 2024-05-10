@@ -64,6 +64,11 @@ class FileIndex {
   // with this file are called.
   virtual OpResults PutFileInfo(const FileInfo& file_info) = 0;
 
+  // Removes the file uniquely identified by the URL from this index. This is
+  // preferred way of removing files over calling the UpdateFile method with an
+  // empty terms vector. Returns true if the file was found and removed.
+  virtual OpResults RemoveFile(const GURL& url) = 0;
+
   // Updates terms associated with the file. The `url` must be of a FileInfo
   // previously put in the index. Please note that only the passed terms are
   // associated with the file. Thus if you call this method first with, say
@@ -74,8 +79,8 @@ class FileIndex {
   //
   // It is an error to pass an empty term vector. Use the RemoveFile() method
   // instead.
-  virtual OpResults UpdateFile(const std::vector<Term>& terms,
-                               const GURL& url) = 0;
+  virtual OpResults UpdateTerms(const std::vector<Term>& terms,
+                                const GURL& url) = 0;
 
   // Augments terms associated with the file with the specified `url` with
   // the `terms` given as the first argument. Once this operation is finished,
@@ -85,13 +90,8 @@ class FileIndex {
   // AugmentFile() method with Term("label", "starred") you can retrieve the
   // file with the matching `url` (specified in both of these calls) by either
   // or both of the terms.
-  virtual OpResults AugmentFile(const std::vector<Term>& terms,
-                                const GURL& url) = 0;
-
-  // Removes the file uniquely identified by the URL from this index. This is
-  // preferred way of removing files over calling the UpdateFile method with an
-  // empty terms vector. Returns true if the file was found and removed.
-  virtual OpResults RemoveFile(const GURL& url) = 0;
+  virtual OpResults AugmentTerms(const std::vector<Term>& terms,
+                                 const GURL& url) = 0;
 
   // Removes the specified term from terms associated with the file with the
   // given URL.

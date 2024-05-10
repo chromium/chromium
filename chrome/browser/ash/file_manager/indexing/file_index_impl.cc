@@ -21,8 +21,8 @@ OpResults FileIndexImpl::PutFileInfo(const FileInfo& file_info) {
                                                 : OpResults::kSuccess;
 }
 
-OpResults FileIndexImpl::UpdateFile(const std::vector<Term>& terms,
-                                    const GURL& url) {
+OpResults FileIndexImpl::UpdateTerms(const std::vector<Term>& terms,
+                                     const GURL& url) {
   if (terms.empty()) {
     return OpResults::kArgumentError;
   }
@@ -67,8 +67,8 @@ OpResults FileIndexImpl::RemoveTerms(const std::vector<Term>& terms,
   return OpResults::kSuccess;
 }
 
-OpResults FileIndexImpl::AugmentFile(const std::vector<Term>& terms,
-                                     const GURL& url) {
+OpResults FileIndexImpl::AugmentTerms(const std::vector<Term>& terms,
+                                      const GURL& url) {
   if (terms.empty()) {
     return OpResults::kSuccess;
   }

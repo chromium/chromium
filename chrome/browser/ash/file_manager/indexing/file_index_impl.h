@@ -18,6 +18,9 @@
 
 namespace file_manager {
 
+// Implements FileIndex. The implementation needs to be given an IndexStorage
+// implementation to function. For temporary indexes use RamStorage, for
+// persistent indexes use SqlStorage.
 class FileIndexImpl : public FileIndex {
  public:
   explicit FileIndexImpl(std::unique_ptr<IndexStorage> storage);
@@ -34,20 +37,20 @@ class FileIndexImpl : public FileIndex {
   // the given file.
   OpResults PutFileInfo(const FileInfo& file_info) override;
 
-  // Overrides base implementation to store association between terms
-  // and info in in-memory maps.
-  OpResults UpdateFile(const std::vector<Term>& terms,
-                       const GURL& url) override;
-
-  // Overrides base implementation to associate additional terms with
-  // the given file.
-  OpResults AugmentFile(const std::vector<Term>& terms,
-                        const GURL& url) override;
-
   // Overrides base implementation to remove information associated with the
   // file with the given `url`. This means removing association between URL ID
   // and all terms known for the file, as well as the URL ID itself.
   OpResults RemoveFile(const GURL& url) override;
+
+  // Overrides base implementation to store association between terms
+  // and info in in-memory maps.
+  OpResults UpdateTerms(const std::vector<Term>& terms,
+                        const GURL& url) override;
+
+  // Overrides base implementation to associate additional terms with
+  // the given file.
+  OpResults AugmentTerms(const std::vector<Term>& terms,
+                         const GURL& url) override;
 
   // Overrides base implementation to remove association between the file with
   // the given `url` and the specified terms.
