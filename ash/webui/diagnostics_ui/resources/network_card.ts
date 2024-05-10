@@ -40,8 +40,8 @@ export enum TroubleshootingState {
 const NetworkCardElementBase = I18nMixin(PolymerElement);
 
 export class NetworkCardElement extends NetworkCardElementBase {
-  static get is(): string {
-    return 'network-card';
+  static get is(): 'network-card' {
+    return 'network-card' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -362,7 +362,7 @@ export class NetworkCardElement extends NetworkCardElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'network-card': NetworkCardElement;
+    [NetworkCardElement.is]: NetworkCardElement;
   }
 }
 

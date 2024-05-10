@@ -36,8 +36,8 @@ export interface NetworkListElement {
 const NetworkListElementBase = I18nMixin(PolymerElement);
 
 export class NetworkListElement extends NetworkListElementBase {
-  static get is(): string {
-    return 'network-list';
+  static get is(): 'network-list' {
+    return 'network-list' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -158,11 +158,23 @@ export class NetworkListElement extends NetworkListElementBase {
   protected getSettingsString(): TrustedHTML {
     return this.i18nAdvanced('settingsLinkText');
   }
+
+  setActiveGuidForTesting(guid: string): void {
+    this.activeGuid = guid;
+  }
+
+  setIsLoggedInForTesting(state: boolean): void {
+    this.isLoggedIn = state;
+  }
+
+  getOtherNetworkGuidsForTesting(): string[] {
+    return this.otherNetworkGuids;
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'network-list': NetworkListElement;
+    [NetworkListElement.is]: NetworkListElement;
   }
 }
 

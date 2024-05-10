@@ -30,8 +30,8 @@ import {RoutineSectionElement} from './routine_section.js';
 const ConnectivityCardElementBase = I18nMixin(PolymerElement);
 
 export class ConnectivityCardElement extends ConnectivityCardElementBase {
-  static get is(): string {
-    return 'connectivity-card';
+  static get is(): 'connectivity-card' {
+    return 'connectivity-card' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -193,7 +193,7 @@ export class ConnectivityCardElement extends ConnectivityCardElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'connectivity-card': ConnectivityCardElement;
+    [ConnectivityCardElement.is]: ConnectivityCardElement;
   }
 }
 
