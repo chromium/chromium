@@ -2680,12 +2680,20 @@ class TabListMediator {
         if (hideTabGroups) {
             filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
         } else {
+            List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
+
             // Present a confirmation dialog to the user before closing the tab group.
             Callback<Integer> onResult =
                     (@ConfirmationResult Integer result) -> {
                         if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
                             boolean canUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
-                            filter.closeMultipleTabs(tabs, canUndo, hideTabGroups);
+                            List<Tab> tabsToClose =
+                                    tabIds.stream()
+                                            .map(filter.getTabModel()::getTabById)
+                                            .filter(Objects::nonNull)
+                                            .filter(tab -> !tab.isClosing())
+                                            .collect(Collectors.toList());
+                            filter.closeMultipleTabs(tabsToClose, canUndo, hideTabGroups);
                         }
                     };
             mActionConfirmationManager.processDeleteGroupAttempt(onResult);
