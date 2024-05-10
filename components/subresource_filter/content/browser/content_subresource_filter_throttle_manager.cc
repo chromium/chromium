@@ -334,8 +334,8 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     current_committed_load_has_notified_disallowed_load_ = false;
     statistics_.reset();
     if (filter) {
-      statistics_ =
-          std::make_unique<PageLoadStatistics>(filter->activation_state());
+      statistics_ = std::make_unique<PageLoadStatistics>(
+          filter->activation_state(), kUmaFilterTag);
       if (filter->activation_state().enable_logging) {
         DCHECK(filter->activation_state().activation_level !=
                mojom::ActivationLevel::kDisabled);
