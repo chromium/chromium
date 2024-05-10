@@ -129,7 +129,7 @@ void OmniboxResult::UpdateRelevance() {
   double normalized_autocomplete_relevance =
       search_result_->relevance / kMaxOmniboxScore;
 
-  if (search_features::isLauncherFuzzyMatchForOmniboxEnabled()) {
+  if (search_features::IsLauncherFuzzyMatchForOmniboxEnabled()) {
     double title_relevance = CalculateTitleRelevance();
     if (title_relevance < kRelevanceThreshold) {
       scoring().set_filtered(true);

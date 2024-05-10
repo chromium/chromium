@@ -422,9 +422,11 @@ void ImageAnnotationWorker::ProcessNextImage() {
                        file_info->size);
 
   if (search_features::IsLauncherImageSearchIndexingLimitEnabled()) {
-    // Early return if reaches the indexing limit.
+    // Early return if reaches the indexing limit. Continue the process as we
+    // still need to deal with deleted files.
     if (num_indexing_images_ >= indexing_limit_) {
-      return;
+      files_to_process_.pop();
+      return ProcessNextItem();
     }
     num_indexing_images_ += 1;
   }

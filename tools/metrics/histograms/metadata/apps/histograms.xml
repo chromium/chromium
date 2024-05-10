@@ -172,6 +172,14 @@ chromium-metrics-reviews@google.com.
   <variant name="Launch" summary="launch"/>
 </variants>
 
+<variants name="SearchFileExtension">
+  <variant name="Jpeg" summary="jpeg"/>
+  <variant name="Jpg" summary="jpg"/>
+  <variant name="Png" summary="png"/>
+  <variant name="Total" summary="total number of files"/>
+  <variant name="Webp" summary="webp"/>
+</variants>
+
 <variants name="SearchView">
   <variant name="AnswerCard" summary="answer card"/>
   <variant name="AppsSearch" summary="app tiles search"/>
@@ -755,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
-    enum="GameProviderSearchStatus" expires_after="2024-05-19">
+    enum="GameProviderSearchStatus" expires_after="2024-09-29">
   <owner>chenjih@chromium.org</owner>
   <owner>dgrebenyuk@chromium.org</owner>
   <summary>
@@ -1131,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
-    expires_after="2024-04-28">
+    expires_after="2024-09-01">
   <owner>dgrebenyuk@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1384,8 +1392,31 @@ chromium-metrics-reviews@google.com.
   <token key="SearchAction" variants="SearchAction"/>
 </histogram>
 
+<histogram name="Apps.AppList.SearchFileScan.ExecutionTime" units="ms"
+    expires_after="2024-09-29">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>The time spent for the whole file scan process.</summary>
+</histogram>
+
+<histogram name="Apps.AppList.SearchFileScan.{SearchFileExtension}"
+    units="units" expires_after="2024-09-29">
+  <owner>chenjih@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    Tracks the total number of files within user's local directory, and the
+    total number of files with the extensions that we are interested in. They
+    are required by the power team to help estimatie the power influence of
+    certain launcher search features. Emitted at most once per user per device
+    per week. It's triggered at user login, and do a quick file scan to get the
+    metrics.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
-    expires_after="2024-05-19">
+    expires_after="2024-09-29">
   <owner>dgrebenyuk@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>

@@ -322,6 +322,11 @@ inline constexpr char kLauncherResultEverLaunched[] =
 inline constexpr char kLauncherSearchCategoryControlStatus[] =
     "launcher.search_category_control_status";
 
+// A time pref indicating the last time a local file scan is logged in launcher
+// search.
+inline constexpr char kLauncherSearchLastFileScanLogTime[] =
+    "launcher.search_last_file_scan_log_time";
+
 // Dictionary pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
 inline constexpr char kLauncherSearchNormalizerParameters[] =

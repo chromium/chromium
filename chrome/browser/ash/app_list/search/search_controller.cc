@@ -25,16 +25,20 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/common/file_util.h"
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/search_file_scanner.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -87,6 +91,12 @@ void SearchController::Initialize() {
   app_discovery_metrics_manager_ =
       std::make_unique<AppDiscoveryMetricsManager>(profile_);
   search_engine_ = std::make_unique<SearchEngine>(profile_);
+
+  if (search_features::IsLauncherSearchFileScanEnabled()) {
+    search_file_scanner_ = std::make_unique<SearchFileScanner>(
+        profile_, file_manager::util::GetMyFilesFolderForProfile(profile_),
+        GetTrashPaths(profile_));
+  }
 }
 
 std::vector<ash::AppListSearchControlCategory>

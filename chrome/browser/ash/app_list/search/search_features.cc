@@ -71,6 +71,10 @@ BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherSearchFileScan,
+             "kLauncherSearchFileScan",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(b/330386392): kLauncherGameSearch can be removed because if there's no
 // payload, there will be no result.
 bool IsLauncherGameSearchEnabled() {
@@ -91,7 +95,7 @@ bool IsLauncherFuzzyMatchAcrossProvidersEnabled() {
   return base::FeatureList::IsEnabled(kLauncherFuzzyMatchAcrossProviders);
 }
 
-bool isLauncherFuzzyMatchForOmniboxEnabled() {
+bool IsLauncherFuzzyMatchForOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kLauncherFuzzyMatchForOmnibox);
 }
 
@@ -115,8 +119,12 @@ bool IsLauncherImageSearchIndexingLimitEnabled() {
   return base::FeatureList::IsEnabled(kLauncherImageSearchIndexingLimit);
 }
 
-bool isLauncherSystemInfoAnswerCardsEnabled() {
+bool IsLauncherSystemInfoAnswerCardsEnabled() {
   return base::FeatureList::IsEnabled(kLauncherSystemInfoAnswerCards);
+}
+
+bool IsLauncherSearchFileScanEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherSearchFileScan);
 }
 
 }  // namespace search_features

@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
+#include "chrome/browser/ash/app_list/search/search_file_scanner.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
 class AppListControllerDelegate;
@@ -231,6 +232,8 @@ class SearchController {
 
   // TODO(b/315709613):Temporary before it is moved to a new service.
   std::unique_ptr<SearchEngine> search_engine_;
+
+  std::unique_ptr<SearchFileScanner> search_file_scanner_;
 
   const raw_ptr<AppListModelUpdater> model_updater_;
   const raw_ptr<AppListControllerDelegate> list_controller_;
