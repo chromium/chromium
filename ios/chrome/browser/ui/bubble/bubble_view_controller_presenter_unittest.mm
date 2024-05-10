@@ -32,14 +32,14 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
                 IPHDismissalReasonType reason,
                 feature_engagement::Tracker::SnoozeAction action) {
               dismissal_callback_count_++;
-              dismissal_callback_asction_ = action;
+              dismissal_callback_action_ = action;
             }]),
         window_([[UIWindow alloc]
             initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)]),
         parent_view_controller_([[UIViewController alloc] init]),
         anchor_point_(CGPointMake(250.0, 250.0)),
         dismissal_callback_count_(0),
-        dismissal_callback_asction_() {
+        dismissal_callback_action_() {
     parent_view_controller_.view.frame = CGRectMake(0.0, 0.0, 500.0, 500.0);
     [window_ addSubview:parent_view_controller_.view];
   }
@@ -66,7 +66,7 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
   // callback is invoked, `dismissal_callback_count_` increments.
   int dismissal_callback_count_;
   std::optional<feature_engagement::Tracker::SnoozeAction>
-      dismissal_callback_asction_;
+      dismissal_callback_action_;
 };
 
 // Tests that, after initialization, the internal BubbleViewController and
@@ -206,9 +206,9 @@ TEST_F(BubbleViewControllerPresenterTest,
   UIButton* close_button = GetCloseButtonFromBubbleView(bubble_view);
   EXPECT_TRUE(close_button);
   [close_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_TRUE(dismissal_callback_asction_);
+  EXPECT_TRUE(dismissal_callback_action_);
   EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::DISMISSED,
-            dismissal_callback_asction_);
+            dismissal_callback_action_);
   EXPECT_EQ(1, dismissal_callback_count_);
 }
 
@@ -226,8 +226,76 @@ TEST_F(BubbleViewControllerPresenterTest,
   UIButton* snooze_button = GetSnoozeButtonFromBubbleView(bubble_view);
   EXPECT_TRUE(snooze_button);
   [snooze_button sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_TRUE(dismissal_callback_asction_);
+  EXPECT_TRUE(dismissal_callback_action_);
   EXPECT_EQ(feature_engagement::Tracker::SnoozeAction::SNOOZED,
-            dismissal_callback_asction_);
+            dismissal_callback_action_);
   EXPECT_EQ(1, dismissal_callback_count_);
+}
+
+// Tests that all gesture recognizers are attached in the default case.
+TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersPresent) {
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                         view:parent_view_controller_.view
+                  anchorPoint:anchor_point_];
+  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
+      bubble_view_controller_presenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 3U);
+}
+
+// Tests that the gesture recognizers for outside the bubble are not attached in
+// the `ignoreOutsideInteractions` case.
+TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersReduced) {
+  bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                         view:parent_view_controller_.view
+                  anchorPoint:anchor_point_];
+  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
+      bubble_view_controller_presenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 1U);
+}
+
+// Tests that the default gesture recognizers have been removed after the Bubble
+// View Controller Presenter was dismissed.
+TEST_F(BubbleViewControllerPresenterTest, BubbleViewGestureRecognizersRemoved) {
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                         view:parent_view_controller_.view
+                  anchorPoint:anchor_point_];
+  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
+      bubble_view_controller_presenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 3U);
+
+  [bubble_view_controller_presenter_ dismissAnimated:NO];
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 0U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 0U);
+}
+
+// Tests that the reduced set of gesture recognizers have been removed after the
+// Bubble View Controller Presenter was dismissed.
+TEST_F(BubbleViewControllerPresenterTest,
+       BubbleViewGestureRecognizersReducedRemoved) {
+  bubble_view_controller_presenter_.ignoreOutsideInteractions = YES;
+  [bubble_view_controller_presenter_
+      presentInViewController:parent_view_controller_
+                         view:parent_view_controller_.view
+                  anchorPoint:anchor_point_];
+  BubbleView* bubble_view = base::apple::ObjCCastStrict<BubbleView>(
+      bubble_view_controller_presenter_.bubbleViewController.view);
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 1U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 1U);
+
+  [bubble_view_controller_presenter_ dismissAnimated:YES];
+  EXPECT_TRUE(bubble_view);
+  EXPECT_EQ([[bubble_view gestureRecognizers] count], 0U);
+  EXPECT_EQ([[parent_view_controller_.view gestureRecognizers] count], 0U);
 }

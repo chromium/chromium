@@ -70,6 +70,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @property(nonatomic, strong) UIPanGestureRecognizer* outsideBubblePanRecognizer;
 // The swipe gesture recognizer to dismiss the bubble on swipes.
 @property(nonatomic, strong) UISwipeGestureRecognizer* swipeRecognizer;
+// Whether the current presenter has outside gesture recognizers setup or not.
+@property(nonatomic, assign) BOOL hasOutsideGestureRecognizers;
 // The direction the underlying BubbleView's arrow is pointing.
 @property(nonatomic, assign) BubbleArrowDirection arrowDirection;
 // The alignment of the underlying BubbleView's arrow.
@@ -120,30 +122,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                          alignment:alignment
                                     bubbleViewType:type
                                           delegate:self];
-    _outsideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(tapOutsideBubbleRecognized:)];
-    _outsideBubbleTapRecognizer.delegate = self;
-    _outsideBubbleTapRecognizer.cancelsTouchesInView = NO;
-
-    _outsideBubblePanRecognizer = [[UIPanGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(tapOutsideBubbleRecognized:)];
-    _outsideBubblePanRecognizer.delegate = self;
-    _outsideBubblePanRecognizer.cancelsTouchesInView = NO;
-
-    _insideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(tapInsideBubbleRecognized:)];
-    _insideBubbleTapRecognizer.delegate = self;
-    _insideBubbleTapRecognizer.cancelsTouchesInView = NO;
-    _swipeRecognizer = [[UISwipeGestureRecognizer alloc]
-        initWithTarget:self
-                action:@selector(tapOutsideBubbleRecognized:)];
-    _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
-    _swipeRecognizer.delegate = self;
     _userEngaged = NO;
     _triggerFollowUpAction = NO;
+    _ignoreOutsideInteractions = NO;
     _arrowDirection = arrowDirection;
     _alignment = alignment;
     _bubbleType = type;
@@ -203,18 +184,14 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   // the frame can be set before calling `presentInViewController`.
   DCHECK(!CGRectIsEmpty(self.bubbleViewController.view.frame));
 
+  [self addGestureRecognizersToParentView:parentView];
+
   self.presenting = YES;
   [parentViewController addChildViewController:self.bubbleViewController];
   [parentView addSubview:self.bubbleViewController.view];
   [self.bubbleViewController
       didMoveToParentViewController:parentViewController];
   [self.bubbleViewController animateContentIn];
-
-  [self.bubbleViewController.view
-      addGestureRecognizer:self.insideBubbleTapRecognizer];
-  [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
-  [parentView addGestureRecognizer:self.outsideBubblePanRecognizer];
-  [parentView addGestureRecognizer:self.swipeRecognizer];
 
   self.bubbleDismissalTimer = [NSTimer
       scheduledTimerWithTimeInterval:self.isLongDurationBubble
@@ -286,13 +263,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
   [self.bubbleDismissalTimer invalidate];
   self.bubbleDismissalTimer = nil;
-  [self.insideBubbleTapRecognizer.view
-      removeGestureRecognizer:self.insideBubbleTapRecognizer];
-  [self.outsideBubbleTapRecognizer.view
-      removeGestureRecognizer:self.outsideBubbleTapRecognizer];
-  [self.outsideBubblePanRecognizer.view
-      removeGestureRecognizer:self.outsideBubblePanRecognizer];
-  [self.swipeRecognizer.view removeGestureRecognizer:self.swipeRecognizer];
+
+  [self removeGestureRecognizers];
+
   [self.bubbleViewController dismissAnimated:animated];
   self.presenting = NO;
 
@@ -316,13 +289,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   self.bubbleDismissalTimer = nil;
   [self.engagementTimer invalidate];
   self.engagementTimer = nil;
-  [self.insideBubbleTapRecognizer.view
-      removeGestureRecognizer:self.insideBubbleTapRecognizer];
-  [self.outsideBubbleTapRecognizer.view
-      removeGestureRecognizer:self.outsideBubbleTapRecognizer];
-  [self.outsideBubblePanRecognizer.view
-      removeGestureRecognizer:self.outsideBubblePanRecognizer];
-  [self.swipeRecognizer.view removeGestureRecognizer:self.swipeRecognizer];
+
+  [self removeGestureRecognizers];
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -352,6 +320,13 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
       [touch.view isKindOfClass:[UIButton class]]) {
     return NO;
   }
+  // If the swipe originated from outside the bubble, and outside gestures
+  // should be ignored, cancel the touch instead of dismissing the bubble.
+  if (gestureRecognizer == self.swipeRecognizer &&
+      self.ignoreOutsideInteractions &&
+      ![touch.view isDescendantOfView:self.bubbleViewController.view]) {
+    return NO;
+  }
   // Prevents inside gesture recognizers from triggering when tapping on a
   // button inside of the bubble.
   if (gestureRecognizer == self.insideBubbleTapRecognizer &&
@@ -374,6 +349,57 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 }
 
 #pragma mark - Private
+
+- (void)removeGestureRecognizers {
+  if (self.hasOutsideGestureRecognizers) {
+    [self.outsideBubbleTapRecognizer.view
+        removeGestureRecognizer:self.outsideBubbleTapRecognizer];
+    [self.outsideBubblePanRecognizer.view
+        removeGestureRecognizer:self.outsideBubblePanRecognizer];
+  }
+
+  [self.insideBubbleTapRecognizer.view
+      removeGestureRecognizer:self.insideBubbleTapRecognizer];
+  [self.swipeRecognizer.view removeGestureRecognizer:self.swipeRecognizer];
+}
+
+// Adds gesture recognizers to parent view. Some gesture recognizers outside the
+// bubble are not added if `ignoreOutsideInteractions` is YES.
+- (void)addGestureRecognizersToParentView:(UIView*)parentView {
+  if (!self.ignoreOutsideInteractions) {
+    self.hasOutsideGestureRecognizers = YES;
+
+    self.outsideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapOutsideBubbleRecognized:)];
+    self.outsideBubbleTapRecognizer.delegate = self;
+    self.outsideBubbleTapRecognizer.cancelsTouchesInView = NO;
+
+    self.outsideBubblePanRecognizer = [[UIPanGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapOutsideBubbleRecognized:)];
+    self.outsideBubblePanRecognizer.delegate = self;
+    self.outsideBubblePanRecognizer.cancelsTouchesInView = NO;
+
+    [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
+    [parentView addGestureRecognizer:self.outsideBubblePanRecognizer];
+  }
+
+  self.insideBubbleTapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(tapInsideBubbleRecognized:)];
+  self.insideBubbleTapRecognizer.delegate = self;
+  self.insideBubbleTapRecognizer.cancelsTouchesInView = NO;
+  self.swipeRecognizer = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(tapOutsideBubbleRecognized:)];
+  self.swipeRecognizer.direction = UISwipeGestureRecognizerDirectionUp;
+  self.swipeRecognizer.delegate = self;
+
+  [self.bubbleViewController.view
+      addGestureRecognizer:self.insideBubbleTapRecognizer];
+  [parentView addGestureRecognizer:self.swipeRecognizer];
+}
 
 // Invoked by tapping inside the bubble. Dismisses the bubble.
 - (void)tapInsideBubbleRecognized:(id)sender {
