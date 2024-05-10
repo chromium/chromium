@@ -551,6 +551,8 @@ void StatisticsProviderImpl::LoadVpd() {
       kKeyboardMechanicalLayoutKey,
       kAttestedDeviceIdKey,
       kDisplayProfilesKey,
+      kMachineModelName,
+      kMachineOemName,
   };
   constexpr std::array rw_keys{
       kActivateDateKey,      kBlockDevModeKey,

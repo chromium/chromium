@@ -172,6 +172,12 @@ extern const char kSerialNumberKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kDisplayProfilesKey[];
 
+// Machine model and oem names.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kMachineModelName[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kMachineOemName[];
+
 // This interface provides access to Chrome OS statistics.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
  public:
