@@ -10,13 +10,12 @@
 #import "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
@@ -250,7 +249,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
 
       // Use native VoiceOver support for live regions.
       BrowserAccessibilityCocoa* retained_node = native_node;
-      GetUIThreadTaskRunner({})->PostDelayedTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               [](BrowserAccessibilityCocoa* wrapper) {
