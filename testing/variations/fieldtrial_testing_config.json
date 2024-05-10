@@ -6853,6 +6853,27 @@
             ]
         }
     ],
+    "EagerPrefetchBlockUntilHeadDifferentTimeoutsRetrospective": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "block_until_head_timeout_eager_prefetch": "500"
+                    },
+                    "enable_features": [
+                        "PrefetchUseContentRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeAndroid": [
         {
             "platforms": [
