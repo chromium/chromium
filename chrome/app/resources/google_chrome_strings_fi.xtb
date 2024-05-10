@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome on estänyt tämän latauksen, koska tiedostotyyppiä ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1229096353876452996">Google suosittelee Chromen asettamista oletusselaimeksi</translation>
+<translation id="1265739287306757398">Lisätietoja</translation>
 <translation id="1278833599417554002">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="1302523850133262269">Odota hetki, Chrome asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Google ChromeOS Flexin ehtoja.</translation>
@@ -176,6 +177,7 @@
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="3667616615096815454">Asennus ei onnistu, palvelin ei tunnista sovellusta.</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
+<translation id="3695446226812920698">Lisätietoja</translation>
 <translation id="3697952514309507634">Muut Chrome-profiilit</translation>
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
@@ -262,6 +264,7 @@
 <translation id="4970880042055371251">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
+<translation id="5120334927898581447">Kirjaudu Chromeen, kun kirjaudut muihin Googlen palveluihin</translation>
 <translation id="5126049312684316860">Chrome esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="5132929315877954718">Löydät hienoja sovelluksia, pelejä ja teemoja Google Chromelle.</translation>
 <translation id="5139423532931106058">Muokkaa Chrome-profiiliasi</translation>
@@ -295,6 +298,7 @@
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
 <translation id="5727531838415286053">Jos Chrome on sijoittanut sinut aktiiviseen kokeiluun satunnaisesti, selaushistoriasi vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiin. Yksityisyytesi suojaamiseksi Chrome poistaa kiinnostuksen kohteesi kuukausittain. Kiinnostuksen kohteet päivittyvät, ellet poista niitä.</translation>
 <translation id="5736850870166430177">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
+<translation id="575458254678141039">Kun kirjaudut Googlen palveluihin (esim. Gmailiin tai YouTubeen) tilillä <ph name="USER_EMAIL" />, voit kirjautua Chromeen samalla tilillä</translation>
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
@@ -336,6 +340,7 @@
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
+<translation id="6479881432656947268">Käy Chrome Web Storessa</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
 <translation id="6489302989675808168">Päällä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
@@ -345,6 +350,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
 <translation id="6632473616050862500">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä.</translation>
+<translation id="6660596345553328257">Haluatko kirjautua Chromeen?</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
 <translation id="6679975945624592337">Jätä Google Chrome käyntiin taustalle</translation>
 <translation id="6696915334902295848">Chrome tarvitsee mikrofonin luvan tällä sivustolla</translation>
@@ -373,6 +379,7 @@
 <translation id="7036251913954633326">Jos haluat käyttää tiliä vain tämän kerran, voit käyttää Chrome-selaimen <ph name="GUEST_LINK_BEGIN" />vierastilaa<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
 
 Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit ylläpitää Google-tilejä <ph name="SETTINGS_LINK_BEGIN" />asetuksissa<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="7037538054043837165">Kirjaudu Chromeen, niin voit tallentaa esimerkiksi salasanoja ja käyttää niitä kaikilla laitteillasi</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>
 <translation id="7071827361006050863">Selausdata poistetaan pian Chromesta</translation>
 <translation id="7085332316435785646">Valitse, käytetäänkö Chrome-historiaa personoituun kokemukseen Google-palveluissa</translation>
@@ -446,6 +453,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8111297389482307122">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos, data säilyy tällä laitteella.</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
+<translation id="8162006532256575008">Käytä Chromea ilman tiliä</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8257796129973882597">Voit avata esimerkiksi kirjanmerkit ja lukutilan Chrome-valikosta</translation>
 <translation id="8267953129876836456">Chrome on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
@@ -456,6 +464,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8336463659890584292">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
+<translation id="8350273347136316769">Kirjaudu Chromeen automaattisesti</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Chrome voi rakentaa kuvaa kiinnostuksen kohteistasi. Sivut, joilla käyt, voivat myöhemmin pyytää Chromelta tietoa kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
@@ -464,6 +473,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
 <translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="842386925677997438">Chromen turvallisuustyökalut</translation>
+<translation id="8428213095426709021">Asetukset</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chrome-selainprofiilin ja sen datan (esim. kirjanmerkit, historian ja salasanat) sekä muokata niitä.</translation>
 <translation id="8496177819998570653">Google S&amp;alasanat</translation>
@@ -506,6 +516,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9053892488859122171">ChromeOS Flexin järjestelmä</translation>
 <translation id="9090566250983691233">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
+<translation id="9127728564687112483">Älä kirjaa minua Chromeen</translation>
 <translation id="9138603949443464873">Ota muutokset käyttöön käynnistämällä Chrome uudelleen</translation>
 <translation id="9195993889682885387">Chrome voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>
 <translation id="919706545465235479">Aloita synkronointi päivittämällä Chrome.</translation>

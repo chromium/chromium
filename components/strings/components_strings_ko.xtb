@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">가격이 비쌈</translation>
 <translation id="2122719317867821810">이 정책은 정상 작동 중이나 다른 곳에 충돌하는 값이 설정되어 있어 이 정책에 의해 재정의되었습니다.</translation>
 <translation id="2126374524350484896">PDF 변환 프로그램:</translation>
+<translation id="2127090458081644412">비밀번호가 이 기기에 저장됨</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">무작위 순서로 표시됩니다. 언제든지 기본값을 변경할 수 있습니다.</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3126023634486644099">라벨(영구)</translation>
 <translation id="3133565499688974786">이제 <ph name="SEARCH_ENGINE_NAME" /> 검색엔진이 기본 검색엔진이 되었습니다</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> 검색</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{없음}=1{계정 1개의 로그인 데이터}other{계정 #개의 로그인 데이터}}</translation>
 <translation id="3140646734028448730">비즈니스 서비스</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3141641372357166056">동의 결정 없음</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4901952598169637881">캐주얼 신발</translation>
 <translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
+<translation id="4913784027728226227">모든 기기에서 이 비밀번호를 저장하고 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4916389289686916969">TV 리얼리티 쇼</translation>
 <translation id="4917064667437236721">이미징 실린더</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">수정 다시 실행(&amp;R)</translation>
 <translation id="547963486735802022">파일을 다시 전송해 보세요.</translation>
 <translation id="5481076368049295676">이 콘텐츠는 사용자의 정보를 도용하거나 삭제하는 위험한 소프트웨어를 기기에 설치하려 할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">작성 도움 제공</translation>
 <translation id="54817484435770891">유효한 주소 추가</translation>
 <translation id="5483838506518938965">준비 완료</translation>
 <translation id="5485973315555778056">Cloud 머신</translation>
@@ -2477,7 +2481,6 @@
 <translation id="5786044859038896871">카드 정보를 입력하시겠습니까?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{없음}=1{계정 1개의 로그인 데이터}other{계정 #개의 로그인 데이터}}</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
 <translation id="580241730938216256">업데이트 시작</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />을(를) 입력하시겠습니까?</translation>
@@ -3209,7 +3212,6 @@
 <translation id="7201591969684833065">관리자가 볼 수 있는 항목은 다음과 같습니다.</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, 새 시크릿 탭을 열어 비공개로 탐색하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="7203375778433816396">Chrome을 시스템 기본 브라우저로 설정</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{없음}=1{패스키 1개}other{패스키 #개}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />에서 보안 기준을 준수하지 않습니다.</translation>
 <translation id="7210993021468939304">컨테이너 내 Linux 활동 및 컨테이너 내에서 Linux 앱 설치 및 실행 가능</translation>
 <translation id="721197778055552897">이 문제에 대해 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

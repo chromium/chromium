@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">Ngarko imazhin</translation>
 <translation id="1026959648338730078">Windows Hello ose tasti i sigurisë së jashtme</translation>
 <translation id="1028700151766901954">Arsyeja: LBS qëndron në <ph name="DEFAULT_OPEN_BROWSER" /> si parazgjedhje.</translation>
+<translation id="1028823395684328817">Për të vazhduar të përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1029317248976101138">Zmadho</translation>
 <translation id="1029526375103058355">Trokit për të klikuar</translation>
@@ -421,6 +422,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1307165550267142340">Kodi yt PIN është krijuar</translation>
 <translation id="1307431692088049276">Mos më pyet përsëri</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
+<translation id="1308876641060960899">Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1311294419381837540">Po transmeton një skedë. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="131188242279372879">Zbulo mbrojtjen e përmirësuar për të marrë nivelin më të lartë të sigurisë të Chrome për shkarkimet</translation>
@@ -3004,6 +3006,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3220943972464248773">Për të sinkronizuar fjalëkalimet e tua, verifiko që je ti</translation>
 <translation id="3222066309010235055">Interpretuesi paraprak: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Lidhu me <ph name="USB_VM_NAME" /></translation>
+<translation id="3222857603094643834">Kërko çdo gjë në këtë faqe me "Lenten e Google"</translation>
 <translation id="3223531857777746191">Butoni i rivendosjes</translation>
 <translation id="3225084153129302039">Avatari i parazgjedhur i purpurt</translation>
 <translation id="3225319735946384299">Nënshkrimi me kod</translation>
@@ -3180,6 +3183,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3365598184818502391">Përdor ose Ctrl, ose Alt</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369067987974711168">Shfaq më shumë veprime për këtë portë</translation>
+<translation id="336916507624489577">Një rreth me vijë të ndërprerë shfaqet rreth ikonave të sajteve.</translation>
 <translation id="3369624026883419694">Po zgjidh strehuesin...</translation>
 <translation id="3370260763947406229">Korrigjimi automatik</translation>
 <translation id="3371140690572404006">Pajisja USB-C (porta e përparme, djathtas)</translation>
@@ -3300,6 +3304,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3450180775417907283"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim.</translation>
 <translation id="3452999110156026232">Qasja e prindit</translation>
 <translation id="3453082738208775226">Të pastrohet hapësira ruajtëse offline?</translation>
+<translation id="3453597230179205517">Qasja te vendndodhja është bllokuar</translation>
 <translation id="3453612417627951340">Ka nevojë për autorizim</translation>
 <translation id="3454213325559396544">Ky është përditësimi i fundit automatik i softuerit dhe i sigurisë për këtë pajisje <ph name="DEVICE_TYPE" />. Për të marrë përditësime të ardhshme, përmirësoje në një model më të ri.</translation>
 <translation id="3454818737556063691">Të zhvendoset 1 skedar te <ph name="CLOUD_PROVIDER" /> për ta hapur?</translation>
@@ -3490,6 +3495,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3605515937536882518">Vlerat e formularit u përditësuan</translation>
 <translation id="3605780360466892872">I kollarisur</translation>
 <translation id="3607671391978830431">Për një fëmijë</translation>
+<translation id="3607799000129481474"><ph name="SITE" /> kërkon të verifikojë që je ti</translation>
 <translation id="3608460311600621471">Jep një arsye për printimin e këtyre të dhënave:</translation>
 <translation id="3608730769702025110">Hapi 3 nga 4: Rishiko informacionet e identifikueshme personalisht</translation>
 <translation id="3609277884604412258">Kërkimi i shpejtë</translation>
@@ -3525,6 +3531,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3627588569887975815">Hape lidhjen në një dritare të fshe&amp;hur</translation>
 <translation id="3627671146180677314">Koha e rinovimit të certifikatës së Netscape</translation>
 <translation id="3628275722731025472">Çaktivizo Bluetooth-in</translation>
+<translation id="3629630597033136279">Joaktive • Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat</translation>
 <translation id="3629664892718440872">Kujtoje këtë zgjedhje</translation>
 <translation id="3630132874740063857">Telefoni yt</translation>
 <translation id="3630995161997703415">Shtoje këtë sajt te rafti yt për ta përdorur në çdo kohë</translation>
@@ -3779,6 +3786,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3796648294839530037">Rrjetet e preferuara:</translation>
 <translation id="3797739167230984533">Pajisja jote <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> menaxhohet<ph name="END_LINK" /> nga organizata jote</translation>
 <translation id="3797900183766075808">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për "<ph name="SEARCH_TERMS" />"</translation>
+<translation id="3798026281364973895">Çaktivizo "Zonën e qasjes për internet në çast"</translation>
 <translation id="3798449238516105146">Versioni</translation>
 <translation id="3798632811625902122">Pajisja me Bluetooth "<ph name="DEVICE" />" kërkon leje për çiftim.</translation>
 <translation id="3798670284305777884">Altoparlanti (i brendshëm)</translation>
@@ -3892,6 +3900,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3873915545594852654">Ndodhi një problem me ARC++.</translation>
 <translation id="3874164307099183178">Aktivizo "Asistentin e Google"</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> është caktuar të hapet në një skedë të re shfletuesi. Lidhjet e mbështetura do të hapen gjithashtu në shfletues. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="3876833929577368454">Më pyet çdo herë</translation>
 <translation id="3877075909000773256">Cilësimet e "Ndarjes në afërsi" për pajisjen e <ph name="USER_NAME" />, e cila ndan nën llogarinë <ph name="USER_EMAIL" />.</translation>
 <translation id="3878445208930547646">Kopjimi nga ky sajt nuk lejohet</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
@@ -4932,6 +4941,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="467510802200863975">Fjalëkalimet nuk përputhen</translation>
 <translation id="4675828034887792601">Krijo shkurtore për të kërkuar në sajte dhe për të menaxhuar motorin e kërkimit</translation>
 <translation id="4676595058027112862">Phone Hub. Mëso më shumë</translation>
+<translation id="4676616966096505747">Disa të dhëna nuk janë ruajtur ende në llogarinë tënde</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
 <translation id="467809019005607715">Diapozitivat e Google</translation>
 <translation id="4678848110205818817">Kartë krediti/debiti</translation>
@@ -5421,6 +5431,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5070773577685395116">Nuk e more këtë?</translation>
 <translation id="5071295820492622726">Kthehu prapa te shkarkimet e fundit</translation>
 <translation id="5071892329440114717">Shfaq detajet e mbrojtjes standarde</translation>
+<translation id="5072500507106264618">Vetëm shërbimet e sistemit mund ta përdorin vendndodhjen tënde</translation>
 <translation id="5072836811783999860">Shfaq faqeshënuesit e menaxhuar</translation>
 <translation id="5072900412896857127">Kushtet e shërbimit të Google Play nuk mund të ngarkohen. Kontrollo lidhjen me rrjetin dhe provo përsëri.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> dhe # të tjerë}}</translation>
@@ -5463,6 +5474,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5097874180538493929">Kliko automatikisht kur të ndalojë kursori</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> është gozhduar nga administratori</translation>
 <translation id="5101839224773798795">Kliko automatikisht kur kursori ndalon</translation>
+<translation id="5102244391872941183">Aplikacionet dhe uebsajtet me lejen për vendndodhjen, si dhe shërbimet e sistemit, mund të përdorin vendndodhjen tënde.</translation>
 <translation id="5103311607312269661">ngritja e ndriçimit të ekranit</translation>
 <translation id="5106350808162641062">Hiq</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> mbikëqyret nga Family Link. Mund të shtosh llogari të shkollës për të pasur qasje te burimet e shkollës me mbikëqyrjen e prindërve.</translation>
@@ -5507,6 +5519,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5135533361271311778">Artikulli i faqeshënuesve nuk mund të krijohej.</translation>
 <translation id="513555878193063507">Shto një APN të re</translation>
 <translation id="5136343472380336530">Sigurohu që të dyja pajisjet të jenë të shkyçura, pranë njëra-tjetrës, si dhe të kenë të aktivizuar Bluetooth-in. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="5137349216872139332">Lidhja e "Zonës së qasjes për internet në çast" dështoi</translation>
 <translation id="5138227688689900538">Shfaq më pak</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, kërko në <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">Fut kodin PIN për çelësin e sigurisë. Nëse nuk e di kodin PIN, do të duhet ta rivendosësh çelësin e sigurisë.</translation>
@@ -5594,6 +5607,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5197255632782567636">Interneti</translation>
 <translation id="5198430103906431024">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="5199729219167945352">Eksperimentet</translation>
+<translation id="5200680225062692606">Touch ID është kyçur. Fut fjalëkalimin për të vazhduar.</translation>
 <translation id="5203035663139409780">Mund të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliko për të shikuar shtesën}other{Kliko për të shikuar këto shtesa}}</translation>
 <translation id="5204673965307125349">Kryej powerwash për pajisjen dhe provo përsëri.</translation>
@@ -5953,6 +5967,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5486071940327595306"><ph name="WEBSITE" /> mund të kërkojë një pajisje më të re ose një lloj tjetër pajisjeje</translation>
 <translation id="5486261815000869482">Konfirmo fjalëkalimin</translation>
 <translation id="5486561344817861625">Simulo rifillimin e shfletimit</translation>
+<translation id="5486748931874756433">Ky ndryshim do të zbatohet kur të marrësh përditësimin tjetër dhe ta rinisësh pajisjen tënde <ph name="DEVICE_TYPE" />. Ky ndryshim nuk mund të anulohet dhe ai zbatohet për të gjithë përdoruesit e kësaj pajisjeje.</translation>
 <translation id="5487460042548760727">Riemërtoje profilin si <ph name="PROFILE_NAME" /></translation>
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" u kopjua</translation>
 <translation id="5488508217173274228">Opsionet e enkriptimit të sinkronizimit</translation>
@@ -6367,6 +6382,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5799508265798272974">Pajisja virtuale Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5799971219262397777">Rivendosi cilësimet në pajisjen tënde me ChromeOS te parazgjedhjet e sigurta.</translation>
 <translation id="5800020978570554460">Skedari i destinacionit u shkurtua ose u hoq që nga shkarkimi i fundit.</translation>
+<translation id="5800290746557538611">Aktivizo "Zonën e qasjes për internet në çast"</translation>
 <translation id="5800351251499368110">Mbyll kërkimin në panelin anësor. Kërkimi është i hapur në panelin anësor.</translation>
 <translation id="5800703268655655701">Zgjidh temën e ndriçuar ose të errët</translation>
 <translation id="5801051031414037185">Konfiguro telefonin</translation>
@@ -6526,6 +6542,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="59174027418879706">Aktivizuar</translation>
 <translation id="5920543303088087579">Lidhja me këtë rrjet është çaktivizuar nga administratori yt</translation>
+<translation id="5922963926582976524">Shkëput rrjetin e "Zonës së qasjes për internet në çast"</translation>
 <translation id="5924047253200400718">Kërko ndihmë<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te "Disku i Google"</translation>
 <translation id="5924527146239595929">Shkrep një fotografi të re ose zgjidh një fotografi ose ikonë ekzistuese.
@@ -6576,6 +6593,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5955721306465922729">Një uebsajt dëshiron që ta hapë këtë aplikacion.</translation>
 <translation id="5955809630138889698">Kjo pajisje mund të jetë e përshtatshme vetëm për modalitetin e demonstrimit online. Kontakto me përfaqësuesin e ekipit të mbështetjes për më shumë detaje.</translation>
 <translation id="5957987129450536192">Trokit ikonën e "Zgjidh që të thuhet" pranë imazhit të profilit tënd, më pas zgjidh atë që dëshiron të dëgjosh.</translation>
+<translation id="5958836583172610505">Sinkronizimi është aktiv</translation>
 <translation id="5959471481388474538">Rrjeti nuk ofrohet</translation>
 <translation id="5959982036207776176">Zmadhuesi ndjek fjalën që po lexohet duke zgjedhur që të thuhet</translation>
 <translation id="5963413905009737549">Seksioni</translation>
@@ -6902,6 +6920,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6209838773933913227">Përditësimi i përbërësit</translation>
 <translation id="6209908325007204267">Pajisja jote përfshin një përmirësim të Chrome Enterprise, por emri yt i përdoruesit nuk lidhet me llogarinë e ndërmarrjes. Krijo një llogari të ndërmarrjes duke vizituar g.co/ChromeEnterpriseAccount në një pajisje dytësore.</translation>
 <translation id="6210282067670792090">Në shiritin e adresave, përdor këtë shkurtore të tastierës me shkurtoret për motorët e kërkimit dhe kërkimin e sajteve</translation>
+<translation id="6211067089253408231">Aktivizo "Zonës së qasjes për internet në çast"</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{Hapi të gjitha në &amp;Grup të ri skedash}=1{Hape në &amp;Grup të ri skedash}other{Hapi të gjitha ({COUNT}) në &amp;Grup të ri skedash}}</translation>
 <translation id="6212039847102026977">Shfaq karakteristikat e përparuara të rrjetit</translation>
 <translation id="6212168817037875041">Fik ekranin</translation>
@@ -8075,6 +8094,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7120762240626567834">Trafiku në shfletuesin Chrome dhe Android do të bllokohet përveçse nëse është lidhur një rrjet VPN</translation>
 <translation id="7121438501124788993">Modaliteti i zhvilluesit</translation>
 <translation id="7121728544325372695">Vizat inteligjente</translation>
+<translation id="7122605570852873914">Dil gjithsesi nga llogaria</translation>
 <translation id="7123030151043029868">Lejohen të shkarkojnë automatikisht shumë skedarë</translation>
 <translation id="7124013154139278147">Cakto çelësin për veprimin “Pas”</translation>
 <translation id="7124712201233930202">Politikat e organizatës sate nuk janë respektuar</translation>
@@ -8724,6 +8744,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7629827748548208700">Skeda: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Kjo pajisje menaxhohet nga <ph name="MANAGER" /> dhe të kërkon të identifikohesh çdo herë.</translation>
 <translation id="7631014249255418691">Aplikacionet dhe skedarët e Linux janë rezervuar me sukses</translation>
+<translation id="7631722872321401342">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Mund të instalosh zëra te cilësimet.</translation>
 <translation id="7631887513477658702">&amp;Hapi gjithmonë skedarët e këtij lloji</translation>
 <translation id="7632437836497571618">Përdor lidhjet e sigurta për të kërkuar për sajtet</translation>
 <translation id="7632948528260659758">Aplikacionet e mëposhtme të kioskës kanë dështuar me përditësimin:</translation>
@@ -9187,6 +9208,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7947964080535614577">Sajtet shfaqin zakonisht reklama që të mund të ofrojnë përmbajtje ose shërbime falas. Por disa sajte dihet se shfaqin reklama ndërhyrëse ose mashtruese.</translation>
 <translation id="7948407723851303488">Të gjitha faqet e <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Arsyeja: LBS mbështet vetëm URL-të në formatin http://, https:// dhe file://.</translation>
+<translation id="7950814699499457511">Aktive • Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat</translation>
 <translation id="7951265006188088697">Për të shtuar ose menaxhuar metodat e pagesës me Google Pay, vizito <ph name="BEGIN_LINK" />Llogarinë tënde të Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Çaktivizo kartën virtuale</translation>
 <translation id="795240231873601803">Përdor regjistrimin e ndërmarrjes për llogaritë e punës dhe të shkollës</translation>
@@ -9232,6 +9254,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7978412674231730200">Çelës privat</translation>
 <translation id="7978450511781612192">Kjo do të të nxjerrë nga llogaritë e Google. Faqeshënuesit, historiku, fjalëkalimet dhe shumë të tjera nuk do të sinkronizohen më.</translation>
 <translation id="7980084013673500153">ID-ja e punës: <ph name="ASSET_ID" /></translation>
+<translation id="7981410461060625406">Përdor një çelës të ruajtur kalimi për <ph name="APP_NAME" /></translation>
 <translation id="7981662863948574132">Shfaq dritaren kërcyese të numrit EID dhe kodit QR të pajisjes</translation>
 <translation id="7981670705071137488">Pas kësaj, përditësimet e softuerit do të kryhen në sfond. Mund t'i shqyrtosh preferencat e përditësimeve te "Cilësimet".</translation>
 <translation id="7982083145464587921">Rinise pajisjen tënde për të rregulluar këtë gabim.</translation>
@@ -9271,6 +9294,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8009225694047762179">Menaxho fjalëkalimet</translation>
 <translation id="8011372169388649948">"<ph name="BOOKMARK_TITLE" />" u zhvendos.</translation>
 <translation id="8012188750847319132">caps lock</translation>
+<translation id="8012463809859447963">Detajet e "Zonës së qasjes për internet në çast"</translation>
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8014154204619229810">Përditësuesi është aktualisht në ekzekutim. Rifreskoje pas një minute për të kontrolluar përsëri.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nuk mund të kthehet prapa te versioni i instaluar më parë. Provo përsëri për të kryer Powerwash të pajisjes tënde.</translation>
@@ -9285,6 +9309,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8025151549289123443">Ekrani i kyçjes dhe identifikimi</translation>
 <translation id="8025291188699172126">Rreth përditësimeve</translation>
 <translation id="8026471514777758216">Të gjitha pajisjet e tua</translation>
+<translation id="8026784703228858744">Ruaj faqeshënuesit etj. me sinkronizimin</translation>
 <translation id="8027581147000338959">Hape në dritare të re</translation>
 <translation id="8028060951694135607">Rikuperimi i Çelësit të Microsoft</translation>
 <translation id="8028803902702117856">Po shkarkon <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
@@ -9415,6 +9440,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8115139559594092084">Nga "Disku yt i Google"</translation>
 <translation id="8116972784401310538">&amp;Menaxheri i faqeshënuesve</translation>
 <translation id="8118276691321086429">"<ph name="PASSWORD_MANAGER_BRAND" />" mban mend se si je identifikuar dhe të identifikon automatikisht kur është e mundur. Kur është joaktiv, do të të kërkohet gjithmonë konfirmimi.</translation>
+<translation id="8118331347066725040">Dërgo komente për kërkimin me "Lenten"</translation>
 <translation id="8118362518458010043">Çaktivizuar nga Chrome. Kjo shtesë mund të jetë e pasigurt.</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Shfletuesi yt menaxhohet<ph name="END_LINK" /> nga organizata jote</translation>
 <translation id="8118515372935001629">Shpejtësia e rifreskimit të ekranit</translation>
@@ -9465,11 +9491,13 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8151057139207656239">Detajet e ndërtimit u kopjuan</translation>
 <translation id="815114315010033526">Përdor kodin QR më mirë</translation>
 <translation id="8151638057146502721">Konfiguro</translation>
+<translation id="8151748163667572916">Çaktivizo "Zonën e qasjes për internet në çast"</translation>
 <translation id="8154790740888707867">Asnjë skedar</translation>
 <translation id="815491593104042026">Gabim! Vërtetimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt (<ph name="BLOCKED_URL" />). Kontakto me administratorin tënd.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nuk u gjetën fjalëkalime të komprometuara}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="8157248655669507702">Aktivizo të dhënat celulare për të instaluar një profil të kartës eSIM</translation>
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
+<translation id="8157849462797352650">Pajisja jote merr përditësimet më të fundit të sigurisë, qëndrueshmërisë dhe performancës</translation>
 <translation id="8158117992543756526">Marrja e përditësimeve automatike të sigurisë dhe softuerëve për këtë pajisje ka ndaluar në <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">Merr konfirmim me dridhje për veprimet si ekrani i ndarë dhe ndryshimi i tavolinave të punës. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
@@ -9912,6 +9940,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8480082892550707549">Edhe nëse i ke shkarkuar skedarë nga ky uebsajt më parë, sajti mund të jetë përkohësisht i pasigurt (i sulmuar). Provo ta shkarkosh këtë skedar më vonë.</translation>
 <translation id="8480869669560681089">Pajisje e panjohur nga <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Konfirmo lejen e USB-së</translation>
+<translation id="8482077254400484047">Menaxho pamjen e skedave joaktive këtu</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8486666913807228950">Arsyeja: Rregulli i anasjellë <ph name="REVERT_RULE" /> u gjet në listën "Hap me forcë në".</translation>
 <translation id="8487678622945914333">Zmadho</translation>
@@ -9998,6 +10027,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>
 <translation id="855604308879080518">Lejo që aplikacionet për Android të kenë qasje në pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
+<translation id="8557100046150195444">Përdor Touch ID për të vazhduar</translation>
 <translation id="8557180006508471423">Aktivizo "Google Chrome" te "Shërbimet e vendndodhjes" në kompjuterin tënd Mac</translation>
 <translation id="8557856025359704738">Shkarkimi tjetër është më <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
 <translation id="8558281414737757274">Fjalëkalimi i "Llogarisë së Google"</translation>
@@ -10066,6 +10096,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619803522055190423">Me hijezim</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
+<translation id="8620206585293032550">Paraqitja e skedave joaktive</translation>
 <translation id="8621979332865976405">Ndaj të gjithë ekranin tënd</translation>
 <translation id="8624315169751085215">Kopjo në kujtesën e fragmenteve</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>

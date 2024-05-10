@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">ಲೇಬಲ್‌ಗಳು (ಶಾಶ್ವತವಾದ)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ಈಗ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿದೆ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಹುಡುಕಿ</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಖಾತೆಯ ಸೈನ್ ಇನ್ ಡೇಟಾ}one{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}other{# ಖಾತೆಗಳ ಸೈನ್ ಇನ್ ಡೇಟಾ}}</translation>
 <translation id="3140646734028448730">ವ್ಯವಹಾರ ಸೇವೆಗಳು</translation>
 <translation id="3141093262818886744">ಹೇಗಿದ್ದರೂ ತೆರೆಯಿರಿ</translation>
 <translation id="3141641372357166056">ಸಮ್ಮತಿಯ ನಿರ್ಧಾರವಿಲ್ಲ</translation>
@@ -2474,7 +2475,6 @@
 <translation id="5786044859038896871">ನಿಮ್ಮ ಕಾರ್ಡ್ ಮಾಹಿತಿ ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ಈ ಪಾವತಿ ವಿಧಾನವನ್ನು ಈ ಸಾಧನದಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಖಾತೆಯ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}one{# ಖಾತೆಗಳ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}other{# ಖಾತೆಗಳ ಸೈನ್‌-ಇನ್ ಡೇಟಾ}}</translation>
 <translation id="5800727402210090597">ಮೊಬೈಲ್ ಫೋನ್ ದುರಸ್ತಿ ಮತ್ತು ಸೇವೆಗಳು</translation>
 <translation id="580241730938216256">ಅಪ್‌ಡೇಟ್‌‌ ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5803412860119678065">ನಿಮ್ಮ <ph name="CARD_DETAIL" /> ಭರ್ತಿ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
@@ -3206,7 +3206,6 @@
 <translation id="7201591969684833065">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಇವುಗಳನ್ನು ನೋಡಬಹುದು:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ಒಂದನ್ನು ತೆರೆಯಲು, Tab ಒತ್ತಿರಿ, ನಂತರ Enter ಒತ್ತಿರಿ</translation>
 <translation id="7203375778433816396">Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಪಾಸ್‌ಕೀ}one{# ಪಾಸ್‌ಕೀಗಳು}other{# ಪಾಸ್‌ಕೀಗಳು}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ಭದ್ರತೆ ಮಾನದಂಡಗಳನ್ನು ಅನುಸರಿಸುತ್ತಿಲ್ಲ.</translation>
 <translation id="7210993021468939304">ಕಂಟೇನರ್‌ನಲ್ಲಿ Linux ಚಟುವಟಿಕೆ ಮತ್ತು ಕಂಟೇನರ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದಾದ ಮತ್ತು ರನ್ ಮಾಡಬಹುದಾದ Linux ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="721197778055552897">ಈ ತೊಂದರೆಯ ಬಗ್ಗೆ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>

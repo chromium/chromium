@@ -1105,6 +1105,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> é agora o seu motor de pesquisa predefinido</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Sem}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
 <translation id="3140646734028448730">Serviços empresariais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Sem decisão sobre o consentimento</translation>
@@ -2480,7 +2481,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Nenhuns}=1{dados de início de sessão para 1 conta}other{dados de início de sessão para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e reparação de telemóveis</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5803412860119678065">Quer preencher o seu cartão <ph name="CARD_DETAIL" />?</translation>
@@ -3212,7 +3212,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="7203375778433816396">Defina o Chrome como o navegador predefinido do sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nenhuma}=1{1 chave de acesso}other{# chaves de acesso}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não respeita os padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux dentro do contentor, podendo instalar e executar apps para Linux no contentor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>

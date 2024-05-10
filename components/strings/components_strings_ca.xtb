@@ -1063,6 +1063,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037605927509011580">Vaja!</translation>
 <translation id="3039406992698062762">Viatges en família</translation>
+<translation id="3041176923638368519">Consulta les condicions de l'avantatge de la targeta</translation>
 <translation id="3041612393474885105">Informació del certificat</translation>
 <translation id="3045769629416806687">Esports de risc</translation>
 <translation id="305162504811187366">Historial de l'Escriptori remot de Chrome, inclosos els amfitrions, les marques de temps i els identificadors de sessió de client</translation>
@@ -1103,6 +1104,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3126023634486644099">Etiquetes (permanents)</translation>
 <translation id="3133565499688974786">Ara, <ph name="SEARCH_ENGINE_NAME" /> és el teu motor de cerca predeterminat</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Cerca <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Cap}=1{dades d'inici de sessió per a 1 compte}other{dades d'inici de sessió per a # comptes}}</translation>
 <translation id="3140646734028448730">Serveis empresarials</translation>
 <translation id="3141093262818886744">Obre igualment</translation>
 <translation id="3141641372357166056">cap decisió sobre el consentiment</translation>
@@ -2476,7 +2478,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5786044859038896871">Vols emplenar la informació de la teva targeta?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Aquesta forma de pagament se suprimirà del dispositiu</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Cap}=1{dades d'inici de sessió per a 1 compte}other{dades d'inici de sessió per a # comptes}}</translation>
 <translation id="5800727402210090597">Serveis i reparació de telèfons mòbils</translation>
 <translation id="580241730938216256">Inicia l'actualització</translation>
 <translation id="5803412860119678065">Vols emplenar la informació de la teva targeta <ph name="CARD_DETAIL" />?</translation>
@@ -2590,6 +2591,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (informació sincronitzada)</translation>
 <translation id="6028591542479806248">Gestiona les notificacions al mòbil i per correu electrònic</translation>
 <translation id="6028833024483927901">Cuina del món</translation>
+<translation id="6030251660719692307">Clau d'accés del gestor de contrasenyes de Google</translation>
 <translation id="603068602130820122">Grapat doble a la dreta</translation>
 <translation id="6032524144326295339">Bústia de correu 2</translation>
 <translation id="6032955021262906325">Enquadernació a l'esquerra</translation>
@@ -3207,7 +3209,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7201591969684833065">L'administrador pot veure el següent:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Prem Tab i després Retorn per obrir una pestanya d'incògnit nova i navegar en privat.</translation>
 <translation id="7203375778433816396">Estableix Chrome com a navegador predeterminat del sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Cap}=1{1 clau d'accés}other{# claus d'accés}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> no compleix la normativa de seguretat.</translation>
 <translation id="7210993021468939304">L'activitat de Linux al contenidor; i també pot instal·lar-hi i executar-hi aplicacions de Linux</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre aquest problema.</translation>

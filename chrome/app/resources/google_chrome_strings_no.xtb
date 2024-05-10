@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google anbefaler at du angir Chrome som standard</translation>
+<translation id="1265739287306757398">Finn ut hvordan</translation>
 <translation id="1278833599417554002">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="1302523850133262269">Vent mens Chrome installerer de nyeste systemoppdateringene.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser Google ChromeOS Flex-vilkårene.</translation>
@@ -175,6 +176,7 @@
 <translation id="3635073343384702370">Chrome kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="3667616615096815454">Kan ikke installere programmet fordi det er ukjent for tjeneren.</translation>
 <translation id="3673813398384385993">Chrome har oppdaget at «<ph name="EXTENSION_NAME" />» inneholder skadelig programvare</translation>
+<translation id="3695446226812920698">Sånn gjør du det</translation>
 <translation id="3697952514309507634">Andre Chrome-profiler</translation>
 <translation id="3703994572283698466">ChromeOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-versjon</translation>
@@ -337,6 +339,7 @@
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
+<translation id="6479881432656947268">Gå til Chrome Nettmarked</translation>
 <translation id="6481963882741794338">Knytt sammen Chrome og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
 <translation id="6489302989675808168">På • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
@@ -469,6 +472,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8416347857511542594">Finn ut mer om personlig tilpasning av annonser i Chrome</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
+<translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8451192282033883849">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chrome-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>
 <translation id="8496177819998570653">Google P&amp;assordlagring</translation>

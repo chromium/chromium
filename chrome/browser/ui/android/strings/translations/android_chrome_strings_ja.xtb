@@ -768,6 +768,7 @@
 <translation id="4961107849584082341">このページを任意の言語に翻訳できます</translation>
 <translation id="496607651705915226">Google アカウントに新しいパスワードを保存して使用するには、Google Play 開発者サービスを更新してください</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
+<translation id="4971753085054504448">さらに結果を表示するには、条件を変えて検索するか、Chrome の全履歴を開いてみてください。</translation>
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4987271110129728827">該当のページは見つかりません。つづりを確認するか、ウェブ検索をお試しください。</translation>
 <translation id="4988526792673242964">ページ</translation>
@@ -1053,6 +1054,7 @@
 <translation id="6459045781120991510">アンケート</translation>
 <translation id="6461962085415701688">ファイルを開けません</translation>
 <translation id="6464977750820128603">Chrome でアクセスしたサイトを表示し、タイマーを設定できます。\n\nタイマーを設定したサイトの情報と、サイトでの滞在時間に関する情報が Google に送信されます。送信した情報は Digital Wellbeing の改善に役立てられます。</translation>
+<translation id="6470181189905173055"><ph name="APP_LABEL" /> の使用中に Chrome で開いたページがここに表示されます。</translation>
 <translation id="6473086018775716761">共有オプションのリストが画面の下半分に表示されています。</translation>
 <translation id="6475951671322991020">動画をダウンロード</translation>
 <translation id="6477928892249167417">以下のサイトは重要な可能性があります。</translation>

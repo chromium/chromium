@@ -615,6 +615,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2122214041802369259">Mataas ang Presyo</translation>
 <translation id="2122719317867821810">Gumagana ang patakarang ito tulad ng inaasahan pero may itinakdang hindi tumutugmang value sa ibang lugar at nao-override ito ng patakarang ito.</translation>
 <translation id="2126374524350484896">Producer ng PDF:</translation>
+<translation id="2127090458081644412">Na-save ang password sa device na ito</translation>
 <translation id="2130448033692577677">Posibleng hindi mailapat ang mga template na tinukoy mo dahil hindi naitakda ang patakarang DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Ipinapakita ang mga ito sa random na pagkakasunod-sunod. Puwede mong palitan ang iyong default sa anumang oras.</translation>
@@ -1104,6 +1105,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3126023634486644099">Mga Label (Permanente)</translation>
 <translation id="3133565499688974786">Ang <ph name="SEARCH_ENGINE_NAME" /> na ang iyong default na search engine</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Maghanap ng <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Wala}=1{data ng pag-sign in para sa 1 account}one{data ng pag-sign in para sa # account}other{data ng pag-sign in para sa # na account}}</translation>
 <translation id="3140646734028448730">Mga Serbisyong Pangnegosyo</translation>
 <translation id="3141093262818886744">Buksan pa rin</translation>
 <translation id="3141641372357166056">Walang pasya sa pahintulot</translation>
@@ -2031,6 +2033,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4901778704868714008">I-save...</translation>
 <translation id="4901952598169637881">Mga Casual na Sapatos</translation>
 <translation id="4905659621780993806">Awtomatikong ire-restart ng iyong administrator ang device mo nang <ph name="TIME" /> sa <ph name="DATE" />. I-save ang anumang bukas na item bago mag-restart ang iyong device.</translation>
+<translation id="4913784027728226227">Para i-save at gamitin ang password na ito sa lahat ng iyong device, i-verify na ikaw ito</translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4916389289686916969">Mga Reality Show sa TV</translation>
 <translation id="4917064667437236721">Imaging Cylinder</translation>
@@ -2314,6 +2317,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5470861586879999274">&amp;Gawing muli ang pag-e-edit</translation>
 <translation id="547963486735802022">Subukang ilipat ulit ang iyong mga file</translation>
 <translation id="5481076368049295676">Maaaring subukan ng content na ito na mag-install ng mapanganib na software sa iyong device na magnanakaw o magde-delete ng impormasyon mo. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Mag-alok ng tulong sa pagsusulat</translation>
 <translation id="54817484435770891">Magdagdag ng wastong address</translation>
 <translation id="5483838506518938965">Handa ka na</translation>
 <translation id="5485973315555778056">Machine ng Cloud</translation>
@@ -2477,7 +2481,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5786044859038896871">Gusto mo bang ilagay ang impormasyon ng iyong card?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Made-delete ang paraan ng pagbabayad na ito sa device na ito</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Wala}=1{data sa pag-sign in para sa 1 account}one{data sa pag-sign in para sa # account}other{data sa pag-sign in para sa # na account}}</translation>
 <translation id="5800727402210090597">Pagkukumpuni at Mga Serbisyo sa Mobile Phone</translation>
 <translation id="580241730938216256">Simulan ang pag-update</translation>
 <translation id="5803412860119678065">Gusto mo bang ilagay ang iyong <ph name="CARD_DETAIL" />?</translation>
@@ -3209,7 +3212,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7201591969684833065">Makikita ng iyong administrator ang:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
 <translation id="7203375778433816396">Itakda ang Chrome bilang default na browser ng system</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Wala}=1{1 passkey}one{# passkey}other{# na passkey}}</translation>
 <translation id="7210863904660874423">Hindi sumusunod ang <ph name="HOST_NAME" /> sa mga pamantayan sa seguridad.</translation>
 <translation id="7210993021468939304">Aktibidad ng Linux sa container, at puwedeng mag-install at magpatakbo ng mga Linux app sa container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dagdagan ang nalalaman<ph name="END_LINK" /> tungkol sa problemang ito.</translation>

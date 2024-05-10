@@ -1063,6 +1063,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3037177537145227281">Siguiendo precio</translation>
 <translation id="3037605927509011580">¡Vaya!</translation>
 <translation id="3039406992698062762">Viajes familiares</translation>
+<translation id="3041176923638368519">Ver términos sobre las ventajas de la tarjeta</translation>
 <translation id="3041612393474885105">Datos del certificado</translation>
 <translation id="3045769629416806687">Deportes de riesgo</translation>
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
@@ -1103,6 +1104,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> es ahora tu buscador predeterminado</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Buscar en <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Ninguno}=1{datos de inicio de sesión para 1 cuenta}other{datos de inicio de sesión para # cuentas}}</translation>
 <translation id="3140646734028448730">Servicios para empresas</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141641372357166056">Sin decisión sobre el consentimiento</translation>
@@ -2476,7 +2478,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5786044859038896871">¿Quieres rellenar la información de la tarjeta?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pago se eliminará de este dispositivo</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ninguno}=1{datos de inicio de sesión de 1 cuenta}other{datos de inicio de sesión de # cuentas}}</translation>
 <translation id="5800727402210090597">Servicio técnico de teléfonos móviles</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
 <translation id="5803412860119678065">¿Quieres rellenar la información de <ph name="CARD_DETAIL" />?</translation>
@@ -2590,6 +2591,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Gestiona las notificaciones móviles y por correo electrónico</translation>
 <translation id="6028833024483927901">Cocina del mundo</translation>
+<translation id="6030251660719692307">Llave de acceso del Gestor de contraseñas de Google</translation>
 <translation id="603068602130820122">Grapado doble en la parte derecha</translation>
 <translation id="6032524144326295339">Buzón de correo 2</translation>
 <translation id="6032955021262906325">Encuadernar por la izquierda</translation>
@@ -3207,7 +3209,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7201591969684833065">El administrador puede consultar lo siguiente:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ninguna}=1{1 llave de acceso}other{# llaves de acceso}}</translation>
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
 <translation id="7210993021468939304">Los administradores pueden ver la actividad de Linux en el contenedor, y también pueden instalar y ejecutar aplicaciones de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre este problema.</translation>

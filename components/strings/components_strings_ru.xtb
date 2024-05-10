@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
 <translation id="3133565499688974786">Теперь <ph name="SEARCH_ENGINE_NAME" /> – поисковая система по умолчанию.</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Поиск по разделу "<ph name="KEYWORD_SHORT_NAME" />"</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Нет}=1{данные для входа в 1 аккаунт}one{данные для входа в # аккаунт}few{данные для входа в # аккаунта}many{данные для входа в # аккаунтов}other{данные для входа в # аккаунта}}</translation>
 <translation id="3140646734028448730">Услуги для бизнеса</translation>
 <translation id="3141093262818886744">Все равно открыть</translation>
 <translation id="3141641372357166056">пользователь ещё не принял решение</translation>
@@ -2476,7 +2477,6 @@
 <translation id="5786044859038896871">Заполнить данные банковской карты?</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Этот способ оплаты будет удален с устройства.</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Нет данных}=1{учетные данные для 1 аккаунта}one{учетные данные для # аккаунта}few{учетные данные для # аккаунтов}many{учетные данные для # аккаунтов}other{учетные данные для # аккаунта}}</translation>
 <translation id="5800727402210090597">Ремонт и обслуживание мобильных телефонов</translation>
 <translation id="580241730938216256">Обновить</translation>
 <translation id="5803412860119678065">Заполнить данные банковской карты <ph name="CARD_DETAIL" />?</translation>
@@ -3208,7 +3208,6 @@
 <translation id="7201591969684833065">Администратор может отслеживать:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть новую вкладку в режиме инкогнито.</translation>
 <translation id="7203375778433816396">Сделать Chrome браузером по умолчанию</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Нет ключей доступа}=1{1 ключ доступа}one{# ключ доступа}few{# ключа доступа}many{# ключей доступа}other{# ключа доступа}}</translation>
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Подробнее <ph name="END_LINK" /> об этой неполадке.</translation>

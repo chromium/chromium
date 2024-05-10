@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">કિંમત વધુ છે</translation>
 <translation id="2122719317867821810">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે, પરંતુ વિરોધાભાસ ધરાવતું મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેને ઓવરરાઇડ કરે છે.</translation>
 <translation id="2126374524350484896">PDF નિર્માતા:</translation>
+<translation id="2127090458081644412">આ ડિવાઇસમાં પાસવર્ડ સચવાયો</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode પૉલિસી સેટ ન કરી હોવાને કારણે તમે ઉલ્લેખ કરેલા નમૂનાને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">આને કોઈપણ ક્રમમાં બતાવવામાં આવ્યા છે. તમારું ડિફૉલ્ટ શોધ એન્જિન કોઈપણ સમયે બદલી શકો છો.</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3126023634486644099">લેબલ (કાયમી)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> હવે તમારું ડિફૉલ્ટ શોધ એન્જિન છે</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> શોધો</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{કોઈ નહીં}=1{1 એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}one{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}other{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}}</translation>
 <translation id="3140646734028448730">વ્યવસાય સેવાઓ</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
 <translation id="3141641372357166056">સંમતિ સંબંધિત કોઈ નિર્ણય લેવાયો નથી</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4901952598169637881">કેઝ્યુઅલ શૂઝ</translation>
 <translation id="4905659621780993806">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે ઑટોમૅટિક રીતે તમારું ડિવાઇસ ફરી શરૂ કરશે. તમારું ડિવાઇસ ફરી શરૂ થાય તે પહેલાં ખુલી હોય એવી કોઈપણ આઇટમ સાચવો.</translation>
+<translation id="4913784027728226227">તમારા બધાં ડિવાઇસ પર આ પાસવર્ડ સાચવવા અને તેનો ઉપયોગ કરવા માટે આ તમે હોવાનું ચકાસો</translation>
 <translation id="4913987521957242411">ઉપર ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="4916389289686916969">ટીવી રિયાલિટી શો</translation>
 <translation id="4917064667437236721">ઇમેજિંગ સિલિન્ડર</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">&amp;ફરી ફેરફાર કરો</translation>
 <translation id="547963486735802022">તમારી ફાઇલોને ફરીથી ટ્રાન્સફર કરવાનો પ્રયાસ કરો</translation>
 <translation id="5481076368049295676">આ કન્ટેન્ટ કદાચ તમારા ડિવાઇસ પર જોખમકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરી શકે છે કે જે તમારી માહિતીની ચોરી કરે અથવા કાઢી નાખે છે. <ph name="BEGIN_LINK" />છતાં પણ બતાવો<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">લખાણમાં સહાયની ઑફર</translation>
 <translation id="54817484435770891">માન્ય સરનામું ઉમેરો</translation>
 <translation id="5483838506518938965">તમે બધું સેટ કરી લીધું</translation>
 <translation id="5485973315555778056">ક્લાઉડ મશીન</translation>
@@ -2477,7 +2481,6 @@
 <translation id="5786044859038896871">શું તમે તમારી કાર્ડ માહિતી ભરવા માગો છો?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{એકપણ નહીં}=1{1 એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}one{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}other{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}}</translation>
 <translation id="5800727402210090597">મોબાઇલ ફોન રિપૅર અને સેવાઓ</translation>
 <translation id="580241730938216256">અપડેટ શરૂ કરો</translation>
 <translation id="5803412860119678065">શું તમે તમારી <ph name="CARD_DETAIL" /> માહિતી ભરવા માગો છો?</translation>
@@ -2591,6 +2594,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (સમન્વયિત)</translation>
 <translation id="6028591542479806248">મોબાઇલ અને ઇમેઇલ નોટિફિકેશન મેનેજ કરો</translation>
 <translation id="6028833024483927901">વિશ્વના વિવિધ સ્થાનોના પકવાનો</translation>
+<translation id="6030251660719692307">Google Password Managerની પાસકી</translation>
 <translation id="603068602130820122">જમણી બાજુએ બે સ્ટેપલ લગાવો</translation>
 <translation id="6032524144326295339">મેઇલબૉક્સ 2</translation>
 <translation id="6032955021262906325">ડાબી બાજુએ જોડો</translation>
@@ -3208,7 +3212,6 @@
 <translation id="7201591969684833065">તમારા વ્યવસ્થાપક જોઈ શકે છે:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી ટૅબ ખોલવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="7203375778433816396">Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસકી}one{# પાસકી}other{# પાસકી}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, સુરક્ષા માનકોનું પાલન કરતું નથી.</translation>
 <translation id="7210993021468939304">કન્ટેનરની અંદર જ Linuxની પ્રવૃત્તિ અને કન્ટેનરની અંદર જ Linuxની ઍપ ઇન્સ્ટૉલ કરી શકાશે તેમજ ચલાવી શકાશે</translation>
 <translation id="721197778055552897">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>

@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">تحميل صورة</translation>
 <translation id="1026959648338730078">‏‫Windows Hello أو مفتاح أمان خارجي</translation>
 <translation id="1028700151766901954">‏السبب: تم العثور على ميزة "الوصول إلى المتصفِّحات القديمة" (LBS) في <ph name="DEFAULT_OPEN_BROWSER" /> بشكل تلقائي.</translation>
+<translation id="1028823395684328817">‏لمواصلة استخدام كلمات المرور وغيرها في حسابك على Google، يجب إثبات هويتك</translation>
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1029317248976101138">تكبير/تصغير</translation>
 <translation id="1029526375103058355">الضغط للنقر</translation>
@@ -3310,6 +3311,7 @@
 <translation id="3450180775417907283">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث.</translation>
 <translation id="3452999110156026232">وصول أحد الوالدين</translation>
 <translation id="3453082738208775226">هل تريد إخلاء مساحة التخزين بلا اتصال بالإنترنت؟</translation>
+<translation id="3453597230179205517">تم حظر الوصول إلى الموقع الجغرافي</translation>
 <translation id="3453612417627951340">يتطلب تخويل</translation>
 <translation id="3454213325559396544">هذا هو آخر تحديث تلقائي للبرنامج والأمان للجهاز <ph name="DEVICE_TYPE" />. وللحصول على التحديثات المستقبلية، يمكنك الترقية إلى طراز أحدث.</translation>
 <translation id="3454818737556063691">هل تريد نقل ملف واحد إلى <ph name="CLOUD_PROVIDER" /> وفتحه؟</translation>
@@ -3536,6 +3538,7 @@
 <translation id="3627588569887975815">فتح الرّابط في نافذة للتصفّح المتخ&amp;فّي</translation>
 <translation id="3627671146180677314">‏وقت تجديد شهادة Netscape</translation>
 <translation id="3628275722731025472">إيقاف البلوتوث</translation>
+<translation id="3629630597033136279">غير مفعَّلة • لم تنشر هذه الإضافة الممارسات المتعلقة بالخصوصية، مثل كيفية جمعها للبيانات واستخدامها</translation>
 <translation id="3629664892718440872">تذكُّر هذا الاختيار</translation>
 <translation id="3630132874740063857">هاتفك</translation>
 <translation id="3630995161997703415">أضف الموقع الإلكتروني هذا إلى الرف لاستخدامه في أي وقت.</translation>
@@ -4943,6 +4946,7 @@
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
 <translation id="4675828034887792601">يمكنك إنشاء اختصارات للبحث في المواقع الإلكتروني وإدارة محرك البحث الخاص بك.</translation>
 <translation id="4676595058027112862">ميزة "مركز التحكم بالهاتف"، مزيد من المعلومات</translation>
+<translation id="4676616966096505747">لم يتم حفظ بعض البيانات في حسابك إلى الآن</translation>
 <translation id="4677772697204437347">ذاكرة وحدة معالج الرسومات</translation>
 <translation id="467809019005607715">‏العروض التقديمية من Google</translation>
 <translation id="4678848110205818817">بطاقة الائتمان أو بطاقة السحب الآلي</translation>
@@ -5433,6 +5437,7 @@
 <translation id="5070773577685395116">ألم يصلك الإشعار بعد؟</translation>
 <translation id="5071295820492622726">الرجوع إلى عمليات التنزيل الأخيرة</translation>
 <translation id="5071892329440114717">عرض تفاصيل الحماية العادية</translation>
+<translation id="5072500507106264618">يمكن للخدمات التابعة لنظام التشغيل فقط استخدام موقعك الجغرافي</translation>
 <translation id="5072836811783999860">عرض الإشارات المرجعية المدارة</translation>
 <translation id="5072900412896857127">‏يتعذّر تحميل بنود خدمة Google Play. يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> و<ph name="FILE2" />}zero{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}few{<ph name="FILE1" /> و<ph name="FILE2" /> و# أخرى}many{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}other{<ph name="FILE1" /> و<ph name="FILE2" /> و# آخر}}</translation>
@@ -5475,6 +5480,7 @@
 <translation id="5097874180538493929">النقر تلقائيًا عند توقف المؤشر</translation>
 <translation id="5100775515702043594">تم تثبيت <ph name="EXTENSION_NAME" /> بواسطة المشرف.</translation>
 <translation id="5101839224773798795">النقر تلقائيًا عند توقف المؤشر</translation>
+<translation id="5102244391872941183">إنّ التطبيقات والمواقع الإلكترونية التي لديها أذونات تحديد الموقع الجغرافي وكذلك الخدمات التابعة لنظام التشغيل يمكنها استخدام موقعك الجغرافي</translation>
 <translation id="5103311607312269661">زيادة سطوع الشاشة</translation>
 <translation id="5106350808162641062">إزالة</translation>
 <translation id="510695978163689362">‏يخضع عنوان البريد الإلكتروني <ph name="USER_EMAIL" /> للإشراف من خلال Family Link. يمكنك إضافة حسابات تديرها مؤسسات تعليمية للوصول إلى المصادر التعليمية تحت إشراف الأهل.</translation>
@@ -6593,6 +6599,7 @@
 <translation id="5955721306465922729">يريد موقع إلكتروني فتح هذا التطبيق.</translation>
 <translation id="5955809630138889698">قد لا يكون هذا الجهاز مؤهلاً إلا للوضع التجريبي على الإنترنت، يُرجى التواصل مع ممثِّل الدعم لمعرفة مزيد من التفاصيل.</translation>
 <translation id="5957987129450536192">يمكنك النقر على رمز"الاختيار والاستماع" بالقرب من الملف الشخصي، ثم اختيار ما ترغب بسماعه.</translation>
+<translation id="5958836583172610505">المزامنة مفعَّلة</translation>
 <translation id="5959471481388474538">الشبكة غير متاحة</translation>
 <translation id="5959982036207776176">يتّبع "المكبِّر" الكلمة التي تقرأها ميزة "سماع الاختيار"</translation>
 <translation id="5963413905009737549">قسم</translation>
@@ -8102,6 +8109,7 @@
 <translation id="7120762240626567834">‏سيتم حظر متصفِّح Chrome وزيارات Android حتى يتم الاتصال بشبكة افتراضية خاصة (VPN)</translation>
 <translation id="7121438501124788993">وضع مطوِّر البرامج</translation>
 <translation id="7121728544325372695">الشرطات الذكية</translation>
+<translation id="7122605570852873914">تسجيل الخروج على أي حال</translation>
 <translation id="7123030151043029868">المواقع الإلكترونية التي يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
 <translation id="7124013154139278147">تخصيص مفتاح تحكّم للإجراء "السابق"</translation>
 <translation id="7124712201233930202">لا يستوفي الملف متطلبات سياسات مؤسستك.</translation>
@@ -9216,6 +9224,7 @@
 <translation id="7947964080535614577">تعرض المواقع الإلكترونية عادةً الإعلانات لتتمكَّن من توفير محتوى أو خدمات مجانًا، إلا أن بعض المواقع الإلكترونية تُعرَف بعرضها إعلانات مضلِّلة أو غير مرغوب فيها.</translation>
 <translation id="7948407723851303488">جميع صفحات النطاق <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">‏السبب: لا تتوافق ميزة "الوصول إلى المتصفِّحات القديمة" (LBS) إلا مع عناوين URL التي تبدأ بـ http://‎ وhttps://‎ وfile://‎.</translation>
+<translation id="7950814699499457511">مفعَّلة • لم تنشر هذه الإضافة الممارسات المتعلقة بالخصوصية، مثل كيفية جمعها للبيانات واستخدامها</translation>
 <translation id="7951265006188088697">‏لإضافة طرق الدفع في Google Pay أو إدارتها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">إيقاف البطاقة الافتراضية</translation>
 <translation id="795240231873601803">استخدام ميزة تسجيل المؤسسة لتسجيل حسابات العمل والحسابات التي تديرها المؤسسات التعليمية</translation>

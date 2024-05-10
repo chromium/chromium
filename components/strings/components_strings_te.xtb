@@ -610,6 +610,7 @@
 <translation id="2122214041802369259">ధర ఎక్కువగా ఉంటుంది</translation>
 <translation id="2122719317867821810">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ వైరుధ్య విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా ఓవర్‌రైడ్ అయ్యింది.</translation>
 <translation id="2126374524350484896">PDF ప్రొడ్యూసర్:</translation>
+<translation id="2127090458081644412">పాస్‌వర్డ్ ఈ పరికరంలో సేవ్ అయింది</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">ఇవి ర్యాండమ్ ఆర్డర్‌లో చూపబడుతున్నాయి. మీ ఆటోమేటిక్ సెట్టింగ్‌ను ఎప్పుడైనా మార్చుకోవచ్చు.</translation>
@@ -1099,6 +1100,7 @@
 <translation id="3126023634486644099">లేబుల్స్ (పర్మనెంట్)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ఇప్పుడు మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> సెర్చ్ చేయండి</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{ఏమీ లేవు}=1{1 ఖాతా సైన్ ఇన్ డేటా}other{# ఖాతాల సైన్ ఇన్ డేటా}}</translation>
 <translation id="3140646734028448730">బిజినెస్ సర్వీస్‌లు</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
 <translation id="3141641372357166056">సమ్మతి నిర్ణయం ఏదీ లేదు</translation>
@@ -2026,6 +2028,7 @@
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4901952598169637881">సాధారణ షూస్</translation>
 <translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
+<translation id="4913784027728226227">మీ పరికరాలన్నింటిలో ఈ పాస్‌వర్డ్‌ను సేవ్ చేసి, ఉపయోగించడానికి, మీ గుర్తింపును వెరిఫై చేయండి</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4916389289686916969">టీవీ రియాలిటీ షోలు</translation>
 <translation id="4917064667437236721">ఇమేజింగ్ సిలిండర్</translation>
@@ -2309,6 +2312,7 @@
 <translation id="5470861586879999274">&amp;సవరించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="547963486735802022">మీ ఫైళ్లను మళ్లీ బదిలీ చేయడానికి ట్రై చేయండి</translation>
 <translation id="5481076368049295676">ఈ కంటెంట్ మీ సమాచారాన్ని దొంగిలించగల లేదా తొలగించగల హానికరమైన సాఫ్ట్‌వేర్‌ను మీ పరికరంలో ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">రాయడంలో సహాయం పొందండి</translation>
 <translation id="54817484435770891">చెల్లుబాటు అయ్యే అడ్రస్‌ను జోడించండి</translation>
 <translation id="5483838506518938965">మీరు అంతా పూర్తి చేశారు</translation>
 <translation id="5485973315555778056">క్లౌడ్ మెషీన్</translation>
@@ -2472,7 +2476,6 @@
 <translation id="5786044859038896871">మీరు మీ కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ఈ పరికరం నుండి ఈ పేమెంట్ ఆప్షన్ తొలగించబడుతుంది</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ఏవీ లేవు}=1{1 ఖాతాకు సంబంధించిన సైన్-ఇన్ డేటా}other{# ఖాతాలకు సంబంధించిన సైన్-ఇన్ డేటా}}</translation>
 <translation id="5800727402210090597">మొబైల్ ఫోన్ రిపేర్ &amp; సర్వీస్‌లు</translation>
 <translation id="580241730938216256">అప్‌డేట్‌ను ప్రారంభించండి</translation>
 <translation id="5803412860119678065">మీరు మీ <ph name="CARD_DETAIL" /> కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
@@ -3204,7 +3207,6 @@
 <translation id="7201591969684833065">మీ నిర్వాహకుడు వీటిని చూడగలరు:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="7203375778433816396">Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్-కీ}other{# పాస్-కీలు}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> భద్రతా ప్రమాణాలకు కట్టుబడి లేదు.</translation>
 <translation id="7210993021468939304">కంటెయినర్ లోపల Linux యాక్టివిటీ, కంటెయినర్ లోపల Linux యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు</translation>
 <translation id="721197778055552897">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి <ph name="END_LINK" />.</translation>

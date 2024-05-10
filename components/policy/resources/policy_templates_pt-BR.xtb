@@ -4931,6 +4931,15 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Seu smartphone".
 
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
+<translation id="4775667151768335538">Se a política for definida como "Ativada", a Navegação segura confiará nos domínios designados por você. Ela não verificará a presença de recursos perigosos, como phishing, malware ou software indesejado. O serviço de proteção de downloads da Navegação segura não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização delas.
+
+Se a política não for definida, as proteções padrão da Navegação segura serão aplicadas a todos os recursos.
+
+Esta política não tem suporte a expressões regulares. No entanto, os subdomínios de um determinado domínio estão na lista de permissões. Nomes de domínio totalmente qualificados (FQDNs, na sigla em inglês) não são obrigatórios.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4783415902268741066">Permitir mostrar a página de resultados mais recente do mecanismo de pesquisa padrão em um painel lateral do navegador</translation>
 <translation id="4786784434769279324">Ações a serem executadas quando o computador estiver inativo</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.

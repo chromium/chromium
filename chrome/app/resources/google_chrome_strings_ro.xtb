@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1229096353876452996">Google recomandă să setezi Chrome ca prestabilit</translation>
+<translation id="1265739287306757398">Află cum</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile pentru sistemul de operare Google Chrome Flex.</translation>
@@ -175,6 +176,7 @@
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
 <translation id="3667616615096815454">Nu se poate instala. Aplicația nu este cunoscută de server.</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
+<translation id="3695446226812920698">Află cum</translation>
 <translation id="3697952514309507634">Alte profiluri Chrome</translation>
 <translation id="3703994572283698466">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versiunea sistemului de operare Chrome Flex</translation>
@@ -337,6 +339,7 @@
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="6418662306461808273">Schimbi la profilul Chrome existent?</translation>
+<translation id="6479881432656947268">Accesează Magazinul web Chrome</translation>
 <translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>
 <translation id="6489302989675808168">Activată • Chrome nu poate verifica de unde provine această extensie</translation>
@@ -469,6 +472,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8416347857511542594">Află mai multe despre personalizarea anunțurilor în Chrome</translation>
 <translation id="8418845734693287262">ChromeOS nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
+<translation id="8428213095426709021">Setări</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="8496177819998570653">Manager de p&amp;arole Google</translation>

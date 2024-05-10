@@ -25,6 +25,7 @@
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1574377791422810894">Chromiums sikkerhedsværktøjer</translation>
+<translation id="1591808205441691831">Chromium skal verificere din identitet, før visse data kan gemmes på din Google-konto og bruges på alle dine enheder. Hvis du logger ud, forbliver disse data på denne enhed.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
 <translation id="1632539827495546968">Hvis du kun vil bruge denne konto én gang, kan du anvende <ph name="GUEST_LINK_BEGIN" />Gæstetilstand<ph name="GUEST_LINK_END" /> i Chromium-browseren. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
@@ -93,6 +94,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="268602741124540128">Velkommen til Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Fanen Chromium</translation>
 <translation id="2718390899429598676">Som et ekstra sikkerhedsniveau krypterer Chromium dine data.</translation>
+<translation id="2721354645805494590">Log ud for at fjerne din Google-konto fra Chromium</translation>
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2770231113462710648">Skift standardbrowser til:</translation>
 <translation id="2785438272836277133">Denne udvidelse indeholder malware og er ikke sikker. Fjern den fra Chromium, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
@@ -122,6 +124,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3179665906251668410">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="3185330573522821672">Tilpas din nye Chromium-profil</translation>
 <translation id="3190315855212034486">Hov! Chromium er gået ned. Vil du genstarte nu?</translation>
+<translation id="3224847870593914902">Hvis du vil fjerne din Google-konto fra Chromium, skal du logge ud af Chromium på siden Indstillinger</translation>
 <translation id="3258596308407688501">Chromium kan ikke læse og skrive til sin datamappe:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -185,6 +188,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4222932583846282852">Annullerer…</translation>
 <translation id="4230135487732243613">Vil du linke dine Chromium-data til denne konto?</translation>
 <translation id="4251772536351901305">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chromium-advarsler over.</translation>
+<translation id="4269093074552541569">Log ud af Chromium</translation>
 <translation id="4271805377592243930">Få hjælp til Chromium</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
 <translation id="4285930937574705105">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Chromium kører, skal du lukke programmet og prøve igen.</translation>
@@ -197,6 +201,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4501471624619070934">Installationen mislykkedes, fordi der er begrænset adgang i dette land.</translation>
+<translation id="4510853178268397146">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chromium anbefaler, at du fjerner den.</translation>
 <translation id="452711251841752011">Velkommen til Chromium – Et nyt browservindue er åbnet</translation>
 <translation id="4544142686420020088">Chromium kunne ikke opdateres, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chromium og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vil du fortsætte på en ny Chromium-profil?</translation>
@@ -441,6 +446,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Genstart Chromium inden for en dag}one{Genstart Chromium inden for # dag}other{Genstart Chromium inden for # dag}}</translation>
 <translation id="8453117565092476964">Installationsarkivet er beskadiget eller ugyldigt. Download Chromium igen.</translation>
 <translation id="8458614432758743027">Chromium kræver Windows 10 eller nyere.</translation>
+<translation id="8461326814397467035">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud.</translation>
 <translation id="8463672209299734063">Valgfrit: Vær med til at forbedre funktioner og ydeevne i Chromium OS ved automatisk at sende diagnostik og brugsdata til Google.</translation>
 <translation id="8493179195440786826">Chromium er forældet</translation>
 <translation id="8522801943730206384">Chromium kan tjekke dine adgangskoder, når du gemmer dem</translation>

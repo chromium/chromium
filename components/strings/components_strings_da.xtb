@@ -1063,6 +1063,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3037177537145227281">Der holdes øje med prisen</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
 <translation id="3039406992698062762">Familierejser</translation>
+<translation id="3041176923638368519">Se vilkårene for kortfordele</translation>
 <translation id="3041612393474885105">Certifikatoplysninger</translation>
 <translation id="3045769629416806687">Ekstremsport</translation>
 <translation id="305162504811187366">Historik for Chrome Fjernskrivebord, herunder tidsstempler, hosts og id'er for klientsessioner</translation>
@@ -1103,6 +1104,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3126023634486644099">Etiketter (permanente)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> er nu din standardsøgemaskine</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Søg i <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Ingen}=1{logindata for en konto}one{logindata for # konto}other{logindata for # konti}}</translation>
 <translation id="3140646734028448730">Virksomhedsydelser</translation>
 <translation id="3141093262818886744">Åbn alligevel</translation>
 <translation id="3141641372357166056">Ingen beslutning om samtykke</translation>
@@ -2476,7 +2478,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5786044859038896871">Skal dine kortoplysninger udfyldes?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Betalingsmetoden slettes fra denne enhed</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ingen}=1{logindata for 1 konto}one{logindata for # konto}other{logindata for # konti}}</translation>
 <translation id="5800727402210090597">Reparation og servicering af mobiltelefoner</translation>
 <translation id="580241730938216256">Start opdatering</translation>
 <translation id="5803412860119678065">Skal <ph name="CARD_DETAIL" /> udfyldes?</translation>
@@ -3208,7 +3209,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7201591969684833065">Din administrator kan se:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="7203375778433816396">Angiv Chrome som systemets standardbrowser</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ingen}=1{1 adgangsnøgle}one{# adgangsnøgle}other{# adgangsnøgler}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> overholder ikke sikkerhedsstandarderne.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i containeren. Kan også installere og køre Linux-apps i containeren.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om dette problem.</translation>

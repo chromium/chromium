@@ -1063,7 +1063,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039406992698062762">家庭旅遊</translation>
-<translation id="3041176923638368519">查看卡片優惠措施條款</translation>
+<translation id="3041176923638368519">查看信用卡禮遇條款</translation>
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="3045769629416806687">極限運動</translation>
 <translation id="305162504811187366">Chrome 遠端桌面記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">標籤 (永久)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設定為預設搜尋引擎</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{ # 個帳戶的登入資料}}</translation>
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意書決定</translation>
@@ -2476,7 +2477,6 @@
 <translation id="5786044859038896871">要填寫您的信用卡資料嗎？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方法將從此裝置上刪除</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{# 個帳戶的登入資料}}</translation>
 <translation id="5800727402210090597">手機維修和服務</translation>
 <translation id="580241730938216256">開始更新</translation>
 <translation id="5803412860119678065">要填寫 <ph name="CARD_DETAIL" /> 的資料嗎？</translation>
@@ -2590,6 +2590,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
 <translation id="6028591542479806248">管理流動裝置/應用程式和電郵通知</translation>
 <translation id="6028833024483927901">環球美食</translation>
+<translation id="6030251660719692307">「Google 密碼管理工具」密鑰</translation>
 <translation id="603068602130820122">雙釘 (右側)</translation>
 <translation id="6032524144326295339">出紙槽 2</translation>
 <translation id="6032955021262906325">釘裝 (左側)</translation>
@@ -3207,7 +3208,6 @@
 <translation id="7201591969684833065">您的管理員可以查看以下項目：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以開新嘅無痕式分頁私下瀏覽</translation>
 <translation id="7203375778433816396">將 Chrome 設定為系統的預設瀏覽器</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{無}=1{1 個密鑰}other{# 個密鑰}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 沒有依循安全標準。</translation>
 <translation id="7210993021468939304">可查看容器中的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>

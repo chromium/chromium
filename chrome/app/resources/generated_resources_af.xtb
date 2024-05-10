@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">Laai prent</translation>
 <translation id="1026959648338730078">Windows Hello of eksterne sekuriteitsleutel</translation>
 <translation id="1028700151766901954">Rede: LBS bly by verstek in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
+<translation id="1028823395684328817">Verifieer dat dit jy is om aan te hou om die wagwoorde en meer in jou Google-rekening te gebruik</translation>
 <translation id="102916930470544692">Wagwoordsleutel</translation>
 <translation id="1029317248976101138">Zoem</translation>
 <translation id="1029526375103058355">Tik om te klik</translation>
@@ -3320,6 +3321,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453082738208775226">Maak vanlyn berging skoon?</translation>
+<translation id="3453597230179205517">Liggingtoegang is geblokkeer</translation>
 <translation id="3453612417627951340">Benodig magtiging</translation>
 <translation id="3454213325559396544">Dit is die laaste outomatiese sagteware- en sekuriteitopdatering vir hierdie <ph name="DEVICE_TYPE" />. Gradeer na 'n nuwer model toe op om toekomstige opdaterings te kry.</translation>
 <translation id="3454818737556063691">Skuif 1 lêer na <ph name="CLOUD_PROVIDER" /> toe om oop te maak?</translation>
@@ -3546,6 +3548,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3627588569887975815">Maak skakel in incognito-venster oop</translation>
 <translation id="3627671146180677314">Netscape-sertifikaathernuwingtyd</translation>
 <translation id="3628275722731025472">Skakel Bluetooth af</translation>
+<translation id="3629630597033136279">Af • Hierdie uitbreiding het nie privaatheidpraktyke gepubliseer nie, soos hoe dit data insamel en gebruik</translation>
 <translation id="3629664892718440872">Onthou hierdie keuse</translation>
 <translation id="3630132874740063857">Jou foon</translation>
 <translation id="3630995161997703415">Voeg hierdie werf by jou rak om dit enige tyd te gebruik</translation>
@@ -4956,6 +4959,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
 <translation id="4675828034887792601">Skep kortpaaie om werwe te deursoek en bestuur jou soekenjin</translation>
 <translation id="4676595058027112862">Foonsentrum, kom meer te wete</translation>
+<translation id="4676616966096505747">Sommige data is nog nie in jou rekening gestoor nie</translation>
 <translation id="4677772697204437347">GPU-geheue</translation>
 <translation id="467809019005607715">Google Skyfies</translation>
 <translation id="4678848110205818817">Krediet- of debietkaart</translation>
@@ -5445,6 +5449,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5070773577685395116">Het dit nie gekry nie?</translation>
 <translation id="5071295820492622726">Terug na onlangse aflaaie</translation>
 <translation id="5071892329440114717">Wys besonderhede oor standaardbeskerming</translation>
+<translation id="5072500507106264618">Net stelseldienste kan jou ligging gebruik</translation>
 <translation id="5072836811783999860">Wys bestuurde boekmerke</translation>
 <translation id="5072900412896857127">Google Play se diensbepalings kan nie gelaai word nie. Gaan jou netwerkverbinding na en probeer weer.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> en nog #}}</translation>
@@ -5487,6 +5492,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5097874180538493929">Klik outomaties wanneer skermpyltjie stop</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> is deur jou admin vasgespeld</translation>
 <translation id="5101839224773798795">Klik outomaties wanneer die merker stop</translation>
+<translation id="5102244391872941183">Apps en webwerwe met die liggingtoestemming, sowel as die stelseldienste, kan jou ligging gebruik</translation>
 <translation id="5103311607312269661">verhoog skermhelderheid</translation>
 <translation id="5106350808162641062">Verwyder</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> is onder toesig van Family Link. Jy kan skoolrekeninge byvoeg om met ouertoesig toegang tot skoolhulpbronne te kry.</translation>
@@ -6606,6 +6612,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5955721306465922729">'n Webwerf wil hierdie program oopmaak.</translation>
 <translation id="5955809630138889698">Hierdie toestel kwalifiseer dalk vir aanlyn demonstrasiemodus. Kontak jou steundiensverteenwoordiger vir meer besonderhede.</translation>
 <translation id="5957987129450536192">Tik op die Hardoplees-ikoon naby jou profielprent en kies wat jy wil hoor.</translation>
+<translation id="5958836583172610505">Sinkronisering is aan</translation>
 <translation id="5959471481388474538">Netwerk nie beskikbaar nie</translation>
 <translation id="5959982036207776176">Vergrootglas volg die woord wat deur Hardoplees gelees word</translation>
 <translation id="5963413905009737549">Afdeling</translation>
@@ -8106,6 +8113,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7120762240626567834">Chrome-blaaier en Android-verkeer sal geblokkeer word, tensy 'n VPN gekoppel is</translation>
 <translation id="7121438501124788993">Ontwikkelaarmodus</translation>
 <translation id="7121728544325372695">Slimaandagstrepe</translation>
+<translation id="7122605570852873914">Meld in elk geval af</translation>
 <translation id="7123030151043029868">Mag outomaties veelvuldige lêers aflaai</translation>
 <translation id="7124013154139278147">Wys skakelaar toe vir “Vorige”</translation>
 <translation id="7124712201233930202">Jou organisasie se beleide word nie aan voldoen nie</translation>
@@ -9220,6 +9228,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7947964080535614577">Werwe wys gewoonlik advertensies sodat hulle inhoud of dienste kosteloos kan verskaf. Sommige werwe is egter bekend daarvoor dat hulle indringerige of misleidende advertensies wys.</translation>
 <translation id="7948407723851303488">Alle bladsye van <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Rede: LBS ondersteun net URL'e met http://, https:// en file://.</translation>
+<translation id="7950814699499457511">Aan • Hierdie uitbreiding het nie privaatheidpraktyke gepubliseer nie, soos hoe dit data insamel en gebruik</translation>
 <translation id="7951265006188088697">Besoek jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /> om Google-betaalmetodes by te voeg of te bestuur</translation>
 <translation id="795130320946928025">Skakel virtuele kaart af</translation>
 <translation id="795240231873601803">Gebruik onderneminginskrywing vir werk- en skoolrekeninge</translation>

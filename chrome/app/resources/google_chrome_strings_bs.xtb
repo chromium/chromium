@@ -18,6 +18,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1194807384646768652">Chrome je blokirao ovo preuzimanje jer se ta vrsta fajla ne preuzima često i fajl je možda opasan</translation>
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google preporučuje da postavite Chrome kao zadani preglednik</translation>
+<translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da ažurirate Chrome</translation>
 <translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje Uslova za Google ChromeOS Flex.</translation>
@@ -82,7 +83,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2174917724755363426">Instalacija nije završena. Jeste li sigurni da želite otkazati?</translation>
 <translation id="2190166659037789668">Greška provjere ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199691482078155239">Chrome vam daje veću kontrolu nad oglasima koji vam se prikazuju i ograničava koje web lokacije mogu saznati informacije o vama kada vam prikažu personalizirane oglase</translation>
-<translation id="2216543877350048334">Odjavite se da biste uklonili svoj Google račun iz Chromea</translation>
+<translation id="2216543877350048334">Odjavite se da uklonite Google račun iz Chromea</translation>
 <translation id="223889379102603431">Informacije o tome kako Chrome upravlja svojim temeljnim certifikatima</translation>
 <translation id="2258103955319320201">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim stvarima s Chrome preglednika na svim svojim uređajima</translation>
 <translation id="2290014774651636340">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će biti onemogućene.</translation>
@@ -140,7 +141,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2929907241665500097">Ažuriranje Chromea nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromea i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Greška prilikom instaliranja: pokretanje postupka programa za instaliranje nije uspjelo.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
-<translation id="2970681950995291301">Da biste uklonili svoj Google račun iz Chromea, odjavite se iz Chromea na stranici Postavke</translation>
+<translation id="2970681950995291301">Da uklonite Google račun iz Chromea, odjavite se iz tog preglednika na stranici Postavke</translation>
 <translation id="3018957014024118866">Također izbriši podatke iz Chromea (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Ponovo pokrenite da ažurirate &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
@@ -181,6 +182,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3635073343384702370">Chrome može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Nije moguće instalirati jer aplikacija nije poznata serveru.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da ekstenzija "<ph name="EXTENSION_NAME" />" sadržava zlonamjerni softver</translation>
+<translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3697952514309507634">Drugi profili u Chromeu</translation>
 <translation id="3703994572283698466">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
@@ -242,7 +244,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4624065194742029982">Anonimni način rada u Chromeu</translation>
 <translation id="4627412468266359539">Nije obavezno: pomozite da poboljšamo funkcije i performanse operativnog sistema ChromeOS Flexa automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="4633000520311261472">Kako bi Chrome bio sigurniji, onemogućili smo neke ekstenzije koje nisu navedene u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koje su možda dodane bez vašeg znanja.</translation>
-<translation id="4643107447730827793">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun. Pokušajte pričekati nekoliko minuta prije odjave.</translation>
+<translation id="4643107447730827793">Neki podaci Chromea još uvijek nisu sačuvani na vaš Google račun. Pričekajte nekoliko minuta prije nego što se odjavite.</translation>
 <translation id="4680828127924988555">Otkaži instalaciju</translation>
 <translation id="469553575393225953">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chrome preporučuje da ih instalirate samo iz Chrome Web trgovine</translation>
 <translation id="4724676981607797757">Instalacija nije uspjela zbog greške s nepodržanim protokolom.</translation>
@@ -348,6 +350,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6412673304250309937">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu. Ako web lokacija pokuša ukrasti vašu lozinku, ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija automatski zatvara Chrome kada se ne koristi 1 minutu. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}one{Organizacija automatski zatvara Chrome kada se ne koristi # minutu. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}few{Organizacija automatski zatvara Chrome kada se ne koristi # minute. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}other{Organizacija automatski zatvara Chrome kada se ne koristi # minuta. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="6418662306461808273">Želite li se prebaciti na postojeći Chrome profil?</translation>
+<translation id="6479881432656947268">Posjetite Chrome Web trgovinu</translation>
 <translation id="6481963882741794338">Povežite Chrome i druge Googleove usluge radi personalizacije i u druge svrhe</translation>
 <translation id="648319183876919572">Poboljšano Sigurno pregledanje vas bolje štiti od opasnih web lokacija i preuzimanja</translation>
 <translation id="6489302989675808168">Uključeno • Chrome ne može potvrditi odakle dolazi ova ekstenzija</translation>
@@ -457,7 +460,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
-<translation id="8111297389482307122">Chrome treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se odjavite, ti će podaci ostati na ovom uređaju.</translation>
+<translation id="8111297389482307122">Da se podaci mogu sačuvati na Google račun i koristiti na svim vašim uređajima, Chrome mora potvrditi vaš identitet. Ako se odjavite, ti podaci će ostati na ovom uređaju.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8162006532256575008">Koristi Chrome bez računa</translation>
@@ -480,6 +483,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8416347857511542594">Saznajte više o personalizaciji oglasa u Chromeu</translation>
 <translation id="8418845734693287262">ChromeOS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
 <translation id="842386925677997438">Chromeovi sigurnosni alati</translation>
+<translation id="8428213095426709021">Postavke</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8451192282033883849">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može vidjeti i urediti ovaj profil Chrome preglednika i njegove podatke kao što su oznake, historija i lozinke.</translation>
 <translation id="8496177819998570653">Google upravitelj l&amp;ozinki</translation>
@@ -513,7 +517,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Pokušajte ponovo pokrenuti instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
-<translation id="8948460679427074738">Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke. Chrome preporučuje da ga uklonite.</translation>
+<translation id="8948460679427074738">Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke. Chrome vam preporučuje da je uklonite.</translation>
 <translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8999117580775242387">Kada HTTPS nije dostupan, Chrome će koristiti nesigurnu vezu bez upozorenja</translation>

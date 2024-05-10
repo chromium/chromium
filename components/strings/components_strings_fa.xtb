@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">برچسب (دائمی)</translation>
 <translation id="3133565499688974786">اکنون <ph name="SEARCH_ENGINE_NAME" /> موتور جستجوی پیش‌فرض شما است</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - جستجوی <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{هیچ‌کدام}=1{داده‌های ورود به سیستم برای ۱ حساب}one{داده‌های ورود به سیستم برای # حساب}other{داده‌های ورود به سیستم برای # حساب}}</translation>
 <translation id="3140646734028448730">خدمات کسب‌وکار</translation>
 <translation id="3141093262818886744">درهرصورت باز شود</translation>
 <translation id="3141641372357166056">تصمیمی برای رضایت وجود ندارد</translation>
@@ -2477,7 +2478,6 @@
 <translation id="5786044859038896871">می‌خواهید اطلاعات کارتتان را وارد کنید؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">این روش پرداخت از این دستگاه حذف خواهد شد</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{خالی}=1{داده‌های ورود به سیستم برای یک حساب}one{داده‌های ورود به سیستم برای # حساب}other{داده‌های ورود به سیستم برای # حساب}}</translation>
 <translation id="5800727402210090597">تعمیرات و خدمات تلفن همراه</translation>
 <translation id="580241730938216256">شروع به‌روزرسانی</translation>
 <translation id="5803412860119678065">می‌خواهید <ph name="CARD_DETAIL" /> خود را وارد کنید؟</translation>
@@ -3209,7 +3209,6 @@
 <translation id="7201591969684833065">سرپرستتان می‌تواند این موارد را ببیند:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای باز کردن «برگه ناشناس» جدید و مرور کردن به‌صورت خصوصی، کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="7203375778433816396">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{خالی}=1{یک گذرکلید}one{# گذرکلید}other{# گذرکلید}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> از استانداردهای امنیتی پیروی نمی‌کند.</translation>
 <translation id="7210993021468939304">‏فعالیت Linux در محتوی و می‌توانید برنامه‌های Linux را در محتوی نصب و اجرا کنید</translation>
 <translation id="721197778055552897">دربارهٔ این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>

@@ -1105,6 +1105,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3126023634486644099">Etykiety (trwałe)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> jest teraz Twoją domyślną wyszukiwarką</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – szukaj w: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}many{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
 <translation id="3140646734028448730">Usługi dla firm</translation>
 <translation id="3141093262818886744">Otwórz mimo to</translation>
 <translation id="3141641372357166056">Brak decyzji w sprawie zgody</translation>
@@ -2480,7 +2481,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5786044859038896871">Chcesz wpisać dane swojej karty?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ta forma płatności zostanie usunięta z tego urządzenia</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}many{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
 <translation id="5800727402210090597">Naprawa telefonów komórkowych i powiązane usługi</translation>
 <translation id="580241730938216256">Rozpocznij aktualizację</translation>
 <translation id="5803412860119678065">Chcesz wpisać dane swojej karty (<ph name="CARD_DETAIL" />)?</translation>
@@ -3212,7 +3212,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7201591969684833065">Administrator może zobaczyć:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="7203375778433816396">Ustaw Chrome jako domyślną przeglądarkę w systemie</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Brak}=1{1 klucz dostępu}few{# klucze dostępu}many{# kluczy dostępu}other{# klucza dostępu}}</translation>
 <translation id="7210863904660874423">Serwer <ph name="HOST_NAME" /> nie spełnia norm bezpieczeństwa.</translation>
 <translation id="7210993021468939304">Wyświetlanie aktywności Linuksa w kontenerze oraz instalowanie i uruchamianie aplikacji Linuksa w kontenerze</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> na temat tego problemu.</translation>

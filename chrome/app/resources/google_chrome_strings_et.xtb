@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome blokeeris selle allalaadimise, kuna seda faili tüüpi ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
 <translation id="1229096353876452996">Google soovitab Chrome'i määrata vaikebrauseriks</translation>
+<translation id="1265739287306757398">Lisateave</translation>
 <translation id="1278833599417554002">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="1302523850133262269">Oodake, kuni Chrome installib uusimad süsteemivärskendused.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> nõuab, et loete enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustute nendega. Need tingimused ei laienda, muuda ega piira Google Chrome OS Flexi tingimusi.</translation>
@@ -177,6 +178,7 @@
 <translation id="3635073343384702370">Chrome saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="3667616615096815454">Ei saa installida, rakendus on serverile tundmatu.</translation>
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
+<translation id="3695446226812920698">Lisateave</translation>
 <translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
@@ -341,6 +343,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="6418662306461808273">Kas lülituda olemasolevale Chrome'i profiilile?</translation>
+<translation id="6479881432656947268">Külastage Chrome'i veebipoodi</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
 <translation id="648319183876919572">Täiustatud ohutu sirvimine kaitseb teid paremini ohtlike veebisaitide ja allalaadimiste eest</translation>
 <translation id="6489302989675808168">Sees • Chrome ei suuda tuvastada, kust see laiendus pärineb</translation>
@@ -473,6 +476,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8416347857511542594">Lisateave Chrome'is reklaamide isikupärastamise kohta</translation>
 <translation id="8418845734693287262">Chrome OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="842386925677997438">Chrome'i ohutustööriistad</translation>
+<translation id="8428213095426709021">Seaded</translation>
 <translation id="8433638294851456451">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8451192282033883849">Teie kontot haldab <ph name="MANAGER_NAME" />. Administraator saab seda Chrome'i brauseri profiili ja selle andmeid (nt järjehoidjaid, ajalugu ja paroole) vaadata ning muuta.</translation>
 <translation id="8496177819998570653">Google'i p&amp;aroolihaldur</translation>

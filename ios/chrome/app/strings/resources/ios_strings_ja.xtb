@@ -196,7 +196,7 @@
 <translation id="1992055602764528852">ログインすると、他のデバイスと同じタブを表示できます。</translation>
 <translation id="199425419756152024">パスワードを表示</translation>
 <translation id="2010008505735295285">再読み込み</translation>
-<translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
+<translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="2021670401941426298">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="202292859882676807">マイクへのアクセスが許可されています</translation>
 <translation id="20485545164632846">新しいアイテム</translation>
@@ -862,6 +862,7 @@
 <translation id="5444892875087332195">ブックマーク</translation>
 <translation id="5454211924362324495">他のユーザーがパスワードを使用できないようにするには、<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> でパスワードを変更<ph name="END_LINK" />します</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
+<translation id="5459548306731933777">詳細を表示</translation>
 <translation id="5475069061743940393">荷物追跡</translation>
 <translation id="5478327362747197944">ウェブページ上の日付をクリックして、カレンダーの予定を直接作成できます。</translation>
 <translation id="5482922178977937393">興味や関心に基づいてニュースやスポーツなどに関する通知を受け取りますか？</translation>

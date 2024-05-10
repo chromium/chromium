@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Pestanya d'adreces d'interès}other{Pestanyes d'adreces d'interès}}</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="2498435670446402865">Canvia nom grup pestanyes</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

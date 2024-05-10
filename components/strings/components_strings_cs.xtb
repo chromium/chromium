@@ -1063,6 +1063,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestování</translation>
+<translation id="3041176923638368519">Viz podmínky výhod karty</translation>
 <translation id="3041612393474885105">Informace o certifikátu</translation>
 <translation id="3045769629416806687">Extrémní sporty</translation>
 <translation id="305162504811187366">Historie Vzdálené plochy Chrome, včetně časových razítek, hostitelů a ID relací klientů</translation>
@@ -1103,6 +1104,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3126023634486644099">Štítky (permanentní)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je teď váš výchozí vyhledávač</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Vyhledat v: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Žádné}=1{přihlašovací údaje pro 1 účet}few{přihlašovací údaje pro # účty}many{přihlašovací údaje pro # účtu}other{přihlašovací údaje pro # účtů}}</translation>
 <translation id="3140646734028448730">Obchodní služby</translation>
 <translation id="3141093262818886744">Přesto otevřít</translation>
 <translation id="3141641372357166056">Žádné rozhodnutí ohledně souhlasu</translation>
@@ -2472,7 +2474,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5786044859038896871">Chcete vyplnit informace o kartě?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Žádné}=1{přihlašovací údaje pro 1 účet}few{přihlašovací údaje pro # účty}many{přihlašovací údaje pro # účtu}other{přihlašovací údaje pro # účtů}}</translation>
 <translation id="5800727402210090597">Opravy a služby pro mobilní telefony</translation>
 <translation id="580241730938216256">Spustit aktualizaci</translation>
 <translation id="5803412860119678065">Chcete vyplnit informace o kartě <ph name="CARD_DETAIL" />?</translation>
@@ -2586,6 +2587,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronizováno)</translation>
 <translation id="6028591542479806248">Správa oznámení na mobilní zařízení a e‑mailem</translation>
 <translation id="6028833024483927901">Světová kuchyně</translation>
+<translation id="6030251660719692307">Přístupový klíč ze Správce hesel Google</translation>
 <translation id="603068602130820122">Dvě sponky vpravo</translation>
 <translation id="6032524144326295339">Schránka 2</translation>
 <translation id="6032955021262906325">Vazba vlevo</translation>
@@ -3202,7 +3204,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7201591969684833065">Administrátor má přístup k následujícím údajům:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
 <translation id="7203375778433816396">Nastavit Chrome jako výchozí prohlížeč</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Žádné}=1{1 přístupový klíč}few{# přístupové klíče}many{# přístupového klíče}other{# přístupových klíčů}}</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nevyhovuje bezpečnostním standardům.</translation>
 <translation id="7210993021468939304">Aktivita systému Linux v rámci kontejneru, může instalovat a spouštět aplikace Linux v kontejneru</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o tomto problému.</translation>

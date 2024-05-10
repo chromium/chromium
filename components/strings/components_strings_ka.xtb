@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">ლეიბლები (პერმანენტული)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ახლა თქვენი ნაგულისხმევი საძიებო სისტემაა</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – „<ph name="KEYWORD_SHORT_NAME" />“-ში ძიება</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{არაფერი}=1{სისტემაში შესვლის მონაცემები 1 ანგარიშისთვის}other{სისტემაში შესვლის მონაცემები # ანგარიშისთვის}}</translation>
 <translation id="3140646734028448730">ბიზნესმომსახურება</translation>
 <translation id="3141093262818886744">მაინც გახსნა</translation>
 <translation id="3141641372357166056">თანხმობის გადაწყვეტილება არ არის</translation>
@@ -2477,7 +2478,6 @@
 <translation id="5786044859038896871">გსურთ თქვენი ბარათის ინფორმაციის შევსება?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">გადახდის ეს მეთოდი წაიშლება ამ მოწყობილობიდან</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{არცერთი}=1{სისტემაში შესვლის მონაცემები 1 ანგარიშისთვის}other{სისტემაში შესვლის მონაცემები # ანგარიშისთვის}}</translation>
 <translation id="5800727402210090597">მობილური ტელეფონების შეკეთება და მომსახურება</translation>
 <translation id="580241730938216256">განახლების დაწყება</translation>
 <translation id="5803412860119678065">გსურთ თქვენი <ph name="CARD_DETAIL" />-ის ინფორმაციის შევსება?</translation>
@@ -3209,7 +3209,6 @@
 <translation id="7201591969684833065">თქვენს ადმინისტრატორს შეუძლია ნახოს:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ვების კონფიდენციალურად დათვალიერებისთვის ახალი ინკოგნიტო ჩანართის გასახსნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="7203375778433816396">Chrome-ის დაყენება სისტემის ნაგულისხმევ ბრაუზერად</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{არცერთი}=1{წვდომის 1 გასაღები}other{წვდომის # გასაღებები}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> არ აკმაყოფილებს უსაფრთხოების სტანდარტებს.</translation>
 <translation id="7210993021468939304">შეუძლია კონტეინერის შიგნით Linux-ის აქტივობის ნახვა და Linux აპების ინსტალაცია/გაშვება</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />გაიგეთ მეტი<ph name="END_LINK" /> ამ პრობლემის შესახებ.</translation>

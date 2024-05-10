@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">लेबल (पर्मनंट)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> हे आता तुमचे डीफॉल्ट शोध इंजीन आहे</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> शोधा</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{काहीही नाही}=1{एका खात्यासाठी साइन इन डेटा}other{# खात्यांसाठी साइन इन डेटा}}</translation>
 <translation id="3140646734028448730">व्‍यवसाय सेवा</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
 <translation id="3141641372357166056">संमती निर्णय नाही</translation>
@@ -2476,7 +2477,6 @@
 <translation id="5786044859038896871">तुम्ही तुमची कार्ड माहिती भरू इच्छित आहात?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">या डिव्हाइसवरून ही पेमेंट पद्धत हटवली जाईल</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{None}=1{एका खात्यासाठी साइन इन डेटा}other{# खात्यांसाठी साइन इन डेटा}}</translation>
 <translation id="5800727402210090597">मोबाइल फोन दुरुस्ती आणि सेवा</translation>
 <translation id="580241730938216256">अपडेट सुरू करा</translation>
 <translation id="5803412860119678065">तुम्ही तुमचे <ph name="CARD_DETAIL" /> भरू इच्छित आहात?</translation>
@@ -2590,6 +2590,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक केलेले)</translation>
 <translation id="6028591542479806248">मोबाइल आणि ईमेल सूचना व्यवस्थापित करा</translation>
 <translation id="6028833024483927901">जागतिक पाकशैली</translation>
+<translation id="6030251660719692307">Google Password Manager कडून पासकी</translation>
 <translation id="603068602130820122">ड्युअल स्टेपल राइट</translation>
 <translation id="6032524144326295339">मेलबॉक्स २</translation>
 <translation id="6032955021262906325">बाइंड लेफ्ट</translation>
@@ -3208,7 +3209,6 @@
 <translation id="7201591969684833065">तुमचा अ‍ॅडमिनिस्ट्रेटर हे पाहू शकतो:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडण्याकरिता टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="7203375778433816396">Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{None}=1{एक पासकी}other{# पासकी}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> नी सुरक्षितता मानकांचे पालन केले नाही.</translation>
 <translation id="7210993021468939304">कंटेनरमधील Linux अ‍ॅक्टिव्हिटी आणि कंटेनरमध्ये Linux अ‍ॅप्स इंस्टॉल आणि रन करू शकते</translation>
 <translation id="721197778055552897">या समस्येबद्दल <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" />.</translation>

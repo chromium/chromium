@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
+<translation id="2498435670446402865">ટૅબ ગ્રૂપનું નામ બદલો</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>

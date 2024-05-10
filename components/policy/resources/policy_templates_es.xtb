@@ -4767,6 +4767,15 @@ Si se inhabilita esta política, la promoción de la extensión del proveedor de
       Si se inhabilita esta opción, los usuarios no podrán usar Mi teléfono.
 
       Si no se establece esta política, la opción predeterminada no estará disponible para usuarios gestionados por empresas y sí estará disponible para los no gestionados.</translation>
+<translation id="4775667151768335538">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si contienen recursos peligrosos, como phishing, malware o software no deseado. El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+
+Si no se define la política, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
+
+Esta política no admite expresiones regulares, pero los subdominios de un dominio determinado se añaden a la lista de permitidos. No es obligatorio indicar los nombres de dominios completos.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página más reciente de resultados del buscador predeterminado en un panel lateral del navegador</translation>
 <translation id="4786784434769279324">Acciones que se ejecutarán cuando el ordenador esté inactivo</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado de la página de impresión.

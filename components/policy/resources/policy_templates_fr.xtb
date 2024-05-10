@@ -4752,6 +4752,15 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
       S'il est désactivé, ils ne seront pas autorisés à activer Phone Hub.
 
       Si cette règle n'est pas configurée, par défaut, ce mode de partage n'est pas autorisé pour les utilisateurs gérés par une entreprise et est autorisé pour les utilisateurs non gérés.</translation>
+<translation id="4775667151768335538">Si cette règle est activée, la fonctionnalité de navigation sécurisée juge fiables les domaines que vous avez spécifiés. Autrement dit, elle ne vérifie pas si des ressources présentent un danger (hameçonnage, logiciels malveillants ou indésirables, par exemple). Le service de protection des téléchargements associé à cette fonctionnalité ne vérifie pas non plus les téléchargements hébergés sur ces domaines. De même, le service de protection par mot de passe ne vérifie pas si un mot de passe est réutilisé.
+
+Si cette règle n'est pas configurée, la navigation sécurisée applique son service de protection par défaut à toutes les ressources.
+
+Cette règle n'accepte pas les expressions régulières, mais elle autorise les sous-domaines d'un domaine donné. Les noms de domaine complets ne sont pas obligatoires.
+
+Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4783415902268741066">Autoriser l'affichage de la page des résultats les plus récents du moteur de recherche par défaut dans un panneau latéral du navigateur</translation>
 <translation id="4786784434769279324">Actions à exécuter lorsque l'ordinateur est inactif</translation>
 <translation id="4787763197941188108">Cette règle permet d'ignorer le format de la page d'impression par défaut.

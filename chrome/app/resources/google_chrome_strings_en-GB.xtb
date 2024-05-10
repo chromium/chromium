@@ -18,6 +18,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1194807384646768652">Chrome blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google recommends setting Chrome as default</translation>
+<translation id="1265739287306757398">Learn How</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Flex terms.</translation>
@@ -179,6 +180,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
+<translation id="3695446226812920698">Find out how</translation>
 <translation id="3697952514309507634">Other Chrome profiles</translation>
 <translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
@@ -345,6 +347,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chrome automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
+<translation id="6479881432656947268">Visit Chrome Web Store</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
 <translation id="6489302989675808168">On • Chrome can't verify where this extension comes from</translation>
@@ -477,6 +480,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
+<translation id="8428213095426709021">Settings</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

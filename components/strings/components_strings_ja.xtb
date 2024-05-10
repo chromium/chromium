@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">高価格</translation>
 <translation id="2122719317867821810">このポリシーは想定どおり動作していますが、競合する値が設定されている別のポリシーによってオーバーライドされています。</translation>
 <translation id="2126374524350484896">PDF 変換アプリケーション:</translation>
+<translation id="2127090458081644412">パスワードをこのデバイスに保存しました</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">表示は順不同です。既定の検索エンジンはいつでも変更できます。</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3126023634486644099">ラベル（永久接着）</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> をデフォルトの検索エンジンに設定しました</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />を検索</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{なし}=1{1 件のアカウントのログインデータ}other{# 件のアカウントのログインデータ}}</translation>
 <translation id="3140646734028448730">企業向けサービス</translation>
 <translation id="3141093262818886744">開く</translation>
 <translation id="3141641372357166056">同意に関する判断なし</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4901952598169637881">カジュアル シューズ</translation>
 <translation id="4905659621780993806">デバイスは <ph name="DATE" /> <ph name="TIME" /> に管理者によって自動的に再起動されます。デバイスが再起動される前に、開いているすべてのアイテムを保存してください。</translation>
+<translation id="4913784027728226227">このパスワードをすべてのデバイスで保存して使用するには、本人確認を行ってください</translation>
 <translation id="4913987521957242411">パンチ（左上）</translation>
 <translation id="4916389289686916969">リアリティ番組</translation>
 <translation id="4917064667437236721">イメージング シリンダー</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">編集のやり直し（&amp;R）</translation>
 <translation id="547963486735802022">ファイルをもう一度転送してみてください</translation>
 <translation id="5481076368049295676">アクセス先のコンテンツによって、個人情報を入手したり削除したりする危険なソフトウェアがインストールされる可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">文書作成をサポートする</translation>
 <translation id="54817484435770891">有効なアドレスを追加</translation>
 <translation id="5483838506518938965">以上で完了です</translation>
 <translation id="5485973315555778056">クラウドマシン</translation>
@@ -2477,7 +2481,6 @@
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{なし}=1{1 件のアカウントのログインデータ}other{# 件のアカウントのログインデータ}}</translation>
 <translation id="5800727402210090597">携帯電話の修理、サービス</translation>
 <translation id="580241730938216256">更新を開始</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
@@ -3209,7 +3212,6 @@
 <translation id="7201591969684833065">管理者は、以下の情報を確認できます。</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="7203375778433816396">Chrome をシステムの既定のブラウザとして設定します</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{なし}=1{1 件のパスキー}other{# 件のパスキー}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ではセキュリティ規格が遵守されていません。</translation>
 <translation id="7210993021468939304">コンテナ内の Linux アクティビティ、コンテナ内での Linux アプリのインストールと実行</translation>
 <translation id="721197778055552897">この問題の詳細については、<ph name="BEGIN_LINK" />こちら<ph name="END_LINK" />をご覧ください。</translation>

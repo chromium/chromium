@@ -1105,6 +1105,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3126023634486644099">Amalebula (Okungunaphakade)</translation>
 <translation id="3133565499688974786">U-<ph name="SEARCH_ENGINE_NAME" /> manje isiyinjini yakho yokusesha ezenzakalelayo</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Sesha <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Lutho}=1{idatha yokungena ngemvume ye-akhawunti engu-1}one{idatha yokungena ngemvume yama-akhawunti angu-#}other{idatha yokungena ngemvume yama-akhawunti angu-#}}</translation>
 <translation id="3140646734028448730">Amasevisi Ebhizinisi</translation>
 <translation id="3141093262818886744">Vula noma kunjalo</translation>
 <translation id="3141641372357166056">Asikho isinqumo semvume</translation>
@@ -2477,7 +2478,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5786044859038896871">Ingabe ufuna ukugcwalisa ulwazi lwekhadi lakho?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Le ndlela yokukhokha izosulwa kule divayisi</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Lutho}=1{Idatha yokungena ngemvume ye-akhawunti e-1}one{idatha yokungena ngemvume yama-akhawunti angu-#}other{idatha yokungena ngemvume yama-akhawunti angu-#}}</translation>
 <translation id="5800727402210090597">Amasevisi Okulungisa Ifoni Yeselula</translation>
 <translation id="580241730938216256">Qala isibuyekezo</translation>
 <translation id="5803412860119678065">Ingabe ufuna ukugcwalisa i-<ph name="CARD_DETAIL" /> yakho?</translation>
@@ -3209,7 +3209,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7201591969684833065">Umlawuli wakho angabona:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze uvule ithebhu ye-Incognito entsha yokubhrawuza ngokugodliwe</translation>
 <translation id="7203375778433816396">Setha i-Chrome njengebhrawuza ezenzakalelayo yesistimu</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Lutho}=1{Ukhiye wokudlula o-1}one{Okhiye bokudlula abangu-#}other{Okhiye bokudlula abangu-#}}</translation>
 <translation id="7210863904660874423">I-<ph name="HOST_NAME" /> ayithobeli amazinga ezokuvikela.</translation>
 <translation id="7210993021468939304">Umsebenzi we-Linux ungaphakathi kwesiqukathi, futhi ungafaka uphinde uqalise izinhlelo zokusebenza ze-Linux ngaphakathi kwesiqukathi</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /> mayelana nale nkinga.</translation>

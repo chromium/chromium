@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">ป้าย (ถาวร)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> เป็นเครื่องมือค้นหาเริ่มต้นของคุณแล้วตอนนี้</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - ค้นหา<ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{ไม่มี}=1{ข้อมูลการลงชื่อเข้าใช้ของบัญชี 1 บัญชี}other{ข้อมูลการลงชื่อเข้าใช้ของบัญชี # บัญชี}}</translation>
 <translation id="3140646734028448730">บริการทางธุรกิจ</translation>
 <translation id="3141093262818886744">เปิดต่อไป</translation>
 <translation id="3141641372357166056">ไม่มีการตัดสินใจให้ความยินยอม</translation>
@@ -2476,7 +2477,6 @@
 <translation id="5786044859038896871">คุณต้องการกรอกข้อมูลบัตรไหม</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ไม่มี}=1{ข้อมูลการลงชื่อเข้าใช้สำหรับ 1 บัญชี}other{ข้อมูลการลงชื่อเข้าใช้สำหรับ # บัญชี}}</translation>
 <translation id="5800727402210090597">บริการรับซ่อมโทรศัพท์มือถือ</translation>
 <translation id="580241730938216256">เริ่มอัปเดต</translation>
 <translation id="5803412860119678065">คุณต้องการกรอกข้อมูล <ph name="CARD_DETAIL" /> ไหม</translation>
@@ -3208,7 +3208,6 @@
 <translation id="7201591969684833065">ผู้ดูแลระบบจะเห็นสิ่งต่อไปนี้</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเปิดแท็บที่ไม่ระบุตัวตนแท็บใหม่ในการท่องเว็บแบบส่วนตัว</translation>
 <translation id="7203375778433816396">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบ</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ไม่มี}=1{1 พาสคีย์}other{# พาสคีย์}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ไม่เป็นไปตามมาตรฐานความปลอดภัย</translation>
 <translation id="7210993021468939304">กิจกรรม Linux ในคอนเทนเนอร์ และติดตั้งรวมถึงเรียกใช้แอป Linux ในคอนเทนเนอร์ได้</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /> เกี่ยวกับปัญหานี้</translation>

@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome je blokirao ovo preuzimanje jer se ova vrsta datoteke obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="1203500561924088507">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti preglednik.</translation>
 <translation id="1229096353876452996">Google preporučuje postavljanje Chromea kao zadanog</translation>
+<translation id="1265739287306757398">Saznajte kako</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da biste ažurirali &amp;Chrome</translation>
 <translation id="1302523850133262269">Pričekajte da Chrome instalira najnovija ažuriranja sustava.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ili ograničenje uvjeta ChromeOS Flexa.</translation>
@@ -177,6 +178,7 @@
 <translation id="3635073343384702370">Chrome može provjeriti vaše zaporke kad ih spremite</translation>
 <translation id="3667616615096815454">Nije moguće instalirati, aplikacija nije poznata poslužitelju.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
+<translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3697952514309507634">Ostali profili na Chromeu</translation>
 <translation id="3703994572283698466">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojnim okruženjem Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
@@ -340,6 +342,7 @@
 <translation id="6412673304250309937">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromeu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može poslati URL-ove, uključujući dijelove sadržaja web-stranice, Sigurnom pregledavanju.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Kad se Chrome ne koristi jednu minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}one{Kad se Chrome ne koristi # minutu, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}few{Kad se Chrome ne koristi # minute, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}other{Kad se Chrome ne koristi # minuta, vaša ga organizacija automatski zatvara. Podaci o pregledavanju se brišu. To može uključivati povijest, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="6418662306461808273">Želite li prijeći na postojeći profil u Chromeu?</translation>
+<translation id="6479881432656947268">Posjetite Chrome Web Store</translation>
 <translation id="6481963882741794338">Povezivanje Chromea i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
 <translation id="648319183876919572">Poboljšano sigurno pregledavanje pruža vam više zaštite od opasnih web-lokacija i preuzimanja</translation>
 <translation id="6489302989675808168">Uključeno • Chrome ne može provjeriti odakle dolazi ovo proširenje</translation>
@@ -472,6 +475,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8416347857511542594">Saznajte više o prilagodbi oglasa u Chromeu</translation>
 <translation id="8418845734693287262">Chrome OS nije mogao sinkronizirati vaše podatke jer su vaši podaci za prijavu na račun zastarjeli.</translation>
 <translation id="842386925677997438">Chromeovi sigurnosni alati</translation>
+<translation id="8428213095426709021">Postavke</translation>
 <translation id="8433638294851456451">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>
 <translation id="8451192282033883849">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može pregledavati i uređivati profil ovog preglednika Chrome i njegove podatke, kao što su oznake, povijest i zaporke.</translation>
 <translation id="8496177819998570653">Google upravitelj zaporki</translation>

@@ -1063,6 +1063,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3037177537145227281">Spoor tans prys na</translation>
 <translation id="3037605927509011580">O, mapstieks!</translation>
 <translation id="3039406992698062762">Gesinsreise</translation>
+<translation id="3041176923638368519">Sien bepalings vir kaartvoordele</translation>
 <translation id="3041612393474885105">Sertifikaatinligting</translation>
 <translation id="3045769629416806687">Adrenaliensport</translation>
 <translation id="305162504811187366">Geskiedenis van Chrome-afstandwerkskerm, insluitend tydstempels, gasheer- en kliëntsessie-ID's</translation>
@@ -1103,6 +1104,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3126023634486644099">Etikette (permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> is nou jou versteksoekenjin</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Search <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{aanmelddata vir 1 rekening}other{aanmelddata vir # rekeninge}}</translation>
 <translation id="3140646734028448730">Besigheidsdienste</translation>
 <translation id="3141093262818886744">Maak nogtans oop</translation>
 <translation id="3141641372357166056">Geen toestemmingbesluit nie</translation>
@@ -2476,7 +2478,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5786044859038896871">Wil jy jou kaartinligting invul?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Hierdie betaalmetode sal van hierdie toestel af uitgevee word</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Geen}=1{aanmelddata vir 1 rekening}other{aanmelddata vir # rekeninge}}</translation>
 <translation id="5800727402210090597">Selfoonherstelwerk en -dienste</translation>
 <translation id="580241730938216256">Begin opdatering</translation>
 <translation id="5803412860119678065">Wil jy jou <ph name="CARD_DETAIL" /> invul?</translation>
@@ -3208,7 +3209,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7201591969684833065">Jou administrateur kan sien:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om 'n nuwe Incognito-oortjie oop te maak om privaat te blaai</translation>
 <translation id="7203375778433816396">Stel Chrome as die stelsel se verstekblaaier</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Geen}=1{1 toegangsleutel}other{# toegangsleutels}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> kom nie sekuriteitstandaarde na nie.</translation>
 <translation id="7210993021468939304">Linux-aktiwiteit binne die houer, en kan Linux-programme binne die houer installeer en laat loop</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor hierdie probleem.</translation>

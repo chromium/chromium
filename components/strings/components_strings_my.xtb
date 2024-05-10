@@ -1109,6 +1109,7 @@
 <translation id="3126023634486644099">လေဘယ်လ် (အမြဲတမ်း)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> သည် သင်၏ မူရင်းရှာဖွေရေးအင်ဂျင် ဖြစ်သွားပါပြီ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ရှာရန်</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}}</translation>
 <translation id="3140646734028448730">လုပ်ငန်း ဝန်ဆောင်မှု</translation>
 <translation id="3141093262818886744">မည်သို့ပင်ဖြစ်စေ ဖွင့်ရန်</translation>
 <translation id="3141641372357166056">သဘောတူညီမှု ဆုံးဖြတ်ချက် မရှိပါ</translation>
@@ -2478,7 +2479,6 @@
 <translation id="5786044859038896871">သင့်ကဒ်အချက်အလက်ကို ဖြည့်သွင်းလိုပါသလား။</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ဤငွေပေးချေနည်းလမ်းကို ယခုစက်မှ ဖျက်လိုက်မည်</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{မရှိ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာ}}</translation>
 <translation id="5800727402210090597">မိုဘိုင်းဖုန်း ပြုပြင်ခြင်းနှင့် ဝန်ဆောင်မှု</translation>
 <translation id="580241730938216256">အပ်ဒိတ်စတင်ရန်</translation>
 <translation id="5803412860119678065">သင့် <ph name="CARD_DETAIL" /> ကို ဖြည့်သွင်းလိုပါသလား။</translation>
@@ -2592,6 +2592,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="6028591542479806248">မိုဘိုင်းနှင့် အီးမေးလ် အကြောင်းကြားချက်များကို စီမံနိုင်သည်</translation>
 <translation id="6028833024483927901">ကမ္ဘာ့အစားအစာ</translation>
+<translation id="6030251660719692307">Google Password Manager မှ လျှို့ဝှက်ကီး</translation>
 <translation id="603068602130820122">ညာဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
 <translation id="6032524144326295339">စာတိုက်ပုံး ၂</translation>
 <translation id="6032955021262906325">ဘယ်ဘက်တွင် တွဲချုပ်ရန်</translation>
@@ -3208,7 +3209,6 @@
 <translation id="7201591969684833065">သင့်စီမံခန့်ခွဲသူများက အောက်ပါတို့ကို မြင်နိုင်သည်-</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab နှိပ်ပြီး Enter ခလုတ်နှိပ်၍ ရုပ်ဖျက်တဘ်အသစ်တွင် သီးသန့်ကြည့်ရှုနိုင်သည်</translation>
 <translation id="7203375778433816396">Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{မရှိ}=1{လျှို့ဝှက်ကီး ၁ ခု}other{လျှို့ဝှက်ကီး # ခု}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> သည်လုံခြုံရေး စံနှုန်းများကို လိုက်နာမှုမရှိပါ။</translation>
 <translation id="7210993021468939304">ကွန်တိန်နာအတွင်းရှိ Linux လုပ်ဆောင်ချက်ကို ကြည့်နိုင်ပြီး ကွန်တိန်နာအတွင်းတွင် Linux အက်ပ်များကို ထည့်သွင်းနိုင်၊ လုပ်ဆောင်နိုင်သည်</translation>
 <translation id="721197778055552897">ဒီပြဿနာ အကြောင်းကို <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" />။</translation>

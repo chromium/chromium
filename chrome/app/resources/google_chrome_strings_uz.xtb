@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome bu yuklamani blokladi, chunki bunday turdagi fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
 <translation id="1229096353876452996">Google asosiy brauzer sifatida Chromeni sozlashni tavsiya etadi</translation>
+<translation id="1265739287306757398">Batafsil axborot</translation>
 <translation id="1278833599417554002">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromeOS Flex shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
@@ -178,6 +179,7 @@
 <translation id="3635073343384702370">Chrome faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="3667616615096815454">Oʻrnatilmadi, ilova serverga nomaʼlum.</translation>
 <translation id="3673813398384385993">Chrome “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
+<translation id="3695446226812920698">Batafsil</translation>
 <translation id="3697952514309507634">Boshqa Chrome profillari</translation>
 <translation id="3703994572283698466">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="3716540481907974026">ChromeOS Flex versiyasi</translation>
@@ -345,6 +347,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
 <translation id="6418662306461808273">Mavjud Chrome profiliga almashilsinmi?</translation>
+<translation id="6479881432656947268">Chrome Web Store doʻkonini ochish</translation>
 <translation id="6481963882741794338">Chrome va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
 <translation id="648319183876919572">Saytlarni kuchaytirilgan rejimda xavfsiz kezish yordamida zararli saytlar va yuklanmalardan himoyalanish mumkin</translation>
 <translation id="6489302989675808168">Yoniq • Chrome bu kengaytma manbasini tekshira olmadi</translation>
@@ -477,6 +480,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8416347857511542594">Chromeda reklamani moslashtirish haqida batafsil</translation>
 <translation id="8418845734693287262">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="842386925677997438">Chrome xavfsizlik vositalari</translation>
+<translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8451192282033883849">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi bukmarklar, tarix va parollar kabi maʼlumotlarni koʻrib, tahrirlay oladi.</translation>
 <translation id="8496177819998570653">Google &amp;Parollar menejeri</translation>

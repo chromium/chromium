@@ -1063,6 +1063,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
 <translation id="3039406992698062762">Udhëtime familjare</translation>
+<translation id="3041176923638368519">Shiko kushtet për përfitimet për kartat</translation>
 <translation id="3041612393474885105">Informacioni i certifikatës</translation>
 <translation id="3045769629416806687">Sporte ekstreme</translation>
 <translation id="305162504811187366">Historiku i "Desktopit në distancë të Chrome", duke përfshirë vulat kohore, organizatorët dhe ID-të e seancës së klientit.</translation>
@@ -1103,6 +1104,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3126023634486644099">Etiketa (të përhershme)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> tani është motori yt i parazgjedhur i kërkimit</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Kërko te <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Asnjë}=1{të dhënat e identifikimit për 1 llogari}other{të dhënat e identifikimit për # llogari}}</translation>
 <translation id="3140646734028448730">Shërbime biznesi</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141641372357166056">Nuk ka vendim për pëlqimin</translation>
@@ -2476,7 +2478,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5786044859038896871">Dëshiron që të plotësosh informacionet e kartës?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kjo mënyrë pagese do të fshihet nga kjo pajisje</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Asnjë}=1{të dhënat e identifikimit për 1 llogari}other{të dhënat e identifikimit për # llogari}}</translation>
 <translation id="5800727402210090597">Riparim dhe shërbime për telefona celularë</translation>
 <translation id="580241730938216256">Fillo përditësimin</translation>
 <translation id="5803412860119678065">Dëshiron që të plotësosh informacionet për <ph name="CARD_DETAIL" />?</translation>
@@ -2590,6 +2591,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizuar)</translation>
 <translation id="6028591542479806248">Menaxho njoftimet e email-it dhe pajisjes celulare</translation>
 <translation id="6028833024483927901">Kuzhina botërore</translation>
+<translation id="6030251660719692307">Çelësi i kalimit nga "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="603068602130820122">Dy kapje me tel djathtas</translation>
 <translation id="6032524144326295339">Kutia postare 2</translation>
 <translation id="6032955021262906325">Lidhje majtas</translation>
@@ -3206,7 +3208,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7201591969684833065">Administratori yt mund të shohë:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin Tab dhe më pas tastin Enter për të hapur një dritare të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="7203375778433816396">Cakto Chrome si shfletuesin e parazgjedhur të sistemit</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Asnjë}=1{1 çelës kalimi}other{# çelësa kalimi}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nuk i respekton standardet e sigurisë.</translation>
 <translation id="7210993021468939304">Aktiviteti i Linux brenda kontejnerit dhe mund të instalojë dhe të ekzekutojë aplikacione të Linux brenda kontejnerit</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>

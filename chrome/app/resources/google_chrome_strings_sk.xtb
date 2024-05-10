@@ -18,6 +18,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1194807384646768652">Chrome toto sťahovanie zablokoval, pretože používatelia tento typ súboru bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1229096353876452996">Google odporúča nastaviť Chrome ako predvolený prehliadač</translation>
+<translation id="1265739287306757398">Ako na to</translation>
 <translation id="1278833599417554002">Znova spustiť a aktualizovať Chrome</translation>
 <translation id="1302523850133262269">Počkajte, kým Chrome nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vyžaduje, aby ste si pred používaním tohto zariadenia prečítali nasledujúce zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú zmluvné podmienky systému Google Chrome OS Flex.</translation>
@@ -178,6 +179,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3635073343384702370">Chrome môže skontrolovať heslá, keď ich uložíte</translation>
 <translation id="3667616615096815454">Nepodarilo sa nainštalovať, pretože server aplikáciu nepozná.</translation>
 <translation id="3673813398384385993">Chrome zistil, že <ph name="EXTENSION_NAME" /> obsahuje malvér</translation>
+<translation id="3695446226812920698">Ako na to</translation>
 <translation id="3697952514309507634">Ďalšie profily Chromu</translation>
 <translation id="3703994572283698466">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verzia systému Chrome OS Flex</translation>
@@ -344,6 +346,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať jednu minútu. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}few{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}many{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}other{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}}</translation>
 <translation id="6418662306461808273">Chcete prepnúť na existujúci profil Chromu?</translation>
+<translation id="6479881432656947268">Navštíviť Internetový obchod Chrome</translation>
 <translation id="6481963882741794338">Prepojte Chrome a ďalšie služby Googlu na prispôsobenie a ďalšie účely</translation>
 <translation id="648319183876919572">Zlepšené bezpečné prehliadanie vás chráni viac pred nebezpečnými webmi a stiahnutými súbormi</translation>
 <translation id="6489302989675808168">Zapnuté • Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>
@@ -476,6 +479,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8416347857511542594">Ďalšie informácie o prispôsobení reklám v Chrome</translation>
 <translation id="8418845734693287262">Systému Chrome OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="842386925677997438">Bezpečnostné nástroje Chromu</translation>
+<translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8433638294851456451">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="8451192282033883849">Váš účet spravuje <ph name="MANAGER_NAME" />. Váš správca si môže zobraziť a upraviť tento profil prehliadača Chrome vrátane jeho údajov, ako sú záložky, história a heslá.</translation>
 <translation id="8496177819998570653">Správca hesiel Google</translation>

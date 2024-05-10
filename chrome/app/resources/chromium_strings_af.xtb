@@ -27,6 +27,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
 <translation id="1553461853655228091">Chromium moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="1574377791422810894">Chromium se veiligheidnutsgoed</translation>
+<translation id="1591808205441691831">Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy afmeld, sal hierdie data op jou toestel bly.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1625909126243026060">Gaan belangrike privaatheid- en sekuriteitkontroles in Chromium na</translation>
 <translation id="1632539827495546968">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chromium-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
@@ -95,6 +96,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="268602741124540128">Welkom by Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-oortjie</translation>
 <translation id="2718390899429598676">Chromium sal jou data enkripteer vir bykomende sekuriteit.</translation>
+<translation id="2721354645805494590">Meld af om jou Google-rekening uit Chromium te verwyder</translation>
 <translation id="2738871930057338499">Kon nie aan die internet koppel nie. HTTP 403 verbode. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
 <translation id="2785438272836277133">Hierdie uitbreiding bevat wanware en is onveilig. Verwyder dit uit Chromium sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
@@ -124,6 +126,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3179665906251668410">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="3185330573522821672">Pasmaak jou nuwe Chromium-profiel</translation>
 <translation id="3190315855212034486">Sjoe! Chromium het omgeval. Wil jy nou herbegin?</translation>
+<translation id="3224847870593914902">Meld in die Instellings-bladsy by Chromium af om jou Google-rekening uit Chromium te verwyder</translation>
 <translation id="3258596308407688501">Chromium kan nie sy datagids lees of daarheen skryf nie:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -187,6 +190,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4222932583846282852">Kanselleer tans …</translation>
 <translation id="4230135487732243613">Koppel jou Chromium-data aan hierdie rekening?</translation>
 <translation id="4251772536351901305">Waarsku jou oor gevaarlike werwe – selfs werwe waarvan Google nie voorheen geweet het nie – deur meer data van werwe te ontleed as standaardbeskerming. Jy kan kies om Chromium-waarskuwings oor te slaan.</translation>
+<translation id="4269093074552541569">Meld by Chromium af</translation>
 <translation id="4271805377592243930">Kry hulp met Chromium</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
 <translation id="4285930937574705105">Kon weens 'n ongespesifiseerde fout nie installeer nie. As Chromium tans loop, maak dit asseblief toe en probeer weer.</translation>
@@ -199,6 +203,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4427306783828095590">Verbeterde beskerming doen meer om uitvissing en wanware te blokkeer</translation>
 <translation id="4447409407328223819">Meer oor Chrome-toetsweergawe</translation>
 <translation id="4501471624619070934">Installasie het misluk omdat toegang in hierdie land beperk is.</translation>
+<translation id="4510853178268397146">Hierdie uitbreiding het nie privaatheidpraktyke gepubliseer nie, soos hoe dit data insamel en gebruik. Chromium beveel aan dat jy dit verwyder.</translation>
 <translation id="452711251841752011">Welkom by Chromium; nuwe blaaiervenster is oopgemaak</translation>
 <translation id="4544142686420020088">Chromium het nie opgedateer nie; iets het skeefgeloop. <ph name="BEGIN_LINK" />Stel Chrome-opdateringprobleme en mislukte opdaterings reg.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Gaan voort in 'n nuwe Chromium-profiel?</translation>
@@ -443,6 +448,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Herbegin Chromium binne 'n dag}other{Herbegin Chromium binne # dae}}</translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8458614432758743027">Chromium vereis Windows 10 of nuwer.</translation>
+<translation id="8461326814397467035">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie. Probeer om ’n paar minute te wag voordat jy afmeld.</translation>
 <translation id="8463672209299734063">Opsioneel: Help om Chromium-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="8522801943730206384">Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>

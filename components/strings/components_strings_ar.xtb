@@ -1064,6 +1064,7 @@
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3039406992698062762">سياحة عائلية</translation>
+<translation id="3041176923638368519">الاطّلاع على أحكام مزايا البطاقة</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
 <translation id="3045769629416806687">رياضات خطرة</translation>
 <translation id="305162504811187366">‏سجلّ الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome، بما في ذلك الطوابع الزمنية والمضيفين وأرقام تعريف جلسات العملاء</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3126023634486644099">تصنيفات (دائمة)</translation>
 <translation id="3133565499688974786">تم ضبط <ph name="SEARCH_ENGINE_NAME" /> على أنّه محرك البحث التلقائي.</translation>
 <translation id="3137283076021007034">‏‫‎<ph name="KEYWORD" />: البحث في "<ph name="KEYWORD_SHORT_NAME" />"</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{بدون بيانات تسجيل دخول}=1{بيانات تسجيل الدخول لحساب واحد}two{بيانات تسجيل الدخول لحسابين (#)}few{بيانات تسجيل الدخول لـ # حسابات}many{بيانات تسجيل الدخول لـ # حسابًا}other{بيانات تسجيل الدخول لـ # حساب}}</translation>
 <translation id="3140646734028448730">خدمات أنشطة تجارية</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
 <translation id="3141641372357166056">لم يتم اتخاذ قرار بشأن الموافقة.</translation>
@@ -2479,7 +2481,6 @@
 <translation id="5786044859038896871">هل تريد ملء معلومات بطاقتك؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">سيتم حذف طريقة الدفع هذه من هذا الجهاز.</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ما مِن بيانات تسجيل دخول.}=1{بيانات تسجيل الدخول إلى حساب واحد}two{بيانات تسجيل الدخول إلى حسابَين}few{بيانات تسجيل الدخول إلى # حسابات}many{بيانات تسجيل الدخول إلى # حسابًا}other{بيانات تسجيل الدخول إلى # حساب}}</translation>
 <translation id="5800727402210090597">خدمات الهواتف المحمولة وإصلاحها</translation>
 <translation id="580241730938216256">بدء التحديث</translation>
 <translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
@@ -3211,7 +3212,6 @@
 <translation id="7201591969684833065">يمكن للمشرف الاطِّلاع على ما يلي:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab)، ثم المفتاح Enter لفتح علامة تبويب جديدة في وضع التصفّح المتخفي للتصفُّح بخصوصية تامة.</translation>
 <translation id="7203375778433816396">‏ضبط Chrome كمتصفِّح تلقائي للنظام</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ما مِن مفاتيح مرور.}=1{مفتاح مرور واحد}two{‫مفتاحَا مرور}few{‫# مفاتيح مرور}many{‫# مفتاح مرور}other{‫# مفتاح مرور}}</translation>
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>
 <translation id="7210993021468939304">‏نشاط نظام التشغيل Linux في الحاوية ويمكن تثبيت تطبيقات نظام التشغيل Linux وتشغيلها في الحاوية.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>

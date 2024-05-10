@@ -65,6 +65,7 @@
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 минут бойы пайдаланылмаса, ұйымыңыз браузерді пайдалану деректерін автоматты түрде жояды. Оларға тарих, автотолтыру және жүктеп алынғандар кіруі мүмкін. Қойындыларыңыз ашық болады.}other{Chromium # минут бойы пайдаланылмаса, ұйымыңыз браузерді пайдалану деректерін автоматты түрде жояды. Оларға тарих, автотолтыру және жүктеп алынғандар кіруі мүмкін. Қойындыларыңыз ашық болады.}}</translation>
 <translation id="2126108037660393668">Жүктеп алынған файл растаудан өтпеді.</translation>
 <translation id="215352261310130060">Chromium жүктеп алуды блоктады, себебі сайтта қауіпсіз байланыс пайдаланылып жатқан жоқ және файл өзгертілген болуы мүмкін.</translation>
+<translation id="2157600032285353789">Chromium мәзірінен бетбелгілерді, оқу режимін және т.б. ашуға болады.</translation>
 <translation id="2174178932569897599">Chromium-ді реттеу</translation>
 <translation id="2174917724755363426">Орнату аяқталмады. Шынымен бас тартқыңыз келе ме?</translation>
 <translation id="2185166961232948079">Chromium – Желіге кіру - <ph name="PAGE_TITLE" /></translation>
@@ -246,6 +247,7 @@
 <translation id="5386450000063123300">Chromium жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium браузеріне кіруге рұқсат ету</translation>
 <translation id="5398878173008909840">Жаңа Chromium нұсқасы қолжетімді.</translation>
+<translation id="5400757303519321734">Gmail не YouTube сияқты Google қызметтеріне <ph name="USER_EMAIL" /> көмегімен кірген кезде, Chromium-ге сол аккаунтпен кіруге болады.</translation>
 <translation id="5405650547142096840">Chromium-нен жою</translation>
 <translation id="5427571867875391349">Әдепкі браузер ретінде Chromium қолданбасын орнату</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium бета нұсқасы</translation>
@@ -276,6 +278,7 @@
 <translation id="5987687638152509985">Chromium браузерін жаңартып, синхрондауды бастаңыз</translation>
 <translation id="5988505247484123880">Әдетте кіретін сайттарыңыз тәжірибені жекелендіру үшін сізді қызықтыратын нәрселерді есте сақтайды. Сондай-ақ сайттар Chromium браузерінде қызығушылықтарыңыз туралы ақпаратты сақтай алады.</translation>
 <translation id="6003112304606738118">Жүктеп алынып жатыр… <ph name="HOURS" /> сағат қалды.</translation>
+<translation id="6019451407441383358">Жоғарғы оң жақтағы Chromium мәзірінен бетбелгілерді, оқу режимін және т.б. ашуға болады.</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6055895534982063517">Жаңа жылдамырақ Chromium нұсқасы қолжетімді.</translation>
 <translation id="6058380562449900225">Деректеріңізді қорғау үшін Chromium-ге сіз соңғы уақытта кірмеген сайттар рұқсаттарын өшіруге рұқсат беріңіз. Хабарландырулар көрсетіле береді.</translation>
@@ -367,7 +370,9 @@
 <translation id="7045244423563602563">Chromium браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="705851970750939768">Chromium жаңарту</translation>
 <translation id="7067091210845072982">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі.</translation>
+<translation id="7100062358172078145">Chromium-ге кірмеу</translation>
 <translation id="7141270731789036260">Chrome for Testing қызметін бейімдеу</translation>
+<translation id="7159538860914681762">Құпия сөздерді және т.б. барлық құрылғыңызда сақтап, қолданғыңыз келсе, Chromium-ге кіріңіз.</translation>
 <translation id="7173822816570314652">Ұйымыңыз Chromium деректерін <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жояды. Оларға тарих, автотолтыру мәліметтері және жүктеп алынғандар кіруі мүмкін.</translation>
 <translation id="718435575166326686">Chromium бұл сайт үшін камераны пайдалануға рұқсат сұрайды.</translation>
 <translation id="7196312274710523067">Chromium браузері қосылмады. Қайталап көріңіз.</translation>
@@ -460,6 +465,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8719993436687031146">Chromium-ге кіру қажет пе?</translation>
 <translation id="878572486461146056">Орнату қатесі: желі әкімшісі орнатуға рұқсат бермейтін топтық саясатты қолданды: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium браузеріне бұл сайтта камераны және микрофонды пайдалану үшін рұқсат керек</translation>
+<translation id="8818550178040858407">Chromium-ге кіру қажет пе?</translation>
 <translation id="8826492472752484139">"Password Manager" түймесін басыңыз.</translation>
 <translation id="8833697763442816810">ChromiumOS жүйесі</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Қандай дерек пайдаланылады:<ph name="END_BOLD" /> браузерді қолдану тарихы, осы құрылғыда Chromium көмегімен кірген сайттардың жазбасы.</translation>
@@ -475,6 +481,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9019929317751753759">Chromium браузерін қауіпсіз ету үшін, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> тізімінде жоқ келесі кеңейтім өшірілді, ол сізге ескертілмей қосылған болуы мүмкін.</translation>
 <translation id="9022552996538154597">Chromium жүйесіне кіру</translation>
 <translation id="904366664621834601">Chromium бұл мұрағаттау файлын жүктеп алуға тыйым салды, себебі онда зиянды бағдарламаны жасыруы мүмкін басқа файлдар бар</translation>
+<translation id="9062666675513499497">Басқа Google қызметтеріне кірген кезде, Chromium-ге де кіресіз</translation>
 <translation id="907832235989677238">Chromium-ге кіріңіз. Аккаунтқа тек бір рет кіргіңіз келсе, <ph name="GUEST_LINK_BEGIN" />құрылғыны қонақ ретінде пайдалануға<ph name="GUEST_LINK_END" /> болады</translation>
 <translation id="9078733879136747090">Chromium автоматты түрде жабылған</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
@@ -486,11 +493,13 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9158494823179993217">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> сілтемесіне қосымша браузер арқылы кіре алатындай етіп конфигурациялады.</translation>
 <translation id="9185526690718004400">&amp;Chromium-ді жаңарту үшін қайта іске қосу</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9220341227291329091">Chromium-ге автоматты түрде кіру</translation>
 <translation id="924957577793602335">Chromium браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="93478295209880648">Chromium дұрыс жұмыс істемеуі мүмкін, себебі оған Windows XP не Windows Vista жүйелерінде қолдау көрсетілмейді</translation>
 <translation id="942598560705308788">Chromium басқаратын сертификаттар</translation>
 <translation id="965162752251293939">Chromium-ді кім пайдаланып жатыр?</translation>
 <translation id="967427899662692980">Chromium браузерінің ең күшті қорғанысын қолданыңыз</translation>
 <translation id="983803489796659991">Орнатылмады, себебі жаңарту серверінде қолданбаға арналған хештеу деректері жоқ.</translation>
+<translation id="985498048907240953">Chromium-ді аккаунтсыз қолдану</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

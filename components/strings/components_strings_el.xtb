@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">Ετικέτες (Μόνιμες)</translation>
 <translation id="3133565499688974786">Το <ph name="SEARCH_ENGINE_NAME" /> αποτελεί πλέον την προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Αναζήτηση για <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Κανένα}=1{δεδομένα σύνδεσης για 1 λογαριασμό}other{δεδομένα σύνδεσης για # λογαριασμούς}}</translation>
 <translation id="3140646734028448730">Επαγγελματικές Υπηρεσίες</translation>
 <translation id="3141093262818886744">Άνοιγμα ούτως ή άλλως</translation>
 <translation id="3141641372357166056">Χωρίς απόφαση συναίνεσης</translation>
@@ -2478,7 +2479,6 @@
 <translation id="5786044859038896871">Θέλετε να συμπληρωθούν τα στοιχεία της κάρτας σας;</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Αυτός ο τρόπος πληρωμής θα διαγραφεί από αυτήν τη συσκευή</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Κανένα}=1{δεδομένα σύνδεσης για έναν λογαριασμό}other{δεδομένα σύνδεσης για # λογαριασμούς}}</translation>
 <translation id="5800727402210090597">Υπηρεσίες επισκευής κινητών τηλεφώνων</translation>
 <translation id="580241730938216256">Έναρξη ενημέρωσης</translation>
 <translation id="5803412860119678065">Θέλετε να συμπληρωθούν τα στοιχεία της κάρτας <ph name="CARD_DETAIL" />;</translation>
@@ -3210,7 +3210,6 @@
 <translation id="7201591969684833065">Ο διαχειριστής σας μπορεί να βλέπει:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ανοίξετε μια νέα καρτέλα ανώνυμης περιήγησης για ιδιωτική περιήγηση</translation>
 <translation id="7203375778433816396">Ορίστε το Chrome ως το προεπιλεγμένο πρόγραμμα περιήγησης του συστήματος</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Κανένα}=1{1 κλειδί πρόσβασης}other{# κλειδιά πρόσβασης}}</translation>
 <translation id="7210863904660874423">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν συμμορφώνεται με τα πρότυπα ασφάλειας.</translation>
 <translation id="7210993021468939304">Δραστηριότητα Linux εντός του κοντέινερ καθώς και δυνατότητα εγκατάστασης και εκτέλεσης εφαρμογών Linux εντός του κοντέινερ.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>

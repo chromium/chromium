@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">このダウンロードは Chrome でブロックされました。ファイル形式が一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1229096353876452996">Chrome を既定のブラウザに設定することをおすすめします</translation>
+<translation id="1265739287306757398">詳細</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
@@ -33,6 +34,7 @@
 <translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="155168855724261758">Chrome をカスタマイズ</translation>
+<translation id="1551749261806528781">すべてのデバイスでパスワードなどを保存して使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
 <translation id="1587223624401073077">Google Chrome がカメラを使用しています。</translation>
@@ -175,6 +177,7 @@
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
+<translation id="3695446226812920698">詳細</translation>
 <translation id="3697952514309507634">その他の Chrome プロフィール</translation>
 <translation id="3703994572283698466">Chrome OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="3716540481907974026">ChromeOS Flex のバージョン</translation>
@@ -309,6 +312,7 @@
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
+<translation id="5947104538377036631">Chrome のショートカット</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome のツール<ph name="END_LINK" />を使って、自分で管理しながら安全にブラウジングできます</translation>
 <translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
@@ -337,6 +341,7 @@
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chrome を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
+<translation id="6479881432656947268">Chrome ウェブストアにアクセス</translation>
 <translation id="6481963882741794338">パーソナライズなどの目的で、Chrome と他の Google サービスをリンクします</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
 <translation id="6489302989675808168">オン • Chrome では、この拡張機能の提供元を確認できません</translation>
@@ -469,6 +474,7 @@
 <translation id="8416347857511542594">Chrome での広告のパーソナライズの詳細</translation>
 <translation id="8418845734693287262">アカウントのログイン情報が最新でないため、Chrome OS はデータを同期できませんでした。</translation>
 <translation id="842386925677997438">Chrome の安全性ツール</translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8451192282033883849">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="8496177819998570653">Google パスワード マネージャー(&amp;A)</translation>

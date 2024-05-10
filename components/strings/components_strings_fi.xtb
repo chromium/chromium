@@ -1104,6 +1104,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3126023634486644099">Etiketit (pysyvä)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> on nyt oletushakukoneesi</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Hae <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Ei mitään}=1{1 tilin kirjautumistiedot}other{# tilin kirjautumistiedot}}</translation>
 <translation id="3140646734028448730">Liiketoimintapalvelut</translation>
 <translation id="3141093262818886744">Avaa silti</translation>
 <translation id="3141641372357166056">Ei suostumuspäätöstä</translation>
@@ -2478,7 +2479,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5786044859038896871">Täytetäänkö kortin tiedot?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tämä maksutapa poistetaan tältä laitteelta</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ei yhtään}=1{1 tilin kirjautumisdata}other{# tilin kirjautumisdata}}</translation>
 <translation id="5800727402210090597">Matkapuhelimien korjauspalvelut</translation>
 <translation id="580241730938216256">Aloita päivitys</translation>
 <translation id="5803412860119678065">Täytetäänkö kortin <ph name="CARD_DETAIL" /> tiedot?</translation>
@@ -2592,6 +2592,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synkronoitu)</translation>
 <translation id="6028591542479806248">Muuta mobiili- ja sähköposti-ilmoitusten valintoja</translation>
 <translation id="6028833024483927901">Ruokalajeja maailmalta</translation>
+<translation id="6030251660719692307">Avainkoodi Google Salasanoista</translation>
 <translation id="603068602130820122">Kaksi niittiä oikealla</translation>
 <translation id="6032524144326295339">Postilaatikko 2</translation>
 <translation id="6032955021262906325">Vasemmalla sidottu</translation>
@@ -3209,7 +3210,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7201591969684833065">Järjestelmänvalvoja näkee seuraavat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter avataksesi uuden incognito-välilehden, niin voit selata yksityisesti</translation>
 <translation id="7203375778433816396">Valitse Chrome järjestelmän oletusselaimeksi</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ei yhtään}=1{1 avainkoodi}other{# avainkoodia}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ei noudata tietoturvastandardeja.</translation>
 <translation id="7210993021468939304">Linux-toiminta säilön sisällä, ja voi asentaa ja suorittaa Linux-sovelluksia säilön sisällä</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /> ongelmasta.</translation>

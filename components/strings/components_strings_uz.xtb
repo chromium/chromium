@@ -1104,6 +1104,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3126023634486644099">Yorliqlar (oʻzi yopishadigan)</translation>
 <translation id="3133565499688974786">Birlamchi qidiruv tizimi: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> qidiruvi</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Mavjud emas}=1{1 ta tizimga kirgan hisob axborotlari}other{# ta tizimga kirgan hisob axborotlari}}</translation>
 <translation id="3140646734028448730">Biznes xizmatlar</translation>
 <translation id="3141093262818886744">Baribir ochilsin</translation>
 <translation id="3141641372357166056">Rozilik bildirilmagan</translation>
@@ -2475,7 +2476,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5786044859038896871">Bank karta ma’lumotlari to‘ldirilsinmi?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu toʻlov usuli ushbu qurilmadan olib tashlanadi</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Hech qanday}=1{1 ta hisobga kirish maʼlumotlari}other{# ta hisobga kirish maʼlumotlari}}</translation>
 <translation id="5800727402210090597">Mobil telefon tuzatish xizmatlari</translation>
 <translation id="580241730938216256">Yangilashni boshlash</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> kartangiz ma’lumotlari to‘ldirilsinmi?</translation>
@@ -3206,7 +3206,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7201591969684833065">Administratorga koʻrinadigan axborotlar:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Inkognito varaq ochish va internetdan maxfiy foydalanish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="7203375778433816396">Chrome brauzerini standart brauzer qilish</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Hech qanday}=1{1 ta kod}other{# ta kod}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> sayti xavfsizlik standartlariga muvofiq kelmadi.</translation>
 <translation id="7210993021468939304">Konteyner ichidagi Linux jarayonlari va Linux ilovalarining konteyner ichida oʻrnatilishi va ishga tushirilishi</translation>
 <translation id="721197778055552897">Bu muammo haqidagi <ph name="BEGIN_LINK" />tafsilotlar<ph name="END_LINK" />.</translation>

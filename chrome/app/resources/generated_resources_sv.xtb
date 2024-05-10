@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">Läs in bild</translation>
 <translation id="1026959648338730078">Windows Hello eller extern säkerhetsnyckel</translation>
 <translation id="1028700151766901954">Orsak: Stöd för äldre webbläsare använder <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
+<translation id="1028823395684328817">Verifiera din identitet för att fortsätta använda lösenord och annat i Google-kontot</translation>
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1029317248976101138">Zooma in</translation>
 <translation id="1029526375103058355">Lätt klick på styrplattan</translation>
@@ -91,7 +92,7 @@
 <translation id="10619348099955377">Kopiera visningsnamn</translation>
 <translation id="1062407476771304334">Ersätt</translation>
 <translation id="1062628064301375934">Hjälp oss att göra webben mer privat</translation>
-<translation id="1066964438793906105">Sök efter skadlig programvara</translation>
+<translation id="1066964438793906105">Sök efter skadlig kod</translation>
 <translation id="1067661089446014701">Du kan öka säkerheten genom att kryptera lösenord på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="1067922213147265141">Andra Google-tjänster</translation>
 <translation id="106814709658156573">Låt ditt barn trycka på fingeravtryckssensorn nere till vänster på tangentbordet för att ställa in fingeravtryck. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
@@ -779,7 +780,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1576729678809834061">Rapportera detta sökresultat</translation>
 <translation id="1578488449637163638">Mörkt</translation>
 <translation id="1578558981922970608">Tvångsavsluta</translation>
-<translation id="157931050206866263">Läs mer om genomsökningar efter skadlig programvara</translation>
+<translation id="157931050206866263">Läs mer om genomsökningar efter skadlig kod</translation>
 <translation id="1580772913177567930">Kontakta administratören</translation>
 <translation id="1581962803218266616">Visa i Finder</translation>
 <translation id="1582955169539260415">radera [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -934,7 +935,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1674073353928166410">Öppna alla (<ph name="URL_COUNT" />) i ett inkognitofönster</translation>
 <translation id="1677306805708094828">Det går inte att lägga till <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
-<translation id="1678849866171627536">Genomsökningen misslyckades. Den här filen kan innehålla ett virus eller skadlig programvara.</translation>
+<translation id="1678849866171627536">Genomsökningen misslyckades. Den här filen kan innehålla ett virus eller skadlig kod.</translation>
 <translation id="1679068421605151609">Verktyg för utvecklare</translation>
 <translation id="1679810534535368772">Vill du avsluta?</translation>
 <translation id="167983332380191032">Hanteringstjänsten skickade ett HTTP-fel.</translation>
@@ -1451,7 +1452,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2046702855113914483">Ramen (nudelsoppa)</translation>
 <translation id="204706822916043810">Den virtuella maskinen kontrolleras</translation>
 <translation id="2048182445208425546">Åtkomst till din nätverkstrafik</translation>
-<translation id="2048254245884707305">Söker efter skadlig programvara …</translation>
+<translation id="2048254245884707305">Söker efter skadlig kod …</translation>
 <translation id="2048554637254265991">Ett fel uppstod när hanteraren av behållare skulle startas. Försök igen.</translation>
 <translation id="2048653237708779538">Åtgärden är inte tillgänglig</translation>
 <translation id="204914487372604757">Skapa genväg</translation>
@@ -1588,7 +1589,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2146263598007866206">Webbplatser kan automatiskt ladda ned relaterade filer samtidigt så att du sparar tid</translation>
 <translation id="2147218225094845757">Dölj sidopanel</translation>
 <translation id="2147282432401652483">kommando</translation>
-<translation id="2147402320887035428">Den här filen kan innehålla skadlig programvara.<ph name="LINE_BREAK" />Google Säker webbsökning kontrollerar om filen är osäker. Genomsökningen tar vanligtvis några sekunder.</translation>
+<translation id="2147402320887035428">Den här filen kan innehålla skadlig kod.<ph name="LINE_BREAK" />Google Säker webbsökning kontrollerar om filen är osäker. Genomsökningen tar vanligtvis några sekunder.</translation>
 <translation id="2148219725039824548">Det gick inte att montera den delade resursen. Den angivna resursen hittades inte i nätverket.</translation>
 <translation id="2148756636027685713">Formateringen är klar</translation>
 <translation id="2148892889047469596">Casta fliken</translation>
@@ -2697,7 +2698,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2956070239128776395">Ett avsnitt har kapslats in i en grupp: <ph name="ERROR_LINE" /></translation>
 <translation id="2958721676848865875">Varning vid paketering av tillägg</translation>
 <translation id="2959127025785722291">Något gick fel. Det gick inte att slutföra genomsökningen. Försök igen.</translation>
-<translation id="2959474507964749987">Den här krypterade filen kan innehålla ett virus eller skadlig programvara.<ph name="LINE_BREAK" />Du kan kontrollera om den är säker genom att skicka filen och lösenordet till Google Säker webbsökning. Genomsökningen tar vanligtvis några sekunder.<ph name="LINE_BREAK" />Lägg till filens lösenord för att genomsöka den.</translation>
+<translation id="2959474507964749987">Den här krypterade filen kan innehålla ett virus eller skadlig kod.<ph name="LINE_BREAK" />Du kan kontrollera om den är säker genom att skicka filen och lösenordet till Google Säker webbsökning. Genomsökningen tar vanligtvis några sekunder.<ph name="LINE_BREAK" />Lägg till filens lösenord för att genomsöka den.</translation>
 <translation id="2959842337402130152">Återställningen misslyckades eftersom det inte finns tillräckligt med lagringsutrymme. Frigör <ph name="SPACE_REQUIRED" /> lagringsutrymme på enheten och försök igen.</translation>
 <translation id="2960208947600937804">Ett fel uppstod när Linux skulle konfigureras. Kontakta administratören.</translation>
 <translation id="2960942820860729477">Uppdateringsfrekvens</translation>
@@ -2852,7 +2853,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3072775339180057696">Vill du låta webbplatsen visa <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Översätt hela sidan</translation>
 <translation id="3075144191779656260">Tryck på fingeravtryckssensorn på vänster sida av <ph name="DEVICE_TYPE" />. Din fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3075740753681485522">Av • Det här tillägget innehåller skadlig programvara</translation>
+<translation id="3075740753681485522">Av • Det här tillägget innehåller skadlig kod</translation>
 <translation id="3075874217500066906">En omstart krävs för att Powerwash-processen ska inledas. Efter omstarten får du bekräfta att du vill fortsätta.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Spara endast på den här enheten</translation>
@@ -3159,7 +3160,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3323521181261657960">Bonus! Du har fått mer skärmtid</translation>
 <translation id="3325930488268995856">Microsoft OneDrive har anslutits</translation>
 <translation id="3325995804968971809">Stil</translation>
-<translation id="3327050066667856415">En Chromebook är gjord för att vara säker. Enheten skyddas från skadlig programvara automatiskt – inga specialprogram behövs.</translation>
+<translation id="3327050066667856415">En Chromebook är gjord för att vara säker. Enheten skyddas från skadlig kod automatiskt – inga specialprogram behövs.</translation>
 <translation id="3328489342742826322">Om du återställer från en säkerhetskopia raderas befintliga Linux-program och all data i mappen för Linux-filer.</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Appinformation</translation>
@@ -3320,6 +3321,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3450180775417907283"><ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering nu.</translation>
 <translation id="3452999110156026232">Föräldraåtkomst</translation>
 <translation id="3453082738208775226">Vill du rensa i lagringsutrymmet offline?</translation>
+<translation id="3453597230179205517">Platsåtkomst har blockerats</translation>
 <translation id="3453612417627951340">Auktorisering behövs</translation>
 <translation id="3454213325559396544">Detta är den sista automatiska programvaru- och säkerhetsuppdateringen för <ph name="DEVICE_TYPE" />. Uppgradera till en nyare modell om du vill få uppdateringar i framtiden.</translation>
 <translation id="3454818737556063691">Vill du flytta 1 fil till <ph name="CLOUD_PROVIDER" /> och öppna den?</translation>
@@ -3397,7 +3399,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3514335087372914653">Spelinställningar</translation>
 <translation id="3514373592552233661">Prioriterade nätverk väljs före andra kända nätverk när det finns flera nätverk tillgängliga</translation>
 <translation id="3514647716686280777">Du har nu standardsäkerhetsskydd. Aktivera Förbättrad säker webbsökning i Chrome-inställningarna om du vill få ett bättre skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
-<translation id="3514681096978190000">Den här arkivfilen innehåller andra filer som kan dölja skadlig programvara</translation>
+<translation id="3514681096978190000">Den här arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="3515983984924808886">Tryck på säkerhetsnyckeln igen för att bekräfta återställningen. All information som lagras på säkerhetsnyckeln, inklusive dess pinkod, raderas.</translation>
 <translation id="3518866566087677312">Bokmärk saker som du vill komma tillbaka till senare</translation>
 <translation id="3519564332031442870">Servertjänst för utskrift</translation>
@@ -3546,6 +3548,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3627588569887975815">Öppna länk i inko&amp;gnitofönster</translation>
 <translation id="3627671146180677314">Förnyelsetid för Netscape-certifikat</translation>
 <translation id="3628275722731025472">Inaktivera Bluetooth</translation>
+<translation id="3629630597033136279">Av • Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data</translation>
 <translation id="3629664892718440872">Kom ihåg det här valet</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Lägg till den här webbplatsen på hyllan och använd den när som helst</translation>
@@ -4604,7 +4607,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jälp</translation>
-<translation id="4408965460206576430">Den här filen innehåller skadlig programvara eller kommer från en misstänkt webbplats</translation>
+<translation id="4408965460206576430">Den här filen innehåller skadlig kod eller kommer från en misstänkt webbplats</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4409697491990005945">Marginaler</translation>
 <translation id="4409779593816003679">Lösenord och autofyll</translation>
@@ -4956,6 +4959,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
 <translation id="4675828034887792601">Skapa genvägar för att söka på webbplatser och hantera sökmotorn</translation>
 <translation id="4676595058027112862">Phone Hub, Läs mer</translation>
+<translation id="4676616966096505747">Viss data har inte sparats i ditt konto ännu</translation>
 <translation id="4677772697204437347">GPU-minne</translation>
 <translation id="467809019005607715">Google Presentationer</translation>
 <translation id="4678848110205818817">Kredit-/bankkort</translation>
@@ -5118,7 +5122,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="481574578487123132">Länkade enheter</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, information</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmärke har raderats}other{{COUNT} bokmärken har raderats}}</translation>
-<translation id="481689174647911539">Den här filen kan innehålla ett virus eller skadlig programvara.<ph name="LINE_BREAK" />Du kan skicka den till Google Säker webbsökning för att kontrollera om den är säker. Genomsökningen tar vanligtvis några sekunder.</translation>
+<translation id="481689174647911539">Den här filen kan innehålla ett virus eller skadlig kod.<ph name="LINE_BREAK" />Du kan skicka den till Google Säker webbsökning för att kontrollera om den är säker. Genomsökningen tar vanligtvis några sekunder.</translation>
 <translation id="4816900689218414104">Skapa en nyckel på en telefon eller surfplatta</translation>
 <translation id="4819323978093861656">{0,plural, =0{Avslutas nu.}=1{Avslutas om 1 sekund}other{Avslutas om # sekunder}}</translation>
 <translation id="4819607494758673676">Aviseringar från Google Assistent</translation>
@@ -5340,7 +5344,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4977942889532008999">Bekräfta åtkomst</translation>
 <translation id="4979263087381759787">Utvecklaralternativ</translation>
 <translation id="4979510648199782334">Konfigureringen av Microsoft 365 är klar</translation>
-<translation id="4980805016576257426">Tillägget innehåller skadlig programvara.</translation>
+<translation id="4980805016576257426">Tillägget innehåller skadlig kod.</translation>
 <translation id="4983159853748980742">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chrome. Försök sedan igen.</translation>
 <translation id="4986706507552097681">Du kan alltid välja vad som ska synkroniseras i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4986728572522335985">All data på säkerhetsnyckeln raderas, inklusive pinkoden</translation>
@@ -5446,6 +5450,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5070773577685395116">Fick du den inte?</translation>
 <translation id="5071295820492622726">Tillbaka till senaste nedladdningarna</translation>
 <translation id="5071892329440114717">Visa detaljer om standardskydd</translation>
+<translation id="5072500507106264618">Endast systemtjänster kan använda din plats</translation>
 <translation id="5072836811783999860">Visa hanterade bokmärken</translation>
 <translation id="5072900412896857127">Det gick inte att läsa in användarvillkoren för Google Play. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> och # till}}</translation>
@@ -5488,6 +5493,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5097874180538493929">Klicka automatiskt när markören stannar</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> har fästs av administratören</translation>
 <translation id="5101839224773798795">Klicka automatiskt när pekaren stannar</translation>
+<translation id="5102244391872941183">Appar och webbplatser med platsbehörighet och systemtjänster kan använda din plats</translation>
 <translation id="5103311607312269661">tangenten som ökar skärmens ljusstyrka</translation>
 <translation id="5106350808162641062">Ta bort</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> kontrolleras via Family Link. Du kan lägga till skolkonton för att få åtkomst till skolresurser med föräldrakontroll.</translation>
@@ -5693,7 +5699,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5260508466980570042">Det gick inte att verifiera e-postadressen eller lösenordet. Försök igen.</translation>
 <translation id="5261619498868361045">Behållarnamnet får inte vara tomt.</translation>
 <translation id="5261683757250193089">Öppna i Web Store</translation>
-<translation id="5261799091118902550">Den här filen kan innehålla ett virus eller skadlig programvara. Du kan skicka den till Google för att kontrollera om den är säker.</translation>
+<translation id="5261799091118902550">Den här filen kan innehålla ett virus eller skadlig kod. Du kan skicka den till Google för att kontrollera om den är säker.</translation>
 <translation id="5262334727506665688">Fortsätt spara lösenord i Google-kontot</translation>
 <translation id="5262784498883614021">Anslut till ett nätverk automatiskt</translation>
 <translation id="5263656105659419083">Klicka på Fäst uppe till höger för att enkelt återgå till sidopanelen</translation>
@@ -5761,7 +5767,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5307030433605830021">Källan stöds inte</translation>
 <translation id="5307386115243749078">Parkoppla Bluetooth-brytare</translation>
 <translation id="5308380583665731573">Anslut</translation>
-<translation id="5308989548591363504">Titta efter skadlig programvara</translation>
+<translation id="5308989548591363504">Titta efter skadlig kod</translation>
 <translation id="5309418307557605830">Google Assistent kan användas här också</translation>
 <translation id="5309641450810523897">Supportärende-id</translation>
 <translation id="5311304534597152726">Loggar in som</translation>
@@ -6227,7 +6233,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5663653125349867535">Läslista</translation>
 <translation id="5663918299073387939">Webbplatser begär vanligtvis tillstånd att styra och omprogrammera MIDI-enheter för att skapa musik, redigera musik eller uppdatera enhetens firmware</translation>
 <translation id="5666911576871845853">&amp;Lägg till ny profil</translation>
-<translation id="5667293444945855280">Skadlig programvara</translation>
+<translation id="5667293444945855280">Skadlig kod</translation>
 <translation id="5667546120811588575">Google Play konfigureras …</translation>
 <translation id="5668351004957198136">Ej godkänd</translation>
 <translation id="5669863904928111203">ChromeOS är inaktuellt</translation>
@@ -6594,7 +6600,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5948536763493709626">Anslut ett tangentbord eller en mus eller fortsätt att konfigurera med pekskärmen. Om du använder Bluetooth-enheter kontrollerar du att de är klara att koppla.</translation>
 <translation id="5949544233750246342">Det gick inte att analysera filen</translation>
 <translation id="594993197557058302">Tryck på en till fyra specialtangenter (Ctrl, Alt, Skift, Sök eller appstartartangenten) och en till tangent. Du kan även välja en enda tangent.</translation>
-<translation id="5950762317146173294">Den här filen kan innehålla ett virus eller skadlig programvara</translation>
+<translation id="5950762317146173294">Den här filen kan innehålla ett virus eller skadlig kod</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> vill använda lokala teckensnitt</translation>
 <translation id="5951624318208955736">Skärm</translation>
 <translation id="5952020381407136867">styrplatta</translation>
@@ -6606,6 +6612,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5955721306465922729">En webbplats vill öppna den här appen.</translation>
 <translation id="5955809630138889698">Demoläget kanske bara kan användas online på den här enheten. Kontakta supporten om du vill veta mer.</translation>
 <translation id="5957987129450536192">Tryck på textuppläsningsikonen nära profilbilden och markera sedan det som du vill få uppläst.</translation>
+<translation id="5958836583172610505">Synkronisering har aktiverats</translation>
 <translation id="5959471481388474538">Nätverket är inte tillgängligt</translation>
 <translation id="5959982036207776176">Förstoringsglaset följer ordet som läses upp via textuppläsningen</translation>
 <translation id="5963413905009737549">Avsnitt</translation>
@@ -7183,7 +7190,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6408118934673775994">Läs och ändra dina uppgifter på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> och <ph name="WEBSITE_3" /></translation>
 <translation id="6410257289063177456">Bildfiler</translation>
 <translation id="6410328738210026208">Byt kanal och Powerwash</translation>
-<translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig programvara eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
+<translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig kod eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
 <translation id="6411135999030237579">Håll tangenten nedtryckt för att upprepa den automatiskt</translation>
 <translation id="6414618057231176439">Välj vilken version av <ph name="VM_NAME" /> som ska installeras.</translation>
 <translation id="641469293210305670">Installera uppdateringar och appar</translation>
@@ -7443,7 +7450,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6610064275805055636">Hantera isolerade webbappar</translation>
 <translation id="6611972847767394631">Här finns dina flikar</translation>
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
-<translation id="6613267708691765962">Söker efter skadlig programvara …</translation>
+<translation id="6613267708691765962">Söker efter skadlig kod …</translation>
 <translation id="6613668613087513143">Det gick inte att slutföra uppdateringen eftersom utrymmet inte räcker till. Frigör <ph name="NECESSARY_SPACE" /> på enheten och försök igen i webbläsaren Chrome.</translation>
 <translation id="6615455863669487791">Visa mig</translation>
 <translation id="6618097958368085618">Behåll ändå</translation>
@@ -8107,6 +8114,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7120762240626567834">Trafik till webbläsaren Chrome och Android blockeras om det inte finns någon VPN-anslutning</translation>
 <translation id="7121438501124788993">Utvecklarläge</translation>
 <translation id="7121728544325372695">Smarta bindestreck</translation>
+<translation id="7122605570852873914">Logga ut ändå</translation>
 <translation id="7123030151043029868">Får ladda ned flera filer automatiskt</translation>
 <translation id="7124013154139278147">Tilldela brytare för Föregående</translation>
 <translation id="7124712201233930202">Organisationens policyer efterlevdes inte</translation>
@@ -9221,6 +9229,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7947964080535614577">Webbplatser som visar annonser brukar göra det så att de kan tillhandahålla innehåll eller tjänster utan kostnad. Men vissa webbplatser kan visa påträngande eller vilseledande annonser.</translation>
 <translation id="7948407723851303488">Alla sidor av <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Orsak: Stöd för äldre webbläsare fungerar bara med webbadresser som har protokollen http://, https:// och file://.</translation>
+<translation id="7950814699499457511">På • Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data</translation>
 <translation id="7951265006188088697">Öppna <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> om du vill lägga till eller hantera betalningsmetoder på Google Pay</translation>
 <translation id="795130320946928025">Inaktivera virtuellt kort</translation>
 <translation id="795240231873601803">Använd företagsregistrering för jobb- och skolkonton</translation>
@@ -10191,7 +10200,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8673026256276578048">Sök på webben ...</translation>
 <translation id="867329473311423817">Tillåts hantera fönster på alla skärmar</translation>
 <translation id="8673383193459449849">Serverfel</translation>
-<translation id="8674903726754070732">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-ID. Detta förhindrar att ChromeOS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig programvara<ph name="END_BOLD" />.</translation>
+<translation id="8674903726754070732">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-ID. Detta förhindrar att ChromeOS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig kod<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Webbplatser använder den här funktionen för att aktivera helskärm automatiskt. Användaren måste vanligtvis aktivera helskärmsläget själv.</translation>
 <translation id="8675704450909805533">Installationsprogram hittade ingen giltig destination för installationen av <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# videor}}</translation>

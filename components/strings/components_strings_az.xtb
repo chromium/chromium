@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">Etiket (daimi)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> defolt axtarış mexanizmidir</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Axtarın <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Yoxdur}=1{1 hesab üçün giriş datası}other{# hesabla üçün giriş datası}}</translation>
 <translation id="3140646734028448730">Biznes xidmətləri</translation>
 <translation id="3141093262818886744">Hər halda açın</translation>
 <translation id="3141641372357166056">Razılıq qərarı yoxdur</translation>
@@ -2473,7 +2474,6 @@
 <translation id="5786044859038896871">Kart məlumatlarını doldurmaq istəyirsiniz?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu ödəniş metodu bu cihazdan silinəcək</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Yoxdur}=1{1 hesab üçün giriş datası}other{# hesab üçün giriş datası}}</translation>
 <translation id="5800727402210090597">Mobil telefon təmir və xidmətləri</translation>
 <translation id="580241730938216256">Güncəllənməni başladın</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> doldurmaq istəyirsiniz?</translation>
@@ -3205,7 +3205,6 @@
 <translation id="7201591969684833065">Administrator baxa bilər:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq yeni Anonim tab açın və gizli baxış keçirin</translation>
 <translation id="7203375778433816396">Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Yoxdur}=1{1 giriş açarı}other{# giriş açarı}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> təhlükəsizlik standartlarına əməl etmir.</translation>
 <translation id="7210993021468939304">Konteyner nəzdində Linux fəaliyyəti. Konteyner nəzdində Linux tətbiqləri quraşdırmaq, icra etmək mümkündür</translation>
 <translation id="721197778055552897">Bu problem haqqında <ph name="BEGIN_LINK" />ətraflı məlumat alın<ph name="END_LINK" />.</translation>

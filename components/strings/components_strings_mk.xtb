@@ -1063,6 +1063,7 @@
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
 <translation id="3039406992698062762">Семејно патување</translation>
+<translation id="3041176923638368519">Погледнете ги условите за поволности за картички</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
 <translation id="3045769629416806687">Екстремни спортови</translation>
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
@@ -1103,6 +1104,7 @@
 <translation id="3126023634486644099">Етикети (трајни)</translation>
 <translation id="3133565499688974786">Отсега <ph name="SEARCH_ENGINE_NAME" /> е вашиот стандарден пребарувач</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – пребарувајте <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Нема}=1{податоци за најавување за 1 сметка}one{податоци за најавување за # сметка}other{податоци за најавување за # сметки}}</translation>
 <translation id="3140646734028448730">Бизнис услуги</translation>
 <translation id="3141093262818886744">Сепак отвори</translation>
 <translation id="3141641372357166056">Нема одлука за согласност</translation>
@@ -2476,7 +2478,6 @@
 <translation id="5786044859038896871">Дали сакате да ги пополните информациите од картичката?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Нема}=1{податоци за најавување за 1 сметка}one{податоци за најавување за # сметка}other{податоци за најавување за # сметки}}</translation>
 <translation id="5800727402210090597">Поправка и сервисирање на мобилни телефони</translation>
 <translation id="580241730938216256">Започни ажурирање</translation>
 <translation id="5803412860119678065">Дали сакате да пополните <ph name="CARD_DETAIL" />?</translation>
@@ -2590,6 +2591,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /> (синхронизирани)</translation>
 <translation id="6028591542479806248">Управувајте со мобилните и известувањата по е-пошта</translation>
 <translation id="6028833024483927901">Светска кујна</translation>
+<translation id="6030251660719692307">Криптографски клуч од Google Password Manager</translation>
 <translation id="603068602130820122">Двојно спојување десно</translation>
 <translation id="6032524144326295339">Поштенско сандаче 2</translation>
 <translation id="6032955021262906325">Врзување лево</translation>
@@ -3207,7 +3209,6 @@
 <translation id="7201591969684833065">Администраторот може да гледа:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да отворите нова картичка „Инкогнито“ и да прелистувате приватно</translation>
 <translation id="7203375778433816396">Поставете го Chrome како стандарден прелистувач на системот</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Нема}=1{1 криптографски клуч}one{# криптографски клуч}other{# криптографски клучеви}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придржува до стандардите за безбедност.</translation>
 <translation id="7210993021468939304">Активноста на Linux во рамките на контејнерот и може да инсталира и извршува апликации на Linux во рамките на контејнерот</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>

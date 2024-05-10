@@ -18,6 +18,7 @@
 <translation id="1194807384646768652">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ປະເພດນີ້ບໍ່ໄດ້ມີການດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍ</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google ແນະນໍາໃຫ້ຕັ້ງຄ່າ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
+<translation id="1265739287306757398">ສຶກສາວິທີການ</translation>
 <translation id="1278833599417554002">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="1302523850133262269">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chrome ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ແກ້ໄຂ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS Flex.</translation>
@@ -36,6 +37,7 @@
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="155168855724261758">ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>
+<translation id="1551749261806528781">ເພື່ອບັນທຶກ ແລະ ໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome. ລະບົບຈະບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານຫຼັງຈາກທີ່ທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ກໍາລັງໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
@@ -180,6 +182,7 @@
 <translation id="3635073343384702370">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້</translation>
 <translation id="3667616615096815454">ບໍ່ສາມາດຕິດຕັ້ງໄດ້, ເຊີບເວີບໍ່ຮູ້ຈັກແອັບພລິເຄຊັນ.</translation>
 <translation id="3673813398384385993">Chrome ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
+<translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3697952514309507634">ໂປຣໄຟລ໌ Chrome ອື່ນໆ</translation>
 <translation id="3703994572283698466">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ, ຮວມທັງ <ph name="BEGIN_LINK_LINUX_OSS" />ສະພາບແວດລ້ອມການພັດທະນາ Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ເວີຊັນ ChromeOS Flex</translation>
@@ -318,6 +321,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
+<translation id="5947104538377036631">ທາງລັດ Chrome</translation>
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6014316319780893079">ດ້ວຍ <ph name="BEGIN_LINK" />ເຄື່ອງມືຈາກ Chrome<ph name="END_LINK" />, ທ່ານຈະສາມາດທ່ອງເວັບໄດ້ຢ່າງປອດໄພ ແລະ ຄວບຄຸມສິ່ງຕ່າງໆໄດ້</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
@@ -346,6 +350,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ 1 ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}other{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ # ນາທີ. ລຶບຂໍ້ມູນການທ່ອງເວັບອອກແລ້ວ. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.}}</translation>
 <translation id="6418662306461808273">ສະຫຼັບໄປຫາໂປຣໄຟລ໌ Chrome ທີ່ມີຢູ່ກ່ອນແລ້ວບໍ?</translation>
+<translation id="6479881432656947268">ເຂົ້າເບິ່ງ Chrome Web Store</translation>
 <translation id="6481963882741794338">ລິ້ງ Chrome ແລະ ບໍລິການອື່ນໆຂອງ Google ເພື່ອການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຈຸດປະສົງອື່ນໆ</translation>
 <translation id="648319183876919572">Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນຊ່ວຍປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
 <translation id="6489302989675808168">ເປີດ • Chrome ບໍ່ສາມາດຢັ້ງຢືນໄດ້ວ່າສ່ວນຂະຫຍາຍນີ້ມາຈາກໃສ</translation>
@@ -478,6 +483,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8416347857511542594">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວໃນ Chrome</translation>
 <translation id="8418845734693287262">ChromeOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ.</translation>
 <translation id="842386925677997438">ເຄື່ອງມືຄວາມປອດໄພຂອງ Chrome</translation>
+<translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8433638294851456451">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8451192282033883849">ບັນຊີຂອງທ່ານແມ່ນຈັດການໂດຍ <ph name="MANAGER_NAME" />. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດເບິ່ງ ແລະ ແກ້ໄຂໂປຣໄຟລ໌ໂປຣແກຣມທ່ອງເວັບ Chrome ນີ້ ແລະ ຂໍ້ມູນຂອງມັນໄດ້ ເຊັ່ນ: ບຸກມາກ, ປະຫວັດ ແລະ ລະຫັດຜ່ານ.</translation>
 <translation id="8496177819998570653">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>

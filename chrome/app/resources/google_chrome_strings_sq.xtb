@@ -18,6 +18,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1194807384646768652">Chrome e bllokoi këtë shkarkim sepse lloji i skedarit nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google rekomandon që Chrome të caktohet si parazgjedhje</translation>
+<translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e Google Chrome OS Flex.</translation>
@@ -80,6 +81,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2174917724755363426">Instalimi nuk përfundoi. E konfirmon që dëshiron ta anulosh?</translation>
 <translation id="2190166659037789668">Gabim në kontrollin e përditësimeve: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199691482078155239">Chrome të jep më shumë kontroll mbi reklamat që shikon ti dhe kufizon ato që sajtet mund të mësojnë për ty kur të shfaqin reklama të personalizuara</translation>
+<translation id="2216543877350048334">Për ta hequr "Llogarinë tënde të Google" nga Chrome, dil nga llogaria</translation>
 <translation id="223889379102603431">Informacione rreth mënyrës se si i menaxhon Chrome certifikatat e veta rrënjë</translation>
 <translation id="2258103955319320201">Për t'u qasur te gjërat e shfletuesit Chrome nëpër të gjitha pajisjet e tua, identifikohu dhe më pas aktivizo sinkronizimin</translation>
 <translation id="2290014774651636340">Çelësat API të Google mungojnë. Disa funksione të Chrome do të çaktivizohen.</translation>
@@ -137,6 +139,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2929907241665500097">Chrome nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chrome dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
+<translation id="2970681950995291301">Për ta hequr "Llogarinë tënde të Google" nga Chrome, dil nga llogaria në Chrome te faqja e "Cilësimeve"</translation>
 <translation id="3018957014024118866">Fshi po ashtu të dhënat nga Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Nis sërish për të përditësuar Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome është në modalitetin e sfondit.</translation>
@@ -177,6 +180,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
+<translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3697952514309507634">Profilet e tjera të Chrome</translation>
 <translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
@@ -238,6 +242,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4624065194742029982">Modaliteti "i fshehtë" i Chrome</translation>
 <translation id="4627412468266359539">Opsionale: Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
+<translation id="4643107447730827793">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo.</translation>
 <translation id="4680828127924988555">Anulo instalimin</translation>
 <translation id="469553575393225953">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chrome rekomandon t'i instalosh ato vetëm nga "Dyqani i uebit i Chrome"</translation>
 <translation id="4724676981607797757">Instalimi dështoi për shkak të një gabimi të protokollit të pambështetur.</translation>
@@ -262,6 +267,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4970880042055371251">Versioni i ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliko te “Menaxheri i fjalëkalimeve i Google”</translation>
+<translation id="5120334927898581447">Identifikohu në Chrome kur identifikohesh në shërbimet e tjera të Google</translation>
 <translation id="5126049312684316860">Chrome ngarkon paraprakisht edhe faqe të tjera që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="5132929315877954718">Zbulo aplikacione, lojëra, shtesa dhe tema të mrekullueshme për Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizo profilin tënd të Chrome</translation>
@@ -299,6 +305,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5709557627224531708">Caktoje Chrome si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5727531838415286053">Nëse Chrome të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin interesat e tua në vazhdimësi çdo muaj. Interesat rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="5736850870166430177">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
+<translation id="575458254678141039">Kur identifikohesh në shërbimet e Google, si p.sh. Gmail ose YouTube, me <ph name="USER_EMAIL" />, mund të identifikohesh në Chrome me të njëjtën llogari</translation>
 <translation id="5756509061973259733">Një profil i Chrome me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome nuk mund të hapej. Provo përsëri.</translation>
@@ -340,6 +347,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
+<translation id="6479881432656947268">Vizito "Dyqanin e uebit të Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
 <translation id="6489302989675808168">Aktive • Chrome nuk mund të verifikojë se nga vjen kjo shtesë</translation>
@@ -349,6 +357,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="6632473616050862500">Chrome OS Flex mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6660596345553328257">Do të identifikohesh në Chrome?</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
 <translation id="6679975945624592337">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="6696915334902295848">Chrome ka nevojë për lejen e mikrofonit për këtë sajt</translation>
@@ -377,6 +386,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7036251913954633326">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund të përdorësh <ph name="GUEST_LINK_BEGIN" />modalitetin "Vizitor"<ph name="GUEST_LINK_END" /> në shfletuesin Chrome. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
 
 Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. "Llogaritë e tua të Google" mund t'i menaxhosh te <ph name="SETTINGS_LINK_BEGIN" />Cilësimet<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="7037538054043837165">Për të ruajtur dhe përdorur fjalëkalimet e tua etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
 <translation id="7071827361006050863">Chrome do t'i fshijë së shpejti të dhënat e shfletimit</translation>
 <translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
@@ -447,8 +457,10 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
 <translation id="8086881907087796310">Instalimi dështoi sepse kompjuteri yt nuk i përmbush kërkesat minimale për harduerin.</translation>
+<translation id="8111297389482307122">Chrome duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del nga llogaria, këto të dhëna do të qëndrojnë në këtë pajisje.</translation>
 <translation id="8129812357326543296">Informacion rreth &amp;Google Chrome</translation>
 <translation id="813913629614996137">Po fillon...</translation>
+<translation id="8162006532256575008">Përdor Chrome pa pasur llogari</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8257796129973882597">Mund të hapësh faqeshënuesit, modalitetin e leximit etj. nga menyja e Chrome</translation>
 <translation id="8267953129876836456">Chrome gjeti disa rekomandime për sigurinë për t'u rishikuar nga ti</translation>
@@ -459,6 +471,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8336463659890584292">Kur një sajt kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome përdor serverët e Google. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht, por Google mëson se çfarë sajtesh ngarkohen paraprakisht.</translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chrome. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
+<translation id="8350273347136316769">Më identifiko automatikisht në Chrome</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Chrome mund të përllogarisë interesat e tua. Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
@@ -467,6 +480,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8416347857511542594">Mëso më shumë rreth personalizimit të reklamave në Chrome</translation>
 <translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="842386925677997438">Veglat e sigurisë të Chrome</translation>
+<translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8451192282033883849">Llogaria jote menaxhohet nga <ph name="MANAGER_NAME" />. Administratori yt mund ta shikojë dhe ta modifikojë këtë profil të shfletuesit Chrome dhe të dhënat e tij, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet.</translation>
 <translation id="8496177819998570653">Men&amp;axheri i fjalëkalimeve i Google</translation>
@@ -500,6 +514,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
+<translation id="8948460679427074738">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chrome rekomandon që ta heqësh atë.</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8999117580775242387">Kur HTTPS nuk ofrohet, Chrome do të përdorë një lidhje të pasigurt pa të të paralajmëruar</translation>
@@ -508,6 +523,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9053892488859122171">Sistemi Chrome OS Flex</translation>
 <translation id="9090566250983691233">Mëso se pse Chrome i bllokon disa skedarë</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
+<translation id="9127728564687112483">Mos më identifiko në Chrome</translation>
 <translation id="9138603949443464873">Për të zbatuar ndryshimet, rinis Chrome</translation>
 <translation id="9195993889682885387">Chrome mund të përllogarisë interesat e tua bazuar në historikun tënd të shfletimit nga javët e fundit. Ky informacion qëndron në pajisjen tënde.</translation>
 <translation id="919706545465235479">Përditëso Chrome për të nisur sinkronizimin</translation>

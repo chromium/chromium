@@ -1104,6 +1104,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3126023634486644099">Etiketid (püsivad)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> on nüüd teie vaikeotsingumootor</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – üksuse <ph name="KEYWORD_SHORT_NAME" /> otsimine</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Mitte ühtki}=1{sisselogimisandmete üksus 1 konto kohta}other{sisselogimisandmete üksust # konto kohta}}</translation>
 <translation id="3140646734028448730">Äriteenused</translation>
 <translation id="3141093262818886744">Ava ikka</translation>
 <translation id="3141641372357166056">Nõusoleku otsus puudub</translation>
@@ -2477,7 +2478,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5786044859038896871">Kas soovite sisestada oma kaarditeabe?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">See makseviis kustutatakse sellest seadmest</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Puudub}=1{sisselogimisandmete üksus 1 konto kohta}other{sisselogimisandmete üksust # konto kohta}}</translation>
 <translation id="5800727402210090597">Mobiiltelefonide remont ja hooldus</translation>
 <translation id="580241730938216256">Alusta värskendamist</translation>
 <translation id="5803412860119678065">Kas soovite sisestada kirje <ph name="CARD_DETAIL" />?</translation>
@@ -3209,7 +3209,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7201591969684833065">Teie administraator näeb järgmist.</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage privaatse sirvimise jaoks uue inkognito vahelehe avamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="7203375778433816396">Määra Chrome süsteemi vaikebrauseriks</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Puudub}=1{1 pääsuvõti}other{# pääsuvõtit}}</translation>
 <translation id="7210863904660874423">Host <ph name="HOST_NAME" /> ei pea turvastandarditest kinni.</translation>
 <translation id="7210993021468939304">Saab vaadata Linuxi tegevusi konteineris ning installida ja käitada konteineris Linuxi rakendusi</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> selle probleemi kohta.</translation>

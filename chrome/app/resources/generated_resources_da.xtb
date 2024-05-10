@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">Indlæs billede</translation>
 <translation id="1026959648338730078">Windows Hello eller ekstern sikkerhedsnøgle</translation>
 <translation id="1028700151766901954">Årsag: LBS forbliver i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
+<translation id="1028823395684328817">Verificer din identitet for at fortsætte med at bruge adgangskoderne m.m. på din Google-konto</translation>
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tryk for at klikke</translation>
@@ -3321,6 +3322,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3450180775417907283"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering.</translation>
 <translation id="3452999110156026232">Forældreadgang</translation>
 <translation id="3453082738208775226">Vil du frigøre offlinelagerplads?</translation>
+<translation id="3453597230179205517">Lokationsadgang er blokeret</translation>
 <translation id="3453612417627951340">Mangler godkendelse</translation>
 <translation id="3454213325559396544">Dette er den sidste automatiske software- og sikkerhedsopdatering for denne <ph name="DEVICE_TYPE" />. Opgrader til en nyere model for at få fremtidige opdateringer.</translation>
 <translation id="3454818737556063691">Vil du flytte 1 fil til <ph name="CLOUD_PROVIDER" />, så den kan åbnes?</translation>
@@ -3547,6 +3549,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3627588569887975815">Åbn link i inkognitovindue</translation>
 <translation id="3627671146180677314">Tidspunkt for fornyelse af Netscape-certifikat</translation>
 <translation id="3628275722731025472">Deaktiver Bluetooth</translation>
+<translation id="3629630597033136279">Fra • Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data</translation>
 <translation id="3629664892718440872">Husk dette valg</translation>
 <translation id="3630132874740063857">Din telefon</translation>
 <translation id="3630995161997703415">Føj dette website til din hylde for at bruge det når som helst</translation>
@@ -4957,6 +4960,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
 <translation id="4675828034887792601">Opret genveje til søgning på websites, og administrer din søgemaskine</translation>
 <translation id="4676595058027112862">Telefonstyring – Få flere oplysninger</translation>
+<translation id="4676616966096505747">Nogle data er ikke gemt på din konto endnu</translation>
 <translation id="4677772697204437347">GPU-hukommelse</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Kredit-/debetkort</translation>
@@ -5447,6 +5451,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5070773577685395116">Har du brug for hjælp?</translation>
 <translation id="5071295820492622726">Tilbage til seneste downloads</translation>
 <translation id="5071892329440114717">Vis oplysninger om standardbeskyttelse</translation>
+<translation id="5072500507106264618">Det er kun systemtjenester, der kan bruge din lokation</translation>
 <translation id="5072836811783999860">Vis administrerede bogmærker</translation>
 <translation id="5072900412896857127">Servicevilkårene for Google Play kan ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> og # anden}other{<ph name="FILE1" />, <ph name="FILE2" /> og # andre}}</translation>
@@ -5489,6 +5494,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5097874180538493929">Klik automatisk, når markøren stopper</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> er fastgjort af din administrator</translation>
 <translation id="5101839224773798795">Klik automatisk, når markøren stopper</translation>
+<translation id="5102244391872941183">Apps og websites, der har lokationstilladelse, samt systemtjenester kan bruge din lokation</translation>
 <translation id="5103311607312269661">Skru op for skærmens lysstyrke</translation>
 <translation id="5106350808162641062">Fjern</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> forældrestyres af Family Link. Du kan tilføje skolekonti for at få adgang til skoleressourcer med en forældrestyret konto.</translation>
@@ -6607,6 +6613,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5955721306465922729">Et website vil gerne åbne denne app.</translation>
 <translation id="5955809630138889698">Denne enhed er muligvis ikke kvalificeret til onlinedemotilstand. Kontakt din supportrepræsentant for at få flere oplysninger.</translation>
 <translation id="5957987129450536192">Tryk på ikonet for tekstoplæsning i nærheden af dit profilbillede, og vælg derefter det, der skal læses højt.</translation>
+<translation id="5958836583172610505">Synkronisering er slået til</translation>
 <translation id="5959471481388474538">Netværket er ikke tilgængeligt</translation>
 <translation id="5959982036207776176">Lup følger det ord, der oplæses via Tekstoplæsning</translation>
 <translation id="5963413905009737549">Afsnit</translation>
@@ -8110,6 +8117,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7120762240626567834">Chrome-browseren og Android-trafik blokeres, medmindre der oprettes forbindelse til et VPN-netværk</translation>
 <translation id="7121438501124788993">Udviklertilstand</translation>
 <translation id="7121728544325372695">Smarte bindestreger</translation>
+<translation id="7122605570852873914">Log ud alligevel</translation>
 <translation id="7123030151043029868">Har tilladelse til at downloade flere filer automatisk</translation>
 <translation id="7124013154139278147">Tildel kontakt for handlingen "Forrige"</translation>
 <translation id="7124712201233930202">Din organisations politikker overholdes ikke</translation>
@@ -9223,6 +9231,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7947964080535614577">Websites viser normalt annoncer, så de kan levere indhold eller tjenester uden omkostninger. Nogle websites er dog kendt for at vise påtrængende eller vildledende annoncer.</translation>
 <translation id="7948407723851303488">Alle sider på <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Årsag: LBS understøtter kun http://-, https://- og file://-webadresser.</translation>
+<translation id="7950814699499457511">Til • Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data</translation>
 <translation id="7951265006188088697">Gå til din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /> for at tilføje eller administrere Google Pay-betalingsmetoder</translation>
 <translation id="795130320946928025">Deaktiver virtuelt kort</translation>
 <translation id="795240231873601803">Brug virksomhedstilmelding til arbejds- og skolekonti</translation>

@@ -1104,6 +1104,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3126023634486644099">Merkimiðar (varanlegir)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> er nú sjálfgefna leitarvélin þín</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Leita að <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Engar}=1{innskráningarupplýsingar fyrir einn reikning}one{innskráningarupplýsingar fyrir # reikning}other{innskráningarupplýsingar fyrir # reikninga}}</translation>
 <translation id="3140646734028448730">Viðskiptaþjónusta</translation>
 <translation id="3141093262818886744">Opna samt</translation>
 <translation id="3141641372357166056">Engin samþykkisákvörðun</translation>
@@ -2477,7 +2478,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5786044859038896871">Viltu fylla út upplýsingar um kortið?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Greiðslumátanum verður eytt úr tækinu</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ekkert}=1{innskráningarupplýsingar fyrir 1 reikning}one{innskráningarupplýsingar fyrir # reikning}other{innskráningarupplýsingar fyrir # reikninga}}</translation>
 <translation id="5800727402210090597">Viðgerðir og þjónusta við snjallsíma</translation>
 <translation id="580241730938216256">Hefja uppfærslu</translation>
 <translation id="5803412860119678065">Viltu fylla út <ph name="CARD_DETAIL" />?</translation>
@@ -3209,7 +3209,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7201591969684833065">Kerfisstjórinn þinn getur séð:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að opna nýjan huliðsflipa og fara huldu höfði</translation>
 <translation id="7203375778433816396">Stilla Chrome sem sjálfgefinn vafra kerfisins</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Enginn}=1{1 aðgangslykill}one{# aðgangslykill}other{# aðgangslyklar}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> uppfyllir ekki öryggiskröfur.</translation>
 <translation id="7210993021468939304">Virkni innan Linux-rammans og getur sett upp og keyrt Linux-forrit innan rammans</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um þetta vandamál.</translation>

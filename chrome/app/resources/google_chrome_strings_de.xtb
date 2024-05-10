@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1229096353876452996">Google empfiehlt, Chrome als Standardbrowser festzulegen</translation>
+<translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
 <translation id="1335640173511558774">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen liest und akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS Flex-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
@@ -176,6 +177,7 @@
 <translation id="3635073343384702370">Chrome kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="3667616615096815454">Installation nicht möglich. Die App ist dem Server nicht bekannt.</translation>
 <translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
+<translation id="3695446226812920698">Weitere Informationen</translation>
 <translation id="3697952514309507634">Andere Chrome-Profile</translation>
 <translation id="3703994572283698466">Chrome OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-Version</translation>
@@ -338,6 +340,7 @@
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
+<translation id="6479881432656947268">Chrome Web Store besuchen</translation>
 <translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
 <translation id="6489302989675808168">Aktiviert • Chrome kann nicht bestätigen, woher diese Erweiterung stammt</translation>
@@ -470,6 +473,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8416347857511542594">Weitere Informationen zur Personalisierung von Werbung in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="842386925677997438">Sicherheitstools von Chrome</translation>
+<translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8433638294851456451">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
 <translation id="8451192282033883849">Dein Konto wird von <ph name="MANAGER_NAME" /> verwaltet. Dein Administrator kann das Profil dieses Chrome-Browsers und seine Daten wie Lesezeichen, den Verlauf und Passwörter ansehen und bearbeiten.</translation>
 <translation id="8496177819998570653">Google P&amp;asswortmanager</translation>

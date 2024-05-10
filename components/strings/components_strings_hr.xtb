@@ -1105,6 +1105,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3126023634486644099">Naljepnice (trajno)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je sada vaša zadana tražilica</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – pretražite <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nijedan}=1{podaci o prijavi za jedan račun}one{podaci o prijavi za # račun}few{podaci o prijavi za # računa}other{podaci o prijavi za # računa}}</translation>
 <translation id="3140646734028448730">Poslovne usluge</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141641372357166056">Nema odluke o pristanku</translation>
@@ -2479,7 +2480,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5786044859038896871">Želite li ispuniti podatke o kartici?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Taj će se način plaćanja izbrisati s ovog uređaja</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Nijedan}=1{podaci za prijavu za jedan račun}one{podaci za prijavu za # račun}few{podaci za prijavu za # računa}other{podaci za prijavu za # računa}}</translation>
 <translation id="5800727402210090597">Popravci i usluge u vezi s mobilnim telefonima</translation>
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
 <translation id="5803412860119678065">Želite li ispuniti podatke o kartici <ph name="CARD_DETAIL" />?</translation>
@@ -3211,7 +3211,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7201591969684833065">Vaš administrator može vidjeti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste otvorili novu anonimnu karticu i pregledavali u privatnosti</translation>
 <translation id="7203375778433816396">Postavite Chrome kao zadani preglednik sustava</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nijedan}=1{Jedan pristupni ključ}one{# pristupni ključ}few{# pristupna ključa}other{# pristupnih ključeva}}</translation>
 <translation id="7210863904660874423">Host <ph name="HOST_NAME" /> ne pridržava se sigurnosnih standarda.</translation>
 <translation id="7210993021468939304">aktivnost Linuxa unutar spremnika i može instalirati i pokrenuti Linuxove aplikacije unutar spremnika</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>

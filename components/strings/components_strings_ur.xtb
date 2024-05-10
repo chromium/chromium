@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">قیمت زیادہ ہے</translation>
 <translation id="2122719317867821810">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک متضاد قدر سیٹ کی گئی ہے اور اسے اس پالیسی سے اوور رائیڈ کر دیا گیا ہے۔</translation>
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
+<translation id="2127090458081644412">پاس ورڈ اس آلے پر محفوظ ہو گیا</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">ان کو بے ترتیب آرڈر میں دکھایا گیا ہے۔ آپ کسی بھی وقت اپنے ڈیفالٹ سرچ انجن کو تبدیل کر سکتے ہیں۔</translation>
@@ -1063,6 +1064,7 @@
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
 <translation id="3039406992698062762">فیملی کے ساتھ سفر</translation>
+<translation id="3041176923638368519">کارڈ کے فوائد کی شرائط دیکھیں</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3045769629416806687">خطرناک کھیل</translation>
 <translation id="305162504811187366">‏بشمول ٹائم سٹیمپس، میزبانوں اور کلائنٹ سیشن IDs کے Chrome ریموٹ ڈیسک ٹاپ کی سرگزشت</translation>
@@ -1103,6 +1105,7 @@
 <translation id="3126023634486644099">لیبلز (مستقل)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> اب آپ کا ڈیفالٹ سرچ انجن ہے</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> تلاش کریں</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{کوئی نہیں}=1{1 اکاؤنٹ کا سائن ان ڈیٹا}other{# اکاؤنٹس کا سائن ان ڈیٹا}}</translation>
 <translation id="3140646734028448730">کاروباری سروسز</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
 <translation id="3141641372357166056">منظوری کا کوئی فیصلہ نہیں</translation>
@@ -2031,6 +2034,7 @@
 <translation id="4901778704868714008">محفوظ کریں...</translation>
 <translation id="4901952598169637881">عام پہننے والے جوتے</translation>
 <translation id="4905659621780993806"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم خودکار طور پر آپ کے آلے کو ری اسٹارٹ کرے گا۔ اپنے آلے کے ری اسٹارٹ ہونے سے پہلے کسی بھی کھلے آئٹم کو محفوظ کریں۔</translation>
+<translation id="4913784027728226227">اپنے سبھی آلات پر اس پاس ورڈ کو محفوظ کرنے اور اس کا استعمال کرنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="4913987521957242411">اوپر بائیں طرف فولڈ</translation>
 <translation id="4916389289686916969">‏TV ریئلٹی شوز</translation>
 <translation id="4917064667437236721">امیجنگ سلنڈر</translation>
@@ -2314,6 +2318,7 @@
 <translation id="5470861586879999274">ترمییم &amp;دوبارہ کریں</translation>
 <translation id="547963486735802022">اپنی فائلز کو دوبارہ منتقل کرنے کی کوشش کریں</translation>
 <translation id="5481076368049295676">یہ مواد آپ کے آلہ پر آپ کی معلومات چوری کرنے والا یا اس کو حذف کرنے والا خطرناک سافٹ ویئر انسٹال کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">'لکھنے میں مدد' سے متعلق پیشکش کریں</translation>
 <translation id="54817484435770891">درست پتہ شامل کریں</translation>
 <translation id="5483838506518938965">آپ پوری طرح سے تیار ہیں</translation>
 <translation id="5485973315555778056">کلاؤڈ مشین</translation>
@@ -2477,7 +2482,6 @@
 <translation id="5786044859038896871">کیا آپ اپنے کارڈ کی معلومات پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ادائیگی کا یہ طریقہ اس آلے سے حذف کر دیا جائے گا</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{کوئی نہیں}=1{1 اکاؤنٹ کے لیے سائن ان ڈیٹا}other{# اکاؤنٹس کے لیے سائن ان ڈیٹا}}</translation>
 <translation id="5800727402210090597">موبائل فون کی مرمت اور سروسز</translation>
 <translation id="580241730938216256">اپ ڈیٹ شروع کریں</translation>
 <translation id="5803412860119678065">کیا آپ اپنے <ph name="CARD_DETAIL" /> کو پُر کرنا چاہتے ہیں؟</translation>
@@ -3210,7 +3214,6 @@
 <translation id="7201591969684833065">آپ کا منتظم یہ دیکھ سکتا ہے:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="7203375778433816396">‏Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس کی}other{# پاس کیز}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> سیکیورٹی کے معیارات کی پابندی نہیں کرتا ہے۔</translation>
 <translation id="7210993021468939304">‏کنٹینر کے اندر Linux کی سرگرمی اور کنٹینر کے اندر Linux ایپ کو انسٹال کرکے چلا سکتا ہے</translation>
 <translation id="721197778055552897">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />۔</translation>

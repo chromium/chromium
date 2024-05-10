@@ -1063,6 +1063,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3037177537145227281">Unafuatilia bei</translation>
 <translation id="3037605927509011580">Lo!</translation>
 <translation id="3039406992698062762">Safari za Kifamilia</translation>
+<translation id="3041176923638368519">Angalia sheria na masharti ya manufaa ya kadi</translation>
 <translation id="3041612393474885105">Maelezo ya Cheti</translation>
 <translation id="3045769629416806687">Michezo Iliyokithiri</translation>
 <translation id="305162504811187366">Historia ya Programu ya Chrome ya Ufikiaji wa Kompyuta kutoka Mbali, ikiwa ni pamoja na mihuri ya wakati, seva pangishi na vitambulisho vya vipindi vya programu teja</translation>
@@ -1103,6 +1104,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3126023634486644099">Lebo (Kudumu)</translation>
 <translation id="3133565499688974786">Sasa <ph name="SEARCH_ENGINE_NAME" /> ni mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Tafuta <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Hamna}=1{data ya kuingia katika akaunti 1}other{data ya kuingia katika akaunti #}}</translation>
 <translation id="3140646734028448730">Huduma za Biashara</translation>
 <translation id="3141093262818886744">Fungua licha ya hilo</translation>
 <translation id="3141641372357166056">Hakuna uamuzi wa idhini</translation>
@@ -2476,7 +2478,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5786044859038896871">Ungependa kujaza maelezo ya kadi yako?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Njia hii ya kulipa itafutwa kwenye kifaa hiki</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Hamna}=1{data ya kuingia katika akaunti 1}other{data ya kuingia katika akaunti #}}</translation>
 <translation id="5800727402210090597">Huduma na Urekebishaji wa Simu za Mkononi</translation>
 <translation id="580241730938216256">Anzisha sasisho</translation>
 <translation id="5803412860119678065">Ungependa kujaza maelezo ya <ph name="CARD_DETAIL" /> yako?</translation>
@@ -2590,6 +2591,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (imesawazishwa)</translation>
 <translation id="6028591542479806248">Dhibiti arifa za barua pepe na kifaa cha mkononi</translation>
 <translation id="6028833024483927901">Mapishi ya Sehemu Mbalimbali Duniani</translation>
+<translation id="6030251660719692307">Ufunguo wa siri kutoka kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="603068602130820122">Bana mara mbili kushoto</translation>
 <translation id="6032524144326295339">Kikasha cha barua cha pili</translation>
 <translation id="6032955021262906325">Unganisha kulia</translation>
@@ -3207,7 +3209,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7201591969684833065">Msimamizi wako anaweza kuona:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ufungue kichupo fiche kipya ili uvinjari kwa faragha</translation>
 <translation id="7203375778433816396">Ifanye Chrome iwe kivinjari chaguomsingi cha mfumo</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Hamna}=1{Ufunguo 1 wa siri}other{Funguo # za siri}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> haizingatii viwango vya usalama.</translation>
 <translation id="7210993021468939304">Shughuli ya Linux ndani ya metadata inaweza kusakinisha na kutekeleza programu za Linux ndani ya metadata</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> kuhusu tatizo hili.</translation>

@@ -27,6 +27,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1524282610922162960">Dela en flik i Chromium</translation>
 <translation id="1553461853655228091">Du behöver ge Chromium behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="1574377791422810894">Säkerhetsverktyg i Chromium</translation>
+<translation id="1591808205441691831">Chromium måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut finns denna data kvar på enheten.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas}=1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Om du bara vill använda det här kontot en enda gång kan du använda <ph name="GUEST_LINK_BEGIN" />gästläget<ph name="GUEST_LINK_END" /> i webbläsaren Chromium. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -95,9 +96,10 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="268602741124540128">Välkommen till Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-flik</translation>
 <translation id="2718390899429598676">Din data krypteras i Chromium för att öka säkerheten.</translation>
+<translation id="2721354645805494590">Du kan ta bort Google-kontot från Chromium genom att logga ut</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2770231113462710648">Ändra standardwebbläsare till:</translation>
-<translation id="2785438272836277133">Tillägget innehåller skadlig programvara och är osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
+<translation id="2785438272836277133">Tillägget innehåller skadlig kod och är osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2837693172913560447">En ny Chromium-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2846251086934905009">Installationsfel: Installationsprogrammet slutfördes inte. Installationen har avbrutits.</translation>
@@ -124,6 +126,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3179665906251668410">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="3185330573522821672">Anpassa din nya Chromium-profil</translation>
 <translation id="3190315855212034486">Hoppsan! Chromium har kraschat. Vill du starta om nu?</translation>
+<translation id="3224847870593914902">Du kan ta bort Google-kontot från Chromium genom att logga ut från Chromium på sidan Inställningar</translation>
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -187,6 +190,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4222932583846282852">Avbryter …</translation>
 <translation id="4230135487732243613">Vill du koppla dina uppgifter i Chromium till det här kontot?</translation>
 <translation id="4251772536351901305">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chromium-varningar.</translation>
+<translation id="4269093074552541569">Logga ut från Chromium</translation>
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
@@ -196,9 +200,10 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
-<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
+<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
+<translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
 <translation id="452711251841752011">Välkommen till Chromium, ett nytt webbläsarfönster har öppnats</translation>
 <translation id="4544142686420020088">Ett fel uppstod och Chromium uppdaterades inte. <ph name="BEGIN_LINK" />Åtgärda uppdateringsproblem och misslyckade uppdateringar i Chromium<ph name="END_LINK" />.</translation>
 <translation id="454579500955453258">Vill du fortsätta med en ny Chromium-profil?</translation>
@@ -262,7 +267,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
-<translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
+<translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig kod:</translation>
 <translation id="5889361821821684993">Chromium kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nätverksinloggning</translation>
@@ -349,7 +354,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="684888714667046800">Det går inte att ansluta till internet. Om du använder en brandvägg kontrollerar du att <ph name="PRODUCT_EXE_NAME" /> finns med i godkännandelistan.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
-<translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig programvara</translation>
+<translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="691026815377248078">Chromium behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -443,6 +448,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Starta om Chromium inom en dag}other{Starta om Chromium inom # dagar}}</translation>
 <translation id="8453117565092476964">Arkivet för installationsfilen är skadat eller ogiltigt. Ladda ned Chromium igen.</translation>
 <translation id="8458614432758743027">För Chromium krävs Windows 10 eller senare.</translation>
+<translation id="8461326814397467035">Viss Chromium-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut.</translation>
 <translation id="8463672209299734063">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chromium OS.</translation>
 <translation id="8493179195440786826">Den här versionen av Chromium är inaktuell</translation>
 <translation id="8522801943730206384">Chromium kan bara kontrollera dina lösenord om du sparar dem</translation>
@@ -475,7 +481,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8988036198400390003">Hantera Chromium-profiler</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
-<translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig programvara</translation>
+<translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="9062666675513499497">Logga in i Chromium när du loggar in i andra tjänster från Google</translation>
 <translation id="907832235989677238">Logga in i Chromium. Om du bara vill logga in en gång med ett konto kan du <ph name="GUEST_LINK_BEGIN" />använda enheten som gäst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium avslutades automatiskt</translation>

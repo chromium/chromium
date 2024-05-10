@@ -25,6 +25,7 @@
 <translation id="1524282610922162960">Chromium cilnes kopīgošana</translation>
 <translation id="1553461853655228091">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai, lai varētu izveidot jūsu apkārtnes 3D karti</translation>
 <translation id="1574377791422810894">Chromium drošības rīki</translation>
+<translation id="1591808205441691831">Pārlūkā Chromium ir jāverificē jūsu identitāte, lai noteiktus datus varētu saglabāt jūsu Google kontā un izmantot visās jūsu ierīcēs. Ja izrakstīsieties, šie dati paliks šajā ierīcē.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chromium. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1625909126243026060">Pārskatiet svarīgākās konfidencialitātes un drošības vadīklas pārlūkā Chromium.</translation>
 <translation id="1632539827495546968">Ja vēlaties šo kontu izmantot tikai vienu reizi, varat lietot <ph name="GUEST_LINK_BEGIN" />viesa režīmu<ph name="GUEST_LINK_END" /> pārlūkā Chromium. Ja vēlaties pievienot kontu kādam citam, <ph name="LINK_BEGIN" />pievienojiet jaunu personu<ph name="LINK_END" /> savai ierīcei (<ph name="DEVICE_TYPE" />).
@@ -93,6 +94,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="268602741124540128">Laipni lūdzam pārlūkā Chromium, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
 <translation id="2711502716910134313">Chromium cilne</translation>
 <translation id="2718390899429598676">Papildu drošības nolūkos Chromium šifrēs jūsu datus.</translation>
+<translation id="2721354645805494590">Lai noņemtu savu Google kontu no pārlūka Chromium, izrakstieties.</translation>
 <translation id="2738871930057338499">Nevar izveidot savienojumu ar internetu. HTTP 403 — aizliegts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
 <translation id="2785438272836277133">Šis paplašinājums satur ļaunprātīgu programmatūru un nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
@@ -122,6 +124,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3179665906251668410">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="3185330573522821672">Pielāgojiet savu jauno Chromium profilu.</translation>
 <translation id="3190315855212034486">Eh! Chromium ir avarējis. Vai restartēt to tūlīt?</translation>
+<translation id="3224847870593914902">Lai noņemtu savu Google kontu no pārlūka Chromium, lapā “Iestatījumi” izrakstieties no pārlūka Chromium.</translation>
 <translation id="3258596308407688501">Chromium nevar nolasīt savu datu direktoriju un ierakstīt tajā:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -185,6 +188,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4222932583846282852">Notiek atcelšana...</translation>
 <translation id="4230135487732243613">Vai saistīt Chromium datus ar šo kontu?</translation>
 <translation id="4251772536351901305">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chromium brīdinājumus.</translation>
+<translation id="4269093074552541569">Izrakstīties no pārlūka Chromium</translation>
 <translation id="4271805377592243930">Saņemt palīdzību par Chromium</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="4285930937574705105">Instalācija neizdevās nenoteiktas kļūdas dēļ. Ja Chromium šobrīd darbojas, aizveriet to un mēģiniet vēlreiz.</translation>
@@ -197,6 +201,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4447409407328223819">Par Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalēšana neizdevās, jo šajā valstī piekļuve ir ierobežota.</translation>
+<translation id="4510853178268397146">Nav norādīta konfidencialitātes prakse šim paplašinājumam, piemēram, kā tas vāc un izmanto datus. Chromium iesaka to noņemt.</translation>
 <translation id="452711251841752011">Laipni lūdzam pārlūkā Chromium (tika atvērts jauns pārlūka logs)!</translation>
 <translation id="4544142686420020088">Pārlūkprogramma Chromium netika atjaunināta. Radās problēma. <ph name="BEGIN_LINK" />Novērsiet Chromium atjaunināšanas problēmas.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vai turpināt jaunā Chromium profilā?</translation>
@@ -438,6 +443,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8417404458978023919">{0,plural, =1{Restartējiet pārlūku Chromium vienas dienas laikā}zero{Restartējiet pārlūku Chromium # dienu laikā}one{Restartējiet pārlūku Chromium # dienas laikā}other{Restartējiet pārlūku Chromium # dienu laikā}}</translation>
 <translation id="8453117565092476964">Instalēšanas programmas arhīvs ir bojāts vai nav derīgs. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="8458614432758743027">Pārlūka Chromium izmantošanai nepieciešama operētājsistēma Windows 10 vai jaunāka versija.</translation>
+<translation id="8461326814397467035">Noteikti jūsu Chromium dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes.</translation>
 <translation id="8463672209299734063">Neobligāti: palīdziet uzlabot Chromium OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
 <translation id="8493179195440786826">Chromium versija ir novecojusi</translation>
 <translation id="8522801943730206384">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>

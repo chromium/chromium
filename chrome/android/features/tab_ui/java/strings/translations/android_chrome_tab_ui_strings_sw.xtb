@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Alamisha kichupo}other{Alamisha vichupo}}</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
+<translation id="2498435670446402865">Badilisha jina la kikundi cha vichupo</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="2662028055331606429">Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

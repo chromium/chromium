@@ -18,6 +18,7 @@
 <translation id="1194807384646768652">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે સામાન્ય રીતે આ પ્રકારની ફાઇલ ડાઉનલોડ કરવામાં આવતી નથી અને તે જોખમી હોઈ શકે છે</translation>
 <translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="1229096353876452996">Chromeને ડિફૉલ્ટ તરીકે સેટ કરવાનો સુઝાવ Google આપે છે</translation>
+<translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1278833599417554002">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="1302523850133262269">કૃપા કરીને Chrome નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં નીચેની સેવાની શરતો વાંચો અને સ્વીકારો. આ શરતો Google ChromeOS Flexની શરતોને વધારતી નથી, તેમાં ફેરફાર કરતી નથી અથવા તેને મર્યાદિત કરતી નથી.</translation>
@@ -36,6 +37,7 @@
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="155168855724261758">તમારું Chrome કસ્ટમાઇઝ કરો</translation>
+<translation id="1551749261806528781">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજી ઘણી બાબતો સાચવવા અને તેનો ઉપયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
 <translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
@@ -180,6 +182,7 @@
 <translation id="3635073343384702370">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે</translation>
 <translation id="3667616615096815454">ઇન્સ્ટૉલ કરી શકતા નથી, સર્વર માટે આ ઍપ્લિકેશન અજાણી છે.</translation>
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
+<translation id="3695446226812920698">જાણો કેવી રીતે</translation>
 <translation id="3697952514309507634">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ એન્વાયરમેન્ટ<ph name="END_LINK_LINUX_OSS" />ની જેમ, ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
@@ -266,6 +269,7 @@
 <translation id="4970880042055371251">ChromeOSનું વર્ઝન</translation>
 <translation id="4990567037958725628">Google Chrome કૅનેરી</translation>
 <translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
+<translation id="5120334927898581447">જ્યારે તમે Googleની અન્ય સેવાઓમાં સાઇન ઇન કરશો, ત્યારે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="5126049312684316860">તમે જે પેજની મુલાકાત લેશો તેવી શક્યતા હોય, Chrome તેવા વધુ પેજને પણ પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થાય</translation>
 <translation id="5132929315877954718">Google Chrome માટે શ્રેષ્ઠ ઍપ્લિકેશનો, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો</translation>
 <translation id="5139423532931106058">તમારી Chrome પ્રોફાઇલને કસ્ટમાઇઝ કરો</translation>
@@ -303,6 +307,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="5727531838415286053">જો Chrome કોઈ સક્રિય અજમાયશમાં કોઈપણ ક્રમમાં તમારી ગોઠવણ કરી લે, તો તમારો બ્રાઉઝિંગ ઇતિહાસ તમને દેખાતી જાહેરાતો અને નીચે જણાવેલી અનુમાનિત રુચિઓને અસર કરે છે. તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે Chrome નવા વિષયો આવતા જાય, તેના આધારે દર મહિને તમારી રુચિના વિષયોને ડિલીટ કરે છે. જો તમે રુચિઓને કાઢી ન નાખો, તો તે રિફ્રેશ થાય છે.</translation>
 <translation id="5736850870166430177">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Safe Browsingને મોકલી શકે છે</translation>
+<translation id="575458254678141039">જ્યારે તમે Gmail કે YouTube જેવી Googleની સેવાઓમાં <ph name="USER_EMAIL" /> વડે સાઇન ઇન થાઓ છો, ત્યારે તમે એ જ એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરી શકો છો</translation>
 <translation id="5756509061973259733">આ એકાઉન્ટ સાથેની Chrome પ્રોફાઇલ પહેલેથી જ આ ડિવાઇસ પર અસ્તિત્વમાં છે</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
@@ -316,6 +321,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5940385492829620908">તમારું વેબ, બુકમાર્ક અને અન્ય Chrome સામગ્રી અહીં હોય છે.</translation>
 <translation id="5941711191222866238">નાનું કરો</translation>
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
+<translation id="5947104538377036631">Chrome શૉર્ટકટ</translation>
 <translation id="6003112304606738118">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="HOURS" /> કલાક બાકી છે</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeના ટૂલ<ph name="END_LINK" /> વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
 <translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
@@ -344,6 +350,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6412673304250309937">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{જ્યારે 1 મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}one{જ્યારે # મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}other{જ્યારે # મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવે છે. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.}}</translation>
 <translation id="6418662306461808273">વર્તમાન Chrome પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
+<translation id="6479881432656947268">Chrome વેબ સ્ટોરની મુલાકાત લો</translation>
 <translation id="6481963882741794338">મનગમતું બનાવવા અને અન્ય હેતુઓ માટે, Chrome અને Googleની અન્ય સેવાઓ લિંક કરો</translation>
 <translation id="648319183876919572">Safe Browsingમાં વધારેલી સુરક્ષા તમને જોખમી વેબસાઇટ અને ડાઉનલોડ સામે વધુ સુરક્ષા આપે છે</translation>
 <translation id="6489302989675808168">ચાલુ • આ એક્સ્ટેન્શન ક્યાંથી આવે છે તેની ચકાસણી Chrome કરી શકતું નથી</translation>
@@ -353,6 +360,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં</translation>
 <translation id="6632473616050862500">ChromeOS Flex વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બન્યું છે.</translation>
+<translation id="6660596345553328257">શું Chromeમાં સાઇન ઇન કરીએ?</translation>
 <translation id="6676384891291319759">ઇંટરનેટ ઍક્સેસ કરો</translation>
 <translation id="6679975945624592337">Google Chromeને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="6696915334902295848">આ સાઇટ માટે Chromeને માઇક્રોફોનની પરવાનગીની જરૂર છે</translation>
@@ -381,6 +389,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
 
 તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
+<translation id="7037538054043837165">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતો સાચવવા અને તેનો ઉપયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="7071827361006050863">Chrome ટૂંક સમયમાં જ બ્રાઉઝિંગ ડેટા ડિલીટ કરશે</translation>
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
@@ -454,6 +463,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8111297389482307122">અમુક ડેટા તમારા Google એકાઉન્ટમાં સાચવી શકાયો હોય અને તેનો ઉપયોગ તમારા બધા ડિવાઇસ પર કરી શકાયો હોય એ પહેલાં, Chrome માટે એ તમે જ છો તેની ચકાસણી કરવી જરૂરી છે. જો તમે સાઇન આઉટ કરશો, તો આ ડેટા આ ડિવાઇસ પર રહેશે.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
 <translation id="813913629614996137">પ્રારંભ કરી રહ્યું છે...</translation>
+<translation id="8162006532256575008">કોઈ એકાઉન્ટ વિના Chromeનો ઉપયોગ કરો</translation>
 <translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="8257796129973882597">તમે Chrome મેનૂમાંથી બુકમાર્ક, વાંચન મોડ અને બીજું ઘણું ખોલી શકો છો</translation>
 <translation id="8267953129876836456">Chromeને તમારા રિવ્યૂ માટે કેટલાક સલામતી સંબંધિત સુઝાવો મળ્યા છે</translation>
@@ -464,6 +474,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8336463659890584292">જ્યારે કોઈ સાઇટ તેના પેજ પર લિંક ખાનગી રીતે પહેલેથી લોડ કરવાનું પૂછે ત્યારે Chrome, Google સર્વરનો ઉપયોગ કરે છે. આ તમારી ઓળખ પહેલેથી લોડ કરેલી સાઇટથી છુપાવે છે, પણ Googleને એ જાણવા મળે છે કે કઈ સાઇટ પહેલેથી લોડ કરવામાં આવે છે.</translation>
 <translation id="8342675569599923794">આ ફાઇલ જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />અમે આ ડેટાનો ઉપયોગ કેવી રીતે કરીએ છીએ:<ph name="END_BOLD" /> સાઇટ, Chrome પર તમારી રુચિના વિષયો વિશેની માહિતી સ્ટોર કરી શકે છે. ઉદાહરણ તરીકે જો તમે મૅરેથનમાં દોડવા માટે શૂઝ ખરીદવા કોઈ સાઇટની મુલાકાત લો, તો એ સાઇટ મૅરેથન દોડને તમારી રુચિના વિષય તરીકે સાચવી શકે છે. પછી, જો તમે દોડ માટે રજિસ્ટ્રેશન કરાવવા કોઈ અન્ય સાઇટની મુલાકાત લેશો, તો તે સાઇટ તમારી રુચિના વિષયના આધારે તમને દોડવા માટેના શૂઝની જાહેરાત બતાવી શકે છે.</translation>
+<translation id="8350273347136316769">Chromeમાં મને ઑટોમૅટિક રીતે સાઇન ઇન કરો</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />અમે આ ડેટાનો ઉપયોગ કેવી રીતે કરીએ છીએ:<ph name="END_BOLD" /> Chrome તમારી રુચિઓનું અનુમાન લગાવી શકે છે. પછી, તમે જેની મુલાકાત લો તે સાઇટ Chromeને તમારી રુચિઓ જોવા માટે કહી શકે છે, જેથી તમને જોવા મળતી જાહેરાતોને મનગમતી બનાવી શકાય.</translation>
 <translation id="8387459386171870978">Chromeનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
@@ -472,6 +483,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8416347857511542594">Chromeમાં રુચિ મુજબ જાહેરાત વિશે વધુ જાણો</translation>
 <translation id="8418845734693287262">તમારા એકાઉન્ટની સાઇન ઇન વિગતો જૂની હોવાને કારણે ChromeOS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="842386925677997438">Chromeના સલામતી માટેના ટૂલ</translation>
+<translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8433638294851456451">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર આ Chrome બ્રાઉઝરની પ્રોફાઇલ અને બુકમાર્ક, ઇતિહાસ તથા પાસવર્ડ જેવો તેનો ડેટા જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
@@ -514,6 +526,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="9053892488859122171">ChromeOS Flex સિસ્ટમ</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>
+<translation id="9127728564687112483">Chromeમાં મને સાઇન ઇન કરશો નહીં</translation>
 <translation id="9138603949443464873">તમારા ફેરફારો લાગુ કરવા માટે, Chromeને ફરી લૉન્ચ કરો</translation>
 <translation id="9195993889682885387">Chrome છેલ્લા અમુક અઠવાડિયાઓના તમારા બ્રાઉઝિંગ ઇતિહાસને આધારે તમારી રુચિઓનું અનુમાન લગાવી શકે છે. આ માહિતી તમારા ડિવાઇસમાં જ રહે છે.</translation>
 <translation id="919706545465235479">સમન્વયન પ્રારંભ કરવા માટે Chrome અપડેટ કરો</translation>

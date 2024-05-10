@@ -1104,6 +1104,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3126023634486644099">Labels (permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> is nu je standaard zoekmachine</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Zoeken in <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
 <translation id="3140646734028448730">Zakelijke dienstverlening</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141641372357166056">Geen beslissing over toestemming</translation>
@@ -2472,7 +2473,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Deze betaalmethode wordt verwijderd van dit apparaat</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Geen}=1{inloggegevens voor 1 account}other{inloggegevens voor # accounts}}</translation>
 <translation id="5800727402210090597">Reparatie en service voor mobiele telefoons</translation>
 <translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Wil je de gegevens van je <ph name="CARD_DETAIL" /> laten invullen?</translation>
@@ -3203,7 +3203,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7201591969684833065">De beheerder kan het volgende zien:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en daarna op Enter om een nieuw incognitotabblad te openen om privé te browsen.</translation>
 <translation id="7203375778433816396">Chrome instellen als standaardbrowser van het systeem</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Geen}=1{1 toegangssleutel}other{# toegangssleutels}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> voldoet niet aan de beveiligingsnormen.</translation>
 <translation id="7210993021468939304">Linux-activiteit in de container, en kan Linux-apps in de container installeren en uitvoeren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>

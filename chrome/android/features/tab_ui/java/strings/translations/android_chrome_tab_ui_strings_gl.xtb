@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Engadir pestana aos marcadores}other{Engadir pestanas aos marcadores}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
+<translation id="2498435670446402865">Cambiar o nome do grupo</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="2569352796411618312">Suxestión: <ph name="NUMBER_OF_TABS" /> das pestanas que tes abertas levan sen utilizarse un bo anaco. Queres pechalas?</translation>
 <translation id="2662028055331606429">Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

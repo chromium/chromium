@@ -246,7 +246,7 @@
 <translation id="1433225466058025572">尝试重新移动文件</translation>
 <translation id="1434317006812369578">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能。安全浏览功能<ph name="BEGIN_LINK" />近期在您尝试访问的网站 <ph name="SITE" /> 上发现了内嵌的恶意软件<ph name="END_LINK" />。</translation>
 <translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
-<translation id="1436185428532214179">可以询问能否修改您设备上的文件和文件夹</translation>
+<translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
 <translation id="1441816242347931036">打开以继续</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">标签（永久性）</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 现在已经是默认搜索引擎</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜索<ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{无}=1{1 个账号的登录数据}other{# 个账号的登录数据}}</translation>
 <translation id="3140646734028448730">商业服务</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
@@ -2473,7 +2474,6 @@
 <translation id="5786044859038896871">要填充您的信用卡信息吗？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将被从该设备中删除</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{无}=1{1 个账号的登录数据}other{# 个账号的登录数据}}</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
 <translation id="580241730938216256">开始更新</translation>
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
@@ -3204,7 +3204,6 @@
 <translation id="7201591969684833065">您的管理员可以查看：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
 <translation id="7203375778433816396">将 Chrome 设为系统的默认浏览器</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{无}=1{1 个密钥}other{# 个密钥}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合相关安全标准。</translation>
 <translation id="7210993021468939304">可查看该容器内的 Linux 活动，并可在该容器内安装和运行 Linux 应用</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>

@@ -58,6 +58,7 @@
 <translation id="2018879682492276940">インストールできませんでした。もう一度お試しください。</translation>
 <translation id="2020032459870799438">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="2049376729098081731">Chromium の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
+<translation id="2065461321550902389">すべてのデバイスでパスワードなどを保存して使用するには、Chromium にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="2086476982681781442">このダウンロードは Chromium でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
 <translation id="2088953378266246249">Chromium でのルート証明書の管理方法に関する情報</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
@@ -312,6 +313,7 @@
 <translation id="6327105987658262776">利用できるアップデートはありません。</translation>
 <translation id="6333502561965082103">Chromium で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6334986366598267305">共有パソコンの Chromium で Google アカウントが簡単に使用できるようになりました。</translation>
+<translation id="6347933965114150440">Chromium のショートカット</translation>
 <translation id="6366160072964553914">このダウンロードは Chromium でブロックされました。ファイルが一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="6373523479360886564">Chromium をアンインストールしてもよろしいですか？</translation>
 <translation id="6375219077595103062">パスワード マネージャーのショートカットを追加します</translation>

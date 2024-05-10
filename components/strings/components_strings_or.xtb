@@ -1063,6 +1063,7 @@
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037605927509011580">ଇସ!</translation>
 <translation id="3039406992698062762">ପାରିବାରିକ ଟ୍ରାଭେଲ</translation>
+<translation id="3041176923638368519">କାର୍ଡର ଲାଭ ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ</translation>
 <translation id="3041612393474885105">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3045769629416806687">ଏକ୍ସଟ୍ରିମ ସ୍ପୋର୍ଟ୍ସ</translation>
 <translation id="305162504811187366">ଟାଇମଷ୍ଟାମ୍ପ, ହୋଷ୍ଟ ଏବଂ କ୍ଲାଏଣ୍ଟ ସେସନ idଗୁଡ଼ିକ ସମେତ Chrome ରିମୋଟ ଡେସ୍କଟପ ଇତିହାସ</translation>
@@ -1103,6 +1104,7 @@
 <translation id="3126023634486644099">ଲେବଲ (ସ୍ଥାୟୀ)</translation>
 <translation id="3133565499688974786">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ <ph name="SEARCH_ENGINE_NAME" /> ଅଟେ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />କୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{କିଛିନାହିଁ}=1{1ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଇନ୍ ଡାଟା}other{#ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ୍ ଇନ୍ ଡାଟା}}</translation>
 <translation id="3140646734028448730">ବିଜିନେସ ସେବା</translation>
 <translation id="3141093262818886744">ଯେ କୌଣସି ମତେ ଖୋଲନ୍ତୁ</translation>
 <translation id="3141641372357166056">ସମ୍ମତି ନିଷ୍ପତ୍ତି ନିଆଯାଇନାହିଁ</translation>
@@ -2473,7 +2475,6 @@
 <translation id="5786044859038896871">ଆପଣଙ୍କର କାର୍ଡ ସୂଚନାକୁ ଆପଣ ପୁରଣ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="5789643057113097023">।</translation>
 <translation id="5793317771769868848">ଏହି ଡିଭାଇସରୁ ଏହି ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଡିଲିଟ କରିଦିଆଯିବ</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ-ଇନ ଡାଟା}other{#ଟି ଆକାଉଣ୍ଟ ପାଇଁ ସାଇନ-ଇନ ଡାଟା}}</translation>
 <translation id="5800727402210090597">ମୋବାଇଲ ଫୋନ ମରାମତି ଏବଂ ସେବା</translation>
 <translation id="580241730938216256">ଅପଡେଟ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5803412860119678065">ଆପଣ ନିଜର <ph name="CARD_DETAIL" />କୁ ପୁରଣ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
@@ -3204,7 +3205,6 @@
 <translation id="7201591969684833065">ଏହା ଆପଣଙ୍କର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ ଦେଖିପାରିବେ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବ୍ୟକ୍ତିଗତ ଭାବରେ ବ୍ରାଉଜ କରିବା ପାଇଁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="7203375778433816396">Chromeକୁ ସିଷ୍ଟମର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବେ ସେଟ କରନ୍ତୁ</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1ଟି ପାସକୀ}other{#ଟି ପାସକୀ}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ସୁରକ୍ଷା ମାନାଙ୍କର ପାଳନ କରୁନାହିଁ।</translation>
 <translation id="7210993021468939304">କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux କାର୍ଯ୍ୟକଳାପ ଏବଂ କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରି ଚଲାଇପାରେ</translation>
 <translation id="721197778055552897">ଏହି ଅସୁବିଧା ସମ୍ଵନ୍ଧରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /> ।</translation>

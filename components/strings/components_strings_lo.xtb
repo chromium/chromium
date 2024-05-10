@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">ລາຄາສູງ</translation>
 <translation id="2122719317867821810">ນະໂຍບາຍນີ້ກຳລັງເຮັດວຽກຕາມທີ່ກຳນົດໄວ້ ແຕ່ມີການຕັ້ງຄ່າທີ່ຂັດແຍ່ງກັນຢູ່ບ່ອນອື່ນ ແລະ ນະໂຍບາຍນີ້ກຳລັງລົບລ້າງມັນ.</translation>
 <translation id="2126374524350484896">ໂປຣແກຣມສ້າງ PDF:</translation>
+<translation id="2127090458081644412">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນອຸປະກອນເຄື່ອງນີ້</translation>
 <translation id="2130448033692577677">ແມ່ແບບທີ່ທ່ານລະບຸອາດຈະນຳໃຊ້ບໍ່ໄດ້ຍ້ອນບໍ່ໄດ້ຕັ້ງຄ່ານະໂຍບາຍ DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">ໂປຣແກຣມຊອກຫາເຫຼົ່ານີ້ສະແດງແບບສຸ່ມລຳດັບ. ທ່ານສາມາດປ່ຽນຄ່າເລີ່ມຕົ້ນຂອງທ່ານໄດ້ທຸກເວລາ.</translation>
@@ -1104,6 +1105,7 @@
 <translation id="3126023634486644099">ປ້າຍ (ຖາວອນ)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ເປັນໂປຣແກຣມຊອກຫາຕາມຄ່າເລີ່ມຕົ້ນຂອງທ່ານແລ້ວຕອນນີ້</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - ຊອກຫາ <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{ບໍ່ມີ}=1{ຂໍ້ມູນການເຂົ້າສູ່ລະບົບສຳລັບ 1 ບັນຊີ}other{ຂໍ້ມູນການເຂົ້າສູ່ລະບົບສຳລັບ # ບັນຊີ}}</translation>
 <translation id="3140646734028448730">ການບໍລິການທຸລະກິດ</translation>
 <translation id="3141093262818886744">ຢືນຢັນການເປີດ</translation>
 <translation id="3141641372357166056">ບໍ່ມີການຕັດສິນໃຈໃຫ້ຄວາມຍິນຍອມ</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">ບັນທຶກ...</translation>
 <translation id="4901952598169637881">ເກີບໃສ່ສະບາຍ</translation>
 <translation id="4905659621780993806">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະຣີສະຕາດອຸປະກອນຂອງທ່ານໂດຍອັດຕະໂນມັດເວລາ <ph name="TIME" /> ໃນ <ph name="DATE" />. ກະລຸນາບັນທຶກລາຍການທີ່ເປີດໄວ້ກ່ອນອຸປະກອນຂອງທ່ານຈະຣີສະຕາດ.</translation>
+<translation id="4913784027728226227">ເພື່ອບັນທຶກ ແລະ ໃຊ້ລະຫັດຜ່ານນີ້ໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="4913987521957242411">ເຈາະຮູຢູ່ເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="4916389289686916969">ລາຍການເຣຍລິຕີທາງໂທລະທັດ</translation>
 <translation id="4917064667437236721">ກະບອກຮູບພາບ</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">ເຮັດຄືນຄໍາສັ່ງແກ້ໄຂ</translation>
 <translation id="547963486735802022">ລອງໂອນຍ້າຍໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
 <translation id="5481076368049295676">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງຊອບແວອັນຕະລາຍໃສ່ອຸປະກອນຂອງທ່ານທີ່ລັກເອົາ ຫຼື ລຶບຂໍ້ມູນຂອງທ່ານ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">ສະເໜີຄວາມຊ່ວຍເຫຼືອໃນການຂຽນ</translation>
 <translation id="54817484435770891">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
 <translation id="5483838506518938965">ທ່ານຮຽບຮ້ອຍໝົດແລ້ວ</translation>
 <translation id="5485973315555778056">ເຄື່ອງຈັກຄລາວ</translation>
@@ -2477,7 +2481,6 @@
 <translation id="5786044859038896871">ທ່ານຕ້ອງການຕື່ມຂໍ້ມູນບັດຂອງທ່ານບໍ?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ວິທີການຈ່າຍເງິນນີ້ຈະຖືກລຶບຈາກອຸປະກອນນີ້</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ບໍ່ມີ}=1{ຂໍ້ມູນການເຂົ້າສູ່ລະບົບສຳລັບ 1 ບັນຊີ}other{ຂໍ້ມູນການເຂົ້າສູ່ລະບົບສຳລັບ # ບັນຊີ}}</translation>
 <translation id="5800727402210090597">ບໍລິການ ແລະ ສ້ອມແປງໂທລະສັບມືຖື</translation>
 <translation id="580241730938216256">ເລີ່ມການອັບເດດ</translation>
 <translation id="5803412860119678065">ທ່ານຕ້ອງການຕື່ມຂໍ້ມູນ <ph name="CARD_DETAIL" /> ຂອງທ່ານບໍ?</translation>
@@ -3209,7 +3212,6 @@
 <translation id="7201591969684833065">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດເຫັນ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນ Enter ເພື່ອເປີດແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອຊອກຫາແບບສ່ວນຕົວ</translation>
 <translation id="7203375778433816396">ຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງລະບົບ</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ກະແຈຜ່ານ}other{# ກະແຈຜ່ານ}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ບໍ່ປະຕິບັດຕາມມາດຕະຖານຄວາມປອດໄພ.</translation>
 <translation id="7210993021468939304">ການເຄື່ອນໄຫວ Linux ພາຍໃນກ່ອງບັນຈຸ ແລະ ສາມາດຕິດຕັ້ງ ແລະ ເປີດໃຊ້ແອັບ Linux ພາຍໃນກ່ອງບັນຈຸໄດ້</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /> ກ່ຽວ​ກັບ​ບັນ​ຫາ​ນີ້​.</translation>

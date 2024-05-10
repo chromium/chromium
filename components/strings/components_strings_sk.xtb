@@ -1104,6 +1104,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3126023634486644099">Štítky (trvalé)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je teraz vaším predvoleným vyhľadávačom</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Vyhľadávanie položiek (<ph name="KEYWORD_SHORT_NAME" />)</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Žiadne}=1{prihlasovacie údaje pre 1 účet}few{prihlasovacie údaje pre # účty}many{sign-in data for # accounts}other{prihlasovacie údaje pre # účtov}}</translation>
 <translation id="3140646734028448730">Služby pre firmy</translation>
 <translation id="3141093262818886744">Otvoriť aj tak</translation>
 <translation id="3141641372357166056">Žiadne rozhodnutie o súhlase</translation>
@@ -2473,7 +2474,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5786044859038896871">Chcete vyplniť informácie o karte?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Tento spôsob platby bude odstránený z tohto zariadenia</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Žiadne}=1{prihlasovacie údaje pre 1 účet}few{prihlasovacie údaje pre # účty}many{sign-in data for # accounts}other{prihlasovacie údaje pre # účtov}}</translation>
 <translation id="5800727402210090597">Opravy a servis mobilných telefónov</translation>
 <translation id="580241730938216256">Spustiť aktualizáciu</translation>
 <translation id="5803412860119678065">Chcete vyplniť informácie o karte <ph name="CARD_DETAIL" />?</translation>
@@ -3204,7 +3204,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7201591969684833065">Váš správca uvidí:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter otvorte novú kartu inkognito a prehliadajte v súkromí</translation>
 <translation id="7203375778433816396">Nastaviť Chrome ako predvolený prehliadač systému</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Žiadny}=1{1 prístupový kľúč}few{# prístupové kľúče}many{# passkeys}other{# prístupových kľúčov}}</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nespĺňa bezpečnostné štandardy.</translation>
 <translation id="7210993021468939304">Aktivita Linux v rámci kontajnera. Môže inštalovať a spúšťať aplikácie pre systém LInux v kontajneri.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o tomto probléme.</translation>

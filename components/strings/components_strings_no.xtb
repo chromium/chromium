@@ -1104,6 +1104,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3126023634486644099">Etiketter (permanente)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> er nå standardsøkemotoren din</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Søk etter <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Ingen}=1{påloggingsdata for 1 konto}other{påloggingsdata for # kontoer}}</translation>
 <translation id="3140646734028448730">Bedriftstjenester</translation>
 <translation id="3141093262818886744">Åpne likevel</translation>
 <translation id="3141641372357166056">Ingen beslutning om samtykke</translation>
@@ -2477,7 +2478,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5786044859038896871">Vil du fylle ut kortinformasjonen?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Denne betalingsmåten blir slettet fra denne enheten</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ingen}=1{påloggingsinformasjon for 1 konto}other{påloggingsinformasjon for # kontoer}}</translation>
 <translation id="5800727402210090597">Mobilreparasjon og -tjenester</translation>
 <translation id="580241730938216256">Start oppdateringen</translation>
 <translation id="5803412860119678065">Vil du fylle ut informasjonen knyttet til <ph name="CARD_DETAIL" />?</translation>
@@ -3209,7 +3209,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7201591969684833065">Administratoren kan se</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å åpne en ny inkognitofane for privat surfing</translation>
 <translation id="7203375778433816396">Angi Chrome som systemets standardnettleser</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ingen}=1{1 passnøkkel}other{# passnøkler}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> retter seg ikke etter sikkerhetsstandardene.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i beholderen, og kan installere og kjøre Linux-apper i beholderen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Mer informasjon<ph name="END_LINK" /> om dette problemet.</translation>

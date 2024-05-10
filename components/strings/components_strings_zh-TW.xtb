@@ -1102,6 +1102,7 @@
 <translation id="3126023634486644099">標籤 (永久)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設為預設搜尋引擎</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{# 個帳戶的登入資料}}</translation>
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意聲明決定</translation>
@@ -2475,7 +2476,6 @@
 <translation id="5786044859038896871">要填入你的信用卡資訊嗎？</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{# 個帳戶的登入資料}}</translation>
 <translation id="5800727402210090597">手機維修與服務</translation>
 <translation id="580241730938216256">開始更新</translation>
 <translation id="5803412860119678065">要填入你的 <ph name="CARD_DETAIL" /> 資訊嗎？</translation>
@@ -2589,6 +2589,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /> (已同步)</translation>
 <translation id="6028591542479806248">管理行動裝置/應用程式和電子郵件通知</translation>
 <translation id="6028833024483927901">世界美食</translation>
+<translation id="6030251660719692307">Google 密碼管理工具中的密碼金鑰</translation>
 <translation id="603068602130820122">雙釘 (右側)</translation>
 <translation id="6032524144326295339">出紙槽 2</translation>
 <translation id="6032955021262906325">裝訂 (左側)</translation>
@@ -3206,7 +3207,6 @@
 <translation id="7201591969684833065">系統管理員可以查看以下項目：</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="7203375778433816396">將 Chrome 設為系統的預設瀏覽器</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{無}=1{1 個密碼金鑰}other{# 個密碼金鑰}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合安全性標準。</translation>
 <translation id="7210993021468939304">容器內的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>

@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google consiglia di impostare Chrome come browser predefinito</translation>
+<translation id="1265739287306757398">Scopri come</translation>
 <translation id="1278833599417554002">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="1302523850133262269">Attendi mentre Chrome installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS Flex.</translation>
@@ -176,6 +177,7 @@
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
+<translation id="3695446226812920698">Scopri come</translation>
 <translation id="3697952514309507634">Altri profili Chrome</translation>
 <translation id="3703994572283698466">La realizzazione di ChromeOS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versione ChromeOS Flex</translation>
@@ -262,6 +264,7 @@
 <translation id="4970880042055371251">Versione di ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
+<translation id="5120334927898581447">Accedi a Chrome quando accedi ad altri servizi Google</translation>
 <translation id="5126049312684316860">Chrome precarica ancora più pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizza il tuo profilo Chrome</translation>
@@ -295,6 +298,7 @@
 <translation id="5709557627224531708">Imposta Chrome come browser predefinito</translation>
 <translation id="5727531838415286053">Se Chrome ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi vengono aggiornati.</translation>
 <translation id="5736850870166430177">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
+<translation id="575458254678141039">Quando accedi a servizi Google come Gmail o YouTube con <ph name="USER_EMAIL" />, puoi accedere a Chrome con lo stesso account</translation>
 <translation id="5756509061973259733">Esiste già un profilo Chrome con questo account su questo dispositivo</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossibile avviare Chrome. Riprova.</translation>
@@ -337,6 +341,7 @@
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="6418662306461808273">Vuoi passare a un profilo Chrome esistente?</translation>
+<translation id="6479881432656947268">Visita il Chrome Web Store</translation>
 <translation id="6481963882741794338">Collega Chrome e altri servizi Google per la personalizzazione e altri scopi</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>
 <translation id="6489302989675808168">On • Chrome non può verificare la provenienza dell'estensione</translation>
@@ -346,6 +351,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome per gli sviluppatori</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
 <translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
+<translation id="6660596345553328257">Accedere a Chrome?</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>
 <translation id="6679975945624592337">Lascia Google Chrome in esecuzione in background</translation>
 <translation id="6696915334902295848">Chrome deve avere l'autorizzazione di accesso al microfono per questo sito</translation>
@@ -374,6 +380,7 @@
 <translation id="7036251913954633326">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità ospite<ph name="GUEST_LINK_END" /> del browser Chrome. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
 
 A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Puoi gestire i tuoi Account Google nelle <ph name="SETTINGS_LINK_BEGIN" />Impostazioni<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="7037538054043837165">Accedi a Chrome per salvare e usare le tue password e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="7059914902409643750">Personalizza Chrome</translation>
 <translation id="7071827361006050863">A breve Chrome eliminerà i dati di navigazione</translation>
 <translation id="7085332316435785646">Scegli se includere la cronologia di Chrome per esperienze ancora più personalizzate nei servizi Google</translation>
@@ -447,6 +454,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8111297389482307122">Chrome deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci, i dati in questione rimarranno su questo dispositivo.</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
+<translation id="8162006532256575008">Utilizza Chrome senza un account</translation>
 <translation id="8255190535488645436">Google Chrome sta utilizzando videocamera e microfono.</translation>
 <translation id="8257796129973882597">Dal menu Chrome puoi aprire i preferiti, la modalità Lettura e altro ancora</translation>
 <translation id="8267953129876836456">Chrome ha trovato alcuni consigli per la sicurezza da farti esaminare</translation>
@@ -457,6 +465,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8336463659890584292">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chrome usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
+<translation id="8350273347136316769">Accedi automaticamente a Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> Chrome può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>
@@ -465,6 +474,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8416347857511542594">Scopri di più sulla personalizzazione degli annunci in Chrome</translation>
 <translation id="8418845734693287262">Impossibile sincronizzare i dati in ChromeOS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="842386925677997438">Strumenti per la sicurezza di Chrome</translation>
+<translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
 <translation id="8451192282033883849">Il tuo account è gestito da <ph name="MANAGER_NAME" />. L'amministratore può vedere e modificare questo profilo del browser Chrome e i relativi dati, come preferiti, cronologia e password.</translation>
 <translation id="8496177819998570653">Gestore delle p&amp;assword di Google</translation>
@@ -507,6 +517,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
+<translation id="9127728564687112483">Non accedere automaticamente a Chrome</translation>
 <translation id="9138603949443464873">Riavvia Chrome per applicare le modifiche</translation>
 <translation id="9195993889682885387">Chrome può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>
 <translation id="919706545465235479">Aggiorna Chrome per avviare la sincronizzazione</translation>

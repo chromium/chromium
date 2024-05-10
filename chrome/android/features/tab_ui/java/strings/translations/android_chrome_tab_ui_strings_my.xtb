@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{တဘ်ကို လိပ်စာမှတ်ရန်}other{တဘ်များကို လိပ်စာမှတ်ရန်}}</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသည့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသည့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ခေါက်ပါ။}}</translation>
+<translation id="2498435670446402865">တဘ်အုပ်စု အမည်ပြောင်းခြင်း</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>

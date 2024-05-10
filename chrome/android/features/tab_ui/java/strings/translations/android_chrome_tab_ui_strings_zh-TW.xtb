@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{收合含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{收合含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
+<translation id="2498435670446402865">重新命名分頁群組</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>

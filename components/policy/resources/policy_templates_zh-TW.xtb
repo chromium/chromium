@@ -4646,6 +4646,15 @@
       如果停用這項設定，使用者將無法開啟 Phone Hub 功能。
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法執行 Phone Hub 功能，其他一般使用者則可開啟這項功能。</translation>
+<translation id="4775667151768335538">如果將這項政策設為啟用，安全瀏覽功能會信任你指定的網域，不會確認這些網域是否含有網路釣魚、惡意軟體或垃圾軟體等危險資源。安全瀏覽功能的下載保護服務不會檢查這些網域代管的下載內容，密碼保護服務也不會檢查密碼是否重複使用。
+
+如果不設定這項政策，系統會將預設的安全瀏覽保護功能套用至所有資源。
+
+這項政策不支援規則運算式，不過特定網域的子網域可加入許可清單，而且不一定要有完整網域名稱 (FQDN)。
+
+在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" /> 或註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。
+
+在 <ph name="MAC_OS_NAME" /> 上，這項政策適用的執行個體必須透過行動裝置管理 (MDM) 軟體管理、透過 MCX 加入網域，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。</translation>
 <translation id="4783415902268741066">允許在瀏覽器側邊面板中顯示預設搜尋引擎的最新搜尋結果頁面</translation>
 <translation id="4786784434769279324">電腦閒置時要執行的動作</translation>
 <translation id="4787763197941188108">覆寫預設的列印頁面大小。

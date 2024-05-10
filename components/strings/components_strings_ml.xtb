@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">ഉയർന്ന നിരക്ക്</translation>
 <translation id="2122719317867821810">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ വൈരുദ്ധ്യമുള്ള മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയം അസാധുവാക്കി.</translation>
 <translation id="2126374524350484896">PDF പ്രൊഡ്യൂസർ:</translation>
+<translation id="2127090458081644412">പാസ്‌വേഡ് ഈ ഉപകരണത്തിൽ സംരക്ഷിച്ചു</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">ഇവ ക്രമരഹിതമായി കാണിച്ചിരിക്കുന്നു. ഏതുസമയത്തും നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം.</translation>
@@ -1063,6 +1064,7 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
 <translation id="3039406992698062762">കുടുംബത്തോടൊപ്പമുള്ള യാത്ര</translation>
+<translation id="3041176923638368519">കാർഡ് ആനുകൂല്യ നിബന്ധനകൾ കാണുക</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3045769629416806687">എക്‌സ്ട്രീം സ്പോർട്‌സ്</translation>
 <translation id="305162504811187366">Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് ചരിത്രം, ടൈംസ്റ്റാമ്പുകളും ഹോസ്റ്റുകളും ക്ലയന്റ് സെഷൻ ഐഡികളും ഉൾപ്പെടെ</translation>
@@ -1103,6 +1105,7 @@
 <translation id="3126023634486644099">ലേബലുകൾ (ശാശ്വതം)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ആണ് ഇപ്പോൾ നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> തിരയുക</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു അക്കൗണ്ടിന്‍റെ സൈന്‍ ഇന്‍ ഡാറ്റ}other{# അക്കൗണ്ടുകളുടെ സൈന്‍ ഇന്‍ ഡാറ്റ}}</translation>
 <translation id="3140646734028448730">ബിസിനസ് സേവനങ്ങൾ</translation>
 <translation id="3141093262818886744">എന്തായാലും തുറക്കുക</translation>
 <translation id="3141641372357166056">സമ്മത തീരുമാനമൊന്നുമില്ല</translation>
@@ -2029,6 +2032,7 @@
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4901952598169637881">കാഷ്വൽ ഷൂകൾ</translation>
 <translation id="4905659621780993806">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുന്നതിന് മുമ്പ് തുറന്നിരിക്കുന്ന ഇനങ്ങളെല്ലാം സംരക്ഷിക്കുക.</translation>
+<translation id="4913784027728226227">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഈ പാസ്‌വേഡ് സംരക്ഷിക്കാനും ഉപയോഗിക്കാനും, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കൂ</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="4916389289686916969">ടിവി റിയാലിറ്റി ഷോകൾ</translation>
 <translation id="4917064667437236721">ഇമേജിംഗ് സിലിണ്ടർ</translation>
@@ -2312,6 +2316,7 @@
 <translation id="5470861586879999274">&amp;എഡിറ്റുചെയ്യുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="547963486735802022">നിങ്ങളുടെ ഫയലുകൾ കൈമാറാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5481076368049295676">ഈ ഉള്ളടക്കം, നിങ്ങളുടെ ഉപകരണത്തിൽ വിവരങ്ങൾ മോഷ്‌ടിക്കുകയോ ഇല്ലാതാക്കുയോ ചെയ്യുന്ന തരത്തിലുള്ള സോഫ്‌റ്റ്‌വെയർ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">എഴുതാനുള്ള സഹായം നൽകുക</translation>
 <translation id="54817484435770891">ശരിയായ വിലാസം ചേർക്കുക</translation>
 <translation id="5483838506518938965">നിങ്ങൾ തയ്യാറായിക്കഴിഞ്ഞു</translation>
 <translation id="5485973315555778056">ക്ലൗഡ് മെഷീൻ</translation>
@@ -2475,7 +2480,6 @@
 <translation id="5786044859038896871">നിങ്ങളുടെ കാർഡ് വിവരം പൂരിപ്പിക്കണോ?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ഈ ഉപകരണത്തിൽ നിന്ന് ഈ പേയ്‌മെന്റ് രീതി ഇല്ലാതാക്കും</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു അക്കൗണ്ടിന്റെ സൈൻ ഇൻ ഡാറ്റ}other{# അക്കൗണ്ടുകളുടെ സൈൻ ഇൻ ഡാറ്റ}}</translation>
 <translation id="5800727402210090597">മൊബൈൽ ഫോൺ റിപ്പയറും സേവനങ്ങളും</translation>
 <translation id="580241730938216256">അപ്‌ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക</translation>
 <translation id="5803412860119678065">നിങ്ങളുടെ <ph name="CARD_DETAIL" /> പൂരിപ്പിക്കണോ?</translation>
@@ -2589,6 +2593,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (സമന്വയിപ്പിച്ചത്)</translation>
 <translation id="6028591542479806248">മൊബൈൽ, ഇമെയിൽ അറിയിപ്പുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6028833024483927901">ലോകമെമ്പാടും നിന്നുള്ള വിഭവങ്ങൾ</translation>
+<translation id="6030251660719692307">Google Password Manager-ൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="603068602130820122">വലതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="6032524144326295339">മെയിൽബോക്സ് 2</translation>
 <translation id="6032955021262906325">ഇടതുവശത്ത് ബൈൻഡ് ചെയ്യുക</translation>
@@ -3206,7 +3211,6 @@
 <translation id="7201591969684833065">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് ഇവ കാണാനാകും:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുന്നതിന് 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7203375778433816396">സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു പാസ്‌കീ}other{# പാസ്‌കീകൾ}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
 <translation id="721197778055552897">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതൽ‍ മനസിലാക്കുക<ph name="END_LINK" />.</translation>

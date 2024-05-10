@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Agregar a favoritos}other{Agregar a favoritos}}</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
+<translation id="2498435670446402865">Cambiar el nombre</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="2569352796411618312">Sugerencia: Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
 <translation id="2662028055331606429">Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -1442,6 +1442,7 @@
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6555373427270923730">在網址列中輸入網址，然後按 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
+<translation id="6559158502366839560">探索更多應用程式和遊戲</translation>
 <translation id="6559976592393364813">詢問管理員</translation>
 <translation id="6565007273808762236">無法連接 eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>

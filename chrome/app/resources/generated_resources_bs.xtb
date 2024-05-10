@@ -41,7 +41,7 @@
 <translation id="1026822031284433028">Učitaj sliku</translation>
 <translation id="1026959648338730078">Windows Hello ili vanjski sigurnosni ključ</translation>
 <translation id="1028700151766901954">Razlog: LBS prema zadanim postavkama ostaje u pregledniku <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
-<translation id="1028823395684328817">Da biste nastavili upotrebljavati zaporke i druge podatke na svojem Google računu, potvrdite svoj identitet</translation>
+<translation id="1028823395684328817">Potvrdite identitet da nastavite koristiti lozinke i drugo na Google računu</translation>
 <translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1029317248976101138">Zumiranje</translation>
 <translation id="1029526375103058355">Dodir za klik</translation>
@@ -3322,7 +3322,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje.</translation>
 <translation id="3452999110156026232">Pristup roditelja</translation>
 <translation id="3453082738208775226">Obrisati offline pohranu?</translation>
-<translation id="3453597230179205517">Blokiran je pristup lokaciji</translation>
+<translation id="3453597230179205517">Pristup lokaciji je blokiran</translation>
 <translation id="3453612417627951340">Potrebno je odobrenje</translation>
 <translation id="3454213325559396544">To je posljednje automatsko ažuriranje softvera i sigurnosno ažuriranje za uređaj <ph name="DEVICE_TYPE" />. Nadogradite na noviji model za buduća ažuriranja.</translation>
 <translation id="3454818737556063691">Premjestiti 1 fajl na uslugu <ph name="CLOUD_PROVIDER" /> radi otvaranja?</translation>
@@ -3550,7 +3550,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3627588569887975815">Otvori link u anonimnom prozoru</translation>
 <translation id="3627671146180677314">Vrijeme za obnovu Netscape potvrde</translation>
 <translation id="3628275722731025472">Isključi Bluetooth</translation>
-<translation id="3629630597033136279">Isključeno • Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke</translation>
+<translation id="3629630597033136279">Isključeno • Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke</translation>
 <translation id="3629664892718440872">Zapamti ovaj odabir</translation>
 <translation id="3630132874740063857">Vaš telefon</translation>
 <translation id="3630995161997703415">Dodajte ovu web lokaciju na policu da je koristite bilo kada</translation>
@@ -4098,7 +4098,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3998976413398910035">Upravljajte štampačima</translation>
 <translation id="4000360130639414007">Nećete moći koristiti Android aplikacije ni Google Play trgovinu</translation>
 <translation id="4001540981461989979">Isticanje kursora miša prilikom pomicanja</translation>
-<translation id="4002347779798688515">Preuzeti profil se možda neće moći koristiti ako je operater mobilne mreže zaključan. Kontaktirajte operatera za podršku.</translation>
+<translation id="4002347779798688515">Preuzeti profil se možda neće moći koristiti ako je mobilni operater zaključan. Kontaktirajte operatera za podršku.</translation>
 <translation id="4002440992267487163">Postavi PIN</translation>
 <translation id="4003647532210142956">Trenutni raspored je postavljen na <ph name="SUNRISE" />–<ph name="SUNSET" />. Da automatski ažurirate raspored zalazaka i izlazaka sunca, <ph name="BEGIN_LINK" />uključite pristup lokaciji<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Način prepoznavanja vremenske zone</translation>
@@ -4961,7 +4961,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
 <translation id="4675828034887792601">Kreirajte prečice za pretraživanje web lokacija i upravljajte pretraživačem</translation>
 <translation id="4676595058027112862">Phone Hub, saznajte više</translation>
-<translation id="4676616966096505747">Neki podaci još nisu spremljeni na vaš račun</translation>
+<translation id="4676616966096505747">Neki podaci još uvijek nisu sačuvani na vaš račun</translation>
 <translation id="4677772697204437347">GPU memorija</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Kreditna/debitna kartica</translation>
@@ -5452,7 +5452,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5070773577685395116">Niste ga dobili?</translation>
 <translation id="5071295820492622726">Nazad na nedavna preuzimanja</translation>
 <translation id="5071892329440114717">Prikaži detalje o standardnoj zaštiti</translation>
-<translation id="5072500507106264618">Vašu lokaciju mogu upotrebljavati samo usluge sustava</translation>
+<translation id="5072500507106264618">Samo sistemske usluge mogu koristiti vašu lokaciju</translation>
 <translation id="5072836811783999860">Prikaži upravljane oznake</translation>
 <translation id="5072900412896857127">Nije moguće učitati Uslove korištenja usluge Google Play. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> i još #}few{<ph name="FILE1" />, <ph name="FILE2" /> i još #}other{<ph name="FILE1" />, <ph name="FILE2" /> i još #}}</translation>
@@ -5495,7 +5495,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5097874180538493929">Automatski klik kada se kursor zaustavi</translation>
 <translation id="5100775515702043594">Ekstenziju <ph name="EXTENSION_NAME" /> je zakačio vaš administrator</translation>
 <translation id="5101839224773798795">Automatski klikni kada se kursor zaustavi</translation>
-<translation id="5102244391872941183">Vašu lokaciju mogu upotrebljavati aplikacije i web-lokacije s dopuštenjem za lokaciju, kao i usluge sustava</translation>
+<translation id="5102244391872941183">Vašu lokaciju mogu koristiti aplikacije i web lokacije s odobrenjem za lokaciju, kao i sistemske usluge</translation>
 <translation id="5103311607312269661">pojačavanje osvijetljenosti ekrana</translation>
 <translation id="5106350808162641062">Ukloni</translation>
 <translation id="510695978163689362">Family Link upravlja računom <ph name="USER_EMAIL" />. Možeš dodati školske račune da pristupiš školskim izvorima uz roditeljski nadzor.</translation>
@@ -6615,7 +6615,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5955721306465922729">Web lokacija želi otvoriti ovu aplikaciju.</translation>
 <translation id="5955809630138889698">Moguće je da ovaj uređaj ispunjava uslove isključivo za online način rada za demonstraciju. Obratite se predstavniku podrške za više detalja.</translation>
 <translation id="5957987129450536192">Dodirnite ikonu Odaberite za govor u blizini slike profila, a zatim odaberite ono što želite čuti.</translation>
-<translation id="5958836583172610505">Sinkronizacija je uključena</translation>
+<translation id="5958836583172610505">Sinhronizacija je uključena</translation>
 <translation id="5959471481388474538">Mreža nije dostupna</translation>
 <translation id="5959982036207776176">Povećalo prati riječi koje čita funkcija Odaberite za govor</translation>
 <translation id="5963413905009737549">Odjeljak</translation>
@@ -9236,7 +9236,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7947964080535614577">Web lokacije obično prikazuju oglase da mogu besplatno pružati sadržaj ili usluge. Ali, poznato je da neke web lokacije prikazuju ometajuće ili obmanjujuće oglase.</translation>
 <translation id="7948407723851303488">Sve stranice na domeni <ph name="DOMAIN_NAME" /></translation>
 <translation id="7950629216186736592">Razlog: LBS podržava samo URL-ove http://, https:// i file://.</translation>
-<translation id="7950814699499457511">Uključeno • Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke</translation>
+<translation id="7950814699499457511">Uključeno • Ekstenzija nije objavila prakse u vezi s privatnošću, kao što je način na koji prikuplja i koristi podatke</translation>
 <translation id="7951265006188088697">Za dodavanje ili upravljanje načinima plaćanja u Google Payu, posjetite svoj <ph name="BEGIN_LINK" />Google račun<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Isključi virtuelnu karticu</translation>
 <translation id="795240231873601803">Koristite prijavu preduzeća za poslovne i školske račune</translation>

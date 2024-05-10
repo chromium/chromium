@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">लेबल (पर्मानेन्ट)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> तपाईंको डिफल्ट सर्च इन्जिन भएको छ</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> खोज्नुहोस्</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
 <translation id="3140646734028448730">व्यावसायिक सेवाहरू</translation>
 <translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3141641372357166056">सहमति जनाउने कि नजनाउने भनेर निर्णय गरिएको छैन</translation>
@@ -2428,7 +2429,7 @@
 <translation id="568489534660743582">साइटले सिफारिस गरेका विज्ञापनहरू भनेका साइटले विज्ञापन पर्सनलाइज गर्न प्रयोग गर्न सक्ने थुप्रै कुरामध्येको एक कुरा मात्र हो। तपाईंले "साइटले सिफारिस गरेका विज्ञापनहरू" अफ गर्नुभयो भने पनि साइटहरू तपाईंलाई विज्ञापन देखाउन सक्छन् तर ती विज्ञापन कम रुचिकर हुन सक्छन्।</translation>
 <translation id="5687340364605915800">यो अनुरोध मान्ने वा नमान्ने कुरा साइटमा भर पर्छ</translation>
 <translation id="5688137257686092846">कस्मेटोलोजी र सौन्दर्यसम्बन्धी पेसेकर्मीहरू</translation>
-<translation id="5689199277474810259">JSON ढाँचामा निर्यात गर्नुहोस्</translation>
+<translation id="5689199277474810259">JSON ढाँचामा एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="5689516760719285838">स्थान</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates को यो मान सान्दर्भिक नभएकाले DnsOverHttpsMode नीति सेट गरेर <ph name="SECURE_DNS_MODE_AUTOMATIC" /> वा <ph name="SECURE_DNS_MODE_SECURE" /> नबनाइँदासम्म यसको प्रयोग गरिने छैन।</translation>
 <translation id="5691848789297492617">कार्ड सेभ गर्ने प्रम्प्ट पूरै स्क्रिनमा खोलिएको छ।</translation>
@@ -2475,7 +2476,6 @@
 <translation id="5786044859038896871">तपाईं आफ्नो कार्ड सम्बन्धी जानकारी भर्न चाहनुहुन्छ?</translation>
 <translation id="5789643057113097023">।</translation>
 <translation id="5793317771769868848">यो डिभाइसबाट यो भुक्तानी विधि हटाइने छ</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{कुनै पनि खाताको साइनइन डेटा छैन}=1{एउटा खाताको साइनइन डेटा}other{# वटा खाताको साइनइन डेटा}}</translation>
 <translation id="5800727402210090597">मोबाइल फोन मर्मत गर्ने सेवाहरू</translation>
 <translation id="580241730938216256">अपडेट सुरु गर्नुहोस्</translation>
 <translation id="5803412860119678065">तपाईं आफ्नो <ph name="CARD_DETAIL" /> सम्बन्धी जानकारी भर्न चाहनुहुन्छ?</translation>
@@ -3207,7 +3207,6 @@
 <translation id="7201591969684833065">तपाईंका प्रशासक निम्न कुरा हेर्न सक्नुहुन्छ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने ट्याब की अनि इन्टर की थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="7203375778433816396">Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउनुहोस्</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{एउटा पनि पासकी छैन}=1{एउटा पासकी}other{# वटा पासकी}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>
 <translation id="7210993021468939304">कन्टेनर भित्र Linux का क्रियाकलाप हेर्न र कन्टेनरभित्र Linux एपहरू इन्स्टल गर्न र चलाउन सक्छ</translation>
 <translation id="721197778055552897">यो समस्याको बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
@@ -3864,7 +3863,7 @@
 <translation id="8409413588194360210">भुक्तानी ह्यान्ड्लरहरू</translation>
 <translation id="8412145213513410671">क्रयासहरू (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">तपाइँले एउटै पासफ्रेज दुईटपक प्रविष्ट गर्नुपर्छ।</translation>
-<translation id="8416694386774425977">नेटवर्कको कन्फिगुरेसन अमान्य छ र आयात गर्न सकिएन।
+<translation id="8416694386774425977">नेटवर्कको कन्फिगुरेसन अमान्य छ र इम्पोर्ट गर्न सकिएन।
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">अहिले माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>

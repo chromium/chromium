@@ -1104,6 +1104,7 @@
 <translation id="3126023634486644099">Шошго (салдаггүй)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> нь одоо таны өгөгдмөл хайлтын систем юм</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-г хайх</translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Байхгүй}=1{1 бүртгэлийн нэвтрэх өгөгдөл}other{# бүртгэлийн нэвтрэх өгөгдөл}}</translation>
 <translation id="3140646734028448730">Бизнесийн үйлчилгээнүүд</translation>
 <translation id="3141093262818886744">Ямар ч байсан нээх</translation>
 <translation id="3141641372357166056">Зөвшөөрлийн ямар ч шийдвэр байхгүй</translation>
@@ -2478,7 +2479,6 @@
 <translation id="5786044859038896871">Картын мэдээллээ бөглөх үү?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Энэ төлбөрийн хэрэгслийг энэ төхөөрөмжөөс устгана</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Байхгүй}=1{1 бүртгэлийн нэвтрэх өгөгдөл}other{# бүртгэлийн нэвтрэх өгөгдөл}}</translation>
 <translation id="5800727402210090597">Гар утасны засвар, үйлчилгээнүүд</translation>
 <translation id="580241730938216256">Шинэчилж эхлэх</translation>
 <translation id="5803412860119678065">Та <ph name="CARD_DETAIL" />-г бөглөх үү?</translation>
@@ -3209,7 +3209,6 @@
 <translation id="7201591969684833065">Таны админ дараахыг харах боломжтой:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Нууцлалтайгаар үзэхийн тулд шинэ Нууцлалтай табыг эхлээд Tab, дараа нь Enter дээр дарж нээнэ үү</translation>
 <translation id="7203375778433816396">Chrome-г системийн өгөгдмөл хөтөч болгон тохируулах</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Байхгүй}=1{1 passkey}other{# passkey}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>

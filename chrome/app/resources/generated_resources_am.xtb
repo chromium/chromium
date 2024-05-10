@@ -41,6 +41,7 @@
 <translation id="1026822031284433028">ምስል አክል</translation>
 <translation id="1026959648338730078">Windows Hello ወይም የውጪ የደህንነት ቁልፍ</translation>
 <translation id="1028700151766901954">ምክንያት፦ LBS በ<ph name="DEFAULT_OPEN_BROWSER" /> ውስጥ በነባሪነት ይቆያል።</translation>
+<translation id="1028823395684328817">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን እና ሌሎችንም እየተጠቀሙ ለመቀጠል እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1029317248976101138">ማጉሊያ</translation>
 <translation id="1029526375103058355">ጠቅ ለማድረግ መታ ያድርጉ</translation>
@@ -3313,6 +3314,7 @@
 <translation id="3450180775417907283"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል።</translation>
 <translation id="3452999110156026232">የወላጅ መዳረሻ</translation>
 <translation id="3453082738208775226">ከመስመር ውጭ የሆነ ማከማቻ ይጸዳ?</translation>
+<translation id="3453597230179205517">የአካባቢ መዳረሻ ታግዷል</translation>
 <translation id="3453612417627951340">ፈቀዳ ያስፈልገዋል</translation>
 <translation id="3454213325559396544">ይህ ለዚህ <ph name="DEVICE_TYPE" /> የመጨረሻው ራስሰር ሶፍትዌር እና የደህንነት ዝማኔ ነው። የወደፊት ዝማኔዎችን ለማግኘት፣ ወደ በጣም አዲሱ ሞዴል ደረጃ ያሻሽሉ።</translation>
 <translation id="3454818737556063691">ለመክፈት 1 ፋይል ወደ <ph name="CLOUD_PROVIDER" /> ይንቀሳቀስ?</translation>
@@ -3539,6 +3541,7 @@
 <translation id="3627588569887975815">አገናኙን ማን&amp;ነትን በማያሳውቅ መስኮት ክፈት</translation>
 <translation id="3627671146180677314">የNetscape ሰርቲፊኬት የእድሳት ጊዜ</translation>
 <translation id="3628275722731025472">ብሉቱዝ አጥፋ</translation>
+<translation id="3629630597033136279">ጠፍቷል • ይህ ቅጥያ እንደ ውሂብን እንዴት እንደሚሰበስብ እና እንደሚጠቀም ያሉ የግላዊነት ተግባሮችን አላተመም</translation>
 <translation id="3629664892718440872">ይህን ምርጫ አስታውስ</translation>
 <translation id="3630132874740063857">የእርስዎ ስልክ</translation>
 <translation id="3630995161997703415">ይህን ጣቢያ በማንኛውም ጊዜ ለመጠቀም ወደ መደርደሪያዎ ያክሉት</translation>
@@ -4946,6 +4949,7 @@
 <translation id="467510802200863975">የይለፍ ቃላትዎ አይዛመዱም</translation>
 <translation id="4675828034887792601">ጣቢያዎችን ለመፈለግ አቋራጮችን ይፍጠሩ እና የፍለጋ ፕሮግራምዎን ያቀናብሩ</translation>
 <translation id="4676595058027112862">የስልክ ሃብ፣ የበለጠ ለመረዳት</translation>
+<translation id="4676616966096505747">የተወሰነ ውሂብ በመለያዎ ውስጥ ገና አልተቀመጠም</translation>
 <translation id="4677772697204437347">የጂፒዩ ማህደረ ትውስታ</translation>
 <translation id="467809019005607715">Google ስላይዶች</translation>
 <translation id="4678848110205818817">ክሬዲት/ዴቢት ካርድ</translation>
@@ -5436,6 +5440,7 @@
 <translation id="5070773577685395116">አላገኙትም?</translation>
 <translation id="5071295820492622726">ወደ የቅርብ ጊዜ ውርዶች ተመለስ</translation>
 <translation id="5071892329440114717">ደረጃቸውን የጠበቁ የጥበቃ ዝርዝሮችን አሳይ</translation>
+<translation id="5072500507106264618">አካባቢዎን መጠቀም የሚችሉት የሥርዓት አገልግሎቶች ብቻ ናቸው</translation>
 <translation id="5072836811783999860">የሚቀናበሩ ዕልባቶችን አሳይ</translation>
 <translation id="5072900412896857127">የGoogle Play የአገልግሎት ውልን መጫን አይቻልም። እባክዎ የእርስዎን አውታረ መረብ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />፣ <ph name="FILE2" />}one{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}other{<ph name="FILE1" />፣ <ph name="FILE2" />፣ እና # ተጨማሪ}}</translation>
@@ -5478,6 +5483,7 @@
 <translation id="5097874180538493929">ጠቋሚው ሲያቆም በራስ-ሰር ጠቅ አድርግ</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> በእርስዎ አስተዳዳሪ ፒን ተደርጓል</translation>
 <translation id="5101839224773798795">ጠቋሚ ሲያቆም በራስሰር ጠቅ አድርግ</translation>
+<translation id="5102244391872941183">የአካባቢ ፈቃድ ያላቸው መተግበሪያዎች እና ድር ጣቢያዎች እንዲሁም የሥርዓት አገልግሎቶች የእርስዎን አካባቢ መጠቀም ይችላሉ</translation>
 <translation id="5103311607312269661">የማሳያ ብሩህነት መጨመሪያ</translation>
 <translation id="5106350808162641062">አስወግድ</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> በ Family Link ክትትል ይደረግበታል። በወላጆች ክትትል የትምህርት ቤት ንብረቶችን ለመድረስ የትምህርት ቤት መለያዎችን ማከል ይችላሉ።</translation>
@@ -6596,6 +6602,7 @@
 <translation id="5955721306465922729">አንድ ድር ጣቢያ ይህን መተግበሪያ መክፈት ይፈልጋል።</translation>
 <translation id="5955809630138889698">ይህ መሣሪያ ምናልባት ለመስመር ላይ የቅንጭብ ማሳያ ሁነታ ብቻ ብቁ ሊሆን ይችላል። ለተጨማሪ ዝርዝሮች እባክዎ የእርስዎን የድጋፍ ተወካይ ያነጋግሩ።</translation>
 <translation id="5957987129450536192">ከመገለጫ ምስልዎ አጠገብ ያለውን ለመናገር-ይምረጡ አዶ መታ ያድርጉ፣ ከዚያ መስማት የሚፈልጉትን ነገር ይምረጡ።</translation>
+<translation id="5958836583172610505">ስምረት በርቷል</translation>
 <translation id="5959471481388474538">አውታረ መረብ አይገኝም</translation>
 <translation id="5959982036207776176">ማጉያው ለመናገር ምረጥ በሚለው እየተነበበ ያለውን ቃል ይከተላል</translation>
 <translation id="5963413905009737549">ክፍል</translation>
@@ -8099,6 +8106,7 @@
 <translation id="7120762240626567834">VPN ካልተገናኘ በስተቀር የChrome አሳሽ እና የAndroid ትራፊክ ይታገዳሉ</translation>
 <translation id="7121438501124788993">የገንቢ ሁነታ</translation>
 <translation id="7121728544325372695">ዘመናዊ ዳሾች</translation>
+<translation id="7122605570852873914">ቢሆንም ዘግተህ ውጣ</translation>
 <translation id="7123030151043029868">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ ተፈቅዷል</translation>
 <translation id="7124013154139278147">ለ«ቀዳሚው» መቀየሪያ ይመድቡ</translation>
 <translation id="7124712201233930202">የድርጅትዎ መመሪያዎች አልተሟሉም</translation>
@@ -9213,6 +9221,7 @@
 <translation id="7947964080535614577">ጣቢያዎች ይዘትን ወይም አገልግሎቶችን ከክፍያ ነፃ ማቅረብ እንዲችሉ ማስታወቂያዎችን ያሳያሉ። ነገር ግን አንዳንድ ጣቢያዎች ረባሽ ወይም አሳሳች ማስታወቂያዎችን በማሳየት ይታወቃሉ።</translation>
 <translation id="7948407723851303488">የ<ph name="DOMAIN_NAME" /> ሁሉም ገጾች</translation>
 <translation id="7950629216186736592">ምክንያት፦ LBS የሚደግፈው የ http://፣ https:// እና file:// ዩአርኤሎችን ብቻ ነው።</translation>
+<translation id="7950814699499457511">በርቷል • ይህ ቅጥያ እንደ ውሂብን እንዴት እንደሚሰበስብ እና እንደሚጠቀም ያሉ የግላዊነት ተግባሮችን አላተመም</translation>
 <translation id="7951265006188088697">የ Google Pay ክፍያ ዘዴዎችን ለማከል ወይም ለማስተዳደር፣ የእርስዎን <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ይጎብኙ</translation>
 <translation id="795130320946928025">ምናባዊ ካርድን አጥፋ</translation>
 <translation id="795240231873601803">ለሥራ እና የትምህርት ቤት መለያዎች የድርጅት ምዝገባን ይጠቀሙ</translation>

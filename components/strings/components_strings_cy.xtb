@@ -1063,6 +1063,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3037605927509011580">Damo!</translation>
 <translation id="3039406992698062762">Teithio Teuluol</translation>
+<translation id="3041176923638368519">Gweler telerau buddion cerdyn</translation>
 <translation id="3041612393474885105">Gwybodaeth am y Dystysgrif</translation>
 <translation id="3045769629416806687">Chwaraeon Eithafol</translation>
 <translation id="305162504811187366">Hanes Chrome Remote Desktop, gan gynnwys stampiau amser, gwesteiwyr a rhifau adnabod sesiynau cleient</translation>
@@ -1103,6 +1104,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3126023634486644099">Labeli (Parhaol)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> yw eich peiriant chwilio diofyn bellach</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Chwilio <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Dim}=1{data mewngofnodi ar gyfer 1 cyfrif}two{data mewngofnodi ar gyfer # gyfrif}few{data mewngofnodi ar gyfer # chyfrif}many{data mewngofnodi ar gyfer # chyfrif}other{data mewngofnodi ar gyfer # cyfrif}}</translation>
 <translation id="3140646734028448730">Gwasanaethau Busnes</translation>
 <translation id="3141093262818886744">Agor beth bynnag</translation>
 <translation id="3141641372357166056">Dim penderfyniad cydsyniad</translation>
@@ -2476,7 +2478,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5786044859038896871">Hoffech chi lenwi gwybodaeth am eich cerdyn?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bydd y dull talu hwn yn cael ei ddileu o'r ddyfais hon</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Dim}=1{data mewngofnodi ar gyfer 1 cyfrif}two{data mewngofnodi ar gyfer # gyfrif}few{data mewngofnodi ar gyfer # chyfrif}many{data mewngofnodi ar gyfer # chyfrif}other{data mewngofnodi ar gyfer # cyfrif}}</translation>
 <translation id="5800727402210090597">Atgyweirio a Gwasanaethau Ffonau Symudol</translation>
 <translation id="580241730938216256">Dechrau diweddaru</translation>
 <translation id="5803412860119678065">Ydych chi am lenwi'ch <ph name="CARD_DETAIL" />?</translation>
@@ -3208,7 +3209,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7201591969684833065">Gall eich gweinyddwr weld:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="7203375778433816396">Gosod Chrome fel porwr diofyn y system</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Dim}=1{1 cod pas}two{# god pas}few{# chod pas}many{# chod pas}other{# cod pas}}</translation>
 <translation id="7210863904660874423">Nid yw <ph name="HOST_NAME" /> yn cadw at safonau diogelwch.</translation>
 <translation id="7210993021468939304">Gweithgarwch Linux o fewn y cynhwysydd, a gall osod a rhedeg apiau Linux yn y cynhwysydd</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am y broblem hon.</translation>

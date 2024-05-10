@@ -1063,6 +1063,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
 <translation id="3039406992698062762">Viagens em família</translation>
+<translation id="3041176923638368519">Consulte os termos dos benefícios do cartão</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Esportes radicais</translation>
 <translation id="305162504811187366">o histórico da Área de trabalho remota do Google Chrome, incluindo carimbos de data/hora, hosts e IDs de sessões de clientes.</translation>
@@ -1103,6 +1104,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3126023634486644099">Rótulos (permanentes)</translation>
 <translation id="3133565499688974786">Agora <ph name="SEARCH_ENGINE_NAME" /> é seu mecanismo de pesquisa padrão</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" />: pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="3140646734028448730">Serviços comerciais</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
 <translation id="3141641372357166056">Nenhuma decisão de consentimento</translation>
@@ -2476,7 +2478,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="5800727402210090597">Serviços e assistência técnica para smartphones</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5803412860119678065">Quer preencher as informações do seu cartão <ph name="CARD_DETAIL" />?</translation>
@@ -2590,6 +2591,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizados)</translation>
 <translation id="6028591542479806248">Gerenciar notificações recebidas por e-mail e no dispositivo móvel</translation>
 <translation id="6028833024483927901">Culinária mundial</translation>
+<translation id="6030251660719692307">Chave de acesso do Gerenciador de senhas do Google</translation>
 <translation id="603068602130820122">Dois grampos no lado direito</translation>
 <translation id="6032524144326295339">Caixa de e-mails 2</translation>
 <translation id="6032955021262906325">Encadernação no lado esquerdo</translation>
@@ -3207,7 +3209,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: pressione "Tab" e depois "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
 <translation id="7203375778433816396">Definir o Chrome como o navegador padrão do sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nenhuma}=1{1 chave de acesso}one{# chave de acesso}other{# chaves de acesso}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não adere aos padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux no contêiner, bem como instalar e executar apps do Linux no contêiner</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>

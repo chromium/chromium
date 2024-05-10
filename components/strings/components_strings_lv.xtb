@@ -1063,6 +1063,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3037177537145227281">Notiek cenas izsekošana</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
 <translation id="3039406992698062762">Ceļojumi ģimenēm</translation>
+<translation id="3041176923638368519">Skatīt kartes priekšrocību noteikumus</translation>
 <translation id="3041612393474885105">Sertifikāta informācija</translation>
 <translation id="3045769629416806687">Ekstrēmie sporta veidi</translation>
 <translation id="305162504811187366">Chrome attālās darbvirsmas vēsture, tostarp laikspiedoli, saimniekdatori un klientu sesiju identifikatori</translation>
@@ -1103,6 +1104,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3126023634486644099">Etiķešu papīrs (pastāvīgs līmējums)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> tagad ir jūsu noklusējuma meklētājprogramma.</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> — meklēt šeit: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nav}=1{1 konta pierakstīšanās dati}zero{# kontu pierakstīšanās dati}one{# konta pierakstīšanās dati}other{# kontu pierakstīšanās dati}}</translation>
 <translation id="3140646734028448730">Pakalpojumi uzņēmumiem</translation>
 <translation id="3141093262818886744">Tomēr atvērt</translation>
 <translation id="3141641372357166056">nav lēmuma par piekrišanu</translation>
@@ -2475,7 +2477,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5786044859038896871">Vai vēlaties aizpildīt laukus ar kartes informāciju?</translation>
 <translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Šis maksājuma veids tiks dzēsts no šīs ierīces.</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Nav}=1{1 konta pierakstīšanās dati}zero{# kontu pierakstīšanās dati}one{# konta pierakstīšanās dati}other{# kontu pierakstīšanās dati}}</translation>
 <translation id="5800727402210090597">Mobilo tālruņu remonts un pakalpojumi</translation>
 <translation id="580241730938216256">Sākt atjaunināšanu</translation>
 <translation id="5803412860119678065">Vai vēlaties aizpildīt lauku ar informāciju “<ph name="CARD_DETAIL" />”?</translation>
@@ -3207,7 +3208,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7201591969684833065">Administrators var redzēt:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai privātai pārlūkošanai atvērtu inkognito cilni, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="7203375778433816396">Iestatīt Chrome kā sistēmas noklusējuma pārlūku</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nav}=1{1 piekļuves atslēga}zero{# piekļuves atslēgu}one{# piekļuves atslēga}other{# piekļuves atslēgas}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> neatbilst drošības standartiem.</translation>
 <translation id="7210993021468939304">Linux darbība konteinerā; var instalēt un palaist Linux lietotnes konteinerā</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par šo problēmu.</translation>

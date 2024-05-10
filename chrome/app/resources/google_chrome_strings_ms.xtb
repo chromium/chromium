@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome menyekat muat turun ini kerana jenis fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google mengesyorkan supaya Chrome ditetapkan sebagai lalai</translation>
+<translation id="1265739287306757398">Ketahui Caranya</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chrome OS Flex.</translation>
@@ -34,6 +35,7 @@
  penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="155168855724261758">Sesuaikan Chrome Anda</translation>
+<translation id="1551749261806528781">Untuk menyimpan dan menggunakan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chrome. Kata laluan ini akan disimpan dalam Google Account anda selepas anda log masuk.</translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Tindakan ini akan membuat profil Chrome baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera anda.</translation>
@@ -176,6 +178,7 @@
 <translation id="3635073343384702370">Chrome boleh menyemak kata laluan anda apabila anda menyimpan kata laluan tersebut</translation>
 <translation id="3667616615096815454">Tidak dapat memasang, aplikasi tidak dikenali oleh pelayan.</translation>
 <translation id="3673813398384385993">Chrome mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
+<translation id="3695446226812920698">Ketahui caranya</translation>
 <translation id="3697952514309507634">Profil Chrome lain</translation>
 <translation id="3703994572283698466">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versi Chrome OS Flex</translation>
@@ -310,6 +313,7 @@
 <translation id="5940385492829620908">Web, penanda halaman dan barangan Chrome anda yang lain tinggal di sini.</translation>
 <translation id="5941711191222866238">Minimumkan</translation>
 <translation id="5941830788786076944">Jadikan Google Chrome penyemak imbas lalai</translation>
+<translation id="5947104538377036631">Pintasan Chrome</translation>
 <translation id="6003112304606738118">Memuat turun… <ph name="HOURS" /> jam lagi</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alatan daripada Chrome<ph name="END_LINK" />, anda boleh menyemak imbas dengan selamat dan mengekalkan kawalan anda</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
@@ -338,6 +342,7 @@
 <translation id="6412673304250309937">Semak URL melalui perbandingan dengan senarai tapak tidak selamat yang disimpan dalam Chrome. Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chrome secara automatik apabila Chrome tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
+<translation id="6479881432656947268">Lawati Gedung Web Chrome</translation>
 <translation id="6481963882741794338">Pautkan Chrome dan perkhidmatan Google lain untuk pemeribadian dan tujuan lain</translation>
 <translation id="648319183876919572">Penyemakan Imbas Selamat Dipertingkatkan melakukan lebih banyak lagi untuk melindungi anda daripada laman web dan muat turun berbahaya</translation>
 <translation id="6489302989675808168">Hidupkan • Chrome tidak dapat mengesahkan tempat asal sambungan ini</translation>
@@ -470,6 +475,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8416347857511542594">Ketahui lebih lanjut tentang pemeribadian iklan dalam Chrome</translation>
 <translation id="8418845734693287262">Chrome OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="842386925677997438">Alatan keselamatan Chrome</translation>
+<translation id="8428213095426709021">Tetapan</translation>
 <translation id="8433638294851456451">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
 <translation id="8451192282033883849">Akaun anda diurus oleh <ph name="MANAGER_NAME" />. Pentadbir anda boleh melihat dan mengedit profil penyemak imbas Chrome ini dan datanya seperti penanda halaman, sejarah dan kata laluan.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

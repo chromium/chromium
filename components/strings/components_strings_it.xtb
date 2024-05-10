@@ -1105,6 +1105,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3126023634486644099">Etichette (fisse)</translation>
 <translation id="3133565499688974786">Ora <ph name="SEARCH_ENGINE_NAME" /> è il tuo motore di ricerca predefinito</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Cerca <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="3140646734028448730">Servizi per le aziende</translation>
 <translation id="3141093262818886744">Apri comunque</translation>
 <translation id="3141641372357166056">nessuna decisione relativa al consenso</translation>
@@ -2477,7 +2478,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5786044859038896871">Vuoi inserire automaticamente i dati della carta?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Questo metodo di pagamento verrà eliminato dal dispositivo</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="5800727402210090597">Riparazione e assistenza cellulari</translation>
 <translation id="580241730938216256">Avvia aggiornamento</translation>
 <translation id="5803412860119678065">Vuoi inserire automaticamente <ph name="CARD_DETAIL" />?</translation>
@@ -2591,6 +2591,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sincronizzati)</translation>
 <translation id="6028591542479806248">Gestisci le notifiche mobile e via email</translation>
 <translation id="6028833024483927901">Cucine nazionali</translation>
+<translation id="6030251660719692307">Passkey di Gestore delle password di Google</translation>
 <translation id="603068602130820122">Doppia pinzatura a destra</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Rilegatura a sinistra</translation>
@@ -3207,7 +3208,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7201591969684833065">L'amministratore è in grado di vedere:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="7203375778433816396">Imposta Chrome come browser predefinito del sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nessuna}=1{1 passkey}other{# passkey}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non è conforme agli standard di sicurezza.</translation>
 <translation id="7210993021468939304">Attività Linux all'interno del container; possono installare ed eseguire app Linux all'interno del container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>

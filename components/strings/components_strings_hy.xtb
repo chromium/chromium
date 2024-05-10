@@ -619,6 +619,7 @@
 <translation id="2122214041802369259">Գինը բարձր է</translation>
 <translation id="2122719317867821810">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն անտեսում է հակասական արժեքը, որը սահմանված է մեկ այլ տեղ։</translation>
 <translation id="2126374524350484896">PDF-ի թողարկիչ՝</translation>
+<translation id="2127090458081644412">Գաղտնաբառը պահվել է այս սարքում</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Ցուցադրվում են պատահական հերթականությամբ։ Ցանկացած ժամանակ կարող եք փոխել ձեր կանխադրվածը։</translation>
@@ -1069,6 +1070,7 @@
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037605927509011580">Վա՛յ</translation>
 <translation id="3039406992698062762">Ընտանեկան ճանապարհորդություն</translation>
+<translation id="3041176923638368519">Տեսնել քարտի առավելությունների պայմանները</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="3045769629416806687">Էքստրեմալ սպորտաձևեր</translation>
 <translation id="305162504811187366">Chrome հեռակա աշխատասեղանի պատմությունը, այդ թվում՝ ժամադրոշմները, խնամորդները և սպասառուների աշխատաշրջանների նույնացուցիչները</translation>
@@ -1109,6 +1111,7 @@
 <translation id="3126023634486644099">Պիտակներ (պերմանենտ)</translation>
 <translation id="3133565499688974786">Ձեր կանխադրված որոնողական համակարգը՝ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Որոնել <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Ոչինչ չկա}=1{1 հաշվի մուտքի տվյալներ}one{# հաշվի մուտքի տվյալներ}other{# հաշվի մուտքի տվյալներ}}</translation>
 <translation id="3140646734028448730">Բիզնես ծառայություններ</translation>
 <translation id="3141093262818886744">Բացել</translation>
 <translation id="3141641372357166056">Համաձայնության որոշում չկա</translation>
@@ -2038,6 +2041,7 @@
 <translation id="4901778704868714008">Պահել…</translation>
 <translation id="4901952598169637881">Ամենօրյա կոշիկներ</translation>
 <translation id="4905659621780993806">Ադմինիստրատորն ավտոմատ կվերագործարկի սարքը՝ <ph name="DATE" />, <ph name="TIME" />։ Պահեք բոլոր բացված տարրերը մինչև սարքի վերագործարկումը։</translation>
+<translation id="4913784027728226227">Ձեր բոլոր սարքերում այս գաղտնաբառն օգտագործելու համար հաստատեք ձեր ինքնությունը</translation>
 <translation id="4913987521957242411">Անցք վերևի ձախ կողմում</translation>
 <translation id="4916389289686916969">Հեռուստատեսային ռեալիթի շոուներ</translation>
 <translation id="4917064667437236721">Պատկերների գլան</translation>
@@ -2324,6 +2328,7 @@
 <translation id="5470861586879999274">&amp;Վերարկել փոփոխումը</translation>
 <translation id="547963486735802022">Փորձեք նորից փոխանցել ֆայլերը</translation>
 <translation id="5481076368049295676">Այս բովանդակությունը կարող է փորձել ձեր սարքում վնասարար ծրագիր տեղադրել, որը գողանում կամ ջնջում է ձեր տեղեկությունները։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Առաջարկել գրելու օգնություն</translation>
 <translation id="54817484435770891">Ավելացրեք վավեր հասցե</translation>
 <translation id="5483838506518938965">Պատրաստ է</translation>
 <translation id="5485973315555778056">Ամպի սարք</translation>
@@ -2487,7 +2492,6 @@
 <translation id="5786044859038896871">Ուզո՞ւմ եք լրացնել ձեր քարտի տվյալները:</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ոչ մի}=1{1 հաշվի մուտքի տվյալներ}one{# հաշվի մուտքի տվյալներ}other{# հաշվի մուտքի տվյալներ}}</translation>
 <translation id="5800727402210090597">Բջջային հեռախոսների վերանորոգում և սպասարկում</translation>
 <translation id="580241730938216256">Թարմացնել</translation>
 <translation id="5803412860119678065">Ուզո՞ւմ եք լրացնել ձեր <ph name="CARD_DETAIL" /> քարտի տվյալները:</translation>
@@ -2601,6 +2605,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (համաժամացված)</translation>
 <translation id="6028591542479806248">Կառավարեք բջջային և փոստային ծանուցումները</translation>
 <translation id="6028833024483927901">Աշխարհի ժողովուրդների խոհանոց</translation>
+<translation id="6030251660719692307">Մուտքի բանալի Google գաղտնաբառերի կառավարչից</translation>
 <translation id="603068602130820122">Երկու ամրակ աջ կողմում</translation>
 <translation id="6032524144326295339">Փոստարկղ 2</translation>
 <translation id="6032955021262906325">Ամրակար ձախ կողմում</translation>
@@ -3218,7 +3223,6 @@
 <translation id="7201591969684833065">Ձեր ադմինիստրատորը կարող է տեսնել՝</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո ներդիր բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7203375778433816396">Դարձնել Chrome-ը համակարգի կանխադրված դիտարկիչ</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ոչ մի}=1{1 մուտքի բանալի}one{# մուտքի բանալի}other{# մուտքի բանալի}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>
 <translation id="7210993021468939304">Տեսնում է Լինուքսի գործողությունները կոնտեյներում և կարող է տեղադրել ու գործարկել Լինուքսի հավելվածներ կոնտեյներից</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>

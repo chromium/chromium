@@ -60,6 +60,7 @@
 <translation id="2018879682492276940">설치할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2020032459870799438">다른 암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="2049376729098081731">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chromium 방문 기록을 포함할지 선택하세요.</translation>
+<translation id="2065461321550902389">모든 기기에서 비밀번호 등을 저장하고 사용하려면 Chromium에 로그인하세요. 로그인하면 이 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="2086476982681781442">사기성 파일이며 기기에 예기치 않은 변경사항이 적용될 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="2088953378266246249">Chromium의 루트 인증서 관리 방식에 관한 정보</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
@@ -314,6 +315,7 @@
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6333502561965082103">Chromium에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6334986366598267305">이제 Google 계정으로 공유 컴퓨터에서 Chromium을 손쉽게 사용할 수 있습니다.</translation>
+<translation id="6347933965114150440">Chromium 바로가기</translation>
 <translation id="6366160072964553914">일반적으로 다운로드하지 않는 파일이며 위험할 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="6373523479360886564">Chromium을 제거하시겠습니까?</translation>
 <translation id="6375219077595103062">비밀번호 관리자로 연결되는 바로가기를 추가하세요</translation>

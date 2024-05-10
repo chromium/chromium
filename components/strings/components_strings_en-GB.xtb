@@ -1104,6 +1104,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3126023634486644099">Labels (permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> is now your default search engine</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – search <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{None}=1{sign-in data for 1 account}other{sign-in data for # accounts}}</translation>
 <translation id="3140646734028448730">Business Services</translation>
 <translation id="3141093262818886744">Open anyway</translation>
 <translation id="3141641372357166056">No consent decision</translation>
@@ -2477,7 +2478,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5786044859038896871">Do you want to fill in your card info?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">This payment method will be deleted from this device</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{None}=1{sign-in data for 1 account}other{sign-in data for # accounts}}</translation>
 <translation id="5800727402210090597">Mobile Phone Repair and Services</translation>
 <translation id="580241730938216256">Start update</translation>
 <translation id="5803412860119678065">Do you want to fill in your <ph name="CARD_DETAIL" />?</translation>
@@ -3209,7 +3209,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7201591969684833065">Your administrator can see:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter to open a new incognito tab to browse privately</translation>
 <translation id="7203375778433816396">Set Chrome as the system's default browser</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{None}=1{1 passkey}other{# passkeys}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> doesn't adhere to security standards.</translation>
 <translation id="7210993021468939304">Linux activity within the container, and can install and run Linux apps within the container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about this problem.</translation>

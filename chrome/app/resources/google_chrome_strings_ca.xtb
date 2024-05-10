@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Chrome ha bloquejat aquesta baixada perquè el tipus de fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1229096353876452996">Google recomana que Chrome es configuri com a navegador predeterminat</translation>
+<translation id="1265739287306757398">Informació</translation>
 <translation id="1278833599417554002">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espereu mentre Chrome instal·la les actualitzacions més recents del sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Google ChromeOS Flex.</translation>
@@ -77,6 +78,7 @@
 <translation id="2174917724755363426">La instal·lació no s'ha completat. Confirmes que vols cancel·lar-la?</translation>
 <translation id="2190166659037789668">Error de comprovació d'actualització: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199691482078155239">Chrome et proporciona més control sobre els anuncis que veus i limita la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats</translation>
+<translation id="2216543877350048334">Per suprimir de Chrome el teu Compte de Google, tanca la sessió</translation>
 <translation id="223889379102603431">Informació sobre com gestiona Chrome els seus certificats arrel</translation>
 <translation id="2258103955319320201">Per accedir al teu contingut del navegador Chrome des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
@@ -134,6 +136,7 @@
 <translation id="2929907241665500097">No s'ha actualitzat Chrome. S'ha produït un error. <ph name="BEGIN_LINK" />Soluciona els problemes i errors d'actualització de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa - Chrome</translation>
+<translation id="2970681950995291301">Per suprimir de Chrome el teu Compte de Google, tanca la sessió de Chrome a la pàgina Configuració</translation>
 <translation id="3018957014024118866">Suprimeix també les dades de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Reinicia per actualitzar &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome està en mode de segon pla.</translation>
@@ -174,6 +177,7 @@
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="3667616615096815454">No es pot instal·lar; el servidor no coneix l'aplicació.</translation>
 <translation id="3673813398384385993">Chrome ha detectat que l'extensió "<ph name="EXTENSION_NAME" />" conté programari maliciós</translation>
+<translation id="3695446226812920698">Informació</translation>
 <translation id="3697952514309507634">Altres perfils de Chrome</translation>
 <translation id="3703994572283698466">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versió de ChromeOS Flex</translation>
@@ -235,6 +239,7 @@
 <translation id="4624065194742029982">Mode d'incògnit a Chrome</translation>
 <translation id="4627412468266359539">Opcional: ajuda a millorar les funcions i el rendiment de ChromeOS Flex enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
 <translation id="4633000520311261472">Perquè Chrome sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
+<translation id="4643107447730827793">Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió.</translation>
 <translation id="4680828127924988555">Cancel·la la instal·lació</translation>
 <translation id="469553575393225953">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de Chrome Web Store.</translation>
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
@@ -259,6 +264,7 @@
 <translation id="4970880042055371251">Versió de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fes clic a Gestor de contrasenyes de Google</translation>
+<translation id="5120334927898581447">Inicia la sessió a Chrome quan iniciïs la sessió en altres serveis de Google</translation>
 <translation id="5126049312684316860">Chrome precarrega encara més pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="5132929315877954718">Descobriu aplicacions, jocs, extensions i temes genials per a Google Chrome.</translation>
 <translation id="5139423532931106058">Personalitza el teu perfil de Chrome</translation>
@@ -292,6 +298,7 @@
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="5727531838415286053">Si Chrome t'ha inclòs aleatòriament en una prova activa, el teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix els interessos de manera contínua cada mes, i s'actualitzen tret que els suprimeixis.</translation>
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
+<translation id="575458254678141039">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió a Chrome</translation>
 <translation id="5756509061973259733">Ja existeix un perfil de Chrome amb aquest compte en aquest dispositiu</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">No s'ha pogut iniciar Chrome. Torna-ho a provar.</translation>
@@ -333,6 +340,7 @@
 <translation id="6412673304250309937">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La teva organització tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{La teva organització tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="6418662306461808273">Vols canviar al perfil de Chrome existent?</translation>
+<translation id="6479881432656947268">Visita Chrome Web Store</translation>
 <translation id="6481963882741794338">Enllaça Chrome i altres serveis de Google per a la personalització i altres finalitats</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6489302989675808168">Activat • Chrome no pot verificar d'on prové aquesta extensió</translation>
@@ -342,6 +350,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>
+<translation id="6660596345553328257">Vols iniciar la sessió a Chrome?</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
 <translation id="6679975945624592337">Permet que Google Chrome s'executi en segon pla</translation>
 <translation id="6696915334902295848">Chrome necessita permís d'accés al micròfon per a aquest lloc web</translation>
@@ -370,6 +379,7 @@
 <translation id="7036251913954633326">Si vols utilitzar aquest compte només una vegada, pots utilitzar el <ph name="GUEST_LINK_BEGIN" />mode de convidat<ph name="GUEST_LINK_END" /> al navegador Chrome. Si vols afegir un compte per a algú altre, <ph name="LINK_BEGIN" />afegeix una persona nova<ph name="LINK_END" /> al teu <ph name="DEVICE_TYPE" />.
 
 És possible que els permisos que ja hagis donat a llocs web i aplicacions s'apliquin a aquest compte. Pots gestionar els teus Comptes de Google a <ph name="SETTINGS_LINK_BEGIN" />Configuració<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="7037538054043837165">Per desar i utilitzar les teves contrasenyes i altres elements en tots els teus dispositius, inicia la sessió a Chrome</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
 <translation id="7071827361006050863">Chrome suprimirà les dades de navegació aviat</translation>
 <translation id="7085332316435785646">Tria si vols incloure l'historial de Chrome per obtenir experiències més personalitzades als serveis de Google</translation>
@@ -440,8 +450,10 @@
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
+<translation id="8111297389482307122">Chrome ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió, aquestes dades es conservaran en aquest dispositiu.</translation>
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
+<translation id="8162006532256575008">Fes servir Chrome sense cap compte</translation>
 <translation id="8255190535488645436">Google Chrome està utilitzant la càmera i el micròfon.</translation>
 <translation id="8257796129973882597">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome</translation>
 <translation id="8267953129876836456">Chrome ha trobat algunes recomanacions de seguretat que hauries de revisar</translation>
@@ -452,6 +464,7 @@
 <translation id="8336463659890584292">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
+<translation id="8350273347136316769">Inicia la sessió automàticament a Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: Chrome pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
@@ -460,6 +473,7 @@
 <translation id="8416347857511542594">Més informació sobre la personalització d'anuncis a Chrome</translation>
 <translation id="8418845734693287262">Chrome OS no ha pogut sincronitzar les teves dades perquè les dades d'inici de sessió del compte no estan actualitzades.</translation>
 <translation id="842386925677997438">Eines de seguretat de Chrome</translation>
+<translation id="8428213095426709021">Configuració</translation>
 <translation id="8433638294851456451">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chrome i les dades associades, com ara les adreces d'interès, l'historial i les contrasenyes.</translation>
 <translation id="8496177819998570653">G&amp;estor de contrasenyes de Google</translation>
@@ -493,6 +507,7 @@
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8922193594870374009">Per enviar un número del dispositiu <ph name="ORIGIN" /> al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
+<translation id="8948460679427074738">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chrome et recomana que la suprimeixis.</translation>
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999117580775242387">Quan l'HTTPS no estigui disponible, Chrome utilitzarà una connexió no segura sense avisar-te</translation>
@@ -501,6 +516,7 @@
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
+<translation id="9127728564687112483">No iniciïs la sessió a Chrome</translation>
 <translation id="9138603949443464873">Torna a iniciar Chrome perquè s'apliquin els canvis</translation>
 <translation id="9195993889682885387">Chrome pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>
 <translation id="919706545465235479">Actualitza Chrome per iniciar la sincronització</translation>

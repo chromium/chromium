@@ -18,6 +18,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1194807384646768652">„Chrome“ užblokavo šį atsisiuntimą, nes šio tipo failas nėra dažnai atsisiunčiamas ir jis gali būti pavojingas</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="1229096353876452996">„Google“ rekomenduoja nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
+<translation id="1265739287306757398">Sužinoti, kaip tai padaryti</translation>
 <translation id="1278833599417554002">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="1302523850133262269">Palaukite, kol „Chrome“ įdiegs naujausius sistemos naujinius.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> reikia, kad prieš naudodami šį įrenginį perskaitytumėte toliau pateiktas paslaugų teikimo sąlygas. Šios sąlygos neišplečia, nepakeičia ir neapriboja „ChromeOS Flex“ sąlygų.</translation>
@@ -180,6 +181,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3635073343384702370">„Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="3667616615096815454">Nepavyko įdiegti, nes programa nežinoma serveriui.</translation>
 <translation id="3673813398384385993">„Chrome“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
+<translation id="3695446226812920698">Sužinokite kaip</translation>
 <translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
 <translation id="3703994572283698466">„Chrome“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">„ChromeOS Flex“ versija</translation>
@@ -346,6 +348,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama vieną minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}one{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutę. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}few{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutes. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}many{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutės. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}other{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minučių. Naršymo duomenys ištrinami. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.}}</translation>
 <translation id="6418662306461808273">Perjungti į esamą „Chrome“ profilį?</translation>
+<translation id="6479881432656947268">Apsilankykite „Chrome“ internetinėje parduotuvėje</translation>
 <translation id="6481963882741794338">Susiekite „Chrome“ ir kitas „Google“ paslaugas, kad būtų galima suasmeninti ir kitais tikslais</translation>
 <translation id="648319183876919572">Sustiprinto saugaus naršymo funkcija padeda apsaugoti jus nuo pavojingų svetainių ir atsisiuntimų</translation>
 <translation id="6489302989675808168">Įjungta • „Chrome“ nepavyko patvirtinti, iš kur gaunamas šis plėtinys</translation>
@@ -478,6 +481,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8416347857511542594">Sužinokite daugiau apie skelbimų suasmeninimą sistemoje „Chrome“</translation>
 <translation id="8418845734693287262">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes išsami paskyros prisijungimo informacija pasenusi.</translation>
 <translation id="842386925677997438">„Chrome“ saugos įrankiai</translation>
+<translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
 <translation id="8451192282033883849">Jūsų paskyrą tvarko <ph name="MANAGER_NAME" />. Jūsų administratorius gali matyti ir redaguoti šį „Chrome“ naršyklės profilį bei jo duomenis, pvz., žymes, istoriją ir slaptažodžius.</translation>
 <translation id="8496177819998570653">„Google“ slaptažodžių tvarkyklė</translation>

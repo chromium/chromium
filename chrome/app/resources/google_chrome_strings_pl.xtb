@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">Pobieranie zostało zablokowane przez Chrome, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
 <translation id="1229096353876452996">Google zaleca ustawienie Chrome jako przeglądarki domyślnej</translation>
+<translation id="1265739287306757398">Instrukcje</translation>
 <translation id="1278833599417554002">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="1302523850133262269">Poczekaj, aż Chrome zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> wymaga, aby przed skorzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google ChromeOS Flex.</translation>
@@ -176,6 +177,7 @@
 <translation id="3635073343384702370">Chrome może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="3667616615096815454">Nie można zainstalować aplikacji. Serwer jej nie rozpoznaje.</translation>
 <translation id="3673813398384385993">Przeglądarka Chrome wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
+<translation id="3695446226812920698">Instrukcje</translation>
 <translation id="3697952514309507634">Inne profile Chrome</translation>
 <translation id="3703994572283698466">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Wersja ChromeOS Flex</translation>
@@ -339,6 +341,7 @@
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez minutę. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}few{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}many{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minut. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}other{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}}</translation>
 <translation id="6418662306461808273">Przełączyć na istniejący profil Chrome?</translation>
+<translation id="6479881432656947268">Zajrzyj do Chrome Web Store</translation>
 <translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
 <translation id="648319183876919572">Ulepszone Bezpieczne przeglądanie skuteczniej chroni Cię przed niebezpiecznymi stronami i pobieranymi plikami</translation>
 <translation id="6489302989675808168">Włączone • Chrome nie może sprawdzić, skąd pochodzi to rozszerzenie</translation>
@@ -471,6 +474,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8416347857511542594">Więcej informacji o personalizacji reklam w Chrome</translation>
 <translation id="8418845734693287262">Chrome OS nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="842386925677997438">Narzędzia bezpieczeństwa w Chrome</translation>
+<translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
 <translation id="8451192282033883849">Tym kontem zarządza <ph name="MANAGER_NAME" />. Administrator może przeglądać i edytować ten profil przeglądarki Chrome i dane, które się na nim znajdują, w tym zakładki, historię i hasła.</translation>
 <translation id="8496177819998570653">Menedżer &amp;haseł Google</translation>

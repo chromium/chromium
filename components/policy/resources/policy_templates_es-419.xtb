@@ -4933,6 +4933,15 @@ Si la inhabilitas, no se le mostrará la promoción para la extensión del Prove
       Si la inhabilitas, los usuarios no podrán habilitar Phone Hub.
 
       Si no estableces la política, la acción predeterminada no se permite para los usuarios administrados por empresas y sí se permite para los usuarios no administrados.</translation>
+<translation id="4775667151768335538">Si habilitas la política, la Navegación segura confiará en los dominios que designes. No comprobará si incluyen recursos peligrosos, como software malicioso o no deseado o phishing. El servicio de protección de descargas de la Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará que no se reutilicen contraseñas.
+
+Si no estableces la política, se aplicará la protección predeterminada de la Navegación segura en todos los recursos.
+
+Esta política no admite expresiones regulares. Sin embargo, los subdominios de un dominio determinado se incluyen en la lista de entidades permitidas. Los nombres de dominio completamente calificados (FQDN) no son obligatorios.
+
+En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página de resultados más reciente del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
 <translation id="4786784434769279324">Respuestas para ejecutar cuando la computadora está inactiva</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado para la página de impresión.

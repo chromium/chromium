@@ -16,6 +16,7 @@
 <translation id="1194807384646768652">ఫైల్ రకం సాధారణంగా డౌన్‌లోడ్ అవ్వదు, అలాగే ఇది ప్రమాదకరమైనది అయినందున Chrome ఈ డౌన్‌లోడ్‌ను బ్లాక్ చేసింది</translation>
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1229096353876452996">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయమని Google సిఫార్సు చేస్తుంది</translation>
+<translation id="1265739287306757398">ఎలాగో తెలుసుకోండి</translation>
 <translation id="1278833599417554002">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="1302523850133262269">దయచేసి Chrome తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> కోసం ఈ పరికరాన్ని ఉపయోగించడానికి ముందు కింది సర్వీస్ నియమాలను మీరు చదివి, అంగీకరించాలి. ఈ నియమాలు Google ChromeOS Flex నియమాలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
@@ -34,6 +35,7 @@
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="155168855724261758">మీ Chromeను అనుకూలంగా మార్చండి</translation>
+<translation id="1551749261806528781">మీ పరికరాలన్నింటిలో, పాస్‌వర్డ్‌లను సేవ్ చేయడం, ఉపయోగించడంతో పాటు మరెన్నో చేయడానికి, Chromeకు సైన్ ఇన్ చేయండి. ఈ పాస్‌వర్డ్, మీ Google ఖాతాలో మీరు సైన్ ఇన్ చేసిన తర్వాత సేవ్ అవుతుంది.</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chrome ప్రొఫైల్‌కు సైన్ ఇన్ చేసి ఉన్నారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
@@ -176,6 +178,7 @@
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>
 <translation id="3667616615096815454">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, అప్లికేషన్‌ను సర్వర్ గుర్తించలేదు.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉన్నట్టుగా Chrome కనుగొన్నది</translation>
+<translation id="3695446226812920698">ఎలాగో తెలుసుకోండి</translation>
 <translation id="3697952514309507634">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="3703994572283698466">ChromeOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
@@ -310,6 +313,7 @@
 <translation id="5940385492829620908">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chrome అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
+<translation id="5947104538377036631">Chrome షార్ట్‌కట్</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome నుండి టూల్స్‌<ph name="END_LINK" />‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, కంట్రోల్‌లో ఉండవచ్చు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
@@ -338,6 +342,7 @@
 <translation id="6412673304250309937">Chromeలో స్టోర్ చేసిన సురక్షితం కాని సైట్‌ల లిస్ట్‌తో కూడిన URLలను చెక్ చేస్తుంది. ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chrome, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Chromeను 1 నిమిషం పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}other{Chromeను # నిమిషాల పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}}</translation>
 <translation id="6418662306461808273">ప్రస్తుతం ఉన్న Chrome ప్రొఫైల్‌కు స్విచ్ చేయాలా?</translation>
+<translation id="6479881432656947268">Chrome వెబ్ స్టోర్‌కు వెళ్లండి</translation>
 <translation id="6481963882741794338">వ్యక్తిగతీకరణ, ఇతర ప్రయోజనాల కోసం Chrome, ఇతర Google సర్వీస్‌లను లింక్ చేయండి</translation>
 <translation id="648319183876919572">ప్రమాదకరమైన వెబ్‌సైట్‌ల నుండి, డౌన్‌లోడ్‌ల నుండి మెరుగైన సురక్షిత బ్రౌజింగ్ మీకు మరింత రక్షణను అందిస్తుంది</translation>
 <translation id="6489302989675808168">ఆన్‌లో ఉంది • ఈ ఎక్స్‌టెన్షన్ ఎక్కడ నుండి వచ్చిందో Chrome వెరిఫై చేయలేదు</translation>
@@ -470,6 +475,7 @@
 <translation id="8416347857511542594">Chromeలో యాడ్ వ్యక్తిగతీకరణ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8418845734693287262">మీ ఖాతా సైన్ ఇన్ వివరాల గడువు ముగిసినందున, ChromeOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="842386925677997438">Chrome భద్రతా టూల్స్</translation>
+<translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8433638294851456451">ఇక్కడి నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8451192282033883849">మీ ఖాతాను <ph name="MANAGER_NAME" /> మేనేజ్ చేస్తున్నారు. మీ అడ్మినిస్ట్రేటర్ ఈ Chrome బ్రౌజర్ ప్రొఫైల్‌ను, అలాగే బుక్‌మార్క్‌లు, హిస్టరీ, ఇంకా పాస్‌వర్డ్‌ల వంటి దాని డేటాను చూడగలరు, ఎడిట్ చేయగలరు.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

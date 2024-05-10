@@ -1063,6 +1063,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3037177537145227281">Ár nyomon követése…</translation>
 <translation id="3037605927509011580">A manóba!</translation>
 <translation id="3039406992698062762">Családi utazás</translation>
+<translation id="3041176923638368519">A kártya előnyeire vonatkozó feltételek megtekintése</translation>
 <translation id="3041612393474885105">Tanúsítvány adatai</translation>
 <translation id="3045769629416806687">Extrém sportok</translation>
 <translation id="305162504811187366">A Chrome távoliasztal-szolgáltatás előzményei, beleértve az időbélyegeket, a gazdagépeket és az ügyfelek munkamenet-azonosítóit is</translation>
@@ -1103,6 +1104,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3126023634486644099">Címkék (állandó)</translation>
 <translation id="3133565499688974786">Mostantól a(z) <ph name="SEARCH_ENGINE_NAME" /> az alapértelmezett keresőmotor</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Keresés itt: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nincs}=1{bejelentkezési adat 1 fiókhoz}other{bejelentkezési adat # fiókhoz}}</translation>
 <translation id="3140646734028448730">Üzleti szolgáltatás</translation>
 <translation id="3141093262818886744">Megnyitás mindenképpen</translation>
 <translation id="3141641372357166056">Nincs beleegyezési döntés</translation>
@@ -2474,7 +2476,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5786044859038896871">Ki szeretné tölteni a kártyaadatait?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Egy sincs}=1{bejelentkezési adat 1 fiókhoz}other{bejelentkezési adat # fiókhoz}}</translation>
 <translation id="5800727402210090597">Mobiltelefon-javítás és kapcsolódó szolgáltatások</translation>
 <translation id="580241730938216256">Frissítés indítása</translation>
 <translation id="5803412860119678065">Ki szeretné tölteni <ph name="CARD_DETAIL" /> kártyájának adataival?</translation>
@@ -2588,6 +2589,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (szinkronizálva)</translation>
 <translation id="6028591542479806248">Mobilos és e-mailes értesítések kezelése</translation>
 <translation id="6028833024483927901">Világkonyha</translation>
+<translation id="6030251660719692307">Azonosítókulcs a Google Jelszókezelőből</translation>
 <translation id="603068602130820122">Két kapocs a jobb oldalon</translation>
 <translation id="6032524144326295339">2. postaláda</translation>
 <translation id="6032955021262906325">Kötés a bal oldalon</translation>
@@ -3205,7 +3207,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7201591969684833065">Rendszergazdája a következőket láthatja:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt új inkognitó lap megnyitásához, ahol privát módon böngészhet</translation>
 <translation id="7203375778433816396">A Chrome beállítása a rendszer alapértelmezett böngészőjeként</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Egy sincs}=1{1 azonosítókulcs}other{# azonosítókulcs}}</translation>
 <translation id="7210863904660874423">A(z) <ph name="HOST_NAME" /> nem felel meg a biztonsági szabványoknak.</translation>
 <translation id="7210993021468939304">A tárolóban végzett linuxos tevékenység megtekintése, valamint Linux-alkalmazások telepítése és futtatása a tárolóban</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> erről a hibáról.</translation>

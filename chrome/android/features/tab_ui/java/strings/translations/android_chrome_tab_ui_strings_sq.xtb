@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Shto skedën te faqeshënuesit}other{Shto skedat te faqeshënuesit}}</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
+<translation id="2498435670446402865">Riemërto grup skedash</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

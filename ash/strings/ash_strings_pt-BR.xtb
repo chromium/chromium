@@ -1444,6 +1444,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6555373427270923730">Digite um endereço da Web na barra de endereço e pressione <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nova instalação</translation>
+<translation id="6559158502366839560">Encontrar mais apps e jogos</translation>
 <translation id="6559976592393364813">Peça ao administrador</translation>
 <translation id="6565007273808762236">A conexão do eSIM está indisponível</translation>
 <translation id="6570831796530454248">{0,plural, =1{Atualize o dispositivo em 1 hora}one{Atualize o dispositivo em # hora}other{Atualize o dispositivo em # horas}}</translation>

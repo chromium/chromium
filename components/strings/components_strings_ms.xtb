@@ -615,6 +615,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2122214041802369259">Harga Tinggi</translation>
 <translation id="2122719317867821810">Dasar ini berfungsi seperti yang diharapkan tetapi nilai yang bercanggah ditetapkan di tempat lain dan dibatalkan oleh dasar ini.</translation>
 <translation id="2126374524350484896">Pengeluar PDF:</translation>
+<translation id="2127090458081644412">Kata laluan telah disimpan pada peranti ini</translation>
 <translation id="2130448033692577677">Templat yang anda nyatakan tidak dapat digunakan kerana dasar DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Enjin carian ini ditunjukkan dalam tertib rawak. Anda boleh mengubah pilihan lalai anda pada bila-bila masa.</translation>
@@ -1104,6 +1105,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3126023634486644099">Label (Kekal)</translation>
 <translation id="3133565499688974786">Kini <ph name="SEARCH_ENGINE_NAME" /> ialah enjin carian lalai anda</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Cari <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Tiada}=1{data log masuk untuk 1 akaun}other{data log masuk untuk # akaun}}</translation>
 <translation id="3140646734028448730">Perkhidmatan Perniagaan</translation>
 <translation id="3141093262818886744">Buka juga</translation>
 <translation id="3141641372357166056">Tiada keputusan persetujuan</translation>
@@ -2032,6 +2034,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4901952598169637881">Kasut Kasual</translation>
 <translation id="4905659621780993806">Pentadbir anda akan memulakan semula peranti anda pada <ph name="DATE" /> jam <ph name="TIME" /> secara automatik. Simpan sebarang item terbuka sebelum peranti anda dimulakan semula.</translation>
+<translation id="4913784027728226227">Untuk menyimpan dan menggunakan kata laluan ini pada semua peranti anda, sahkan identiti anda</translation>
 <translation id="4913987521957242411">Tebukan atas sebelah kiri</translation>
 <translation id="4916389289686916969">Rancangan Realiti TV</translation>
 <translation id="4917064667437236721">Silinder pengimejan</translation>
@@ -2315,6 +2318,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5470861586879999274">&amp;Buat semula edit</translation>
 <translation id="547963486735802022">Cuba pindahkan semula fail anda</translation>
 <translation id="5481076368049295676">Kandungan ini mungkin cuba memasang perisian berbahaya pada peranti anda yang mencuri atau memadamkan maklumat anda. <ph name="BEGIN_LINK" />Tunjukkan juga<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Tawaran bantuan menulis</translation>
 <translation id="54817484435770891">Tambahkan alamat yang sah</translation>
 <translation id="5483838506518938965">Anda sudah sedia</translation>
 <translation id="5485973315555778056">Mesin awan</translation>
@@ -2478,7 +2482,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5786044859038896871">Adakah anda ingin mengisi maklumat kad anda?</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kaedah pembayaran ini akan dipadamkan daripada peranti ini</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Tiada}=1{data log masuk untuk 1 akaun}other{data log masuk untuk # akaun}}</translation>
 <translation id="5800727402210090597">Pembaikan &amp; Perkhidmatan Telefon Mudah Alih</translation>
 <translation id="580241730938216256">Mulakan pengemaskinian</translation>
 <translation id="5803412860119678065">Adakah anda ingin mengisi <ph name="CARD_DETAIL" /> anda?</translation>
@@ -3210,7 +3213,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7201591969684833065">Pentadbir anda dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tab Inkognito baharu untuk semak imbas secara peribadi</translation>
 <translation id="7203375778433816396">Tetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Tiada}=1{1 kunci laluan}other{# kunci laluan}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
 <translation id="7210993021468939304">Aktiviti Linux dalam bekas dan boleh memasang serta menjalankan apl Linux dalam bekas</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> mengenai masalah ini.</translation>

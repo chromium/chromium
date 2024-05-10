@@ -4799,6 +4799,15 @@ Se viene disattivato, all'utente non viene mostrata la promozione dell'estension
       Se viene disattivata, gli utenti non possono attivare Phone Hub.
 
       Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
+<translation id="4775667151768335538">Se il criterio viene attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password non esegue alcun controllo per il riutilizzo delle password.
+
+Se il criterio non viene configurato, a tutte le risorse viene applicata la protezione predefinita di Navigazione sicura.
+
+Questo criterio non supporta espressioni regolari, ma i sottodomini di un determinato dominio sono inseriti nella lista consentita. I nomi di dominio completi non sono obbligatori.
+
+Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4783415902268741066">Consenti la visualizzazione della pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale del browser</translation>
 <translation id="4786784434769279324">Azioni da eseguire quando il computer è inattivo</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.

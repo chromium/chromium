@@ -1064,7 +1064,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037605927509011580">Oh, ne!</translation>
 <translation id="3039406992698062762">Porodična putovanja</translation>
-<translation id="3041176923638368519">Pogledajte uvjete pogodnosti za karticu</translation>
+<translation id="3041176923638368519">Pogledajte uslove pogodnosti kartice</translation>
 <translation id="3041612393474885105">Informacije o potvrdi</translation>
 <translation id="3045769629416806687">Ekstremni sportovi</translation>
 <translation id="305162504811187366">Historija Chrome udaljenog računara, uključujući vremenske oznake, host računare i ID-ove sesija klijenta</translation>
@@ -1105,6 +1105,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3126023634486644099">Naljepnice (trajne)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je sada zadani pretraživač</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – pretražite <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137507986424712703">{COUNT,plural, =0{Nijedna}=1{podaci o prijavi za 1 račun}one{podaci o prijavi za # račun}few{podaci o prijavi za # računa}other{podaci o prijavi za # računa}}</translation>
 <translation id="3140646734028448730">Poslovne usluge</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
 <translation id="3141641372357166056">Nema odluke o pristanku</translation>
@@ -2480,7 +2481,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5786044859038896871">Želite li popuniti informacije o svojoj kartici?</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Ovaj način plaćanja će se izbrisati s uređaja</translation>
-<translation id="5793777472500812427">{COUNT,plural, =0{Ništa}=1{podaci za prijavu za 1 račun}one{podaci za prijavu za # račun}few{podaci za prijavu za # računa}other{podaci za prijavu za # računa}}</translation>
 <translation id="5800727402210090597">Popravak i servis mobilnih telefona</translation>
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
 <translation id="5803412860119678065">Želite li popuniti svoju karticu <ph name="CARD_DETAIL" />?</translation>
@@ -3212,7 +3212,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7201591969684833065">Administrator može vidjeti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="7203375778433816396">Postavite Chrome kao zadani preglednik sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ništa}=1{1 pristupni ključ}one{# pristupni ključ}few{# pristupna ključa}other{# pristupnih ključeva}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> se ne pridržava sigurnosnih standarda.</translation>
 <translation id="7210993021468939304">Aktivnost Linuxa se nalazi u spremniku i moguće je instalirati i pokrenuti Linux aplikacije unutar spremnika</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>
