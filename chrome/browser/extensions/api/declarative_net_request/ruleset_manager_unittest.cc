@@ -946,9 +946,6 @@ TEST_P(RulesetManagerResponseHeadersTest, MergeModifyHeaderActions) {
                            std::make_pair(*e1_hr_rule.id, extension_1_id)));
 }
 
-// TODO(crbug.com/40727004): Add some end to end testing that involve modify
-// headers actions from both request phases.
-
 INSTANTIATE_TEST_SUITE_P(All,
                          RulesetManagerTest,
                          ::testing::Values(ExtensionLoadType::PACKED,

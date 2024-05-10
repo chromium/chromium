@@ -7704,74 +7704,10 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
   TestFrameCollapse(kFrameName2, true);
 }
 
-// Test that an allow rule matched in onHeadersReceived will prevent lower
-// priority modifyHeaders rules matched in onBeforeRequest from taking action.
-IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
-                       AllowRule_ModifyHeaders) {
-  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
-                   ConfigFlag::kConfig_HasFeedbackPermission);
-
-  DeclarativeNetRequestGetMatchedRulesFunction::
-      set_disable_throttling_for_tests(true);
-
-  // Add 3 rules: a rule which overwrites the set-cookie header, a rule which
-  // appends onto the set-cookie header, and an allow rule which matches on the
-  // value of the set-cookie header.
-  TestRule set_cookie_rule = CreateModifyHeadersRule(
-      kMinValidID, kMinValidPriority + 2, "example.com", std::nullopt,
-      std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "set", "key1=val1")}));
-  set_cookie_rule.condition->resource_types =
-      std::vector<std::string>({"main_frame", "sub_frame"});
-
-  TestRule add_cookie_rule = CreateModifyHeadersRule(
-      kMinValidID + 1, kMinValidPriority, "example.com", std::nullopt,
-      std::vector<TestHeaderInfo>(
-          {TestHeaderInfo("set-cookie", "append", "key2=val2")}));
-  add_cookie_rule.condition->resource_types =
-      std::vector<std::string>({"main_frame", "sub_frame"});
-
-  TestRule allow_rule = CreateGenericRule(kMinValidID + 2);
-  allow_rule.priority = kMinValidPriority + 1;
-  allow_rule.action->type = "allow";
-  allow_rule.condition->url_filter = "example.com";
-  allow_rule.condition->resource_types =
-      std::vector<std::string>({"main_frame", "sub_frame"});
-  allow_rule.condition->response_headers = std::vector<TestHeaderCondition>(
-      {TestHeaderCondition("set-cookie", {"orig-key=val"}, {})});
-
-  std::vector<TestRule> rules;
-  rules.push_back(std::move(set_cookie_rule));
-  rules.push_back(std::move(add_cookie_rule));
-  rules.push_back(std::move(allow_rule));
-
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
-      std::move(rules), "test_extension", {URLPattern::kAllUrlsPattern}));
-
-  // Note that `allow_rule` matches on the original value of the set-cookie
-  // header before other rules have modified it.
-  auto set_cookie_url =
-      embedded_test_server()->GetURL("example.com", "/set-cookie?orig-key=val");
-
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
-
-  // The `allow_rule` outprioritizes `add_cookie_rule` but not `set_cookie_rule`
-  // so only `set_cookie_rule` will modify headers. Note that a match is
-  // recorded only for `set_cookie_rule` since allow rule matches are only
-  // recorded if the request has not been modified through DNR rules.
-  std::string expected_rule_and_tab_ids = base::StringPrintf(
-      "%d,%d", kMinValidID, ExtensionTabUtil::GetTabId(web_contents()));
-  std::string actual_rule_and_tab_ids =
-      GetRuleAndTabIdsMatched(last_loaded_extension_id(), std::nullopt);
-  EXPECT_EQ(expected_rule_and_tab_ids, actual_rule_and_tab_ids);
-
-  // Verify that the page's cookie was successfully set by `set_cookie_rule`.
-  EXPECT_EQ("key1=val1", GetPageCookie());
-}
-
 // Verify that getMatchedRules returns the correct rule matches for rules which
 // match on response headers.
-IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, GetMatchedRules) {
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       GetMatchedRules_SingleExtension) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission);
 
@@ -7916,7 +7852,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, GetMatchedRules) {
 // Verify that getMatchedRules returns the correct rule matches for rules which
 // match on response headers between different extensions.
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
-                       GetMatchedRules_DifferentExtensions) {
+                       GetMatchedRules_MultipleExtensions) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission);
 
@@ -7994,6 +7930,246 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     std::string ext_2_rules_matched =
         GetRuleIdsMatched(extension_2_id, start_time);
     EXPECT_EQ(test_case.ext_2_expected_matched_rules, ext_2_rules_matched);
+  }
+}
+
+// Test that modifyHeaders rules matched in both onBeforeRequest and
+// onHeadersReceived phases will perform the correct action(s) on the request.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       ModifyHeaders_SingleExtension) {
+  std::vector<TestHeaderCondition> blank_header_condition =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("nonsense-header", {}, {})});
+
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  struct RuleData {
+    int id;
+    int priority;
+    std::string action_type;
+    std::string filter;
+    std::optional<std::vector<TestHeaderInfo>> response_headers_action =
+        std::nullopt;
+    std::optional<std::vector<TestHeaderCondition>> exclude_header_condition =
+        std::nullopt;
+    std::optional<std::vector<TestHeaderCondition>> header_condition =
+        std::nullopt;
+  } rule_data[] = {
+      // Used for sub-test 1, all parts.
+      {1, 2, "modifyHeaders", "a.test",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "set", "key1=val1")})},
+      {2, 1, "modifyHeaders", "a.test",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "set", "key2=val2")}),
+       blank_header_condition},
+
+      // Used for sub-test 1, part 2.
+      {3, 4, "modifyHeaders", "a.test2",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "remove", std::nullopt)}),
+       blank_header_condition},
+
+      // Used for sub-test 2, all parts.
+      {4, 5, "modifyHeaders", "b.test",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "append", "key4=val4")})},
+      {5, 3, "modifyHeaders", "b.test",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "append", "key5=val5")}),
+       blank_header_condition},
+      {6, 1, "modifyHeaders", "b.test",
+       std::vector<TestHeaderInfo>(
+           {TestHeaderInfo("set-cookie", "append", "key6=val6")})},
+
+      // Used for sub-test 2, part 2.
+      {7, 4, "allow", "b.test2"},
+
+      // Used for sub-test 2, part 3. Note that this rule will match on the
+      // original value of response headers, before they are modified by
+      // extensions.
+      {8, 2, "allow", "b.test3", std::nullopt, std::nullopt,
+       std::vector<TestHeaderCondition>(
+           {TestHeaderCondition("set-cookie", {"orig-key=val"}, {})})},
+  };
+
+  std::vector<TestRule> rules;
+  for (const auto& rule : rule_data) {
+    TestRule test_rule = CreateGenericRule();
+    test_rule.id = rule.id;
+    test_rule.priority = rule.priority;
+    test_rule.action->type = rule.action_type;
+    if (rule.action_type == "modifyHeaders") {
+      test_rule.action->response_headers = rule.response_headers_action;
+    }
+
+    test_rule.condition->url_filter.reset();
+    test_rule.condition->url_filter = rule.filter;
+    test_rule.condition->resource_types =
+        std::vector<std::string>({"main_frame"});
+    test_rule.condition->response_headers = rule.header_condition;
+    test_rule.condition->excluded_response_headers =
+        rule.exclude_header_condition;
+
+    rules.push_back(std::move(test_rule));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      std::move(rules), "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  struct {
+    std::string hostname;
+    std::string expected_matched_rules;
+    std::string expected_set_cookie_value;
+  } test_cases[] = {
+      // Sub-test 1: Test that even if rules are matched across different
+      // request phases, the highest priority rule takes precedence in modifying
+      // headers.
+
+      // Part 1: rule 1 (matched in onBeforeRequest) sets the header.
+      {"a.test", "1", "key1=val1"},
+
+      // Part 2: rule 3 (matched in onHeadersReceived) removes the header.
+      {"a.test2", "3", ""},
+
+      // Sub-test 2: Test that multiple header actions are applied in descending
+      // order of priority, and that matched allow rules will prevent lower
+      // priority modifyHeaders rules from taking effect, even if these matches
+      // happen in different request phases.
+
+      // Part 1: Rules 4, 5 and 6 match the request and their append operations
+      // are applied onto the header with the highest priority rule (rule 4)
+      // being applied first.
+      {"b.test", "4,5,6", "orig-key=val; key4=val4; key5=val5; key6=val6"},
+
+      // Part 2: Rule 7 (matched in onBeforeRequest) outprioritizes rules 5 and
+      // 6.
+      {"b.test2", "4", "orig-key=val; key4=val4"},
+
+      // Part 3: Rule 8 (matched in onHeadersReceived) outprioritizes rule 6.
+      {"b.test3", "4,5", "orig-key=val; key4=val4; key5=val5"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::Time start_time = base::Time::Now();
+
+    auto set_cookie_url = embedded_test_server()->GetURL(
+        test_case.hostname, "/set-cookie?orig-key=val");
+
+    SCOPED_TRACE(
+        base::StringPrintf("Testing %s", set_cookie_url.spec().c_str()));
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
+
+    // Get the rule ids matched for the navigation request sent above.
+    std::string actual_rules_matched =
+        GetRuleIdsMatched(last_loaded_extension_id(), start_time);
+    EXPECT_EQ(test_case.expected_matched_rules, actual_rules_matched);
+
+    // Verify the value of the set-cookie header.
+    EXPECT_EQ(test_case.expected_set_cookie_value, GetPageCookie());
+  }
+}
+
+// Test inter-extension interactions for modifyHeaders rules matched in both
+// onBeforeRequest and onHeadersReceived phases.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       ModifyHeaders_MultipleExtensions) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_HasFeedbackPermission);
+
+  DeclarativeNetRequestGetMatchedRulesFunction::
+      set_disable_throttling_for_tests(true);
+
+  auto create_rule =
+      [](int id, int priority, const std::string& filter,
+         bool headers_received_rule,
+         const std::vector<TestHeaderInfo>& response_headers_action) {
+        TestRule test_rule = CreateGenericRule();
+        test_rule.id = id;
+        test_rule.priority = priority;
+        test_rule.action->type = "modifyHeaders";
+        test_rule.action->response_headers = response_headers_action;
+
+        test_rule.condition->url_filter.reset();
+        test_rule.condition->url_filter = filter;
+        test_rule.condition->resource_types =
+            std::vector<std::string>({"main_frame"});
+
+        if (headers_received_rule) {
+          test_rule.condition->excluded_response_headers =
+              std::vector<TestHeaderCondition>(
+                  {TestHeaderCondition("nonsense-header", {}, {})});
+        }
+
+        return test_rule;
+      };
+
+  auto ext_1_append =
+      create_rule(1, 100, "google", false,
+                  {TestHeaderInfo("set-cookie", "append", "key1=ext1")});
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({std::move(ext_1_append)}, "test_extension",
+                             {URLPattern::kAllUrlsPattern}));
+  auto extension_1_id = last_loaded_extension_id();
+
+  auto ext_2_append =
+      create_rule(2, 1, "google.ca", true,
+                  {TestHeaderInfo("set-cookie", "append", "key2=ext2")});
+  auto ext_2_remove =
+      create_rule(3, 1, "google.xyz", true,
+                  {TestHeaderInfo("set-cookie", "remove", std::nullopt)});
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {std::move(ext_2_append), std::move(ext_2_remove)}, "test_extension_2",
+      {URLPattern::kAllUrlsPattern}));
+  auto extension_2_id = last_loaded_extension_id();
+
+  struct {
+    std::string hostname;
+    std::string ext_1_expected_matched_rules;
+    std::string ext_2_expected_matched_rules;
+    std::string expected_set_cookie_value;
+  } test_cases[] = {
+      // Only `ext_1_append` matches.
+      {"google.com", "1", "", "orig-key=val; key1=ext1"},
+
+      // Both `ext_1_append` and `ext_2_append` match, with `ext_2_append`
+      // taking precedence and adding to the header first since its extension
+      // was more recently installed.
+      {"google.ca", "1", "2", "orig-key=val; key2=ext2; key1=ext1"},
+
+      // Only `ext_2_remove` is applied since it takes precedence over
+      // `ext_1_append` (and prevents `ext_1_append` from adding to the header)
+      // since its extension was more recently installed.
+      {"google.xyz", "", "3", ""},
+  };
+
+  for (const auto& test_case : test_cases) {
+    base::Time start_time = base::Time::Now();
+    auto set_cookie_url = embedded_test_server()->GetURL(
+        test_case.hostname, "/set-cookie?orig-key=val");
+
+    SCOPED_TRACE(
+        base::StringPrintf("Testing %s", set_cookie_url.spec().c_str()));
+
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
+
+    // Get the rule ids matched for both extensions for the navigation request
+    // sent above.
+    std::string ext_1_rules_matched =
+        GetRuleIdsMatched(extension_1_id, start_time);
+    EXPECT_EQ(test_case.ext_1_expected_matched_rules, ext_1_rules_matched);
+
+    std::string ext_2_rules_matched =
+        GetRuleIdsMatched(extension_2_id, start_time);
+    EXPECT_EQ(test_case.ext_2_expected_matched_rules, ext_2_rules_matched);
+
+    // Verify the value of the set-cookie header.
+    EXPECT_EQ(test_case.expected_set_cookie_value, GetPageCookie());
   }
 }
 
