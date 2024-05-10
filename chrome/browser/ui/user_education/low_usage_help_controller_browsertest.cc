@@ -93,8 +93,8 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(LowUsageHelpControllerBrowsertest,
 IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest,
                        NoPromoOnFreshProfile) {
   // Ensure that the controller has been created.
-  EXPECT_NE(nullptr,
-            LowUsageHelpController::GetForBrowserForTesting(browser()));
+  EXPECT_NE(nullptr, LowUsageHelpController::GetForProfileForTesting(
+                         browser()->profile()));
 
   RunTestSequence(
       // Processing new sessions happens on a one-frame delay, so clear the call

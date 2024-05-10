@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -16,11 +17,10 @@ namespace {
 const void* const kLowUsageHelpControllerKey = &kLowUsageHelpControllerKey;
 }
 
-LowUsageHelpController::LowUsageHelpController(Browser* browser)
-    : browser_(browser) {
+LowUsageHelpController::LowUsageHelpController(Profile* profile)
+    : profile_(profile) {
   if (UserEducationService* const service =
-          UserEducationServiceFactory::GetForBrowserContext(
-              browser->profile())) {
+          UserEducationServiceFactory::GetForBrowserContext(profile)) {
     if (RecentSessionObserver* const observer =
             service->recent_session_observer()) {
       subscription_ = observer->AddLowUsageSessionCallback(
@@ -33,20 +33,20 @@ LowUsageHelpController::LowUsageHelpController(Browser* browser)
 LowUsageHelpController::~LowUsageHelpController() = default;
 
 // static
-LowUsageHelpController* LowUsageHelpController::MaybeCreateForBrowser(
-    Browser* browser) {
-  if (auto* const data = browser->GetUserData(kLowUsageHelpControllerKey)) {
+LowUsageHelpController* LowUsageHelpController::MaybeCreateForProfile(
+    Profile* profile) {
+  if (auto* const data = profile->GetUserData(kLowUsageHelpControllerKey)) {
     return static_cast<LowUsageHelpController*>(data);
   }
-  auto new_data_ptr = base::WrapUnique(new LowUsageHelpController(browser));
+  auto new_data_ptr = base::WrapUnique(new LowUsageHelpController(profile));
   auto* const new_data = new_data_ptr.get();
-  browser->SetUserData(kLowUsageHelpControllerKey, std::move(new_data_ptr));
+  profile->SetUserData(kLowUsageHelpControllerKey, std::move(new_data_ptr));
   return new_data;
 }
 
-LowUsageHelpController* LowUsageHelpController::GetForBrowserForTesting(
-    Browser* browser) {
-  if (auto* const data = browser->GetUserData(kLowUsageHelpControllerKey)) {
+LowUsageHelpController* LowUsageHelpController::GetForProfileForTesting(
+    Profile* profile) {
+  if (auto* const data = profile->GetUserData(kLowUsageHelpControllerKey)) {
     return static_cast<LowUsageHelpController*>(data);
   }
   return nullptr;
@@ -60,15 +60,20 @@ void LowUsageHelpController::OnLowUsageSession() {
 }
 
 void LowUsageHelpController::MaybeShowPromo() {
-  BrowserWindow* const window = browser_->window();
-
-  // Only ever want to show a promo in the active window.
-  if ((user_education::FeaturePromoControllerCommon::
-           active_window_check_blocked() ||
-       window->IsActive()) &&
-      window->MaybeShowStartupFeaturePromo(
-          feature_engagement::kIPHDesktopReEngagementFeature)) {
-    // TODO(dfried): maybe write some additional telemetry here (though just
-    // checking the show result histograms should be fairly informative).
+  // Get the most recent active browser in the profile.
+  auto* const browser = chrome::FindBrowserWithProfile(profile_);
+  if (!browser) {
+    // Test the assumption that `FindBrowserWithProfile()` will always result
+    // in a valid browser by the time this method gets called.
+    NOTREACHED() << "Got new session event for profile but profile had no "
+                    "valid browsers.";
+    return;
   }
+
+  const bool result = browser->window()->MaybeShowStartupFeaturePromo(
+      feature_engagement::kIPHDesktopReEngagementFeature);
+
+  // TODO(dfried): maybe write some additional telemetry here (though just
+  // checking the show result histograms should be fairly informative).
+  (void)result;
 }

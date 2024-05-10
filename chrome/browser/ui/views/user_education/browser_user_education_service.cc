@@ -1308,7 +1308,7 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
   MaybeRegisterChromeNewBadges(*user_education_service->new_badge_registry());
   user_education_service->new_badge_controller()->InitData();
 
-  LowUsageHelpController::MaybeCreateForBrowser(browser_view->browser());
+  LowUsageHelpController::MaybeCreateForProfile(browser_view->GetProfile());
 
   return std::make_unique<BrowserFeaturePromoController>(
       browser_view,

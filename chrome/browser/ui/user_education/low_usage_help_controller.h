@@ -8,27 +8,29 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/profiles/profile.h"
 
 // Class that provides additional help to users who don't use Chrome often.
+// There is one controller per profile, and the promo will only show in the
+// active browser.
 class LowUsageHelpController : public base::SupportsUserData::Data {
  public:
   ~LowUsageHelpController() override;
 
-  // Creates or returns the existing controller for a given Browser.
-  static LowUsageHelpController* MaybeCreateForBrowser(Browser* browser);
+  // Creates or returns the existing controller for a given `profile`.
+  static LowUsageHelpController* MaybeCreateForProfile(Profile* profile);
 
-  // Returns the controller already created for a given browser, or null if
+  // Returns the controller already created for a given `profile`, or null if
   // none exists.
-  static LowUsageHelpController* GetForBrowserForTesting(Browser* browser);
+  static LowUsageHelpController* GetForProfileForTesting(Profile* profile);
 
  private:
-  explicit LowUsageHelpController(Browser* browser);
+  explicit LowUsageHelpController(Profile* profile);
 
   void OnLowUsageSession();
   void MaybeShowPromo();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
   base::CallbackListSubscription subscription_;
   base::WeakPtrFactory<LowUsageHelpController> weak_ptr_factory_{this};
 };
