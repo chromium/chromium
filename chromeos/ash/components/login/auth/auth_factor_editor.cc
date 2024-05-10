@@ -228,7 +228,10 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
   request.set_auth_factor_label(ref.label().value());
 
   cryptohome::AuthFactorCommonMetadata metadata;
-  cryptohome::AuthFactor factor(ref, std::move(metadata));
+  cryptohome::PasswordMetadata password_metadata =
+      cryptohome::PasswordMetadata::CreateWithoutSalt();
+  cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                std::move(password_metadata));
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::Password{key->GetSecret()});
