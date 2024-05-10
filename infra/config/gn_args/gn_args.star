@@ -63,6 +63,14 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    name = "android_asan",
+    args = {
+        "is_asan": True,
+        "default_min_sdk_version": 27,
+    },
+)
+
 # We build Android with codecs on most bots to ensure maximum test
 # coverage, but use 'android_builder_without_codecs' on bots responsible for
 # building publicly advertised non-Official Android builds --

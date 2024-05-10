@@ -1084,7 +1084,7 @@ ci.builder(
             "minimal_symbols",
             "arm_no_neon",
             "clang",
-            "asan",
+            "android_asan",
             "strip_debug_info",
         ],
     ),
