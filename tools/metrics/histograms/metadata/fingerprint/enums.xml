@@ -26,6 +26,45 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AuthenticateCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Establish nonce context failed"/>
+  <int value="4" label="Upload templates failed (deprecated)"/>
+  <int value="5" label="Match command failed (deprecated)"/>
+  <int value="6" label="No templates to match"/>
+  <int value="7" label="Match secret not available"/>
+  <int value="8" label="Internal error"/>
+</enum>
+
+<enum name="CreateCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Template not available"/>
+  <int value="4" label="Match secret not available"/>
+  <int value="5" label="Persist record failed"/>
+</enum>
+
+<enum name="DeleteCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Template doesn't exist"/>
+  <int value="4" label="Deletion failed"/>
+</enum>
+
+<enum name="EnrollLegacyTemplateStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Record not found"/>
+  <int value="3" label="Templates full"/>
+  <int value="4" label="Establish nonce context failed"/>
+  <int value="5" label="Unlock templates failed"/>
+  <int value="6" label="Migrate command failed"/>
+</enum>
+
 <enum name="FingerprintError">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Hardware unavailable"/>
@@ -138,6 +177,31 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Failed - Error checking MCU flash protect status"/>
   <int value="10" label="Failed - Error flashing RO"/>
   <int value="11" label="Failed - Error flashing RW"/>
+</enum>
+
+<enum name="ListLegacyRecordsStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+</enum>
+
+<enum name="StartAuthSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Load user failed"/>
+  <int value="3" label="Waiting finger to lift"/>
+  <int value="4" label="Establish nonce context failed"/>
+  <int value="5" label="Unlock templates failed"/>
+  <int value="6" label="Set match mode failed"/>
+</enum>
+
+<enum name="StartEnrollSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Templates full"/>
+  <int value="3" label="Establish nonce context failed"/>
+  <int value="4" label="Unlock templates failed"/>
+  <int value="5" label="Set enroll mode failed"/>
 </enum>
 
 </enums>

@@ -98,6 +98,90 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.OpStatus.AuthenticateCredential"
+    enum="AuthenticateCredentialStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of AuthenticateCredential operations. An
+    AuthenticateCredential will be called when FPMCU finishes a fingerprint
+    match. This metric is recorded every time an AuthenticateCredential
+    operation completes (success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.CreateCredential"
+    enum="CreateCredentialStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of CreateCredential operations. A CreateCredential
+    will be called when FPMCU finishes a finger enrollment. This metric is
+    recorded every time a CreateCredential operation completes (success or
+    failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.DeleteCredential"
+    enum="DeleteCredentialStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of DeleteCredential operations. A DeleteCredential
+    will be called when the user wants to delete a fingerprint record (including
+    when removing the user from the device). This metric is recorded every time
+    a DeleteCredential operation completes (success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.EnrollLegacyTemplate"
+    enum="EnrollLegacyTemplateStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of EnrollLegacyTemplate operations. An
+    EnrollLegacyTemplate will be called when cryptohomed wants to migrate a
+    legacy fingerprint. This metric is recorded every time an
+    EnrollLegacyTemplate operation completes (success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.ListLegacyRecords"
+    enum="ListLegacyRecordsStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of ListLegacyRecords operations. A
+    ListLegacyRecords will be called when cryptohomed wants to migrate the
+    legacy fingerprints. This metric is recorded every time a ListLegacyRecords
+    operation completes (success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.StartAuthSession"
+    enum="StartAuthSessionStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of StartAuthSession operations. A StartAuthSession
+    will be called when the user wants to authenticate with fingerprint. This
+    metric is recorded every time a StartAuthSession operation completes
+    (success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.OpStatus.StartEnrollSession"
+    enum="StartEnrollSessionStatus" expires_after="2025-05-01">
+  <owner>patrykd@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the return status of StartEnrollSession operations. A
+    StartEnrollSession will be called when the user wants to enroll a new
+    fingerprint. This metric is recorded every time a StartEnrollSession
+    operation completes (success or failure).
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.SensorError.BadHwid" enum="BooleanError"
     expires_after="2024-09-15">
   <owner>fsammoura@google.com</owner>
