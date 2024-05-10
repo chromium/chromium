@@ -41,6 +41,11 @@ const char* DataSharingNavigationThrottle::GetNameForLogging() {
   return "DataSharingNavigationThrottle";
 }
 
+void DataSharingNavigationThrottle::SetServiceForTesting(
+    DataSharingService* test_service) {
+  test_service_ = test_service;
+}
+
 DataSharingNavigationThrottle::ThrottleCheckResult
 DataSharingNavigationThrottle::CheckIfShouldIntercept() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
@@ -51,6 +56,10 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
   DataSharingService* data_sharing_service =
       DataSharingServiceFactory::GetForProfile(Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext()));
+
+  if (test_service_) {
+    data_sharing_service = test_service_;
+  }
 
   const GURL& url = navigation_handle()->GetURL();
   if (data_sharing_service &&

@@ -147,14 +147,20 @@ if (is_android) {
   }
 }
 
+# TODO(b/339698854): Move these to public/test instead of internal.
 source_set("test_support") {
   testonly = true
 
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/test:*",
+  ]
 
   sources = [
     "mock_data_sharing_network_loader.cc",
     "mock_data_sharing_network_loader.h",
+    "mock_data_sharing_service.cc",
+    "mock_data_sharing_service.h",
   ]
 
   public_deps = [

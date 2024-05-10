@@ -27,8 +27,13 @@ class DataSharingNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
+  // Set a DataSharingService to use for testing.
+  void SetServiceForTesting(DataSharingService* test_service);
+
  private:
   ThrottleCheckResult CheckIfShouldIntercept();
+
+  raw_ptr<DataSharingService> test_service_;
 };
 
 }  // namespace data_sharing

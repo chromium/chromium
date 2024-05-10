@@ -6920,6 +6920,7 @@ test("unit_tests") {
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
     "//components/data_sharing/internal",
+    "//components/data_sharing/internal:test_support",
     "//components/data_sharing/public",
     "//components/device_reauth",
     "//components/device_signals/core/browser",

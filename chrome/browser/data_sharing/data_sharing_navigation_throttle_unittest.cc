@@ -5,10 +5,15 @@
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/data_sharing/internal/mock_data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+
+using ::testing::_;
+using ::testing::Return;
 
 namespace data_sharing {
 
@@ -23,8 +28,9 @@ class DataSharingNavigationThrottleUnitTest
         {{data_sharing::features::kDataSharingFeature, {}}}, {});
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  MockDataSharingService mock_data_sharing_service_;
 };
 
 // Tests if a web page should be intercepted.
@@ -32,7 +38,17 @@ TEST_F(DataSharingNavigationThrottleUnitTest, TestCheckIfShouldIntercept) {
   content::MockNavigationHandle test_handle(
       GURL("https://www.example.com/"), web_contents()->GetPrimaryMainFrame());
   auto throttle = std::make_unique<DataSharingNavigationThrottle>(&test_handle);
+  throttle->SetServiceForTesting(&mock_data_sharing_service_);
 
+  EXPECT_CALL(mock_data_sharing_service_,
+              ShouldInterceptNavigationForShareURL(_))
+      .WillOnce(Return(true));
+  EXPECT_EQ(DataSharingNavigationThrottle::CANCEL,
+            throttle->WillStartRequest());
+
+  EXPECT_CALL(mock_data_sharing_service_,
+              ShouldInterceptNavigationForShareURL(_))
+      .WillOnce(Return(false));
   EXPECT_EQ(DataSharingNavigationThrottle::PROCEED,
             throttle->WillStartRequest());
 }
