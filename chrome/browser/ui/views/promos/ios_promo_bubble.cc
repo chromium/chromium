@@ -230,13 +230,16 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       // Set up iOS Password Promo Bubble.
       IOSPromoConfig.kPromoQRCodeURL =
           IOSPromoConstants::kPasswordBubbleQRCodeURL;
-      IOSPromoConfig.kBubbleTitleID = IDS_IOS_PASSWORD_PROMO_BUBBLE_TITLE;
-      IOSPromoConfig.kBubbleSubtitleID = IDS_IOS_PASSWORD_PROMO_BUBBLE_SUBTITLE;
-      IOSPromoConfig.kPromoTitleID = IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE;
+      IOSPromoConfig.kBubbleTitleID =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE;
+      IOSPromoConfig.kBubbleSubtitleID =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_SUBTITLE;
+      IOSPromoConfig.kPromoTitleID =
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE;
       IOSPromoConfig.kPromoDescriptionID =
-          IDS_IOS_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR;
       IOSPromoConfig.kDeclineButtonTextID =
-          IDS_IOS_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE;
+          IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
     default:
       NOTREACHED_NORETURN();
