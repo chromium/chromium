@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
@@ -26,6 +28,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
@@ -342,7 +345,8 @@ void AppListClientImpl::InvokeSearchResultAction(
 void AppListClientImpl::ActivateItem(int profile_id,
                                      const std::string& id,
                                      int event_flags,
-                                     ash::AppListLaunchedFrom launched_from) {
+                                     ash::AppListLaunchedFrom launched_from,
+                                     bool is_above_the_fold) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
 
   // Pointless to notify the AppListModelUpdater of the activated item if the
@@ -385,6 +389,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
   }
 
   MaybeRecordLauncherAction(launched_from);
+  MaybeRecordActivatedItemVisibility(id, launched_from, is_above_the_fold);
   requested_model_updater->ActivateChromeItem(id, event_flags);
 }
 
@@ -920,6 +925,41 @@ void AppListClientImpl::MaybeRecordLauncherAction(
           kTimeMetricsBucketCount);
     }
   }
+}
+
+void AppListClientImpl::MaybeRecordActivatedItemVisibility(
+    const std::string& id,
+    ash::AppListLaunchedFrom launched_from,
+    bool is_app_above_the_fold) {
+  // Do not record this metric for tablet mode.
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+  const std::optional<apps::DefaultAppName> default_app_name =
+      apps::AppIdToName(id);
+  // This metric only cares for default apps.
+  if (!default_app_name) {
+    return;
+  }
+
+  std::string_view apps_collections_state;
+  if (app_list_features::IsAppsCollectionsEnabled()) {
+    apps_collections_state =
+        app_list_features::IsAppsCollectionsEnabledCounterfactually()
+            ? ".Counterfactual"
+            : ".Enabled";
+  }
+  const std::string_view app_list_page =
+      launched_from == ash::AppListLaunchedFrom::kLaunchedFromAppsCollections
+          ? "AppsCollectionsPage"
+          : "AppsPage";
+  const std::string_view visibility =
+      is_app_above_the_fold ? "AboveTheFold" : "BelowTheFold";
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppListBubble.", app_list_page,
+                    ".AppLaunchesByVisibility.", visibility,
+                    apps_collections_state}),
+      default_app_name.value());
 }
 
 std::optional<bool> AppListClientImpl::IsNewUser(

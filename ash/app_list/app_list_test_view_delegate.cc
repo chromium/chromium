@@ -98,7 +98,8 @@ void AppListTestViewDelegate::SetIsTabletModeEnabled(bool is_tablet_mode) {
 void AppListTestViewDelegate::ActivateItem(
     const std::string& id,
     int event_flags,
-    ash::AppListLaunchedFrom launched_from) {
+    ash::AppListLaunchedFrom launched_from,
+    bool is_app_above_the_fold) {
   AppListItem* item = model_->FindItem(id);
   if (!item)
     return;

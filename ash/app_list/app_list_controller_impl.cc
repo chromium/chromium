@@ -1326,7 +1326,8 @@ void AppListControllerImpl::ViewClosing() {
 
 void AppListControllerImpl::ActivateItem(const std::string& id,
                                          int event_flags,
-                                         AppListLaunchedFrom launched_from) {
+                                         AppListLaunchedFrom launched_from,
+                                         bool is_app_above_the_fold) {
   RecordAppLaunched(launched_from);
 
   const bool is_tablet_mode = IsInTabletMode();
@@ -1356,7 +1357,8 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
   }
 
   if (client_)
-    client_->ActivateItem(profile_id_, id, event_flags, launched_from);
+    client_->ActivateItem(profile_id_, id, event_flags, launched_from,
+                          is_app_above_the_fold);
 
   ResetHomeLauncherIfShown();
 }

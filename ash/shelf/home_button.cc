@@ -780,7 +780,8 @@ void HomeButton::CreateQuickAppButton() {
 void HomeButton::QuickAppButtonPressed() {
   ash::Shell::Get()->app_list_controller()->ActivateItem(
       AppListModelProvider::Get()->quick_app_access_model()->quick_app_id(),
-      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess);
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess,
+      /*is_above_the_fold=*/false);
   AppListModelProvider::Get()->quick_app_access_model()->SetQuickAppActivated();
 }
 

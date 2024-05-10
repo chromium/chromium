@@ -507,4 +507,59 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, DiscoveryChipLogsMetric) {
                                 1);
 }
 
+// Verifies that apps visibility is correctly calculated.
+TEST_F(AppListBubbleAppsCollectionsPageTest, AppsVisibility) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create enough apps so that the launcher can be scrolled.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 25);
+  // This will be items with collection kUnknown.
+  // kUnknown collection is always above all categories.
+  helper->AddAppItems(25);
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  views::ScrollView* scroll_view = apps_collections_page->scroll_view();
+
+  ASSERT_NE(scroll_view->GetVisibleBounds(),
+            scroll_view->contents()->GetLocalBounds());
+
+  AppsCollectionSectionView* entertainment_collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(entertainment_collection);
+  ASSERT_EQ(entertainment_collection->GetItemViewCount(), 25u);
+
+  AppsCollectionSectionView* unknown_collection =
+      GetViewForCollection(AppCollection::kUnknown);
+  ASSERT_TRUE(unknown_collection);
+  ASSERT_EQ(unknown_collection->GetItemViewCount(), 25u);
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_below_the_fold());
+
+  AppListItemView* above_the_fold_item =
+      GetAppItemAtIndex(unknown_collection, 0);
+  GetEventGenerator()->MoveMouseTo(
+      above_the_fold_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(apps_collections_page->IsAboveTheFold(above_the_fold_item));
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_below_the_fold());
+
+  AppListItemView* below_the_fold_item =
+      GetAppItemAtIndex(entertainment_collection, 24);
+
+  // Scroll the apps page to the end.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+  GetEventGenerator()->MoveMouseTo(
+      below_the_fold_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_FALSE(apps_collections_page->IsAboveTheFold(below_the_fold_item));
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_below_the_fold());
+}
+
 }  // namespace ash

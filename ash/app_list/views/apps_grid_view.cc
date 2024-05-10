@@ -3621,8 +3621,14 @@ void AppsGridView::OnAppListItemViewActivated(
   // which may be destroyed during the procedure as the function parameter
   // may bring the crash like https://crbug.com/990282.
   const std::string id = pressed_item_view->item()->id();
-  app_list_view_delegate()->ActivateItem(
-      id, event.flags(), AppListLaunchedFrom::kLaunchedFromGrid);
+  const bool is_above_the_fold = IsAboveTheFold(pressed_item_view);
+  app_list_view_delegate()->ActivateItem(id, event.flags(),
+                                         AppListLaunchedFrom::kLaunchedFromGrid,
+                                         is_above_the_fold);
+}
+
+bool AppsGridView::IsAboveTheFold(AppListItemView* item_view) {
+  return false;
 }
 
 void AppsGridView::OnHostDragStartTimerFired() {

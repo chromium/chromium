@@ -81,7 +81,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void ViewClosing() override {}
   void ActivateItem(const std::string& id,
                     int event_flags,
-                    ash::AppListLaunchedFrom launched_from) override;
+                    ash::AppListLaunchedFrom launched_from,
+                    bool is_app_above_the_fold) override;
   void GetContextMenuModel(const std::string& id,
                            AppListItemContext item_context,
                            GetContextMenuModelCallback callback) override;

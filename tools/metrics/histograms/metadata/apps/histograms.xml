@@ -1809,6 +1809,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Apps.AppListBubble.{AppListPage}.AppLaunchesByVisibility.{Visibility}{ExperimentalArm}"
+    enum="DefaultAppName" expires_after="2025-05-06">
+  <owner>anasalazar@google.com</owner>
+  <owner>anooshree@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records when a user attempts to launch a particular Chrome OS app from the
+    App List Bubble's {AppListPage}. The metric represents that the app is
+    located {Visibility} Each bucket records a particular default app. The
+    launcher fold is defined as the lower limit of the apps grid view default
+    visibility. For a scrollable launcher, an item view would be above the fold
+    if it were visible when the apps grid view is not scrolled.
+  </summary>
+  <token key="AppListPage">
+    <variant name="AppCollectionsPage" summary="Apps Collections page"/>
+    <variant name="AppsPage" summary="Apps page"/>
+  </token>
+  <token key="ExperimentalArm">
+    <variant name="" summary=""/>
+    <variant name=".Counterfactual" summary=""/>
+    <variant name=".Enable" summary=""/>
+  </token>
+  <token key="Visibility">
+    <variant name="AboveTheFold" summary="above the launcher fold"/>
+    <variant name="BelowTheFold" summary="below the launcher fold"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppListBubbleAppMovingType" enum="AppListAppMovingType"
     expires_after="2025-02-22">
   <owner>tbarzic@chromium.org</owner>

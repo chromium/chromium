@@ -97,7 +97,8 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void ActivateItem(int profile_id,
                             const std::string& id,
                             int event_flags,
-                            ash::AppListLaunchedFrom launched_from) = 0;
+                            ash::AppListLaunchedFrom launched_from,
+                            bool is_above_the_fold) = 0;
   // Returns the context menu model for the item with |id|, or an empty array if
   // there is currently no menu for the item (e.g. during install).
   // `item_context` is where the item is being shown (e.g. apps grid or recent

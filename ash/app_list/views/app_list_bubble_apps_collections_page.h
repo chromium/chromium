@@ -6,9 +6,12 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_APPS_COLLECTIONS_PAGE_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_provider.h"
+#include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/ash_export.h"
@@ -33,7 +36,8 @@ class SearchResultPageDialogController;
 // contains an informational nudge that dismisses the page when acknowledged.
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsCollectionsPage
-    : public AppListToastContainerView::Delegate,
+    : public AppListItemViewGridDelegate,
+      public AppListToastContainerView::Delegate,
       public AppListModelProvider::Observer,
       public views::View {
   METADATA_HEADER(AppListBubbleAppsCollectionsPage, views::View)
@@ -70,6 +74,23 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
+  // AppListItemView::GridDelegate:
+  bool IsInFolder() const override;
+  void SetSelectedView(AppListItemView* view) override;
+  void ClearSelectedView() override;
+  bool IsSelectedView(const AppListItemView* view) const override;
+  bool InitiateDrag(AppListItemView* view,
+                    const gfx::Point& location,
+                    const gfx::Point& root_location,
+                    base::OnceClosure drag_start_callback,
+                    base::OnceClosure drag_end_callback) override;
+  void StartDragAndDropHostDragAfterLongPress() override;
+  bool UpdateDragFromItem(bool is_touch,
+                          const ui::LocatedEvent& event) override;
+  void EndDrag(bool cancel) override;
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override;
+  bool IsAboveTheFold(AppListItemView* item_view) override;
 
   // Updates the controller that the page uses to show dialogs.
   void SetDialogController(SearchResultPageDialogController* dialog_controller);
@@ -128,6 +149,9 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // The last observed offset between the scroll view's visible and contents
   // bounds bottoms.
   std::optional<int> last_bottom_scroll_offset_;
+
+  // The currently selected view.
+  raw_ptr<AppListItemView> selected_view_ = nullptr;
 
   base::WeakPtrFactory<AppListBubbleAppsCollectionsPage> weak_factory_{this};
 };

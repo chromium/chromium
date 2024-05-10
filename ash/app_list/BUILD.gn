@@ -63,6 +63,7 @@ source_set("app_list") {
     "views/app_list_folder_view.h",
     "views/app_list_item_view.cc",
     "views/app_list_item_view.h",
+    "views/app_list_item_view_grid_delegate.h",
     "views/app_list_keyboard_controller.cc",
     "views/app_list_keyboard_controller.h",
     "views/app_list_main_view.cc",

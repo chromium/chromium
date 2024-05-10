@@ -110,7 +110,8 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Activates (opens) the item.
   virtual void ActivateItem(const std::string& id,
                             int event_flags,
-                            AppListLaunchedFrom launched_from) = 0;
+                            AppListLaunchedFrom launched_from,
+                            bool is_app_above_the_fold) = 0;
 
   // Returns the context menu model for a ChromeAppListItem with |id|, or
   // nullptr if there is currently no menu for the item (e.g. during install).

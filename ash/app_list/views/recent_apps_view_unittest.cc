@@ -17,6 +17,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -301,8 +302,7 @@ TEST_P(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
   // The grid delegates are the same, so it doesn't matter which one we use for
   // expectations below.
   ASSERT_EQ(item1->grid_delegate_for_test(), item2->grid_delegate_for_test());
-  AppListItemView::GridDelegate* grid_delegate =
-      item1->grid_delegate_for_test();
+  AppListItemViewGridDelegate* grid_delegate = item1->grid_delegate_for_test();
 
   // Right clicking an item selects it.
   RightClickOn(item1);

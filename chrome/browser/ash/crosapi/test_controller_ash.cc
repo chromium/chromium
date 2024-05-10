@@ -491,7 +491,8 @@ void TestControllerAsh::GetWindowPositionInScreen(
 
 void TestControllerAsh::LaunchAppFromAppList(const std::string& app_id) {
   ash::Shell::Get()->app_list_controller()->ActivateItem(
-      app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid);
+      app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid,
+      /*is_above_the_fold=*/false);
 }
 
 void TestControllerAsh::AreDesksBeingModified(

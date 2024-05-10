@@ -78,9 +78,15 @@ void TestAppListClient::InvokeSearchResultAction(
 void TestAppListClient::ActivateItem(int profile_id,
                                      const std::string& id,
                                      int event_flags,
-                                     ash::AppListLaunchedFrom launched_from) {
+                                     ash::AppListLaunchedFrom launched_from,
+                                     bool is_above_the_fold) {
   activate_item_count_++;
   activate_item_last_id_ = id;
+  if (is_above_the_fold) {
+    activate_item_above_the_fold_++;
+  } else {
+    activate_item_below_the_fold_++;
+  }
 }
 
 void TestAppListClient::GetContextMenuModel(

@@ -11,6 +11,7 @@
 
 #include "ash/app_list/app_collections_constants.h"
 #include "ash/app_list/model/app_list_model_observer.h"
+#include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
@@ -32,7 +33,8 @@ class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
 
  public:
   AppsCollectionSectionView(AppCollection collection,
-                            AppListViewDelegate* view_delegate);
+                            AppListViewDelegate* view_delegate,
+                            AppListItemViewGridDelegate* grid_delegate);
   AppsCollectionSectionView(const AppsCollectionSectionView&) = delete;
   AppsCollectionSectionView& operator=(const AppsCollectionSectionView&) =
       delete;
@@ -77,8 +79,7 @@ class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
   raw_ptr<AppListModel> model_ = nullptr;
 
   // The grid delegate for each AppListItemView.
-  class GridDelegateImpl;
-  std::unique_ptr<GridDelegateImpl> grid_delegate_;
+  raw_ptr<AppListItemViewGridDelegate> grid_delegate_;
 
   // The recent app items. Stored here because this view has child views for
   // spacing that are not AppListItemViews.

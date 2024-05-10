@@ -643,6 +643,11 @@ bool PagedAppsGridView::ShouldContainerHandleDragEvents() {
   return true;
 }
 
+bool PagedAppsGridView::IsAboveTheFold(AppListItemView* item_view) {
+  // The first page is considered above the fold.
+  return GetIndexOfView(item_view).page == 0;
+}
+
 bool PagedAppsGridView::DoesIntersectRect(const views::View* target,
                                           const gfx::Rect& rect) const {
   gfx::Rect target_bounds(target->GetLocalBounds());

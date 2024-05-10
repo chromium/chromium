@@ -1188,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
       NotifyEvent(scalable_iph::kEventNameAppListItemActivationYouTube));
   app_list_client_impl->ActivateItem(
       /*profile_id=*/0, web_app::kYoutubeAppId, /*event_flags=*/0,
-      ash::AppListLaunchedFrom::kLaunchedFromGrid);
+      ash::AppListLaunchedFrom::kLaunchedFromGrid, /*is_above_the_fold=*/true);
 }
 
 // TODO(crbug.com/328713274): Test is flaky.

@@ -70,61 +70,13 @@ std::vector<AppListItem*> GetAppListItemsForCollection(
 
 }  // namespace
 
-// The grid delegate for each AppListItemView. Collection app icons cannot be
-// dragged, so this implementation is mostly a stub.
-class AppsCollectionSectionView::GridDelegateImpl
-    : public AppListItemView::GridDelegate {
- public:
-  explicit GridDelegateImpl(AppListViewDelegate* view_delegate)
-      : view_delegate_(view_delegate) {}
-  GridDelegateImpl(const GridDelegateImpl&) = delete;
-  GridDelegateImpl& operator=(const GridDelegateImpl&) = delete;
-  ~GridDelegateImpl() override = default;
-
-  // AppListItemView::GridDelegate:
-  bool IsInFolder() const override { return false; }
-  void SetSelectedView(AppListItemView* view) override {
-    selected_view_ = view;
-  }
-  void ClearSelectedView() override { selected_view_ = nullptr; }
-  bool IsSelectedView(const AppListItemView* view) const override {
-    return view == selected_view_;
-  }
-  bool InitiateDrag(AppListItemView* view,
-                    const gfx::Point& location,
-                    const gfx::Point& root_location,
-                    base::OnceClosure drag_start_callback,
-                    base::OnceClosure drag_end_callback) override {
-    return false;
-  }
-  void StartDragAndDropHostDragAfterLongPress() override {}
-  bool UpdateDragFromItem(bool is_touch,
-                          const ui::LocatedEvent& event) override {
-    return false;
-  }
-  void EndDrag(bool cancel) override {}
-  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
-                                  const ui::Event& event) override {
-    const std::string id = pressed_item_view->item()->id();
-    view_delegate_->ActivateItem(
-        id, event.flags(), AppListLaunchedFrom::kLaunchedFromAppsCollections);
-    RecordAppListByCollectionLaunched(
-        pressed_item_view->item()->collection_id(),
-        /*is_apps_collections_page=*/true);
-    // `this` may be deleted.
-  }
-
- private:
-  const raw_ptr<AppListViewDelegate> view_delegate_;
-  raw_ptr<AppListItemView> selected_view_ = nullptr;
-};
-
 AppsCollectionSectionView::AppsCollectionSectionView(
     AppCollection collection,
-    AppListViewDelegate* view_delegate)
+    AppListViewDelegate* view_delegate,
+    AppListItemViewGridDelegate* grid_delegate)
     : collection_(collection),
       view_delegate_(view_delegate),
-      grid_delegate_(std::make_unique<GridDelegateImpl>(view_delegate_)) {
+      grid_delegate_(grid_delegate) {
   DCHECK(view_delegate_);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(

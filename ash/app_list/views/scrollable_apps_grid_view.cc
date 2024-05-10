@@ -114,6 +114,13 @@ bool ScrollableAppsGridView::ShouldContainerHandleDragEvents() {
   return !IsInFolder();
 }
 
+bool ScrollableAppsGridView::IsAboveTheFold(AppListItemView* item_view) {
+  gfx::Rect item_bounds_in_scroll_view = views::View::ConvertRectToTarget(
+      item_view, scroll_view_->contents(), item_view->GetLocalBounds());
+  return item_bounds_in_scroll_view.bottom() <
+         scroll_view_->GetVisibleRect().height();
+}
+
 gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   // AppListItemList may contain page break items, so use the view_model().
   size_t items = view_model()->view_size() + pulsing_blocks_model().view_size();

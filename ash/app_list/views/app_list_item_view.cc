@@ -591,14 +591,14 @@ BEGIN_METADATA(AppListItemView, FolderIconView)
 END_METADATA
 
 AppListItemView::AppListItemView(const AppListConfig* app_list_config,
-                                 GridDelegate* grid_delegate,
+                                 AppListItemViewGridDelegate* grid_delegate,
                                  AppListItem* item,
                                  AppListViewDelegate* view_delegate,
                                  Context context)
-    : views::Button(
-          base::BindRepeating(&GridDelegate::OnAppListItemViewActivated,
-                              base::Unretained(grid_delegate),
-                              base::Unretained(this))),
+    : views::Button(base::BindRepeating(
+          &AppListItemViewGridDelegate::OnAppListItemViewActivated,
+          base::Unretained(grid_delegate),
+          base::Unretained(this))),
       app_list_config_(app_list_config),
       is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),

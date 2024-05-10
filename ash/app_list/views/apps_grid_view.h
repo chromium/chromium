@@ -23,6 +23,7 @@
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -66,7 +67,7 @@ class PagedAppsGridViewTest;
 // - The main grid of apps in the launcher
 // - The grid of apps in a folder
 class ASH_EXPORT AppsGridView : public views::View,
-                                public AppListItemView::GridDelegate,
+                                public AppListItemViewGridDelegate,
                                 public AppListItemListObserver,
                                 public AppListItemObserver,
                                 public AppListModelObserver {
@@ -149,6 +150,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   void EndDrag(bool cancel) override;
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override;
+  bool IsAboveTheFold(AppListItemView* item_view) override;
 
   bool IsDragging() const;
   bool IsDraggedView(const AppListItemView* view) const;

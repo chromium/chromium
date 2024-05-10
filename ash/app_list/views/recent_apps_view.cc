@@ -16,6 +16,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_item_view_grid_delegate.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
@@ -96,7 +97,7 @@ std::vector<RecentAppInfo> GetRecentApps(
 
 // The grid delegate for each AppListItemView. Recent app icons cannot be
 // dragged, so this implementation is mostly a stub.
-class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
+class RecentAppsView::GridDelegateImpl : public AppListItemViewGridDelegate {
  public:
   explicit GridDelegateImpl(AppListViewDelegate* view_delegate)
       : view_delegate_(view_delegate) {}
@@ -148,7 +149,13 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
 
     // `this` may be deleted after activation.
     view_delegate_->ActivateItem(id, event.flags(),
-                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
+                                 AppListLaunchedFrom::kLaunchedFromRecentApps,
+                                 IsAboveTheFold(pressed_item_view));
+  }
+
+  bool IsAboveTheFold(AppListItemView* item_view) override {
+    // Recent apps are always above the fold.
+    return true;
   }
 
  private:
