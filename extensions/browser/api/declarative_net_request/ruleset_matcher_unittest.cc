@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -1144,7 +1145,7 @@ TEST_F(RulesetMatcherTest, RulesCount) {
   for (size_t i = 0; i < kNumNonRegexRules; ++i, ++id) {
     TestRule rule = CreateGenericRule();
     rule.id = id;
-    rule.condition->url_filter = std::to_string(id);
+    rule.condition->url_filter = base::NumberToString(id);
     if (i < kNumUnsafeNonRegexRules) {
       rule.action->type = "redirect";
       rule.action->redirect.emplace();
@@ -1157,7 +1158,7 @@ TEST_F(RulesetMatcherTest, RulesCount) {
     TestRule rule = CreateGenericRule();
     rule.id = id;
     rule.condition->url_filter.reset();
-    rule.condition->regex_filter = std::to_string(id);
+    rule.condition->regex_filter = base::NumberToString(id);
     if (i < kNumUnsafeRegexRules) {
       rule.action->type = std::string("modifyHeaders");
       rule.action->response_headers = std::vector<TestHeaderInfo>(

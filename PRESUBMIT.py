@@ -808,8 +808,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           "content/browser/renderer_host/text_input_manager.cc",
           "content/browser/sandbox_parameters_mac.mm",
           "device/fido/mock_fido_device.cc",
-          "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.cc",
-          "extensions/browser/api/declarative_net_request/ruleset_matcher_unittest.cc",
           "gpu/command_buffer/tests/gl_webgl_multi_draw_test.cc",
           "gpu/config/gpu_control_list.cc",
           "media/audio/win/core_audio_util_win.cc",

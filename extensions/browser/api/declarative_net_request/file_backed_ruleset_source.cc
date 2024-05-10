@@ -96,7 +96,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   if (rules_list.size() > rule_limit && !is_dynamic_ruleset) {
     result.status = ReadJSONRulesResult::Status::kRuleCountLimitExceeded;
     result.error = ErrorUtils::FormatErrorMessage(
-        kIndexingRuleLimitExceeded, std::to_string(ruleset_id.value()));
+        kIndexingRuleLimitExceeded, base::NumberToString(ruleset_id.value()));
 
     return result;
   }
@@ -198,9 +198,10 @@ IndexAndPersistJSONRulesetResult IndexAndPersistRuleset(
     warnings.erase(warnings.begin() + kMaxUnparsedRulesWarnings,
                    warnings.end());
     warnings.push_back(CreateInstallWarning(
-        source.json_path(), ErrorUtils::FormatErrorMessage(
-                                kTooManyParseFailuresWarning,
-                                std::to_string(kMaxUnparsedRulesWarnings))));
+        source.json_path(),
+        ErrorUtils::FormatErrorMessage(
+            kTooManyParseFailuresWarning,
+            base::NumberToString(kMaxUnparsedRulesWarnings))));
   }
 
   return IndexAndPersistJSONRulesetResult::CreateSuccessResult(
