@@ -33,6 +33,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -40,6 +41,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 #endif
 
 namespace apps {
@@ -96,7 +101,7 @@ class AppInstallNavigationThrottleBrowserTest
     // dialog enabled.
     ASSERT_TRUE(is_ash_dialog_enabled());
 
-    if (!crosapi::AshSupportsCapabilities({"b/331715712"})) {
+    if (!crosapi::AshSupportsCapabilities({"b/331715712", "b/339106891"})) {
       GTEST_SKIP() << "Unsupported Ash version.";
     }
 
@@ -122,19 +127,31 @@ class AppInstallNavigationThrottleBrowserTest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    auto it = response_map_.find(request.GetURL());
-    if (it == response_map_.end()) {
+    if (request.GetURL() != embedded_test_server()->GetURL("/v1/app-install")) {
       return nullptr;
     }
+
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
+    proto::AppInstallRequest app_request;
+    if (!app_request.ParseFromString(request.content)) {
+      http_response->set_code(net::HTTP_BAD_REQUEST);
+      return std::move(http_response);
+    }
+
+    auto it = app_install_map_.find(app_request.package_id());
+    if (it == app_install_map_.end()) {
+      http_response->set_code(net::HTTP_NOT_FOUND);
+      return std::move(http_response);
+    }
+
     http_response->set_code(net::HTTP_OK);
     http_response->set_content(it->second);
     return std::move(http_response);
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::map<GURL, std::string> response_map_;
+  std::map<std::string, std::string> app_install_map_;
   base::AutoReset<bool> feature_scope_ =
       chromeos::features::SetAppInstallServiceUriEnabledForTesting();
 
@@ -150,7 +167,7 @@ class AppInstallNavigationThrottleBrowserTest
     PackageId package_id(apps::PackageType::kWeb, manifest_id.spec());
 
     // Set Almanac server payload.
-    response_map_[embedded_test_server()->GetURL("/v1/app-install")] = [&] {
+    app_install_map_[package_id.ToString()] = [&] {
       proto::AppInstallResponse response;
       proto::AppInstallResponse_AppInstance& instance =
           *response.mutable_app_instance();
@@ -210,6 +227,44 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   // These metrics are emitted on lacros only.
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", true, 1);
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 0);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+                       InstallUrlFallback) {
+  base::HistogramTester histograms;
+
+  // Set up payload
+  GURL install_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  app_install_map_["unknown package id format"] = [&] {
+    proto::AppInstallResponse response;
+    proto::AppInstallResponse_AppInstance& instance =
+        *response.mutable_app_instance();
+    instance.set_install_url(install_url.spec());
+    return response.SerializeAsString();
+  }();
+
+  {
+    content::TestNavigationObserver observer(install_url);
+    observer.StartWatchingNewWebContents();
+
+    // Open unknown install-app URI.
+    EXPECT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        "window.open('cros-apps://"
+        "install-app?package_id=unknown%20package%20id%20format');"));
+
+    // Expect install URL to be opened.
+    observer.WaitForNavigationFinished();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // These metrics are emitted on Ash only.
+  histograms.ExpectBucketCount("Apps.AppInstallService.AppInstallResult",
+                               AppInstallResult::kInstallUrlFallback, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
+      AppInstallResult::kInstallUrlFallback, 1);
 #endif
 }
 

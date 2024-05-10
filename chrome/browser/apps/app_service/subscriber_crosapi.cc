@@ -218,16 +218,11 @@ void SubscriberCrosapi::UninstallSilently(const std::string& app_id,
   proxy_->UninstallSilently(app_id, uninstall_source);
 }
 
-void SubscriberCrosapi::InstallApp(crosapi::mojom::InstallAppParamsPtr params,
-                                   InstallAppCallback callback) {
+void SubscriberCrosapi::InstallAppWithFallback(
+    crosapi::mojom::InstallAppParamsPtr params,
+    InstallAppWithFallbackCallback callback) {
   bool valid = [&] {
-    if (!params->package_id.has_value()) {
-      return false;
-    }
-
-    std::optional<PackageId> package_id =
-        PackageId::FromString(params->package_id.value());
-    if (!package_id.has_value()) {
+    if (!params->serialized_package_id.has_value()) {
       return false;
     }
 
@@ -243,13 +238,11 @@ void SubscriberCrosapi::InstallApp(crosapi::mojom::InstallAppParamsPtr params,
           params->window_id.value());
     }
 
-    proxy_->AppInstallService().InstallApp(
-        surface.value(), std::move(package_id).value(), window,
-        base::BindOnce(
-            [](InstallAppCallback callback) {
-              std::move(callback).Run(crosapi::mojom::AppInstallResult::New());
-            },
-            std::move(callback)));
+    proxy_->AppInstallService().InstallAppWithFallback(
+        surface.value(), std::move(params->serialized_package_id).value(),
+        window,
+        base::BindOnce(std::move(callback),
+                       crosapi::mojom::AppInstallResult::New()));
     return true;
   }();
 

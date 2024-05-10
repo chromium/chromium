@@ -57,11 +57,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 constexpr int kMaxResponseSizeInBytes = 1024 * 1024;
 
 std::string BuildRequestBody(const DeviceInfo& info,
-                             const PackageId& package_id) {
+                             std::string serialized_package_id) {
   proto::AppInstallRequest request_proto;
   *request_proto.mutable_device_context() = info.ToDeviceContext();
   *request_proto.mutable_user_context() = info.ToUserContext();
-  *request_proto.mutable_package_id() = package_id.ToString();
+  *request_proto.mutable_package_id() = std::move(serialized_package_id);
 
   return request_proto.SerializeAsString();
 }
@@ -171,6 +171,21 @@ base::expected<AppInstallData, QueryError> ConvertAppInstallResponseProto(
   return base::ok(std::move(data).value());
 }
 
+base::expected<GURL, QueryError> ExtractAppInstallUrlFromResponseProto(
+    base::expected<proto::AppInstallResponse, QueryError> query_response) {
+  if (!query_response.has_value()) {
+    return base::unexpected(std::move(query_response).error());
+  }
+
+  GURL result = GURL(query_response.value().app_instance().install_url());
+  if (!result.is_valid()) {
+    return base::unexpected(
+        QueryError{QueryError::kBadResponse, "Failed to convert install URL"});
+  }
+
+  return base::ok(std::move(result));
+}
+
 }  // namespace
 
 GURL GetEndpointUrlForTesting() {
@@ -184,10 +199,25 @@ void GetAppInstallInfo(
     GetAppInstallInfoCallback callback) {
   QueryAlmanacApi<proto::AppInstallResponse>(
       url_loader_factory, kTrafficAnnotation,
-      BuildRequestBody(device_info, package_id), kAlmanacAppInstallEndpoint,
-      kMaxResponseSizeInBytes,
+      BuildRequestBody(device_info, package_id.ToString()),
+      kAlmanacAppInstallEndpoint, kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
       base::BindOnce(&ConvertAppInstallResponseProto)
+          .Then(std::move(callback)));
+}
+
+using GetAppInstallUrlCallback =
+    base::OnceCallback<void(base::expected<GURL, QueryError>)>;
+void GetAppInstallUrl(std::string serialized_package_id,
+                      DeviceInfo device_info,
+                      network::mojom::URLLoaderFactory& url_loader_factory,
+                      GetAppInstallUrlCallback callback) {
+  QueryAlmanacApi<proto::AppInstallResponse>(
+      url_loader_factory, kTrafficAnnotation,
+      BuildRequestBody(device_info, std::move(serialized_package_id)),
+      kAlmanacAppInstallEndpoint, kMaxResponseSizeInBytes,
+      /*error_histogram_name=*/std::nullopt,
+      base::BindOnce(&ExtractAppInstallUrlFromResponseProto)
           .Then(std::move(callback)));
 }
 

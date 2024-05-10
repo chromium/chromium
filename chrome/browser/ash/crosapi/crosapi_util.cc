@@ -260,6 +260,12 @@ constexpr std::string_view kAshCapabilities[] = {
     // past M128.
     "b/331715712"
 
+    // Support unknown package types when requesting app installation in
+    // AppInstallServiceAsh.
+    // TODO(b/339548766): Remove this capability once Ash and Lacros are both
+    // past M129.
+    "b/339106891"
+
     // Entries added to this list must record the current milestone + 3 with a
     // TODO for removal.
 };

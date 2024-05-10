@@ -58,6 +58,18 @@ std::optional<QueryError::Type> VerifyAppInstallData(
   return data.error().type;
 }
 
+AppInstallResult AppInstallResultFromQueryError(
+    QueryError::Type query_error_type) {
+  switch (query_error_type) {
+    case QueryError::kConnectionError:
+      return AppInstallResult::kAlmanacFetchFailed;
+    case QueryError::kBadRequest:
+      return AppInstallResult::kBadAppRequest;
+    case QueryError::kBadResponse:
+      return AppInstallResult::kAppDataCorrupted;
+  }
+}
+
 AppInstallResult InstallWebAppWithBrowserInstallDialog(
     Profile& profile,
     const GURL& install_url) {
@@ -114,6 +126,28 @@ AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
       web_app_installer_(&*profile_) {}
 
 AppInstallServiceAsh::~AppInstallServiceAsh() = default;
+
+void AppInstallServiceAsh::InstallAppWithFallback(
+    AppInstallSurface surface,
+    std::string serialized_package_id,
+    std::optional<WindowIdentifier> anchor_window,
+    base::OnceClosure callback) {
+  if (std::optional<PackageId> package_id =
+          PackageId::FromString(serialized_package_id)) {
+    InstallApp(surface, std::move(package_id).value(), anchor_window,
+               std::move(callback));
+    return;
+  }
+
+  base::OnceCallback<void(AppInstallResult)> result_callback =
+      base::BindOnce(&RecordInstallResult, std::move(callback), surface);
+
+  FetchAppInstallUrl(
+      std::move(serialized_package_id),
+      base::BindOnce(&AppInstallServiceAsh::MaybeLaunchAppInstallUrl,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(result_callback)));
+}
 
 void AppInstallServiceAsh::InstallApp(
     AppInstallSurface surface,
@@ -307,16 +341,8 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
       }
     }
 
-    std::move(callback).Run([&] {
-      switch (query_error.value()) {
-        case QueryError::kConnectionError:
-          return AppInstallResult::kAlmanacFetchFailed;
-        case QueryError::kBadRequest:
-          return AppInstallResult::kBadAppRequest;
-        case QueryError::kBadResponse:
-          return AppInstallResult::kAppDataCorrupted;
-      }
-    }());
+    std::move(callback).Run(
+        AppInstallResultFromQueryError(query_error.value()));
     return;
   }
 
@@ -417,6 +443,53 @@ void AppInstallServiceAsh::PerformInstall(
     LOG(ERROR) << "Unsupported AppInstallData type";
     std::move(install_callback).Run(false);
   }
+}
+
+void AppInstallServiceAsh::FetchAppInstallUrl(
+    std::string serialized_package_id,
+    base::OnceCallback<void(base::expected<GURL, QueryError>)> callback) {
+  device_info_manager_.GetDeviceInfo(
+      base::BindOnce(&AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(serialized_package_id), std::move(callback)));
+}
+
+void AppInstallServiceAsh::FetchAppInstallUrlWithDeviceInfo(
+    std::string serialized_package_id,
+    base::OnceCallback<void(base::expected<GURL, QueryError>)> callback,
+    DeviceInfo device_info) {
+  app_install_almanac_endpoint::GetAppInstallUrl(
+      serialized_package_id, std::move(device_info),
+      *profile_->GetURLLoaderFactory(), std::move(callback));
+}
+
+void AppInstallServiceAsh::MaybeLaunchAppInstallUrl(
+    base::OnceCallback<void(AppInstallResult)> callback,
+    base::expected<GURL, QueryError> install_url) {
+  if (!install_url.has_value()) {
+    if (ash::app_install::AppInstallDialog::IsEnabled()) {
+      base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
+          ash::app_install::AppInstallDialog::CreateDialog();
+      switch (install_url.error().type) {
+        case QueryError::kConnectionError:
+          // TODO(b/339548810): Show connection error dialog instead, this needs
+          // the parameters necessary for a retry_callback to be plumbed through
+          // to here.
+        case QueryError::kBadRequest:
+        case QueryError::kBadResponse:
+          // TODO(b/339548810): Plumb the parent window through to here.
+          dialog->ShowNoAppError(/*parent=*/nullptr);
+          break;
+      }
+    }
+    std::move(callback).Run(
+        AppInstallResultFromQueryError(install_url.error().type));
+    return;
+  }
+
+  MaybeLaunchPreferredAppForUrl(&*profile_, install_url.value(),
+                                LaunchSource::kFromInstaller);
+  std::move(callback).Run(AppInstallResult::kInstallUrlFallback);
 }
 
 }  // namespace apps

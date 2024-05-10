@@ -217,7 +217,8 @@ interface AppServiceProxy {
   // If InstallAppParams::Surface::kUnknown is received then a version mismatch
   // is assumed and the request will be cancelled.
   [MinVersion=20]
-  InstallApp@8(InstallAppParams params) => (AppInstallResult result);
+  InstallAppWithFallback@8(
+      InstallAppParams params) => (AppInstallResult result);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

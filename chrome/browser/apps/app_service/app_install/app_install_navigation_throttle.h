@@ -39,12 +39,16 @@ class AppInstallNavigationThrottle : public content::NavigationThrottle {
   // Exposed for testing.
   struct QueryParams {
     QueryParams();
-    QueryParams(std::optional<PackageId> package_id, AppInstallSurface source);
+    QueryParams(std::optional<std::string> serialized_package_id,
+                AppInstallSurface source);
     QueryParams(QueryParams&&);
     ~QueryParams();
     bool operator==(const QueryParams& other) const;
 
-    std::optional<PackageId> package_id;
+    // This is a std::string instead of a PackageId because Chrome should still
+    // attempt to handle PackageIds it does not yet understand and fallback to
+    // install URL behavior.
+    std::optional<std::string> serialized_package_id;
     AppInstallSurface source = AppInstallSurface::kAppInstallUriUnknown;
   };
   static QueryParams ExtractQueryParams(std::string_view query);

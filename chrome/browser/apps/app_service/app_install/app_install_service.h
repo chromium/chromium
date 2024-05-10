@@ -42,6 +42,19 @@ class AppInstallService {
   using WindowIdentifier = base::UnguessableToken;
 #endif
 
+  // Behaves the same as InstallApp() unless `serialized_package_id` isn't
+  // recognized in which case it falls back to asking Almanac for an install URL
+  // to open instead. This fallback is for when the client is out of date behind
+  // new PackageTypes that the Almanac server can understand.
+  virtual void InstallAppWithFallback(
+      AppInstallSurface surface,
+      std::string serialized_package_id,
+      std::optional<WindowIdentifier> anchor_window,
+      base::OnceClosure callback) = 0;
+
+// Not needed by Lacros clients, so can avoid adding to the crosapi.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Requests installation of the app with ID `package_id` from `surface`. This
   // communicates with the Almanac app API to retrieve app data, and then
   // prompts the user to proceed with the installation. `callback` is called
@@ -56,9 +69,6 @@ class AppInstallService {
                           PackageId package_id,
                           std::optional<WindowIdentifier> anchor_window,
                           base::OnceClosure callback) = 0;
-
-// Not needed by Lacros clients, so can avoid adding to the crosapi.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Requests installation of the app with ID `package_id` from `surface`. This
   // communicates with the Almanac app API to retrieve app data, and then

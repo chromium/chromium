@@ -13,18 +13,17 @@
 
 namespace apps {
 
-class PackageId;
-
 class AppInstallServiceLacros : public AppInstallService {
  public:
   AppInstallServiceLacros();
   ~AppInstallServiceLacros() override;
 
   // AppInstallService:
-  void InstallApp(AppInstallSurface surface,
-                  PackageId package_id,
-                  std::optional<base::UnguessableToken> anchor_window,
-                  base::OnceClosure callback) override;
+  void InstallAppWithFallback(
+      AppInstallSurface surface,
+      std::string serialized_package_id,
+      std::optional<base::UnguessableToken> anchor_window,
+      base::OnceClosure callback) override;
 };
 
 }  // namespace apps

@@ -44,7 +44,8 @@ enum class AppInstallResult {
   kAppTypeInstallFailed = 8,
   kUserTypeNotPermitted = 9,
   kBadAppRequest = 10,  // Server rejected request.
-  kMaxValue = kBadAppRequest,
+  kInstallUrlFallback = 11,
+  kMaxValue = kInstallUrlFallback,
 };
 
 class AppInstallServiceAsh : public AppInstallService {
@@ -57,6 +58,11 @@ class AppInstallServiceAsh : public AppInstallService {
   ~AppInstallServiceAsh() override;
 
   // AppInstallService:
+  void InstallAppWithFallback(AppInstallSurface surface,
+                              std::string serialized_package_id,
+                              std::optional<WindowIdentifier> anchor_window,
+                              base::OnceClosure callback) override;
+
   void InstallApp(AppInstallSurface surface,
                   PackageId package_id,
                   std::optional<gfx::NativeWindow> anchor_window,
@@ -116,6 +122,17 @@ class AppInstallServiceAsh : public AppInstallService {
   void PerformInstall(AppInstallSurface surface,
                       AppInstallData data,
                       base::OnceCallback<void(bool)> install_callback);
+
+  void FetchAppInstallUrl(
+      std::string serialized_package_id,
+      base::OnceCallback<void(base::expected<GURL, QueryError>)> callback);
+  void FetchAppInstallUrlWithDeviceInfo(
+      std::string serialized_package_id,
+      base::OnceCallback<void(base::expected<GURL, QueryError>)> callback,
+      DeviceInfo device_info);
+  void MaybeLaunchAppInstallUrl(
+      base::OnceCallback<void(AppInstallResult)> callback,
+      base::expected<GURL, QueryError> install_url);
 
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;

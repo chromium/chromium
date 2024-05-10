@@ -664,7 +664,7 @@ struct InstallAppParams {
   Surface surface@0;
 
   // Represents which package_id to fetch from Almanac to be installed.
-  string? package_id@1;
+  string? serialized_package_id@1;
 
   // Instance ID of a parent window to anchor the app install dialog to. If not
   // provided or a corresponding window is not found, the app install dialog is

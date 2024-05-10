@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
+#include "url/gurl.h"
 
 class GURL;
 
@@ -25,15 +26,23 @@ struct DeviceInfo;
 
 namespace app_install_almanac_endpoint {
 
-using GetAppInstallInfoCallback =
-    base::OnceCallback<void(base::expected<AppInstallData, QueryError>)>;
-
 // Fetches app installation details from the app install endpoint of the Almanac
 // server.
+using GetAppInstallInfoCallback =
+    base::OnceCallback<void(base::expected<AppInstallData, QueryError>)>;
 void GetAppInstallInfo(PackageId package_id,
                        DeviceInfo device_info,
                        network::mojom::URLLoaderFactory& url_loader_factory,
                        GetAppInstallInfoCallback callback);
+
+// Fetches the app install URL from the app install endpoint of the Almanac
+// server.
+using GetAppInstallUrlCallback =
+    base::OnceCallback<void(base::expected<GURL, QueryError>)>;
+void GetAppInstallUrl(std::string serialized_package_id,
+                      DeviceInfo device_info,
+                      network::mojom::URLLoaderFactory& url_loader_factory,
+                      GetAppInstallUrlCallback callback);
 
 GURL GetEndpointUrlForTesting();
 

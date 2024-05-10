@@ -8,7 +8,6 @@
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/services/app_service/public/cpp/package_id.h"
 
 namespace apps {
 
@@ -16,9 +15,9 @@ AppInstallServiceLacros::AppInstallServiceLacros() = default;
 
 AppInstallServiceLacros::~AppInstallServiceLacros() = default;
 
-void AppInstallServiceLacros::InstallApp(
+void AppInstallServiceLacros::InstallAppWithFallback(
     AppInstallSurface surface,
-    PackageId package_id,
+    std::string serialized_package_id,
     std::optional<base::UnguessableToken> anchor_window,
     base::OnceClosure callback) {
   auto params = crosapi::mojom::InstallAppParams::New();
@@ -48,13 +47,14 @@ void AppInstallServiceLacros::InstallApp(
         return Surface::kUnknown;
     }
   }();
-  params->package_id = package_id.ToString();
+  params->serialized_package_id = std::move(serialized_package_id);
 
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::AppServiceProxy>()
-      ->InstallApp(std::move(params),
-                   base::IgnoreArgs<crosapi::mojom::AppInstallResultPtr>(
-                       std::move(callback)));
+      ->InstallAppWithFallback(
+          std::move(params),
+          base::IgnoreArgs<crosapi::mojom::AppInstallResultPtr>(
+              std::move(callback)));
 }
 
 }  // namespace apps

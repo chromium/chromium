@@ -63,9 +63,9 @@ void MockCrosapiAppServiceProxy::UninstallSilently(
     const std::string& app_id,
     UninstallSource uninstall_source) {}
 
-void MockCrosapiAppServiceProxy::InstallApp(
+void MockCrosapiAppServiceProxy::InstallAppWithFallback(
     crosapi::mojom::InstallAppParamsPtr params,
-    InstallAppCallback callback) {
+    InstallAppWithFallbackCallback callback) {
   // TODO(crbug.com/40829501): Implement this.
   NOTIMPLEMENTED();
 }
