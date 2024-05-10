@@ -901,6 +901,10 @@ void GPMEnclaveController::OnTrustThisComputer() {
     model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
     return;
   }
+  Profile::FromBrowserContext(model_->GetRenderFrameHost()->GetBrowserContext())
+      ->GetPrefs()
+      ->SetInteger(webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
+                   0);
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 

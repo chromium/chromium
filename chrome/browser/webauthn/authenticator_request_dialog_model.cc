@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -663,9 +664,22 @@ void AuthenticatorRequestDialogController::StartFlow(
 }
 
 void AuthenticatorRequestDialogController::StartOver() {
-  if (enclave_was_priority_mechanism_) {
+  if (model_->step() == Step::kTrustThisComputerCreation ||
+      model_->step() == Step::kTrustThisComputerAssertion) {
     auto* pref_service = Profile::FromBrowserContext(
                              model_->GetRenderFrameHost()->GetBrowserContext())
+                             ->GetOriginalProfile()
+                             ->GetPrefs();
+    int current_gpm_decline_count = pref_service->GetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount);
+    pref_service->SetInteger(
+        webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
+        std::min(current_gpm_decline_count + 1,
+                 device::enclave::kMaxGPMBootstrapPrompts));
+  } else if (enclave_was_priority_mechanism_) {
+    auto* pref_service = Profile::FromBrowserContext(
+                             model_->GetRenderFrameHost()->GetBrowserContext())
+                             ->GetOriginalProfile()
                              ->GetPrefs();
     int current_gpm_decline_count = pref_service->GetInteger(
         webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount);
@@ -2515,13 +2529,22 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
              device::FidoRequestType::kMakeCredential);
 
     Profile* profile = Profile::FromBrowserContext(
-        model_->GetRenderFrameHost()->GetBrowserContext());
+                           model_->GetRenderFrameHost()->GetBrowserContext())
+                           ->GetOriginalProfile();
     const bool enclave_decline_limit_reached =
         profile->GetPrefs()->GetInteger(
             webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
         kMaxPriorityGPMCredentialCreations;
+    // If a user has declined bootstrapping too many times then GPM will still
+    // be available in the mechanism selection screen for credential creation,
+    // but it can no longer be a priority mechanism.
+    const bool enclave_bootstrap_limit_reached =
+        profile->GetPrefs()->GetInteger(
+            webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
+        device::enclave::kMaxGPMBootstrapPrompts;
     if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        !enclave_decline_limit_reached && enclave_enabled_ &&
+        !enclave_decline_limit_reached && !enclave_bootstrap_limit_reached &&
+        enclave_enabled_ &&
         *transport_availability_.make_credential_attachment ==
             device::AuthenticatorAttachment::kPlatform) {
       priority_list.emplace_back(Mechanism::Enclave());

@@ -11,6 +11,9 @@ const char kAllowWithBrokenCerts[] = "webauthn.allow_with_broken_certs";
 const char kEnclaveDeclinedGPMCredentialCreationCount[] =
     "webauthn.enclave_declined_gpm_credential_creation_count";
 
+const char kEnclaveDeclinedGPMBootstrappingCount[] =
+    "webauthn.enclave_declined_gpm_bootstrapping_count";
+
 const char kEnclaveFailedPINAttemptsCount[] =
     "webauthn.enclave_failed_pin_attempts_count";
 

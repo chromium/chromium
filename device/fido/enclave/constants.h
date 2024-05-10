@@ -45,6 +45,10 @@ inline constexpr size_t kCounterIDLen = 8;
 // The length of a recovery key store "vault handle" value.
 inline constexpr size_t kVaultHandleLen = 17;
 
+// The maximum number of times that GPM enclave bootstrapping can be declined
+// before it becomes deprioritized as an authenticator option.
+inline constexpr int kMaxGPMBootstrapPrompts = 2;
+
 // The list of algorithms that are acceptable as device identity keys.
 inline constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kSigningAlgorithms[] = {

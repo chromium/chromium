@@ -15,6 +15,9 @@ extern const char kAllowWithBrokenCerts[];
 // request.
 extern const char kEnclaveDeclinedGPMCredentialCreationCount[];
 
+// Tracks how many times a user has declined GPM bootstrapping on this device.
+extern const char kEnclaveDeclinedGPMBootstrappingCount[];
+
 // Tracks how many consecutive failed GPM PIN attempts have been made to the
 // enclave service from this device and profile.
 extern const char kEnclaveFailedPINAttemptsCount[];

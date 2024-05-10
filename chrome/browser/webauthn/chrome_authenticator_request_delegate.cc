@@ -615,6 +615,8 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
   registry->RegisterIntegerPref(
       webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
+  registry->RegisterIntegerPref(
+      webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount, 0);
 #if BUILDFLAG(IS_WIN)
   LocalCredentialManagementWin::RegisterProfilePrefs(registry);
 #endif
@@ -1388,7 +1390,14 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     credentials = chromeos_passkey_controller_->credentials();
     type = device::AuthenticatorType::kChromeOSPasskeys;
 #else
-  if (enclave_controller_) {
+  int enclave_bootstrap_limit_reached =
+      Profile::FromBrowserContext(GetBrowserContext())
+          ->GetOriginalProfile()
+          ->GetPrefs()
+          ->GetInteger(
+              webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
+      device::enclave::kMaxGPMBootstrapPrompts;
+  if (enclave_controller_ && !enclave_bootstrap_limit_reached) {
     credentials = enclave_controller_->creds();
     type = device::AuthenticatorType::kEnclave;
 #endif
