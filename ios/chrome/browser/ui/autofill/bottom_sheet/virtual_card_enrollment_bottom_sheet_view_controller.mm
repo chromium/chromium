@@ -192,6 +192,7 @@ CGFloat const kCreditCardCellHeight = 64;
 
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+  titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   titleLabel.text = _bottomSheetData.title;
   titleLabel.numberOfLines = 0;  // Allow multiple lines.
   UIFontDescriptor* title2FontDescriptor =
