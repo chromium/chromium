@@ -2071,6 +2071,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Notifications.Tips.Dismissed"
+    enum="IOSTipsNotificationType" expires_after="2024-09-29">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    Logs when a Tips notification that was triggered appears to have dismissed
+    or cleared from the notification center. Will be logged when or if the app
+    starts again, after the notification has dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Notifications.Tips.Interaction"
     enum="IOSTipsNotificationType" expires_after="2024-09-29">
   <owner>scottyoder@chromium.org</owner>
@@ -2085,6 +2096,17 @@ the generic promo launch. -->
   <summary>
     Logs when a Tips notification is sent. Note: this does not indicate that the
     notification was recieved by the user.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.Triggered"
+    enum="IOSTipsNotificationType" expires_after="2024-09-29">
+  <owner>scottyoder@chromium.org</owner>
+  <owner>hiramahmood@google.com</owner>
+  <summary>
+    Logs when a Tips notification that was requested appears to have triggered.
+    Will be logged when or if the app starts again, after the notification has
+    triggered.
   </summary>
 </histogram>
 

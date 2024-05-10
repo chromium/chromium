@@ -44,6 +44,9 @@ NSString* const kTipsNotificationId = @"kTipsNotificationId";
 NSString* const kTipsNotificationTypeKey = @"kTipsNotificationTypeKey";
 const base::TimeDelta kTipsNotificationDefaultTriggerDelta = base::Hours(72);
 const char kTipsNotificationsSentPref[] = "tips_notifications.sent_bitfield";
+const char kTipsNotificationsLastSent[] = "tips_notifiations.last_sent";
+const char kTipsNotificationsLastTriggered[] =
+    "tips_notifiations.last_triggered";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];

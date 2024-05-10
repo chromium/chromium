@@ -22,6 +22,12 @@ extern NSString* const kNotificationTypeKey;
 // Pref that stores which notifications have been sent.
 extern const char kTipsNotificationsSentPref[];
 
+// Pref that stores which notification type was sent last.
+extern const char kTipsNotificationsLastSent[];
+
+// Pref that stores which notification type was triggered last.
+extern const char kTipsNotificationsLastTriggered[];
+
 // The type of Tips Notification, for an individual notification.
 // Always keep this enum in sync with
 // the corresponding IOSTipsNotificationType in enums.xml.
