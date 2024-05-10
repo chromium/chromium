@@ -572,6 +572,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CookiesGet"/>
   <int value="6" label="DeclarativeNetRequest"/>
   <int value="7" label="TabsApi"/>
+  <int value="8" label="DeclarativeNetRequestAction"/>
 </enum>
 
 <enum name="SBFileTypeUpdateResult">

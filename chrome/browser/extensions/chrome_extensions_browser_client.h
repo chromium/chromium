@@ -214,6 +214,11 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionId& extension_id,
       const std::vector<api::declarative_net_request::Rule>& rules)
       const override;
+  void NotifyExtensionDeclarativeNetRequestRedirectAction(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const GURL& request_url,
+      const GURL& redirect_url) const override;
   void NotifyExtensionRemoteHostContacted(content::BrowserContext* context,
                                           const ExtensionId& extension_id,
                                           const GURL& url) const override;

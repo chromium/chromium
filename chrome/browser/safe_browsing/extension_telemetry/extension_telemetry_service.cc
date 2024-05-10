@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
@@ -353,6 +354,9 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         ExtensionSignalType::kCookiesGetAll,
         std::make_unique<CookiesGetAllSignalProcessor>());
     signal_processors_.emplace(
+        ExtensionSignalType::kDeclarativeNetRequestAction,
+        std::make_unique<DeclarativeNetRequestActionSignalProcessor>());
+    signal_processors_.emplace(
         ExtensionSignalType::kDeclarativeNetRequest,
         std::make_unique<DeclarativeNetRequestSignalProcessor>());
     signal_processors_.emplace(ExtensionSignalType::kTabsApi,
@@ -375,6 +379,11 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
         subscribers_for_cookies_get_all = {
             signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
+    std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+        subscribers_for_declarative_net_request_action = {
+            signal_processors_
+                [ExtensionSignalType::kDeclarativeNetRequestAction]
+                    .get()};
     std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
         subscribers_for_declarative_net_request = {
             signal_processors_[ExtensionSignalType::kDeclarativeNetRequest]
@@ -399,6 +408,9 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
                                 std::move(subscribers_for_cookies_get));
     signal_subscribers_.emplace(ExtensionSignalType::kCookiesGetAll,
                                 std::move(subscribers_for_cookies_get_all));
+    signal_subscribers_.emplace(
+        ExtensionSignalType::kDeclarativeNetRequestAction,
+        std::move(subscribers_for_declarative_net_request_action));
     signal_subscribers_.emplace(
         ExtensionSignalType::kDeclarativeNetRequest,
         std::move(subscribers_for_declarative_net_request));
@@ -964,7 +976,7 @@ void ExtensionTelemetryService::DumpReportForTest(
         }
       }
 
-      // Declarative Net Request
+      // Declarative Net Request Api
       if (signal_pb.has_declarative_net_request_info()) {
         const auto& declarative_net_request_info_pb =
             signal_pb.declarative_net_request_info();
@@ -978,6 +990,27 @@ void ExtensionTelemetryService::DumpReportForTest(
           ss << "    MaxExceededRulesCount:"
              << declarative_net_request_info_pb.max_exceeded_rules_count()
              << "\n";
+        }
+        continue;
+      }
+
+      // Declarative Net Request Action
+      if (signal_pb.has_declarative_net_request_action_info()) {
+        const auto& dnr_action_info_pb =
+            signal_pb.declarative_net_request_action_info();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_DeclarativeNetRequestActionInfo_ActionDetails>&
+            action_details = dnr_action_info_pb.action_details();
+        if (!action_details.empty()) {
+          ss << "  Signal: DeclarativeNetRequestAction\n";
+          for (const auto& entry : action_details) {
+            ss << "    Action Details:\n"
+               << "      action type: "
+               << base::NumberToString(static_cast<int>(entry.type())) << "\n"
+               << "      request URL: " << entry.request_url() << "\n"
+               << "      redirect URL: " << entry.redirect_url() << "\n"
+               << "      count: " << entry.count() << "\n";
+          }
         }
         continue;
       }

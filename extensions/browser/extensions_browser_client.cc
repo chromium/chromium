@@ -155,6 +155,13 @@ void ExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
     const ExtensionId& extension_id,
     const std::vector<api::declarative_net_request::Rule>& rules) const {}
 
+void ExtensionsBrowserClient::
+    NotifyExtensionDeclarativeNetRequestRedirectAction(
+        content::BrowserContext* context,
+        const ExtensionId& extension_id,
+        const GURL& request_url,
+        const GURL& redirect_url) const {}
+
 void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,
     const ExtensionId& extension_id,

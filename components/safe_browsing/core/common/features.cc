@@ -105,6 +105,10 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal,
+             "SafeBrowsingExtensionTelemetryDeclarativeNetRequestActionSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -371,6 +375,7 @@ constexpr struct {
     {&kDlpRegionalizedEndpoints, true},
     {&kDownloadReportWithoutUserDecision, true},
     {&kDownloadTailoredWarnings, true},
+    {&kExtensionTelemetryDeclarativeNetRequestActionSignal, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},

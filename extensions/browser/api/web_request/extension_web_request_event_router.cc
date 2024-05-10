@@ -980,6 +980,14 @@ int WebRequestEventRouter::OnBeforeRequest(
           DCHECK(action.redirect_url);
           OnDNRActionMatched(browser_context, *request, action);
           *new_url = action.redirect_url.value();
+          // Collect redirect action data for the Extension Telemetry Service.
+          if (action.type == DNRRequestAction::Type::REDIRECT) {
+            ExtensionsBrowserClient::Get()
+                ->NotifyExtensionDeclarativeNetRequestRedirectAction(
+                    browser_context, action.extension_id, request->url,
+                    action.redirect_url.value());
+          }
+
           return net::OK;
         case DNRRequestAction::Type::MODIFY_HEADERS:
           // Unlike other actions, allow web request extensions to intercept
