@@ -275,6 +275,37 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAndRestoreRecentSessionData) {
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest,
+       SaveRecentSessionDataMultipleTimes) {
+  CompareRecentSessionData(RecentSessionData());
+  RecentSessionData data;
+  data.enabled_time = base::Time::FromSecondsSinceUnixEpoch(10);
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(100000),
+      base::Time::FromSecondsSinceUnixEpoch(10000),
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  SaveRecentSessionData(data);
+
+  // Add a new entry to the front of the list, save, and verify.
+  // This ensures that an existing list can be safely added to.
+  data.recent_session_start_times.insert(
+      data.recent_session_start_times.begin(),
+      base::Time::FromSecondsSinceUnixEpoch(110000));
+  SaveRecentSessionData(data);
+  CompareRecentSessionData(data);
+
+  // Replace the entire list with a single, later entry, then save and verify.
+  // This ensures that we do not trigger a previous bug where the old data was
+  // not removed from prefs.
+  data.recent_session_start_times.clear();
+  data.recent_session_start_times.emplace_back(
+      base::Time::FromSecondsSinceUnixEpoch(120000));
+  SaveRecentSessionData(data);
+  CompareRecentSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest,
        SaveAndRestoreRecentSessionData_NoEnabledTime) {
   CompareRecentSessionData(RecentSessionData());
   RecentSessionData data;
