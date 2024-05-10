@@ -46,7 +46,8 @@ ContentSettingPatternSource CreateContentSetting(
   return ContentSettingPatternSource(
       ContentSettingsPattern::FromString(primary_pattern),
       ContentSettingsPattern::FromString(secondary_pattern),
-      base::Value(setting), std::string(), /*incognito=*/false);
+      base::Value(setting), content_settings::ProviderType::kNone,
+      /*incognito=*/false);
 }
 
 }  // namespace

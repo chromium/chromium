@@ -127,7 +127,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
       host_content_settings_map_->GetDefaultContentSetting(
           content_settings_type_, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   const bool content_setting_managed =
       content_setting_source != content_settings::SettingSource::kUser;

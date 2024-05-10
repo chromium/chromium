@@ -58,10 +58,10 @@ ContentSettingsForOneType ManagerBase::GetContentSettingForOneType(
     const content_settings::HostIndexedContentSettings& grants) const {
   ContentSettingsForOneType result;
   for (const auto& RuleEntry : grants) {
-    result.emplace_back(RuleEntry.first.primary_pattern,
-                        RuleEntry.first.secondary_pattern,
-                        RuleEntry.second.value.Clone(), std::string(), false,
-                        RuleEntry.second.metadata);
+    result.emplace_back(
+        RuleEntry.first.primary_pattern, RuleEntry.first.secondary_pattern,
+        RuleEntry.second.value.Clone(), content_settings::ProviderType::kNone,
+        false, RuleEntry.second.metadata);
   }
   return result;
 }

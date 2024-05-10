@@ -26,7 +26,7 @@ bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
   map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
                                 &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   return content_setting_source == SettingSource::kUser;
 }
@@ -199,7 +199,7 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
   auto content_setting = map->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   bool content_setting_enforced =
       content_setting_source != SettingSource::kUser;
@@ -329,7 +329,7 @@ settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
   // Content settings can be managed via policy, extension or supervision, but
   // cannot be recommended.
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
@@ -393,7 +393,7 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
   // Cookies content setting can be managed via policy, extension or
   // supervision, but cannot be recommended.
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;

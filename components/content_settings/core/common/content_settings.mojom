@@ -77,7 +77,7 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern secondary_pattern;
   mojo_base.mojom.Value setting_value;
   RuleMetaData metadata;
-  string source;
+  ProviderType source;
   bool incognito;
 };
 

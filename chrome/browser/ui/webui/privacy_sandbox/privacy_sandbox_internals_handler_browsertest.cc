@@ -231,14 +231,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
-            Contains(AllOf(
-                Field(&ContentSettingPatternSource::primary_pattern,
-                      ContentSettingsPattern::FromString(
-                          "https://[*.]google.com")),
-                Field(&ContentSettingPatternSource::secondary_pattern,
-                      ContentSettingsPattern::FromString(
-                          "https://[*.]example.com")),
-                Field(&ContentSettingPatternSource::source, "preference")))));
+            Contains(
+                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
+                            ContentSettingsPattern::FromString(
+                                "https://[*.]google.com")),
+                      Field(&ContentSettingPatternSource::secondary_pattern,
+                            ContentSettingsPattern::FromString(
+                                "https://[*.]example.com")),
+                      Field(&ContentSettingPatternSource::source,
+                            content_settings::ProviderType::kPrefProvider)))));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
@@ -255,14 +256,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
-            Contains(AllOf(
-                Field(&ContentSettingPatternSource::primary_pattern,
-                      ContentSettingsPattern::FromString(
-                          "https://example.org:443")),
-                Field(&ContentSettingPatternSource::secondary_pattern,
-                      ContentSettingsPattern::FromString(
-                          "https://[*.]example.net")),
-                Field(&ContentSettingPatternSource::source, "preference")))));
+            Contains(
+                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
+                            ContentSettingsPattern::FromString(
+                                "https://example.org:443")),
+                      Field(&ContentSettingPatternSource::secondary_pattern,
+                            ContentSettingsPattern::FromString(
+                                "https://[*.]example.net")),
+                      Field(&ContentSettingPatternSource::source,
+                            content_settings::ProviderType::kPrefProvider)))));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTopLevelTpcdTrial) {
@@ -279,13 +281,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTopLevelTpcdTrial) {
   EXPECT_THAT(
       content_settings_cb_data_,
       AllOf(SizeIs(Ge(1u)),
-            Contains(AllOf(
-                Field(&ContentSettingPatternSource::primary_pattern,
-                      ContentSettingsPattern::FromString(
-                          "https://example.org:443")),
-                Field(&ContentSettingPatternSource::secondary_pattern,
-                      ContentSettingsPattern::FromString("*")),
-                Field(&ContentSettingPatternSource::source, "preference")))));
+            Contains(
+                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
+                            ContentSettingsPattern::FromString(
+                                "https://example.org:443")),
+                      Field(&ContentSettingPatternSource::secondary_pattern,
+                            ContentSettingsPattern::FromString("*")),
+                      Field(&ContentSettingPatternSource::source,
+                            content_settings::ProviderType::kPrefProvider)))));
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,

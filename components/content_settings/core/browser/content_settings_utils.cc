@@ -130,7 +130,7 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
   // it.
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingToValue(CONTENT_SETTING_BLOCK), std::string(),
+      ContentSettingToValue(CONTENT_SETTING_BLOCK), ProviderType::kNone,
       map->IsOffTheRecord()));
 #endif
 }

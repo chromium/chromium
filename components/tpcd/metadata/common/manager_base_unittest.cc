@@ -71,8 +71,8 @@ TEST_P(ManagerBaseTest, GetContentSetting) {
   grants.emplace_back(
       ContentSettingsPattern::FromString(primary_pattern_spec),
       ContentSettingsPattern::FromString(secondary_pattern_spec),
-      std::move(value),
-      /*source=*/std::string(), /*incognito=*/false, rule_metadata);
+      std::move(value), content_settings::ProviderType::kNone,
+      /*incognito=*/false, rule_metadata);
 
   std::vector<common::Grants> v_grants;
   v_grants.emplace_back(grants);

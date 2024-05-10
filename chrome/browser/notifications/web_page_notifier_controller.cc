@@ -44,7 +44,7 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
        iter != settings.end(); ++iter) {
     if (iter->primary_pattern == ContentSettingsPattern::Wildcard() &&
         iter->secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        iter->source != "preference") {
+        iter->source != content_settings::ProviderType::kPrefProvider) {
       continue;
     }
 

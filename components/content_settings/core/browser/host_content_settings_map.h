@@ -107,9 +107,9 @@ class HostContentSettingsMap : public content_settings::Observer,
       ProviderType type,
       std::unique_ptr<content_settings::ObservableProvider> provider);
 
-  // Returns the default setting for a particular content type. If |provider_id|
-  // is not NULL, the id of the provider which provided the default setting is
-  // assigned to it.
+  // Returns the default setting for a particular content type. If
+  // |provider_type| is not NULL, the id of the provider which provided the
+  // default setting is assigned to it.
   //
   // This may be called on any thread.
   ContentSetting GetDefaultContentSetting(
@@ -339,20 +339,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
-  // Returns the ProviderType associated with the given source string.
-  // TODO(estade): I regret adding this. At the moment there are no legitimate
-  // uses. We should stick to ProviderType rather than string so we don't have
-  // to convert backwards.
-  static ProviderType GetProviderTypeFromSource(const std::string& source);
-
-  // Returns the SettingSource associated with the given ProviderType.
-  static content_settings::SettingSource GetSettingSourceFromProviderType(
-      content_settings::ProviderType provider_type);
-
-  // Returns the SettingSource associated with the given |provider_name|
-  // string.
-  static content_settings::SettingSource GetSettingSourceFromProviderName(
-      const std::string& provider_name);
 
   // Whether this settings map is for an incognito or guest session.
   bool IsOffTheRecord() const { return is_off_the_record_; }

@@ -287,17 +287,17 @@ class CookieManagerTest : public testing::Test {
   ContentSettingPatternSource CreateDefaultSetting(ContentSetting setting) {
     return ContentSettingPatternSource(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        base::Value(setting), std::string(), false);
+        base::Value(setting), content_settings::ProviderType::kNone, false);
   }
 
   ContentSettingPatternSource CreateSetting(ContentSetting setting,
                                             const std::string& url_str) {
     const GURL url(url_str);
     EXPECT_TRUE(url.is_valid());
-    return ContentSettingPatternSource(ContentSettingsPattern::FromURL(url),
-                                       ContentSettingsPattern::Wildcard(),
-                                       base::Value(setting), std::string(),
-                                       false);
+    return ContentSettingPatternSource(
+        ContentSettingsPattern::FromURL(url),
+        ContentSettingsPattern::Wildcard(), base::Value(setting),
+        content_settings::ProviderType::kNone, false);
   }
 
   void SetContentSettings(ContentSettingsForOneType settings) {
@@ -2669,11 +2669,13 @@ TEST_F(SessionCleanupCookieManagerTest, MorePreciseSettingTakesPrecedence) {
       {ContentSettingPatternSource(
            ContentSettingsPattern::FromURLNoWildcard(GURL(kCookieURL)),
            ContentSettingsPattern::Wildcard(),
-           base::Value(CONTENT_SETTING_SESSION_ONLY), std::string(), false),
+           base::Value(CONTENT_SETTING_SESSION_ONLY),
+           content_settings::ProviderType::kNone, false),
        ContentSettingPatternSource(
            ContentSettingsPattern::FromURL(GURL(kCookieURL)),
            ContentSettingsPattern::Wildcard(),
-           base::Value(CONTENT_SETTING_ALLOW), std::string(), false)});
+           base::Value(CONTENT_SETTING_ALLOW),
+           content_settings::ProviderType::kNone, false)});
 
   auto store = CreateCookieStore();
   InitializeCookieService(store, store);

@@ -97,7 +97,7 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSettingPatternSource) {
   original.setting_value = base::Value(123);
   original.metadata.SetExpirationAndLifetime(
       base::Time::FromSecondsSinceUnixEpoch(234), base::Days(2));
-  original.source = "source";
+  original.source = content_settings::ProviderType::kNone;
   ContentSettingPatternSource round_tripped;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<

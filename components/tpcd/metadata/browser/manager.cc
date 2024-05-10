@@ -205,8 +205,8 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     rule_metadata.set_tpcd_metadata_cohort(cohort.value());
 
     grants.emplace_back(primary_pattern, secondary_pattern, std::move(value),
-                        /*source=*/std::string(), /*incognito=*/false,
-                        std::move(rule_metadata));
+                        content_settings::ProviderType::kNone,
+                        /*incognito=*/false, std::move(rule_metadata));
   }
 
   if (base::FeatureList::IsEnabled(

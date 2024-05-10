@@ -62,7 +62,7 @@ class CookiesApiTest : public ExtensionApiTest,
               ContentSettingsPattern::Wildcard(),
               ContentSettingsPattern::Wildcard(),
               base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
-              std::string() /* source */, false /* incognito */)},
+              content_settings::ProviderType::kNone, false /* incognito */)},
           base::NullCallback());
       cookie_manager_remote_.FlushForTesting();
     }

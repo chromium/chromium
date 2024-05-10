@@ -312,7 +312,7 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   bool matches_session_only_rule = false;
   for (const auto& entry : cookie_settings) {
     // Skip WebUI third-party cookie exceptions.
-    if (entry.source == "webui_allowlist" &&
+    if (entry.source == ProviderType::kWebuiAllowlistProvider &&
         !entry.secondary_pattern.MatchesAllHosts()) {
       continue;
     }

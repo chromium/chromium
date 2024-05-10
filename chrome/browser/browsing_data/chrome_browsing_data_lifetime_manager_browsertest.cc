@@ -34,6 +34,7 @@
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -74,6 +75,8 @@
 #endif
 
 namespace {
+
+using ProviderType = content_settings::ProviderType;
 
 enum class BrowserType { Default, Incognito };
 
@@ -271,8 +274,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   for (const auto& host_setting :
        map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
-    if (host_setting.source == "webui_allowlist")
+    if (host_setting.source == ProviderType::kWebuiAllowlistProvider) {
       continue;
+    }
     EXPECT_EQ(ContentSettingsPattern::Wildcard(), host_setting.primary_pattern);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, host_setting.GetContentSetting());
   }
@@ -546,9 +550,10 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
   bool has_pref_setting = false;
   for (const auto& host_setting :
        map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
-    if (host_setting.source == "webui_allowlist")
+    if (host_setting.source == ProviderType::kWebuiAllowlistProvider) {
       continue;
-    if (host_setting.source == "preference") {
+    }
+    if (host_setting.source == ProviderType::kPrefProvider) {
       has_pref_setting = true;
       EXPECT_EQ(ContentSettingsPattern::FromURL(GURL("http://host1.com:1")),
                 host_setting.primary_pattern);
@@ -578,9 +583,10 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
   bool has_pref_setting = false;
   for (const auto& host_setting :
        map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
-    if (host_setting.source == "webui_allowlist")
+    if (host_setting.source == ProviderType::kWebuiAllowlistProvider) {
       continue;
-    if (host_setting.source == "preference") {
+    }
+    if (host_setting.source == ProviderType::kPrefProvider) {
       has_pref_setting = true;
       EXPECT_EQ(ContentSettingsPattern::FromURL(GURL("http://host1.com:1")),
                 host_setting.primary_pattern);
@@ -613,8 +619,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
 
   for (const auto& host_setting :
        map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
-    if (host_setting.source == "webui_allowlist")
+    if (host_setting.source == ProviderType::kWebuiAllowlistProvider) {
       continue;
+    }
     EXPECT_EQ(ContentSettingsPattern::Wildcard(), host_setting.primary_pattern);
     EXPECT_EQ(CONTENT_SETTING_ALLOW, host_setting.GetContentSetting());
   }

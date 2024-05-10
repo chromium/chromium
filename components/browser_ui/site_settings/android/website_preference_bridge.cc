@@ -161,8 +161,7 @@ void GetOrigins(JNIEnv* env,
     if (settings_it.GetContentSetting() == default_content_setting)
       continue;
     if (managedOnly &&
-        HostContentSettingsMap::GetProviderTypeFromSource(settings_it.source) !=
-            content_settings::ProviderType::kPolicyProvider) {
+        settings_it.source != content_settings::ProviderType::kPolicyProvider) {
       continue;
     }
     const std::string origin = settings_it.primary_pattern.ToString();
@@ -1016,9 +1015,7 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(
         env, list, content_settings_type, ConvertUTF8ToJavaString(env, origin),
         ConvertUTF8ToJavaString(env, entry.secondary_pattern.ToString()),
-        entry.GetContentSetting(),
-        static_cast<int>(
-            HostContentSettingsMap::GetProviderTypeFromSource(entry.source)),
+        entry.GetContentSetting(), static_cast<int>(entry.source),
         hasExpiration, expirationInDays,
         /*is_embargoed=*/false);
   }

@@ -320,7 +320,7 @@ SiteSettingSource CalculateSiteSettingSource(
 }
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
-  return HostContentSettingsMap::GetProviderTypeFromSource(pattern.source) ==
+  return pattern.source ==
          content_settings::ProviderType::kWebuiAllowlistProvider;
 }
 
@@ -931,8 +931,7 @@ void GetRawExceptionsForContentSettingsType(
     // Don't add default settings.
     if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
         setting.secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        setting.source !=
-            SiteSettingSourceToString(SiteSettingSource::kPreference)) {
+        setting.source != content_settings::ProviderType::kPrefProvider) {
       continue;
     }
 
@@ -942,8 +941,7 @@ void GetRawExceptionsForContentSettingsType(
     // incognito-only exceptions, meaning these are necesssarily duplicates.
     if (map->IsOffTheRecord() &&
         (!setting.incognito ||
-         setting.source ==
-             SiteSettingSourceToString(SiteSettingSource::kPolicy))) {
+         setting.source == content_settings::ProviderType::kPolicyProvider)) {
       continue;
     }
 
@@ -971,9 +969,7 @@ void GetRawExceptionsForContentSettingsType(
       content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
     }
 
-    all_patterns_settings[{
-        setting.primary_pattern,
-        HostContentSettingsMap::GetProviderTypeFromSource(setting.source)}][{
+    all_patterns_settings[{setting.primary_pattern, setting.source}][{
         setting.secondary_pattern, setting.incognito}] = {
         content_setting, /*is_embargoed=*/false, setting.metadata.expiration()};
   }
@@ -998,9 +994,7 @@ void GetRawExceptionsForContentSettingsType(
 
     if (auto_blocker->IsEmbargoed(GURL(setting.primary_pattern.ToString()),
                                   type)) {
-      all_patterns_settings[{
-          setting.primary_pattern,
-          HostContentSettingsMap::GetProviderTypeFromSource(setting.source)}]
+      all_patterns_settings[{setting.primary_pattern, setting.source}]
                            [{setting.secondary_pattern, setting.incognito}] = {
                                CONTENT_SETTING_BLOCK, /*is_embargoed=*/true,
                                setting.metadata.expiration()};

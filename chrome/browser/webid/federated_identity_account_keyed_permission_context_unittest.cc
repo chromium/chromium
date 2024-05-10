@@ -432,7 +432,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
                       relying_party_embedder.GetURL()),
                   content_settings::ContentSettingToValue(
                       ContentSetting::CONTENT_SETTING_ALLOW),
-                  /*source=*/"", /*incognito=*/false)));
+                  content_settings::ProviderType::kNone, /*incognito=*/false)));
 
   base::test::TestFuture<void> future;
   context()->RevokePermission(relying_party_requester, relying_party_embedder,

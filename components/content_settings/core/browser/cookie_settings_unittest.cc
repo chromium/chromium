@@ -1344,7 +1344,7 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAViaFedCM) {
                 ContentSettingsPattern::FromURLToSchemefulSitePattern(
                     top_level_url),
                 content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-                /*source=*/"", /*incognito=*/false),
+                ProviderType::kNone, /*incognito=*/false),
         };
       }),
       /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
@@ -1574,7 +1574,8 @@ TEST_P(CookieSettingsTestP, GetCookieSetting3pcdMetadataGrants) {
   tpcd_metadata_grants.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(), false);
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+      content_settings::ProviderType::kNone, false);
   tpcd_metadata_manager_->SetGrantsForTesting(tpcd_metadata_grants);
 
   EXPECT_EQ(cookie_settings_->GetCookieSetting(

@@ -348,8 +348,8 @@ TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
       content_setting_rules.mixed_content_rules;
   mixed_content_setting_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
-      std::string(), false));
+      ContentSettingToValue(CONTENT_SETTING_BLOCK), ProviderType::kNone,
+      false));
 
   ContentSettingsAgentImpl* agent =
       ContentSettingsAgentImpl::Get(GetMainRenderFrame());
@@ -362,8 +362,8 @@ TEST_P(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
       ContentSettingPatternSource(
           ContentSettingsPattern::FromString("https://example.com/"),
           ContentSettingsPattern::Wildcard(),
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-          std::string(), false));
+          ContentSettingToValue(CONTENT_SETTING_ALLOW), ProviderType::kNone,
+          false));
   agent->SetRendererContentSettingRulesForTest(content_setting_rules);
 
   EXPECT_FALSE(agent->ShouldAutoupgradeMixedContent());

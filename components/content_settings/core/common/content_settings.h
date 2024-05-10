@@ -40,11 +40,12 @@ enum ContentSetting {
 // Range-checked conversion of an int to a ContentSetting, for use when reading
 // prefs off disk.
 ContentSetting IntToContentSetting(int content_setting);
+
 struct ContentSettingPatternSource {
   ContentSettingPatternSource(const ContentSettingsPattern& primary_pattern,
                               const ContentSettingsPattern& secondary_patttern,
                               base::Value setting_value,
-                              const std::string& source,
+                              content_settings::mojom::ProviderType provider,
                               bool incognito,
                               content_settings::RuleMetaData metadata =
                                   content_settings::RuleMetaData());
@@ -62,7 +63,8 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern secondary_pattern;
   base::Value setting_value;
   content_settings::RuleMetaData metadata;
-  std::string source;
+  content_settings::mojom::ProviderType source =
+      content_settings::mojom::ProviderType::kNone;
   bool incognito;
 };
 
@@ -136,6 +138,31 @@ struct SettingInfo {
   }
 };
 
+// Returns the SettingSource associated with the given ProviderType.
+constexpr SettingSource GetSettingSourceFromProviderType(
+    ProviderType provider_type) {
+  switch (provider_type) {
+    case ProviderType::kWebuiAllowlistProvider:
+      return SettingSource::kAllowList;
+    case ProviderType::kPolicyProvider:
+      return SettingSource::kPolicy;
+    case ProviderType::kSupervisedProvider:
+      return SettingSource::kSupervised;
+    case ProviderType::kCustomExtensionProvider:
+      return SettingSource::kExtension;
+    case ProviderType::kInstalledWebappProvider:
+      return SettingSource::kInstalledWebApp;
+    case ProviderType::kNotificationAndroidProvider:
+    case ProviderType::kOneTimePermissionProvider:
+    case ProviderType::kPrefProvider:
+    case ProviderType::kDefaultProvider:
+    case ProviderType::kProviderForTests:
+    case ProviderType::kOtherProviderForTests:
+      return SettingSource::kUser;
+    case content_settings::ProviderType::kNone:
+      return SettingSource::kNone;
+  }
+}
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_H_

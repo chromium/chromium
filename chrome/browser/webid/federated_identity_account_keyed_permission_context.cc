@@ -394,7 +394,8 @@ ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
         ContentSettingsPattern::FromURLToSchemefulSitePattern(
             GURL(*rp_embedder_origin)),
         content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-        /*source=*/"", browser_context_->IsOffTheRecord());
+        content_settings::ProviderType::kNone,
+        browser_context_->IsOffTheRecord());
   }
   return settings;
 }

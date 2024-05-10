@@ -157,7 +157,8 @@ struct StructTraits<
     return r.metadata;
   }
 
-  static const std::string& source(const ContentSettingPatternSource& r) {
+  static content_settings::ProviderType source(
+      const ContentSettingPatternSource& r) {
     return r.source;
   }
 

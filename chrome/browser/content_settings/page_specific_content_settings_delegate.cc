@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -167,7 +168,7 @@ void GetGuestViewDefaultContentSettingRules(
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
-      std::string(), incognito));
+      content_settings::ProviderType::kNone, incognito));
 }
 #endif
 }  // namespace

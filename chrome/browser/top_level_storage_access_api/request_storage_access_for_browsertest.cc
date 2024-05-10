@@ -280,12 +280,14 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
       ContentSettingPatternSource(
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostB)),
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
-          base::Value(CONTENT_SETTING_ALLOW), "preference",
+          base::Value(CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kPrefProvider,
           /*incognito=*/false, metadata),
       ContentSettingPatternSource(
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
           ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
-          base::Value(CONTENT_SETTING_ALLOW), "preference",
+          base::Value(CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kPrefProvider,
           /*incognito=*/false, metadata),
   };
 

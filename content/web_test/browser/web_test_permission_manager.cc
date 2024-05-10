@@ -52,7 +52,8 @@ std::vector<ContentSettingPatternSource> GetContentSettings(
   std::vector<ContentSettingPatternSource> patterns;
   if (setting) {
     patterns.emplace_back(permission_pattern, embedding_pattern,
-                          base::Value(*setting), /*source=*/"",
+                          base::Value(*setting),
+                          content_settings::ProviderType::kNone,
                           /*incognito=*/false);
   }
   return patterns;

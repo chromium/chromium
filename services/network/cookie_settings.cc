@@ -113,26 +113,6 @@ bool IsOriginOpaqueHttpOrHttps(const url::Origin* top_frame_origin) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
-// This map should stay in sync with the `kProviderNamesSourceMap` in
-// components/content_settings/core/browser/host_content_settings_map.cc.
-// TODO(https://crbug.com/40538766): remove this mapping once we use enum
-// instead of string for storing setting source.
-constexpr auto kProviderNamesSourceMap =
-    base::MakeFixedFlatMap<base::StringPiece, content_settings::SettingSource>({
-        {"webui_allowlist", content_settings::SettingSource::kAllowList},
-        {"policy", content_settings::SettingSource::kPolicy},
-        {"supervised_user", content_settings::SettingSource::kSupervised},
-        {"extension", content_settings::SettingSource::kExtension},
-        {"installed_webapp_provider",
-         content_settings::SettingSource::kInstalledWebApp},
-        {"notification_android", content_settings::SettingSource::kUser},
-        {"one_time", content_settings::SettingSource::kUser},
-        {"preference", content_settings::SettingSource::kUser},
-        {"default", content_settings::SettingSource::kUser},
-        {"tests", content_settings::SettingSource::kUser},
-        {"tests_other", content_settings::SettingSource::kUser},
-    });
-
 }  // namespace
 
 // static
@@ -201,7 +181,7 @@ void CookieSettings::set_content_settings(
       if (absl::holds_alternative<EntryIndex>(content_settings_)) {
         auto& index =
             absl::get<EntryIndex>(content_settings_)[type].emplace_back(
-                "default", false);
+                content_settings::ProviderType::kDefaultProvider, false);
         index.SetValue(ContentSettingsPattern::Wildcard(),
                        ContentSettingsPattern::Wildcard(),
                        base::Value(CONTENT_SETTING_ALLOW), /*metadata=*/{});
@@ -210,7 +190,7 @@ void CookieSettings::set_content_settings(
             ContentSettingsPattern::Wildcard(),
             ContentSettingsPattern::Wildcard(),
             base::Value(CONTENT_SETTING_ALLOW),
-            /*source=*/"default",
+            content_settings::ProviderType::kDefaultProvider,
             /*incognito=*/false);
       }
     }
@@ -235,7 +215,7 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
       for (const auto& entry : index) {
         settings.emplace_back(entry.first.primary_pattern,
                               entry.first.secondary_pattern,
-                              entry.second.value.Clone(), *index.source(),
+                              entry.second.value.Clone(), index.source(),
                               *index.off_the_record(), entry.second.metadata);
       }
     }
@@ -432,9 +412,8 @@ ContentSetting CookieSettings::GetContentSetting(
         if (result) {
           if (info) {
             info->SetAttributes(*result);
-            if (index.source().has_value() && !index.source()->empty()) {
-              info->source = kProviderNamesSourceMap.at(index.source().value());
-            }
+            info->source = content_settings::GetSettingSourceFromProviderType(
+                index.source());
           }
           return content_settings::ValueToContentSetting(result->second.value);
         }
@@ -446,9 +425,8 @@ ContentSetting CookieSettings::GetContentSetting(
       if (result) {
         if (info) {
           info->SetAttributes(*result);
-          if (!result->source.empty()) {
-            info->source = kProviderNamesSourceMap.at(result->source);
-          }
+          info->source = content_settings::GetSettingSourceFromProviderType(
+              result->source);
         }
         return result->GetContentSetting();
       }

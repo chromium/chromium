@@ -213,7 +213,7 @@ void SetContentSetting(const GURL& primary_pattern,
       {ContentSettingPatternSource(
           ContentSettingsPattern::FromURL(primary_pattern),
           ContentSettingsPattern::FromURL(secondary_pattern),
-          base::Value(setting), std::string(), false)},
+          base::Value(setting), content_settings::ProviderType::kNone, false)},
       runloop.QuitClosure());
   runloop.Run();
 }
@@ -223,9 +223,10 @@ void SetDefaultContentSetting(ContentSetting setting,
   base::RunLoop runloop;
   network_context->cookie_manager()->SetContentSettings(
       ContentSettingsType::COOKIES,
-      {ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
-                                   ContentSettingsPattern::Wildcard(),
-                                   base::Value(setting), std::string(), false)},
+      {ContentSettingPatternSource(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(), base::Value(setting),
+          content_settings::ProviderType::kNone, false)},
       runloop.QuitClosure());
   runloop.Run();
 }
@@ -8175,7 +8176,8 @@ TEST_F(NetworkContextTest,
       {ContentSettingPatternSource(
           ContentSettingsPattern::FromURL(GURL(kTopFrameOriginForFetchRequest)),
           ContentSettingsPattern::Wildcard(),
-          base::Value(CONTENT_SETTING_BLOCK), std::string(), false)},
+          base::Value(CONTENT_SETTING_BLOCK),
+          content_settings::ProviderType::kNone, false)},
       content_settings_run_loop.QuitClosure());
   content_settings_run_loop.Run();
 
@@ -8252,7 +8254,8 @@ TEST_F(NetworkContextTest,
           ContentSettingsPattern::FromURL(
               test_server.GetURL("a.test", "/empty.html")),
           ContentSettingsPattern::Wildcard(),
-          base::Value(CONTENT_SETTING_BLOCK), std::string(), false)},
+          base::Value(CONTENT_SETTING_BLOCK),
+          content_settings::ProviderType::kNone, false)},
       content_settings_run_loop.QuitClosure());
   content_settings_run_loop.Run();
 

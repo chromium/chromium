@@ -360,7 +360,7 @@ class ExtensionSameSiteCookiesTest
               ContentSettingsPattern::Wildcard(),
               ContentSettingsPattern::Wildcard(),
               base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
-              /*source=*/std::string(), /*incognito=*/false)},
+              content_settings::ProviderType::kNone, /*incognito=*/false)},
           base::NullCallback());
       cookie_manager_remote_.FlushForTesting();
     }

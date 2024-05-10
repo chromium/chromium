@@ -114,7 +114,7 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
     auto current_value = map->GetDefaultContentSetting(
         content_setting_type, &content_setting_provider);
     auto content_setting_source =
-        HostContentSettingsMap::GetSettingSourceFromProviderType(
+        content_settings::GetSettingSourceFromProviderType(
             content_setting_provider);
 
     const bool user_controlled =

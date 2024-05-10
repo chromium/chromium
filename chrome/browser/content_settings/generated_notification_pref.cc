@@ -24,7 +24,7 @@ bool IsDefaultNotificationContentSettingUserControlled(
   map->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                 &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   return content_setting_source == SettingSource::kUser;
 }
@@ -154,7 +154,7 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
   auto content_setting = map->GetDefaultContentSetting(
       ContentSettingsType::NOTIFICATIONS, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderType(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   bool content_setting_enforced =
       content_setting_source != content_settings::SettingSource::kUser;

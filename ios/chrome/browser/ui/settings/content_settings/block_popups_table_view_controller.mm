@@ -350,7 +350,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // settings; all of them will affect the default setting UI.
     if (entries[i].primary_pattern == ContentSettingsPattern::Wildcard() &&
         entries[i].secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        entries[i].source != "preference") {
+        entries[i].source != content_settings::ProviderType::kPrefProvider) {
       continue;
     }
     // The content settings UI does not support secondary content settings
@@ -360,7 +360,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // wildcard pattern. So only show settings that the user is able to modify.
     if (entries[i].secondary_pattern == ContentSettingsPattern::Wildcard() &&
         entries[i].GetContentSetting() == CONTENT_SETTING_ALLOW) {
-      if (entries[i].source == "policy") {
+      if (entries[i].source ==
+          content_settings::ProviderType::kPolicyProvider) {
         // Add the urls to `_allowPopupsByPolicy` if the allowed urls are set by
         // the policy.
         _allowPopupsByPolicy.Append(entries[i].primary_pattern.ToString());

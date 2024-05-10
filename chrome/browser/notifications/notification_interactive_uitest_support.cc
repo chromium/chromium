@@ -231,7 +231,7 @@ void NotificationsTest::GetDisabledContentSettings(
 
   std::erase_if(*settings, [](const ContentSettingPatternSource& setting) {
     return setting.GetContentSetting() != CONTENT_SETTING_BLOCK ||
-           setting.source.compare("preference") != 0;
+           setting.source != content_settings::ProviderType::kPrefProvider;
   });
 }
 

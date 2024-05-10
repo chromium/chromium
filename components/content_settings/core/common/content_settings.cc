@@ -42,7 +42,7 @@ ContentSettingPatternSource::ContentSettingPatternSource(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Value setting_value,
-    const std::string& source,
+    content_settings::mojom::ProviderType source,
     bool incognito,
     content_settings::RuleMetaData metadata)
     : primary_pattern(primary_pattern),
@@ -90,7 +90,7 @@ std::ostream& operator<<(std::ostream& os,
   PrintTo(source.primary_pattern, &os);
   os << ", ";
   PrintTo(source.secondary_pattern, &os);
-  os << ") source=" << source.source
+  os << ") source=" << static_cast<int>(source.source)
      << " value=" << source.setting_value.DebugString() << "]";
   return os;
 }

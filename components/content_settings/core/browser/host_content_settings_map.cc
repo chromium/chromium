@@ -82,44 +82,20 @@ const ProviderType kFirstProvider = ProviderType::kWebuiAllowlistProvider;
 const ProviderType kFirstUserModifiableProvider =
     ProviderType::kNotificationAndroidProvider;
 
-constexpr auto kProviderNamesSourceMap =
-    base::MakeFixedFlatMap<ProviderType, ProviderNamesSourceMapEntry>({
-        {ProviderType::kWebuiAllowlistProvider,
-         {"webui_allowlist", SettingSource::kAllowList}},
-        {ProviderType::kPolicyProvider, {"policy", SettingSource::kPolicy}},
-        {ProviderType::kSupervisedProvider,
-         {"supervised_user", SettingSource::kSupervised}},
-        {ProviderType::kCustomExtensionProvider,
-         {"extension", SettingSource::kExtension}},
-        {ProviderType::kInstalledWebappProvider,
-         {"installed_webapp_provider", SettingSource::kInstalledWebApp}},
-        {ProviderType::kNotificationAndroidProvider,
-         {"notification_android", SettingSource::kUser}},
-        {ProviderType::kOneTimePermissionProvider,
-         {"one_time", SettingSource::kUser}},
-        {ProviderType::kPrefProvider, {"preference", SettingSource::kUser}},
-        {ProviderType::kDefaultProvider, {"default", SettingSource::kUser}},
-        {ProviderType::kNone, {"none", SettingSource::kNone}},
-        {ProviderType::kProviderForTests, {"tests", SettingSource::kUser}},
-        {ProviderType::kOtherProviderForTests,
-         {"tests_other", SettingSource::kUser}},
-    });
-
-static_assert(std::size(kProviderNamesSourceMap) ==
-                  static_cast<int>(ProviderType::kMaxValue) + 1,
-              "kProviderNamesSourceMap should have kNumProviderTypes elements");
-
 // Ensure that kFirstUserModifiableProvider is actually the highest
 // precedence user modifiable provider.
 constexpr bool FirstUserModifiableProviderIsHighestPrecedence() {
-  auto it = kProviderNamesSourceMap.begin();
-  for (; it->first != kFirstUserModifiableProvider; ++it) {
-    if (it->second.provider_source == SettingSource::kUser) {
+  int i = static_cast<int>(ProviderType::kMinValue);
+  for (; i != static_cast<int>(kFirstUserModifiableProvider); ++i) {
+    if (content_settings::GetSettingSourceFromProviderType(
+            static_cast<ProviderType>(i)) == SettingSource::kUser) {
       return false;
     }
   }
-  return it->second.provider_source == SettingSource::kUser;
+  return content_settings::GetSettingSourceFromProviderType(
+             static_cast<ProviderType>(i)) == SettingSource::kUser;
 }
+
 static_assert(FirstUserModifiableProviderIsHighestPrecedence(),
               "kFirstUserModifiableProvider is not the highest precedence user "
               "modifiable provider.");
@@ -427,14 +403,14 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
       return default_setting;
     }
   }
-
+  *provider_type = content_settings::ProviderType::kNone;
   return CONTENT_SETTING_DEFAULT;
 }
 
 ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
     ContentSettingsType content_type,
     ProviderType* provider_id) const {
-  ProviderType provider_type = ProviderType::kMaxValue;
+  ProviderType provider_type = ProviderType::kNone;
   ContentSetting content_setting =
       GetDefaultContentSettingInternal(content_type, &provider_type);
   if (content_setting != CONTENT_SETTING_DEFAULT && provider_id)
@@ -715,7 +691,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
         continue;
       }
 
-      if (setting_entry.source == "preference") {
+      if (setting_entry.source == ProviderType::kPrefProvider) {
         // |content_info| will be non-nullptr iff |content_type| is a content
         // setting rather than a website setting.
         if (content_info)
@@ -780,7 +756,7 @@ void HostContentSettingsMap::RecordThirdPartyCookieMetrics(
   size_t num_3pc_allow_exceptions_domain_wildcard = 0;
 
   for (const ContentSettingPatternSource& setting_entry : settings) {
-    if (setting_entry.source == "preference" &&
+    if (setting_entry.source == ProviderType::kPrefProvider &&
         setting_entry.primary_pattern.MatchesAllHosts() &&
         !setting_entry.secondary_pattern.MatchesAllHosts() &&
         setting_entry.GetContentSetting() == CONTENT_SETTING_ALLOW) {
@@ -1004,10 +980,9 @@ void HostContentSettingsMap::AddSettingsForOneType(
         continue;
       }
     }
-    settings->emplace_back(
-        rule->primary_pattern, rule->secondary_pattern, std::move(value),
-        kProviderNamesSourceMap.at(provider_type).provider_name, incognito,
-        rule->metadata);
+    settings->emplace_back(rule->primary_pattern, rule->secondary_pattern,
+                           std::move(value), provider_type, incognito,
+                           rule->metadata);
   }
 }
 
@@ -1052,44 +1027,6 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
                                    kFirstProvider, info);
 }
 
-// static
-ProviderType HostContentSettingsMap::GetProviderTypeFromSource(
-    const std::string& source) {
-  for (const auto& entry : kProviderNamesSourceMap) {
-    if (source == entry.second.provider_name) {
-      return entry.first;
-    }
-  }
-
-  NOTREACHED();
-  return ProviderType::kDefaultProvider;
-}
-
-// static
-content_settings::SettingSource
-HostContentSettingsMap::GetSettingSourceFromProviderType(
-    content_settings::ProviderType provider_type) {
-  auto it = kProviderNamesSourceMap.find(provider_type);
-  if (it != kProviderNamesSourceMap.end()) {
-    return it->second.provider_source;
-  }
-  NOTREACHED();
-  return SettingSource::kNone;
-}
-
-// static
-content_settings::SettingSource
-HostContentSettingsMap::GetSettingSourceFromProviderName(
-    const std::string& provider_name) {
-  for (const auto& entry : kProviderNamesSourceMap) {
-    if (provider_name == entry.second.provider_name) {
-      return entry.second.provider_source;
-    }
-  }
-  NOTREACHED();
-  return SettingSource::kNone;
-}
-
 base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
     const GURL& primary_url,
     const GURL& secondary_url,
@@ -1116,7 +1053,8 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
         clock_);
     if (!value.is_none()) {
       if (info)
-        info->source = kProviderNamesSourceMap.at(it->first).provider_source;
+        info->source =
+            content_settings::GetSettingSourceFromProviderType(it->first);
       return value;
     }
   }
@@ -1272,7 +1210,7 @@ void HostContentSettingsMap::
   ContentSettingsType type = info->type();
 
   for (ContentSettingPatternSource pattern : GetSettingsForOneType(type)) {
-    if (pattern.source != "preference" ||
+    if (pattern.source != ProviderType::kPrefProvider ||
         pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
       continue;
     }
@@ -1379,21 +1317,19 @@ void HostContentSettingsMap::DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(
 
     if (setting.metadata.expiration() <= (clock_->Now() + kEagerExpiryBuffer)) {
       expired_entries.emplace_back(setting);
-      content_settings_uma_util::RecordActiveExpiryEvent(
-          GetProviderTypeFromSource(setting.source), content_setting_type);
+      content_settings_uma_util::RecordActiveExpiryEvent(setting.source,
+                                                         content_setting_type);
     } else {
       next_expiry = std::min(next_expiry, setting.metadata.expiration());
     }
   }
 
   for (const auto& entry : expired_entries) {
-    const auto provider_type = GetProviderTypeFromSource(entry.source);
-    const bool is_user_modifiable =
-        provider_type > kFirstUserModifiableProvider;
+    const bool is_user_modifiable = entry.source > kFirstUserModifiableProvider;
 
     if (is_user_modifiable) {
       static_cast<content_settings::UserModifiableProvider*>(
-          content_settings_providers_[provider_type].get())
+          content_settings_providers_.at(entry.source).get())
           ->ExpireWebsiteSetting(
               entry.primary_pattern, entry.secondary_pattern,
               content_setting_type,

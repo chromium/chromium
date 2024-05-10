@@ -52,7 +52,7 @@ class ManagerTest : public ::testing::Test,
 
     return ContentSettingPatternSource(
         primary_pattern, secondary_pattern, std::move(value),
-        /*source=*/std::string(), /*incognito=*/false,
+        content_settings::ProviderType::kNone, /*incognito=*/false,
         std::move(rule_metadata));
   }
 

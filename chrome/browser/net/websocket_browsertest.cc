@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
                     ContentSettingsPattern::FromURLNoWildcard(
                         server().GetURL(kHostB, "/")),
                     /*setting_value=*/base::Value(CONTENT_SETTING_ALLOW),
-                    /*source=*/"preference",
+                    content_settings::ProviderType::kPrefProvider,
                     /*incognito=*/false,
                     /*metadata=*/content_settings::RuleMetaData()),
             },

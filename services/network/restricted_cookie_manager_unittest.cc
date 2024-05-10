@@ -694,7 +694,8 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlEqualsMatch_WithStorageAccess) {
       {ContentSettingPatternSource(
           ContentSettingsPattern::FromURL(kDefaultUrl),
           ContentSettingsPattern::FromURL(kOtherUrl),
-          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kNone,
           /*incognito=*/false)});
 
   auto options = mojom::CookieManagerGetOptions::New();
@@ -1089,7 +1090,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie_WithStorageAccess) {
       {ContentSettingPatternSource(
           ContentSettingsPattern::FromURL(kDefaultUrl),
           ContentSettingsPattern::FromURL(kOtherUrl),
-          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kNone,
           /*incognito=*/false)});
 
   EXPECT_FALSE(sync_service_->SetCanonicalCookie(
@@ -1371,7 +1373,8 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor_WithStorageAccess) {
       {ContentSettingPatternSource(
           ContentSettingsPattern::FromURL(kDefaultUrl),
           ContentSettingsPattern::FromURL(kOtherUrl),
-          base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
+          base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kNone,
           /*incognito=*/false)});
 
   bool result;

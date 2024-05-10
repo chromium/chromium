@@ -444,8 +444,8 @@ class CookieStoreManagerTest
     legacy_settings.emplace_back(
         ContentSettingsPattern::FromString("[*.]legacy.com"),
         ContentSettingsPattern::FromString("*"),
-        base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(),
-        false /* incognito */);
+        base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+        content_settings::ProviderType::kNone, false /* incognito */);
     cookie_manager_->SetContentSettings(
         ContentSettingsType::LEGACY_COOKIE_ACCESS, std::move(legacy_settings),
         base::NullCallback());

@@ -7,7 +7,6 @@
 
 #include <iterator>
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -42,7 +41,7 @@ class HostIndexedContentSettings {
 
   // Creates an index with additional metadata about the content settings
   // provider that the settings came from.
-  HostIndexedContentSettings(std::string source, bool off_the_record);
+  HostIndexedContentSettings(ProviderType source, bool off_the_record);
 
   HostIndexedContentSettings(const HostIndexedContentSettings& other) = delete;
   HostIndexedContentSettings& operator=(const HostIndexedContentSettings&) =
@@ -108,7 +107,7 @@ class HostIndexedContentSettings {
   bool empty() const;
 
   // Returns the source of the entries within this index.
-  const std::optional<std::string>& source() const { return source_; }
+  const ProviderType& source() const { return source_; }
   // Returns whether the index contains off the record entries.
   const std::optional<bool>& off_the_record() const { return off_the_record_; }
 
@@ -140,7 +139,7 @@ class HostIndexedContentSettings {
   HostToContentSettings primary_host_indexed_;
   HostToContentSettings secondary_host_indexed_;
   Rules wildcard_settings_;
-  std::optional<std::string> source_;
+  ProviderType source_ = ProviderType::kNone;
   std::optional<bool> off_the_record_;
   raw_ptr<base::Clock> clock_;
   mutable int iterating_ = 0;

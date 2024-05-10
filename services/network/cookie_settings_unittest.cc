@@ -132,7 +132,8 @@ class CookieSettingsTestBase : public testing::Test {
       const std::string& secondary_pattern,
       ContentSetting setting,
       base::Time expiration = base::Time(),
-      const std::string& source = std::string(),
+      content_settings::ProviderType source =
+          content_settings::ProviderType::kNone,
       bool off_the_record = false) {
     content_settings::RuleMetaData metadata;
     metadata.SetExpirationAndLifetime(
@@ -326,12 +327,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingMultipleProviders) {
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY, base::Time(),
-                     "policy"),
-       CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(), "policy"),
+                     content_settings::ProviderType::kPolicyProvider),
+       CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(),
+                     content_settings::ProviderType::kPolicyProvider),
        CreateSetting(kOtherURL, kOtherURL, CONTENT_SETTING_ALLOW, base::Time(),
-                     "preference"),
+                     content_settings::ProviderType::kPrefProvider),
        CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(),
-                     "default")});
+                     content_settings::ProviderType::kDefaultProvider)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_SESSION_ONLY);
@@ -345,13 +347,13 @@ TEST_P(CookieSettingsTest, GetCookieSettingOtrProviders) {
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY, base::Time(),
-                     "preference", true),
+                     content_settings::ProviderType::kPrefProvider, true),
        CreateSetting("*", "*", CONTENT_SETTING_BLOCK, base::Time(),
-                     "preference", true),
+                     content_settings::ProviderType::kPrefProvider, true),
        CreateSetting(kOtherURL, kOtherURL, CONTENT_SETTING_ALLOW, base::Time(),
-                     "preference", false),
-       CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(), "default",
-                     false)});
+                     content_settings::ProviderType::kPrefProvider, false),
+       CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(),
+                     content_settings::ProviderType::kDefaultProvider, false)});
   EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL),
                                       net::CookieSettingOverrides(), nullptr),
             CONTENT_SETTING_SESSION_ONLY);
@@ -2454,8 +2456,8 @@ class CookieSettingsTopLevelTpcdTrialTest
       ContentSetting setting) {
     return ContentSettingPatternSource(
         ContentSettingsPattern::FromURLNoWildcard(top_level_url),
-        ContentSettingsPattern::Wildcard(), base::Value(setting), std::string(),
-        false /* incognito */);
+        ContentSettingsPattern::Wildcard(), base::Value(setting),
+        content_settings::ProviderType::kNone, false /* incognito */);
   }
 };
 
