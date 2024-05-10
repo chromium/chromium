@@ -175,8 +175,8 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
   }
 
   for (IndexedDBConnection* connection : connections_) {
-    if (connection->client_token() ==
-        current_transaction->connection()->client_token()) {
+    if (connection->client_id() ==
+        current_transaction->connection()->client_id()) {
       continue;
     }
 
@@ -1507,7 +1507,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker,
-    base::UnguessableToken client_token) {
+    uint64_t client_id) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
@@ -1515,7 +1515,7 @@ std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
       base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
                      weak_factory_.GetWeakPtr()),
       std::move(database_callbacks), std::move(client_state_checker),
-      client_token);
+      client_id);
   connections_.insert(connection.get());
   return connection;
 }

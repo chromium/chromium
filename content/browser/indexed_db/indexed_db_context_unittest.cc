@@ -107,7 +107,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       example_checker_receiver.BindNewPipeAndPassRemote(),
-      base::UnguessableToken(), example_remote.BindNewPipeAndPassReceiver());
+      example_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<blink::mojom::IDBFactory> google_remote;
   mojo::Receiver<storage::mojom::IndexedDBClientStateChecker>
@@ -115,7 +115,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(google_storage_key_),
       google_checker_receiver.BindNewPipeAndPassRemote(),
-      base::UnguessableToken(), google_remote.BindNewPipeAndPassReceiver());
+      google_remote.BindNewPipeAndPassReceiver());
 
   storage::QuotaManagerProxySync quota_manager_proxy_sync(
       quota_manager_proxy_.get());
@@ -163,7 +163,7 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   indexed_db_context_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(example_storage_key_),
       example_checker_receiver.BindNewPipeAndPassRemote(),
-      base::UnguessableToken(), example_remote.BindNewPipeAndPassReceiver());
+      example_remote.BindNewPipeAndPassReceiver());
 
   // IDBFactory::GetDatabaseInfo
   base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,

@@ -317,12 +317,10 @@ void IndexedDBContextImpl::BindIndexedDB(
     const BucketLocator& bucket_locator,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  auto on_got_bucket = base::BindOnce(&IndexedDBContextImpl::BindIndexedDBImpl,
-                                      weak_factory_.GetWeakPtr(),
-                                      std::move(client_state_checker_remote),
-                                      client_token, std::move(receiver));
+  auto on_got_bucket = base::BindOnce(
+      &IndexedDBContextImpl::BindIndexedDBImpl, weak_factory_.GetWeakPtr(),
+      std::move(client_state_checker_remote), std::move(receiver));
 
   if (bucket_locator.is_default) {
     // If it's for a default bucket, `bucket_locator` will be a placeholder
@@ -340,7 +338,6 @@ void IndexedDBContextImpl::BindIndexedDB(
 void IndexedDBContextImpl::BindIndexedDBImpl(
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
-    const base::UnguessableToken& client_token,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   std::optional<storage::BucketInfo> bucket;
@@ -350,7 +347,7 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
   if (bucket) {
     EnsureBucketContext(*bucket, GetDataPath(bucket->ToBucketLocator()));
     CALL_BUCKET_METHOD(bucket->id, AddReceiver,
-                       std::move(client_state_checker_remote), client_token,
+                       std::move(client_state_checker_remote),
                        std::move(pending_receiver));
   } else {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MissingBucketErrorEndpoint>(),

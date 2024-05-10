@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -122,7 +123,7 @@ class IndexedDBTransactionTest : public testing::Test {
         base::DoNothing(),
         std::make_unique<IndexedDBDatabaseCallbacks>(
             mojo::NullAssociatedRemote()),
-        std::move(remote), base::UnguessableToken::Create());
+        std::move(remote), base::RandUint64());
     db_->AddConnectionForTesting(connection.get());
     return connection;
   }

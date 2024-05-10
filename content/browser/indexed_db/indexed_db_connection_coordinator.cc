@@ -238,7 +238,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(pending_->client_state_checker),
-                                pending_->client_token),
+                                pending_->client_id),
           db_->metadata_);
       bucket_context_handle_.Release();
       state_ = RequestState::kDone;
@@ -251,7 +251,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       pending_->factory_client->OnOpenSuccess(
           db_->CreateConnection(std::move(pending_->database_callbacks),
                                 std::move(pending_->client_state_checker),
-                                pending_->client_token),
+                                pending_->client_id),
           db_->metadata_);
       state_ = RequestState::kDone;
       bucket_context_handle_.Release();
@@ -331,7 +331,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK(!lock_receiver_.locks.empty());
     connection_ = db_->CreateConnection(
         std::move(pending_->database_callbacks),
-        std::move(pending_->client_state_checker), pending_->client_token);
+        std::move(pending_->client_state_checker), pending_->client_id);
     bucket_context_handle_.Release();
     DCHECK(!connection_ptr_for_close_comparision_);
     connection_ptr_for_close_comparision_ = connection_.get();

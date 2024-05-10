@@ -13,7 +13,6 @@ import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -57,7 +56,6 @@ interface IndexedDBControl {
     storage.mojom.BucketLocator bucket_locator,
     pending_remote<storage.mojom.IndexedDBClientStateChecker>
         client_state_checker_remote,
-    mojo_base.mojom.UnguessableToken client_token,
     pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Forcibly closes all connections to all databases within the bucket.

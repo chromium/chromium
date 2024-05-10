@@ -147,7 +147,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
     base::RepeatingCallback<void(
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         /*client_state_checker_remote*/,
-        const base::UnguessableToken& /*client_token*/,
         mojo::PendingReceiver<blink::mojom::IDBFactory> /*pending_receiver*/)>
         on_receiver_bounced;
 
@@ -284,7 +283,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
   void AddReceiver(
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      base::UnguessableToken client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   // blink::mojom::IDBFactory implementation:
@@ -357,8 +355,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   struct ReceiverContext {
     ReceiverContext(
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-            client_state_checker_remote,
-        base::UnguessableToken token);
+            client_state_checker_remote);
 
     ~ReceiverContext();
 
@@ -369,8 +366,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
 
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote;
-
-    base::UnguessableToken client_token;
   };
 
   // Used to synchronize the global throttling of LevelDB cleanup operations.

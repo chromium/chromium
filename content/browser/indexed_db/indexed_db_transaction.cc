@@ -142,7 +142,7 @@ IndexedDBTransaction::IndexedDBTransaction(
 
   locks_receiver_.SetUserData(
       IndexedDBLockRequestData::kKey,
-      std::make_unique<IndexedDBLockRequestData>(connection->client_token()));
+      std::make_unique<IndexedDBLockRequestData>(connection->client_id()));
 
   database_ = connection_->database();
   if (database_) {
@@ -309,8 +309,8 @@ bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
                       if (!lock_request_data) {
                         return true;
                       }
-                      return lock_request_data->client_token !=
-                             connection_->client_token();
+                      return lock_request_data->client_id !=
+                             connection_->client_id();
                     })) {
       return true;
     }
