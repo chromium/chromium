@@ -44,8 +44,6 @@ class MODULES_EXPORT NativePaintDefinition : public PaintDefinition {
                            PaintWorkletInput::PaintWorkletInputType);
 
   int worklet_id_;
-  // The worker thread that does the paint work.
-  std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
   Member<PaintWorkletProxyClient> proxy_client_;
 };
 

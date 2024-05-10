@@ -219,7 +219,7 @@ void PaintWorkletProxyClient::RegisterForNativePaintWorklet(
   DCHECK(!native_definitions_.Contains(type));
   native_definitions_.insert(type, definition);
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      thread->BackingThread().GetTaskRunner();
+      thread ? thread->BackingThread().GetTaskRunner() : nullptr;
   // At this moment, we are in the paint phase which is before commit, we queue
   // a task to the compositor thread to register the |paint_dispatcher_|. When
   // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
