@@ -139,8 +139,9 @@ struct UrlInfo {
   url.mojom.Url url;
 };
 
-// Used by the price tracking section in side panel to bootstrap
-// bidirectional communication.
+// Used by surfaces like the price tracking section in side panel, product
+// specifications, chrome://history etc, to bootstrap bidirectional
+// communication.
 interface ShoppingServiceHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
   CreateShoppingServiceHandler(pending_remote<Page> page,
