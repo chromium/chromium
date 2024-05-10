@@ -115,6 +115,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "dictation_off_newui.icon",
     "dictation_on.icon",
     "dictation_on_newui.icon",
+    "discovery_chip.icon",
     "do_not_disturb_disabled.icon",
     "done.icon",
     "drop_down_arrow.icon",

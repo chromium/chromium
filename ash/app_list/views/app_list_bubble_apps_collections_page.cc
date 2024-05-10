@@ -159,7 +159,6 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
   discovery_chip_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // TODO(b/337035530): Set the showoff icon for the discovery chip.
   discovery_chip_ =
       discovery_chip_container->AddChildView(std::make_unique<ash::PillButton>(
           base::BindRepeating(
@@ -167,7 +166,7 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISCOVERY_CHIP_LABEL),
-          ash::PillButton::kDefaultWithIconLeading, &kLaunchIcon));
+          ash::PillButton::kDefaultWithIconLeading, &kDiscoveryChipIcon));
 
   scroll_view_->SetContents(std::move(scroll_contents));
   toast_container_->CreateTutorialNudgeView();
