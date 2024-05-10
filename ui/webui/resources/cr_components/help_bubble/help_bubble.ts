@@ -102,6 +102,11 @@ export class HelpBubbleElement extends CrLitElement {
       sortedButtons: {type: Array},
       closeButtonAltText: {type: String},
       closeButtonTabIndex: {type: Number},
+
+      progressData_: {
+        type: Array,
+        state: true,
+      },
     };
   }
 

@@ -57,16 +57,16 @@ export class ThemeHueSliderDialogElement extends
   static override get properties() {
     return {
       /* Linear gradient for the background of the slider's track. */
-      hueGradient_: {type: String},
+      hueGradient_: {type: String, state: true},
 
-      maxHue_: {type: Number},
-      minHue_: {type: Number},
+      maxHue_: {type: Number, state: true},
+      minHue_: {type: Number, state: true},
 
       /* The committed value of the slider. */
       selectedHue: {type: Number},
 
       /* The hue value to show in the knob during drag. */
-      knobHue_: {type: Number},
+      knobHue_: {type: Number, state: true},
     };
   }
 

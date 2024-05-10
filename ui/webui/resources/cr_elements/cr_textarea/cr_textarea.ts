@@ -94,7 +94,10 @@ export class CrTextareaElement extends CrLitElement {
         notify: true,
       },
 
-      internalValue_: {type: String},
+      internalValue_: {
+        type: String,
+        state: true,
+      },
 
       /**
        * Placeholder text that is shown when no value is present.

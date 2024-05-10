@@ -109,22 +109,22 @@ export class MostVisitedElement extends MostVisitedElementBase {
         reflect: true,
       },
 
-      columnCount_: {type: Number},
-      rowCount_: {type: Number},
+      columnCount_: {type: Number, state: true},
+      rowCount_: {type: Number, state: true},
 
       customLinksEnabled_: {
         type: Boolean,
         reflect: true,
       },
 
-      dialogTileTitle_: {type: String},
-      dialogTileUrl_: {type: String},
-      dialogTileUrlInvalid_: {type: Boolean},
-      dialogTitle_: {type: String},
-      dialogSaveDisabled_: {type: Boolean},
-      dialogShortcutAlreadyExists_: {type: Boolean},
-      dialogTileUrlError_: {type: String},
-      info_: {type: Object},
+      dialogTileTitle_: {type: String, state: true},
+      dialogTileUrl_: {type: String, state: true},
+      dialogTileUrlInvalid_: {type: Boolean, state: true},
+      dialogTitle_: {type: String, state: true},
+      dialogSaveDisabled_: {type: Boolean, state: true},
+      dialogShortcutAlreadyExists_: {type: Boolean, state: true},
+      dialogTileUrlError_: {type: String, state: true},
+      info_: {type: Object, state: true},
 
       isDark_: {
         type: Boolean,
@@ -140,13 +140,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
         reflect: true,
       },
 
-      maxTiles_: {type: Number},
-      maxVisibleTiles_: {type: Number},
-      showAdd_: {type: Boolean},
-      showToastButtons_: {type: Boolean},
-      maxVisibleColumnCount_: {type: Number},
-      tiles_: {type: Array},
-      toastContent_: {type: String},
+      maxTiles_: {type: Number, state: true},
+      maxVisibleTiles_: {type: Number, state: true},
+      showAdd_: {type: Boolean, state: true},
+      showToastButtons_: {type: Boolean, state: true},
+      maxVisibleColumnCount_: {type: Number, state: true},
+      tiles_: {type: Array, state: true},
+      toastContent_: {type: String, state: true},
 
       visible_: {
         type: Boolean,

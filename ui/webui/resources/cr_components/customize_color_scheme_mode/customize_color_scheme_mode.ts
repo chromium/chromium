@@ -53,8 +53,8 @@ export class CustomizeColorSchemeModeElement extends
 
   static override get properties() {
     return {
-      currentMode_: {type: Object},
-      colorSchemeModeOptions_: {type: Array},
+      currentMode_: {type: Object, state: true},
+      colorSchemeModeOptions_: {type: Array, state: true},
     };
   }
 

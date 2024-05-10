@@ -91,13 +91,16 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
       },
 
       size: {
-        reflect: true,
         type: String,
+        reflect: true,
       },
 
       imageUrls: {type: Array},
 
-      firstImageLoaded_: {type: Boolean},
+      firstImageLoaded_: {
+        type: Boolean,
+        state: true,
+      },
 
       forceHover: {
         reflect: true,

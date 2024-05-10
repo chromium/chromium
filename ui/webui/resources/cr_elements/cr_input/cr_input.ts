@@ -157,7 +157,10 @@ export class CrInputElement extends CrLitElement {
         notify: true,
       },
 
-      internalValue_: {type: String},
+      internalValue_: {
+        type: String,
+        state: true,
+      },
     };
   }
 

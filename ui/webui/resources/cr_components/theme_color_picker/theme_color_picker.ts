@@ -51,16 +51,16 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
 
   static override get properties() {
     return {
-      defaultColor_: {type: Object},
-      greyDefaultColor_: {type: Object},
-      colors_: {type: Array},
-      theme_: {type: Object},
-      selectedColor_: {type: Object},
-      isDefaultColorSelected_: {type: Boolean},
-      isGreyDefaultColorSelected_: {type: Boolean},
-      isCustomColorSelected_: {type: Boolean},
-      customColor_: {type: Object},
-      showManagedDialog_: {type: Boolean},
+      defaultColor_: {type: Object, state: true},
+      greyDefaultColor_: {type: Object, state: true},
+      colors_: {type: Array, state: true},
+      theme_: {type: Object, state: true},
+      selectedColor_: {type: Object, state: true},
+      isDefaultColorSelected_: {type: Boolean, state: true},
+      isGreyDefaultColorSelected_: {type: Boolean, state: true},
+      isCustomColorSelected_: {type: Boolean, state: true},
+      customColor_: {type: Object, state: true},
+      showManagedDialog_: {type: Boolean, state: true},
       columns: {type: Number},
     };
   }
@@ -77,7 +77,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   private setThemeListenerId_: number|null = null;
 
   protected showManagedDialog_: boolean = false;
-  protected columns: number = 4;
+  columns: number = 4;
 
   private handler_: ThemeColorPickerHandlerRemote =
       ThemeColorPickerBrowserProxy.getInstance().handler;

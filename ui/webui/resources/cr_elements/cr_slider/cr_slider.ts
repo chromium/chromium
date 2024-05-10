@@ -146,6 +146,7 @@ export class CrSliderElement extends CrSliderElementBase {
 
       label_: {
         type: String,
+        state: true,
       },
 
       showLabel_: {
