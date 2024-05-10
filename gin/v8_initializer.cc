@@ -449,6 +449,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kWebAssemblyInlining,
                          "--experimental-wasm-inlining",
                          "--no-experimental-wasm-inlining");
+  SetV8FlagsIfOverridden(features::kWebAssemblyLiftoffCodeFlushing,
+                         "--flush-liftoff-code", "--no-flush-liftoff-code");
   SetV8FlagsIfOverridden(features::kWebAssemblyGenericWrapper,
                          "--wasm-to-js-generic-wrapper",
                          "--no-wasm-to-js-generic-wrapper");
