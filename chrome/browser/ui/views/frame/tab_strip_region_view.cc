@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window_features.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -118,6 +119,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     product_specifications_button =
         std::make_unique<ProductSpecificationsButton>(
             tab_strip_->controller(), browser->tab_strip_model(),
+            browser->browser_window_features()
+                ->product_specifications_entry_point_controller(),
             render_tab_search_before_tab_strip_, this);
     product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
                                                views::LayoutAlignment::kCenter);

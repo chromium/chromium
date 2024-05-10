@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
@@ -18,15 +19,20 @@
 
 class TabStripController;
 
-class ProductSpecificationsButton : public TabStripControlButton,
-                                    public views::MouseWatcherListener {
+class ProductSpecificationsButton
+    : public TabStripControlButton,
+      public views::MouseWatcherListener,
+      public commerce::ProductSpecificationsEntryPointController::Observer {
   METADATA_HEADER(ProductSpecificationsButton, TabStripControlButton)
 
  public:
-  ProductSpecificationsButton(TabStripController* tab_strip_controller,
-                              TabStripModel* tab_strip_model,
-                              bool before_tab_strip,
-                              View* locked_expansion_view);
+  ProductSpecificationsButton(
+      TabStripController* tab_strip_controller,
+      TabStripModel* tab_strip_model,
+      commerce::ProductSpecificationsEntryPointController*
+          entry_point_controller,
+      bool before_tab_strip,
+      View* locked_expansion_view);
   ProductSpecificationsButton(const ProductSpecificationsButton&) = delete;
   ProductSpecificationsButton& operator=(const ProductSpecificationsButton&) =
       delete;
@@ -44,18 +50,13 @@ class ProductSpecificationsButton : public TabStripControlButton,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // Trigger ProductSpecificationsButton show. Whether it's actually showing
-  // depends on if the |locked_expansion_view| is hovered.
-  void Show();
-
-  // Trigger ProductSpecificationsButton hide. Whether it's actually hiding
-  // depends on if the |locked_expansion_view| is hovered.
-  void Hide();
-
   float width_factor_for_testing() { return width_factor_; }
   gfx::SlideAnimation* expansion_animation_for_testing() {
     return &expansion_animation_;
   }
+
+  // commerce::ProductSpecificationsEntryPointController::Observer
+  void ShowEntryPointWithTitle(const std::string title) override;
 
  protected:
   // TabStripControlButton:
@@ -64,6 +65,14 @@ class ProductSpecificationsButton : public TabStripControlButton,
  private:
   friend class ProductSpecificationsButtonBrowserTest;
   friend class ProductSpecificationsButtonTest;
+
+  // Trigger ProductSpecificationsButton show. Whether it's actually showing
+  // depends on if the |locked_expansion_view| is hovered.
+  void Show();
+
+  // Trigger ProductSpecificationsButton hide. Whether it's actually hiding
+  // depends on if the |locked_expansion_view| is hovered.
+  void Hide();
 
   void ApplyAnimationValue(const gfx::Animation* animation);
   void ExecuteShow();
@@ -78,6 +87,10 @@ class ProductSpecificationsButton : public TabStripControlButton,
   void ShowOpacityAnimation();
   void SetOpacity(float opacity);
   void SetWidthFactor(float factor);
+  void SetEntryPointControllerForTesting(
+      commerce::ProductSpecificationsEntryPointController* controller) {
+    entry_point_controller_ = controller;
+  }
 
   base::TimeDelta GetAnimationDuration(base::TimeDelta duration);
 
@@ -85,8 +98,10 @@ class ProductSpecificationsButton : public TabStripControlButton,
   // will not change. Changes will be staged until after the mouse exits the
   // bounds of this View.
   raw_ptr<View, DanglingUntriaged> locked_expansion_view_;
-
   const raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<commerce::ProductSpecificationsEntryPointController,
+          DanglingUntriaged>
+      entry_point_controller_ = nullptr;
 
   // Animations controlling showing and hiding of the button.
   gfx::SlideAnimation expansion_animation_{this};
@@ -111,6 +126,12 @@ class ProductSpecificationsButton : public TabStripControlButton,
 
   // Prevents other features from showing tabstrip-modal UI.
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
+
+  // Observer to listen to signals to show, hide or update the button.
+  base::ScopedObservation<
+      commerce::ProductSpecificationsEntryPointController,
+      commerce::ProductSpecificationsEntryPointController::Observer>
+      entry_point_controller_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_

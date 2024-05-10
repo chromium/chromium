@@ -1771,6 +1771,15 @@ base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForSelection(
+    GURL old_url,
+    GURL new_url) {
+  if (!cluster_manager_) {
+    return std::nullopt;
+  }
+  return cluster_manager_->GetEntryPointInfoForSelection(old_url, new_url);
+}
+
 void ShoppingService::Shutdown() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 

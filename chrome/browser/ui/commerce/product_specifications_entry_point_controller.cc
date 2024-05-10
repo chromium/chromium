@@ -4,20 +4,69 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
-namespace commerce {
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_button.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/commerce/core/shopping_service.h"
 
-// TODO(b/325661685): Add implementation for
-// ProductSpecificationsEntryPointController.
+namespace commerce {
 ProductSpecificationsEntryPointController::
     ProductSpecificationsEntryPointController(TabStripModel* tab_strip_model)
-    : tab_strip_model_(tab_strip_model) {
+    : tab_strip_model_(tab_strip_model),
+      shopping_service_(ShoppingServiceFactory::GetForBrowserContext(
+          tab_strip_model->profile())) {
   CHECK(tab_strip_model_);
   tab_strip_model_->AddObserver(this);
 }
 
 ProductSpecificationsEntryPointController::
-    ~ProductSpecificationsEntryPointController() {
-  CHECK(tab_strip_model_);
-  tab_strip_model_->RemoveObserver(this);
+    ~ProductSpecificationsEntryPointController() = default;
+
+void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // Filter out non-tab-selection events.
+  if (change.type() != TabStripModelChange::Type::kSelectionOnly ||
+      !selection.active_tab_changed() || !selection.old_contents ||
+      !selection.new_contents || !shopping_service_) {
+    return;
+  }
+
+  auto entry_point_info = shopping_service_->GetEntryPointInfoForSelection(
+      selection.old_contents->GetLastCommittedURL(),
+      selection.new_contents->GetLastCommittedURL());
+  if (entry_point_info.has_value()) {
+    current_entry_point_info_ = entry_point_info;
+    for (auto& observer : observers_) {
+      observer.ShowEntryPointWithTitle(entry_point_info->title);
+    }
+  }
 }
+
+void ProductSpecificationsEntryPointController::AddObserver(
+    Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ProductSpecificationsEntryPointController::RemoveObserver(
+    Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
+  // TODO(b/325661685): Add implementation to trigger product specification
+  // experience.
+}
+
+void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {
+  // TODO(b/325661685): Add implementation for back-off mechanism.
+}
+
+void ProductSpecificationsEntryPointController::OnEntryPointHidden() {
+  DCHECK(current_entry_point_info_.has_value());
+  current_entry_point_info_.reset();
+}
+
 }  // namespace commerce

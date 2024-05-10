@@ -431,6 +431,11 @@ class ShoppingService : public KeyedService,
 
   virtual ProductSpecificationsService* GetProductSpecificationsService();
 
+  // ClusterManager APIs.
+  virtual std::optional<EntryPointInfo> GetEntryPointInfoForSelection(
+      GURL old_url,
+      GURL new_url);
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 

@@ -138,6 +138,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetProductSpecificationsService,
               (),
               (override));
+  MOCK_METHOD(std::optional<EntryPointInfo>,
+              GetEntryPointInfoForSelection,
+              (GURL old_url, GURL new_url),
+              (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.
@@ -176,6 +180,8 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<ParcelTrackingStatus> parcels);
   void SetResponseForGetProductSpecificationsForUrls(
       ProductSpecifications specs);
+  void SetResponseForGetEntryPointInfoForSelection(
+      std::optional<EntryPointInfo> entry_point_info);
 
  private:
   // Since the discount API wants a const ref to some map, keep a default

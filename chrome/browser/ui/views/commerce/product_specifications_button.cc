@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,6 +42,7 @@ constexpr base::TimeDelta kShowDuration = base::Seconds(20);
 ProductSpecificationsButton::ProductSpecificationsButton(
     TabStripController* tab_strip_controller,
     TabStripModel* tab_strip_model,
+    commerce::ProductSpecificationsEntryPointController* entry_point_controller,
     bool before_tab_strip,
     View* locked_expansion_view)
     : TabStripControlButton(
@@ -52,11 +53,14 @@ ProductSpecificationsButton::ProductSpecificationsButton(
               IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT),
           Edge::kNone),
       locked_expansion_view_(locked_expansion_view),
-      tab_strip_model_(tab_strip_model) {
+      tab_strip_model_(tab_strip_model),
+      entry_point_controller_(entry_point_controller) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
                                                     gfx::Insets()),
       this);
+  CHECK(entry_point_controller_);
+  entry_point_controller_observations_.Observe(entry_point_controller_);
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -160,6 +164,13 @@ void ProductSpecificationsButton::Hide() {
   }
 }
 
+void ProductSpecificationsButton::ShowEntryPointWithTitle(
+    const std::string title) {
+  SetText(l10n_util::GetStringFUTF16(IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
+                                     base::UTF8ToUTF16(title)));
+  Show();
+}
+
 void ProductSpecificationsButton::SetOpacity(float factor) {
   label()->layer()->SetOpacity(factor);
   close_button_->layer()->SetOpacity(factor);
@@ -202,6 +213,7 @@ void ProductSpecificationsButton::ExecuteShow() {
 }
 
 void ProductSpecificationsButton::ExecuteHide() {
+  hide_button_timer_.Stop();
   expansion_animation_.SetSlideDuration(
       GetAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
@@ -209,14 +221,23 @@ void ProductSpecificationsButton::ExecuteHide() {
   opacity_animation_.SetSlideDuration(
       GetAnimationDuration(kOpacityOutDuration));
   opacity_animation_.Hide();
+  if (entry_point_controller_) {
+    entry_point_controller_->OnEntryPointHidden();
+  }
 }
 
 void ProductSpecificationsButton::OnClicked() {
-  // TODO(b/325661685): Add implementation for this method.
+  if (entry_point_controller_) {
+    entry_point_controller_->OnEntryPointExecuted();
+  }
+  ExecuteHide();
 }
 
 void ProductSpecificationsButton::OnDismissed() {
   ExecuteHide();
+  if (entry_point_controller_) {
+    entry_point_controller_->OnEntryPointDismissed();
+  }
 }
 
 void ProductSpecificationsButton::OnTimeout() {

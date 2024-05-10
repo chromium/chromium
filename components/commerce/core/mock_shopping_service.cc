@@ -287,4 +287,10 @@ void MockShoppingService::SetResponseForGetProductSpecificationsForUrls(
           });
 }
 
+void MockShoppingService::SetResponseForGetEntryPointInfoForSelection(
+    std::optional<EntryPointInfo> entry_point_info) {
+  ON_CALL(*this, GetEntryPointInfoForSelection)
+      .WillByDefault(testing::Return(entry_point_info));
+}
+
 }  // namespace commerce

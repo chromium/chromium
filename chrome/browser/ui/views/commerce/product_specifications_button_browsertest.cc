@@ -4,26 +4,53 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
+
+class MockProductSpecificationsEntryPointController
+    : public commerce::ProductSpecificationsEntryPointController {
+ public:
+  explicit MockProductSpecificationsEntryPointController(
+      TabStripModel* tab_strip_model)
+      : commerce::ProductSpecificationsEntryPointController(tab_strip_model) {}
+  ~MockProductSpecificationsEntryPointController() override = default;
+
+  MOCK_METHOD(void, OnEntryPointExecuted, (), (override));
+  MOCK_METHOD(void, OnEntryPointDismissed, (), (override));
+  MOCK_METHOD(void, OnEntryPointHidden, (), (override));
+};
 
 class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
  public:
   ProductSpecificationsButtonBrowserTest() {
     feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
+  }
+
+  void SetUpOnMainThread() override {
+    controller_ =
+        std::make_unique<MockProductSpecificationsEntryPointController>(
+            browser()->tab_strip_model());
+    product_specifications_button()->SetEntryPointControllerForTesting(
+        controller_.get());
   }
 
   BrowserView* browser_view() {
@@ -40,6 +67,10 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
         ->product_specifications_button();
   }
 
+  MockProductSpecificationsEntryPointController* controller() {
+    return controller_.get();
+  }
+
   bool GetRenderTabSearchBeforeTabStrip() {
     return TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip();
   }
@@ -48,12 +79,17 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
     product_specifications_button()->SetLockedExpansionMode(mode);
   }
 
+  void ShowButton() { product_specifications_button()->Show(); }
+
+  void ClickButton() { product_specifications_button()->OnClicked(); }
+
   void OnDismissed() { product_specifications_button()->OnDismissed(); }
 
   void OnTimeout() { product_specifications_button()->OnTimeout(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<MockProductSpecificationsEntryPointController> controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
@@ -81,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
                    ->IsShowing());
 
   SetLockedExpansionModeForTesting(LockedExpansionMode::kWillShow);
-  product_specifications_button()->Show();
+  ShowButton();
 
   ASSERT_FALSE(product_specifications_button()
                    ->expansion_animation_for_testing()
@@ -94,28 +130,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysShow) {
                   ->IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, DelaysHide) {
-  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
-  ASSERT_FALSE(product_specifications_button()
-                   ->expansion_animation_for_testing()
-                   ->IsClosing());
-
-  SetLockedExpansionModeForTesting(LockedExpansionMode::kWillHide);
-  product_specifications_button()->Hide();
-
-  ASSERT_FALSE(product_specifications_button()
-                   ->expansion_animation_for_testing()
-                   ->IsClosing());
-
-  SetLockedExpansionModeForTesting(LockedExpansionMode::kNone);
-
-  ASSERT_TRUE(product_specifications_button()
-                  ->expansion_animation_for_testing()
-                  ->IsClosing());
-}
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ImmediatelyHidesWhenButtonDismissed) {
+  EXPECT_CALL(*controller(), OnEntryPointDismissed()).Times(1);
+  EXPECT_CALL(*controller(), OnEntryPointHidden()).Times(1);
   product_specifications_button()->expansion_animation_for_testing()->Reset(1);
   SetLockedExpansionModeForTesting(LockedExpansionMode::kWillHide);
 
@@ -128,6 +147,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        DelaysHideWhenButtonTimesOut) {
+  EXPECT_CALL(*controller(), OnEntryPointHidden()).Times(1);
+  EXPECT_CALL(*controller(), OnEntryPointDismissed()).Times(0);
   product_specifications_button()->expansion_animation_for_testing()->Reset(1);
   SetLockedExpansionModeForTesting(LockedExpansionMode::kWillHide);
 
@@ -152,14 +173,14 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui =
       browser()->tab_strip_model()->ShowModalUI();
-  product_specifications_button()->Show();
+  ShowButton();
 
   EXPECT_FALSE(product_specifications_button()
                    ->expansion_animation_for_testing()
                    ->IsShowing());
 
   scoped_tab_strip_modal_ui.reset();
-  product_specifications_button()->Show();
+  ShowButton();
 
   EXPECT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
@@ -170,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
-  product_specifications_button()->Show();
+  ShowButton();
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
@@ -178,11 +199,36 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  product_specifications_button()->Hide();
+  OnDismissed();
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
   product_specifications_button()->expansion_animation_for_testing()->Reset(0);
 
   EXPECT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, ClickButton) {
+  EXPECT_CALL(*controller(), OnEntryPointExecuted()).Times(1);
+  EXPECT_CALL(*controller(), OnEntryPointHidden()).Times(1);
+
+  ShowButton();
+  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
+
+  ClickButton();
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsClosing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       NotifyShowEntryPoint) {
+  product_specifications_button()->ShowEntryPointWithTitle("title");
+
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+  ASSERT_EQ(product_specifications_button()->GetText(),
+            l10n_util::GetStringFUTF16(IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
+                                       u"title"));
 }

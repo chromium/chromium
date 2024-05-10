@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,19 +19,26 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     tab_strip_model_ =
         std::make_unique<TabStripModel>(&tab_strip_model_delegate_, &profile_);
+    entry_point_controller_ =
+        std::make_unique<commerce::ProductSpecificationsEntryPointController>(
+            tab_strip_model_.get());
     locked_expansion_view_ = std::make_unique<views::View>();
     button_ = std::make_unique<ProductSpecificationsButton>(
-        tab_strip_controller_.get(), tab_strip_model_.get(), true,
-        locked_expansion_view_.get());
+        tab_strip_controller_.get(), tab_strip_model_.get(),
+        entry_point_controller_.get(), true, locked_expansion_view_.get());
   }
 
   void SetWidthFactor(float factor) { button_->SetWidthFactor(factor); }
 
+  void ShowButton() { button_->Show(); }
+
  protected:
-  std::unique_ptr<TabStripController> tab_strip_controller_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   TestingProfile profile_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
+      entry_point_controller_;
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<ProductSpecificationsButton> button_;
 };
@@ -58,7 +66,7 @@ TEST_F(ProductSpecificationsButtonTest, AnimatesToExpanded) {
 
   ASSERT_EQ(0, button_->width_factor_for_testing());
 
-  button_->Show();
+  ShowButton();
 
   ASSERT_TRUE(button_->expansion_animation_for_testing()->IsShowing());
 
