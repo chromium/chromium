@@ -1211,7 +1211,6 @@ TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // The trace_analyzer does not work on platforms on which the migration of
 // tracing into Perfetto has not completed.
 TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
@@ -1248,7 +1247,6 @@ TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
   std::string* navigation_id = arg_dict.FindString("navigationId");
   ASSERT_TRUE(navigation_id);
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   using trace_analyzer::Query;
