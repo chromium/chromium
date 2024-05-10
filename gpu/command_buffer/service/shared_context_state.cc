@@ -525,12 +525,10 @@ bool SharedContextState::InitializeGanesh(
 bool SharedContextState::InitializeGraphite(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds) {
-  [[maybe_unused]] skgpu::graphite::ContextOptions context_options =
-      GetDefaultGraphiteContextOptions(workarounds);
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     CHECK(dawn_context_provider_);
-    if (dawn_context_provider_->InitializeGraphiteContext(context_options)) {
+    if (dawn_context_provider_->InitializeGraphiteContext(workarounds)) {
       graphite_context_ = dawn_context_provider_->GetGraphiteContext();
     } else {
       // There is currently no way for the GPU process to gracefully handle
@@ -546,7 +544,8 @@ bool SharedContextState::InitializeGraphite(
     CHECK_EQ(gr_context_type_, GrContextType::kGraphiteMetal);
 #if BUILDFLAG(SKIA_USE_METAL)
     if (metal_context_provider_ &&
-        metal_context_provider_->InitializeGraphiteContext(context_options)) {
+        metal_context_provider_->InitializeGraphiteContext(
+            GetDefaultGraphiteContextOptions(workarounds))) {
       graphite_context_ = metal_context_provider_->GetGraphiteContext();
     } else {
       DLOG(ERROR) << "Failed to create Graphite Context for Metal";

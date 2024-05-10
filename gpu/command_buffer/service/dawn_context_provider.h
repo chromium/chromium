@@ -71,7 +71,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
       std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
   bool InitializeGraphiteContext(
-      const skgpu::graphite::ContextOptions& options);
+      const GpuDriverBugWorkarounds& gpu_driver_workarounds);
 
   skgpu::graphite::Context* GetGraphiteContext() const {
     return graphite_context_.get();

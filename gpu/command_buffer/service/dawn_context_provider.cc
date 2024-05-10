@@ -30,6 +30,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/service/dawn_instance.h"
 #include "gpu/command_buffer/service/dawn_platform.h"
+#include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
@@ -51,6 +52,12 @@
 
 namespace gpu {
 namespace {
+
+#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
+constexpr bool kUseUserDefinedLabels = true;
+#else
+constexpr bool kUseUserDefinedLabels = false;
+#endif
 
 // Used as a flag to test dawn initialization failure.
 BASE_FEATURE(kForceDawnInitializeFailure,
@@ -336,9 +343,9 @@ bool DawnSharedState::Initialize(
   }
   // The following toggles are all device-scoped toggles so it's not necessary
   // to pass them when creating the Instance above.
-#if DCHECK_IS_ON() || BUILDFLAG(IS_WIN)
-  enabled_toggles.push_back("use_user_defined_labels_in_backend");
-#endif
+  if (kUseUserDefinedLabels) {
+    enabled_toggles.push_back("use_user_defined_labels_in_backend");
+  }
 
 #if !DCHECK_IS_ON()
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
@@ -756,7 +763,7 @@ wgpu::Instance DawnContextProvider::GetInstance() const {
 }
 
 bool DawnContextProvider::InitializeGraphiteContext(
-    const skgpu::graphite::ContextOptions& options) {
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
   CHECK(!graphite_context_);
 
   if (auto device = GetDevice()) {
@@ -764,8 +771,11 @@ bool DawnContextProvider::InitializeGraphiteContext(
     backend_context.fInstance = GetInstance();
     backend_context.fDevice = device;
     backend_context.fQueue = device.GetQueue();
-    graphite_context_ =
-        skgpu::graphite::ContextFactory::MakeDawn(backend_context, options);
+    auto context_options =
+        GetDefaultGraphiteContextOptions(gpu_driver_workarounds);
+    context_options.fSetBackendLabels = kUseUserDefinedLabels;
+    graphite_context_ = skgpu::graphite::ContextFactory::MakeDawn(
+        backend_context, context_options);
   }
 
   return !!graphite_context_;
