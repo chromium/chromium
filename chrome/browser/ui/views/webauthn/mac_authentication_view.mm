@@ -27,7 +27,7 @@ constexpr float kErrorAnimationLength = 1;
 // The seconds it takes for the Touch ID animation to finish when the challenge
 // succeeds. This is trimmed down so that we can overlap the enclave operation
 // with the animation.
-constexpr float kSuccessAnimationLength = 1.1;
+constexpr float kSuccessAnimationLength = 1.6;
 
 struct API_AVAILABLE(macos(12.0)) MacAuthenticationView::ObjCStorage {
   LAContext* __strong context;

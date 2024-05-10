@@ -722,6 +722,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
 
   switch (account_state_) {
     case AccountState::kReady:
+      model_->SetStep(Step::kGPMConnecting);
       StartTransaction();
       break;
 
@@ -941,6 +942,7 @@ void GPMEnclaveController::ContinueGPMCreatePasskey() {
         account_state_ == AccountState::kReadyWithPIN ||
         account_state_ == AccountState::kReadyWithBiometrics);
   if (account_state_ == AccountState::kReady) {
+    model_->SetStep(Step::kGPMConnecting);
     StartTransaction();
   } else if (account_state_ == AccountState::kReadyWithPIN) {
     PromptForPin();
@@ -981,6 +983,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
         base::BindOnce(&GPMEnclaveController::OnGpmPinChanged,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
+    model_->SetStep(Step::kGPMConnecting);
     StartTransaction();
   }
 }
@@ -988,6 +991,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
 void GPMEnclaveController::OnTouchIDComplete(bool success) {
   // On error no LAContext will be provided and macOS will show the system UI
   // for user verification.
+  model_->SetStep(Step::kGPMConnecting);
   StartTransaction();
 }
 
