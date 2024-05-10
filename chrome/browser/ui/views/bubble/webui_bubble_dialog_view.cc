@@ -67,7 +67,10 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
     base::WeakPtr<WebUIContentsWrapper> contents_wrapper,
     const std::optional<gfx::Rect>& anchor_rect,
     views::BubbleBorder::Arrow arrow)
-    : BubbleDialogDelegateView(anchor_view, arrow),
+    : BubbleDialogDelegateView(anchor_view,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
       contents_wrapper_(contents_wrapper),
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
           contents_wrapper_->web_contents()))),
@@ -164,7 +167,6 @@ void WebUIBubbleDialogView::CloseUI() {
 void WebUIBubbleDialogView::ResizeDueToAutoResize(content::WebContents* source,
                                                   const gfx::Size& new_size) {
   web_view_->SetPreferredSize(new_size);
-  SizeToContents();
 }
 
 bool WebUIBubbleDialogView::HandleKeyboardEvent(
