@@ -366,11 +366,12 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll-update events.
-  // The |blocking_touch_dispatched_to_renderer| must be not null only for
+  // The `arrived_in_browser_main_timestamp` can be null for events that were
+  // generated synthetically within the Renderer.  The
+  // `blocking_touch_dispatched_to_renderer` must be not null only for
   // scrolls which corresponding TouchMove was blocking.
   //
-  // TODO(b/224960731): Fix tests and stop supporting the case when
-  // `arrived_in_browser_main_timestamp` is null.
+  // TODO(b/329346768): Build `trace_id` generation for synthetic events.
   static std::unique_ptr<ScrollUpdateEventMetrics> Create(
       ui::EventType type,
       ui::ScrollInputType input_type,
@@ -379,8 +380,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       float delta,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      TraceId trace_id,
-      base::TimeTicks blocking_touch_dispatched_to_renderer);
+      base::TimeTicks blocking_touch_dispatched_to_renderer,
+      std::optional<TraceId> trace_id);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.

@@ -195,8 +195,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, trace_id,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp,
+          blocking_touch_dispatched_to_renderer_timestamp, trace_id);
 
   // Assert
   EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
@@ -249,8 +249,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, TraceId(trace_id),
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp,
+          blocking_touch_dispatched_to_renderer_timestamp, TraceId(trace_id));
 
   // Assert
   EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
@@ -298,8 +298,8 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, trace_id,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp,
+          blocking_touch_dispatched_to_renderer_timestamp, trace_id);
 
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> copy_scroll_metric =

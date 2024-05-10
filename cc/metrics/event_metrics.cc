@@ -585,8 +585,8 @@ std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
     float delta,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    TraceId trace_id,
-    base::TimeTicks blocking_touch_dispatched_to_renderer) {
+    base::TimeTicks blocking_touch_dispatched_to_renderer,
+    std::optional<TraceId> trace_id) {
   // TODO(crbug.com/40160689): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -620,8 +620,8 @@ ScrollUpdateEventMetrics::CreateForBrowser(ui::EventType type,
                                            TraceId trace_id) {
   return Create(
       type, input_type, is_inertial, scroll_update_type, delta, timestamp,
-      /*arrived_in_browser_main_timestamp=*/base::TimeTicks(), trace_id,
-      /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks());
+      /*arrived_in_browser_main_timestamp=*/base::TimeTicks(),
+      /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks(), trace_id);
 }
 
 // static

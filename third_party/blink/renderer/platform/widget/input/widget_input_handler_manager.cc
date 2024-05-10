@@ -641,9 +641,9 @@ void WidgetInputHandlerManager::DispatchEvent(
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
           gesture_event.data.scroll_update.delta_y, event->Event().TimeStamp(),
           arrived_in_browser_main_timestamp,
+          blocking_touch_dispatched_to_renderer_timestamp,
           base::IdType64<class ui::LatencyInfo>(
-              event->latency_info().trace_id()),
-          blocking_touch_dispatched_to_renderer_timestamp);
+              event->latency_info().trace_id()));
       has_seen_first_gesture_scroll_update_after_begin_ = true;
     } else {
       metrics = cc::ScrollEventMetrics::Create(
