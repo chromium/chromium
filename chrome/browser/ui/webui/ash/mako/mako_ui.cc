@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
+#include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
@@ -63,7 +64,7 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
       base::make_span(kOrcaResources, kOrcaResourcesSize);
 
   // TODO: b:333625296 - Add tests for this conditional behavior
-  if (chromeos::features::IsOrcaUseL10nStringsEnabled()) {
+  if (input_method::ShouldUseL10nStrings()) {
     webui::SetupWebUIDataSource(source, orca_resources, IDR_MAKO_ORCA_HTML);
   } else {
     std::vector<webui::ResourcePath> orca_en_us_resources;

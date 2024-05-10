@@ -95,6 +95,7 @@ source_set("views") {
   deps = [
     ":utils",
     "//base",
+    "//chrome/browser:browser_process",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
