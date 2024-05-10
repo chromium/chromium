@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,6 +102,30 @@ TEST_F(ManifestV2ExperimentManagerUnitTest, MV2ExtensionsAreAffected) {
             .Build();
     EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*mv3_extension));
   }
+}
+
+TEST_F(ManifestV2ExperimentManagerUnitTest, MarkingWarningsAsAcknowledged) {
+  scoped_refptr<const Extension> ext1 =
+      ExtensionBuilder("one")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  scoped_refptr<const Extension> ext2 =
+      ExtensionBuilder("two")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+
+  service()->AddExtension(ext1.get());
+  service()->AddExtension(ext2.get());
+
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext2->id()));
+
+  experiment_manager()->MarkWarningAsAcknowledged(ext1->id());
+
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeWarning(ext1->id()));
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext2->id()));
 }
 
 // Tests that the experiment stage is properly set when the manifest V2
