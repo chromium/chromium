@@ -101,9 +101,11 @@ TEST_F(ShortcutCreatorMacTest, ShortcutCreated) {
       CreateImageFamily({{.size = 128, .color = SK_ColorMAGENTA}});
 
   base::test::TestFuture<ShortcutCreatorResult> future;
-  CreateShortcutOnUserDesktop("Test Name", GURL("https://example.com/test"),
-                              std::move(images), profile_path(),
-                              future.GetCallback());
+
+  ShortcutMetadata metadata(profile_path(), GURL("https://example.com/test"),
+                            u"Test Name", std::move(images));
+
+  CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
 
@@ -132,9 +134,10 @@ TEST_F(ShortcutCreatorMacTest, ShortcutCreatedWithCorrectIcons) {
   gfx::ImageFamily images = CreateImageFamily(image_descs);
 
   base::test::TestFuture<ShortcutCreatorResult> future;
-  CreateShortcutOnUserDesktop("Test Name", GURL("https://example.com/test"),
-                              std::move(images), profile_path(),
-                              future.GetCallback());
+  ShortcutMetadata metadata(profile_path(), GURL("https://example.com/test"),
+                            u"Test Name", std::move(images));
+
+  CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
 

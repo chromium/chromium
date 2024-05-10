@@ -10,10 +10,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
@@ -45,19 +49,21 @@ base::FilePath CreateIconFileFromBitmap(const base::FilePath& icon_path,
 
 }  // namespace
 
-void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
-                                 const GURL& shortcut_url,
-                                 gfx::ImageFamily icon_images,
-                                 const base::FilePath& profile_path,
+void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                                  ShortcutCreatorCallback complete) {
+  CHECK(shortcut_metadata.IsValid());
+  const GURL& shortcut_url = shortcut_metadata.shortcut_url;
+
   base::FilePath chrome_proxy_path = GetChromeProxyPath();
   // Create a .ico file from the icon images, and put it in
   // <profile dir>/shortcuts/resources/<Url Hash>/icons.
   std::string url_hash =
       base::NumberToString(base::PersistentHash(shortcut_url.spec()));
   base::FilePath target_path =
-      profile_path.Append(kWebShortcutsIconDirName).AppendASCII(url_hash);
-  base::FilePath icon_path = CreateIconFileFromBitmap(target_path, icon_images);
+      shortcut_metadata.profile_path.Append(kWebShortcutsIconDirName)
+          .AppendASCII(url_hash);
+  base::FilePath icon_path =
+      CreateIconFileFromBitmap(target_path, shortcut_metadata.shortcut_images);
 
   // Create a desktop shortcut
   base::FilePath desktop;
@@ -66,14 +72,14 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
     std::move(complete).Run(ShortcutCreatorResult::kError);
     return;
   }
-  base::FilePath shortcut_path =
-      desktop.Append(base::StrCat({base::ASCIIToWide(shortcut_name), L".lnk"}));
+  base::FilePath shortcut_path = desktop.Append(base::StrCat(
+      {base::UTF16ToWide(shortcut_metadata.shortcut_title), L".lnk"}));
 
   base::win::ShortcutProperties target_and_args_properties;
   target_and_args_properties.set_target(chrome_proxy_path);
   target_and_args_properties.set_arguments(base::StrCat(
       {L"--", base::ASCIIToWide(switches::kProfileDirectory), L"=\"",
-       profile_path.BaseName().value(), L"\" --",
+       shortcut_metadata.profile_path.BaseName().value(), L"\" --",
        base::ASCIIToWide(switches::kIgnoreProfileDirectoryIfNotExists), L" ",
        base::ASCIIToWide(shortcut_url.spec())}));
   target_and_args_properties.set_icon(icon_path, /*icon_index_in=*/0);
@@ -83,6 +89,12 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
                                  base::win::ShortcutOperation::kCreateAlways);
   std::move(complete).Run(res ? ShortcutCreatorResult::kSuccess
                               : ShortcutCreatorResult::kError);
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {
+  return base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
 
 }  // namespace shortcuts

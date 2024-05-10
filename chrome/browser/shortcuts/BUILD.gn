@@ -18,8 +18,10 @@ source_set("shortcuts") {
   ]
 
   if (!is_chromeos) {
+    public += [ "create_shortcut_for_current_web_contents_task.h" ]
+
     sources += [
-      "create_shortcut_for_current_web_contents_task.h",
+      "create_shortcut_for_current_web_contents_task.cc",
       "document_icon_fetcher.cc",
       "document_icon_fetcher.h",
       "fetch_icons_from_document_task.cc",
@@ -53,10 +55,7 @@ source_set("shortcuts") {
       "platform_util_win.cc",
       "shortcut_creator_win.cc",
     ]
-    deps += [
-      "//chrome/browser/profiles:profile",
-      "//chrome/common:non_code_constants",
-    ]
+    deps += [ "//chrome/common:non_code_constants" ]
   }
 
   friend = [
@@ -114,6 +113,7 @@ if (!is_chromeos) {
 
     sources = [
       "document_icon_fetcher_browsertest.cc",
+      "shortcut_creation_browsertest.cc",
       "shortcut_launch_browsertest.cc",
     ]
 

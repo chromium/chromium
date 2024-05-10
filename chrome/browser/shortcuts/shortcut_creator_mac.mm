@@ -16,9 +16,14 @@
 #include "base/functional/concurrent_callbacks.h"
 #include "base/functional/function_ref.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/shortcuts/chrome_webloc_file.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
 #include "ui/gfx/image/image_family.h"
@@ -26,12 +31,11 @@
 
 namespace shortcuts {
 
-void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
-                                 const GURL& shortcut_url,
-                                 gfx::ImageFamily icon_images,
-                                 const base::FilePath& profile_path,
+void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                                  ShortcutCreatorCallback complete) {
+  CHECK(shortcut_metadata.IsValid());
   using Result = ShortcutCreatorResult;
+  const GURL& shortcut_url = shortcut_metadata.shortcut_url;
 
   base::FilePath desktop_path;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
@@ -39,8 +43,8 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
     return;
   }
 
-  std::optional<base::SafeBaseName> base_name =
-      SanitizeTitleForFileName(shortcut_name);
+  std::optional<base::SafeBaseName> base_name = SanitizeTitleForFileName(
+      base::UTF16ToUTF8(shortcut_metadata.shortcut_title));
   if (!base_name.has_value()) {
     base_name = SanitizeTitleForFileName(shortcut_url.spec());
   }
@@ -54,7 +58,8 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
     return;
   }
 
-  auto profile_path_name = base::SafeBaseName::Create(profile_path);
+  auto profile_path_name =
+      base::SafeBaseName::Create(shortcut_metadata.profile_path);
   if (!profile_path_name.has_value() ||
       !ChromeWeblocFile(shortcut_url, *profile_path_name)
            .SaveToFile(target_path)) {
@@ -78,10 +83,12 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
       }).Then(concurrent.CreateCallback()));
 
   NSImage* icon_image = [[NSImage alloc] init];
-  for (const gfx::Image& image : icon_images) {
-    NSArray* image_reps = image.AsNSImage().representations;
-    DCHECK_EQ(1u, image_reps.count);
-    [icon_image addRepresentation:image_reps[0]];
+  for (const gfx::Image& image : shortcut_metadata.shortcut_images) {
+    NSArray<NSImageRep*>* image_reps = image.AsNSImage().representations;
+    DCHECK_GE(image_reps.count, 1u);
+    for (NSImageRep* rep in image_reps) {
+      [icon_image addRepresentation:rep];
+    }
   }
   SetIconForFile(icon_image, target_path,
                  base::BindOnce([](bool success) {
@@ -107,6 +114,12 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
               },
               target_path)
               .Then(std::move(complete)));
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
 
 }  // namespace shortcuts

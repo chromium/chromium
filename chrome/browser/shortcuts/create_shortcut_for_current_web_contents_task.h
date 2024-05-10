@@ -5,19 +5,97 @@
 #ifndef CHROME_BROWSER_SHORTCUTS_CREATE_SHORTCUT_FOR_CURRENT_WEB_CONTENTS_TASK_H_
 #define CHROME_BROWSER_SHORTCUTS_CREATE_SHORTCUT_FOR_CURRENT_WEB_CONTENTS_TASK_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
+#include "chrome/browser/shortcuts/shortcut_creator.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/image/image_family.h"
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
+class Page;
+enum class Visibility;
 }  // namespace content
+
+namespace gfx {
+class ImageSkia;
+class ImageFamily;
+}  // namespace gfx
 
 namespace shortcuts {
 
-// Stub starting point for shortcut creation.
-class CreateShortcutForCurrentWebContentsTask {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ShortcutCreationTaskResult {
+  kTaskAlreadyRunning = 0,
+  kInvalidRenderFrameHost = 1,
+  kPageInvalidated = 2,
+  kIconFetchingFailed = 3,
+  kUserCancelledShortcutCreationFromDialog = 4,
+  kShortcutCreationFailure = 5,
+  kShortcutCreationSuccess = 6,
+  kMaxValue = kShortcutCreationSuccess
+};
+
+// Used to perform the actions needed to create the shortcut on the UI thread.
+// This usually involves downloading icons and badging them before passing them
+// on to the OS specific code to create the shortcuts.
+class CreateShortcutForCurrentWebContentsTask
+    : public content::DocumentUserData<CreateShortcutForCurrentWebContentsTask>,
+      public content::WebContentsObserver {
  public:
+  using ShortcutsDialogResultCallback =
+      base::OnceCallback<void(bool is_accepted, std::u16string title)>;
+  using ShortcutsDialogCallback = base::OnceCallback<void(
+      const gfx::ImageSkia& icon_for_dialog,
+      std::u16string title_for_dialog,
+      ShortcutsDialogResultCallback dialog_result_callback)>;
+
+  // Creates a CreateShortcutForCurrentWebContentsTask for the given
+  // `web_contents` and starts it. `dialog_callback` is called when the task
+  // needs to show the create shortcut dialog to the user. `callback` is called
+  // when the task has completed its execution, including the OS specific calls
+  // once the metadata fetching has completed.
+  static void CreateAndStart(
+      content::WebContents& web_contents,
+      ShortcutsDialogCallback dialog_callback,
+      base::OnceCallback<void(bool shortcuts_created)> callback);
+
+  ~CreateShortcutForCurrentWebContentsTask() override;
+
+  // content::WebContentsObserver overrides:
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+ private:
+  friend DocumentUserData;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
   explicit CreateShortcutForCurrentWebContentsTask(
-      base::WeakPtr<content::WebContents> web_contents);
+      content::RenderFrameHost* rfh);
+
+  void FetchIcons(
+      content::WebContents& web_contents,
+      ShortcutsDialogCallback dialog_callback,
+      base::OnceCallback<void(ShortcutCreationTaskResult task_result)>
+          callback);
+  void OnIconsFetchedStartBadgingAndShowDialog(
+      FetchIconsFromDocumentResult result);
+  void OnShortcutDialogResultObtained(gfx::ImageFamily results,
+                                      GURL shortcut_url,
+                                      bool dialog_result,
+                                      std::u16string title);
+  void OnMetadataFetchCompleteSelfDestruct(
+      base::expected<ShortcutMetadata, ShortcutCreationTaskResult>
+          fetch_result);
+
+  ShortcutsDialogCallback dialog_callback_;
+  base::OnceCallback<void(ShortcutCreationTaskResult task_result)> callback_;
+  base::WeakPtrFactory<CreateShortcutForCurrentWebContentsTask>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace shortcuts

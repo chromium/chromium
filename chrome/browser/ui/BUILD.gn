@@ -2261,6 +2261,10 @@ static_library("ui") {
     if (!is_android) {
       deps += [ "//chrome/browser/headless:command_processor" ]
     }
+
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/shortcuts" ]
+    }
   }
 
   if (enable_paint_preview) {

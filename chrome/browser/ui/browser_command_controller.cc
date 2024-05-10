@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -134,6 +135,10 @@
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
@@ -766,8 +771,25 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_CREATE_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+        content::WebContents* const web_contents =
+            browser_->tab_strip_model()->GetActiveWebContents();
+
+        if (web_contents) {
+          shortcuts::CreateShortcutForCurrentWebContentsTask::CreateAndStart(
+              *web_contents,
+              base::BindOnce(&chrome::ShowCreateShortcutDialog, web_contents),
+              base::DoNothing());
+        }
+      } else {
+        web_app::CreateWebAppFromCurrentWebContents(
+            browser_, web_app::WebAppInstallFlow::kCreateShortcut);
+      }
+#else
       web_app::CreateWebAppFromCurrentWebContents(
           browser_, web_app::WebAppInstallFlow::kCreateShortcut);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       break;
     case IDC_INSTALL_PWA:
       base::RecordAction(base::UserMetricsAction("InstallWebAppFromMenu"));

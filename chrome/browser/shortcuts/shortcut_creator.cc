@@ -4,11 +4,38 @@
 
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 
+#include <string>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "ui/gfx/image/image_family.h"
+#include "url/gurl.h"
 
 namespace shortcuts {
+
+ShortcutMetadata::ShortcutMetadata() = default;
+ShortcutMetadata::ShortcutMetadata(base::FilePath profile_path,
+                                   GURL shortcut_url,
+                                   std::u16string shortcut_title,
+                                   gfx::ImageFamily shortcut_images)
+    : profile_path(profile_path),
+      shortcut_url(shortcut_url),
+      shortcut_title(shortcut_title),
+      shortcut_images(std::move(shortcut_images)) {
+  CHECK(IsValid());
+}
+ShortcutMetadata::~ShortcutMetadata() = default;
+
+ShortcutMetadata::ShortcutMetadata(ShortcutMetadata&& metadata) = default;
+ShortcutMetadata& ShortcutMetadata::operator=(ShortcutMetadata&& metadata) =
+    default;
+
+bool ShortcutMetadata::IsValid() {
+  return !profile_path.empty() && shortcut_url.is_valid() &&
+         !shortcut_title.empty() && profile_path.BaseName() != profile_path &&
+         !shortcut_images.empty();
+}
 
 void EmitIconStorageCountMetric(const base::FilePath& icon_directory) {
   size_t num_files = 0;

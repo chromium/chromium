@@ -33,7 +33,7 @@ namespace shortcuts {
 namespace {
 
 constexpr char kShortcutFileName[] = "Test Name.lnk";
-constexpr char kShortcutName[] = "Test Name";
+constexpr char16_t kShortcutName[] = u"Test Name";
 
 struct ImageDesc {
   int size;
@@ -97,9 +97,11 @@ TEST_F(ShortcutCreatorWinTest, ShortcutCreated) {
                          {.size = 32, .color = SK_ColorBLUE},
                          {.size = 256, .color = SK_ColorGREEN}});
 
+  ShortcutMetadata metadata(default_profile_path(), kUrl, kShortcutName,
+                            std::move(images));
   base::test::TestFuture<ShortcutCreatorResult> future;
-  CreateShortcutOnUserDesktop(kShortcutName, kUrl, std::move(images),
-                              default_profile_path(), future.GetCallback());
+
+  CreateShortcutOnUserDesktop(std::move(metadata), future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(ShortcutCreatorResult::kSuccess, future.Get());
 

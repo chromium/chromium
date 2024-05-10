@@ -308,6 +308,12 @@ gfx::ImageFamily ApplyProductLogoBadgeToIcons(std::vector<SkBitmap> icons) {
     // Apply the masked product logo to the bitmaps.
     gfx::ImageSkia badged_icon = gfx::ImageSkiaOperations::CreateIconWithBadge(
         resized_to_fit, masked_badge);
+
+    // Doing this allows the returned gfx::ImageFamily to be passed across
+    // multiple sequences, like when this is passed to the ThreadPool during
+    // shortcut creation at the OS level.
+    badged_icon.MakeThreadSafe();
+
     badged_icons.Add(badged_icon);
   }
   return badged_icons;

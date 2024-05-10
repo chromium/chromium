@@ -22,6 +22,32 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Shortcuts.Creation.Result" enum="ShortcutCreatorResult"
+    expires_after="M131">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records if shortcut creation on the user's desktop was successful. This is
+    only recorded if the user accepts the shortcut creation dialog. Shortcut
+    creation occurs when the user creates a shortcut to a webpage using the
+    3-dot-menu -&gt; &quot;Save and Share&quot; -&gt; &quot;Create
+    Shortcut&quot; functionality.
+  </summary>
+</histogram>
+
+<histogram name="Shortcuts.CreationTask.Result"
+    enum="ShortcutCreationTaskResult" expires_after="M131">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of shortcut creation for the web &quot;shortcut&quot;
+    feature. This is recorded when the user attempts to create a shortcut using
+    the 3-dot-menu -&gt; &quot;Save and Share&quot; -&gt; &quot;Create
+    Shortcut&quot; functionality. If a shortcut cannot be created, the stage at
+    which it failed is logged as an error here.
+  </summary>
+</histogram>
+
 <histogram name="Shortcuts.Icons.StorageCount" units="count"
     expires_after="2024-09-01">
   <owner>dmurph@chromium.org</owner>

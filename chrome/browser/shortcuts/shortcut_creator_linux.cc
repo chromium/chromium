@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/shortcuts/linux_xdg_wrapper.h"
 #include "chrome/browser/shortcuts/linux_xdg_wrapper_impl.h"
@@ -81,11 +82,6 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
     const gfx::Image& icon,
     const base::FilePath& profile_path,
     LinuxXdgWrapper& xdg_wrapper) {
-  CHECK(!shortcut_name.empty());
-  CHECK(shortcut_url.is_valid());
-  CHECK(!profile_path.empty());
-  CHECK_NE(profile_path.BaseName(), profile_path);
-
   // First, create necessary directories and do .desktop file location
   // resolution before writing any data, removing some cleanup.
   base::FilePath icon_directory = profile_path.Append(kWebShortcutsIconDirName);
@@ -148,19 +144,26 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
                            : ShortcutCreatorResult::kSuccess;
 }
 
-void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
-                                 const GURL& shortcut_url,
-                                 gfx::ImageFamily icon_images,
-                                 const base::FilePath& profile_path,
+void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                                  ShortcutCreatorCallback complete) {
-  const gfx::Image* image = icon_images.GetBest(gfx::Size(128, 128));
+  CHECK(shortcut_metadata.IsValid());
+  const gfx::Image* image =
+      shortcut_metadata.shortcut_images.GetBest(gfx::Size(128, 128));
   CHECK(image);
   CHECK_EQ(image->Size().width(), 128);
   LinuxXdgWrapperImpl wrapper_impl;
   ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
-      shortcut_name, shortcut_url, *image, profile_path, wrapper_impl);
+      base::UTF16ToUTF8(shortcut_metadata.shortcut_title),
+      shortcut_metadata.shortcut_url, *image, shortcut_metadata.profile_path,
+      wrapper_impl);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(complete), result));
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
 
 }  // namespace shortcuts
