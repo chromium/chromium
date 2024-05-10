@@ -2188,8 +2188,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
   EnableUVKeySupport();
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -2253,5 +2251,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   delegate_observer()->WaitForDelegateDestruction();
 }
+
+}  // namespace
 
 #endif  // !defined(MEMORY_SANITIZER)
