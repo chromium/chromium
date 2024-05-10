@@ -37433,6 +37433,17 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SnapGroups_RecallSnapGroup">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a snap group is recalled or brought back together. This covers
+    all recall inactive group scenarios, including if one of the windows in the
+    group was active, then overview was started, then the same group was brought
+    back from overview.
+  </description>
+</action>
+
 <action name="SoundContentSetting.MuteBy.DefaultSwitch">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

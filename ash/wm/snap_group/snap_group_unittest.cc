@@ -86,6 +86,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -6897,6 +6898,49 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
                                       /*expected_count=*/2);
 
   histogram_tester_.ExpectTotalCount(snap_groups_count_histogram, 3);
+}
+
+TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
+  UpdateDisplay("800x600");
+  base::UserActionTester user_action_tester;
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  // Create a maximized window to occlude the snap group, then activate `w1` to
+  // recall the group.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow(work_area_bounds()));
+  wm::ActivateWindow(w1.get());
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 1);
+
+  // Enter overview, then click the overview group item to recall the group.
+  ToggleOverview();
+  ASSERT_TRUE(
+      wm::IsActiveWindow(GetOverviewSession()->GetOverviewFocusWindow()));
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+  ASSERT_TRUE(overview_group_item);
+  GetOverviewSession()->SelectWindow(overview_group_item);
+  ASSERT_TRUE(wm::IsActiveWindow(w1.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 2);
+
+  // Activate `w3`, then window cycle to `w1` to recall the group.
+  wm::ActivateWindow(w3.get());
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+  CompleteWindowCycling();
+  ASSERT_TRUE(wm::IsActiveWindow(w1.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
+
+  // Window cycle to `w2`. Test we don't record since the other `w1` was
+  // previously active.
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+  CompleteWindowCycling();
+  ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
 }
 
 }  // namespace ash

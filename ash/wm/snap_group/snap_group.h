@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -36,7 +37,8 @@ class ScopedOverviewHideWindows;
 class SnapGroup : public aura::WindowObserver,
                   public WindowStateObserver,
                   public LayoutDividerController,
-                  public display::DisplayObserver {
+                  public display::DisplayObserver,
+                  public wm::ActivationChangeObserver {
  public:
   SnapGroup(aura::Window* window1,
             aura::Window* window2,
@@ -101,6 +103,11 @@ class SnapGroup : public aura::WindowObserver,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   friend class SnapGroupController;

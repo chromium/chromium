@@ -22,6 +22,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/display_observer.h"
@@ -29,6 +30,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -69,6 +71,7 @@ SnapGroup::SnapGroup(aura::Window* window1,
   // We manually add ourselves as a display observer so we can early remove
   // ourselves in `Shutdown()`.
   display::Screen::GetScreen()->AddObserver(this);
+  Shell::Get()->activation_client()->AddObserver(this);
 }
 
 SnapGroup::~SnapGroup() {
@@ -80,6 +83,7 @@ SnapGroup::~SnapGroup() {
 void SnapGroup::Shutdown() {
   is_shutting_down_ = true;
 
+  Shell::Get()->activation_client()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
 
   // Restore the snapped window bounds that were adjusted to make room for
@@ -312,6 +316,18 @@ void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
   }
 
   RefreshSnapGroup();
+}
+
+void SnapGroup::OnWindowActivated(ActivationReason reason,
+                                  aura::Window* gained_active,
+                                  aura::Window* lost_active) {
+  // We are only interested when neither of the windows was active.
+  if (lost_active == window1_ || lost_active == window2_) {
+    return;
+  }
+  if (gained_active == window1_ || gained_active == window2_) {
+    base::RecordAction(base::UserMetricsAction("SnapGroups_RecallSnapGroup"));
+  }
 }
 
 void SnapGroup::StartObservingWindows() {
