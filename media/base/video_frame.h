@@ -86,6 +86,16 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static constexpr size_t kFrameAddressAlignment =
       VideoFrameLayout::kBufferAddressAlignment;
 
+  enum Plane : uint8_t {
+    kY = 0,
+    kARGB = kY,
+    kU = 1,
+    kUV = kU,
+    kV = 2,
+    kATriPlanar = kV,
+    kA = 3,
+  };
+
   enum {
     kMaxPlanes = 4,
 
