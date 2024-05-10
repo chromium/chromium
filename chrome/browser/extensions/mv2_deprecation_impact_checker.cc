@@ -64,9 +64,6 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
     return false;
   }
 
-  // TODO(https://crbug.com/337191307): Finalize behavior for unpacked,
-  // commandline, default-installed, OS-installed, etc extensions.
-
   // Ignore MV2 extensions that are allowed by policy.
   if (extension_management_->IsExemptFromMV2DeprecationByPolicy(
           extension.manifest_version(), extension.id(),

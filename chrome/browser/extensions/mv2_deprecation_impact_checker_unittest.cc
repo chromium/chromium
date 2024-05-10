@@ -283,6 +283,20 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest,
           .SetManifestVersion(2)
           .Build();
 
+  // Unpacked (and commandline) extensions *are* affected by the MV2
+  // deprecation.  They will be treated differently depending on the experiment
+  // stage, but should be included in e.g. the warning.
+  scoped_refptr<const Extension> unpacked =
+      ExtensionBuilder("unpacked")
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .SetManifestVersion(2)
+          .Build();
+  scoped_refptr<const Extension> commandline =
+      ExtensionBuilder("commandline")
+          .SetLocation(mojom::ManifestLocation::kCommandLine)
+          .SetManifestVersion(2)
+          .Build();
+
   // These user-facing MV2 extensions would be affected if the experiment is
   // active and the policy is anything other than set to "Allowed" (which
   // allows all MV2 extensions).
@@ -296,6 +310,38 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest,
             impact_checker()->IsExtensionAffected(*external_pref));
   EXPECT_EQ(expected_affected,
             impact_checker()->IsExtensionAffected(*external_pref_download));
+  EXPECT_EQ(expected_affected,
+            impact_checker()->IsExtensionAffected(*unpacked));
+  EXPECT_EQ(expected_affected,
+            impact_checker()->IsExtensionAffected(*commandline));
+}
+
+// Checks that certain special cases of extensions, such as default-installed
+// and installed by OEM, are also affected by the MV2 deprecation experiments.
+TEST_P(MV2DeprecationImpactCheckerUnitTest,
+       DefaultInstalledMV2ExtensionsAreAffected) {
+  scoped_refptr<const Extension> default_installed =
+      ExtensionBuilder("default installed")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT)
+          .Build();
+  scoped_refptr<const Extension> oem_installed =
+      ExtensionBuilder("oem installed")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .SetManifestVersion(2)
+          .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT &
+                    Extension::WAS_INSTALLED_BY_OEM)
+          .Build();
+
+  // These extensions should be affected if the experiment is enabled and the
+  // policy isn't set to allow all MV2 extensions.
+  bool expected_affected =
+      ExperimentIsActive() && policy_level() != MV2PolicyLevel::kAllowed;
+  EXPECT_EQ(expected_affected,
+            impact_checker()->IsExtensionAffected(*default_installed));
+  EXPECT_EQ(expected_affected,
+            impact_checker()->IsExtensionAffected(*oem_installed));
 }
 
 // Tests that component extensions are not included in the MV2 deprecation
