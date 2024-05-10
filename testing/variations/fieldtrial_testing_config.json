@@ -3892,6 +3892,21 @@
             ]
         }
     ],
+    "ChromeOSOobeQuickStart": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "OobeQuickStart"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSPrintingIppUsb": [
         {
             "platforms": [
