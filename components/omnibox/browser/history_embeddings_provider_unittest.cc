@@ -20,7 +20,8 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
     float score,
     const std::string& url,
     const std::u16string& title) {
-  history_embeddings::ScoredUrlRow scored_url_row{{0, 0, {}, score, 0u, ""}};
+  history_embeddings::ScoredUrlRow scored_url_row(
+      history_embeddings::ScoredUrl(0, 0, {}, score, 0u, {}));
   scored_url_row.row = history::URLRow{GURL{url}};
   scored_url_row.row.set_title(title);
   return scored_url_row;

@@ -31,6 +31,7 @@ UrlPassages& UrlPassages::operator=(UrlPassages&&) = default;
 ////////////////////////////////////////////////////////////////////////////////
 
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {}
+Embedding::Embedding() = default;
 Embedding::~Embedding() = default;
 Embedding::Embedding(const Embedding&) = default;
 Embedding& Embedding::operator=(const Embedding&) = default;
@@ -100,6 +101,26 @@ std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+ScoredUrl::ScoredUrl(history::URLID url_id,
+                     history::VisitID visit_id,
+                     base::Time visit_time,
+                     float score,
+                     size_t index,
+                     Embedding passage_embedding)
+    : url_id(url_id),
+      visit_id(visit_id),
+      visit_time(visit_time),
+      score(score),
+      index(index),
+      passage_embedding(std::move(passage_embedding)) {}
+ScoredUrl::~ScoredUrl() = default;
+ScoredUrl::ScoredUrl(ScoredUrl&&) = default;
+ScoredUrl& ScoredUrl::operator=(ScoredUrl&&) = default;
+ScoredUrl::ScoredUrl(const ScoredUrl&) = default;
+ScoredUrl& ScoredUrl::operator=(ScoredUrl&) = default;
+
+////////////////////////////////////////////////////////////////////////////////
+
 SearchInfo::SearchInfo() = default;
 SearchInfo::SearchInfo(SearchInfo&&) = default;
 SearchInfo::~SearchInfo() = default;
@@ -127,7 +148,6 @@ SearchInfo VectorDatabase::FindNearest(
   // Magnitudes are also assumed equal; they are provided normalized by design.
   CHECK_LT(std::abs(query.Magnitude() - kUnitLength), kEpsilon);
 
-  // TODO(orinj): Manage a heap for speed.
   struct Compare {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
       return a.score < b.score;
@@ -145,21 +165,16 @@ SearchInfo VectorDatabase::FindNearest(
       search_info.completed = false;
       break;
     }
+    search_info.searched_url_count++;
+    search_info.searched_embedding_count += item->embeddings.size();
 
     base::ElapsedTimer scoring_timer;
     while (q.size() > count) {
       q.pop();
     }
     const auto [score, score_index] = item->BestScoreWith(query);
-    q.push(ScoredUrl{
-        .url_id = item->url_id,
-        .visit_id = item->visit_id,
-        .visit_time = item->visit_time,
-        .score = score,
-        .index = score_index,
-    });
-    search_info.searched_url_count++;
-    search_info.searched_embedding_count += item->embeddings.size();
+    q.emplace(item->url_id, item->visit_id, item->visit_time, score,
+              score_index, std::move(item->embeddings[score_index]));
     scoring_elapsed += scoring_timer.Elapsed();
   }
 

@@ -45,6 +45,9 @@ extern const base::FeatureParam<bool> kOmniboxUnscoped;
 extern const base::FeatureParam<int> kScheduledEmbeddingsMin;
 extern const base::FeatureParam<int> kScheduledEmbeddingsMax;
 
+// Whether quality logging data should be sent.
+extern const base::FeatureParam<bool> kSendQualityLog;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

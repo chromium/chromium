@@ -7,6 +7,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_embeddings/chrome_history_embeddings_service.h"
 #include "chrome/browser/history_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -87,7 +88,7 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
-  return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
+  return std::make_unique<history_embeddings::ChromeHistoryEmbeddingsService>(
       history_service, page_content_annotations_service,
       optimization_guide_keyed_service,
       history_embeddings::ChromePassageEmbeddingsServiceController::Get());

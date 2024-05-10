@@ -34,6 +34,7 @@ struct UrlPassages {
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
+  Embedding();
   ~Embedding();
   Embedding(const Embedding&);
   Embedding& operator=(const Embedding&);
@@ -83,6 +84,18 @@ struct UrlEmbeddings {
 };
 
 struct ScoredUrl {
+  ScoredUrl(history::URLID url_id,
+            history::VisitID visit_id,
+            base::Time visit_time,
+            float score,
+            size_t index,
+            Embedding passage_embedding);
+  ~ScoredUrl();
+  ScoredUrl(ScoredUrl&&);
+  ScoredUrl& operator=(ScoredUrl&&);
+  ScoredUrl(const ScoredUrl&);
+  ScoredUrl& operator=(ScoredUrl&);
+
   // Basic data about the found URL/visit.
   history::URLID url_id;
   history::VisitID visit_id;
@@ -94,6 +107,9 @@ struct ScoredUrl {
   // Index of the embedding, which also corresponds to the index of the source
   // passage used to compute the embedding.
   size_t index;
+
+  // The embedding for the source passage. Preserved during search.
+  Embedding passage_embedding;
 
   // Source passage; may not be populated during search, but kept in this
   // struct for convenience when passing finished results to service callers.

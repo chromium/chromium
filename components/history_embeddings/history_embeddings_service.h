@@ -26,6 +26,8 @@
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 
 namespace optimization_guide {
@@ -52,6 +54,9 @@ struct ScoredUrlRow {
 };
 using SearchResult = std::vector<ScoredUrlRow>;
 using SearchResultCallback = base::OnceCallback<void(SearchResult)>;
+
+using QualityLogEntry =
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
 
 class HistoryEmbeddingsService : public KeyedService,
                                  public history::HistoryServiceObserver {
@@ -87,6 +92,14 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Weak `this` provider method.
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
+
+  // Submit quality logging data after user selects an item from search result.
+  void SendQualityLog(const std::string& query,
+                      const SearchResult& result,
+                      size_t selection,
+                      size_t num_days,
+                      size_t num_entered_characters,
+                      bool from_omnibox_history_scope);
 
   // KeyedService:
   void Shutdown() override;
@@ -136,6 +149,10 @@ class HistoryEmbeddingsService : public KeyedService,
   // Called when the embedder metadata is available. Passes the metadata to
   // the internal storage.
   void OnEmbedderMetadataReady(EmbedderMetadata metadata);
+
+  // This can be overridden to prepare a log entry that will then be filled
+  // with data and sent on destruction. Default implementation returns null.
+  virtual QualityLogEntry PrepareQualityLogEntry();
 
   // Called indirectly via RetrievePassages when passage extraction completes.
   void OnPassagesRetrieved(UrlPassages url_passages,

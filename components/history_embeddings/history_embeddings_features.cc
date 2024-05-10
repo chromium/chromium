@@ -51,4 +51,8 @@ const base::FeatureParam<int> kScheduledEmbeddingsMax(&kHistoryEmbeddings,
                                                       "ScheduledEmbeddingsMax",
                                                       1);
 
+const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
+                                               "SendQualityLog",
+                                               false);
+
 }  // namespace history_embeddings
