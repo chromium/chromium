@@ -11,36 +11,30 @@ import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_ent
 import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('routineResultEntryTestSuite', function() {
-  /** @type {?RoutineResultEntryElement} */
-  let routineResultEntryElement = null;
+  let routineResultEntryElement: RoutineResultEntryElement|null = null;
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(function() {
-    if (routineResultEntryElement) {
-      routineResultEntryElement.remove();
-    }
+    routineResultEntryElement?.remove();
     routineResultEntryElement = null;
   });
 
-  /** @param {boolean=} usingRoutineGroups */
-  function initializeRoutineResultEntry(usingRoutineGroups = false) {
-    assertFalse(!!routineResultEntryElement);
-
+  function initializeRoutineResultEntry(usingRoutineGroups: boolean = false):
+      Promise<void> {
     // Add the entry to the DOM.
-    routineResultEntryElement = /** @type {!RoutineResultEntryElement} */ (
-        document.createElement('routine-result-entry'));
-    assertTrue(!!routineResultEntryElement);
+    routineResultEntryElement = document.createElement(RoutineResultEntryElement.is);
+    assert(routineResultEntryElement);
     document.body.appendChild(routineResultEntryElement);
     routineResultEntryElement.usingRoutineGroups = usingRoutineGroups;
     return flushTasks();
@@ -48,21 +42,19 @@ suite('routineResultEntryTestSuite', function() {
 
   /**
    * Updates the item in the element.
-   * @param {ResultStatusItem|RoutineGroup} item
-   * @return {!Promise}
    */
-  function updateItem(item) {
+  function updateItem(item: ResultStatusItem|RoutineGroup): Promise<void> {
+    assert(routineResultEntryElement);
     routineResultEntryElement.item = item;
     return flushTasks();
   }
 
   /**
    * Initializes the entry then updates the item.
-   * @param {ResultStatusItem|RoutineGroup} item
-   * @param {boolean=} usingRoutineGroups
-   * @return {!Promise}
    */
-  function initializeEntryWithItem(item, usingRoutineGroups = false) {
+  function initializeEntryWithItem(
+      item: ResultStatusItem|RoutineGroup,
+      usingRoutineGroups: boolean = false): Promise<void> {
     return initializeRoutineResultEntry(usingRoutineGroups).then(() => {
       return updateItem(item);
     });
@@ -70,65 +62,62 @@ suite('routineResultEntryTestSuite', function() {
 
   /**
    * Creates a completed result status item with a result.
-   * @param {!RoutineType} routine
-   * @param {!RoutineResult} result
-   * @return {!ResultStatusItem}
    */
-  function createCompletedStatus(routine, result) {
+  function createCompletedStatus(
+      routine: RoutineType, result: RoutineResult): ResultStatusItem {
     const status = new ResultStatusItem(routine, ExecutionProgress.COMPLETED);
     status.result = result;
     return status;
   }
 
-  /**
-   * @suppress {visibility}
-   * @return {string}
-   */
-  function getAnnoucedText() {
-    assertTrue(!!routineResultEntryElement);
-
-    return routineResultEntryElement.announcedText;
+  function getAnnoucedText(): string {
+    assert(routineResultEntryElement);
+    return routineResultEntryElement.getAnnouncedTextForTesting();
   }
 
   /**
    * Returns the routine name element text content.
-   * @return {string}
    */
-  function getNameText() {
-    const name = routineResultEntryElement.shadowRoot.querySelector('#routine');
-    assertTrue(!!name);
-    return name.textContent.trim();
+  function getNameText(): string {
+    assert(routineResultEntryElement);
+    const name =
+        routineResultEntryElement.shadowRoot!.querySelector<HTMLDivElement>(
+            '#routine');
+    assert(name);
+    return name!.textContent!.trim();
   }
 
   /**
    * Returns the status badge content.
-   * @return {!TextBadgeElement}
    */
-  function getStatusBadge() {
-    const badge = /** @type{!TextBadgeElement} */ (
-        routineResultEntryElement.shadowRoot.querySelector('#status'));
-    assertTrue(!!badge);
+  function getStatusBadge(): TextBadgeElement {
+    assert(routineResultEntryElement);
+    const badge =
+        routineResultEntryElement.shadowRoot!.querySelector<TextBadgeElement>(
+            '#status');
+    assert(badge);
     return badge;
   }
 
   /**
    * Returns the span wrapping the failure reason text.
-   * @return {!HTMLSpanElement}
    */
-  function getFailedTestContainer() {
-    const failedTestContainer = /** @type {!HTMLSpanElement} */ (
-        routineResultEntryElement.shadowRoot.querySelector(
-            '#failed-test-text'));
-    assertTrue(!!failedTestContainer);
+  function getFailedTestContainer(): HTMLSpanElement {
+    assert(routineResultEntryElement);
+    const failedTestContainer =
+        routineResultEntryElement.shadowRoot!.querySelector<HTMLSpanElement>(
+            '#failed-test-text');
+    assert(failedTestContainer);
     return failedTestContainer;
   }
 
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
+      assert(routineResultEntryElement);
       const div =
-          routineResultEntryElement.shadowRoot.querySelector('.entry-row');
-      assertTrue(!!div);
+          routineResultEntryElement.shadowRoot!.querySelector('.entry-row');
+      assert(div);
     });
   });
 
@@ -169,11 +158,10 @@ suite('routineResultEntryTestSuite', function() {
   });
 
   test('PassedTest', () => {
-    const item = createCompletedStatus(
-        RoutineType.kCpuStress,
-        /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestPassed,
-        }));
+    const item = createCompletedStatus(RoutineType.kCpuStress, {
+      simpleResult: StandardRoutineResult.kTestPassed,
+      powerResult: undefined,
+    });
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -188,11 +176,10 @@ suite('routineResultEntryTestSuite', function() {
   });
 
   test('FailedTest', () => {
-    const item = createCompletedStatus(
-        RoutineType.kCpuStress,
-        /** @type {!RoutineResult} */ ({
-          simpleResult: StandardRoutineResult.kTestFailed,
-        }));
+    const item = createCompletedStatus(RoutineType.kCpuStress, {
+      simpleResult: StandardRoutineResult.kTestFailed,
+      powerResult: undefined,
+    });
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -225,16 +212,14 @@ suite('routineResultEntryTestSuite', function() {
   });
 
   test('PowerTest', () => {
-    const item = createCompletedStatus(
-        RoutineType.kBatteryCharge,
-        /** @type {!RoutineResult} */ ({
-          powerResult: {
-            simpleResult: StandardRoutineResult.kTestPassed,
-            isCharging: true,
-            percentDelta: 10,
-            timeDeltaSeconds: 10,
-          },
-        }));
+    const item = createCompletedStatus(RoutineType.kBatteryCharge, {
+      powerResult: {
+        simpleResult: StandardRoutineResult.kTestPassed,
+        percentChange: 10,
+        timeElapsedSeconds: 10,
+      },
+      simpleResult: undefined,
+    });
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -250,7 +235,11 @@ suite('routineResultEntryTestSuite', function() {
 
   test('NetworkRoutineHasCorrectFailureMessage', () => {
     const item = new RoutineGroup(
-        [RoutineType.kLanConnectivity], 'lanConnectivityRoutineText');
+        [{
+          routine: RoutineType.kLanConnectivity,
+          blocking: false,
+        }],
+        'lanConnectivityRoutineText');
     item.failedTest = RoutineType.kLanConnectivity;
     return initializeEntryWithItem(item, true).then(() => {
       // Span should not be hidden
@@ -270,10 +259,10 @@ suite('routineResultEntryTestSuite', function() {
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = createCompletedStatus(
-              routine, /* @type {!RoutineResult} */ ({
-                simpleResult: StandardRoutineResult.kTestPassed,
-              }));
+          item = createCompletedStatus(routine, {
+            simpleResult: StandardRoutineResult.kTestPassed,
+            powerResult: undefined,
+          });
 
           return updateItem(item);
         })
@@ -309,10 +298,10 @@ suite('routineResultEntryTestSuite', function() {
         .then(() => {
           assertEquals(expectedAnnounceText, getAnnoucedText());
 
-          item = createCompletedStatus(
-              routine, /* @type {!RoutineResult} */ ({
-                simpleResult: StandardRoutineResult.kTestFailed,
-              }));
+          item = createCompletedStatus(routine, {
+            simpleResult: StandardRoutineResult.kTestFailed,
+            powerResult: undefined,
+          });
           expectedAnnounceText = 'Lan Connectivity test - FAILED';
 
           return updateItem(item);
