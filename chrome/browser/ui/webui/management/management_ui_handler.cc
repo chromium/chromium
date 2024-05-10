@@ -51,6 +51,7 @@
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "management_ui_handler.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
@@ -178,6 +179,9 @@ ManagementUIHandler::ManagementUIHandler(Profile* profile) {
   reporting_extension_ids_ = {kOnPremReportingExtensionStableId,
                               kOnPremReportingExtensionBetaId};
   UpdateAccountManagedState(profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  UpdateBrowserManagedState();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 ManagementUIHandler::~ManagementUIHandler() {
@@ -343,42 +347,30 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
 base::Value::Dict ManagementUIHandler::GetContextualManagedData(
     Profile* profile) {
   base::Value::Dict response;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string enterprise_manager = GetAccountManager(profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  int message_id = IDS_MANAGEMENT_NOT_MANAGED_NOTICE;
+  if (browser_managed_) {
+    message_id = IDS_MANAGEMENT_BROWSER_NOTICE;
+  } else if (account_managed_) {
+    message_id = IDS_MANAGEMENT_PROFILE_NOTICE;
+  }
+
   response.Set("browserManagementNotice",
                l10n_util::GetStringFUTF16(
-                   managed() ? IDS_MANAGEMENT_BROWSER_NOTICE
-                             : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                   chrome::kManagedUiLearnMoreUrl,
+                   message_id, chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
 
-  if (enterprise_manager.empty()) {
-    response.Set(
-        "extensionReportingSubtitle",
-        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
-    response.Set(
-        "applicationReportingSubtitle",
-        l10n_util::GetStringUTF16(IDS_MANAGEMENT_APPLICATIONS_INSTALLED));
-    response.Set(
-        "managedWebsitesSubtitle",
-        l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
+  response.Set("extensionReportingSubtitle",
+               l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  response.Set(
+      "applicationReportingSubtitle",
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_APPLICATIONS_INSTALLED));
+  response.Set(
+      "managedWebsitesSubtitle",
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
-  } else {
-    response.Set(
-        "extensionReportingSubtitle",
-        l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
-                                   base::UTF8ToUTF16(enterprise_manager)));
-    response.Set(
-        "applicationReportingSubtitle",
-        l10n_util::GetStringFUTF16(IDS_MANAGEMENT_APPLICATIONS_INSTALLED_BY,
-                                   base::UTF8ToUTF16(enterprise_manager)));
-    response.Set("managedWebsitesSubtitle",
-                 l10n_util::GetStringFUTF16(
-                     IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
-                     base::UTF8ToUTF16(enterprise_manager)));
-  }
   response.Set("managed", managed());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -525,7 +517,7 @@ ManagementUIHandler::GetUserPermissionService() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool ManagementUIHandler::managed() const {
-  return account_managed();
+  return account_managed() || browser_managed_;
 }
 
 void ManagementUIHandler::RegisterPrefChange(
@@ -537,9 +529,14 @@ void ManagementUIHandler::RegisterPrefChange(
 }
 
 void ManagementUIHandler::UpdateManagedState() {
-  if (UpdateAccountManagedState(Profile::FromWebUI(web_ui()))) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  bool is_account_updated =
+      UpdateAccountManagedState(Profile::FromWebUI(web_ui()));
+  bool is_browser_updated = UpdateBrowserManagedState();
+  if (is_account_updated || is_browser_updated) {
     FireWebUIListener("managed_data_changed");
   }
+#endif
 }
 
 bool ManagementUIHandler::UpdateAccountManagedState(Profile* profile) {
@@ -548,13 +545,19 @@ bool ManagementUIHandler::UpdateAccountManagedState(Profile* profile) {
     return false;
   }
   bool new_managed = IsProfileManaged(profile);
-#if !BUILDFLAG(IS_CHROMEOS)
-  new_managed |= IsBrowserManaged();
-#endif
   bool is_updated = (new_managed != account_managed_);
   account_managed_ = new_managed;
   return is_updated;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool ManagementUIHandler::UpdateBrowserManagedState() {
+  bool new_managed = IsBrowserManaged();
+  bool is_updated = (new_managed != browser_managed_);
+  browser_managed_ = new_managed;
+  return is_updated;
+}
+#endif
 
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) const {
   std::optional<std::string> manager =

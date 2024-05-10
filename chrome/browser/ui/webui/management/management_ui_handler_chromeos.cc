@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 
 #include "base/check_is_test.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -56,6 +57,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/escape.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -628,13 +631,28 @@ void ManagementUIHandlerChromeOS::RegisterPrefChange(
 base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
     Profile* profile) {
   base::Value::Dict response;
+  std::string enterprise_manager;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string enterprise_manager = GetDeviceManager();
+  enterprise_manager = GetDeviceManager();
+#endif
   if (enterprise_manager.empty()) {
     enterprise_manager = GetAccountManager(profile);
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AddUpdateRequiredEolInfo(&response);
   AddMonitoredNetworkPrivacyDisclosure(&response);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
+  response.Set("browserManagementNotice",
+               l10n_util::GetStringFUTF16(
+                   managed() ? IDS_MANAGEMENT_BROWSER_NOTICE
+                             : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
+                   chrome::kManagedUiLearnMoreUrl,
+                   base::EscapeForHTML(l10n_util::GetStringUTF16(
+                       IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
+#endif
   if (enterprise_manager.empty()) {
     response.Set(
         "extensionReportingSubtitle",
@@ -645,6 +663,7 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
     response.Set(
         "managedWebsitesSubtitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
     response.Set("pageSubtitle",
                  managed() ? l10n_util::GetStringFUTF16(
@@ -653,6 +672,7 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
                            : l10n_util::GetStringFUTF16(
                                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                  l10n_util::GetStringUTF16(device_type)));
+#endif
   } else {
     response.Set(
         "extensionReportingSubtitle",
@@ -666,6 +686,7 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
                  l10n_util::GetStringFUTF16(
                      IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
                      base::UTF8ToUTF16(enterprise_manager)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
     response.Set("pageSubtitle",
                  managed() ? l10n_util::GetStringFUTF16(
@@ -675,11 +696,9 @@ base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
                            : l10n_util::GetStringFUTF16(
                                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                  l10n_util::GetStringUTF16(device_type)));
+#endif
   }
   response.Set("managed", managed());
-#else
-  response = ManagementUIHandler::GetContextualManagedData(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   GetManagementStatus(profile, &response);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
