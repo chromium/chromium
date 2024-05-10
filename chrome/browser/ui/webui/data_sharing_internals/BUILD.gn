@@ -6,5 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "data_sharing_internals.mojom" ]
+  deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
 }

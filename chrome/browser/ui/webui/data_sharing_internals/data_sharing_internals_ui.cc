@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 
+#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -52,7 +53,9 @@ void DataSharingInternalsUI::CreatePageHandler(
         receiver) {
   data_sharing_internals_page_handler_ =
       std::make_unique<DataSharingInternalsPageHandlerImpl>(
-          std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()));
+          std::move(receiver), std::move(page),
+          data_sharing::DataSharingServiceFactory::GetForProfile(
+              Profile::FromWebUI(web_ui())));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DataSharingInternalsUI)

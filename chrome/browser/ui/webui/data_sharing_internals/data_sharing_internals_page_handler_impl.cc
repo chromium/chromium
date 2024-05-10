@@ -4,17 +4,29 @@
 
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
 
-#include "chrome/browser/data_sharing/data_sharing_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
+namespace {
+data_sharing_internals::mojom::RoleType MemberRoleToRoleType(
+    data_sharing::MemberRole member_role) {
+  switch (member_role) {
+    case data_sharing::MemberRole::kUnknown:
+      return data_sharing_internals::mojom::RoleType::UNKNOWN;
+    case data_sharing::MemberRole::kOwner:
+      return data_sharing_internals::mojom::RoleType::OWNER;
+    case data_sharing::MemberRole::kMember:
+      return data_sharing_internals::mojom::RoleType::MEMBER;
+    case data_sharing::MemberRole::kInvitee:
+      return data_sharing_internals::mojom::RoleType::INVITEE;
+  }
+}
+}  // namespace
 
 DataSharingInternalsPageHandlerImpl::DataSharingInternalsPageHandlerImpl(
     mojo::PendingReceiver<data_sharing_internals::mojom::PageHandler> receiver,
     mojo::PendingRemote<data_sharing_internals::mojom::Page> page,
-    Profile* profile)
+    data_sharing::DataSharingService* data_sharing_service)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      data_sharing_service_(
-          data_sharing::DataSharingServiceFactory::GetForProfile(profile)) {
+      data_sharing_service_(data_sharing_service) {
   // TODO(qinmin): adding this class as an observer to |data_sharing_service_|.
 }
 
@@ -24,4 +36,38 @@ DataSharingInternalsPageHandlerImpl::~DataSharingInternalsPageHandlerImpl() =
 void DataSharingInternalsPageHandlerImpl::IsEmptyService(
     IsEmptyServiceCallback callback) {
   std::move(callback).Run(data_sharing_service_->IsEmptyService());
+}
+
+void DataSharingInternalsPageHandlerImpl::GetAllGroups(
+    GetAllGroupsCallback callback) {
+  data_sharing_service_->ReadAllGroups(
+      base::BindOnce(&DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
+    GetAllGroupsCallback callback,
+    const data_sharing::DataSharingService::GroupsDataSetOrFailureOutcome&
+        group_result) {
+  if (group_result.has_value()) {
+    std::vector<data_sharing_internals::mojom::GroupDataPtr> group_data;
+    for (const auto& data : group_result.value()) {
+      auto group_entry = data_sharing_internals::mojom::GroupData::New();
+      group_entry->group_id = data.group_id;
+      group_entry->name = data.display_name;
+      for (const auto& member : data.members) {
+        auto group_member = data_sharing_internals::mojom::GroupMember::New();
+        group_member->display_name = member.display_name;
+        group_member->email = member.email;
+        group_member->role = MemberRoleToRoleType(member.role);
+        group_member->avatar_url = member.avatar_url;
+        group_entry->members.emplace_back(std::move(group_member));
+      }
+      group_data.emplace_back(std::move(group_entry));
+    }
+    std::move(callback).Run(true, std::move(group_data));
+  } else {
+    std::move(callback).Run(
+        false, std::vector<data_sharing_internals::mojom::GroupDataPtr>());
+  }
 }
