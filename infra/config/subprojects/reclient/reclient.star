@@ -198,7 +198,7 @@ fyi_reclient_test_builder(
     console_view_category = "linux",
     # TODO(b/297350970): remove once fully rolled out.
     reclient_bootstrap_env = {
-        "RBE_use_round_robin_balancer": True,
+        "RBE_use_round_robin_balancer": "true",
     },
     reclient_rewrapper_env = {
         "RBE_compression_threshold": "0",
