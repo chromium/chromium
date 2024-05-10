@@ -38,6 +38,17 @@ COMPONENT_EXPORT(URL)
 ScopedJavaLocalRef<jobject> ToJniType<GURL>(JNIEnv* env, const GURL& gurl) {
   return url::GURLAndroid::FromNativeGURL(env, gurl);
 }
+
+// Enables vector<const GURL*> to avoid copies.
+template <>
+COMPONENT_EXPORT(URL)
+ScopedJavaLocalRef<jobject> ToJniType<const GURL*>(JNIEnv* env,
+                                                   const GURL* const& gurl) {
+  if (!gurl) {
+    return nullptr;
+  }
+  return url::GURLAndroid::FromNativeGURL(env, *gurl);
+}
 }  // namespace jni_zero
 
 namespace url {

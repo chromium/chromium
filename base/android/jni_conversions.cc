@@ -28,6 +28,17 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<std::string>(
   return base::android::ConvertUTF8ToJavaString(env, input);
 }
 
+// Enables vector<const std::string*> to avoid copies.
+template <>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<const std::string*>(
+    JNIEnv* env,
+    const std::string* const& input) {
+  if (!input) {
+    return nullptr;
+  }
+  return base::android::ConvertUTF8ToJavaString(env, *input);
+}
+
 template <>
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<const char*>(
     JNIEnv* env,
@@ -48,6 +59,17 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<std::u16string>(
     JNIEnv* env,
     const std::u16string& input) {
   return base::android::ConvertUTF16ToJavaString(env, input);
+}
+
+// Enables vector<const std::u16string*> to avoid copies.
+template <>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<const std::u16string*>(
+    JNIEnv* env,
+    const std::u16string* const& input) {
+  if (!input) {
+    return nullptr;
+  }
+  return base::android::ConvertUTF16ToJavaString(env, *input);
 }
 
 template <>

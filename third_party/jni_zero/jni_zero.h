@@ -759,21 +759,6 @@ struct ConvertArray<ContainerType> {
  private:
   using ElementType = std::remove_const_t<typename ContainerType::value_type>;
 
-  static ScopedJavaLocalRef<jobject> ElementToJniType(
-      JNIEnv* env,
-      const ElementType& element) {
-    if constexpr (std::is_pointer_v<ElementType> &&
-                  !std::is_fundamental_v<std::remove_pointer_t<ElementType>>) {
-      // Dereference object pointers to enable using vector<ContainerType*>
-      // in order to avoid copying objects for the sake of JNI.
-      return jni_zero::ToJniType<
-          std::remove_const_t<std::remove_pointer_t<ElementType>>>(env,
-                                                                   *element);
-    } else {
-      return jni_zero::ToJniType<ElementType>(env, element);
-    }
-  }
-
  public:
   static ContainerType FromJniType(JNIEnv* env,
                                    const JavaRef<jobjectArray>& j_array) {
@@ -822,7 +807,8 @@ struct ConvertArray<ContainerType> {
       if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
         env->SetObjectArrayElement(j_array, i, value.obj());
       } else {
-        ScopedJavaLocalRef<jobject> element = ElementToJniType(env, value);
+        ScopedJavaLocalRef<jobject> element =
+            jni_zero::ToJniType<ElementType>(env, value);
         env->SetObjectArrayElement(j_array, i, element.obj());
       }
       ++i;
