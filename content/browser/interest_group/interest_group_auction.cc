@@ -1023,9 +1023,14 @@ InterestGroupAuction::Bid::GetAdDescriptorWithReplacements() {
        auction->GetDeprecatedRenderURLReplacements()) {
     local_replacements.emplace_back(replacement.match, replacement.replacement);
   }
-  return blink::AdDescriptor(GURL(SubstituteMappedStrings(
-                                 ad_descriptor.url.spec(), local_replacements)),
-                             ad_descriptor.size);
+  GURL url_with_replacements = GURL(
+      SubstituteMappedStrings(ad_descriptor.url.spec(), local_replacements));
+
+  if (url_with_replacements.is_valid()) {
+    return blink::AdDescriptor(GURL(std::move(url_with_replacements)),
+                               ad_descriptor.size);
+  }
+  return ad_descriptor;
 }
 
 // If the auction config specified 'deprecatedRenderURLReplacements', this will
@@ -1042,10 +1047,15 @@ InterestGroupAuction::Bid::GetComponentAdDescriptorsWithReplacements() {
   }
 
   for (auto& ad_component_descriptor : ad_component_descriptors) {
-    local_component_ad_descriptors.emplace_back(
-        GURL(SubstituteMappedStrings(ad_component_descriptor.url.spec(),
-                                     local_replacements)),
-        ad_component_descriptor.size);
+    GURL url_with_replacements = GURL(SubstituteMappedStrings(
+        ad_component_descriptor.url.spec(), local_replacements));
+
+    if (url_with_replacements.is_valid()) {
+      local_component_ad_descriptors.emplace_back(
+          GURL(std::move(url_with_replacements)), ad_component_descriptor.size);
+    } else {
+      local_component_ad_descriptors.emplace_back(ad_component_descriptor);
+    }
   }
   return local_component_ad_descriptors;
 }

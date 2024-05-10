@@ -10030,6 +10030,295 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// Run a multi-seller auction with multiple component auctions and ensure the
+// render url replacements do not occur if they create an invalid URL.
+IN_PROC_BROWSER_TEST_F(
+    DeprecatedRenderURLReplacementsEnabledTest,
+    MultipleComponentAuctionsWithWinnerNotReplacedWithBadURLReplacementsWithinHostname) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  GURL test_url2 =
+      embedded_https_test_server().GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  url::Origin test_origin2 = url::Origin::Create(test_url2);
+
+  GURL ad_url = GURL("https://${video_rendering_url}");
+  GURL expected_ad_url = ad_url;
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url2));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin2,
+                /*name=*/"boats",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "b.test", "/interest_group/bidding_logic_throws.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicURL: $2,
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements: {$5: $6, "%%echo%%": "echo"}
+          },
+          {
+            // This seller loses because the bidding logic used for it, throws
+            // an error. So the replacements will have no effect.
+            seller: $3,
+            decisionLogicURL: $4,
+            interestGroupBuyers: [$3],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+          }]
+        })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      test_origin2,
+      embedded_https_test_server().GetURL("b.test",
+                                          "/interest_group/decision_logic.js"),
+      "${video_rendering_url}",
+      "${video_rendering_url}https%3A%2F%2Fcomponent_seller_url_2${post_"
+      "component_url_string}");
+
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_TRUE(observer.mapped_url()) << urn_url;
+  EXPECT_EQ(expected_ad_url, observer.mapped_url());
+}
+
+// Run a multi-seller auction with multiple component auctions and ensure the
+// render url replacements occur within the hostname.
+IN_PROC_BROWSER_TEST_F(
+    DeprecatedRenderURLReplacementsEnabledTest,
+    MultipleComponentAuctionsWithWinnerWithURLReplacementsWithinHostname) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  GURL test_url2 =
+      embedded_https_test_server().GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  url::Origin test_origin2 = url::Origin::Create(test_url2);
+
+  GURL ad_url = GURL("https://${video_rendering_url}");
+  GURL expected_ad_url = GURL("https://example.com");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url2));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin2,
+                /*name=*/"boats",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "b.test", "/interest_group/bidding_logic_throws.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicURL: $2,
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:{$5: $6, "%%echo%%": "echo"}
+          },
+          {
+            // This seller loses because the bidding logic used for it, throws
+            // an error. So the replacements will have no effect.
+            seller: $3,
+            decisionLogicURL: $4,
+            interestGroupBuyers: [$3],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+          }]
+        })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      test_origin2,
+      embedded_https_test_server().GetURL("b.test",
+                                          "/interest_group/decision_logic.js"),
+      "${video_rendering_url}", "example.com");
+
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_TRUE(observer.mapped_url()) << urn_url;
+  EXPECT_EQ(expected_ad_url, observer.mapped_url());
+}
+
+// Run a multi-seller auction with multiple component auctions and ensure that
+// we can chain together replacements from deprecatedRenderURLReplacements with
+// replacements in deprecatedReplaceInURN.
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       MultipleComponentAuctionsWithChainingReplacements) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  GURL test_url2 =
+      embedded_https_test_server().GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  url::Origin test_origin2 = url::Origin::Create(test_url2);
+
+  GURL ad_url = GURL("https://${video_rendering_url}");
+  GURL expected_ad_url = GURL(
+      "https://${video_rendering_url}/"
+      "https%3A%2F%2Fcomponent_seller_url_2%%post_component_url_string%%/");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url2));
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin2,
+                /*name=*/"boats",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "b.test", "/interest_group/bidding_logic_throws.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+          seller: $1,
+          decisionLogicURL: $2,
+          // Signal to the top-level seller to allow participation in a
+          // component auction.
+          auctionSignals: "sellerAllowsComponentAuction",
+          componentAuctions: [{
+            seller: $1,
+            decisionLogicURL: $2,
+            interestGroupBuyers: [$1],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+            deprecatedRenderURLReplacements:{$5: $6, "%%echo%%": "echo"}
+          },
+          {
+            // This seller loses because the bidding logic used for it, throws
+            // an error. So the replacements will have no effect.
+            seller: $3,
+            decisionLogicURL: $4,
+            interestGroupBuyers: [$3],
+            // Signal to the bidder and component seller to allow participation
+            // in a component auction.
+            auctionSignals: "bidderAllowsComponentAuction,"+
+                            "sellerAllowsComponentAuction",
+          }]
+        })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      test_origin2,
+      embedded_https_test_server().GetURL("b.test",
+                                          "/interest_group/decision_logic.js"),
+      "${video_rendering_url}",
+      "${video_rendering_url}/"
+      "https%3A%2F%2Fcomponent_seller_url_2%%post_component_url_string%%");
+
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+    EXPECT_EQ(expected_ad_url, observer.mapped_url());
+  }
+  EXPECT_TRUE(ReplaceInURNInJS(
+      urn_url, {{"${video_rendering_url}", "example.com/%%MORE_MACROS%%"},
+                {"%%post_component_url_string%%", "POST_COMPONENT_STUFF"}}));
+  GURL new_expected_url = GURL(
+      "https://example.com/%%MORE_MACROS%%/"
+      "https%3A%2F%2Fcomponent_seller_url_2POST_COMPONENT_STUFF/");
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_EQ(new_expected_url, observer.mapped_url());
+  }
+}
+
 // Run a multi-seller auction with multiple component auctions, and ensure an
 // error is thrown when any of the component auctions pass badly formatted
 // replacements.
@@ -10187,6 +10476,299 @@ IN_PROC_BROWSER_TEST_F(
         "may only specify 'deprecatedRenderURLReplacements' if they do not "
         "have  'componentAuctions'.";
     EXPECT_EQ(result, expected_error_message);
+  }
+}
+// This tests for when a replacement is done within
+// deprecatedRenderURLReplacements, that the URL created after is a valid one,
+// because it would crash otherwise.
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       ReplacementWithInvalidURLReplacement) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL("https://${video_rendering_url}");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+         seller: $1,
+         decisionLogicURL: $2,
+         interestGroupBuyers: [$1],
+         deprecatedRenderURLReplacements: {$3: $4, "%%echo%%": "echo"}
+       })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      "${video_rendering_url}",
+      "${video_rendering_url}https%3A%2F%2Fcomponent_seller_url_2${post_"
+      "component_url_string}");
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_TRUE(observer.mapped_url()) << urn_url;
+  EXPECT_EQ(ad_url, observer.mapped_url());
+}
+
+// This tests that replacements can be made within the hostname and in the path
+// together.
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       ReplacementWithinHostnameAndPath) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL("https://${host}/%%path%%https%3A%2F%2Fexample.com");
+  GURL expected_ad_url =
+      GURL("https://host/path?query=https%3A%2F%2Fexample.com");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+         seller: $1,
+         decisionLogicURL: $2,
+         interestGroupBuyers: [$1],
+         deprecatedRenderURLReplacements: {$3: "host", $4: $5}
+       })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      "${host}", "%%path%%", "path?query=");
+
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_TRUE(observer.mapped_url()) << urn_url;
+  EXPECT_EQ(expected_ad_url, observer.mapped_url());
+}
+
+// This tests that replacements can be made within the hostname and the path,
+// specifically that by adding a '/' within the replacements will still keep it
+// valid.
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       ReplacementWithinHostnameAndPathWithoutSlashSeperator) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL("https://${host}${path}example.com");
+  GURL expected_ad_url =
+      GURL("https://host/file.html?query=https%3A%2F%2Fexample.com/");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+         seller: $1,
+         decisionLogicURL: $2,
+         interestGroupBuyers: [$1],
+         deprecatedRenderURLReplacements:{$3: $4, $5: $6}
+       })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      "${host}", "host/file.html", "${path}", "?query=https%3A%2F%2F");
+
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_TRUE(observer.mapped_url()) << urn_url;
+  EXPECT_EQ(expected_ad_url, observer.mapped_url());
+}
+
+// This tests for when a replacement is done within
+// deprecatedRenderURLReplacements, that another can be done
+// properly with deprecatedReplaceInURN.
+IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
+                       ChainingReplacements) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL("https://${video_rendering_url}");
+  GURL expected_ad_url = GURL(
+      "https://${video_rendering_url}/"
+      "https%3A%2F%2Fcomponent_seller_url_2%%post_component_url_string%%/");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+         seller: $1,
+         decisionLogicURL: $2,
+         interestGroupBuyers: [$1],
+         deprecatedRenderURLReplacements: {$3: $4, "%%echo%%": "echo"}
+       })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"),
+      "${video_rendering_url}",
+      "${video_rendering_url}/https%3A%2F%2Fcomponent_seller_url_2%%post_"
+      "component_url_string%%");
+  auto result = RunAuctionAndWait(auction_config);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+    EXPECT_EQ(expected_ad_url, observer.mapped_url());
+  }
+
+  EXPECT_TRUE(ReplaceInURNInJS(
+      urn_url, {{"${video_rendering_url}", "example.com/%%MORE_MACROS%%"},
+                {"%%post_component_url_string%%", "POST_COMPONENT_STUFF"}}));
+  GURL new_expected_url = GURL(
+      "https://example.com/%%MORE_MACROS%%/"
+      "https%3A%2F%2Fcomponent_seller_url_2POST_COMPONENT_STUFF/");
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_EQ(new_expected_url, observer.mapped_url());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       PercentsInRenderURLHostnameThrowsTypeError) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  const char kScriptTemplate[] = R"(
+    (async function() {
+      try {
+        await navigator.joinAdInterestGroup(
+            {
+              name: 'cars',
+              owner: $1,
+              ads: [{name:"foo",renderURL:$2}],
+            },
+            /*joinDurationSec=*/1);
+      } catch (e) {
+        return e.toString();
+      }
+      return 'done';
+    })())";
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'joinAdInterestGroup' on "
+                "'Navigator': ad "
+                "renderURL 'https://%%%%host%%%%example.com' for "
+                "AuctionAdInterestGroup with "
+                "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
+                origin_string.c_str()),
+            EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str(),
+                                      "https://%%host%%example.com")));
+  WaitForAccessObserved({});
+}
+
+// When trying to replace a render URL with deprecatedReplaceInURN, if the new
+// URL is invalid, the URL will remain unchanged.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithWinnerInvalidReplacedURNDoesNotChange) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = GURL("https://${video_rendering_url}");
+  GURL expected_ad_url = ad_url;
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0, /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+      })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"));
+  auto result = RunAuctionAndWait(auction_config,
+                                  /*execution_target=*/std::nullopt);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+    EXPECT_EQ(ad_url, observer.mapped_url());
+  }
+
+  EXPECT_TRUE(ReplaceInURNInJS(
+      urn_url, {{"${video_rendering_url}",
+                 "${video_rendering_url}https%3A%2F%2Fcomponent_seller_url_2${"
+                 "post_component_url_string}"}}));
+
+  {
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_EQ(expected_ad_url, observer.mapped_url());
   }
 }
 
