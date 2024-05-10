@@ -27,8 +27,6 @@ void JavaScriptCallStackGenerator::OnCollectorFinished(
 
 void JavaScriptCallStackGenerator::CollectJavaScriptCallStack(
     CollectJavaScriptCallStackCallback callback) {
-  if (RuntimeEnabledFeatures::
-          DocumentPolicyIncludeJSCallStacksInCrashReportsEnabled()) {
     std::unique_ptr<JavaScriptCallStackCollector> call_stack_collector =
         std::make_unique<JavaScriptCallStackCollector>(
             std::move(callback),
@@ -37,7 +35,6 @@ void JavaScriptCallStackGenerator::CollectJavaScriptCallStack(
     JavaScriptCallStackCollector* raw_collector = call_stack_collector.get();
     collectors_.Set(raw_collector, std::move(call_stack_collector));
     raw_collector->CollectJavaScriptCallStack();
-  }
 }
 
 void JavaScriptCallStackGenerator::Bind(

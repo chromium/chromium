@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -79,6 +81,12 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
     return;
   }
   ExecutionContext* execution_context = ToExecutionContext(script_state);
+  if (!RuntimeEnabledFeatures::
+          DocumentPolicyIncludeJSCallStacksInCrashReportsEnabled(
+              execution_context)) {
+    PostHandleCollectedCallStackTask(collector, builder);
+    return;
+  }
   DOMWrapperWorld& world = script_state->World();
   auto* execution_dom_window = DynamicTo<LocalDOMWindow>(execution_context);
   LocalFrame* frame =
@@ -94,6 +102,9 @@ void GenerateJavaScriptCallStack(v8::Isolate* isolate, void* data) {
           "Website owner has not opted in for JS call stacks in crash "
           "reports.");
     } else {
+      UseCounter::Count(
+          execution_context,
+          WebFeature::kDocumentPolicyIncludeJSCallStacksInCrashReports);
       FormatStackTrace(isolate, builder);
     }
   }

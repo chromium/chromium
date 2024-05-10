@@ -278,8 +278,6 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
           CrossThreadBindRepeating(&V8DetailedMemoryReporterImpl::Bind)),
       main_thread_task_runner);
 
-  if (RuntimeEnabledFeatures::
-          DocumentPolicyIncludeJSCallStacksInCrashReportsEnabled()) {
     DCHECK(Platform::Current());
     // We need to use the IO task runner here because the call stack generator
     // should work even when the main thread is blocked.
@@ -287,7 +285,6 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&JavaScriptCallStackGenerator::Bind)),
         Platform::Current()->GetIOTaskRunner());
-  }
 }
 
 void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {

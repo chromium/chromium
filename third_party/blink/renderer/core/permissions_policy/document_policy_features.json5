@@ -147,7 +147,6 @@
       document_policy_name: "include-js-call-stacks-in-crash-reports",
       value_type: "Bool",
       default_value: "false",
-      depends_on: ["DocumentPolicyIncludeJSCallStacksInCrashReports"],
     }
   ],
 }

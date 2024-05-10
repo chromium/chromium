@@ -14264,6 +14264,20 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
   same_document_navigation_requests_.erase(navigation_token);
 }
 
+bool IsDocumentPolicyIncludeJSCallStacksInCrashReportsEnabled(
+    content::RenderFrameHost* rfh) {
+  if (std::optional<bool> state = base::FeatureList::GetStateIfOverridden(
+          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports);
+      state.has_value()) {
+    return state.value();
+  }
+  content::RuntimeFeatureStateDocumentData* document_data =
+      content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
+  CHECK(document_data);
+  return document_data->runtime_feature_state_read_context()
+      .IsDocumentPolicyIncludeJSCallStacksInCrashReportsEnabled();
+}
+
 void RenderFrameHostImpl::MaybeGenerateCrashReport(
     base::TerminationStatus status,
     int exit_code) {
@@ -14311,9 +14325,8 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   if (!reason.empty()) {
     body.Set("reason", reason);
     if (reason == "unresponsive" &&
-        base::FeatureList::IsEnabled(
-            blink::features::
-                kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
+        IsDocumentPolicyIncludeJSCallStacksInCrashReportsEnabled(
+            FromFrameToken(GetProcess()->GetID(), GetFrameToken()))) {
       RenderProcessHostImpl* rph =
           static_cast<RenderProcessHostImpl*>(GetProcess());
       const std::string& unresponsive_document_javascript_call_stack =
