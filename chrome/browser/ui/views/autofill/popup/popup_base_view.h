@@ -129,9 +129,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // Return the web contents related to this.
   content::WebContents* GetWebContents() const;
 
-  // Must return the container view for this popup.
-  gfx::NativeView container_view();
-
   // Scoped observation for focus events.
   base::ScopedObservation<views::WidgetFocusManager,
                           views::WidgetFocusChangeListener>
