@@ -358,6 +358,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // UseCounter
   void CountUse(mojom::WebFeature) override;
   void CountDeprecation(mojom::WebFeature) override;
+  void CountWebDXFeature(mojom::blink::WebDXFeature) override;
 
   void SetCommitReason(CommitReason reason) { commit_reason_ = reason; }
 

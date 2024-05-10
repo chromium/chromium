@@ -3615,6 +3615,13 @@ bool Internals::isUseCounted(Document* document, uint32_t feature) {
   return document->IsUseCounted(static_cast<WebFeature>(feature));
 }
 
+bool Internals::isWebDXFeatureUseCounted(Document* document, uint32_t feature) {
+  if (feature >= static_cast<int32_t>(WebDXFeature::kNumberOfFeatures)) {
+    return false;
+  }
+  return document->IsWebDXFeatureCounted(static_cast<WebDXFeature>(feature));
+}
+
 bool Internals::isCSSPropertyUseCounted(Document* document,
                                         const String& property_name) {
   return document->IsPropertyCounted(

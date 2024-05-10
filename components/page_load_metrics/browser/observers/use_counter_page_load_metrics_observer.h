@@ -17,6 +17,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
 
 class UseCounterMetricsRecorder {
@@ -49,7 +50,10 @@ class UseCounterMetricsRecorder {
 
   // Records UKM subset of WebFeatures, if the WebFeature is observed in the
   // page.
-  void RecordUkmFeatures(ukm::SourceId ukm_source_id);
+  void RecordWebFeatures(ukm::SourceId ukm_source_id);
+
+  // Records WebDXFeatures that are based on other WebFeature use counters.
+  void RecordWebDXFeatures(ukm::SourceId ukm_source_id);
 
   using UkmFeatureList = base::flat_set<blink::mojom::WebFeature>;
 
@@ -70,6 +74,7 @@ class UseCounterMetricsRecorder {
   // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_features_;
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_main_frame_features_;
+  AtMostOnceEnumUmaDeferrer<blink::mojom::WebDXFeature> uma_webdx_features_;
   std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
       uma_css_properties_;
   std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>

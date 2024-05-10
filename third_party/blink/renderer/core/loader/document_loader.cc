@@ -3169,6 +3169,10 @@ void DocumentLoader::CountDeprecation(mojom::WebFeature feature) {
   return use_counter_.Count(feature, GetFrame());
 }
 
+void DocumentLoader::CountWebDXFeature(mojom::blink::WebDXFeature feature) {
+  return use_counter_.CountWebDXFeature(feature, GetFrame());
+}
+
 void DocumentLoader::RecordAcceptLanguageAndContentLanguageMetric() {
   // Get document Content-Language value, which has been set as the top-most
   // content language value from http head.

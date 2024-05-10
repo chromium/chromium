@@ -747,6 +747,15 @@ void LocalDOMWindow::CountUse(mojom::WebFeature feature) {
     loader->CountUse(feature);
 }
 
+void LocalDOMWindow::CountWebDXFeature(mojom::blink::WebDXFeature feature) {
+  if (!GetFrame()) {
+    return;
+  }
+  if (auto* loader = GetFrame()->Loader().GetDocumentLoader()) {
+    loader->CountWebDXFeature(feature);
+  }
+}
+
 void LocalDOMWindow::CountPermissionsPolicyUsage(
     mojom::blink::PermissionsPolicyFeature feature,
     UseCounterImpl::PermissionsPolicyUsageType type) {

@@ -114,6 +114,7 @@ class CORE_EXPORT UseCounterImpl final {
   // Repeated calls are ignored.
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
   void Count(WebFeature, const LocalFrame*);
+  void CountWebDXFeature(WebDXFeature, const LocalFrame*);
   void CountPermissionsPolicyUsage(mojom::blink::PermissionsPolicyFeature,
                                    PermissionsPolicyUsageType,
                                    const LocalFrame&);
@@ -122,6 +123,7 @@ class CORE_EXPORT UseCounterImpl final {
   // (except when muted).  Does include features seen in documents which have
   // reporting disabled.
   bool IsCounted(WebFeature) const;
+  bool IsWebDXFeatureCounted(WebDXFeature) const;
   bool IsCounted(CSSPropertyID unresolved_property, CSSPropertyType) const;
 
   // Retains a reference to the observer to notify of UseCounterImpl changes.
@@ -135,6 +137,7 @@ class CORE_EXPORT UseCounterImpl final {
   void UnmuteForInspector();
 
   void ClearMeasurementForTesting(WebFeature);
+  void ClearMeasurementForTesting(WebDXFeature);
 
   void Trace(Visitor*) const;
 

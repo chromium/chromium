@@ -29,6 +29,11 @@ class DetachableUseCounter final
       use_counter_->CountDeprecation(feature);
     }
   }
+  void CountWebDXFeature(mojom::blink::WebDXFeature feature) override {
+    if (use_counter_) {
+      use_counter_->CountWebDXFeature(feature);
+    }
+  }
   void Trace(Visitor* visitor) const override { visitor->Trace(use_counter_); }
 
   void Detach() { use_counter_ = nullptr; }

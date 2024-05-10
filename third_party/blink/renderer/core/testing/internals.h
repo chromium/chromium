@@ -526,6 +526,7 @@ class Internals final : public ScriptWrappable {
   // Return true if the given use counter exists for the given document.
   // |feature| must be one of the values from the WebFeature enum.
   bool isUseCounted(Document*, uint32_t feature);
+  bool isWebDXFeatureUseCounted(Document*, uint32_t feature);
   bool isCSSPropertyUseCounted(Document*, const String&);
   bool isAnimatedCSSPropertyUseCounted(Document*, const String&);
   void clearUseCounter(Document*, uint32_t feature);

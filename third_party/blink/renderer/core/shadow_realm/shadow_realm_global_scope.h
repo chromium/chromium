@@ -34,6 +34,7 @@ class CORE_EXPORT ShadowRealmGlobalScope final : public EventTarget,
   // UseCounter:
   void CountUse(mojom::blink::WebFeature feature) override;
   void CountDeprecation(mojom::blink::WebFeature feature) override;
+  void CountWebDXFeature(mojom::blink::WebDXFeature feature) override;
 
   // ExecutionContext:
   bool IsShadowRealmGlobalScope() const override;

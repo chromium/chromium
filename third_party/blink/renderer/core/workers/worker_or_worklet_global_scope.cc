@@ -279,7 +279,7 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   if (IsContextDestroyed())
     return;
 
-  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
+  DCHECK_NE(WebFeature::kPageVisits, feature);
   DCHECK_GT(WebFeature::kNumberOfFeatures, feature);
   if (used_features_[static_cast<size_t>(feature)])
     return;
@@ -323,6 +323,27 @@ void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
 
 void WorkerOrWorkletGlobalScope::CountDeprecation(WebFeature feature) {
   Deprecation::CountDeprecation(this, feature);
+}
+
+void WorkerOrWorkletGlobalScope::CountWebDXFeature(WebDXFeature feature) {
+  DCHECK(IsContextThread());
+
+  // `reporting_proxy_` should outlive `this` but there seems a situation where
+  // the assumption is broken. Don't count features while the context is
+  // destroyed.
+  // TODO(https://crbug.com/40058806): Fix the lifetime of WorkerReportingProxy.
+  if (IsContextDestroyed()) {
+    return;
+  }
+
+  DCHECK_NE(WebDXFeature::kPageVisits, feature);
+  DCHECK_GT(WebDXFeature::kNumberOfFeatures, feature);
+  if (used_webdx_features_[static_cast<size_t>(feature)]) {
+    return;
+  }
+  used_webdx_features_.set(static_cast<size_t>(feature));
+
+  ReportingProxy().CountWebDXFeature(feature);
 }
 
 ResourceLoadScheduler::ThrottleOptionOverride

@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -22,6 +23,7 @@ namespace {
 
 using MimeTypeCheck = AllowedByNosniff::MimeTypeCheck;
 using WebFeature = mojom::WebFeature;
+using WebDXFeature = mojom::blink::WebDXFeature;
 using ::testing::_;
 
 class MockUseCounter : public GarbageCollected<MockUseCounter>,
@@ -31,8 +33,9 @@ class MockUseCounter : public GarbageCollected<MockUseCounter>,
     return MakeGarbageCollected<testing::StrictMock<MockUseCounter>>();
   }
 
-  MOCK_METHOD1(CountUse, void(mojom::WebFeature));
-  MOCK_METHOD1(CountDeprecation, void(mojom::WebFeature));
+  MOCK_METHOD1(CountUse, void(WebFeature));
+  MOCK_METHOD1(CountWebDXFeature, void(WebDXFeature));
+  MOCK_METHOD1(CountDeprecation, void(WebFeature));
 };
 
 class MockConsoleLogger : public GarbageCollected<MockConsoleLogger>,

@@ -9116,6 +9116,18 @@ void Document::CountDeprecation(mojom::WebFeature feature) {
     execution_context_->CountDeprecation(feature);
 }
 
+void Document::CountWebDXFeature(mojom::blink::WebDXFeature feature) const {
+  if (execution_context_) {
+    execution_context_->CountWebDXFeature(feature);
+  }
+}
+
+void Document::CountWebDXFeature(mojom::blink::WebDXFeature feature) {
+  if (execution_context_) {
+    execution_context_->CountWebDXFeature(feature);
+  }
+}
+
 void Document::CountProperty(CSSPropertyID property) const {
   if (DocumentLoader* loader = Loader()) {
     loader->GetUseCounter().Count(
@@ -9133,6 +9145,13 @@ void Document::CountAnimatedProperty(CSSPropertyID property) const {
 bool Document::IsUseCounted(mojom::WebFeature feature) const {
   if (DocumentLoader* loader = Loader()) {
     return loader->GetUseCounter().IsCounted(feature);
+  }
+  return false;
+}
+
+bool Document::IsWebDXFeatureCounted(mojom::blink::WebDXFeature feature) const {
+  if (DocumentLoader* loader = Loader()) {
+    return loader->GetUseCounter().IsWebDXFeatureCounted(feature);
   }
   return false;
 }

@@ -21,6 +21,14 @@ void MainThreadWorkletReportingProxy::CountFeature(WebFeature feature) {
   UseCounter::Count(context_, feature);
 }
 
+void MainThreadWorkletReportingProxy::CountWebDXFeature(
+    mojom::blink::WebDXFeature feature) {
+  DCHECK(IsMainThread());
+  // A parent context is on the same thread, so just record API use in the
+  // context's UseCounter.
+  UseCounter::CountWebDXFeature(context_, feature);
+}
+
 void MainThreadWorkletReportingProxy::DidTerminateWorkerThread() {
   // MainThreadWorklet does not start and terminate a thread.
   NOTREACHED();

@@ -1879,6 +1879,7 @@ mojom_component("web_feature_mojo_bindings") {
   sources = [
     "use_counter/metrics/css_property_id.mojom",
     "use_counter/metrics/web_feature.mojom",
+    "use_counter/metrics/webdx_feature.mojom",
   ]
 
   macro_prefix = "WEB_FEATURE_MOJO_BINDINGS_MOJOM"

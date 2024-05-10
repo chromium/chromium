@@ -99,6 +99,12 @@ void ThreadedMessagingProxyBase::CountFeature(WebFeature feature) {
   UseCounter::Count(execution_context_, feature);
 }
 
+void ThreadedMessagingProxyBase::CountWebDXFeature(
+    mojom::blink::WebDXFeature feature) {
+  DCHECK(IsParentContextThread());
+  UseCounter::CountWebDXFeature(execution_context_, feature);
+}
+
 void ThreadedMessagingProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,

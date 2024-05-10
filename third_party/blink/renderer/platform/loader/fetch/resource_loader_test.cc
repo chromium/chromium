@@ -50,6 +50,7 @@ class MockUseCounter : public GarbageCollected<MockUseCounter>,
                        public UseCounter {
  public:
   MOCK_METHOD1(CountUse, void(mojom::WebFeature));
+  MOCK_METHOD1(CountWebDXFeature, void(mojom::blink::WebDXFeature));
   MOCK_METHOD1(CountDeprecation, void(mojom::WebFeature));
 };
 

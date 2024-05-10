@@ -207,6 +207,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeatures) {
       blink::mojom::UseCounterFeatureType::kCssProperty, 1};
   blink::UseCounterFeature feature_2 = {
       blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2};
+  blink::UseCounterFeature feature_3 = {
+      blink::mojom::UseCounterFeatureType::kWebDXFeature, 3};
 
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -222,6 +224,9 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeatures) {
   // Observe the third feature, update expected features sent across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_2);
   validator_.UpdateExpectPageLoadFeatures(feature_2);
+  // Observe the fourth feature, update expected features sent across IPC.
+  metrics_sender_->DidObserveNewFeatureUsage(feature_3);
+  validator_.UpdateExpectPageLoadFeatures(feature_3);
   // Fire the timer to trigger sending of features via an SendTiming call.
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedFeatures();
@@ -257,6 +262,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
       blink::mojom::UseCounterFeatureType::kCssProperty, 1};
   blink::UseCounterFeature feature_2 = {
       blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2};
+  blink::UseCounterFeature feature_3 = {
+      blink::mojom::UseCounterFeatureType::kWebDXFeature, 3};
 
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -292,6 +299,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
   // IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_2);
   validator_.UpdateExpectPageLoadFeatures(feature_2);
+  metrics_sender_->DidObserveNewFeatureUsage(feature_3);
+  validator_.UpdateExpectPageLoadFeatures(feature_3);
   // Fire the timer to trigger another sending of features via the second
   // SendTiming call.
   metrics_sender_->mock_timer()->Fire();

@@ -344,6 +344,7 @@ interface Internals {
     void setVisualViewportOffset(long x, long y);
 
     boolean isUseCounted(Document document, unsigned long feature);
+    boolean isWebDXFeatureUseCounted(Document document, unsigned long feature);
     boolean isCSSPropertyUseCounted(Document document, DOMString propertyName);
     boolean isAnimatedCSSPropertyUseCounted(Document document, DOMString propertyName);
     void clearUseCounter(Document document, unsigned long feature);

@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 
 namespace blink {
 
@@ -29,6 +30,9 @@ bool UseCounterFeature::IsValid() const {
     case mojom::UseCounterFeatureType::kWebFeature:
       return value_ < static_cast<UseCounterFeature::EnumValue>(
                           mojom::WebFeature::kNumberOfFeatures);
+    case mojom::UseCounterFeatureType::kWebDXFeature:
+      return value_ < static_cast<UseCounterFeature::EnumValue>(
+                          mojom::WebDXFeature::kNumberOfFeatures);
     case mojom::UseCounterFeatureType::kCssProperty:
     case mojom::UseCounterFeatureType::kAnimatedCssProperty:
       return value_ < static_cast<UseCounterFeature::EnumValue>(

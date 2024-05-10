@@ -212,6 +212,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // UseCounter orverrides:
   void CountUse(mojom::WebFeature feature) final;
+  void CountWebDXFeature(mojom::blink::WebDXFeature feature) final;
 
   // Count |feature| only when this window is associated with a cross-origin
   // iframe.

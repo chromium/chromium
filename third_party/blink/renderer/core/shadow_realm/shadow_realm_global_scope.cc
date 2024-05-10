@@ -46,6 +46,9 @@ void ShadowRealmGlobalScope::CountUse(mojom::blink::WebFeature feature) {}
 void ShadowRealmGlobalScope::CountDeprecation(
     mojom::blink::WebFeature feature) {}
 
+void ShadowRealmGlobalScope::CountWebDXFeature(
+    mojom::blink::WebDXFeature feature) {}
+
 bool ShadowRealmGlobalScope::IsShadowRealmGlobalScope() const {
   return true;
 }

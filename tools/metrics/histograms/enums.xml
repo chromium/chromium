@@ -35003,6 +35003,18 @@ This is true even if the type has been removed from the mojom file.
   <int value="9" label="kFailedToCommitInitTransaction"/>
 </enum>
 
+<enum name="WebDXFeatureObserver">
+<!-- Generated from third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.
+Called by update_use_counter_feature_enum.py.-->
+
+  <int value="0" label="PageVisits"/>
+  <int value="1" label="CompressionStreams"/>
+  <int value="2" label="ViewTransitions"/>
+  <int value="3" label="Popover"/>
+  <int value="4" label="Subgrid"/>
+  <int value="5" label="CascadeLayers"/>
+</enum>
+
 <enum name="WebFontCacheHit">
   <int value="0" label="Miss"/>
   <int value="1" label="Hit disk cache"/>

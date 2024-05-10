@@ -1904,11 +1904,16 @@ class CORE_EXPORT Document : public ContainerNode,
   void CountUse(mojom::WebFeature feature) final;
   void CountDeprecation(mojom::WebFeature feature) final;
   void CountUse(mojom::WebFeature feature) const;
+  void CountWebDXFeature(mojom::blink::WebDXFeature feature) final;
+  void CountWebDXFeature(mojom::blink::WebDXFeature feature) const;
   void CountProperty(CSSPropertyID property_id) const;
   void CountAnimatedProperty(CSSPropertyID property_id) const;
   // Return whether the Feature was previously counted for this document.
   // NOTE: only for use in testing.
   bool IsUseCounted(mojom::WebFeature) const;
+  // Return whether the property was previously counted for this document.
+  // NOTE: only for use in testing.
+  bool IsWebDXFeatureCounted(mojom::blink::WebDXFeature) const;
   // Return whether the property was previously counted for this document.
   // NOTE: only for use in testing.
   bool IsPropertyCounted(CSSPropertyID property) const;

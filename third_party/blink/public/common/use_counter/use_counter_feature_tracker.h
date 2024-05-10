@@ -8,11 +8,13 @@
 #include <array>
 #include <bitset>
 #include <vector>
+
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 
 namespace blink {
 
@@ -34,6 +36,8 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
   // Track what features have been recorded.
   std::bitset<static_cast<size_t>(mojom::WebFeature::kNumberOfFeatures)>
       web_features_;
+  std::bitset<static_cast<size_t>(mojom::WebDXFeature::kNumberOfFeatures)>
+      webdx_features_;
   std::bitset<static_cast<size_t>(mojom::CSSSampleId::kMaxValue) + 1>
       css_properties_;
   std::bitset<static_cast<size_t>(mojom::CSSSampleId::kMaxValue) + 1>

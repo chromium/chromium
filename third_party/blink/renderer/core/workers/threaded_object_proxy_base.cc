@@ -30,6 +30,19 @@ void ThreadedObjectProxyBase::CountFeature(WebFeature feature) {
                           MessagingProxyWeakPtr(), feature));
 }
 
+void ThreadedObjectProxyBase::CountWebDXFeature(WebDXFeature feature) {
+  if (!GetParentExecutionContextTaskRunners()) {
+    DCHECK(GetParentAgentGroupTaskRunner());
+    return;
+  }
+
+  PostCrossThreadTask(
+      *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
+      FROM_HERE,
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::CountWebDXFeature,
+                          MessagingProxyWeakPtr(), feature));
+}
+
 void ThreadedObjectProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,

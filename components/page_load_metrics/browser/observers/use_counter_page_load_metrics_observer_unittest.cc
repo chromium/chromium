@@ -17,12 +17,14 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "url/gurl.h"
 
 namespace {
 
 const char kTestUrl[] = "https://www.google.com";
 using WebFeature = blink::mojom::WebFeature;
+using WebDXFeature = blink::mojom::WebDXFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using FeatureType = blink::mojom::UseCounterFeatureType;
 
@@ -36,6 +38,8 @@ const char* GetUseCounterHistogramName(
   switch (feature_type) {
     case FeatureType::kWebFeature:
       return "Blink.UseCounter.Features";
+    case FeatureType::kWebDXFeature:
+      return "Blink.UseCounter.WebDXFeatures";
     case FeatureType::kCssProperty:
       return "Blink.UseCounter.CSSProperties";
     case FeatureType::kAnimatedCssProperty:
@@ -87,6 +91,9 @@ class UseCounterMetricsRecorderTest
     recorder.RecordOrDeferUseCounterFeature(
         rfh, {blink::mojom::UseCounterFeatureType::kWebFeature,
               static_cast<int>(WebFeature::kPageVisits)});
+    recorder.RecordOrDeferUseCounterFeature(
+        rfh, {blink::mojom::UseCounterFeatureType::kWebDXFeature,
+              static_cast<int>(WebDXFeature::kPageVisits)});
     recorder.RecordOrDeferUseCounterFeature(
         rfh,
         {FeatureType::kCssProperty,
@@ -172,10 +179,12 @@ TEST_P(UseCounterMetricsRecorderTest, CountFeatures) {
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
       },
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
           {blink::mojom::UseCounterFeatureType::
                kPermissionsPolicyViolationEnforce,
@@ -189,6 +198,9 @@ TEST_P(UseCounterMetricsRecorderTest, CountDuplicatedFeatures) {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
@@ -200,6 +212,8 @@ TEST_P(UseCounterMetricsRecorderTest, CountDuplicatedFeatures) {
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
           {blink::mojom::UseCounterFeatureType::
                kPermissionsPolicyViolationEnforce,
@@ -274,15 +288,22 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
   HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebFeature, 0}});
 }
 
+TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneWebDXFeature) {
+  HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebDXFeature, 0}});
+}
+
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
   HistogramBasicTest(
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
       },
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
           {blink::mojom::UseCounterFeatureType::
                kPermissionsPolicyViolationEnforce,
@@ -296,6 +317,9 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kCssProperty, 1},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
@@ -307,6 +331,8 @@ TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
           {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebDXFeature, 2},
           {blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2},
           {blink::mojom::UseCounterFeatureType::
                kPermissionsPolicyViolationEnforce,

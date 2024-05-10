@@ -4467,7 +4467,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: used by Chrome Platform Status dashboard -->
 
-<!-- https://www.chromestatus.com/metrics/css/animated -->
+<!-- https://chromestatus.com/metrics/feature/popularity -->
 
   <owner>chasej@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
@@ -4559,6 +4559,29 @@ chromium-metrics-reviews@google.com.
     triggered when ExecutionContext::IsFeatureEnabled with
     ReportOptions::ReportOnFailure as param returns false, at most once per page
     visit.
+
+    Not recorded if the page is prerendered and cancelled.
+  </summary>
+</histogram>
+
+<histogram name="Blink.UseCounter.WebDXFeatures" enum="WebDXFeatureObserver"
+    expires_after="2025-05-10">
+<!-- expires-never: used by Chrome Platform Status dashboard, etc -->
+
+<!-- https://chromestatus.com -->
+
+  <owner>jstenback@google.com</owner>
+  <owner>feature-control@chromium.org</owner>
+  <summary>
+    Count of how many page loads use various Web Platform features (as defined
+    by https://github.com/web-platform-dx/web-features/) across all frames in a
+    page. The PageVisits bucket is incremented for each page load, and the other
+    buckets incremented at most once per PageVisit via blink::UseCounter and
+    UseCounterPageLoadMetricsObserver.
+
+    Note that this histogram only counts page with HTTP/HTTPS URL scheme. Web DX
+    Feature used in pages with other URL schemes might be counted in other
+    histograms.
 
     Not recorded if the page is prerendered and cancelled.
   </summary>
