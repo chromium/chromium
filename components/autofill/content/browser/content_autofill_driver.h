@@ -162,7 +162,6 @@ class ContentAutofillDriver : public AutofillDriver,
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
-  void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
 
   // Called on certain types of navigations by ContentAutofillDriverFactory.

@@ -443,7 +443,11 @@ void AutofillManager::OnHidePopup() {
 }
 
 void AutofillManager::OnSuggestionsHidden() {
-  driver().PopupHidden();
+  // If the unmask prompt is shown, keep showing the preview. The preview
+  // will be cleared when the prompt closes.
+  if (ShouldClearPreviewedForm()) {
+    driver().RendererShouldClearPreviewedForm();
+  }
   NotifyObservers(&Observer::OnSuggestionsHidden);
 }
 

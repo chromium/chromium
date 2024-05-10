@@ -82,7 +82,6 @@ class TestAutofillDriverTemplate : public T {
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
       mojom::AutofillSuggestionAvailability suggestion_availability) override {}
-  void PopupHidden() override {}
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
   void TriggerFormExtractionInDriverFrame() override {}
   void TriggerFormExtractionInAllFrames(

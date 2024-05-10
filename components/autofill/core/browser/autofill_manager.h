@@ -207,9 +207,6 @@ class AutofillManager
 
   // Events triggered by the renderer.
 
-  // Returns true only if the previewed form should be cleared.
-  virtual bool ShouldClearPreviewedForm() = 0;
-
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
   // Virtual for testing.
@@ -464,6 +461,9 @@ class AutofillManager
   void ParseFormAsync(
       const FormData& form,
       base::OnceCallback<void(AutofillManager&, const FormData&)> callback);
+
+  // Returns true only if the previewed form should be cleared.
+  virtual bool ShouldClearPreviewedForm() = 0;
 
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {

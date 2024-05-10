@@ -226,9 +226,6 @@ class AutofillDriver {
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) = 0;
 
-  // Informs the renderer that the popup has been hidden.
-  virtual void PopupHidden() = 0;
-
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.
   virtual void GetFourDigitCombinationsFromDOM(

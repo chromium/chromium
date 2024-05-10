@@ -222,9 +222,6 @@ void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,
     mojom::AutofillSuggestionAvailability suggestion_availability) {}
 
-void AutofillDriverIOS::PopupHidden() {
-}
-
 net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
   web::WebFramesManager* frames_manager =
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(web_state_);

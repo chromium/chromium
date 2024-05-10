@@ -110,7 +110,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
-  void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;
 
   bool is_processed() const { return processed_; }

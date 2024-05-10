@@ -208,14 +208,6 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
-void ContentAutofillDriver::PopupHidden() {
-  // If the unmask prompt is shown, keep showing the preview. The preview
-  // will be cleared when the prompt closes.
-  if (autofill_manager_->ShouldClearPreviewedForm()) {
-    RendererShouldClearPreviewedForm();
-  }
-}
-
 gfx::RectF ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates(
     const gfx::RectF& bounding_box) const {
   content::RenderWidgetHostView* view = render_frame_host_->GetView();
