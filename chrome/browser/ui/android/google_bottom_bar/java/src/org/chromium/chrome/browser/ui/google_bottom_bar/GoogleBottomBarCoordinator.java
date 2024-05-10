@@ -31,8 +31,8 @@ public class GoogleBottomBarCoordinator {
     }
 
     /** Returns true if the id of the custom button param is supported. */
-    public static boolean shouldUseCustomButtonParams(int customButtonParamsId) {
-        return BottomBarConfigCreator.shouldUseCustomButtonParams(customButtonParamsId);
+    public static boolean isSupported(int customButtonParamsId) {
+        return BottomBarConfigCreator.shouldAddToGoogleBottomBar(customButtonParamsId);
     }
 
     private final Context mContext;
@@ -56,6 +56,17 @@ public class GoogleBottomBarCoordinator {
                         context,
                         getButtonConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
+    }
+
+    /**
+     * Updates the state of a bottom bar button based on the provided parameters.
+     *
+     * @param params The parameters containing information relevant to the button update.
+     * @return {@code true} if the button was successfully updated, {@code false} otherwise.
+     */
+    public boolean updateBottomBarButton(CustomButtonParams params) {
+        return mGoogleBottomBarViewCreator.updateBottomBarButton(
+                BottomBarConfigCreator.createButtonConfigFromCustomParams(mContext, params));
     }
 
     /** Returns a view that contains the Google Bottom bar. */

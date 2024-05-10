@@ -18,17 +18,44 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
 public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
-    private static final List<Integer> SUPPORTED_BUTTON_IDS = Arrays.asList(100, 101, 104);
+    private static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
+            Map.of(
+                    100,
+                    ButtonId.SAVE,
+                    101,
+                    ButtonId.SHARE,
+                    103,
+                    ButtonId.PIH_BASIC,
+                    104,
+                    ButtonId.ADD_NOTES);
+
     private final Context mContext;
 
     /** Returns true if the id of the custom button param is supported. */
-    public static boolean shouldUseCustomButtonParams(int customButtonParamsId) {
-        return SUPPORTED_BUTTON_IDS.contains(customButtonParamsId);
+    static boolean shouldAddToGoogleBottomBar(int customButtonParamsId) {
+        return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.containsKey(customButtonParamsId);
+    }
+
+    /**
+     * Creates a ButtonConfig object based on the provided {@link CustomButtonParams}.
+     *
+     * @param context The Android Context.
+     * @param params The custom parameters for the button configuration.
+     * @return {@link BottomBarConfig}, or null if creation is not possible.
+     */
+    static @Nullable ButtonConfig createButtonConfigFromCustomParams(
+            Context context, CustomButtonParams params) {
+        Integer id = getButtonId(params.getId());
+        if (id != null) {
+            return new ButtonConfig(context, id, params);
+        }
+        return null;
     }
 
     /**
@@ -99,10 +126,10 @@ public class BottomBarConfigCreator {
         List<ButtonConfig> buttonConfigs = new ArrayList<>();
 
         for (@ButtonId int id : buttonIdList) {
-            ButtonConfig buttonConfig;
-            if (getCustomButtonParamsId(id) != -1) {
-                buttonConfig = createButtonConfigFromCustomParams(customButtonParams, id);
-            } else {
+            ButtonConfig buttonConfig =
+                    createButtonConfigFromCustomParamsList(customButtonParams, id);
+            // If we don't succeed to create button from custom params, fallback to default version
+            if (buttonConfig == null) {
                 buttonConfig = createButtonConfigFromId(id);
             }
             if (buttonConfig != null) {
@@ -112,11 +139,13 @@ public class BottomBarConfigCreator {
         return buttonConfigs;
     }
 
-    private @Nullable ButtonConfig createButtonConfigFromCustomParams(
+    private @Nullable ButtonConfig createButtonConfigFromCustomParamsList(
             List<CustomButtonParams> customButtonParams, @ButtonId int id) {
+
         for (CustomButtonParams params : customButtonParams) {
-            if (params.getId() == getCustomButtonParamsId(id)) {
-                return new ButtonConfig(mContext, id, params);
+            Integer buttonId = getButtonId(params.getId());
+            if (buttonId == id) {
+                return new ButtonConfig(mContext, buttonId, params);
             }
         }
         return null;
@@ -138,16 +167,8 @@ public class BottomBarConfigCreator {
         return result;
     }
 
-    /**
-     * Returns valid ID for {@link CustomButtonParams} if they should be used, or
-     * returns -1 if they should not be used.
-     */
-    private static int getCustomButtonParamsId(@ButtonId int id) {
-        return switch (id) {
-            case ButtonId.SAVE -> 100;
-            case ButtonId.ADD_NOTES -> 104;
-            default -> -1;
-        };
+    private static @ButtonId Integer getButtonId(int customButtonParamId) {
+        return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 
     /**

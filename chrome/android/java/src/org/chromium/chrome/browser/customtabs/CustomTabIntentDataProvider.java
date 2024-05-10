@@ -794,8 +794,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         boolean isGoogleBottomBarEnabled = isGoogleBottomBarEnabled(this);
         for (CustomButtonParams params : mCustomButtonParams) {
             if (isGoogleBottomBarEnabled
-                    && GoogleBottomBarCoordinator.shouldUseCustomButtonParams(params.getId())) {
+                    && GoogleBottomBarCoordinator.isSupported(params.getId())) {
                 mGoogleBottomBarButtons.add(params);
+                params.updateShowOnToolbar(false);
             } else if (!params.showOnToolbar()) {
                 mBottombarButtons.add(params);
             } else if (mToolbarButtons.size() < getMaxCustomToolbarItems()) {

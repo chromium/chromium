@@ -123,6 +123,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     /**
      * Builds an {@link ImageButton} from the data in this params. Generated buttons should be
      * placed on the bottom bar. The button's tag will be its id.
+     *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
@@ -326,6 +327,17 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @Override
     public boolean doesIconFitToolbar(Context context) {
         return doesIconFitToolbar(context, mIcon);
+    }
+
+    /**
+     * Updates the visibility of this component on the toolbar.
+     *
+     * @param showOnToolbar {@code true} to display the component on the toolbar, {@code false} to
+     *     display the component on the bottomBar.
+     */
+    @Override
+    public void updateShowOnToolbar(boolean showOnToolbar) {
+        mIsOnToolbar = showOnToolbar;
     }
 
     private static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {

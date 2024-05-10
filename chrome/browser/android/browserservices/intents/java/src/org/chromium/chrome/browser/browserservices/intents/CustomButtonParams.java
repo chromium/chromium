@@ -59,4 +59,12 @@ public interface CustomButtonParams {
      * @return Whether the given icon's size is suitable to put on toolbar.
      */
     boolean doesIconFitToolbar(Context context);
+
+    /**
+     * Updates the visibility of this component on the toolbar.
+     *
+     * @param showOnToolbar {@code true} to display the component on the toolbar, {@code false} to
+     *     display the component on the bottomBar.
+     */
+    void updateShowOnToolbar(boolean showOnToolbar);
 }

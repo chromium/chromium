@@ -57,6 +57,23 @@ public class CustomTabBottomBarDelegate
     private static final String TAG = "CustomTab";
     private static final int SLIDE_ANIMATION_DURATION_MS = 400;
 
+    /**
+     * Provides an interface for updating custom button states based on provided parameters.
+     *
+     * <p>Implementations of this interface should define the logic for determining how a custom
+     * button's appearance or behavior should change in response to the given parameters.
+     */
+    public interface CustomButtonsUpdater {
+
+        /**
+         * Updates the state of a bottom bar button based on the provided parameters.
+         *
+         * @param params The parameters containing information relevant to the button update.
+         * @return {@code true} if the button was successfully updated, {@code false} otherwise.
+         */
+        boolean updateBottomBarButton(CustomButtonParams params);
+    }
+
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsSizer mBrowserControlsSizer;
@@ -67,6 +84,7 @@ public class CustomTabBottomBarDelegate
 
     private CustomTabBottomBarView mBottomBarView;
     @Nullable private View mBottomBarContentView;
+    @Nullable private CustomButtonsUpdater mCustomButtonsUpdater;
     private PendingIntent mClickPendingIntent;
     private int[] mClickableIDs;
     private boolean mShowShadow = true;
@@ -183,12 +201,29 @@ public class CustomTabBottomBarDelegate
 
     /**
      * Updates the custom buttons on bottom bar area.
+     *
      * @param params The {@link CustomButtonParams} that describes the button to update.
      */
     public void updateBottomBarButtons(CustomButtonParams params) {
+        if (mCustomButtonsUpdater != null && mCustomButtonsUpdater.updateBottomBarButton(params)) {
+            return;
+        }
         ImageButton button = (ImageButton) getBottomBarView().findViewById(params.getId());
         button.setContentDescription(params.getDescription());
         button.setImageDrawable(params.getIcon(mActivity));
+    }
+
+    /**
+     * Sets the updater responsible for managing the state of custom buttons.
+     *
+     * <p>If the bottom bar view is set with {@link #setBottomBarContentView} you should always
+     * provide customButtonsUpdater.
+     *
+     * @param customButtonsUpdater The {@link CustomButtonsUpdater} implementation that will handle
+     *     the logic for updating custom button states, overriding the default logic.
+     */
+    public void setCustomButtonsUpdater(CustomButtonsUpdater customButtonsUpdater) {
+        mCustomButtonsUpdater = customButtonsUpdater;
     }
 
     /**
@@ -251,11 +286,11 @@ public class CustomTabBottomBarDelegate
     /**
      * Determines the behavior of the bottom bar content view when using RemoteViews.
      *
-     * By default, RemoteViews may replace the bottom bar content view. If the bottom bar view
+     * <p>By default, RemoteViews may replace the bottom bar content view. If the bottom bar view
      * set with {@link #setBottomBarContentView} should always displayed, set this value to {@code
      * true}.
      *
-     * **Important Note:** Enabling this feature will prevent RemoteViews from being used via
+     * <p>**Important Note:** Enabling this feature will prevent RemoteViews from being used via
      * {@link #updateRemoteViews}.
      */
     public void setKeepContentView(boolean keep) {

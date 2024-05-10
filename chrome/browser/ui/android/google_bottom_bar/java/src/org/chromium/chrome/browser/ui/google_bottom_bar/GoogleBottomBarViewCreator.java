@@ -8,6 +8,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
+
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
     private final Context mContext;
@@ -42,8 +44,11 @@ public class GoogleBottomBarViewCreator {
     }
 
     private View createGoogleBottomBarSpotlightLayoutView() {
-        return
-            LayoutInflater.from(mContext)
-                .inflate(R.layout.google_bottom_bar_spotlight, null);
+        return LayoutInflater.from(mContext).inflate(R.layout.google_bottom_bar_spotlight, null);
+    }
+
+    public boolean updateBottomBarButton(ButtonConfig buttonConfig) {
+        // TODO Add logic to update button
+        return buttonConfig != null;
     }
 }
