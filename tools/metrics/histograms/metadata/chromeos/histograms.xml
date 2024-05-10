@@ -1969,6 +1969,30 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Touchscreen.Connected.Configuration"
+    enum="TouchscreenConfiguration" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record various configurations of internal and external touchscreens
+    connected to a ChromeOS devices. Fires when connected touchscreen
+    configuration changes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Inputs.Touchscreen.Connected.External.Count"
+    units="touchscreens" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the number of external touchscreens connected on a ChromeOS device,
+    excluding cases with zero touchscreens. Fires when connected touchscreen
+    configuration changes.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
     units="ms" expires_after="2024-10-06">

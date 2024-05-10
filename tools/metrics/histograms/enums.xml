@@ -33857,6 +33857,14 @@ would be helpful to identify which type is being sent.
   </int>
 </enum>
 
+<enum name="TouchscreenConfiguration">
+  <int value="0" label="InternalOneExternalNone"/>
+  <int value="1" label="InternalNoneExternalOne"/>
+  <int value="2" label="InternalOneExternalOne"/>
+  <int value="3" label="InternalAnyExternalTwoPlus"/>
+  <int value="4" label="Other"/>
+</enum>
+
 <enum name="TouchToFill.SubmissionReadiness">
   <int value="0" label="No information"/>
   <int value="1" label="Error occurred"/>

@@ -19,6 +19,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
+#include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
@@ -624,6 +625,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   KeyboardModifierMetricsRecorder* keyboard_modifier_metrics_recorder() {
     return keyboard_modifier_metrics_recorder_.get();
   }
+  TouchscreenMetricsRecorder* touchscreen_metrics_recorder() {
+    return touchscreen_metrics_recorder_.get();
+  }
   LaserPointerController* laser_pointer_controller() {
     return laser_pointer_controller_.get();
   }
@@ -992,6 +996,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;
   std::unique_ptr<KeyboardModifierMetricsRecorder>
       keyboard_modifier_metrics_recorder_;
+  std::unique_ptr<TouchscreenMetricsRecorder> touchscreen_metrics_recorder_;
   std::unique_ptr<InputDeviceKeyAliasManager> input_device_key_alias_manager_;
   std::unique_ptr<ShortcutInputHandler> shortcut_input_handler_;
   std::unique_ptr<UserMetricsRecorder> user_metrics_recorder_;

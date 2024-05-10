@@ -159,6 +159,7 @@
 #include "ash/system/input_device_settings/input_device_settings_dispatcher.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
+#include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
@@ -806,6 +807,7 @@ Shell::~Shell() {
   AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
+  touchscreen_metrics_recorder_.reset();
   input_device_settings_dispatcher_.reset();
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
@@ -1395,6 +1397,8 @@ void Shell::Init(
           ui::OzonePlatform::GetInstance()->GetInputController());
   keyboard_modifier_metrics_recorder_ =
       std::make_unique<KeyboardModifierMetricsRecorder>();
+  touchscreen_metrics_recorder_ =
+      std::make_unique<TouchscreenMetricsRecorder>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
   modifier_key_combo_recorder_ = std::make_unique<ModifierKeyComboRecorder>();
   rapid_key_sequence_recorder_ = std::make_unique<RapidKeySequenceRecorder>();
