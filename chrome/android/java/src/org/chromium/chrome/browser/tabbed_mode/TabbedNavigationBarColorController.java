@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObse
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
@@ -108,6 +109,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     TabbedNavigationBarColorController(
             Window window,
@@ -118,7 +120,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            InsetObserver insetObserver) {
         this(
                 window,
                 tabModelSelector,
@@ -129,7 +132,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
                         browserControlsStateProvider,
                         snackbarManagerSupplier.get(),
                         contextualSearchManagerSupplier,
-                        bottomSheetController));
+                        bottomSheetController,
+                        insetObserver));
     }
 
     @VisibleForTesting
