@@ -48,8 +48,13 @@ void PrintViewManagerCrosBase::PrintingFailed(
     int32_t cookie,
     ::printing::mojom::PrintFailureReason reason) {}
 
-bool PrintViewManagerCrosBase::PrintNow(content::RenderFrameHost* rfh) {
+bool PrintViewManagerCrosBase::PrintNow(content::RenderFrameHost* rfh,
+                                        bool has_selection) {
   return false;
+}
+
+bool PrintViewManagerCrosBase::IsCrashed() {
+  return web_contents()->IsCrashed();
 }
 
 }  // namespace chromeos

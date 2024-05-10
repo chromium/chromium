@@ -69,6 +69,11 @@
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_basic.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
@@ -558,6 +563,20 @@ void ChromeContentBrowserClient::
               headless::HeadlessPrintManager::BindPrintManagerHost(
                   std::move(receiver), render_frame_host);
             } else {
+#if BUILDFLAG(IS_CHROMEOS)
+              if (base::FeatureList::IsEnabled(
+                      ::features::kPrintPreviewCrosPrimary)) {
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+                chromeos::PrintViewManagerCros::BindPrintManagerHost(
+                    std::move(receiver), render_frame_host);
+#else
+                chromeos::PrintViewManagerCrosBasic::BindPrintManagerHost(
+                    std::move(receiver), render_frame_host);
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+                return;
+              }
+#endif  // BUILDFLAG(CHROMEOS)
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
               printing::PrintViewManager::BindPrintManagerHost(
                   std::move(receiver), render_frame_host);

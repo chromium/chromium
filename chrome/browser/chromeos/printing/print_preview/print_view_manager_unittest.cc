@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -71,6 +72,28 @@ TEST_F(PrintViewManagerCrosTest, UseBrowserViewManager) {
                    /*shift=*/false, /*alt=*/false, /*command=*/false);
   ASSERT_FALSE(PrintViewManagerCros::FromWebContents(web_contents));
   ASSERT_TRUE(printing::PrintViewManager::FromWebContents(web_contents));
+}
+
+TEST_F(PrintViewManagerCrosTest, PrintPreviewNow) {
+  chrome::NewTab(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('p'),
+                   ui::DomCode::US_P, ui::VKEY_P, /*control=*/true,
+                   /*shift=*/false, /*alt=*/false, /*command=*/false);
+  auto* view_manager = PrintViewManagerCros::FromWebContents(web_contents);
+  ASSERT_TRUE(view_manager);
+
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+  view_manager->PrintPreviewNow(rfh, /*has_selection=*/true);
+  EXPECT_EQ(rfh, view_manager->render_frame_host_for_testing());
+  view_manager->PrintPreviewDone();
+  // After cleaning up the rfh pointer, assert it is null and not a dangling
+  // pointer.
+  ASSERT_FALSE(view_manager->render_frame_host_for_testing());
 }
 
 }  //  namespace chromeos

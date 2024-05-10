@@ -6,9 +6,13 @@
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_PREVIEW_PRINT_VIEW_MANAGER_CROS_BASIC_H_
 
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_base.h"
+#include "components/printing/common/print.mojom-forward.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -24,6 +28,11 @@ class PrintViewManagerCrosBasic
       delete;
 
   ~PrintViewManagerCrosBasic() override = default;
+
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<::printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
 
  private:
   friend class content::WebContentsUserData<PrintViewManagerCrosBasic>;

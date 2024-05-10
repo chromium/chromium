@@ -59,7 +59,7 @@ void StartPrint(content::WebContents* contents,
   }
 
   // TODO(jimmyxgong): Handle print preview disabled state.
-  print_view_manager->PrintNow(rfh_to_use);
+  print_view_manager->PrintPreviewNow(rfh_to_use, has_selection);
 }
 
 }  // namespace chromeos::printing

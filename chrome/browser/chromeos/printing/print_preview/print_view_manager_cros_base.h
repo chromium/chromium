@@ -47,10 +47,13 @@ class PrintViewManagerCrosBase : public ::printing::PrintManager {
   // Prints the current document immediately. Since the rendering is
   // asynchronous, the actual printing will not be completed on the return of
   // this function. Returns false if printing is impossible at the moment.
-  virtual bool PrintNow(content::RenderFrameHost* rfh);
+  virtual bool PrintNow(content::RenderFrameHost* rfh, bool has_selection);
 
  protected:
   explicit PrintViewManagerCrosBase(content::WebContents* web_contents);
+
+  // Return true if the webcontent is no longer available due to a crash.
+  bool IsCrashed();
 };
 
 }  // namespace chromeos
