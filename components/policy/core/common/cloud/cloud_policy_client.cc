@@ -51,6 +51,9 @@ BASE_FEATURE(kGetBrowserIdentifierAsync,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+const char kDmServerCloudPolicyRequestHistogramBase[] =
+    "Enterprise.DMServerCloudPolicyRequestStatus";
+
 // Translates the DeviceRegisterResponse::DeviceMode |mode| to the enum used
 // internally to represent different device modes.
 DeviceMode TranslateProtobufDeviceMode(
@@ -233,6 +236,19 @@ std::string FormatMacAddress(const CloudPolicyClient::MacAddress& mac_address) {
       mac_address[2], mac_address[3], mac_address[4], mac_address[5]);
   DCHECK_EQ(mac_address_string.size(), 12u);
   return mac_address_string;
+}
+
+// Returns the histogram variant for the corresponding `type`. Returns nullopt
+// if there is no variant for the type.
+std::optional<std::string_view> HistogramVariantForType(std::string_view type) {
+  if (type == dm_protocol::kChromeUserPolicyType) {
+    return "UserPolicy";
+  } else if (type == dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+    return "MachineLevelUserCloudPolicy";
+  } else if (type == dm_protocol::kChromeDevicePolicyType) {
+    return "ChromeDevicePolicy";
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -1388,11 +1404,24 @@ void CloudPolicyClient::OnFetchRobotAuthCodesCompleted(
   // |this| might be deleted at this point.
 }
 
+void CloudPolicyClient::RecordFetchStatus(DeviceManagementStatus status) {
+  for (const auto& [type, _] : types_to_fetch_) {
+    const auto variant = HistogramVariantForType(type);
+    if (variant) {
+      base::UmaHistogramSparse(
+          base::StrCat(
+              {kDmServerCloudPolicyRequestHistogramBase, ".", *variant}),
+          status);
+    }
+    base::UmaHistogramSparse(kDmServerCloudPolicyRequestHistogramBase, status);
+  }
+}
+
 void CloudPolicyClient::OnPolicyFetchCompleted(base::Time start_time,
                                                DMServerJobResult result) {
   UMA_HISTOGRAM_LONG_TIMES(kPolicyFetchingTimeHistogramName,
                            base::Time::Now() - start_time);
-
+  RecordFetchStatus(result.dm_status);
   if (result.dm_status == DM_STATUS_SUCCESS) {
     if (!result.response.has_policy_response() ||
         result.response.policy_response().responses_size() == 0) {

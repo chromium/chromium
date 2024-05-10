@@ -849,6 +849,10 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::DeviceRegisterResponse& response,
       DeviceManagementStatus dm_status);
 
+  // Records the fetch status for each supported type to fetch used by the
+  // client.
+  void RecordFetchStatus(DeviceManagementStatus status);
+
 #if BUILDFLAG(IS_WIN)
   // Callback to get browser device identifier.
   void SetBrowserDeviceIdentifier(

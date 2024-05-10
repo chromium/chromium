@@ -1852,6 +1852,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.DMServerCloudPolicyRequestStatus{EnterpriseDMServerCloudPolicyRequest}"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2025-06-18">
+  <owner>vincb@google.com</owner>
+  <owner>zmin@google.com</owner>
+  <summary>
+    Records the returned status of fetching cloud policies from the dmserver.
+
+    Recorded when receiving the response from the dmserver upon request
+    completion with policy type {EnterpriseDMServerCloudPolicyRequest}.
+  </summary>
+  <token key="EnterpriseDMServerCloudPolicyRequest">
+    <variant name=""/>
+    <variant name=".ChromeDevicePolicy" summary="Chrome device policy"/>
+    <variant name=".MachineLevelUserCloudPolicy"
+        summary="Machine level policy"/>
+    <variant name=".UserPolicy" summary="User policy"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
     enum="EnterpriseDMServerRequestSuccess" expires_after="2024-11-03">
   <owner>rbock@google.com</owner>

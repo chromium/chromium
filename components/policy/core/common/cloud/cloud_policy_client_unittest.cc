@@ -620,6 +620,8 @@ TEST_F(CloudPolicyClientTest, Init) {
 }
 
 TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
+  base::HistogramTester histogram_tester;
+
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
@@ -642,6 +644,12 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetch) {
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus.UserPolicy",
+      DM_STATUS_SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus", DM_STATUS_SUCCESS, 1);
 }
 
 class CloudPolicyClientWithFetchReasonTest
@@ -949,6 +957,8 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
+  base::HistogramTester histogram_tester;
+
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   ExpectAndCaptureJob(GetRegistrationResponse());
@@ -985,6 +995,12 @@ TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetch) {
             GetPolicyRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CheckPolicyResponse(policy_response);
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus.UserPolicy",
+      DM_STATUS_SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus", DM_STATUS_SUCCESS, 1);
 }
 
 TEST_F(CloudPolicyClientTest, RegistrationAndPolicyFetchWithOAuthToken) {
@@ -1560,6 +1576,8 @@ TEST_F(CloudPolicyClientTest, BadPolicyResponse) {
 }
 
 TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
+  base::HistogramTester histogram_tester;
+
   RegisterClient();
 
   DeviceManagementService::JobConfiguration::JobType job_type;
@@ -1575,6 +1593,13 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
             job_type);
   EXPECT_EQ(DM_STATUS_REQUEST_FAILED, client_->last_dm_status());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus.UserPolicy",
+      DM_STATUS_REQUEST_FAILED, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DMServerCloudPolicyRequestStatus", DM_STATUS_REQUEST_FAILED,
+      1);
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
