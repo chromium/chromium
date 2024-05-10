@@ -111,9 +111,6 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // the |decoder_| member variable.
   bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
 
-  // Trampoline the preparation of a resolution change to the client.
-  void PrepareChangeResolution();
-
   // Continue with the resolution change after allowing the teardown of the
   // queues to occur.
   void ContinueApplyResolutionChange();
