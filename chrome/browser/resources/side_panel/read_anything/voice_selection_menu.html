@@ -17,8 +17,14 @@
   #voiceSelectionMenu::part(dialog) {
     min-width: 304px;
     width: fit-content;
-    max-height: 95%;
   }
+
+  cr-action-menu::part(dialog) {
+    max-height: calc(90% - 36px);
+    /* Prevent jank due to overscrolling from the dialog */
+    overscroll-behavior: contain;
+  }
+
   .dropdown-voice-selection-button {
     display: flex;
     align-items: center;
