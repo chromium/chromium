@@ -39,6 +39,8 @@ enum PermissionName {
     "top-level-storage-access",
     "captured-surface-control",
     "speaker-selection",
+    "keyboard-lock",
+    "pointer-lock",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

@@ -185,6 +185,10 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::CAPTURED_SURFACE_CONTROL;
   } else if (name == "speaker-selection") {
     *permission_type = PermissionType::SPEAKER_SELECTION;
+  } else if (name == "keyboard-lock") {
+    *permission_type = PermissionType::KEYBOARD_LOCK;
+  } else if (name == "pointer-lock") {
+    *permission_type = PermissionType::POINTER_LOCK;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);

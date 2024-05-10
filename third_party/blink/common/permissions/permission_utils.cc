@@ -288,6 +288,11 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::CAPTURED_SURFACE_CONTROL;
     case PermissionName::SPEAKER_SELECTION:
       return PermissionType::SPEAKER_SELECTION;
+    case PermissionName::KEYBOARD_LOCK:
+      return PermissionType::KEYBOARD_LOCK;
+    case PermissionName::POINTER_LOCK:
+      return PermissionType::POINTER_LOCK;
+    default:
       NOTREACHED();
       return std::nullopt;
   }

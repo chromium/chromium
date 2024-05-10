@@ -130,9 +130,11 @@ String PermissionNameToString(PermissionName name) {
       return "captured-surface-control";
     case PermissionName::SPEAKER_SELECTION:
       return "speaker-selection";
+    case PermissionName::KEYBOARD_LOCK:
+      return "keyboard-lock";
+    case PermissionName::POINTER_LOCK:
+      return "pointer-lock";
   }
-  NOTREACHED();
-  return "unknown";
 }
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
@@ -378,6 +380,12 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
       return nullptr;
     }
     return CreatePermissionDescriptor(PermissionName::SPEAKER_SELECTION);
+  }
+  if (name == V8PermissionName::Enum::kKeyboardLock) {
+    return CreatePermissionDescriptor(PermissionName::KEYBOARD_LOCK);
+  }
+  if (name == V8PermissionName::Enum::kPointerLock) {
+    return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
   }
   return nullptr;
 }
