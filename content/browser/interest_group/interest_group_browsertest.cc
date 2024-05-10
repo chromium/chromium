@@ -45,6 +45,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -23311,10 +23312,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
         'permitCrossOriginTrustedSignals');
   )";
 
+  const char kQueryAll[] = R"(
+    navigator.protectedAudience.queryFeatureSupport('*');
+  )";
+
   EXPECT_EQ(40, EvalJs(shell(), kQueryComponentLimit));
   EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
   EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
+  // Since only older features are on in this feature, * isn't available yet.
+  EXPECT_EQ(nullptr, EvalJs(shell(), kQueryAll));
 }
 
 // Worklet handling of zero seller timeout.
@@ -24343,11 +24350,24 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
         'permitCrossOriginTrustedSignals');
   )";
 
+  const char kQueryAll[] = R"(
+    navigator.protectedAudience.queryFeatureSupport('*');
+  )";
+
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/simple_page.html");
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
+
+  auto all_result = EvalJs(shell(), kQueryAll);
+  EXPECT_THAT(all_result.value, base::test::IsJson(R"({
+                "adComponentsLimit": 40,
+                "deprecatedRenderURLReplacements": true,
+                "permitCrossOriginTrustedSignals": true,
+                "reportingTimeout": true,
+              })"))
+      << all_result.error;
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,

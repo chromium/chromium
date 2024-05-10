@@ -1750,6 +1750,15 @@
       status: "stable",
     },
     {
+      name: "FledgeFeatureDetectAll",
+      // FledgeFeatureDetectAll should be enabled by any feature-detectable
+      // experiment that enters trials after it got created; this makes it easy
+      // to polyfill by only checking older things, and makes it serve its
+      // purpose of modularly advertising new things.
+      implied_by: ["FledgePermitCrossOriginTrustedSignals"],
+      base_feature: "none",
+    },
+    {
       name: "FledgeFeatureDetection",
       // FledgeFeatureDetection should be on if any of the features it aims
       // to help detect is on.

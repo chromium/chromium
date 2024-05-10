@@ -3280,7 +3280,8 @@ NavigatorAuction::NavigatorAuction(Navigator& navigator)
           WTF::BindRepeating(&NavigatorAuction::StartClear,
                              WrapWeakPersistent(this))),
       ad_auction_service_(navigator.GetExecutionContext()),
-      protected_audience_(MakeGarbageCollected<ProtectedAudience>()) {
+      protected_audience_(MakeGarbageCollected<ProtectedAudience>(
+          navigator.GetExecutionContext())) {
   navigator.GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       ad_auction_service_.BindNewPipeAndPassReceiver(
           navigator.GetExecutionContext()->GetTaskRunner(
