@@ -1153,9 +1153,9 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             // Asserts that the scope and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "scope=name+email+picture&";
-            content += "%3F+gets+://=%26+escaped+!&";
-            content += "foo=bar&";
-            content += "hello=world";
+            content += "param_%3F+gets+://=%26+escaped+!&";
+            content += "param_foo=bar&";
+            content += "param_hello=world";
 
             EXPECT_EQ(request.content, content);
 

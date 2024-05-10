@@ -170,10 +170,9 @@ std::string ComputeUrlEncodedTokenPostData(
                                base::JoinString(scope, " "), /*use_plus=*/true);
     }
     for (const auto& pair : params) {
-      // TODO(crbug.com/40262526): Should we use a prefix with these custom
-      // parameters so that they don't collide with the standard ones?
-      query += "&" + base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
-               "=" + base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+      query += "&param_" +
+               base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) + "=" +
+               base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
     }
   }
 
