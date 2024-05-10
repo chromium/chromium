@@ -386,7 +386,9 @@ ParseMakeCredentialResponse(cbor::Value response_value,
 
   uint8_t flags =
       static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
-      static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
+      static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation) |
+      static_cast<uint8_t>(AuthenticatorData::Flag::kBackupEligible) |
+      static_cast<uint8_t>(AuthenticatorData::Flag::kBackupState);
   if (user_verified) {
     flags |=
         static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification);
