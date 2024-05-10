@@ -678,6 +678,27 @@ TEST_P(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
+TEST_P(SavedTabGroupBarUnitTest, OnlyShowEverthingButtonForV2) {
+  if (IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Add(kSavedTabGroup1);
+
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_bar()->SetBounds(
+      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(40), 2);
+
+  // Saved tab group button is not visible because there's not enough space.
+  EXPECT_FALSE(saved_tab_group_bar()->children()[0]->GetVisible());
+
+  // Everything button is visible.
+  EXPECT_TRUE(saved_tab_group_bar()->children()[1]->GetVisible());
+}
+
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupBarUnitTest,
                          testing::Bool());

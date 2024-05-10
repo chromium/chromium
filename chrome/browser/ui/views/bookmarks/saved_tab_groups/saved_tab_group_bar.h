@@ -172,7 +172,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Updates the visibilites of all buttons up to `last_index_visible`. The
   // overflow button will be displayed based on `should_show_overflow`.
   void UpdateButtonVisibilities(bool should_show_overflow,
-                                size_t last_visible_button_index);
+                                int last_visible_button_index);
 
   // Returns true if we should show the overflow button because there is not
   // enough space to display all the buttons or if there are more buttons than

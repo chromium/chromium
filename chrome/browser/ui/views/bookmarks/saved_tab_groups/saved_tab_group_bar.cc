@@ -833,12 +833,11 @@ int SavedTabGroupBar::GetNumberOfVisibleGroups() const {
   return count;
 }
 
-void SavedTabGroupBar::UpdateButtonVisibilities(
-    bool show_overflow,
-    size_t last_visible_button_index) {
+void SavedTabGroupBar::UpdateButtonVisibilities(bool show_overflow,
+                                                int last_visible_button_index) {
   // Update visibilities
   overflow_button_->SetVisible(show_overflow);
-  for (size_t i = 0; i < children().size() - 1; ++i) {
+  for (int i = 0; i < static_cast<int>(children().size()) - 1; ++i) {
     views::View* button = children()[i];
     button->SetVisible(i <= last_visible_button_index);
   }
