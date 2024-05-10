@@ -132,6 +132,7 @@ public class ProfileManager {
 
         void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
 
+        @JniType("std::vector<Profile*>")
         Object[] getLoadedProfiles();
     }
 }
