@@ -1363,10 +1363,10 @@ class FakeDataTransferPolicyController
       content::RenderFrameHost* rfh,
       base::OnceCallback<void(bool)> callback) override {}
 
-  void DropIfAllowed(
-      const ui::OSExchangeData* drag_data,
-      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      base::OnceClosure drop_cb) override {}
+  void DropIfAllowed(std::optional<ui::DataTransferEndpoint> data_src,
+                     std::optional<ui::DataTransferEndpoint> data_dst,
+                     std::optional<std::vector<ui::FileInfo>> filenames,
+                     base::OnceClosure drop_cb) override {}
 
  private:
   const GURL allowed_url_;

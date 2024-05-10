@@ -24,6 +24,7 @@
 #include "extensions/common/constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -349,30 +350,27 @@ void DataTransferDlpController::PasteIfAllowed(
 }
 
 void DataTransferDlpController::DropIfAllowed(
-    const ui::OSExchangeData* drag_data,
-    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    std::optional<ui::DataTransferEndpoint> data_dst,
+    std::optional<std::vector<ui::FileInfo>> filenames,
     base::OnceClosure drop_cb) {
-  DCHECK(drag_data);
   // To simplify logic that would have to check OTR in every sub-call of DLP
   // checks, simply null the endpoints so that subsequent code never misuses
   // data.
-  base::optional_ref<const ui::DataTransferEndpoint> source =
-      drag_data->GetSource() && !drag_data->GetSource()->off_the_record()
-          ? base::optional_ref<const ui::DataTransferEndpoint>(
-                drag_data->GetSource())
-          : std::nullopt;
-  base::optional_ref<const ui::DataTransferEndpoint> destination =
+  std::optional<ui::DataTransferEndpoint> source =
+      data_src.has_value() && !data_src->off_the_record() ? data_src
+                                                          : std::nullopt;
+  std::optional<ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
                                                           : std::nullopt;
 
-  if (drag_data->HasFile() && !IsFilesApp(destination)) {
+  if (filenames.has_value() && !filenames->empty() &&
+      !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
-      std::optional<std::vector<ui::FileInfo>> dropped_files =
-          drag_data->GetFilenames();
+      CHECK(destination.has_value());
       files_controller->CheckIfPasteOrDropIsAllowed(
-          GetFilePathsFromFileInfos(dropped_files.value()),
-          destination.as_ptr(),
+          GetFilePathsFromFileInfos(filenames.value()), &destination.value(),
           base::BindOnce(
               [](base::OnceClosure drop_cb, bool is_allowed) {
                 if (is_allowed) {
@@ -599,8 +597,8 @@ void DataTransferDlpController::MaybeReportEvent(
 }
 
 void DataTransferDlpController::ContinueDropIfAllowed(
-    base::optional_ref<const ui::DataTransferEndpoint> data_src,
-    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    std::optional<ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
   std::string src_pattern;
   std::string dst_pattern;

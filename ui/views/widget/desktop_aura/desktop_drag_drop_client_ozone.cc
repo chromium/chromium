@@ -91,7 +91,11 @@ void DropIfAllowed(const ui::OSExchangeData* drag_data,
                    base::OnceClosure drop_cb) {
   if (ui::DataTransferPolicyController::HasInstance()) {
     ui::DataTransferPolicyController::Get()->DropIfAllowed(
-        drag_data, &drag_info.data_endpoint, std::move(drop_cb));
+        (drag_data->GetSource() ? std::make_optional<ui::DataTransferEndpoint>(
+                                      *drag_data->GetSource())
+                                : std::nullopt),
+        {drag_info.data_endpoint}, drag_data->GetFilenames(),
+        std::move(drop_cb));
   } else {
     std::move(drop_cb).Run();
   }

@@ -491,9 +491,10 @@ class MockDataTransferPolicyController
            absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
-  MOCK_METHOD3(DropIfAllowed,
-               void(const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  MOCK_METHOD4(DropIfAllowed,
+               void(std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb));
 };
 
@@ -503,9 +504,11 @@ TEST_F(DesktopDragDropClientOzoneTest, DataLeakPreventionAllowDrop) {
   MockDataTransferPolicyController dtp_controller;
 
   // Data Leak Prevention stack allows the drop.
-  EXPECT_CALL(dtp_controller, DropIfAllowed(testing::_, testing::_, testing::_))
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  EXPECT_CALL(dtp_controller,
+              DropIfAllowed(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   // Set the operation which the destination can accept.
@@ -531,7 +534,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DataLeakPreventionBlockDrop) {
 
   // Data Leak Prevention stack blocks the drop.
   EXPECT_CALL(dtp_controller,
-              DropIfAllowed(testing::_, testing::_, testing::_));
+              DropIfAllowed(testing::_, testing::_, testing::_, testing::_));
 
   // Set the operation which the destination can accept.
   dragdrop_delegate_->SetOperation(DragOperation::kCopy);

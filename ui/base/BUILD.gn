@@ -872,6 +872,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/clipboard:file_info",
     "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
     "//ui/events:events_base",

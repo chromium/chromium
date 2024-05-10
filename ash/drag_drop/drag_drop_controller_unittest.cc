@@ -1771,9 +1771,10 @@ TEST_F(DragDropControllerDlpTest, AllowedSyncDragDrop) {
   }
 
   // Configure `dlp_controller_` to allow sync drop.
-  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   PerformDlpDragAndDrop(CreateDragData(/*with_image=*/false));
@@ -1827,9 +1828,10 @@ TEST_F(DragDropControllerDlpTest, AllowedAsyncDrop) {
   // Hold the drop callback passed to `dlp_controller_` then run this drop
   // callback later. It emulates a successful async drop.
   base::OnceClosure drop_callback;
-  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1855,9 +1857,10 @@ TEST_F(DragDropControllerDlpTest, InterruptedAsyncDrop) {
   }
 
   base::OnceClosure drop_callback;
-  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });
@@ -1892,9 +1895,10 @@ TEST_F(DragDropControllerDlpTest, DlpDisallowAsyncDrop) {
   // Hold the drop callback passed to `dlp_controller_`. Because `drop_callback`
   // does not run, it emulates an async disallowed drop.
   base::OnceClosure drop_callback;
-  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _))
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  EXPECT_CALL(dlp_contoller_, DropIfAllowed(_, _, _, _))
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) {
         drop_callback = std::move(drop_cb);
       });

@@ -45,9 +45,10 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
 
-  MOCK_METHOD3(DropIfAllowed,
-               void(const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  MOCK_METHOD4(DropIfAllowed,
+               void(std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb));
 };
 

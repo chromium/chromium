@@ -191,8 +191,9 @@ TEST_F(DataTransferDlpControllerTest, NullSrc) {
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
 
-  auto drag_data = ui::OSExchangeData();
-  dlp_controller_->DropIfAllowed(&drag_data, std::nullopt, callback.Get());
+  dlp_controller_->DropIfAllowed(/*data_src=*/std::nullopt,
+                                 /*data_dst=*/std::nullopt,
+                                 /*filenames=*/std::nullopt, callback.Get());
 
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
@@ -393,13 +394,15 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
-  EXPECT_CALL(files_controller, CheckIfPasteOrDropIsAllowed(
-                                    std::vector<base::FilePath>{path},
-                                    &data_dst, base::test::IsNotNullCallback()))
+  EXPECT_CALL(files_controller,
+              CheckIfPasteOrDropIsAllowed(std::vector<base::FilePath>{path},
+                                          testing::NotNull(),
+                                          base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(false));
 
   ::testing::StrictMock<base::MockOnceClosure> drop_callback;
-  dlp_controller_->DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data.GetSource()}, {data_dst},
+                                 drag_data.GetFilenames(), drop_callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
@@ -419,14 +422,16 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
-  EXPECT_CALL(files_controller, CheckIfPasteOrDropIsAllowed(
-                                    std::vector<base::FilePath>{path},
-                                    &data_dst, base::test::IsNotNullCallback()))
+  EXPECT_CALL(files_controller,
+              CheckIfPasteOrDropIsAllowed(std::vector<base::FilePath>{path},
+                                          testing::NotNull(),
+                                          base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<2>(true));
 
   ::testing::StrictMock<base::MockOnceClosure> drop_callback;
   EXPECT_CALL(drop_callback, Run);
-  dlp_controller_->DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data.GetSource()}, {data_dst},
+                                 drag_data.GetFilenames(), drop_callback.Get());
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteFile_Blocked) {
@@ -528,7 +533,8 @@ TEST_P(DlpControllerTest, Allow) {
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
 
-  dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
@@ -578,7 +584,8 @@ TEST_P(DlpControllerTest, Block_DropIfAllowed) {
   EXPECT_CALL(*dlp_controller_, NotifyBlockedDrop);
   ::testing::StrictMock<base::MockOnceClosure> callback;
 
-  dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
@@ -626,7 +633,8 @@ TEST_P(DlpControllerTest, Report_DropIfAllowed) {
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
 
-  dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
@@ -710,7 +718,8 @@ TEST_P(DlpControllerTest, Warn_DropIfAllowed) {
 
   ::testing::StrictMock<base::MockOnceClosure> callback;
 
-  dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
@@ -767,7 +776,8 @@ TEST_P(DlpControllerVMsTest, Allow) {
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
 
-  dlp_controller_->DropIfAllowed(&drag_data_, &data_dst, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   histogram_tester_.ExpectUniqueSample(
@@ -815,7 +825,8 @@ TEST_P(DlpControllerVMsTest, Block_DropIfAllowed) {
   EXPECT_CALL(*dlp_controller_, NotifyBlockedDrop);
   ::testing::StrictMock<base::MockOnceClosure> callback;
 
-  dlp_controller_->DropIfAllowed(&drag_data_, &data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   ASSERT_EQ(events_.size(), 1u);
@@ -859,7 +870,8 @@ TEST_P(DlpControllerVMsTest, Report_DropIfAllowed) {
   ::testing::StrictMock<base::MockOnceClosure> callback;
   EXPECT_CALL(callback, Run());
 
-  dlp_controller_->DropIfAllowed(&drag_data_, &data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   ASSERT_EQ(events_.size(), 1u);
@@ -908,7 +920,8 @@ TEST_P(DlpControllerVMsTest, Warn_DropIfAllowed) {
   EXPECT_CALL(*dlp_controller_, WarnOnDrop);
   ::testing::StrictMock<base::MockOnceClosure> callback;
 
-  dlp_controller_->DropIfAllowed(&drag_data_, &data_dst_, callback.Get());
+  dlp_controller_->DropIfAllowed({*drag_data_.GetSource()}, {data_dst_},
+                                 drag_data_.GetFilenames(), callback.Get());
 
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
   histogram_tester_.ExpectUniqueSample(
