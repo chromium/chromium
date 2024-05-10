@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/feed_store.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -14,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -58,13 +58,13 @@ leveldb::ReadOptions CreateReadOptions() {
   content_id.content_domain(), ",", base::NumberToString(content_id.type()), \
       ",", base::NumberToString(content_id.id())
 
-std::string StreamDataKey(const base::StringPiece stream_key) {
+std::string StreamDataKey(const std::string_view stream_key) {
   return base::StrCat({kStreamDataPrefix, stream_key});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
   return StreamDataKey(feedstore::StreamKey(stream_type));
 }
-std::string ContentKey(const base::StringPiece stream_type,
+std::string ContentKey(const std::string_view stream_type,
                        const feedwire::ContentId& content_id) {
   return base::StrCat(
       {"c/", stream_type, "/", CONTENT_ID_STRING_PARTS(content_id)});
@@ -73,7 +73,7 @@ std::string ContentKey(const StreamType& stream_type,
                        const feedwire::ContentId& content_id) {
   return ContentKey(feedstore::StreamKey(stream_type), content_id);
 }
-std::string SharedStateKey(const base::StringPiece stream_type,
+std::string SharedStateKey(const std::string_view stream_type,
                            const feedwire::ContentId& content_id) {
   return base::StrCat(
       {"s/", stream_type, "/", CONTENT_ID_STRING_PARTS(content_id)});
@@ -109,11 +109,11 @@ class StreamKeyMatcher {
   }
 
   // Returns true if `key` is a key specific to `stream_type`.
-  bool IsKeyForStream(base::StringPiece key) const {
+  bool IsKeyForStream(std::string_view key) const {
     if (key.size() < 2 || key[1] != '/') {
       return false;
     }
-    const base::StringPiece key_suffix = key.substr(2);
+    const std::string_view key_suffix = key.substr(2);
     switch (key[0]) {
       case 'S':
         return key_suffix == stream_key_;
@@ -138,11 +138,11 @@ class StreamPrefixMatcher {
   }
 
   // Returns true if `key` is a key specific to `stream_kind`.
-  bool IsKeyForStream(base::StringPiece key) const {
+  bool IsKeyForStream(std::string_view key) const {
     if (key.size() < 2 || key[1] != '/') {
       return false;
     }
-    const base::StringPiece key_suffix = key.substr(2);
+    const std::string_view key_suffix = key.substr(2);
     switch (key[0]) {
       case 'S':
       case 'T':

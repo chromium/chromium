@@ -5,8 +5,8 @@
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_metadata_model.h"
 
 #include <ostream>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 
 namespace feed {
@@ -46,7 +46,7 @@ void WebFeedMetadataModel::AddPendingOperation(
 }
 
 void WebFeedMetadataModel::RemovePendingOperationsForWebFeed(
-    base::StringPiece web_feed_id) {
+    std::string_view web_feed_id) {
   for (auto it = pending_operations_.begin(); it != pending_operations_.end();
        ++it) {
     if (it->operation.web_feed_id() != web_feed_id)
@@ -58,7 +58,7 @@ void WebFeedMetadataModel::RemovePendingOperationsForWebFeed(
 }
 
 void WebFeedMetadataModel::RecordPendingOperationsForWebFeedAttempt(
-    base::StringPiece web_feed_id) {
+    std::string_view web_feed_id) {
   for (Operation& op : pending_operations_) {
     if (op.operation.web_feed_id() != web_feed_id)
       continue;
@@ -74,7 +74,7 @@ void WebFeedMetadataModel::RecordPendingOperationsForWebFeedAttempt(
 }
 
 WebFeedInFlightChange* WebFeedMetadataModel::FindInFlightChange(
-    base::StringPiece web_feed_id) {
+    std::string_view web_feed_id) {
   Operation* op = FindOperation(web_feed_id);
   return op ? &op->change : nullptr;
 }
@@ -93,7 +93,7 @@ WebFeedInFlightChange WebFeedMetadataModel::MakePendingInFlightChange(
 }
 
 WebFeedMetadataModel::Operation* WebFeedMetadataModel::FindOperation(
-    base::StringPiece web_feed_id) {
+    std::string_view web_feed_id) {
   for (auto& op : pending_operations_) {
     if (op.operation.web_feed_id() == web_feed_id)
       return &op;

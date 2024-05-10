@@ -8,6 +8,7 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -19,9 +20,9 @@
 
 namespace gcm {
 
-bool CreateEncryptedPayloadForTesting(const base::StringPiece& payload,
-                                      const base::StringPiece& peer_public_key,
-                                      const base::StringPiece& auth_secret,
+bool CreateEncryptedPayloadForTesting(std::string_view payload,
+                                      std::string_view peer_public_key,
+                                      std::string_view auth_secret,
                                       IncomingMessage* message) {
   DCHECK(message);
 

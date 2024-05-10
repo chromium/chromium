@@ -9,6 +9,8 @@
 #include <wayland-server-protocol-core.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include <string_view>
+
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
@@ -160,7 +162,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
     // Wayland methods should be run in UI Thread.
     DCHECK(base::CurrentUIThread::IsSet());
 
-    base::StringPiece keymap = keymap_str.get();
+    std::string_view keymap = keymap_str.get();
     // Send the content of |keymap| with trailing '\0' termination via shared
     // memory.
     base::UnsafeSharedMemoryRegion shared_keymap_region =

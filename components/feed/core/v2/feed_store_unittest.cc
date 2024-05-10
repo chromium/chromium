@@ -6,13 +6,13 @@
 
 #include <map>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
@@ -34,7 +34,7 @@ using testing::Pair;
 
 using LoadStreamResult = FeedStore::LoadStreamResult;
 
-std::string KeyForContentId(base::StringPiece prefix,
+std::string KeyForContentId(std::string_view prefix,
                             const feedwire::ContentId& content_id) {
   return base::StrCat({prefix, content_id.content_domain(), ",",
                        base::NumberToString(content_id.type()), ",",

@@ -10,9 +10,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 namespace sys {
 class ServiceDirectory;
@@ -37,9 +37,9 @@ class DynamicComponentHost {
   // manifest defines a writable directory capability
   // "for_dynamic_component_host", in which `services` may be bound to be
   // dynamically offered to the child.
-  DynamicComponentHost(base::StringPiece collection,
-                       base::StringPiece child_id,
-                       base::StringPiece component_url,
+  DynamicComponentHost(std::string_view collection,
+                       std::string_view child_id,
+                       std::string_view component_url,
                        base::OnceClosure on_teardown,
                        fidl::InterfaceHandle<fuchsia::io::Directory> services);
 
@@ -48,9 +48,9 @@ class DynamicComponentHost {
   // TODO(crbug.com/40261626): Remove this once tests have an easy way to
   // "bridge" sub-Realms to the TestComponentContextForProcess.
   DynamicComponentHost(fuchsia::component::RealmHandle realm,
-                       base::StringPiece collection,
-                       base::StringPiece child_id,
-                       base::StringPiece component_url,
+                       std::string_view collection,
+                       std::string_view child_id,
+                       std::string_view component_url,
                        base::OnceClosure on_teardown,
                        fidl::InterfaceHandle<fuchsia::io::Directory> services);
 

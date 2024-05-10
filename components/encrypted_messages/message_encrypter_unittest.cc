@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/encrypted_messages/message_encrypter.h"
-#include "base/strings/string_piece.h"
+
+#include <string_view>
+
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -194,9 +196,8 @@ TEST(MessageEncrypterTest, DecrypterWorksWithProperKey) {
   // matching error in the server for the case of certificate reporting,
   // the strlen + 1 can be removed once that error is fixed.
   ASSERT_TRUE(encrypted_messages::DecryptMessageForTesting(
-      server_private_key_,
-      base::StringPiece(kHkdfLabel, strlen(kHkdfLabel) + 1), encrypted_message,
-      &decrypted_serialized_report));
+      server_private_key_, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
+      encrypted_message, &decrypted_serialized_report));
 }
 
 TEST(MessageEncrypterTest, DecrypterFailsWithWrongKey) {
@@ -211,9 +212,8 @@ TEST(MessageEncrypterTest, DecrypterFailsWithWrongKey) {
   // Check decryption fails when using an invalid key.
   // See comment above about the strlen + 1.
   ASSERT_FALSE(encrypted_messages::DecryptMessageForTesting(
-      server_private_key_,
-      base::StringPiece(kHkdfLabel, strlen(kHkdfLabel) + 1), encrypted_message,
-      &decrypted_serialized_message));
+      server_private_key_, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
+      encrypted_message, &decrypted_serialized_message));
 }
 
 }  // namespace

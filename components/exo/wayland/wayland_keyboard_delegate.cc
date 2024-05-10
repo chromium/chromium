@@ -4,10 +4,11 @@
 
 #include "components/exo/wayland/wayland_keyboard_delegate.h"
 
-#include <cstring>
-
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+
+#include <cstring>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -103,8 +104,7 @@ void WaylandKeyboardDelegate::OnKeyboardModifiers(
   SendKeyboardModifiers();
 }
 
-void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
-    base::StringPiece keymap) {
+void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(std::string_view keymap) {
   // Sent the content of |keymap| with trailing '\0' termination via shared
   // memory.
   base::UnsafeSharedMemoryRegion shared_keymap_region =

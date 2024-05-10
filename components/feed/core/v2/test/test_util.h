@@ -6,9 +6,9 @@
 #define COMPONENTS_FEED_CORE_V2_TEST_TEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,7 +39,7 @@ const base::TimeDelta kEpsilon = base::Milliseconds(5);
   }
 
 // Trims whitespace from begin and end of all lines of text.
-std::string TrimLines(base::StringPiece text);
+std::string TrimLines(std::string_view text);
 
 // Does the protobuf argument's ToTextProto() output match message? Allows some
 // whitespace differences.

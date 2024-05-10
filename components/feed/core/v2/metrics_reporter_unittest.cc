@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -117,7 +118,7 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override {
     std::move(callback).Run(kSubscriptionCount);
   }
-  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+  void RegisterFeedUserSettingsFieldTrial(std::string_view group) override {
     register_feed_user_settings_field_trial_calls_.push_back(
         static_cast<std::string>(group));
   }

@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -25,14 +25,14 @@ class Metadata;
 const char kForYouStreamKey[] = "i";
 const char kFollowStreamKey[] = "w";
 const char kSupervisedUserStreamKey[] = "s";
-constexpr base::StringPiece kSingleWebFeedStreamKeyPrefix = "c";
-constexpr base::StringPiece kSingleWebFeedMenuStreamKeyPrefix = "m/";
-constexpr base::StringPiece kSingleWebFeedOtherStreamKeyPrefix = "o/";
+constexpr std::string_view kSingleWebFeedStreamKeyPrefix = "c";
+constexpr std::string_view kSingleWebFeedMenuStreamKeyPrefix = "m/";
+constexpr std::string_view kSingleWebFeedOtherStreamKeyPrefix = "o/";
 
 std::string StreamKey(const feed::StreamType& stream_type);
-feed::StreamType StreamTypeFromKey(base::StringPiece key);
+feed::StreamType StreamTypeFromKey(std::string_view key);
 
-base::StringPiece StreamPrefix(feed::StreamKind stream_type);
+std::string_view StreamPrefix(feed::StreamKind stream_type);
 
 ///////////////////////////////////////////////////
 // Functions that operate on feedstore proto types.

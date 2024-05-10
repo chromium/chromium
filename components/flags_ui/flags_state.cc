@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -174,7 +174,7 @@ std::vector<std::string> TokenizeOriginList(const std::string& value) {
   base::StringTokenizer tokenizer(input, delimiters);
   std::vector<std::string> origin_strings;
   while (tokenizer.GetNext()) {
-    base::StringPiece token = tokenizer.token_piece();
+    std::string_view token = tokenizer.token_piece();
     DCHECK(!token.empty());
     const GURL url(token);
     if (!url.is_valid() ||
@@ -511,9 +511,9 @@ void FlagsState::RemoveFlagsSwitches(
     const std::string& existing_value_utf8 = existing_value;
 #endif
 
-    std::vector<base::StringPiece> features =
+    std::vector<std::string_view> features =
         base::FeatureList::SplitFeatureListString(existing_value_utf8);
-    std::vector<base::StringPiece> remaining_features;
+    std::vector<std::string_view> remaining_features;
     // For any featrue name in |features| that is not in |switch_added_values| -
     // i.e. it wasn't added by about_flags code, add it to |remaining_features|.
     for (const auto& feature : features) {
@@ -837,7 +837,7 @@ void FlagsState::MergeFeatureCommandLineSwitch(
     base::CommandLine* command_line) {
   std::string original_switch_value =
       command_line->GetSwitchValueASCII(switch_name);
-  std::vector<base::StringPiece> features =
+  std::vector<std::string_view> features =
       base::FeatureList::SplitFeatureListString(original_switch_value);
   // Only add features that don't already exist in the lists.
   // Note: The base::Contains() call results in O(n^2) performance, but in

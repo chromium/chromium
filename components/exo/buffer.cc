@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -671,7 +672,7 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gfx::Size buffer_size,
     gfx::BufferFormat buffer_format,
     gfx::BufferUsage buffer_usage,
-    base::StringPiece debug_label,
+    std::string_view debug_label,
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {

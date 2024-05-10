@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_SURFACE_RENDERER_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_SURFACE_RENDERER_H_
 
+#include <string_view>
+
 #include "base/observer_list_types.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -28,9 +30,9 @@ class SurfaceRenderer {
   virtual void StreamUpdate(const feedui::StreamUpdate&) = 0;
 
   // Access to the xsurface data store.
-  virtual void ReplaceDataStoreEntry(base::StringPiece key,
-                                     base::StringPiece data) = 0;
-  virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
+  virtual void ReplaceDataStoreEntry(std::string_view key,
+                                     std::string_view data) = 0;
+  virtual void RemoveDataStoreEntry(std::string_view key) = 0;
   // Returns the ReliabilityLogger associated with this surface.
   virtual ReliabilityLoggingBridge& GetReliabilityLoggingBridge() = 0;
 };

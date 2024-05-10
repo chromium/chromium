@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_EXO_KEYBOARD_DELEGATE_H_
 #define COMPONENTS_EXO_KEYBOARD_DELEGATE_H_
 
+#include <string_view>
+
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/exo/key_state.h"
 
@@ -55,7 +56,7 @@ class KeyboardDelegate {
                                           base::TimeDelta interval) = 0;
 
   // Called when keyboard layout is updated.
-  virtual void OnKeyboardLayoutUpdated(base::StringPiece keymap) = 0;
+  virtual void OnKeyboardLayoutUpdated(std::string_view keymap) = 0;
 };
 
 }  // namespace exo

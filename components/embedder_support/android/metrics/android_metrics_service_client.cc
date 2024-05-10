@@ -5,8 +5,10 @@
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 
 #include <jni.h>
+
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -524,7 +526,7 @@ void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
 std::unique_ptr<MetricsLogUploader> AndroidMetricsServiceClient::CreateUploader(
     const GURL& server_url,
     const GURL& insecure_server_url,
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     MetricsLogUploader::MetricServiceType service_type,
     const MetricsLogUploader::UploadCallback& on_upload_complete) {
   if (service_type == metrics::MetricsLogUploader::UKM) {

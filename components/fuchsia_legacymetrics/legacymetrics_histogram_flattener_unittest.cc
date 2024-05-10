@@ -4,6 +4,8 @@
 
 #include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +27,7 @@ int64_t GetCount(int64_t value, const std::vector<HistogramBucket>& buckets) {
 }
 
 const fuchsia::legacymetrics::Histogram* LookupHistogram(
-    base::StringPiece name,
+    std::string_view name,
     const std::vector<Histogram>& histograms) {
   for (const auto& histogram : histograms) {
     if (histogram.name() == name)

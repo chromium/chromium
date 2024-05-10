@@ -8,6 +8,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -15,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -84,7 +84,7 @@ std::vector<std::string> LoadFlagNeverExpireList() {
   return result;
 }
 
-bool IsValidLookingOwner(base::StringPiece owner) {
+bool IsValidLookingOwner(std::string_view owner) {
   // Never allow ',' or ' ' in owner names, regardless of all other constraints.
   // It is otherwise too easy to accidentally do this:
   //   "owners": [ "foo@chromium.org,bar@chromium.org" ]

@@ -4,6 +4,8 @@
 
 #include "components/feedback/redaction_tool/inprocess_metrics_recorder.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_macros.h"
 
 namespace {
@@ -37,7 +39,7 @@ void InprocessMetricsRecorder::RecordTimeSpentRedactingHistogram(
   UMA_HISTOGRAM_MEDIUM_TIMES(kTimeSpentRedactingHistogram, time_spent);
 }
 
-base::StringPiece
+std::string_view
 RedactionToolMetricsRecorder::GetTimeSpentRedactingHistogramNameForTesting() {
   return kTimeSpentRedactingHistogram;
 }

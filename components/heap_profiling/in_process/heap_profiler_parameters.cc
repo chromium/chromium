@@ -5,13 +5,13 @@
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -136,7 +136,7 @@ void HeapProfilerParameters::RegisterJSONConverter(
       &HeapProfilerParameters::collection_interval, &ConvertCollectionInterval);
 }
 
-bool HeapProfilerParameters::UpdateFromJSON(base::StringPiece json_string) {
+bool HeapProfilerParameters::UpdateFromJSON(std::string_view json_string) {
   if (json_string.empty())
     return true;
 

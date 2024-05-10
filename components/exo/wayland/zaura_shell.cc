@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1267,7 +1268,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     }
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_COMPOSITOR_VERSION_SINCE_VERSION) {
-      const base::StringPiece ash_version = version_info::GetVersionNumber();
+      const std::string_view ash_version = version_info::GetVersionNumber();
       zaura_shell_send_compositor_version(aura_shell_resource_,
                                           ash_version.data());
     }

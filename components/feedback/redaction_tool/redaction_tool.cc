@@ -935,7 +935,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
     }
 
     std::string number;
-    base::RemoveChars(base::StringPiece(sequence), "- ", &number);
+    base::RemoveChars(std::string_view(sequence), "- ", &number);
 
     const auto cc_it = credit_cards_.find(number);
     if (cc_it != credit_cards_.cend()) {
@@ -1019,7 +1019,7 @@ std::string RedactionTool::RedactIbans(
 
     // Since the logic later relies on the size of this string not changing use
     // a lambda to initialize the constant.
-    const std::string numbers_only = [](base::StringPiece stripped) {
+    const std::string numbers_only = [](std::string_view stripped) {
       // Move the first 2 chars+digits to the back of the string.
       constexpr size_t prefix_offset = 4;
       std::string rearranged = std::string(stripped.substr(prefix_offset));

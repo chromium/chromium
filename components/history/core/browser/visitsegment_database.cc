@@ -11,11 +11,11 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/page_usage_data.h"
 #include "sql/statement.h"
@@ -104,11 +104,11 @@ std::string VisitSegmentDatabase::ComputeSegmentName(const GURL& url) {
   // TODO(brettw) this should probably use the registry controlled
   // domains service.
   GURL::Replacements r;
-  base::StringPiece host = url.host_piece();
+  std::string_view host = url.host_piece();
 
   // Strip various common prefixes in order to group the resulting hostnames
   // together and avoid duplicates.
-  for (base::StringPiece prefix : {"www.", "m.", "mobile.", "touch."}) {
+  for (std::string_view prefix : {"www.", "m.", "mobile.", "touch."}) {
     if (host.size() > prefix.size() &&
         base::StartsWith(host, prefix, base::CompareCase::INSENSITIVE_ASCII)) {
       r.SetHostStr(host.substr(prefix.size()));

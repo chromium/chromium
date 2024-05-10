@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
@@ -84,7 +85,7 @@ using ConfigurationProviderList =
 // Used to check whether Feature with `feature_name` is present in
 // `feature_list`; works with both FeatureVector and GroupVector.
 template <typename T>
-static bool ContainsFeature(const base::StringPiece& feature_name,
+static bool ContainsFeature(std::string_view feature_name,
                             const T& feature_list) {
   const auto it = std::find_if(feature_list.begin(), feature_list.end(),
                                [&feature_name](const base::Feature* f) {

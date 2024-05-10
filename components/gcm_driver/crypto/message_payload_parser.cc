@@ -4,9 +4,10 @@
 
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
 namespace gcm {
@@ -29,7 +30,7 @@ constexpr size_t kMinimumMessageSize =
 
 }  // namespace
 
-MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
+MessagePayloadParser::MessagePayloadParser(std::string_view message) {
   if (message.size() < kMinimumMessageSize) {
     failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH;
     return;

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_GCM_DRIVER_CRYPTO_GCM_CRYPTO_TEST_HELPERS_H_
 #define COMPONENTS_GCM_DRIVER_CRYPTO_GCM_CRYPTO_TEST_HELPERS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace gcm {
 
@@ -15,9 +15,9 @@ struct IncomingMessage;
 // (as an octet string in uncompressed form per SEC1 2.3.3) and the
 // |auth_secret|. Returns whether the payload could be created and has been
 // written to the |*message|.
-bool CreateEncryptedPayloadForTesting(const base::StringPiece& payload,
-                                      const base::StringPiece& peer_public_key,
-                                      const base::StringPiece& auth_secret,
+bool CreateEncryptedPayloadForTesting(std::string_view payload,
+                                      std::string_view peer_public_key,
+                                      std::string_view auth_secret,
                                       IncomingMessage* message);
 
 }  // namespace gcm

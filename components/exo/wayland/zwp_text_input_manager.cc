@@ -10,11 +10,12 @@
 #include <wayland-server-protocol-core.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
@@ -194,7 +195,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void Commit(base::StringPiece16 text) override {
+  void Commit(std::u16string_view text) override {
     zwp_text_input_v1_send_commit_string(
         text_input_,
         serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
@@ -202,7 +203,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void SetCursor(base::StringPiece16 surrounding_text,
+  void SetCursor(std::u16string_view surrounding_text,
                  const gfx::Range& selection) override {
     std::vector<size_t> offsets{selection.start(), selection.end()};
     base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
@@ -211,7 +212,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
                                            static_cast<uint32_t>(offsets[0]));
   }
 
-  void DeleteSurroundingText(base::StringPiece16 surrounding_text,
+  void DeleteSurroundingText(std::u16string_view surrounding_text,
                              const gfx::Range& range) override {
     std::vector<size_t> offsets{range.GetMin(), range.GetMax()};
     base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
@@ -274,7 +275,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   }
 
   void SetCompositionFromExistingText(
-      base::StringPiece16 surrounding_text,
+      std::u16string_view surrounding_text,
       const gfx::Range& cursor,
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override {
@@ -296,7 +297,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void ClearGrammarFragments(base::StringPiece16 surrounding_text,
+  void ClearGrammarFragments(std::u16string_view surrounding_text,
                              const gfx::Range& range) override {
     if (!extended_text_input_)
       return;
@@ -312,7 +313,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
-  void AddGrammarFragment(base::StringPiece16 surrounding_text,
+  void AddGrammarFragment(std::u16string_view surrounding_text,
                           const ui::GrammarFragment& fragment) override {
     if (!extended_text_input_)
       return;
@@ -329,7 +330,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
-  void SetAutocorrectRange(base::StringPiece16 surrounding_text,
+  void SetAutocorrectRange(std::u16string_view surrounding_text,
                            const gfx::Range& range) override {
     if (!extended_text_input_) {
       return;
@@ -377,7 +378,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
-  void SendPreeditStyle(base::StringPiece16 text,
+  void SendPreeditStyle(std::u16string_view text,
                         const std::vector<ui::ImeTextSpan>& spans) {
     if (spans.empty())
       return;
@@ -503,7 +504,7 @@ class WaylandExtendedTextInput {
 
 void SetSurroundingTextImpl(TextInput* text_input,
                             WaylandTextInputDelegate* delegate,
-                            base::StringPiece text,
+                            std::string_view text,
                             uint32_t cursor,
                             uint32_t anchor) {
   uint32_t offset_utf16 =

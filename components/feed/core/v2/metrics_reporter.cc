@@ -8,6 +8,7 @@
 #include <memory>
 #include <ratio>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -78,7 +79,7 @@ constexpr base::TimeDelta kMinStableContentSliceVisibilityTime =
 constexpr base::TimeDelta kMaxStableContentSliceVisibilityTime =
     base::Seconds(30);
 
-base::StringPiece HistogramReplacement(const StreamType& stream_type) {
+std::string_view HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
     case StreamKind::kSupervisedUser:
       return "Feed.SupervisedFeed.";
@@ -154,7 +155,7 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
   }
 }
 
-base::StringPiece ContentOrderToString(ContentOrder content_order) {
+std::string_view ContentOrderToString(ContentOrder content_order) {
   switch (content_order) {
     case ContentOrder::kUnspecified:
       NOTREACHED();
@@ -216,7 +217,7 @@ void ReportContentLifetimeInvalidAge(
       /*buckets=*/50);
 }
 
-base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
+std::string_view NetworkRequestTypeUmaName(NetworkRequestType type) {
   switch (type) {
     case NetworkRequestType::kFeedQuery:
       return "FeedQuery";
@@ -250,7 +251,7 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
 }
 
 std::string InfoCardActionUmaName(const StreamType& stream_type,
-                                  base::StringPiece action_name) {
+                                  std::string_view action_name) {
   return base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                        "InfoCard.", action_name});
 }
@@ -902,7 +903,7 @@ void MetricsReporter::NetworkRequestComplete(
         << " response_size=" << response_info.encoded_size_bytes
         << " duration=" << response_info.fetch_duration;
 
-  base::StringPiece request_name = NetworkRequestTypeUmaName(type);
+  std::string_view request_name = NetworkRequestTypeUmaName(type);
   base::UmaHistogramSparse(
       base::StrCat(
           {"ContentSuggestions.Feed.Network.ResponseStatus.", request_name}),

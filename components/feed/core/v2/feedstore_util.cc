@@ -4,6 +4,8 @@
 
 #include "components/feed/core/v2/feedstore_util.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
@@ -43,7 +45,7 @@ std::string StreamKey(const StreamType& stream_type) {
   }
 }
 
-base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
+std::string_view StreamPrefix(feed::StreamKind stream_kind) {
   switch (stream_kind) {
     case feed::StreamKind::kForYou:
       return kForYouStreamKey;
@@ -60,9 +62,9 @@ base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
 }
 
 StreamType DecodeSingleWebFeedKeySuffix(
-    base::StringPiece suffix,
+    std::string_view suffix,
     feed::SingleWebFeedEntryPoint entry_point,
-    base::StringPiece prefix) {
+    std::string_view prefix) {
   if (base::StartsWith(suffix, prefix, base::CompareCase::SENSITIVE)) {
     suffix.remove_prefix(prefix.size());
     std::string single_web_feed_key;
@@ -76,7 +78,7 @@ StreamType DecodeSingleWebFeedKeySuffix(
   return {};
 }
 
-StreamType StreamTypeFromKey(base::StringPiece id) {
+StreamType StreamTypeFromKey(std::string_view id) {
   if (id == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
@@ -91,7 +93,7 @@ StreamType StreamTypeFromKey(base::StringPiece id) {
       return {};
     }
     // add  +1 to account for the '/' separating the c/[mo]/webid
-    base::StringPiece substr =
+    std::string_view substr =
         id.substr(kSingleWebFeedStreamKeyPrefix.size() + 1);
     StreamType result = DecodeSingleWebFeedKeySuffix(
         substr, feed::SingleWebFeedEntryPoint::kMenu,

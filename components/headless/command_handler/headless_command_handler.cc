@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -120,7 +120,7 @@ base::Value::Dict GetColorDictFromHexColor(uint32_t color, bool has_alpha) {
 }
 
 bool ParseWindowSize(const std::string& window_size, int* width, int* height) {
-  std::vector<base::StringPiece> width_and_height = base::SplitStringPiece(
+  std::vector<std::string_view> width_and_height = base::SplitStringPiece(
       window_size, ",x", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (width_and_height.size() != 2 ||
       !base::StringToInt(width_and_height[0], width) ||

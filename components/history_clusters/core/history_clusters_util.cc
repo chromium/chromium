@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
@@ -153,9 +153,9 @@ GURL ComputeURLForDeduping(const GURL& url) {
   GURL::Replacements replacements;
 
   // Strip out www, but preserve the eTLD+1. This matches the omnibox behavior.
-  // Make an explicit local, as a StringPiece can't point to a temporary.
+  // Make an explicit local, as a std::string_view can't point to a temporary.
   std::string stripped_host = url_formatter::StripWWW(url_for_deduping.host());
-  replacements.SetHostStr(base::StringPiece(stripped_host));
+  replacements.SetHostStr(std::string_view(stripped_host));
 
   // Replace http protocol with https. It's just for deduplication.
   if (url_for_deduping.SchemeIs(url::kHttpScheme))

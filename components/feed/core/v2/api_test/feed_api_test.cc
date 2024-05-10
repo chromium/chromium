@@ -3,16 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+
 #include <string>
-#include "base/time/time.h"
-#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
-#include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/feed_network.h"
-#include "components/feed/core/v2/public/logging_parameters.h"
-#include "components/feed/core/v2/public/reliability_logging_bridge.h"
-#include "components/feed/core/v2/types.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,29 +16,37 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
+#include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/test/test_util.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -147,8 +148,8 @@ feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
   *msg.mutable_action_payload() = MakeFeedAction(id).action_payload();
   return msg;
 }
-std::string DatastoreEntryToString(base::StringPiece key,
-                                   base::StringPiece value) {
+std::string DatastoreEntryToString(std::string_view key,
+                                   std::string_view value) {
   if (base::StartsWith(key, "/app/webfeed-follow-state/")) {
     feedxsurface::WebFeedFollowState pb;
     if (pb.ParseFromArray(value.data(), value.size())) {
@@ -227,14 +228,14 @@ void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
 
   described_updates_.push_back(CurrentState());
 }
-void TestSurfaceBase::ReplaceDataStoreEntry(base::StringPiece key,
-                                            base::StringPiece data) {
+void TestSurfaceBase::ReplaceDataStoreEntry(std::string_view key,
+                                            std::string_view data) {
   described_datastore_updates_.push_back(
       base::StrCat({"write ", key, ": ", DatastoreEntryToString(key, data)}));
   data_store_entries_[static_cast<std::string>(key)] =
       static_cast<std::string>(data);
 }
-void TestSurfaceBase::RemoveDataStoreEntry(base::StringPiece key) {
+void TestSurfaceBase::RemoveDataStoreEntry(std::string_view key) {
   described_datastore_updates_.push_back(base::StrCat({"delete ", key}));
   data_store_entries_.erase(static_cast<std::string>(key));
 }
@@ -571,8 +572,8 @@ void DebugLogApiResponse(std::string request_bytes,
 }
 
 void DebugLogResponse(NetworkRequestType request_type,
-                      base::StringPiece api_path,
-                      base::StringPiece method,
+                      std::string_view api_path,
+                      std::string_view method,
                       std::string request_bytes,
                       const FeedNetwork::RawResponse& raw_response) {
   VLOG(1) << "TestFeedNetwork responding to request " << method << " "
@@ -589,8 +590,8 @@ void DebugLogResponse(NetworkRequestType request_type,
 
 void TestFeedNetwork::SendDiscoverApiRequest(
     NetworkRequestType request_type,
-    base::StringPiece api_path,
-    base::StringPiece method,
+    std::string_view api_path,
+    std::string_view method,
     std::string request_bytes,
     const AccountInfo& account_info,
     std::optional<RequestMetadata> request_metadata,
@@ -693,7 +694,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
 
 void TestFeedNetwork::SendAsyncDataRequest(
     const GURL& url,
-    base::StringPiece request_method,
+    std::string_view request_method,
     net::HttpRequestHeaders request_headers,
     std::string request_body,
     const AccountInfo& account_info,
@@ -1009,7 +1010,7 @@ void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
   register_following_feed_follow_count_field_trial_calls_.push_back(
       follow_count);
 }
-void FeedApiTest::RegisterFeedUserSettingsFieldTrial(base::StringPiece group) {
+void FeedApiTest::RegisterFeedUserSettingsFieldTrial(std::string_view group) {
   register_feed_user_settings_field_trial_calls_.push_back(
       static_cast<std::string>(group));
 }

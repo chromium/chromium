@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_KEYBOARD_DELEGATE_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -49,7 +51,7 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   void OnKeyRepeatSettingsChanged(bool enabled,
                                   base::TimeDelta delay,
                                   base::TimeDelta interval) override;
-  void OnKeyboardLayoutUpdated(base::StringPiece keymap) override;
+  void OnKeyboardLayoutUpdated(std::string_view keymap) override;
 
  private:
   // Sends the current modifiers to the client.

@@ -4,9 +4,10 @@
 
 #include "components/gcm_driver/crypto/encryption_header_parsers.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/strings/string_number_conversions.h"
-
 #include "base/strings/string_util.h"
 
 
@@ -20,7 +21,7 @@ const uint64_t kDefaultRecordSizeBytes = 4096;
 
 // Decodes the string in |value| using base64url and writes the decoded value to
 // |*salt|. Returns whether the string is not empty and could be decoded.
-bool ValueToDecodedString(base::StringPiece value, std::string* salt) {
+bool ValueToDecodedString(std::string_view value, std::string* salt) {
   if (value.empty())
     return false;
 
@@ -31,7 +32,7 @@ bool ValueToDecodedString(base::StringPiece value, std::string* salt) {
 // Parses the record size in |value| and writes the value to |*rs|. The value
 // must be a positive decimal integer greater than one that does not start
 // with a plus. Returns whether the record size was valid.
-bool RecordSizeToInt(base::StringPiece value, uint64_t* rs) {
+bool RecordSizeToInt(std::string_view value, uint64_t* rs) {
   if (value.empty())
     return false;
 
@@ -80,8 +81,8 @@ bool EncryptionHeaderIterator::GetNext() {
   bool found_rs = false;
 
   while (name_value_pairs.GetNext()) {
-    const base::StringPiece name = name_value_pairs.name_piece();
-    const base::StringPiece value = name_value_pairs.value_piece();
+    const std::string_view name = name_value_pairs.name_piece();
+    const std::string_view value = name_value_pairs.value_piece();
 
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)
@@ -129,8 +130,8 @@ bool CryptoKeyHeaderIterator::GetNext() {
   bool found_dh = false;
 
   while (name_value_pairs.GetNext()) {
-    const base::StringPiece name = name_value_pairs.name_piece();
-    const base::StringPiece value = name_value_pairs.value_piece();
+    const std::string_view name = name_value_pairs.name_piece();
+    const std::string_view value = name_value_pairs.value_piece();
 
     if (base::EqualsCaseInsensitiveASCII(name, "keyid")) {
       if (found_keyid)

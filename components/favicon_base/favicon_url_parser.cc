@@ -4,6 +4,8 @@
 
 #include "components/favicon_base/favicon_url_parser.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/favicon_base/favicon_types.h"
@@ -25,7 +27,7 @@ bool HasSubstringAt(const std::string& path,
 
 // Same as base::StringToInt() but guarantees that the output number is positive
 // (greater than zero), returns false in all other cases.
-bool StringToPositiveInt(base::StringPiece input, int* output) {
+bool StringToPositiveInt(std::string_view input, int* output) {
   int result;
   if (!base::StringToInt(input, &result))
     return false;
@@ -108,7 +110,7 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
   *parsed = chrome::ParsedFaviconPath();
 
   for (net::QueryIterator it(query_url); !it.IsAtEnd(); it.Advance()) {
-    const base::StringPiece key = it.GetKey();
+    const std::string_view key = it.GetKey();
     // Note: each of these keys can be used in chrome://favicon2 path. See file
     // "favicon_url_parser.h" for a description of what each one does.
     if (key == "allowGoogleServerFallback") {

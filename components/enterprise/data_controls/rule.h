@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/enterprise/data_controls/action_context.h"
 #include "components/enterprise/data_controls/condition.h"
@@ -160,8 +160,8 @@ class Rule {
   // Helper called by `ValidateRuleSubValues` to populate errors related to
   // mutually exclusive fields being used in a rule.
   static void AddMutuallyExclusiveErrors(
-      const std::vector<base::StringPiece>& oneof_conditions,
-      const std::vector<base::StringPiece>& anyof_conditions,
+      const std::vector<std::string_view>& oneof_conditions,
+      const std::vector<std::string_view>& anyof_conditions,
       const char* policy_name,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);
@@ -170,8 +170,8 @@ class Rule {
   // included in a rule are meaningful to the restrictions included in that
   // rule. Returns false if at least one error was added.
   static bool AddUnsupportedAttributeErrors(
-      const std::vector<base::StringPiece>& oneof_conditions,
-      const std::vector<base::StringPiece>& anyof_conditions,
+      const std::vector<std::string_view>& oneof_conditions,
+      const std::vector<std::string_view>& anyof_conditions,
       base::flat_map<Rule::Restriction, Rule::Level> restrictions,
       const char* policy_name,
       policy::PolicyErrorPath error_path,

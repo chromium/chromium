@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -94,7 +94,7 @@ bool HasProcessHistogramName(ProcessType process_type) {
 // Returns the full name of a histogram to record by appending the
 // ProfiledProcess variant name for `process_type` (defined in
 // tools/metrics/histograms/metadata/memory/histograms.xml) to `base_name`.
-std::string ProcessHistogramName(base::StringPiece base_name,
+std::string ProcessHistogramName(std::string_view base_name,
                                  ProcessType process_type) {
   switch (process_type) {
     case ProcessType::kBrowser:

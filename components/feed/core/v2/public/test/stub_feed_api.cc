@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
 
+#include <string_view>
 #include <type_traits>
 
 namespace feed {
@@ -38,7 +39,7 @@ EphemeralChangeId StubFeedApi::CreateEphemeralChange(
 }
 EphemeralChangeId StubFeedApi::CreateEphemeralChangeFromPackedData(
     SurfaceId surface_id,
-    base::StringPiece data) {
+    std::string_view data) {
   return {};
 }
 bool StubFeedApi::CommitEphemeralChange(SurfaceId surface_id,

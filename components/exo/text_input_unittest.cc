@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -69,14 +70,14 @@ class MockTextInputDelegate : public TextInput::Delegate {
               SetCompositionText,
               (const ui::CompositionText&),
               (override));
-  MOCK_METHOD(void, Commit, (base::StringPiece16), (override));
+  MOCK_METHOD(void, Commit, (std::u16string_view), (override));
   MOCK_METHOD(void,
               SetCursor,
-              (base::StringPiece16, const gfx::Range&),
+              (std::u16string_view, const gfx::Range&),
               (override));
   MOCK_METHOD(void,
               DeleteSurroundingText,
-              (base::StringPiece16, const gfx::Range&),
+              (std::u16string_view, const gfx::Range&),
               (override));
   MOCK_METHOD(void, SendKey, (const ui::KeyEvent&), (override));
   MOCK_METHOD(void,
@@ -85,22 +86,22 @@ class MockTextInputDelegate : public TextInput::Delegate {
               (override));
   MOCK_METHOD(void,
               SetCompositionFromExistingText,
-              (base::StringPiece16,
+              (std::u16string_view,
                const gfx::Range&,
                const gfx::Range&,
                const std::vector<ui::ImeTextSpan>& ui_ime_text_spans),
               (override));
   MOCK_METHOD(void,
               ClearGrammarFragments,
-              (base::StringPiece16, const gfx::Range&),
+              (std::u16string_view, const gfx::Range&),
               (override));
   MOCK_METHOD(void,
               AddGrammarFragment,
-              (base::StringPiece16, const ui::GrammarFragment&),
+              (std::u16string_view, const ui::GrammarFragment&),
               (override));
   MOCK_METHOD(void,
               SetAutocorrectRange,
-              (base::StringPiece16, const gfx::Range&),
+              (std::u16string_view, const gfx::Range&),
               (override));
   MOCK_METHOD(bool, ConfirmComposition, (bool), (override));
   MOCK_METHOD(bool, SupportsConfirmPreedit, (), (override));
@@ -560,7 +561,7 @@ TEST_F(TextInputTest, ResetCompositionText) {
 TEST_F(TextInputTest, Commit) {
   constexpr char16_t s[] = u"commit text";
 
-  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(s))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string_view(s))).Times(1);
   text_input()->InsertText(
       s, ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(text_input()->HasCompositionText());
@@ -649,7 +650,7 @@ TEST_F(TextInputTest, SurroundingText) {
   EXPECT_TRUE(text_input()->GetTextFromRange(gfx::Range(11, 12), &got_text));
   EXPECT_EQ(text.substr(11, 1), got_text);
 
-  EXPECT_CALL(*delegate(), DeleteSurroundingText(base::StringPiece16(text),
+  EXPECT_CALL(*delegate(), DeleteSurroundingText(std::u16string_view(text),
                                                  gfx::Range(11, 12)))
       .Times(1);
   text_input()->ExtendSelectionAndDelete(0, 0);
@@ -670,9 +671,9 @@ TEST_F(TextInputTest, SetEditableSelectionRange) {
 
   // Should commit composition text and set selection range.
   EXPECT_CALL(*delegate(),
-              SetCursor(base::StringPiece16(u"text"), gfx::Range(0, 3)))
+              SetCursor(std::u16string_view(u"text"), gfx::Range(0, 3)))
       .Times(1);
-  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"text"))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string_view(u"text"))).Times(1);
   EXPECT_TRUE(text_input()->SetEditableSelectionRange(gfx::Range(0, 3)));
   testing::Mock::VerifyAndClearExpectations(delegate());
 }
@@ -853,7 +854,7 @@ TEST_F(TextInputTest, ClearGrammarFragments) {
                                    std::nullopt, std::nullopt);
   gfx::Range range(3, 8);
   EXPECT_CALL(*delegate(), ClearGrammarFragments(
-                               base::StringPiece16(surrounding_text), range))
+                               std::u16string_view(surrounding_text), range))
       .Times(1);
   text_input()->ClearGrammarFragments(range);
 }
@@ -868,11 +869,11 @@ TEST_F(TextInputTest, AddGrammarFragments) {
   };
   EXPECT_CALL(
       *delegate(),
-      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[0]))
+      AddGrammarFragment(std::u16string_view(surrounding_text), fragments[0]))
       .Times(1);
   EXPECT_CALL(
       *delegate(),
-      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[1]))
+      AddGrammarFragment(std::u16string_view(surrounding_text), fragments[1]))
       .Times(1);
   text_input()->AddGrammarFragments(fragments);
 }
@@ -887,11 +888,11 @@ TEST_F(TextInputTest, GetAutocorrect) {
   };
   EXPECT_CALL(
       *delegate(),
-      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[0]))
+      AddGrammarFragment(std::u16string_view(surrounding_text), fragments[0]))
       .Times(1);
   EXPECT_CALL(
       *delegate(),
-      AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[1]))
+      AddGrammarFragment(std::u16string_view(surrounding_text), fragments[1]))
       .Times(1);
   text_input()->AddGrammarFragments(fragments);
 }

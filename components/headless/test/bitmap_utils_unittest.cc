@@ -4,12 +4,13 @@
 
 #include "components/headless/test/bitmap_utils.h"
 
+#include <string_view>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -26,7 +27,7 @@ bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
       bitmap);
 }
 
-SkBitmap LoadTestImage(base::StringPiece file_name) {
+SkBitmap LoadTestImage(std::string_view file_name) {
   base::FilePath path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
   path = path.AppendASCII("components")

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -554,8 +555,7 @@ const char* GetIconClassForError(const std::string& error_domain,
                                                            : "icon-generic";
 }
 
-base::Value::Dict SingleEntryDictionary(base::StringPiece path,
-                                        int message_id) {
+base::Value::Dict SingleEntryDictionary(std::string_view path, int message_id) {
   base::Value::Dict result;
   result.Set(path, l10n_util::GetStringUTF16(message_id));
   return result;

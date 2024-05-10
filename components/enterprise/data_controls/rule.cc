@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_controls/rule.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
@@ -43,8 +44,8 @@ std::string GetStringOrEmpty(const base::Value::Dict& dict, const char* key) {
 // their dictionary. If other attributes are present alongside them, it creates
 // ambiguity as to how the rule is evaluated, and as such this is considered an
 // error in the set policy.
-std::vector<base::StringPiece> OneOfConditions(const base::Value::Dict& value) {
-  std::vector<base::StringPiece> oneof_conditions;
+std::vector<std::string_view> OneOfConditions(const base::Value::Dict& value) {
+  std::vector<std::string_view> oneof_conditions;
   for (const char* oneof_value :
        {// "and", "or" and "not" need to be the only value at their level as it
         // is otherwise ambiguous which of them has precedence or how they are
@@ -65,8 +66,8 @@ std::vector<base::StringPiece> OneOfConditions(const base::Value::Dict& value) {
 
 // Returns any condition present in `value` that wouldn't match
 // `OneOfConditions`.
-std::vector<base::StringPiece> AnyOfConditions(const base::Value::Dict& value) {
-  std::vector<base::StringPiece> anyof_conditions;
+std::vector<std::string_view> AnyOfConditions(const base::Value::Dict& value) {
+  std::vector<std::string_view> anyof_conditions;
   for (const char* anyof_condition :
        {kKeySources, kKeyDestinations, AttributesCondition::kKeyUrls,
         AttributesCondition::kKeyIncognito,
@@ -291,7 +292,7 @@ base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
 // static
 Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
   static constexpr auto kMap =
-      base::MakeFixedFlatMap<base::StringPiece, Restriction>({
+      base::MakeFixedFlatMap<std::string_view, Restriction>({
           {kRestrictionClipboard, Restriction::kClipboard},
           {kRestrictionScreenshot, Restriction::kScreenshot},
           {kRestrictionPrinting, Restriction::kPrinting},
@@ -313,13 +314,12 @@ Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
 
 // static
 Rule::Level Rule::StringToLevel(const std::string& level) {
-  static constexpr auto kMap =
-      base::MakeFixedFlatMap<base::StringPiece, Level>({
-          {kLevelAllow, Level::kAllow},
-          {kLevelBlock, Level::kBlock},
-          {kLevelWarn, Level::kWarn},
-          {kLevelReport, Level::kReport},
-      });
+  static constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, Level>({
+      {kLevelAllow, Level::kAllow},
+      {kLevelBlock, Level::kBlock},
+      {kLevelWarn, Level::kWarn},
+      {kLevelReport, Level::kReport},
+  });
 
   static_assert(
       static_cast<int>(Level::kMaxValue) == kMap.size(),
@@ -397,8 +397,8 @@ bool Rule::ValidateRuleSubValues(
     const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  std::vector<base::StringPiece> oneof_conditions = OneOfConditions(value);
-  std::vector<base::StringPiece> anyof_conditions = AnyOfConditions(value);
+  std::vector<std::string_view> oneof_conditions = OneOfConditions(value);
+  std::vector<std::string_view> anyof_conditions = AnyOfConditions(value);
   if (oneof_conditions.size() > 1 ||
       (oneof_conditions.size() == 1 && anyof_conditions.size() != 0)) {
     AddMutuallyExclusiveErrors(oneof_conditions, anyof_conditions, policy_name,
@@ -441,8 +441,8 @@ bool Rule::ValidateRuleSubValues(
 
 // static
 void Rule::AddMutuallyExclusiveErrors(
-    const std::vector<base::StringPiece>& oneof_conditions,
-    const std::vector<base::StringPiece>& anyof_conditions,
+    const std::vector<std::string_view>& oneof_conditions,
+    const std::vector<std::string_view>& anyof_conditions,
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
@@ -466,13 +466,13 @@ void Rule::AddMutuallyExclusiveErrors(
 
 // static
 bool Rule::AddUnsupportedAttributeErrors(
-    const std::vector<base::StringPiece>& oneof_conditions,
-    const std::vector<base::StringPiece>& anyof_conditions,
+    const std::vector<std::string_view>& oneof_conditions,
+    const std::vector<std::string_view>& anyof_conditions,
     base::flat_map<Rule::Restriction, Rule::Level> restrictions,
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  static const base::flat_map<Rule::Restriction, std::set<base::StringPiece>>
+  static const base::flat_map<Rule::Restriction, std::set<std::string_view>>
       kSupportedAttributes = {
           {Restriction::kClipboard,
            {AttributesCondition::kKeyOsClipboard, AttributesCondition::kKeyUrls,

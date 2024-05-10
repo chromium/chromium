@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/types.h"
 
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -142,7 +143,7 @@ ContentRevision ToContentRevision(const std::string& str) {
 
   uint32_t value;
   if (str[0] == 'c' && str[1] == '/' &&
-      base::StringToUint(base::StringPiece(str).substr(2), &value)) {
+      base::StringToUint(std::string_view(str).substr(2), &value)) {
     return ContentRevision(value);
   }
   return {};
@@ -157,7 +158,7 @@ std::string SerializeDebugStreamData(const DebugStreamData& data) {
 }
 
 std::optional<DebugStreamData> DeserializeDebugStreamData(
-    base::StringPiece base64_encoded) {
+    std::string_view base64_encoded) {
   std::string binary_data;
   if (!base::Base64Decode(base64_encoded, &binary_data))
     return std::nullopt;

@@ -4,6 +4,8 @@
 
 #include "components/feature_engagement/public/field_trial_utils.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -54,11 +56,11 @@ constexpr char kSnoozeParamsInterval[] = "snooze_interval";
 constexpr char kTrackingOnlyTrue[] = "true";
 constexpr char kTrackingOnlyFalse[] = "false";
 
-bool ParseComparatorSubstring(const base::StringPiece& definition,
+bool ParseComparatorSubstring(std::string_view definition,
                               Comparator* comparator,
                               ComparatorType type,
                               uint32_t type_len) {
-  base::StringPiece number_string =
+  std::string_view number_string =
       base::TrimWhitespaceASCII(definition.substr(type_len), base::TRIM_ALL);
   uint32_t value;
   if (!base::StringToUint(number_string, &value)) {
@@ -70,8 +72,7 @@ bool ParseComparatorSubstring(const base::StringPiece& definition,
   return true;
 }
 
-bool ParseComparator(const base::StringPiece& definition,
-                     Comparator* comparator) {
+bool ParseComparator(std::string_view definition, Comparator* comparator) {
   if (base::EqualsCaseInsensitiveASCII(definition, kComparatorTypeAny)) {
     comparator->type = ANY;
     comparator->value = 0;
@@ -113,8 +114,7 @@ bool ParseComparator(const base::StringPiece& definition,
   return false;
 }
 
-bool ParseEventConfig(const base::StringPiece& definition,
-                      EventConfig* event_config) {
+bool ParseEventConfig(std::string_view definition, EventConfig* event_config) {
   // Support definitions with at least 4 tokens.
   auto tokens = base::SplitStringPiece(definition, ";", base::TRIM_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
@@ -136,8 +136,8 @@ bool ParseEventConfig(const base::StringPiece& definition,
       return false;
     }
 
-    const base::StringPiece& key = pair[0];
-    const base::StringPiece& value = pair[1];
+    std::string_view key = pair[0];
+    std::string_view value = pair[1];
     // TODO(nyquist): Ensure that key matches regex /^[a-zA-Z0-9-_]+$/.
 
     if (base::EqualsCaseInsensitiveASCII(key, kEventConfigDataNameKey)) {
@@ -199,12 +199,12 @@ bool ParseEventConfig(const base::StringPiece& definition,
   return has_name && has_comparator && has_window && has_storage;
 }
 
-bool ParseSessionRateImpact(const base::StringPiece& definition,
+bool ParseSessionRateImpact(std::string_view definition,
                             SessionRateImpact* session_rate_impact,
                             const base::Feature* this_feature,
                             const FeatureVector& known_features,
                             const GroupVector& known_groups) {
-  base::StringPiece trimmed_def =
+  std::string_view trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
   if (trimmed_def.length() == 0) {
@@ -264,12 +264,12 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
   return true;
 }
 
-bool ParseBlockedBy(const base::StringPiece& definition,
+bool ParseBlockedBy(std::string_view definition,
                     BlockedBy* blocked_by,
                     const base::Feature* this_feature,
                     const FeatureVector& known_features,
                     const GroupVector& known_groups) {
-  base::StringPiece trimmed_def =
+  std::string_view trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
   if (trimmed_def.length() == 0) {
@@ -328,8 +328,8 @@ bool ParseBlockedBy(const base::StringPiece& definition,
   return true;
 }
 
-bool ParseBlocking(const base::StringPiece& definition, Blocking* blocking) {
-  base::StringPiece trimmed_def =
+bool ParseBlocking(std::string_view definition, Blocking* blocking) {
+  std::string_view trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
   if (trimmed_def.length() == 0) {
@@ -350,7 +350,7 @@ bool ParseBlocking(const base::StringPiece& definition, Blocking* blocking) {
   return false;
 }
 
-bool ParseSnoozeParams(const base::StringPiece& definition,
+bool ParseSnoozeParams(std::string_view definition,
                        SnoozeParams* snooze_params) {
   auto tokens = base::SplitStringPiece(definition, ",", base::TRIM_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
@@ -368,8 +368,8 @@ bool ParseSnoozeParams(const base::StringPiece& definition,
       return false;
     }
 
-    const base::StringPiece& key = pair[0];
-    const base::StringPiece& value = pair[1];
+    std::string_view key = pair[0];
+    std::string_view value = pair[1];
     if (base::EqualsCaseInsensitiveASCII(key, kSnoozeParamsMaxLimit)) {
       uint32_t parsed_value;
       if (!base::StringToUint(value, &parsed_value)) {
@@ -392,12 +392,11 @@ bool ParseSnoozeParams(const base::StringPiece& definition,
   return has_max_limit && has_snooze_interval;
 }
 
-bool ParseTrackingOnly(const base::StringPiece& definition,
-                       bool* tracking_only) {
+bool ParseTrackingOnly(std::string_view definition, bool* tracking_only) {
   // Since |tracking_only| is a primitive, ensure it set.
   *tracking_only = false;
 
-  base::StringPiece trimmed_def =
+  std::string_view trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
   if (base::EqualsCaseInsensitiveASCII(trimmed_def, kTrackingOnlyTrue)) {
@@ -408,11 +407,11 @@ bool ParseTrackingOnly(const base::StringPiece& definition,
   return base::EqualsCaseInsensitiveASCII(trimmed_def, kTrackingOnlyFalse);
 }
 
-bool ParseGroups(const base::StringPiece& definition,
+bool ParseGroups(std::string_view definition,
                  std::vector<std::string>* groups,
                  const base::Feature* this_feature,
                  const GroupVector& known_groups) {
-  base::StringPiece trimmed_def =
+  std::string_view trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
   if (trimmed_def.length() == 0) {

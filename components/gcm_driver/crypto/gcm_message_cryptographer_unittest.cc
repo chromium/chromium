@@ -5,12 +5,12 @@
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "crypto/ec_private_key.h"
@@ -236,10 +236,9 @@ const TestVector kDecryptionTestVectorsDraft08[] = {
 // Computes the shared secret between the sender and the receiver. The sender
 // must have a ASN.1-encoded PKCS #8 EncryptedPrivateKeyInfo block, whereas
 // the receiver must have a public key in uncompressed EC point format.
-bool ComputeSharedP256SecretFromPrivateKeyStr(
-    const base::StringPiece& private_key,
-    const base::StringPiece& peer_public_key,
-    std::string* out_shared_secret) {
+bool ComputeSharedP256SecretFromPrivateKeyStr(std::string_view private_key,
+                                              std::string_view peer_public_key,
+                                              std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
   std::unique_ptr<crypto::ECPrivateKey> local_key(
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
@@ -253,10 +252,9 @@ bool ComputeSharedP256SecretFromPrivateKeyStr(
                                  out_shared_secret);
 }
 
-void ComputeSharedSecret(
-    const base::StringPiece& encoded_sender_private_key,
-    const base::StringPiece& encoded_receiver_public_key,
-    std::string* shared_secret) {
+void ComputeSharedSecret(std::string_view encoded_sender_private_key,
+                         std::string_view encoded_receiver_public_key,
+                         std::string* shared_secret) {
   std::string sender_private_key, receiver_public_key;
   ASSERT_TRUE(base::Base64UrlDecode(
       encoded_sender_private_key,
@@ -844,10 +842,10 @@ const char kRecipientPrivate[] =
   MessagePayloadParser message_parser(message);
   ASSERT_TRUE(message_parser.IsValid());
 
-  base::StringPiece salt = message_parser.salt();
+  std::string_view salt = message_parser.salt();
   uint32_t record_size = message_parser.record_size();
-  base::StringPiece sender_public_key = message_parser.public_key();
-  base::StringPiece ciphertext = message_parser.ciphertext();
+  std::string_view sender_public_key = message_parser.public_key();
+  std::string_view ciphertext = message_parser.ciphertext();
 
   std::string sender_shared_secret, receiver_shared_secret;
 

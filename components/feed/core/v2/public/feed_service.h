@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -80,8 +81,7 @@ class FeedService : public KeyedService {
     virtual void RegisterFollowingFeedFollowCountFieldTrial(
         size_t follow_count) = 0;
     // Registers a synthetic field trial "FeedUserSettings".
-    virtual void RegisterFeedUserSettingsFieldTrial(
-        base::StringPiece group) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.

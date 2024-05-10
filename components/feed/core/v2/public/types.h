@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/version.h"
@@ -131,7 +131,7 @@ struct DebugStreamData {
 
 std::string SerializeDebugStreamData(const DebugStreamData& data);
 std::optional<DebugStreamData> DeserializeDebugStreamData(
-    base::StringPiece base64_encoded);
+    std::string_view base64_encoded);
 
 // Information about a web page which may be used to determine an associated
 // web feed.

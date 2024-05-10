@@ -4,15 +4,16 @@
 
 #include "components/enterprise/data_controls/component.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 
 namespace data_controls {
 
 namespace {
 
 static constexpr auto kStringToComponentMap =
-    base::MakeFixedFlatMap<base::StringPiece, Component>(
+    base::MakeFixedFlatMap<std::string_view, Component>(
         {{kArc, Component::kArc},
          {kCrostini, Component::kCrostini},
          {kPluginVm, Component::kPluginVm},
@@ -51,7 +52,7 @@ std::string GetComponentMapping(Component component) {
 
 ::dlp::DlpComponent GetComponentProtoMapping(const std::string& component) {
   static constexpr auto kComponentsMap =
-      base::MakeFixedFlatMap<base::StringPiece, ::dlp::DlpComponent>(
+      base::MakeFixedFlatMap<std::string_view, ::dlp::DlpComponent>(
           {{kArc, ::dlp::DlpComponent::ARC},
            {kCrostini, ::dlp::DlpComponent::CROSTINI},
            {kPluginVm, ::dlp::DlpComponent::PLUGIN_VM},

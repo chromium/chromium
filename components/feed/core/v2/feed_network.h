@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_FEED_NETWORK_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
@@ -38,8 +39,8 @@ struct QueryInteractiveFeedDiscoverApi {
   using Response = feedwire::Response;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kQueryInteractiveFeed;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:queryInteractiveFeed";
   }
   static bool SendRequestMetadata() { return false; }
@@ -50,8 +51,8 @@ struct QueryBackgroundFeedDiscoverApi {
   using Response = feedwire::Response;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kQueryBackgroundFeed;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:queryBackgroundFeed";
   }
   static bool SendRequestMetadata() { return false; }
@@ -62,8 +63,8 @@ struct QueryNextPageDiscoverApi {
   using Response = feedwire::Response;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kQueryNextPage;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:queryNextPage";
   }
   static bool SendRequestMetadata() { return false; }
@@ -74,8 +75,8 @@ struct UploadActionsDiscoverApi {
   using Response = feedwire::UploadActionsResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kUploadActions;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1/actions:upload";
   }
   static bool SendRequestMetadata() { return true; }
@@ -86,8 +87,8 @@ struct ListWebFeedsDiscoverApi {
   using Response = feedwire::webfeed::ListWebFeedsResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kListWebFeeds;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) { return "v1/webFeeds"; }
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) { return "v1/webFeeds"; }
   static bool SendRequestMetadata() { return true; }
 };
 
@@ -96,8 +97,8 @@ struct ListRecommendedWebFeedDiscoverApi {
   using Response = feedwire::webfeed::ListRecommendedWebFeedsResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kListRecommendedWebFeeds;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1/recommendedWebFeeds";
   }
   static bool SendRequestMetadata() { return true; }
@@ -108,8 +109,8 @@ struct FollowWebFeedDiscoverApi {
   using Response = feedwire::webfeed::FollowWebFeedResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kFollowWebFeed;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:followWebFeed";
   }
   static bool SendRequestMetadata() { return true; }
@@ -120,8 +121,8 @@ struct UnfollowWebFeedDiscoverApi {
   using Response = feedwire::webfeed::UnfollowWebFeedResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kUnfollowWebFeed;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:unfollowWebFeed";
   }
   static bool SendRequestMetadata() { return true; }
@@ -132,8 +133,8 @@ struct WebFeedListContentsDiscoverApi {
   using Response = feedwire::Response;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kWebFeedListContents;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) { return "v1/contents"; }
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) { return "v1/contents"; }
   static bool SendRequestMetadata() { return false; }
 };
 
@@ -142,8 +143,8 @@ struct SingleWebFeedListContentsDiscoverApi {
   using Response = feedwire::Response;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kSingleWebFeedListContents;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) { return "v1/contents"; }
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) { return "v1/contents"; }
   static bool SendRequestMetadata() { return false; }
 };
 
@@ -152,8 +153,8 @@ struct QueryWebFeedDiscoverApi {
   using Response = feedwire::webfeed::QueryWebFeedResponse;
   static constexpr NetworkRequestType kRequestType =
       NetworkRequestType::kQueryWebFeed;
-  static base::StringPiece Method() { return "POST"; }
-  static base::StringPiece RequestPath(const Request&) {
+  static std::string_view Method() { return "POST"; }
+  static std::string_view RequestPath(const Request&) {
     return "v1:queryWebFeed";
   }
   static bool SendRequestMetadata() { return true; }
@@ -228,7 +229,7 @@ class FeedNetwork {
 
   virtual void SendAsyncDataRequest(
       const GURL& url,
-      base::StringPiece request_method,
+      std::string_view request_method,
       net::HttpRequestHeaders request_headers,
       std::string request_body,
       const AccountInfo& account_info,
@@ -244,8 +245,8 @@ class FeedNetwork {
       const RawResponse& raw_response);
   virtual void SendDiscoverApiRequest(
       NetworkRequestType request_type,
-      base::StringPiece api_path,
-      base::StringPiece method,
+      std::string_view api_path,
+      std::string_view method,
       std::string request_bytes,
       const AccountInfo& account_info,
       std::optional<RequestMetadata> request_metadata,

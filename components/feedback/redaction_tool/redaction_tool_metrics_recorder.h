@@ -6,8 +6,8 @@
 #define COMPONENTS_FEEDBACK_REDACTION_TOOL_REDACTION_TOOL_METRICS_RECORDER_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
@@ -80,7 +80,7 @@ class RedactionToolMetricsRecorder {
 
   // Returns the platform specific metric name used to measure how long it took
   // to redact the input.
-  static base::StringPiece GetTimeSpentRedactingHistogramNameForTesting();
+  static std::string_view GetTimeSpentRedactingHistogramNameForTesting();
 };
 
 }  // namespace redaction

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -174,7 +175,7 @@ int ConstructGCMVersion(const std::string& chrome_version) {
   }
 
   int gcm_version = 0;
-  base::StringToInt(base::StringPiece(chrome_version.c_str(), pos),
+  base::StringToInt(std::string_view(chrome_version.c_str(), pos),
                     &gcm_version);
   return gcm_version;
 }

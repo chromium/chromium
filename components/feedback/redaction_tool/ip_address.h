@@ -16,10 +16,10 @@
 #include <algorithm>
 #include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace redaction_internal {
@@ -188,7 +188,7 @@ class IPAddress {
   //
   // When parsing fails, the original value of |this| will be overwritten such
   // that |this->empty()| and |!this->IsValid()|.
-  [[nodiscard]] bool AssignFromIPLiteral(base::StringPiece ip_literal);
+  [[nodiscard]] bool AssignFromIPLiteral(std::string_view ip_literal);
 
   // Returns the underlying bytes.
   const IPAddressBytes& bytes() const { return ip_address_; }

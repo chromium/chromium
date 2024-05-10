@@ -4,6 +4,7 @@
 
 #include "components/exo/test/test_security_delegate.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -41,7 +42,7 @@ std::vector<ui::FileInfo> TestSecurityDelegate::GetFilenames(
     const std::vector<uint8_t>& data) const {
   std::string lines(data.begin(), data.end());
   std::vector<ui::FileInfo> filenames;
-  for (const base::StringPiece& line : base::SplitStringPiece(
+  for (std::string_view line : base::SplitStringPiece(
            lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path;
     if (net::FileURLToFilePath(GURL(line), &path)) {

@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/feed_network_impl.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -188,7 +189,7 @@ GURL OverrideUrlSchemeHostPort(const GURL& url,
 class FeedNetworkImpl::NetworkFetch {
  public:
   NetworkFetch(const GURL& url,
-               base::StringPiece request_method,
+               std::string_view request_method,
                std::string request_body,
                FeedNetworkImpl::Delegate* delegate,
                signin::IdentityManager* identity_manager,
@@ -401,7 +402,7 @@ class FeedNetworkImpl::NetworkFetch {
 
     variations::SignedIn signed_in_status = variations::SignedIn::kNo;
     if (!access_token_.empty()) {
-      base::StringPiece token = access_token_;
+      std::string_view token = access_token_;
       std::string token_override =
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               "feed-token-override");
@@ -581,7 +582,7 @@ void FeedNetworkImpl::SendQueryRequest(
       // Allow the host override to also add a prefix for the path. Ignore
       // trailing slashes if they are provided, as the path part of |url| will
       // always include "/".
-      base::StringPiece trimmed_path_prefix = base::TrimString(
+      std::string_view trimmed_path_prefix = base::TrimString(
           override_host_url.path_piece(), "/", base::TRIM_TRAILING);
       std::string replacement_path =
           base::StrCat({trimmed_path_prefix, url.path_piece()});
@@ -608,7 +609,7 @@ void FeedNetworkImpl::CancelRequests() {
 }
 
 void FeedNetworkImpl::Send(const GURL& url,
-                           base::StringPiece request_method,
+                           std::string_view request_method,
                            std::string request_body,
                            bool allow_bless_auth,
                            const AccountInfo& account_info,
@@ -633,8 +634,8 @@ void FeedNetworkImpl::Send(const GURL& url,
 
 void FeedNetworkImpl::SendDiscoverApiRequest(
     NetworkRequestType request_type,
-    base::StringPiece request_path,
-    base::StringPiece method,
+    std::string_view request_path,
+    std::string_view method,
     std::string request_body,
     const AccountInfo& account_info,
     std::optional<RequestMetadata> request_metadata,
@@ -656,7 +657,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
 
 void FeedNetworkImpl::SendAsyncDataRequest(
     const GURL& url,
-    base::StringPiece request_method,
+    std::string_view request_method,
     net::HttpRequestHeaders request_headers,
     std::string request_body,
     const AccountInfo& account_info,

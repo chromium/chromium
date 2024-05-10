@@ -4,6 +4,8 @@
 
 #include "components/feedback/redaction_tool/inprocess_metrics_tester.h"
 
+#include <string_view>
+
 #include "components/feedback/redaction_tool/inprocess_metrics_recorder.h"
 
 namespace redaction {
@@ -12,13 +14,13 @@ std::unique_ptr<MetricsTester> MetricsTester::Create() {
   return std::make_unique<InprocessMetricsTester>();
 }
 
-size_t InprocessMetricsTester::GetBucketCount(base::StringPiece histogram_name,
+size_t InprocessMetricsTester::GetBucketCount(std::string_view histogram_name,
                                               int histogram_value) {
   return histogram_tester_.GetBucketCount(histogram_name, histogram_value);
 }
 
 size_t InprocessMetricsTester::GetNumBucketEntries(
-    base::StringPiece histogram_name) {
+    std::string_view histogram_name) {
   return histogram_tester_.GetAllSamples(histogram_name).size();
 }
 

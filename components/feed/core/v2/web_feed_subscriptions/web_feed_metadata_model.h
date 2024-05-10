@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_METADATA_MODEL_H_
 
 #include <iosfwd>
+#include <string_view>
 #include <vector>
 
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -41,10 +42,10 @@ class WebFeedMetadataModel {
       feedstore::PendingWebFeedOperation::Kind kind,
       const std::string& web_feed_id,
       feedwire::webfeed::WebFeedChangeReason change_reason);
-  void RemovePendingOperationsForWebFeed(base::StringPiece web_feed_id);
-  void RecordPendingOperationsForWebFeedAttempt(base::StringPiece web_feed_id);
+  void RemovePendingOperationsForWebFeed(std::string_view web_feed_id);
+  void RecordPendingOperationsForWebFeedAttempt(std::string_view web_feed_id);
 
-  WebFeedInFlightChange* FindInFlightChange(base::StringPiece web_feed_id);
+  WebFeedInFlightChange* FindInFlightChange(std::string_view web_feed_id);
   const std::vector<Operation>& pending_operations() const {
     return pending_operations_;
   }
@@ -52,7 +53,7 @@ class WebFeedMetadataModel {
  private:
   static WebFeedInFlightChange MakePendingInFlightChange(
       const feedstore::PendingWebFeedOperation& operation);
-  Operation* FindOperation(base::StringPiece web_feed_id);
+  Operation* FindOperation(std::string_view web_feed_id);
   raw_ptr<FeedStore, DanglingUntriaged> store_;
   std::vector<Operation> pending_operations_;
   int next_id_ = 0;

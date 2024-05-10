@@ -4,6 +4,8 @@
 
 #include "components/exo/keyboard.h"
 
+#include <string_view>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/app_types.h"
@@ -82,7 +84,7 @@ class MockKeyboardDelegate : public KeyboardDelegate {
   MOCK_METHOD(void,
               OnKeyRepeatSettingsChanged,
               (bool, base::TimeDelta, base::TimeDelta));
-  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (base::StringPiece));
+  MOCK_METHOD(void, OnKeyboardLayoutUpdated, (std::string_view));
 };
 using NiceMockKeyboardDelegate = ::testing::NiceMock<MockKeyboardDelegate>;
 
