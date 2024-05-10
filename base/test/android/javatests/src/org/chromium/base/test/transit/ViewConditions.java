@@ -58,6 +58,10 @@ public class ViewConditions {
         protected ConditionStatus checkWithSuppliers() throws Exception {
             ConditionStatus gateStatus = mGate.check();
             String gateMessage = gateStatus.getMessageAsGate();
+            if (gateStatus.isAwaiting()) {
+                return notFulfilled(gateMessage);
+            }
+
             if (!gateStatus.isFulfilled()) {
                 return fulfilled(gateMessage);
             }

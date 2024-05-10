@@ -105,9 +105,10 @@ class StatusStore {
 
         private String getStatusPrefix() {
             return switch (mStatus) {
-                case Status.FULFILLED -> "OK |";
-                case Status.NOT_FULFILLED -> "NO |";
-                case Status.ERROR -> "ERR |";
+                case Status.FULFILLED -> "OK   |";
+                case Status.NOT_FULFILLED -> "NO   |";
+                case Status.ERROR -> "ERR  |";
+                case Status.AWAITING -> "WAIT |";
                 default -> throw new IllegalStateException("Unexpected value: " + mStatus);
             };
         }

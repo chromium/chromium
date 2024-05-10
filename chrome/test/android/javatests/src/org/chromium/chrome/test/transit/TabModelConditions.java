@@ -4,49 +4,54 @@
 
 package org.chromium.chrome.test.transit;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** {@link Condition}s regarding the state of TabModels. */
 public class TabModelConditions {
     /** Fulfilled when no regular tabs are open. */
-    public static Condition noRegularTabsExist(ChromeTabbedActivityTestRule testRule) {
-        return new NoTabsExistCondition(testRule, /* incognito= */ false);
+    public static Condition noRegularTabsExist(
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+        return new NoTabsExistCondition(tabModelSelectorSupplier, /* incognito= */ false);
     }
 
     /** Fulfilled when no incognito tabs are open. */
-    public static Condition noIncognitoTabsExist(ChromeTabbedActivityTestRule testRule) {
-        return new NoTabsExistCondition(testRule, /* incognito= */ true);
+    public static Condition noIncognitoTabsExist(
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+        return new NoTabsExistCondition(tabModelSelectorSupplier, /* incognito= */ true);
     }
 
     /** Fulfilled when one or more regular tabs are open. */
-    public static Condition anyRegularTabsExist(ChromeTabbedActivityTestRule testRule) {
-        return new AnyTabsExistCondition(testRule, /* incognito= */ false);
+    public static Condition anyRegularTabsExist(
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+        return new AnyTabsExistCondition(tabModelSelectorSupplier, /* incognito= */ false);
     }
 
     /** Fulfilled when one or more incognito tabs are open. */
-    public static Condition anyIncognitoTabsExist(ChromeTabbedActivityTestRule testRule) {
-        return new AnyTabsExistCondition(testRule, /* incognito= */ true);
+    public static Condition anyIncognitoTabsExist(
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+        return new AnyTabsExistCondition(tabModelSelectorSupplier, /* incognito= */ true);
     }
 
     private static class NoTabsExistCondition extends UiThreadCondition {
-
-        private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
+        private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
         private final boolean mIncognito;
         private final String mTabType;
 
         public NoTabsExistCondition(
-                ChromeTabbedActivityTestRule chromeTabbedActivityTestRule, boolean incognito) {
-            mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
+                Supplier<TabModelSelector> tabModelSelectorSupplier, boolean incognito) {
+            mTabModelSelectorSupplier =
+                    dependOnSupplier(tabModelSelectorSupplier, "TabModelSelector");
             mIncognito = incognito;
             mTabType = incognito ? "incognito" : "regular";
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            int tabCount = mChromeTabbedActivityTestRule.tabsCount(mIncognito);
+            int tabCount = mTabModelSelectorSupplier.get().getModel(mIncognito).getCount();
             return whether(tabCount == 0, "%d %s tabs", tabCount, mTabType);
         }
 
@@ -57,21 +62,21 @@ public class TabModelConditions {
     }
 
     private static class AnyTabsExistCondition extends UiThreadCondition {
-
-        private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
+        private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
         private final boolean mIncognito;
         private final String mTabType;
 
         public AnyTabsExistCondition(
-                ChromeTabbedActivityTestRule chromeTabbedActivityTestRule, boolean incognito) {
-            mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
+                Supplier<TabModelSelector> tabModelSelectorSupplier, boolean incognito) {
+            mTabModelSelectorSupplier =
+                    dependOnSupplier(tabModelSelectorSupplier, "TabModelSelector");
             mIncognito = incognito;
             mTabType = incognito ? "incognito" : "regular";
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            int tabCount = mChromeTabbedActivityTestRule.tabsCount(mIncognito);
+            int tabCount = mTabModelSelectorSupplier.get().getModel(mIncognito).getCount();
             return whether(tabCount > 0, "%d %s tabs", tabCount, mTabType);
         }
 

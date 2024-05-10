@@ -127,7 +127,7 @@ public abstract class Condition {
             Supplier<?> supplier = kv.getValue();
             if (!supplier.hasValue()) {
                 if (suppliersMissing == null) {
-                    suppliersMissing = new StringBuilder("waiting for suppliers for: ");
+                    suppliersMissing = new StringBuilder("waiting for suppliers of: ");
                 } else {
                     suppliersMissing.append(", ");
                 }
@@ -137,7 +137,7 @@ public abstract class Condition {
         }
 
         if (suppliersMissing != null) {
-            return notFulfilled(suppliersMissing.toString());
+            return awaiting(suppliersMissing.toString());
         }
 
         return null;
@@ -207,5 +207,41 @@ public abstract class Condition {
     @FormatMethod
     public static ConditionStatus whether(boolean isFulfilled, String message, Object... args) {
         return whether(isFulfilled, String.format(message, args));
+    }
+
+    /**
+     * {@link #checkWithSuppliers()} should return this when it does not have information to check
+     * the Condition yet.
+     *
+     * <p>It is considered not fulfilled for most purposes. The exception is that if the Condition
+     * is used as a gate Condition, the gated Condition will not be checked, considered FULFILLED,
+     * or considered NOT_FULFILLED until the gate resolves to FULFILLED or NOT_FULFILLED.
+     *
+     * @param message A short message stating what is being awaited for
+     */
+    public static ConditionStatus awaiting(@Nullable String message) {
+        return new ConditionStatus(Status.AWAITING, message);
+    }
+
+    /** {@link #awaiting(String)} with format parameters. */
+    @FormatMethod
+    public static ConditionStatus awaiting(String message, Object... args) {
+        return new ConditionStatus(Status.AWAITING, String.format(message, args));
+    }
+
+    /** {@link #checkWithSuppliers()} can return this as a convenience method. */
+    public static ConditionStatus fulfilledOrAwaiting(
+            boolean isFulfilled, @Nullable String message) {
+        return isFulfilled ? fulfilled(message) : awaiting(message);
+    }
+
+    /**
+     * {@link #fulfilledOrAwaiting(boolean, String)} with more details to be logged as a short
+     * message.
+     */
+    @FormatMethod
+    public static ConditionStatus fulfilledOrAwaiting(
+            boolean isFulfilled, String message, Object... args) {
+        return fulfilledOrAwaiting(isFulfilled, String.format(message, args));
     }
 }

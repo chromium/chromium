@@ -82,11 +82,11 @@ public class ActivityElement<ActivityT extends Activity>
             }
             mMatchedActivity = candidate;
             if (mMatchedActivity == null) {
-                return notFulfilled("No Activity with expected class");
+                return awaiting("No Activity with expected class");
             }
 
             @ActivityState int state = ApplicationStatus.getStateForActivity(mMatchedActivity);
-            return whether(
+            return fulfilledOrAwaiting(
                     state == ActivityState.RESUMED,
                     "matched: %s (state=%s)",
                     mMatchedActivity,

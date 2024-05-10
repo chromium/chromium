@@ -64,7 +64,8 @@ public abstract class HubBaseStation extends Station {
                                     R.string.accessibility_tab_switcher_incognito_stack)));
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
-    private ActivityElement<ChromeTabbedActivity> mActivityElement;
+    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
+    protected TabModelSelectorCondition mTabModelSelectorCondition;
 
     /**
      * @param chromeTabbedActivityTestRule The {@link ChromeTabbedActivityTestRule} of the test.
@@ -81,13 +82,15 @@ public abstract class HubBaseStation extends Station {
     @Override
     public void declareElements(Elements.Builder elements) {
         mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
+        mTabModelSelectorCondition =
+                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);
 
         Condition incognitoTabsExist =
-                TabModelConditions.anyIncognitoTabsExist(mChromeTabbedActivityTestRule);
+                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorCondition);
         elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
         elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
 
@@ -169,8 +172,7 @@ public abstract class HubBaseStation extends Station {
         // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
         // harder
         // once we use a recycler view with text based buttons.
-        String contentDescription =
-                mChromeTabbedActivityTestRule.getActivity().getString(contentDescriptionRes);
+        String contentDescription = mActivityElement.get().getString(contentDescriptionRes);
         onView(
                         allOf(
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),

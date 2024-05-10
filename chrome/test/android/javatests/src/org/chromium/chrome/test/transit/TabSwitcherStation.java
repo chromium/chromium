@@ -96,7 +96,8 @@ public abstract class TabSwitcherStation extends Station {
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected final boolean mIsIncognito;
-    private ActivityElement<ChromeTabbedActivity> mActivityElement;
+    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
+    protected TabModelSelectorCondition mTabModelSelectorCondition;
 
     /** Instantiate one of the subclasses instead. */
     protected TabSwitcherStation(
@@ -112,6 +113,8 @@ public abstract class TabSwitcherStation extends Station {
     @CallSuper
     public void declareElements(Elements.Builder elements) {
         mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
+        mTabModelSelectorCondition =
+                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
 
         elements.declareView(TOOLBAR);
         elements.declareView(TOOLBAR_NEW_TAB_BUTTON);

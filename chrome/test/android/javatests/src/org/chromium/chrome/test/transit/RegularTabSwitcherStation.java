@@ -31,11 +31,11 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         super.declareElements(elements);
 
         Condition noRegularTabsExist =
-                TabModelConditions.noRegularTabsExist(mChromeTabbedActivityTestRule);
+                TabModelConditions.noRegularTabsExist(mTabModelSelectorCondition);
         elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
 
         Condition incognitoTabsExist =
-                TabModelConditions.anyIncognitoTabsExist(mChromeTabbedActivityTestRule);
+                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorCondition);
         elements.declareViewIf(INCOGNITO_TOGGLE_TABS, incognitoTabsExist);
         elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
         elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);

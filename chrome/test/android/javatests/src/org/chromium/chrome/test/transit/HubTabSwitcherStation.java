@@ -37,6 +37,6 @@ public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
 
         elements.declareViewIf(
                 EMPTY_STATE_TEXT,
-                TabModelConditions.noRegularTabsExist(mChromeTabbedActivityTestRule));
+                TabModelConditions.noRegularTabsExist(mTabModelSelectorCondition));
     }
 }
