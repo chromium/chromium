@@ -43,6 +43,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
         {features::kPermissionElement,
+         permissions::features::kOneTimePermission,
          blink::features::kDisablePepcSecurityForTesting},
         {});
   }
@@ -312,7 +313,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPartialPermissionsLabels TestPartialPermissionsLabels
 #define MAYBE_TestPermissionElementDialogPositioning \
   TestPermissionElementDialogPositioning
-#define MAYBE_TestPepcHistograms DISABLED_TestPepcHistograms
+#define MAYBE_TestPepcHistograms TestPepcHistograms
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
