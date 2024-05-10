@@ -16,8 +16,7 @@
 
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
 #include "gtest/gtest.h"
 #include "util/file/file_io.h"
 #include "util/net/http_body.h"
@@ -30,17 +29,17 @@ std::string ReadStreamToString(HTTPBodyStream* stream) {
 }
 
 std::string ReadStreamToString(HTTPBodyStream* stream, size_t buffer_size) {
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[buffer_size]);
+  auto buf = base::HeapArray<uint8_t>::Uninit(buffer_size);
   std::string result;
 
   FileOperationResult bytes_read;
-  while ((bytes_read = stream->GetBytesBuffer(buf.get(), buffer_size)) != 0) {
+  while ((bytes_read = stream->GetBytesBuffer(buf.data(), buf.size())) != 0) {
     if (bytes_read < 0) {
       ADD_FAILURE() << "Failed to read from stream: " << bytes_read;
       return std::string();
     }
 
-    result.append(reinterpret_cast<char*>(buf.get()), bytes_read);
+    result.append(reinterpret_cast<char*>(buf.data()), bytes_read);
   }
 
   return result;

@@ -17,8 +17,7 @@
 #include <windows.h>
 #include <stdint.h>
 
-#include <memory>
-
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -33,15 +32,18 @@ bool GetModuleVersionAndType(const base::FilePath& path,
     return false;
   }
 
-  std::unique_ptr<uint8_t[]> data(new uint8_t[size]);
-  if (!GetFileVersionInfo(path.value().c_str(), 0, size, data.get())) {
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
+  if (!GetFileVersionInfo(path.value().c_str(),
+                          0,
+                          static_cast<DWORD>(data.size()),
+                          data.data())) {
     PLOG(WARNING) << "GetFileVersionInfo: " << base::WideToUTF8(path.value());
     return false;
   }
 
   VS_FIXEDFILEINFO* fixed_file_info;
   UINT ffi_size;
-  if (!VerQueryValue(data.get(),
+  if (!VerQueryValue(data.data(),
                      L"\\",
                      reinterpret_cast<void**>(&fixed_file_info),
                      &ffi_size)) {

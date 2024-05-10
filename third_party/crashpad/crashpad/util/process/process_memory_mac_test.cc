@@ -23,6 +23,7 @@
 
 #include "base/apple/scoped_mach_port.h"
 #include "base/apple/scoped_mach_vm.h"
+#include "base/containers/heap_array.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "util/misc/from_pointer_cast.h"
@@ -259,13 +260,12 @@ TEST(ProcessMemoryMac, MappedMemoryDeallocates) {
   // This is the same but with a big buffer that’s definitely larger than a
   // single page. This makes sure that the whole mapped region winds up being
   // deallocated.
-  const size_t kBigSize = 4 * PAGE_SIZE;
-  std::unique_ptr<char[]> big_buffer(new char[kBigSize]);
+  auto big_buffer = base::HeapArray<char>::Uninit(4 * PAGE_SIZE);
   test_address = FromPointerCast<mach_vm_address_t>(&big_buffer[0]);
-  ASSERT_TRUE((mapped = memory.ReadMapped(test_address, kBigSize)));
+  ASSERT_TRUE((mapped = memory.ReadMapped(test_address, big_buffer.size())));
 
   mapped_address = reinterpret_cast<vm_address_t>(mapped->data());
-  vm_address_t mapped_last_address = mapped_address + kBigSize - 1;
+  vm_address_t mapped_last_address = mapped_address + big_buffer.size() - 1;
   EXPECT_TRUE(IsAddressMapped(mapped_address));
   EXPECT_TRUE(IsAddressMapped(mapped_address + PAGE_SIZE));
   EXPECT_TRUE(IsAddressMapped(mapped_last_address));

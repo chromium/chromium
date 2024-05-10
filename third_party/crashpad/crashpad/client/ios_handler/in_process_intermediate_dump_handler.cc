@@ -415,7 +415,7 @@ void MaybeCaptureMemoryAround(IOSIntermediateDumpWriter* writer,
 
   IOSIntermediateDumpWriter::ScopedArrayMap memory_region(writer);
   WriteProperty(
-      writer, IntermediateDumpKey::kThreadContextMemoryRegionAddress, &address);
+      writer, IntermediateDumpKey::kThreadContextMemoryRegionAddress, &target);
   // Don't use WritePropertyBytes, this one will fail regularly if |target|
   // cannot be read.
   writer->AddPropertyBytes(IntermediateDumpKey::kThreadContextMemoryRegionData,

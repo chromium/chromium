@@ -16,9 +16,9 @@
 
 #include <stdio.h>
 
-#include <memory>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -77,7 +77,7 @@ void ToolSupport::UsageHint(const std::string& me, const char* hint) {
 
 // static
 int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
-  std::unique_ptr<char* []> argv_as_utf8(new char*[argc + 1]);
+  auto argv_as_utf8 = base::HeapArray<char*>::Uninit(argc + 1);
   std::vector<std::string> storage;
   storage.reserve(argc);
   for (int i = 0; i < argc; ++i) {
@@ -85,7 +85,7 @@ int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
     argv_as_utf8[i] = &storage[i][0];
   }
   argv_as_utf8[argc] = nullptr;
-  return entry(argc, argv_as_utf8.get());
+  return entry(argc, argv_as_utf8.data());
 }
 
 #endif  // BUILDFLAG(IS_WIN)
