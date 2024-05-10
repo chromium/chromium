@@ -21,6 +21,7 @@
 #include "crypto/aead.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
+#include "crypto/hkdf.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "device/fido/attested_credential_data.h"
@@ -78,6 +79,17 @@ bool EncryptAes256Gcm(base::span<const uint8_t> key,
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(key);
   return aead.Seal(plaintext, nonce, aad, ciphertext);
+}
+
+std::vector<uint8_t> DerivePasskeyEncryptionSecret(
+    base::span<const uint8_t> trusted_vault_key) {
+  constexpr std::string_view kHkdfInfo =
+      "KeychainApplicationKey:gmscore_module:com.google.android.gms.fido";
+  constexpr size_t kEncryptionSecretSize = 32u;
+  return crypto::HkdfSha256(trusted_vault_key,
+                            /*salt=*/base::span<const uint8_t>(),
+                            base::as_bytes(base::span(kHkdfInfo)),
+                            kEncryptionSecretSize);
 }
 
 }  // namespace
@@ -140,7 +152,7 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
 }
 
 bool DecryptWebauthnCredentialSpecificsData(
-    base::span<const uint8_t> key,
+    base::span<const uint8_t> trusted_vault_key,
     const sync_pb::WebauthnCredentialSpecifics& in,
     sync_pb::WebauthnCredentialSpecifics_Encrypted* out) {
   switch (in.encrypted_data_case()) {
@@ -157,9 +169,9 @@ bool DecryptWebauthnCredentialSpecificsData(
           std::string_view(in.encrypted())
               .substr(kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
       std::string plaintext;
-      if (!DecryptAes256Gcm(key, ciphertext, nonce,
-                            kAadWebauthnCredentialSpecificsEncrypted,
-                            &plaintext)) {
+      if (!DecryptAes256Gcm(
+              DerivePasskeyEncryptionSecret(trusted_vault_key), ciphertext,
+              nonce, kAadWebauthnCredentialSpecificsEncrypted, &plaintext)) {
         DVLOG(1) << "Decrypting WebauthnCredentialSpecifics.encrypted failed";
         return false;
       }
@@ -185,9 +197,9 @@ bool DecryptWebauthnCredentialSpecificsData(
           std::string_view(in.private_key())
               .substr(kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
       std::string plaintext;
-      if (!DecryptAes256Gcm(key, ciphertext, nonce,
-                            kAadWebauthnCredentialSpecificsPrivateKey,
-                            &plaintext)) {
+      if (!DecryptAes256Gcm(
+              DerivePasskeyEncryptionSecret(trusted_vault_key), ciphertext,
+              nonce, kAadWebauthnCredentialSpecificsPrivateKey, &plaintext)) {
         DVLOG(1) << "Decrypting WebauthnCredentialSpecifics.private_key failed";
         return false;
       }
@@ -203,7 +215,7 @@ bool DecryptWebauthnCredentialSpecificsData(
 }
 
 bool EncryptWebauthnCredentialSpecificsData(
-    base::span<const uint8_t> key,
+    base::span<const uint8_t> trusted_vault_key,
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& in,
     sync_pb::WebauthnCredentialSpecifics* out) {
   CHECK_NE(out, nullptr);
@@ -214,9 +226,9 @@ bool EncryptWebauthnCredentialSpecificsData(
   const std::string nonce = base::RandBytesAsString(
       kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
   std::string ciphertext;
-  if (!EncryptAes256Gcm(key, plaintext, nonce,
-                        kAadWebauthnCredentialSpecificsEncrypted,
-                        &ciphertext)) {
+  if (!EncryptAes256Gcm(
+          DerivePasskeyEncryptionSecret(trusted_vault_key), plaintext, nonce,
+          kAadWebauthnCredentialSpecificsEncrypted, &ciphertext)) {
     return false;
   }
   *out->mutable_encrypted() = base::StrCat({nonce, ciphertext});
