@@ -30,6 +30,9 @@ class AwDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   std::string GetTargetDescription(content::WebContents* web_contents) override;
   std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
+  // Returns all targets embedder would like to report as debuggable remotely.
+  content::DevToolsAgentHost::List RemoteDebuggingTargets(
+      TargetType target_type) override;
 };
 
 } //  namespace android_webview

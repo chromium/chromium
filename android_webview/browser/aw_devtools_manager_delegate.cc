@@ -58,4 +58,22 @@ bool AwDevToolsManagerDelegate::IsBrowserTargetDiscoverable() {
   return true;
 }
 
+content::DevToolsAgentHost::List
+AwDevToolsManagerDelegate::RemoteDebuggingTargets(TargetType target_type) {
+  DevToolsAgentHost::List result;
+  std::set<content::WebContents*> targets_web_contents;
+  DevToolsAgentHost::List agents = DevToolsAgentHost::GetOrCreateAll();
+  for (DevToolsAgentHost::List::iterator it = agents.begin();
+       it != agents.end(); ++it) {
+    if (content::WebContents* web_contents = (*it)->GetWebContents()) {
+      if (targets_web_contents.find(web_contents) !=
+          targets_web_contents.end()) {
+        continue;
+      }
+      targets_web_contents.insert(web_contents);
+    }
+    result.push_back(*it);
+  }
+  return result;
+}
 }  // namespace android_webview
