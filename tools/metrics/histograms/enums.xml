@@ -20107,6 +20107,7 @@ from previous Chrome versions.
   <int value="-477101783" label="HandwritingGesture:disabled"/>
   <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
   <int value="-475537287" label="EcheLauncherListView:enabled"/>
+  <int value="-475178110" label="WebApkBackupAndRestoreBackend:enabled"/>
   <int value="-475049740" label="disable-vr-shell"/>
   <int value="-475042780" label="DialMediaRouteProvider:enabled"/>
   <int value="-474833105" label="CrostiniUseBusterImage:enabled"/>
@@ -25369,6 +25370,7 @@ from previous Chrome versions.
   <int value="1829252358"
       label="PrivateNetworkAccessPreflightShortTimeout:enabled"/>
   <int value="1829259057" label="MediaAppHandlesPdf:enabled"/>
+  <int value="1829787040" label="WebApkBackupAndRestoreBackend:disabled"/>
   <int value="1830460973" label="disable-network-settings-config"/>
   <int value="1831103529" label="MediaNotificationsCounter:disabled"/>
   <int value="1831156636" label="NearbyKeepAliveFix:enabled"/>

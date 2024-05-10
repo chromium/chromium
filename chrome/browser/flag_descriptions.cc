@@ -2038,6 +2038,11 @@ const char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
     "pipeline";
 
+const char kPwaRestoreBackendName[] = "Enable the PWA Restore Backend";
+const char kPwaRestoreBackendDescription[] =
+    "When enabled, PWA data will be sync to the backend, to support the PWA "
+    "Restore UI.";
+
 const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 const char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";

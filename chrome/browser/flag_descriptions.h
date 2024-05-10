@@ -1153,6 +1153,9 @@ extern const char kCrasProcessorDedicatedThreadDescription[];
 extern const char kCrasProcessorWavDumpName[];
 extern const char kCrasProcessorWavDumpDescription[];
 
+extern const char kPwaRestoreBackendName[];
+extern const char kPwaRestoreBackendDescription[];
+
 extern const char kPwaRestoreUiName[];
 extern const char kPwaRestoreUiDescription[];
 
