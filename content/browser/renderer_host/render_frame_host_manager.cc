@@ -2677,7 +2677,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool is_reload,
     bool is_same_document,
     IsSameSiteGetter& is_same_site,
-    bool dest_is_restore,
     bool dest_is_view_source_mode,
     bool was_server_redirect,
     CoopSwapResult coop_swap_result,
@@ -2750,9 +2749,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   SiteInstanceDescriptor new_instance_descriptor = DetermineSiteInstanceForURL(
       dest_url_info, source_instance, current_instance, dest_instance,
-      transition, error_page_process, is_same_site, dest_is_restore,
-      dest_is_view_source_mode, *should_swap_result, was_server_redirect,
-      reason);
+      transition, error_page_process, is_same_site, *should_swap_result,
+      was_server_redirect, reason);
 
   scoped_refptr<SiteInstanceImpl> new_instance =
       ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
@@ -3009,8 +3007,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     ui::PageTransition transition,
     NavigationRequest::ErrorPageProcess error_page_process,
     IsSameSiteGetter& is_same_site,
-    bool dest_is_restore,
-    bool dest_is_view_source_mode,
     BrowsingContextGroupSwap browsing_context_group_swap,
     bool was_server_redirect,
     std::string* reason) {
@@ -4338,7 +4334,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
           ui::PageTransitionFromInt(request->common_params().transition),
           request->ComputeErrorPageProcess(), is_reload,
           request->IsSameDocument(), is_same_site,
-          request->GetRestoreType() == RestoreType::kRestored,
           request->commit_params().is_view_source, request->WasServerRedirect(),
           request->coop_status().browsing_instance_swap_result(),
           request->common_params().should_replace_current_entry,

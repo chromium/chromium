@@ -766,7 +766,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool is_reload,
       bool is_same_document,
       IsSameSiteGetter& is_same_site,
-      bool dest_is_restore,
       bool dest_is_view_source_mode,
       bool was_server_redirect,
       CoopSwapResult coop_swap_result,
@@ -797,8 +796,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       ui::PageTransition transition,
       NavigationRequest::ErrorPageProcess error_page_process,
       IsSameSiteGetter& is_same_site,
-      bool dest_is_restore,
-      bool dest_is_view_source_mode,
       BrowsingContextGroupSwap browsing_context_group_swap,
       bool was_server_redirect,
       std::string* reason);
