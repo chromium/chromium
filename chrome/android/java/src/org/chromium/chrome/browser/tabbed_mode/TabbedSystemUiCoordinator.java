@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.InsetObserver;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -48,7 +47,6 @@ public class TabbedSystemUiCoordinator {
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
-     * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -59,8 +57,7 @@ public class TabbedSystemUiCoordinator {
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController,
-            InsetObserver insetObserver) {
+            BottomSheetController bottomSheetController) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -73,8 +70,7 @@ public class TabbedSystemUiCoordinator {
                             browserControlsStateProvider,
                             snackbarManagerSupplier,
                             contextualSearchManagerSupplier,
-                            bottomSheetController,
-                            insetObserver);
+                            bottomSheetController);
         }
     }
 
