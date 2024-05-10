@@ -203,8 +203,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
  private:
   friend CompletionIOPortThread;
 
-  // Sets up a watch handle in `watched_handle_` for either `target_` or one of
-  // its ancestors. Returns true on success.
+  // Sets up a watch handle for either `target_` or one of its ancestors.
+  // Returns true on success.
   [[nodiscard]] bool SetupWatchHandleForTarget();
 
   void CloseWatchHandle();
@@ -216,9 +216,6 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   // Path we're supposed to watch (passed to callback).
   FilePath target_;
-
-  // Handle for FindFirstChangeNotification.
-  base::win::ScopedHandle watched_handle_;
 
   std::optional<CompletionIOPortThread::WatcherEntryId> watcher_id_;
 
@@ -397,14 +394,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     first_notification_ = Time::Now();
   }
 
-  if (!SetupWatchHandleForTarget()) {
-    return false;
-  }
-
-  watcher_id_ = CompletionIOPortThread::Get()->AddWatcher(
-      *this, std::move(watched_handle_));
-
-  return watcher_id_.has_value();
+  return SetupWatchHandleForTarget();
 }
 
 void FilePathWatcherImpl::Cancel() {
@@ -486,16 +476,6 @@ void FilePathWatcherImpl::OnObjectSignaled() {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
   }
-
-  // The watch may have been cancelled by the callback.
-  if (self) {
-    watcher_id_ = CompletionIOPortThread::Get()->AddWatcher(
-        *this, std::move(watched_handle_));
-    if (!watcher_id_.has_value()) {
-      // `this` may be deleted after `callback_` is run.
-      callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
-    }
-  }
 }
 
 bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
@@ -508,12 +488,13 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   // child directories stripped from target, in reverse order.
   std::vector<FilePath> child_dirs;
   FilePath path_to_watch(target_);
+  base::win::ScopedHandle watched_handle;
   while (true) {
     auto result = CreateDirectoryHandle(path_to_watch);
 
     // Break if a valid handle is returned.
     if (result.has_value()) {
-      watched_handle_ = std::move(result.value());
+      watched_handle = std::move(result.value());
       break;
     }
 
@@ -533,7 +514,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
     path_to_watch = parent;
   }
 
-  // At this point, `watched_handle_` is valid. However, the bottom-up search
+  // At this point, `watched_handle` is valid. However, the bottom-up search
   // that the above code performs races against directory creation. So try to
   // walk back down and see whether any children appeared in the mean time.
   while (!child_dirs.empty()) {
@@ -549,10 +530,13 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
       // Otherwise go with the current `watched_handle`.
       break;
     }
-    watched_handle_ = std::move(result.value());
+    watched_handle = std::move(result.value());
   }
 
-  return true;
+  watcher_id_ = CompletionIOPortThread::Get()->AddWatcher(
+      *this, std::move(watched_handle));
+
+  return watcher_id_.has_value();
 }
 
 void FilePathWatcherImpl::CloseWatchHandle() {
