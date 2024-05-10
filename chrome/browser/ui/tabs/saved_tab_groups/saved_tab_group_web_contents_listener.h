@@ -6,6 +6,10 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
 #include "base/token.h"
+#include "components/favicon/core/favicon_driver.h"
+#include "components/favicon/core/favicon_driver_observer.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -17,7 +21,8 @@ namespace tab_groups {
 
 class SavedTabGroupModel;
 
-class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
+class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
+                                         public favicon::FaviconDriverObserver {
  public:
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    base::Token token,
@@ -31,6 +36,15 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
+
+  // favicon::FaviconDriverObserver
+  void OnFaviconUpdated(
+      favicon::FaviconDriver* favicon_driver,
+      FaviconDriverObserver::NotificationIconType notification_icon_type,
+      const GURL& icon_url,
+      bool icon_url_changed,
+      const gfx::Image& image) override;
 
   void NavigateToUrl(const GURL& url);
 
@@ -40,6 +54,8 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  private:
   const base::Token token_;
   const raw_ptr<content::WebContents> web_contents_;
+  // Used to update the favicon for this tab.
+  const raw_ptr<favicon::FaviconDriver> favicon_driver_;
   const raw_ptr<SavedTabGroupModel> model_;
 
   // The NavigationHandle that resulted from the last sync update. Ignored by

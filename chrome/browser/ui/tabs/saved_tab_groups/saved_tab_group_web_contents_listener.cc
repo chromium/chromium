@@ -6,9 +6,11 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
@@ -45,8 +47,15 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     base::Token token,
     SavedTabGroupModel* model)
-    : token_(token), web_contents_(web_contents), model_(model) {
+    : token_(token),
+      web_contents_(web_contents),
+      favicon_driver_(
+          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
+      model_(model) {
   Observe(web_contents_);
+  if (favicon_driver_) {
+    favicon_driver_->AddObserver(this);
+  }
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
@@ -56,12 +65,21 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     SavedTabGroupModel* model)
     : token_(token),
       web_contents_(web_contents),
+      favicon_driver_(
+          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
       model_(model),
       handle_from_sync_update_(navigation_handle) {
   Observe(web_contents_);
+  if (favicon_driver_) {
+    favicon_driver_->AddObserver(this);
+  }
 }
 
-SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
+SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
+  if (favicon_driver_) {
+    favicon_driver_->RemoveObserver(this);
+  }
+}
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   if (web_contents_->GetURL().GetWithoutRef().spec() ==
@@ -104,6 +122,30 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   tab->SetTitle(web_contents_->GetTitle());
   tab->SetURL(web_contents_->GetURL());
   tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
+  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+}
+
+void SavedTabGroupWebContentsListener::TitleWasSet(
+    content::NavigationEntry* entry) {
+  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  CHECK(group);
+
+  SavedTabGroupTab* tab = group->GetTab(token_);
+  tab->SetTitle(entry->GetTitleForDisplay());
+  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+}
+
+void SavedTabGroupWebContentsListener::OnFaviconUpdated(
+    favicon::FaviconDriver* favicon_driver,
+    FaviconDriverObserver::NotificationIconType notification_icon_type,
+    const GURL& icon_url,
+    bool icon_url_changed,
+    const gfx::Image& image) {
+  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  CHECK(group);
+
+  SavedTabGroupTab* tab = group->GetTab(token_);
+  tab->SetFavicon(image);
   model_->UpdateTabInGroup(group->saved_guid(), *tab);
 }
 
