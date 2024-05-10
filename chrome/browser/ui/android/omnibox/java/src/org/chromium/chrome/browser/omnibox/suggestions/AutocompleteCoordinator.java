@@ -382,6 +382,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         boolean isShowingList = mDropdown != null && mDropdown.getViewGroup().isShown();
         boolean isAnyDirection = KeyNavigationUtil.isGoAnyDirection(event);
 
+        if (isShowingList && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
+            mMediator.finishInteraction();
+            return true;
+        }
         if (isShowingList && mMediator.getSuggestionCount() > 0 && isAnyDirection) {
             mMediator.allowPendingItemSelection();
         }
