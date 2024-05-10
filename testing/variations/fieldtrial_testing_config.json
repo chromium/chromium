@@ -14451,6 +14451,25 @@
             ]
         }
     ],
+    "PickerUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ModifierSplit",
+                        "ModifierSplitDogfood",
+                        "Picker",
+                        "PickerDogfood"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressFallbackFromContextMenu": [
         {
             "platforms": [
