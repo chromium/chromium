@@ -970,6 +970,8 @@ void MediaRouterDesktop::RecordPresentationRequestUrlBySink(
     case mojom::MediaRouteProviderId::CAST:
       if (source.IsCastPresentationUrl()) {
         value = PresentationUrlBySink::kCastUrlToChromecast;
+      } else if (source.IsRemotePlaybackSource()) {
+        value = PresentationUrlBySink::kRemotePlayback;
       } else if (is_normal_url) {
         value = PresentationUrlBySink::kNormalUrlToChromecast;
       }
@@ -983,7 +985,7 @@ void MediaRouterDesktop::RecordPresentationRequestUrlBySink(
     case mojom::MediaRouteProviderId::TEST:
       break;
   }
-  base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",
+  base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink2",
                                 value);
 }
 

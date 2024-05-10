@@ -919,12 +919,16 @@ TEST_F(MediaRouterDesktopTest, TestRecordPresentationRequestUrlBySink) {
   using PresentationUrlBySink = MediaRouterDesktop::PresentationUrlBySink;
 
   MediaSource cast_source("cast:ABCD1234");
+  MediaSource remote_playback_source(
+      "remote-playback:media-session?&video_codec=vp8&audio_codec=aac");
   MediaSource dial_source(
       GURL(base::StrCat({kCastDialPresentationUrlScheme, ":YouTube"})));
   MediaSource presentation_url(GURL("https://www.example.com"));
 
   base::HistogramTester tester;
   RecordPresentationRequestUrlBySink(cast_source,
+                                     mojom::MediaRouteProviderId::CAST, 6);
+  RecordPresentationRequestUrlBySink(remote_playback_source,
                                      mojom::MediaRouteProviderId::CAST, 5);
   RecordPresentationRequestUrlBySink(dial_source,
                                      mojom::MediaRouteProviderId::DIAL, 4);
@@ -938,18 +942,19 @@ TEST_F(MediaRouterDesktopTest, TestRecordPresentationRequestUrlBySink) {
                                      mojom::MediaRouteProviderId::DIAL, 1);
 
   EXPECT_THAT(
-      tester.GetAllSamples("MediaRouter.PresentationRequest.UrlBySink"),
+      tester.GetAllSamples("MediaRouter.PresentationRequest.UrlBySink2"),
       testing::UnorderedElementsAre(
           Bucket(static_cast<int>(PresentationUrlBySink::kUnknown), 1),
           Bucket(
-              static_cast<int>(PresentationUrlBySink::kNormalUrlToChromecast),
-              3),
-          Bucket(
               static_cast<int>(PresentationUrlBySink::kNormalUrlToWiredDisplay),
               2),
+          Bucket(
+              static_cast<int>(PresentationUrlBySink::kNormalUrlToChromecast),
+              3),
+          Bucket(static_cast<int>(PresentationUrlBySink::kDialUrlToDial), 4),
+          Bucket(static_cast<int>(PresentationUrlBySink::kRemotePlayback), 5),
           Bucket(static_cast<int>(PresentationUrlBySink::kCastUrlToChromecast),
-                 5),
-          Bucket(static_cast<int>(PresentationUrlBySink::kDialUrlToDial), 4)));
+                 6)));
 }
 
 TEST_F(MediaRouterDesktopTest, TestGetCurrentRoutes) {

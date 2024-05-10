@@ -267,9 +267,10 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
     kNormalUrlToWiredDisplay = 3,
     kCastUrlToChromecast = 4,
     kDialUrlToDial = 5,
+    kRemotePlayback = 6,
     // Add new values immediately above this line.  Also update kMaxValue below
     // and the enum of the same name in tools/metrics/histograms/enums.xml.
-    kMaxValue = kDialUrlToDial,
+    kMaxValue = kRemotePlayback,
   };
 
   static void RecordPresentationRequestUrlBySink(

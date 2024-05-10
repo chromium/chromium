@@ -1599,6 +1599,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="https:-like URL to Wired Display"/>
   <int value="4" label="cast: URL to Chromecast"/>
   <int value="5" label="cast-dial: URL to DIAL"/>
+  <int value="6" label="remote-playback: URL"/>
 </enum>
 
 <enum name="PresentationUrlType">
