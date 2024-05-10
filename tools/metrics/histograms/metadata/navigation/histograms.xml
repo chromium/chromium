@@ -1536,19 +1536,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.RendererCommitDelay.{FrameType}" units="ms"
-    expires_after="2023-05-05">
+    expires_after="2024-11-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
     Measures the delay between when the navigation commit was sent by the
     browser to when it is received by the renderer. Recorded for every
     cross-document non-page activation navigation commit.
+
+    Warning: this histogram was expired after 2023-05-05 and brought back
+    2024-05-09; data may be missing.
   </summary>
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
 <histogram name="Navigation.RendererCommitProcessWaitTime.{FrameType}"
-    units="ms" expires_after="2023-05-05">
+    units="ms" expires_after="2024-11-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1556,18 +1559,24 @@ chromium-metrics-reviews@google.com.
     to start before it was able to receive the commit. Recorded for every
     cross-document non-page activation navigation commit which waits on a
     process start.
+
+    Warning: this histogram was expired after 2023-05-05 and brought back
+    2024-05-09; data may be missing.
   </summary>
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
 <histogram name="Navigation.RendererCommitQueueTime.{FrameType}" units="ms"
-    expires_after="2023-05-05">
+    expires_after="2024-11-09">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
     Measures queue time for the navigation commit mojo task on the renderer
     side. Recorded for every cross-document non-page activation navigation
     commit.
+
+    Warning: this histogram was expired after 2023-05-05 and brought back
+    2024-05-09; data may be missing.
   </summary>
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
