@@ -8,6 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -17,18 +18,26 @@
 
 namespace chrome_pdf {
 
-TestDocumentLoader::TestDocumentLoader(
-    Client* client,
-    const base::FilePath::StringType& pdf_name)
-    : client_(client) {
+namespace {
+
+std::vector<uint8_t> ReadTestData(const base::FilePath::StringType& pdf_name) {
   base::FilePath pdf_path =
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
           .Append(FILE_PATH_LITERAL("pdf"))
           .Append(FILE_PATH_LITERAL("test"))
           .Append(FILE_PATH_LITERAL("data"))
           .Append(pdf_name);
-  CHECK(base::ReadFileToString(pdf_path, &pdf_data_));
+  auto result = base::ReadFileToBytes(pdf_path);
+  CHECK(result.has_value());
+  return result.value();
 }
+
+}  // namespace
+
+TestDocumentLoader::TestDocumentLoader(
+    Client* client,
+    const base::FilePath::StringType& pdf_name)
+    : client_(client), pdf_data_(ReadTestData(pdf_name)) {}
 
 TestDocumentLoader::~TestDocumentLoader() = default;
 
@@ -79,7 +88,8 @@ bool TestDocumentLoader::GetBlock(uint32_t position,
   if (!IsDataAvailable(position, size))
     return false;
 
-  memcpy(buf, pdf_data_.data() + position, size);
+  auto dest_span = base::make_span(static_cast<uint8_t*>(buf), size);
+  dest_span.copy_from(base::make_span(pdf_data_).subspan(position, size));
   return true;
 }
 
