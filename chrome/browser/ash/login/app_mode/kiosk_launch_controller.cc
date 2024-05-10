@@ -352,12 +352,15 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
   raw_ref<AcceleratorController> controller_;
 };
 
-KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
+KioskLaunchController::KioskLaunchController(
+    LoginDisplayHost* host,
+    OobeUI* oobe_ui,
+    LaunchCompleteCallback done_callback)
     : KioskLaunchController(
-          LoginDisplayHost::default_host(),
+          host,
           oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
           /*profile_loader=*/base::BindOnce(&LoadProfile),
-          /*done_callback=*/base::DoNothing(),
+          /*done_callback=*/std::move(done_callback),
           /*attempt_relaunch=*/base::BindOnce(chrome::AttemptRelaunch),
           /*attempt_logout=*/base::BindOnce(chrome::AttemptUserExit),
           /*app_launcher_factory=*/base::BindRepeating(&BuildKioskAppLauncher),
@@ -563,9 +566,7 @@ void KioskLaunchController::OnCancelAppLaunch() {
 
   SYSLOG(INFO) << "Canceling kiosk app launch.";
 
-  KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
-  CleanUp();
-  std::move(attempt_logout_).Run();
+  OnLaunchFailed(KioskAppLaunchError::Error::kUserCancel);
 }
 
 AppLaunchSplashScreenView::Data
@@ -599,6 +600,7 @@ void KioskLaunchController::CleanUp() {
 
   if (host_) {
     host_->Finalize(base::OnceClosure());
+    host_ = nullptr;
   } else {
     CHECK_IS_TEST();
   }

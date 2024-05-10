@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -18,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -268,10 +274,6 @@ void LoginDisplayHostCommon::FinalizeImmediately() {
   delete this;
 }
 
-KioskLaunchController* LoginDisplayHostCommon::GetKioskLaunchController() {
-  return kiosk_launch_controller_.get();
-}
-
 void LoginDisplayHostCommon::StartUserAdding(
     base::OnceClosure completion_callback) {
   LoginDisplayHost::StartUserAdding(std::move(completion_callback));
@@ -382,9 +384,7 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
           ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
           : extensions::mojom::FeatureSessionType::kKiosk);
 
-  kiosk_launch_controller_ =
-      std::make_unique<KioskLaunchController>(GetOobeUI());
-  kiosk_launch_controller_->Start(kiosk_app_id, is_auto_launch);
+  KioskController::Get().StartSession(kiosk_app_id, is_auto_launch, this);
 }
 
 void LoginDisplayHostCommon::AttemptShowEnableConsumerKioskScreen() {
@@ -479,12 +479,11 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
-  if (kiosk_launch_controller_ &&
-      kiosk_launch_controller_->HandleAccelerator(action)) {
+  if (KioskController::Get().HandleAccelerator(action)) {
     return true;
   }
 
-  // This path should only handle screen-specific acceletators, so we do not
+  // This path should only handle screen-specific accelerators, so we do not
   // need to create WebUI here.
   if (IsWizardControllerCreated() &&
       GetWizardController()->HandleAccelerator(action)) {
@@ -772,6 +771,10 @@ void LoginDisplayHostCommon::Cleanup() {
   app_terminating_subscription_ = {};
   BrowserList::RemoveObserver(this);
   login_ui_pref_controller_.reset();
+
+  // Cancel kiosk session start since kiosk holds a pointer to `this` during
+  // the start procedure.
+  KioskController::Get().CancelSessionStart();
 }
 
 void LoginDisplayHostCommon::OnAppTerminating() {

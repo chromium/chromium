@@ -126,7 +126,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
 
 // static
 KioskLaunchController* KioskBaseTest::GetKioskLaunchController() {
-  return LoginDisplayHost::default_host()->GetKioskLaunchController();
+  return KioskController::Get().GetLaunchController();
 }
 
 void KioskBaseTest::SetUp() {

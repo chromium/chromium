@@ -16,6 +16,7 @@
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -150,8 +151,8 @@ class KioskProfileLoadFailedWaiter
       // failure already took place.
       return;
     }
-    LoginDisplayHost::default_host()
-        ->GetKioskLaunchController()
+    KioskController::Get()
+        .GetLaunchController()
         ->AddKioskProfileLoadFailedObserver(this);
     run_loop_.Run();
   }

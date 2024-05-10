@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/login_accelerators.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 
@@ -16,7 +17,9 @@ class Profile;
 
 namespace ash {
 
+class KioskLaunchController;
 class KioskSystemSession;
+class LoginDisplayHost;
 
 // Public interface for Kiosk.
 class KioskController {
@@ -31,6 +34,16 @@ class KioskController {
       const KioskAppId& app_id) const = 0;
   virtual std::optional<KioskApp> GetAutoLaunchApp() const = 0;
 
+  // Launches a kiosk session running the given app.
+  virtual void StartSession(const KioskAppId& app,
+                            bool is_auto_launch,
+                            LoginDisplayHost* host) = 0;
+
+  // Cancels the kiosk session launch, if any is in progress.
+  virtual void CancelSessionStart() = 0;
+
+  virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;
+
   // Initializes the `KioskSystemSession`. Should be called at the end of the
   // Kiosk launch.
   virtual void InitializeKioskSystemSession(
@@ -41,6 +54,10 @@ class KioskController {
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.
   virtual KioskSystemSession* GetKioskSystemSession() = 0;
+
+  // Returns the `KioskLaunchController`. Will return nullptr if no kiosk
+  // launch is in progress.
+  virtual KioskLaunchController* GetLaunchController() = 0;
 };
 
 }  // namespace ash

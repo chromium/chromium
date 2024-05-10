@@ -86,10 +86,6 @@ WizardController* FakeLoginDisplayHost::GetWizardController() {
   return wizard_controller_.get();
 }
 
-KioskLaunchController* FakeLoginDisplayHost::GetKioskLaunchController() {
-  return nullptr;
-}
-
 WizardContext* FakeLoginDisplayHost::GetWizardContext() {
   return wizard_context_.get();
 }

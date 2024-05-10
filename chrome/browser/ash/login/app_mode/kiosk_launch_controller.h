@@ -119,7 +119,9 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   using LaunchCompleteCallback =
       base::OnceCallback<void(std::optional<KioskAppLaunchError::Error> error)>;
 
-  explicit KioskLaunchController(OobeUI* oobe_ui);
+  KioskLaunchController(LoginDisplayHost* host,
+                        OobeUI* oobe_ui,
+                        LaunchCompleteCallback done_callback);
   KioskLaunchController(
       LoginDisplayHost* host,
       AppLaunchSplashScreenView* splash_screen,
@@ -225,7 +227,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   AppState app_state_ = AppState::kCreatingProfile;
 
   // Not owned, destructed upon shutdown.
-  raw_ptr<LoginDisplayHost> const host_;
+  raw_ptr<LoginDisplayHost> host_ = nullptr;
   // Owned by OobeUI.
   raw_ptr<AppLaunchSplashScreenView> splash_screen_view_ = nullptr;
   // Current app.

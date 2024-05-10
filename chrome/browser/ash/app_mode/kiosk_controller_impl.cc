@@ -4,29 +4,37 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -130,12 +138,12 @@ void KioskControllerImpl::InitializeKioskSystemSession(
     Profile* profile,
     const KioskAppId& kiosk_app_id,
     const std::optional<std::string>& app_name) {
-  CHECK(!kiosk_system_session_.has_value())
+  CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
   CHECK_NE(kiosk_app_id.type, KioskAppType::kArcApp)
       << "KioskSystemSession should not be created in ARC Kiosk";
 
-  kiosk_system_session_.emplace(profile, kiosk_app_id, app_name);
+  system_session_.emplace(profile, kiosk_app_id, app_name);
 
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:
@@ -149,8 +157,35 @@ void KioskControllerImpl::InitializeKioskSystemSession(
   }
 }
 
+void KioskControllerImpl::StartSession(const KioskAppId& app,
+                                       bool is_auto_launch,
+                                       LoginDisplayHost* host) {
+  CHECK_EQ(launch_controller_, nullptr);
+  CHECK(!system_session_.has_value());
+  launch_controller_ = std::make_unique<KioskLaunchController>(
+      host, host->GetOobeUI(), /*done_callback=*/
+      base::BindOnce(&KioskControllerImpl::OnLaunchComplete,
+                     base::Unretained(this)));
+  launch_controller_->Start(app, is_auto_launch);
+}
+
+void KioskControllerImpl::CancelSessionStart() {
+  DeleteLaunchControllerAsync();
+}
+
+KioskLaunchController* KioskControllerImpl::GetLaunchController() {
+  return launch_controller_.get();
+}
+
+bool KioskControllerImpl::HandleAccelerator(LoginAcceleratorAction action) {
+  return launch_controller_ && launch_controller_->HandleAccelerator(action);
+}
+
 KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {
-  return kiosk_system_session_.has_value() ? &*kiosk_system_session_ : nullptr;
+  if (!system_session_.has_value()) {
+    return nullptr;
+  }
+  return &system_session_.value();
 }
 
 void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
@@ -195,6 +230,25 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
       !kiosk_app_id.empty()) {
     chrome_app_manager_.SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
   }
+}
+
+void KioskControllerImpl::OnLaunchComplete(
+    std::optional<KioskAppLaunchError::Error> error) {
+  // Delete the launcher so it doesn't end up with dangling references.
+  DeleteLaunchControllerAsync();
+}
+
+void KioskControllerImpl::DeleteLaunchControllerAsync() {
+  // Deleted asynchronously since this method is invoked in a callback called by
+  // the launcher itself, but don't use `DeleteSoon` to prevent the launcher
+  // from outliving `this`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&KioskControllerImpl::DeleteLaunchController,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void KioskControllerImpl::DeleteLaunchController() {
+  launch_controller_.reset();
 }
 
 }  // namespace ash
