@@ -23,6 +23,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/caps_lock_event_rewriter.h"
+#include "ui/events/ash/discard_key_event_rewriter.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
 #include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/event_sink.h"
@@ -164,6 +165,9 @@ void EventRewriterControllerImpl::Initialize(
         ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
         Shell::Get()->keyboard_capability(),
         ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
+  }
+  if (features::IsModifierSplitEnabled()) {
+    AddEventRewriter(std::make_unique<ui::DiscardKeyEventRewriter>());
   }
 }
 

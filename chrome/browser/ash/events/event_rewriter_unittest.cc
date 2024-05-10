@@ -54,6 +54,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/caps_lock_event_rewriter.h"
+#include "ui/events/ash/discard_key_event_rewriter.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/event_rewriter_metrics.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -694,6 +695,8 @@ class EventRewriterTestBase : public ChromeAshTestBase {
     event_rewriter_ash_ = std::make_unique<ui::EventRewriterAsh>(
         delegate_.get(), keyboard_capability_.get(),
         Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
+    discard_key_event_rewriter_ =
+        std::make_unique<ui::DiscardKeyEventRewriter>();
 
     source_.AddEventRewriter(keyboard_device_id_event_rewriter_.get());
     if (ash::features::IsKeyboardRewriterFixEnabled()) {
@@ -708,9 +711,15 @@ class EventRewriterTestBase : public ChromeAshTestBase {
         features::IsModifierSplitEnabled()) {
       source_.AddEventRewriter(caps_lock_event_rewriter_.get());
     }
+    if (features::IsModifierSplitEnabled()) {
+      source_.AddEventRewriter(discard_key_event_rewriter_.get());
+    }
   }
 
   void TearDown() override {
+    if (features::IsModifierSplitEnabled()) {
+      source_.RemoveEventRewriter(discard_key_event_rewriter_.get());
+    }
     if (!ash::features::IsKeyboardRewriterFixEnabled() &&
         features::IsModifierSplitEnabled()) {
       source_.RemoveEventRewriter(caps_lock_event_rewriter_.get());
@@ -973,6 +982,7 @@ class EventRewriterTestBase : public ChromeAshTestBase {
       keyboard_modifier_event_rewriter_;
   std::unique_ptr<ui::CapsLockEventRewriter> caps_lock_event_rewriter_;
   std::unique_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
+  std::unique_ptr<ui::DiscardKeyEventRewriter> discard_key_event_rewriter_;
   TestEventSink sink_;
   ui::test::TestEventSource source_{&sink_};
   message_center::FakeMessageCenter message_center_;
@@ -1829,6 +1839,12 @@ TEST_P(EventRewriterTest, TestRewriteToRightAlt) {
 }
 
 TEST_P(EventRewriterTest, TestRewriteToFunction) {
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
+
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+
   // Remap RightAlt to Control
   Preferences::RegisterProfilePrefs(prefs()->registry());
   IntegerPrefMember control;
@@ -1841,19 +1857,14 @@ TEST_P(EventRewriterTest, TestRewriteToFunction) {
                       ui::mojom::ModifierKey::kMeta,
                       ui::mojom::ModifierKey::kFunction);
 
-  for (const auto& keyboard : kChromeKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
+  // Keys + rewritten modifiers produce rewritten six-pack keys.
+  EXPECT_EQ(KeyPageUp::Typed(),
+            RunRewriter(KeyArrowUp::Typed(), ui::EF_CONTROL_DOWN));
+  EXPECT_EQ(KeyPageDown::Typed(),
+            RunRewriter(KeyArrowDown::Typed(), ui::EF_COMMAND_DOWN));
 
-    // A + rewritten modifiers produce events with function flag down.
-    EXPECT_EQ(KeyA::Typed(ui::EF_FUNCTION_DOWN),
-              RunRewriter(KeyA::Typed(), ui::EF_CONTROL_DOWN));
-    EXPECT_EQ(KeyA::Typed(ui::EF_FUNCTION_DOWN),
-              RunRewriter(KeyA::Typed(), ui::EF_COMMAND_DOWN));
-
-    // After command + control are released, events are not affected.
-    EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
-  }
+  // After command + control are released, events are not affected.
+  EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
 }
 
 TEST_P(EventRewriterTest, TestRewriteFromFunction) {
@@ -2596,20 +2607,17 @@ TEST_P(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
     for (auto& unknown : unknowns) {
       unknown.scan_code = scan_code;
     }
-    auto unknowns_with_function = KeyUnknown::Typed(ui::EF_FUNCTION_DOWN);
-    for (auto& unknown : unknowns_with_function) {
-      unknown.scan_code = scan_code;
-    }
     auto expected_events = typed(ui::EF_NONE, {});
     for (auto& event : expected_events) {
       event.scan_code = scan_code;
     }
     EXPECT_EQ(expected_events, RunRewriter(unknowns, ui::EF_COMMAND_DOWN));
 
-    // With fn down, nothing should change since this keyboard uses Search based
-    // rewriting.
-    EXPECT_EQ(unknowns_with_function,
-              RunRewriter(unknowns, ui::EF_FUNCTION_DOWN));
+    if (features::IsModifierSplitEnabled()) {
+      // With fn down, nothing should change since this keyboard uses Search
+      // based rewriting.
+      EXPECT_EQ(unknowns, RunRewriter(unknowns, ui::EF_FUNCTION_DOWN));
+    }
   }
 }
 
@@ -4834,6 +4842,21 @@ TEST_P(EventRewriterTest, CapsLockRemappingFnBased) {
   }
 }
 
+TEST_P(EventRewriterTest, FnDiscarded) {
+  if (!features::IsModifierSplitEnabled()) {
+    GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
+  }
+
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+
+  EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed(), ui::EF_FUNCTION_DOWN));
+  EXPECT_EQ(
+      KeyA::Typed(ui::EF_CONTROL_DOWN),
+      RunRewriter(KeyA::Typed(), ui::EF_FUNCTION_DOWN | ui::EF_CONTROL_DOWN));
+
+  EXPECT_EQ(std::vector<TestKeyEvent>(), RunRewriter(KeyFunction::Typed()));
+}
+
 // Tests that when you press Fn -> Right Alt -> Release Fn -> Release Right Alt
 // that the release of right alt is remapped to CapsLock to match the remapped
 // press.
@@ -4844,14 +4867,13 @@ TEST_P(EventRewriterTest, CapsLockRemappingFnBasedReleaseOrdering) {
 
   SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
 
-  EXPECT_EQ(std::vector<TestKeyEvent>({KeyFunction::Pressed()}),
+  EXPECT_EQ(std::vector<TestKeyEvent>(),
             RunRewriter(std::vector<TestKeyEvent>{KeyFunction::Pressed()}));
   EXPECT_EQ(
       std::vector<TestKeyEvent>({KeyCapsLock::Pressed(ui::EF_CAPS_LOCK_ON)}),
       RunRewriter(std::vector<TestKeyEvent>{
           KeyRightAlt::Pressed(ui::EF_FUNCTION_DOWN, {kPropertyRightAlt})}));
-  EXPECT_EQ(std::vector<TestKeyEvent>({KeyFunction::Released(
-                ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN)}),
+  EXPECT_EQ(std::vector<TestKeyEvent>(),
             RunRewriter(std::vector<TestKeyEvent>{
                 KeyFunction::Released(ui::EF_CAPS_LOCK_ON)}));
   EXPECT_EQ(

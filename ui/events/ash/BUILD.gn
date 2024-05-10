@@ -13,6 +13,8 @@ source_set("ash") {
   sources = [
     "caps_lock_event_rewriter.cc",
     "caps_lock_event_rewriter.h",
+    "discard_key_event_rewriter.cc",
+    "discard_key_event_rewriter.h",
     "event_property.cc",
     "event_property.h",
     "event_rewriter_ash.cc",
