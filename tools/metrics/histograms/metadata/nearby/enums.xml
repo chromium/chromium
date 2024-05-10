@@ -50,6 +50,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Adapter RegisterAdvertisement failed"/>
 </enum>
 
+<enum name="NearbyConnectionsStartScanningFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Adapter observation failed"/>
+  <int value="2" label="Start discovery session failed"/>
+</enum>
+
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
   <int value="0" label="Nearby Connections"/>
   <int value="1" label="Bluetooth Adapter"/>

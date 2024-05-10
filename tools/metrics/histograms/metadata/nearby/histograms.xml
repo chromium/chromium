@@ -84,6 +84,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Nearby.Connections.BleV2.StartScanning.FailureReason"
+    enum="NearbyConnectionsStartScanningFailureReason"
+    expires_after="2025-04-30">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason of the StartScanning operation, which is called
+    by Nearby Connections when the device becomes available for scanning.
+    Emitted only on failure.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.BleV2.StartScanning.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of the StartScanning operation, which is
+    called by Nearby Connections when the device becomes available for scanning.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetName.Result"
     enum="BooleanSuccess" expires_after="2024-09-15">
   <owner>hansenmichael@google.com</owner>

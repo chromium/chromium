@@ -275,7 +275,6 @@ bool BleV2Medium::StopScanning() {
   return false;
 }
 
-// Fake impl to return hard coded advertisement.
 std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
     const Uuid& service_uuid,
     api::ble_v2::TxPowerLevel tx_power_level,
@@ -289,6 +288,11 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
         adapter_->AddObserver(adapter_observer_.BindNewPipeAndPassRemote());
     if (!success) {
       adapter_observer_.reset();
+      metrics::RecordStartScanningResult(
+          /*success=*/false);
+      metrics::RecordStartScanningFailureReason(
+          /*reason=*/metrics::StartScanningFailureReason::
+              kAdapterObserverationFailed);
       return nullptr;
     }
 
@@ -298,6 +302,11 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
 
     if (!success || !discovery_session.is_valid()) {
       adapter_observer_.reset();
+      metrics::RecordStartScanningResult(
+          /*success=*/false);
+      metrics::RecordStartScanningFailureReason(
+          /*reason=*/metrics::StartScanningFailureReason::
+              kStartDiscoverySessionFailed);
       return nullptr;
     }
 
@@ -330,6 +339,9 @@ std::unique_ptr<BleV2Medium::ScanningSession> BleV2Medium::StartScanning(
   } else {
     iter->second.insert(session_id);
   }
+
+  metrics::RecordStartScanningResult(
+      /*success=*/true);
 
   // Generate and return ScanningSession.
   return std::make_unique<BleV2Medium::ScanningSession>(

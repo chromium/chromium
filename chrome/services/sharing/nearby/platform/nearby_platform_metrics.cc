@@ -41,4 +41,15 @@ void RecordStartAdvertisingResult(bool success,
       "Nearby.Connections.BleV2.StartAdvertising.Result" + suffix, success);
 }
 
+void RecordStartScanningFailureReason(StartScanningFailureReason reason) {
+  // Record the StartScanning failure reason.
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.StartScanning.FailureReason", reason);
+}
+void RecordStartScanningResult(bool success) {
+  // Record the StartScanning success rate.
+  base::UmaHistogramBoolean("Nearby.Connections.BleV2.StartScanning.Result",
+                            success);
+}
+
 }  // namespace nearby::chrome::metrics

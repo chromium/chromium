@@ -183,6 +183,9 @@ TEST_F(BleV2MediumTest, TestScanning_OneService) {
                                     GetByteVector(kDeviceServiceData1Str));
 
   EXPECT_TRUE(scanning_started_latch.Await().Ok());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartScanning.Result",
+      /*bucket: Success=*/1, 1);
 
   base::RunLoop run_loop;
   SetOnExpectedPeripheralsDiscoveredCallback(run_loop.QuitClosure());
@@ -235,6 +238,9 @@ TEST_F(BleV2MediumTest, TestScanning_MultipleSessions) {
   EXPECT_NE(scanning_session_1, nullptr);
   EXPECT_NE(scanning_session_2, nullptr);
   EXPECT_TRUE(scanning_started_latch.Await().Ok());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartScanning.Result",
+      /*bucket: Success=*/1, 2);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
   service_data_map.insert_or_assign(kService1BluetoothUuid,
@@ -286,6 +292,9 @@ TEST_F(BleV2MediumTest, TestScanning_IgnoreIrrelevantAdvertisement) {
                                     GetByteVector(kDeviceServiceData1Str));
 
   EXPECT_TRUE(scanning_started_latch.Await().Ok());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartScanning.Result",
+      /*bucket: Success=*/1, 1);
 
   base::RunLoop run_loop;
   fake_adapter_->NotifyDeviceAdded(
