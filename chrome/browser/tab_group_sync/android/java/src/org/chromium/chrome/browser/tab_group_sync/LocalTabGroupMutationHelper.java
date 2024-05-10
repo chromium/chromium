@@ -165,7 +165,7 @@ public class LocalTabGroupMutationHelper {
             if (isOnStartup) {
                 localTab = i < tabs.size() ? tabs.get(i) : null;
             } else {
-                localTab = getLocalTab(savedTab.localId);
+                localTab = getLocalTabInGroup(savedTab.localId, rootId);
             }
 
             // If the tab exists, navigate to the desired URL. Otherwise, create a new tab.
@@ -251,8 +251,11 @@ public class LocalTabGroupMutationHelper {
         mTabCreationDelegate.navigateToUrl(tab, url, title, isCurrentTab);
     }
 
-    private Tab getLocalTab(Integer tabId) {
-        return tabId == null ? null : TabModelUtils.getTabById(getTabModel(), tabId);
+    private Tab getLocalTabInGroup(Integer tabId, int rootId) {
+        Tab tab = tabId == null ? null : TabModelUtils.getTabById(getTabModel(), tabId);
+        // Check if the tab is still attached to the same root ID. If not, it belongs to another
+        // group. Don't touch it and rather create a new one in subsequent step.
+        return tab != null && tab.getRootId() == rootId ? tab : null;
     }
 
     private void updateTabGroupVisuals(SavedTabGroup tabGroup, int rootId) {
