@@ -44,7 +44,6 @@
 //
 // 75079ea6-c55a-44df-acce-7ac4cc861ee1:
 //   model.json
-//   model.pb
 //   weights.bin
 //
 // The model.json content:
@@ -66,7 +65,6 @@ constexpr char kBaseModelKey[] = "base_model";
 constexpr char kUuidKey[] = "uuid";
 constexpr char kMaxTokensKey[] = "max_tokens";
 constexpr char kAdaptationRanksKey[] = "adaptation_ranks";
-constexpr char kModelPathKey[] = "model_path";
 constexpr char kWeightPathKey[] = "weight_path";
 constexpr char kTsDataPathKey[] = "ts_data_path";
 constexpr char kTsSpModelPathKey[] = "ts_sp_model_path";
@@ -256,7 +254,6 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
     return;
   }
 
-  const std::string* model_path = model_dict->FindString(kModelPathKey);
   const std::string* weight_path = model_dict->FindString(kWeightPathKey);
   const std::string* version = model_dict->FindString(kVersionKey);
 
@@ -291,8 +288,7 @@ void ChromeosPlatformModelLoader::OnInstallDlcComplete(
         base::BindOnce(
             &ChromeosPlatformModelLoader::LoadAdaptationPlatformModel,
             weak_ptr_factory_.GetWeakPtr(), base_model_uuid, *base_version,
-            uuid, dlc_root, *version, model_path ? *model_path : "",
-            *weight_path, std::move(platform_model)));
+            uuid, dlc_root, *version, *weight_path, std::move(platform_model)));
 
     return;
   }
@@ -368,7 +364,6 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
     const base::Uuid& uuid,
     const base::FilePath& dlc_root,
     const std::string& version,
-    const std::string& model_path,
     const std::string& weight_path,
     scoped_refptr<PlatformModel> model,
     mojom::LoadModelResult result) {
@@ -392,10 +387,6 @@ void ChromeosPlatformModelLoader::LoadAdaptationPlatformModel(
   }
 
   on_device_model::AdaptationAssetPaths adaptation_paths;
-
-  if (!model_path.empty()) {
-    adaptation_paths.model = dlc_root.Append(model_path);
-  }
   adaptation_paths.weights = dlc_root.Append(weight_path);
 
   auto params = on_device_model::mojom::LoadAdaptationParams::New();

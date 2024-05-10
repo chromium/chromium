@@ -18,10 +18,6 @@ template <>
 struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
     StructTraits<on_device_model::mojom::AdaptationAssetsDataView,
                  on_device_model::AdaptationAssets> {
-  static base::File model(on_device_model::AdaptationAssets& assets) {
-    return std::move(assets.model);
-  }
-
   static base::File weights(on_device_model::AdaptationAssets& assets) {
     return std::move(assets.weights);
   }

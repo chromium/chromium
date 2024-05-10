@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Opened file resources needed to define an adaptation.
 struct AdaptationAssets {
-  mojo_base.mojom.ReadOnlyFile? model;
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
 };

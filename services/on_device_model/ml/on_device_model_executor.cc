@@ -475,31 +475,17 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
   }
 
   on_device_model::AdaptationAssets assets = std::move(params->assets);
-  std::unique_ptr<base::MemoryMappedFile> model_proto;
-  if (assets.model.IsValid()) {
-    model_proto = std::make_unique<base::MemoryMappedFile>();
-  }
-
-  if (model_proto && !model_proto->Initialize(std::move(assets.model))) {
-    LOG(ERROR) << "Unable to load model";
-    return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
-  }
 
   uint32_t id;
   ChromeMLModelData data = {
       .weights_file = assets.weights.TakePlatformFile(),
   };
-  if (model_proto) {
-    data.model_proto_data = model_proto->data();
-    data.model_proto_size = model_proto->length();
-  }
   ChromeMLAdaptationDescriptor descriptor = {
       .model_data = &data,
   };
   if (!chrome_ml_->api().CreateAdaptation(model_, &descriptor, id)) {
     return base::unexpected(LoadModelResult::kFailedToLoadLibrary);
   }
-  adaptation_data_.push_back(std::move(model_proto));
   return base::ok(id);
 }
 
@@ -531,18 +517,9 @@ LoadModelResult OnDeviceModelExecutor::Init(
 
   max_tokens_ = std::max(params->max_tokens, kReserveTokensForSafety);
 
-  auto model_proto_dispose =
-      CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeModelProto, this);
   ChromeMLModelData data = {
       .weights_file = assets.weights.TakePlatformFile(),
   };
-  if (model_proto_) {
-    data.model_proto_data = model_proto_->data();
-    data.model_proto_size = model_proto_->length();
-    data.model_proto_dispose = &model_proto_dispose;
-  }
-  auto sentencepiece_model_proto_dispose =
-      CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeSentencepiece, this);
   ChromeMLModelDescriptor descriptor = {
       .model_data = &data,
       .max_tokens = max_tokens_,
@@ -556,14 +533,6 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .use_low_power = kUseLowPower.Get(),
       .allow_fp16 = kAllowFp16.Get(),
   };
-  if (sentencepiece_model_proto_) {
-    descriptor.sentencepiece_model_proto_data =
-        sentencepiece_model_proto_->data();
-    descriptor.sentencepiece_model_proto_size =
-        sentencepiece_model_proto_->length();
-    descriptor.sentencepiece_model_proto_dispose =
-        &sentencepiece_model_proto_dispose;
-  }
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());
     descriptor.ts_data = ts_data_.data();
@@ -576,14 +545,6 @@ LoadModelResult OnDeviceModelExecutor::Init(
                                          OnDeviceModelExecutor::Schedule);
   return (model_ != 0) ? LoadModelResult::kSuccess
                        : LoadModelResult::kFailedToLoadLibrary;
-}
-
-void OnDeviceModelExecutor::DisposeSentencepiece() {
-  sentencepiece_model_proto_ = nullptr;
-}
-
-void OnDeviceModelExecutor::DisposeModelProto() {
-  model_proto_ = nullptr;
 }
 
 // static

@@ -13,7 +13,7 @@ bool StructTraits<on_device_model::mojom::AdaptationAssetsDataView,
                   on_device_model::AdaptationAssets>::
     Read(on_device_model::mojom::AdaptationAssetsDataView data,
          on_device_model::AdaptationAssets* assets) {
-  return data.ReadModel(&assets->model) && data.ReadWeights(&assets->weights);
+  return data.ReadWeights(&assets->weights);
 }
 
 }  // namespace mojo

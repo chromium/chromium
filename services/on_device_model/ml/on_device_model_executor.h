@@ -57,15 +57,10 @@ class OnDeviceModelExecutor
   on_device_model::mojom::LoadModelResult Init(
       on_device_model::mojom::LoadModelParamsPtr params);
 
-  void DisposeSentencepiece();
-  void DisposeModelProto();
-
   static void Schedule(uintptr_t context, std::function<void()>* fn);
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  std::unique_ptr<base::MemoryMappedFile> sentencepiece_model_proto_;
-  std::unique_ptr<base::MemoryMappedFile> model_proto_;
   base::MemoryMappedFile ts_data_;
   base::MemoryMappedFile ts_sp_model_;
   scoped_refptr<LanguageDetector> language_detector_;

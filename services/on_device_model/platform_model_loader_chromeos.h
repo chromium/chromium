@@ -100,7 +100,6 @@ class ChromeosPlatformModelLoader final : public PlatformModelLoader {
                                    const base::Uuid& uuid,
                                    const base::FilePath& dlc_root,
                                    const std::string& version,
-                                   const std::string& model_path,
                                    const std::string& weight_path,
                                    scoped_refptr<PlatformModel> model,
                                    mojom::LoadModelResult result);

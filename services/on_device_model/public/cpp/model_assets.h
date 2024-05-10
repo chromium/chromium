@@ -64,7 +64,6 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) AdaptationAssets {
   AdaptationAssets& operator=(AdaptationAssets&&);
   ~AdaptationAssets();
 
-  base::File model;
   base::File weights;
 };
 
