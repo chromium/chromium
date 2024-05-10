@@ -815,6 +815,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
   switch (account_state_) {
     case AccountState::kReady:
+      model_->SetStep(Step::kGPMConnecting);
       StartTransaction();
       break;
 
