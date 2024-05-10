@@ -258,10 +258,9 @@ void PersistentWindowController::
     const auto& display =
         display_manager->GetDisplayForId(persistent_display_id);
 
-    const auto& persistent_display_bounds = info->display_bounds_in_screen();
-    // It is possible to have display size change, such as changing cable, bad
-    // cable signal etc., but it should be rare.
-    if (display.bounds().size() != persistent_display_bounds.size()) {
+    // It is possible to have display size in pixel changes, such as changing
+    // cable, bad cable signal etc., but it should be rare.
+    if (display.GetSizeInPixel() != info->display_size_in_pixel()) {
       continue;
     }
     const int64_t display_id_after_removal = info->display_id_after_removal();
@@ -281,7 +280,7 @@ void PersistentWindowController::
       // |persistent_window_bounds| is associated with the right target display.
       gfx::Rect persistent_window_bounds = info->window_bounds_in_screen();
       const gfx::Vector2d offset = display.bounds().OffsetFromOrigin() -
-                                   persistent_display_bounds.OffsetFromOrigin();
+                                   info->display_offset_from_origin_in_screen();
       persistent_window_bounds.Offset(offset);
       window->SetBoundsInScreen(persistent_window_bounds, display);
     }

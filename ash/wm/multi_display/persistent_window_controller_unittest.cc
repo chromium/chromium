@@ -237,6 +237,34 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 }
 
+// Tests that mirror and un-mirror a display with non-identical scale factor
+// (not 1.0f).
+TEST_F(PersistentWindowControllerTest,
+       MirrorDisplayWithNonIdenticalScaleFactor) {
+  UpdateDisplay("500x600,500x600*1.2");
+  ASSERT_EQ(1.2f, display_manager()->GetDisplayAt(1).device_scale_factor());
+
+  aura::Window* w1 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+  aura::Window* w2 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+
+  // Enables mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
+
+  // Disables mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
+  // The window should still be restored to the display with non-identical scale
+  // factor.
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(1.2f, display_manager()->GetDisplayAt(1).device_scale_factor());
+  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
+}
+
 TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
   UpdateDisplay("500x600,500x600,500x600");
   aura::Window* w1 =
