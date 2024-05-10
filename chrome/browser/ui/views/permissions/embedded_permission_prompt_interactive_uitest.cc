@@ -21,7 +21,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -42,8 +41,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
-        {features::kPermissionElement,
-         permissions::features::kOneTimePermission,
+        {permissions::features::kOneTimePermission,
+         blink::features::kPermissionElement,
          blink::features::kDisablePepcSecurityForTesting},
         {});
   }
@@ -550,8 +549,8 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.Reset();
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kPermissionElement,
-             {{"PermissionElementDialogPositioning", "true"}}},
+            {blink::features::kPermissionElement, {}},
+            {permissions::features::kPermissionElementDialogPositioning, {}},
             {permissions::features::kOneTimePermission, {}},
             {blink::features::kDisablePepcSecurityForTesting, {}},
         },

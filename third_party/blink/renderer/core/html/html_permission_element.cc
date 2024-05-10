@@ -248,7 +248,8 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
       permission_observer_receivers_(this, document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,
                                             document.GetExecutionContext()) {
-  DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+  DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+      document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
   intersection_observer_ = IntersectionObserver::Create(
       GetDocument(),

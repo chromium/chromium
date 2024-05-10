@@ -1873,7 +1873,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return media_element && media_element->paused();
     }
     case CSSSelector::kPseudoPermissionGranted: {
-      DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+      CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+          element.GetExecutionContext()));
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();
     }

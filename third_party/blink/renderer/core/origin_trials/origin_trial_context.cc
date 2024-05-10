@@ -561,6 +561,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
            base::FeatureList::IsEnabled(features::kDevicePosture);
   }
 
+  if (trial_name == "PermissionElement") {
+    return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
+  }
+
   return true;
 }
 

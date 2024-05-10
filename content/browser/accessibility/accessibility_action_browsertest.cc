@@ -32,6 +32,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -49,7 +50,7 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
   ~AccessibilityActionBrowserTest() override {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kPermissionElement}, {});
+    feature_list_.InitWithFeatures({blink::features::kPermissionElement}, {});
     ContentBrowserTest::SetUp();
   }
 

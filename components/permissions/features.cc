@@ -50,6 +50,13 @@ BASE_FEATURE(kFailFastQuietChip,
              "FailFastQuietChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables different positioning of the permission dialog, so that it's placed
+// near the permission element, if possible.
+// This feature should be enabled with blink::features::kPermissionElement.
+BASE_FEATURE(kPermissionElementDialogPositioning,
+             "PermissionElementDialogPositioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, use the value of the `service_url` FeatureParam as the url
 // for the Web Permission Predictions Service.
 BASE_FEATURE(kPermissionPredictionServiceUseUrlOverride,

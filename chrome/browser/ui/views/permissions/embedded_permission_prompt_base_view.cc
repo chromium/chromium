@@ -12,8 +12,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/permissions/features.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -343,7 +344,9 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
 }
 
 bool EmbeddedPermissionPromptBaseView::ShouldOverrideBubbleBounds() const {
-  return features::kPermissionElementDialogPositioning.Get() &&
+  return base::FeatureList::IsEnabled(blink::features::kPermissionElement) &&
+         base::FeatureList::IsEnabled(
+             permissions::features::kPermissionElementDialogPositioning) &&
          !element_rect_.IsEmpty();
 }
 

@@ -417,8 +417,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kMediaStreamTrackTransfer)},
           {"PrivateNetworkAccessPermissionPrompt",
            raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt),
-           kSetOnlyIfOverridden},
-          {"PermissionElement", raw_ref(features::kPermissionElement)}};
+           kSetOnlyIfOverridden}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
@@ -721,6 +720,16 @@ void ResolveInvalidConfigurations() {
                 kAlwaysAllowFledgeDeprecatedRenderURLReplacements)) {
       WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(false);
     }
+  }
+
+  // PermissionElement cannot be enabled without the support of the
+  // browser process.
+  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
+    LOG_IF(WARNING, WebRuntimeFeatures::IsPermissionElementEnabled())
+        << "PermissionElement cannot be enabled in this configuration. Use --"
+        << switches::kEnableFeatures << "="
+        << blink::features::kPermissionElement.name << " instead.";
+    WebRuntimeFeatures::EnablePermissionElement(false);
   }
 }
 

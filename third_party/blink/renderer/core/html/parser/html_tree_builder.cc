@@ -974,8 +974,9 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kTr:
       ParseError(token);
       break;
-    case HTMLTag::kPermission:
-      if (RuntimeEnabledFeatures::PermissionElementEnabled()) {
+    case HTMLTag::kPermissionOrUnknown:
+      if (RuntimeEnabledFeatures::PermissionElementEnabled(
+              tree_.OwnerDocumentForCurrentNode().GetExecutionContext())) {
         tree_.ReconstructTheActiveFormattingElements();
         tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
         frameset_ok_ = false;

@@ -2441,7 +2441,7 @@
     "prefix": "permission-element",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/permission-element"],
-    "args": ["--enable-features=PermissionElement"],
+    "args": ["--enable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
     "expires": "Jul 1, 2024"
   },
@@ -2449,7 +2449,7 @@
     "prefix": "permission-element-disabled",
     "platforms": ["Linux"],
     "bases": [],
-    "args": ["--disable-features=PermissionElement"],
+    "args": ["--disable-blink-features=PermissionElement"],
     "owners": ["permissions-core@google.com"],
     "expires": "Jul 1, 2024"
   },

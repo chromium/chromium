@@ -25,8 +25,8 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
@@ -133,9 +133,7 @@ bool ShouldCurrentRequestUseQuietChip(
 
 bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(features::kPermissionElement) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalWebPlatformFeatures)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
     return false;
   }
 

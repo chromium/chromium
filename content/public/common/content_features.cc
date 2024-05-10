@@ -634,17 +634,6 @@ BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
              "PepperCrossOriginRedirectRestriction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables an in-content element that interacts with the permissions
-// infrastructure.
-BASE_FEATURE(kPermissionElement,
-             "PermissionElement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables different positioning of the permission dialog, so that it's placed
-// near the permission element, if possible.
-constexpr base::FeatureParam<bool> kPermissionElementDialogPositioning{
-    &kPermissionElement, "PermissionElementDialogPositioning", false};
-
 // Enables Persistent Origin Trials. It causes tokens for an origin to be stored
 // and persisted for the next navigation. This way, an origin trial can affect
 // things before receiving the response, for instance it can affect the next

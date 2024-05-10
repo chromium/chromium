@@ -383,6 +383,8 @@
       name: "permission",
       interfaceName: "HTMLPermissionElement",
       runtimeEnabled: "PermissionElement",
+      runtimeFlagHasOriginTrial: true,
+      noTypeHelpers: true,
     },
     {
       name: "picture",

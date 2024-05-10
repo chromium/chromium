@@ -12,7 +12,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -35,7 +34,7 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kPermissionElement,
+        {blink::features::kPermissionElement,
          blink::features::kDisablePepcSecurityForTesting},
         {});
   }
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
 class PermissionElementWithSecurityBrowserTest : public InProcessBrowserTest {
  public:
   PermissionElementWithSecurityBrowserTest() {
-    feature_list_.InitWithFeatures({features::kPermissionElement}, {});
+    feature_list_.InitWithFeatures({blink::features::kPermissionElement}, {});
   }
 
   PermissionElementWithSecurityBrowserTest(

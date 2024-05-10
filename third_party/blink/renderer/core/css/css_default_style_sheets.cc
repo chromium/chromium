@@ -296,7 +296,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   }
 
   if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
-    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+        element.GetExecutionContext()));
     permission_element_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
     AddRulesToDefaultStyleSheets(permission_element_style_sheet_,

@@ -65,6 +65,9 @@ class CORE_EXPORT HTMLPermissionElement final
     return permission_text_span_;
   }
 
+  // HTMLElement overrides.
+  bool IsHTMLPermissionElement() const final { return true; }
+
   bool IsFullyVisibleForTesting() const { return is_fully_visible_; }
 
  private:
@@ -268,6 +271,32 @@ class CORE_EXPORT HTMLPermissionElement final
   // A bool that tracks whether a specific console message was sent already to
   // ensure it's not sent again.
   bool length_console_error_sent_ = false;
+};
+
+// The custom type casting is required for the PermissionElement OT because the
+// generated helpers code can lead to a compilation error or an
+// HTMLPermissionElement appearing in a document that does not have the
+// PermissionElement origin trial enabled (this would result in the creation of
+// an HTMLUnknownElement with the "Permission" tag name).
+// TODO((crbug.com/339781931): Once the origin trial has ended, these custom
+// type casts will no longer be necessary.
+template <>
+struct DowncastTraits<HTMLPermissionElement> {
+  static bool AllowFrom(const HTMLElement& element) {
+    return element.IsHTMLPermissionElement();
+  }
+  static bool AllowFrom(const Node& node) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(node)) {
+      return html_element->IsHTMLPermissionElement();
+    }
+    return false;
+  }
+  static bool AllowFrom(const Element& element) {
+    if (const HTMLElement* html_element = DynamicTo<HTMLElement>(element)) {
+      return html_element->IsHTMLPermissionElement();
+    }
+    return false;
+  }
 };
 
 }  // namespace blink
