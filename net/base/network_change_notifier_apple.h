@@ -84,6 +84,8 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
       base::RepeatingCallback<bool(NetworkInterfaceList*, int)>
           get_network_list_callback,
       base::RepeatingCallback<std::string(SCDynamicStoreRef)>
+          get_ipv4_primary_interface_name_callback,
+      base::RepeatingCallback<std::string(SCDynamicStoreRef)>
           get_ipv6_primary_interface_name_callback);
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -103,10 +105,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierApple
   const bool reduce_ip_address_change_notification_;
   base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store_;
   std::optional<NetworkInterfaceList> interfaces_for_network_change_check_;
+  std::string ipv4_primary_interface_name_;
+  std::string ipv6_primary_interface_name_;
 
   base::OnceClosure initialized_callback_for_test_;
   base::RepeatingCallback<bool(NetworkInterfaceList*, int)>
       get_network_list_callback_;
+  base::RepeatingCallback<std::string(SCDynamicStoreRef)>
+      get_ipv4_primary_interface_name_callback_;
   base::RepeatingCallback<std::string(SCDynamicStoreRef)>
       get_ipv6_primary_interface_name_callback_;
 #endif  // BUILDFLAG(IS_MAC)

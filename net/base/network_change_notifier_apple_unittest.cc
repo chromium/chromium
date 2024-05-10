@@ -96,6 +96,10 @@ class NetworkChangeNotifierAppleTest : public WithTaskEnvironment,
             },
             &network_interface_list_),
         base::BindRepeating(
+            [](std::string* ipv4_primary_interface_name, SCDynamicStoreRef)
+                -> std::string { return *ipv4_primary_interface_name; },
+            &ipv4_primary_interface_name_),
+        base::BindRepeating(
             [](std::string* ipv6_primary_interface_name, SCDynamicStoreRef)
                 -> std::string { return *ipv6_primary_interface_name; },
             &ipv6_primary_interface_name_));
@@ -126,6 +130,7 @@ class NetworkChangeNotifierAppleTest : public WithTaskEnvironment,
  protected:
   std::optional<NetworkInterfaceList> network_interface_list_ =
       NetworkInterfaceList();
+  std::string ipv4_primary_interface_name_ = "en0";
   std::string ipv6_primary_interface_name_ = "en0";
 
  private:
@@ -326,6 +331,54 @@ TEST_P(NetworkChangeNotifierAppleTest, NewInterfaceWithPublicIpV6) {
 
   TestIPAddressObserver observer;
   SimulateDynamicStoreCallback(*notifier, kSCEntNetIPv4);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.ip_address_changed());
+}
+
+TEST_P(NetworkChangeNotifierAppleTest, IPv4PrimaryInterfaceChange) {
+  net::IPAddress ip_address;
+  EXPECT_TRUE(ip_address.AssignFromIPLiteral(kIPv4PrivateAddrString1));
+  network_interface_list_->push_back(net::NetworkInterface(
+      "en0", "en0", 1, net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+      ip_address, 0, net::IP_ADDRESS_ATTRIBUTE_NONE));
+  net::IPAddress ip_address2;
+  EXPECT_TRUE(ip_address2.AssignFromIPLiteral(kIPv4PrivateAddrString2));
+  network_interface_list_->push_back(net::NetworkInterface(
+      "en1", "en1", 1, net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+      ip_address2, 0, net::IP_ADDRESS_ATTRIBUTE_NONE));
+
+  std::unique_ptr<NetworkChangeNotifierApple> notifier =
+      CreateNetworkChangeNotifierApple();
+
+  // Simulate OnNetworkConfigChange callback for the IPv4 primary interface
+  // change.
+  TestIPAddressObserver observer;
+  ipv4_primary_interface_name_ = "en1";
+  SimulateDynamicStoreCallback(*notifier, kSCEntNetIPv4);
+  RunUntilIdle();
+  EXPECT_TRUE(observer.ip_address_changed());
+}
+
+TEST_P(NetworkChangeNotifierAppleTest, IPv6PrimaryInterfaceChange) {
+  net::IPAddress ip_address;
+  EXPECT_TRUE(ip_address.AssignFromIPLiteral(kIPv6PublicAddrString1));
+  network_interface_list_->push_back(net::NetworkInterface(
+      "en0", "en0", 1, net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+      ip_address, 0, net::IP_ADDRESS_ATTRIBUTE_NONE));
+  net::IPAddress ip_address2;
+  EXPECT_TRUE(ip_address2.AssignFromIPLiteral(kIPv6PublicAddrString2));
+  network_interface_list_->push_back(net::NetworkInterface(
+      "en1", "en1", 1, net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+      ip_address2, 0, net::IP_ADDRESS_ATTRIBUTE_NONE));
+
+  std::unique_ptr<NetworkChangeNotifierApple> notifier =
+      CreateNetworkChangeNotifierApple();
+
+  // Simulate OnNetworkConfigChange callback for the IPv6 primary interface
+  // change.
+  TestIPAddressObserver observer;
+  ipv6_primary_interface_name_ = "en1";
+  SimulateDynamicStoreCallback(*notifier, kSCEntNetIPv6);
   RunUntilIdle();
   EXPECT_TRUE(observer.ip_address_changed());
 }
