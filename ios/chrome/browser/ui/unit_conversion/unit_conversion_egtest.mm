@@ -106,8 +106,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
 
 #pragma mark - Tests
 
+// TODO(crbug.com/339245132): This test is flaky
 // Test the elements of the unit conversion view controller
-- (void)testUnitConversionViewController {
+- (void)FLAKY_testUnitConversionViewController {
   [UnitConversionAppInterface presentUnitConversionFeature];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UnitConversionMatcher()];
