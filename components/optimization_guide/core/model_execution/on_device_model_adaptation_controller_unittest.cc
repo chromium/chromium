@@ -100,6 +100,8 @@ class OnDeviceModelServiceAdaptationControllerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
+  ScopedOnDeviceModelServiceTestSettings
+      scoped_on_device_model_service_test_settings_;
   // Owned by FakeOnDeviceModelServiceController.
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{

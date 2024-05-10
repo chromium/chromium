@@ -253,6 +253,7 @@ ScopedOnDeviceModelServiceTestSettings::
     ~ScopedOnDeviceModelServiceTestSettings() {
   g_execute_delay = old_execute_delay_;
   g_model_execute_result = old_model_execute_result_;
+  g_adaptation_model_id_counter = 0;
 }
 
 void ScopedOnDeviceModelServiceTestSettings::SetExecuteDelay(
