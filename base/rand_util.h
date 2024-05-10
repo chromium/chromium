@@ -91,11 +91,6 @@ BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
 BASE_EXPORT void RandBytes(span<uint8_t> output);
 
-// // TODO(40284755): This overload will be removed, do not use.
-inline void RandBytes(void* output, size_t output_length) {
-  UNSAFE_BUFFERS(span(static_cast<uint8_t*>(output), output_length));
-}
-
 // Creates a vector of `length` bytes, fills it with random data, and returns
 // it. Thread-safe.
 //

@@ -17,12 +17,6 @@ namespace crypto {
 // Fills `bytes` with cryptographically-secure random bits.
 CRYPTO_EXPORT void RandBytes(base::span<uint8_t> bytes);
 
-// TODO(crbug.com/40284755): Deprecated and will be removed, do not use.
-inline void RandBytes(void* bytes, size_t len) {
-  ::crypto::RandBytes(
-      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bytes), len)));
-}
-
 // Returns a vector of `length` bytes filled with cryptographically-secure
 // random bits.
 CRYPTO_EXPORT std::vector<uint8_t> RandBytesAsVector(size_t length);
