@@ -900,28 +900,13 @@ void PrePaintTreeWalk::WalkPageContainer(
     PrePaintTreeWalkContext page_border_box_context(
         page_container_context,
         page_container_context.NeedsTreeBuilderContext());
-
     if (page_border_box_context.tree_builder_context) {
-      // Create paint properties for the page border box fragment. This fragment
-      // is responsible for @page borders and other decorations, in addition to
-      // the document background. So this needs to be in the coordinate system
-      // of paginated layout.
-      float scale = TargetScaleForPage(page_container);
-      gfx::Transform matrix;
-      matrix.Scale(scale);
-      TransformPaintPropertyNode::State transform_state;
-      transform_state.transform_and_origin = {matrix, gfx::Point3F()};
-
-      PaintPropertyTreeBuilderFragmentContext& fragment_context =
-          page_border_box_context.tree_builder_context->fragment_context;
-      const LayoutObject* object = grandchild->GetLayoutObject();
-      FragmentData& fragment_data =
-          object->GetMutableForPainting().FirstFragment();
-      fragment_data.EnsurePaintProperties().UpdateTransform(
-          *fragment_context.current.transform, std::move(transform_state));
-      fragment_data.SetLocalBorderBoxProperties(PropertyTreeStateOrAlias(
-          *fragment_data.PaintProperties()->Transform(),
-          *fragment_context.current.clip, *fragment_context.current_effect));
+      PrePaintInfo border_box_pre_paint_info =
+          CreatePrePaintInfo(grandchild, page_border_box_context);
+      PaintPropertyTreeBuilder builder(
+          *grandchild->GetLayoutObject(), &border_box_pre_paint_info,
+          page_border_box_context.tree_builder_context.value());
+      builder.UpdateForPageBorderBox(page_container);
     }
 
     // A page border box fragment should only have one child: the page area.

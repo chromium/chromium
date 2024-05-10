@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -3619,6 +3620,28 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
     context_.force_subtree_update_reasons &=
         ~PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
   }
+}
+
+void PaintPropertyTreeBuilder::UpdateForPageBorderBox(
+    const PhysicalBoxFragment& page_container) {
+  // Since the page border box fragment is responsible for @page borders and
+  // other decorations, in addition to the document background, it needs to be
+  // in the coordinate system of paginated layout.
+  float scale = TargetScaleForPage(page_container);
+
+  gfx::Transform matrix;
+  matrix.Scale(scale);
+  TransformPaintPropertyNode::State transform_state;
+  transform_state.transform_and_origin = {matrix, gfx::Point3F()};
+
+  PaintPropertyTreeBuilderFragmentContext& fragment_context =
+      context_.fragment_context;
+  FragmentData& fragment_data = object_.GetMutableForPainting().FirstFragment();
+  fragment_data.EnsurePaintProperties().UpdateTransform(
+      *fragment_context.current.transform, std::move(transform_state));
+  fragment_data.SetLocalBorderBoxProperties(PropertyTreeStateOrAlias(
+      *fragment_data.PaintProperties()->Transform(),
+      *fragment_context.current.clip, *fragment_context.current_effect));
 }
 
 bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
