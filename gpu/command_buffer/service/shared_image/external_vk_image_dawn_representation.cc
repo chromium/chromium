@@ -96,6 +96,16 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
 
   texture_ = wgpu::Texture::Acquire(
       dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
+  if (!texture_) {
+    backing_impl()->EndAccess(false, ExternalSemaphore(), /*is_gl=*/false);
+    // In this case we didn't submit anything, so we can't reuse them.
+    // Release them immediately.
+    backing_impl()->ReleaseSemaphoresWithFenceHelper(
+        std::move(begin_access_semaphores_));
+    begin_access_semaphores_.clear();
+    return nullptr;
+  }
+
   return texture_.Get();
 }
 

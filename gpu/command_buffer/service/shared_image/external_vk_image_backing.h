@@ -167,6 +167,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // Add semaphores to a pending list for reusing or being released immediately.
   void AddSemaphoresToPendingListOrRelease(
       std::vector<ExternalSemaphore> semaphores);
+  // Release semaphores immediately.
+  void ReleaseSemaphoresWithFenceHelper(
+      std::vector<ExternalSemaphore> semaphores);
   // Return |pending_semaphores_| and passed in |semaphores| to
   // ExternalSemaphorePool for reusing.
   void ReturnPendingSemaphoresWithFenceHelper(
