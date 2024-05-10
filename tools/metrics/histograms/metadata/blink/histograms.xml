@@ -2295,7 +2295,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     Number of bytes after which the html fast-path parser aborted. This does not
     count the bytes the fast-path parser did not look at. We measure this since
@@ -2308,7 +2308,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The amount of time the innerHTML fast-path parser took before reaching input
     it could not handle. This is recorded when Element::setInnerHTML is called,
@@ -2323,7 +2323,7 @@ chromium-metrics-reviews@google.com.
     enum="InnerHTMLFastPathParserParseResult" expires_after="2024-09-15">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     Captures the result of the innerHTML fast-path parser. This is recorded
     every time Element::setInnerHTML is called and only if the innerHTML
@@ -2335,7 +2335,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     Number of bytes successfully parsed by the innerHTML fast-path parser. This
     is recorded if the innerHTML fast-path parser completes successfully and is
@@ -2347,7 +2347,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2024-04-28">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The time it takes for the innerHTML fast-path parser to complete processing
     text from Element::setInnerHTML. This is recorded if fast-path innerHTML is
@@ -2362,7 +2362,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-20">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The total time it takes to complete parsing of Element::setInnerHTML. This
     includes the time taken by the fast-path parser (even if it failed). This is
@@ -2377,7 +2377,7 @@ chromium-metrics-reviews@google.com.
     enum="InnerHTMLFastPathParserUnsupportedTagType" expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     This is logged if the innerHTML fast-path parser fails because an {Type} tag
     is encountered. This value is an aggregate (bitmask) that identifies which
@@ -2396,7 +2396,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-07">
   <owner>sky@chromium.org</owner>
   <owner>tebbi@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     See description of Blink.HTMLFastPathParser.*.CompositeMask for an overview
     of this including when it is logged. The value is a bitmask that identifies
@@ -2427,7 +2427,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.ChunkCount4" units="chunks"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The number of chunks parsed while loading a page. Each chunk represents a
     piece of the HTML content that can be loaded without blocking or yielding.
@@ -2441,7 +2441,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.InputCharacterCount4" units="characters"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The number of characters processed while parsing a document during page
     load. This is computed as the sum of all the characters appended to the
@@ -2456,7 +2456,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.ParsingTimeMax4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the maximum time used to parse a single chunk before
     being blocked, yielding or completing, in microseconds. This does not
@@ -2471,7 +2471,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.ParsingTimeMin4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the minimum time used to parse a single chunk before
     being blocked, yielding or completing, in microseconds. This does not
@@ -2486,7 +2486,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the total amount of time spent in the
     HTMLDocumentParser performing parsing, in microseconds. This does not
@@ -2515,7 +2515,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
     units="microseconds" expires_after="2024-10-20">
   <owner>sky@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     The time between when the first content has been received by the
     HTMLDocumentParser and when parsing begins. This is effectively measuring
@@ -2530,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.TokensParsedAverage4" units="tokens"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the average number of tokens parsed across all chunks.
     This is only reported for http/https urls.
@@ -2543,7 +2543,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.TokensParsedMax4" units="tokens"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the maximum number of tokens parsed as a chunk. This
     is only reported for http/https urls.
@@ -2556,7 +2556,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.TokensParsedMin4" units="tokens"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the minimum number of tokens parsed as a chunk. This
     is only reported for http/https urls.
@@ -2569,7 +2569,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.TokensParsedTotal4" units="tokens"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the total number of tokens parsed across all chunks.
     This is only reported for http/https urls.
@@ -2582,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.YieldedTimeAverage4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the average time between parsing of two chunks, in
     microseconds. Will not be recorded if only one chunk was parsed. This is
@@ -2596,7 +2596,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.YieldedTimeMax4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the maximum time between parsing of two chunks, in
     microseconds. Will not be recorded if only one chunk was parsed. This is
@@ -2610,7 +2610,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.HTMLParsing.YieldedTimeMin4" units="microseconds"
     expires_after="2025-01-31">
   <owner>masonf@chromium.org</owner>
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <summary>
     While parsing a page, the minimum time between parsing of two chunks, in
     microseconds. Will not be recorded if only one chunk was parsed. This is

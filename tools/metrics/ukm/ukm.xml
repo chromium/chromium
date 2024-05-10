@@ -4878,7 +4878,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.HTMLParsing">
-  <owner>dom-dev@chromium.org</owner>
+  <owner>dom-dev@google.com</owner>
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

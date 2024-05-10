@@ -1113,7 +1113,7 @@
   },
   {
     "prefix": "details-styling-disabled",
-    "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["dbaron@chromium.org", "dom-dev@google.com"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/html/rendering/the-details-element",
@@ -1127,7 +1127,7 @@
   },
   {
     "prefix": "css-sizing-keyword-animation",
-    "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["dbaron@chromium.org", "dom-dev@google.com"],
     "platforms": ["Linux"],
     "bases": [
       "external/wpt/css/css-sizing/animation",
@@ -2002,7 +2002,7 @@
   "--reset-browsing-instance-between-tests and remove this virtual test suite.",
   {
     "prefix": "close-watcher",
-    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["jarhar@chromium.org", "dom-dev@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/close-watcher"
@@ -2775,7 +2775,7 @@
     "args": ["--enable-features=CSSCustomStateDeprecatedSyntax",
              "--disable-features=CSSCustomStateNewSyntax"],
     "expires": "Dec 1, 2024",
-    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["jarhar@chromium.org", "dom-dev@google.com"],
     "bases": [
       "external/wpt/custom-elements/state"
     ]
@@ -2786,7 +2786,7 @@
     "args": ["--disable-features=CSSCustomStateDeprecatedSyntax",
              "--enable-features=CSSCustomStateNewSyntax"],
     "expires": "Dec 1, 2024",
-    "owners": ["jarhar@chromium.org", "dom-dev@chromium.org"],
+    "owners": ["jarhar@chromium.org", "dom-dev@google.com"],
     "bases": [
       "external/wpt/custom-elements/state"
     ]
