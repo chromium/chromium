@@ -5134,41 +5134,6 @@
             ]
         }
     ],
-    "CrOSLateBootDiscardStaleAtModeratePressure": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDefaultParams",
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure"
-                    ]
-                },
-                {
-                    "name": "EnabledConservativeGradient",
-                    "params": {
-                        "MaxLastVisibleDurationSeconds": "7200",
-                        "MinLastVisibleDurationSeconds": "3600"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure"
-                    ]
-                },
-                {
-                    "name": "EnabledAggressiveGradient",
-                    "params": {
-                        "MaxLastVisibleDurationSeconds": "3600",
-                        "MinLastVisibleDurationSeconds": "300"
-                    },
-                    "enable_features": [
-                        "CrOSLateBootDiscardStaleAtModeratePressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootDynamicEPP": [
         {
             "platforms": [
@@ -5229,6 +5194,88 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootLongBluetoothAutosuspend"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CrOSLateBootLowMemorySignaling": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledEarlyDiscard",
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                },
+                {
+                    "name": "EnabledEarlyDiscardConservativeGradient",
+                    "params": {
+                        "MaxLastVisibleDurationSeconds": "7200",
+                        "MinLastVisibleDurationSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                },
+                {
+                    "name": "EnabledEarlyDiscardAggressiveGradient",
+                    "params": {
+                        "MaxLastVisibleDurationSeconds": "3600",
+                        "MinLastVisibleDurationSeconds": "300"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                },
+                {
+                    "name": "EnabledAvailableAdjustmentPsi",
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                },
+                {
+                    "name": "EnabledAvailableAdjustmentPsiFull",
+                    "params": {
+                        "PsiTopThreshold": "20.0",
+                        "PsiUseFull": "true"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                },
+                {
+                    "name": "EnabledAvailableAdjustmentPsiWithEarlyDiscard",
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPsiAdjustAvailable"
+                    ]
+                },
+                {
+                    "name": "EnabledPSIMemoryPolicy",
+                    "enable_features": [
+                        "CrOSLateBootPSIMemoryPolicy"
+                    ]
+                },
+                {
+                    "name": "EnabledPSIMemoryPolicyConservativeGradient",
+                    "params": {
+                        "BackgroundPsiSomeMillis": "200",
+                        "ForegroundPsiFullMillis": "100",
+                        "UnresponsivePsiFullMillis": "700"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootPSIMemoryPolicy"
+                    ]
+                },
+                {
+                    "name": "EnabledPSIMemoryPolicyWithEarlyDiscard",
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPSIMemoryPolicy"
                     ]
                 }
             ]
