@@ -10674,6 +10674,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/webui",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",

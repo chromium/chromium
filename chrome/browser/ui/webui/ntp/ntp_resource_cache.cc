@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -401,7 +401,8 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
 void NTPResourceCache::CreateNewTabIncognitoCSS(
     const content::WebContents::Getter& wc_getter) {
   auto* web_contents = wc_getter.Run();
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  const ui::NativeTheme* native_theme =
+      webui::GetNativeThemeDeprecated(web_contents);
   DCHECK(native_theme);
 
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
@@ -434,7 +435,8 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
 void NTPResourceCache::CreateNewTabCSS(
     const content::WebContents::Getter& wc_getter) {
   auto* web_contents = wc_getter.Run();
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  const ui::NativeTheme* native_theme =
+      webui::GetNativeThemeDeprecated(web_contents);
   DCHECK(native_theme);
 
   const ui::ThemeProvider& tp =

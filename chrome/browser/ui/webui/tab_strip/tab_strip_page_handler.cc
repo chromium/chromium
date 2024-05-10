@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -191,7 +191,8 @@ TabStripPageHandler::TabStripPageHandler(
   ThemeServiceFactory::GetForProfile(browser_->profile())->AddObserver(this);
 
   // Or native theme change.
-  theme_observation_.Observe(webui::GetNativeTheme(web_ui_->GetWebContents()));
+  theme_observation_.Observe(
+      webui::GetNativeThemeDeprecated(web_ui_->GetWebContents()));
 }
 
 void TabStripPageHandler::NotifyLayoutChanged() {
@@ -886,7 +887,7 @@ void TabStripPageHandler::OnNativeThemeUpdated(
   // switch between light/dark mode. b) A different theme is enabled. e.g.
   // switch between GTK and classic theme on Linux. Reset observer in case b).
   ui::NativeTheme* current_theme =
-      webui::GetNativeTheme(web_ui_->GetWebContents());
+      webui::GetNativeThemeDeprecated(web_ui_->GetWebContents());
   if (observed_theme != current_theme) {
     theme_observation_.Reset();
     theme_observation_.Observe(current_theme);

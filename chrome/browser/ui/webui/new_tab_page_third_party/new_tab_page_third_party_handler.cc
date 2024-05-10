@@ -11,7 +11,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
@@ -55,7 +55,7 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
   auto theme = new_tab_page_third_party::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
   const ui::ThemeProvider* theme_provider =
-      webui::GetThemeProvider(web_contents_);
+      webui::GetThemeProviderDeprecated(web_contents_);
   DCHECK(theme_provider);
   const ui::ColorProvider& color_provider = web_contents_->GetColorProvider();
   most_visited->background_color =
@@ -65,8 +65,8 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
   theme->text_color = color_provider.GetColor(kColorNewTabPageText);
   most_visited->is_dark = !color_utils::IsDark(theme->text_color);
   theme->color_background = color_utils::SkColorToRgbaString(GetThemeColor(
-      webui::GetNativeTheme(web_contents_), web_contents_->GetColorProvider(),
-      kColorNewTabPageBackground));
+      webui::GetNativeThemeDeprecated(web_contents_),
+      web_contents_->GetColorProvider(), kColorNewTabPageBackground));
   if (theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     theme->background_tiling = GetNewTabBackgroundTilingCSS(*theme_provider);
     theme->background_position =

@@ -11,13 +11,7 @@
 #include "ui/base/webui/resource_path.h"
 
 namespace content {
-class WebContents;
 class WebUIDataSource;
-}
-
-namespace ui {
-class NativeTheme;
-class ThemeProvider;
 }
 
 namespace webui {
@@ -44,20 +38,6 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source);
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id);
-#if defined(TOOLKIT_VIEWS)
-
-// Returns whether WebContents should use dark mode colors depending on the
-// theme.
-ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents);
-
-// Returns the ThemeProvider instance associated with the given web contents.
-const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
-
-// Sets a global theme provider that will be returned when calling
-// webui::GetThemeProvider(). Used only for testing.
-void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider);
-
-#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace webui
 

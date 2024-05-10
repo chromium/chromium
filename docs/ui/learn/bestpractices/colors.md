@@ -689,13 +689,13 @@ const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
 void NTPResourceCache::CreateNewTabIncognitoCSS(
     const content::WebContents::Getter& wc_getter) {
   auto* web_contents = wc_getter.Run();
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  const ui::NativeTheme* native_theme = webui::GetNativeThemeDeprecated(web_contents);
   DCHECK(native_theme);
 
   // Requesting the incognito CSS is only done from within incognito browser
   // windows. The ThemeProvider associated with the requesting WebContents will
   // wrap the relevant incognito bits.
-  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
+  const ui::ThemeProvider* tp = webui::GetThemeProviderDeprecated(web_contents);
   DCHECK(tp);
 
   ...

@@ -54,7 +54,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -474,7 +474,7 @@ NewTabPageHandler::NewTabPageHandler(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
-      theme_provider_(webui::GetThemeProvider(web_contents)),
+      theme_provider_(webui::GetThemeProviderDeprecated(web_contents)),
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),

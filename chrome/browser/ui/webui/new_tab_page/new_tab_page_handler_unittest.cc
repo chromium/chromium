@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -319,7 +319,7 @@ class NewTabPageHandlerTest : public testing::Test {
                   VerifyCustomBackgroundImageURL)
           .Times(1);
     }
-    webui::SetThemeProviderForTesting(&mock_theme_provider_);
+    webui::SetThemeProviderForTestingDeprecated(&mock_theme_provider_);
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
 
     EXPECT_FALSE(

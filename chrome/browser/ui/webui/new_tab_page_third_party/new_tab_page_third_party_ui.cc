@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -63,7 +64,7 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
   source->AddLocalizedStrings(kStrings);
 
   const ui::ThemeProvider* theme_provider =
-      webui::GetThemeProvider(web_contents);
+      webui::GetThemeProviderDeprecated(web_contents);
   // TODO(crbug.com/40823895): Always mock theme provider in tests so that
   // `theme_provider` is never nullptr.
   if (theme_provider) {
@@ -74,8 +75,8 @@ void CreateAndAddNewTabPageThirdPartyUiHtmlSource(Profile* profile,
                       GetNewTabBackgroundTilingCSS(*theme_provider));
     source->AddString("colorBackground",
                       color_utils::SkColorToRgbaString(GetThemeColor(
-                          webui::GetNativeTheme(web_contents), color_provider,
-                          kColorNewTabPageBackground)));
+                          webui::GetNativeThemeDeprecated(web_contents),
+                          color_provider, kColorNewTabPageBackground)));
     // TODO(crbug.com/40120448): don't get theme id from profile.
     source->AddString("themeId",
                       profile->GetPrefs()->GetString(prefs::kCurrentThemeID));

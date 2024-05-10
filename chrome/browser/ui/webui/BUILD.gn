@@ -65,3 +65,21 @@ source_set("configs") {
     }
   }
 }
+
+source_set("webui") {
+  sources = [
+    "webui_util.cc",
+    "webui_util.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//ui/resources",
+  ]
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}
