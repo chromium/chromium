@@ -204,7 +204,8 @@ ComposeEnabling::ShouldTriggerPopup(
     const url::Origin& top_level_frame_origin,
     const url::Origin& element_frame_origin,
     GURL url,
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
+    autofill::AutofillSuggestionTriggerSource trigger_source,
+    bool is_msbb_enabled) {
   if (ongoing_session) {
     return ShouldTriggerSavedStatePopup(trigger_source);
   }
@@ -212,7 +213,7 @@ ComposeEnabling::ShouldTriggerPopup(
   base::expected<void, compose::ComposeShowStatus> show_status =
       ShouldTriggerNoStatePopup(autocomplete_attribute, profile, prefs,
                                 translate_manager, top_level_frame_origin,
-                                element_frame_origin, url);
+                                element_frame_origin, url, is_msbb_enabled);
   if (show_status.has_value()) {
     compose::LogComposeProactiveNudgeShowStatus(
         compose::ComposeShowStatus::kShouldShow);
@@ -227,6 +228,7 @@ ComposeEnabling::ShouldTriggerPopup(
         kPractiveNudgeDisabledForSiteByUserPreference:
     case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
     case compose::ComposeShowStatus::kRandomlyBlocked:
+    case compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB:
       // The disabled deny reason means the nudge would show if preference or
       // configuration changed.
       return base::unexpected(
@@ -247,7 +249,8 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
     translate::TranslateManager* translate_manager,
     const url::Origin& top_level_frame_origin,
     const url::Origin& element_frame_origin,
-    GURL url) {
+    GURL url,
+    bool is_msbb_enabled) {
   // TODO(b/319661274): Support fenced frame checks from the Autofill popup
   // entry point.
   bool is_in_fenced_frame = false;
@@ -256,6 +259,11 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
                           element_frame_origin, is_in_fenced_frame);
       !page_checks.has_value()) {
     return base::unexpected(page_checks.error());
+  }
+
+  if (!is_msbb_enabled) {
+    return base::unexpected(
+        compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB);
   }
 
   // Check URL with Optimization guide.
