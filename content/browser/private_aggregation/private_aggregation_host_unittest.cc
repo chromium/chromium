@@ -77,6 +77,9 @@ constexpr std::string_view kTimeToGenerateReportRequestWithContextIdHistogram =
     "PrivacySandbox.PrivateAggregation.Host."
     "TimeToGenerateReportRequestWithContextId";
 
+constexpr std::string_view kFilteringIdStatusHistogram =
+    "PrivacySandbox.PrivateAggregation.Host.FilteringIdStatus";
+
 class PrivateAggregationHostTest : public testing::Test {
  public:
   PrivateAggregationHostTest() = default;
@@ -1152,36 +1155,55 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
     const size_t filtering_id_max_bytes;
     const std::optional<uint64_t> filtering_id;
     bool expected_to_be_valid;
+    std::optional<PrivateAggregationHost::FilteringIdStatus>
+        expected_filtering_id_histogram;
   } kTestCases[] = {
       {
-          "filtering_id null",
+          "filtering_id null with default maxBytes",
           1,
           std::nullopt,
           true,
+          PrivateAggregationHost::FilteringIdStatus::
+              kNoFilteringIdWithDefaultMaxBytes,
       },
       {
           "filtering_id 0",
           1,
           0,
           true,
+          PrivateAggregationHost::FilteringIdStatus::
+              kFilteringIdProvidedWithDefaultMaxBytes,
       },
       {
           "filtering_id max for one byte",
           1,
           255,
           true,
+          PrivateAggregationHost::FilteringIdStatus::
+              kFilteringIdProvidedWithDefaultMaxBytes,
       },
       {
           "filtering_id too big",
           1,
           256,
           false,
+          std::nullopt,
+      },
+      {
+          "filtering_id null with custom maxBytes",
+          3,
+          std::nullopt,
+          true,
+          PrivateAggregationHost::FilteringIdStatus::
+              kNoFilteringIdWithCustomMaxBytes,
       },
       {
           "filtering_id max value for max maxBytes",
           8,
           std::numeric_limits<uint64_t>::max(),
           true,
+          PrivateAggregationHost::FilteringIdStatus::
+              kFilteringIdProvidedWithCustomMaxBytes,
       },
   };
 
@@ -1229,6 +1251,14 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
             ? PrivateAggregationHost::PipeResult::kReportSuccess
             : PrivateAggregationHost::PipeResult::kFilteringIdInvalid,
         1);
+
+    if (test_case.expected_filtering_id_histogram.has_value()) {
+      histogram.ExpectUniqueSample(
+          kFilteringIdStatusHistogram,
+          test_case.expected_filtering_id_histogram.value(), 1);
+    } else {
+      histogram.ExpectTotalCount(kFilteringIdStatusHistogram, 0);
+    }
 
     EXPECT_EQ(validated_request.has_value(), test_case.expected_to_be_valid);
     if (!validated_request.has_value()) {
@@ -1309,7 +1339,7 @@ TEST_F(PrivateAggregationHostTest,
     const std::optional<uint64_t> filtering_id;
   } kTestCases[] = {
       {
-          "filtering_id null",
+          "filtering_id null with default max bytes",
           1,
           std::nullopt,
       },
@@ -1327,6 +1357,11 @@ TEST_F(PrivateAggregationHostTest,
           "filtering_id too big",
           1,
           256,
+      },
+      {
+          "filtering_id null with custom maxBytes",
+          3,
+          std::nullopt,
       },
       {
           "filtering_id max value for max maxBytes",
@@ -1376,6 +1411,8 @@ TEST_F(PrivateAggregationHostTest,
       histogram.ExpectUniqueSample(
           kPipeResultHistogram,
           PrivateAggregationHost::PipeResult::kReportSuccess, 1);
+
+      histogram.ExpectTotalCount(kFilteringIdStatusHistogram, 0);
 
       ASSERT_TRUE(validated_request.has_value());
       ASSERT_EQ(validated_request->payload_contents().contributions.size(), 1u);

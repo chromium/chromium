@@ -30378,6 +30378,13 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failed to create directory"/>
 </enum>
 
+<enum name="PrivacySandboxPrivateAggregationHostFilteringIdStatus">
+  <int value="0" label="No filtering ID, default max bytes"/>
+  <int value="1" label="Filtering ID provided, default max bytes"/>
+  <int value="2" label="No filtering ID, custom max bytes"/>
+  <int value="3" label="Filtering ID provided, custom max bytes"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationHostPipeResult">
   <int value="0" label="Report success"/>
   <int value="1"

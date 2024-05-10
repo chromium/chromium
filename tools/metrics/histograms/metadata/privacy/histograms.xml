@@ -1035,6 +1035,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.PrivateAggregation.Host.FilteringIdStatus"
+    enum="PrivacySandboxPrivateAggregationHostFilteringIdStatus"
+    expires_after="2024-11-06">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether a filtering ID and/or a custom filtering ID max bytes was
+    used for a Private Aggregation report request being generated in the host.
+    This is recorded for every report request generation except that it is not
+    recorded if the filtering ID feature is disabled.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown"
     units="ms" expires_after="2024-11-03">

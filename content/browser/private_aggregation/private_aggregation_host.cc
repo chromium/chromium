@@ -73,6 +73,31 @@ void RecordTimeoutResultHistogram(
       "PrivacySandbox.PrivateAggregation.Host.TimeoutResult", result);
 }
 
+void RecordFilteringIdStatusHistogram(bool has_filtering_id,
+                                      bool has_custom_max_bytes) {
+  PrivateAggregationHost::FilteringIdStatus status;
+
+  if (has_filtering_id) {
+    if (has_custom_max_bytes) {
+      status = PrivateAggregationHost::FilteringIdStatus::
+          kFilteringIdProvidedWithCustomMaxBytes;
+    } else {
+      status = PrivateAggregationHost::FilteringIdStatus::
+          kFilteringIdProvidedWithDefaultMaxBytes;
+    }
+  } else {
+    if (has_custom_max_bytes) {
+      status = PrivateAggregationHost::FilteringIdStatus::
+          kNoFilteringIdWithCustomMaxBytes;
+    } else {
+      status = PrivateAggregationHost::FilteringIdStatus::
+          kNoFilteringIdWithDefaultMaxBytes;
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.PrivateAggregation.Host.FilteringIdStatus", status);
+}
+
 }  // namespace
 
 struct PrivateAggregationHost::ReceiverContext {
@@ -332,12 +357,22 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
 
   std::optional<size_t> applied_filtering_id_max_bytes =
       specified_filtering_id_max_bytes;
-  if (!use_new_report_version) {
+  if (use_new_report_version) {
+    RecordFilteringIdStatusHistogram(
+        /*has_filtering_id=*/base::ranges::any_of(
+            contributions,
+            [](blink::mojom::AggregatableReportHistogramContribution&
+                   contribution) {
+              return contribution.filtering_id.has_value();
+            }),
+        /*has_custom_max_bytes=*/specified_filtering_id_max_bytes !=
+            kDefaultFilteringIdMaxBytes);
+  } else {
     applied_filtering_id_max_bytes.reset();
     base::ranges::for_each(
         contributions,
-        [&](blink::mojom::AggregatableReportHistogramContribution&
-                contribution) { contribution.filtering_id.reset(); });
+        [](blink::mojom::AggregatableReportHistogramContribution&
+               contribution) { contribution.filtering_id.reset(); });
   }
 
   AggregationServicePayloadContents payload_contents(

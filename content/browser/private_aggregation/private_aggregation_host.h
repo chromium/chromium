@@ -69,6 +69,17 @@ class CONTENT_EXPORT PrivateAggregationHost
     kMaxValue = kStillScheduledOnShutdown,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FilteringIdStatus {
+    kNoFilteringIdWithDefaultMaxBytes = 0,
+    kFilteringIdProvidedWithDefaultMaxBytes = 1,
+    kNoFilteringIdWithCustomMaxBytes = 2,
+    kFilteringIdProvidedWithCustomMaxBytes = 3,
+
+    kMaxValue = kFilteringIdProvidedWithCustomMaxBytes,
+  };
+
   using ReportRequestGenerator = base::OnceCallback<AggregatableReportRequest(
       std::vector<blink::mojom::AggregatableReportHistogramContribution>)>;
 
