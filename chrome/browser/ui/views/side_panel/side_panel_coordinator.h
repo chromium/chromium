@@ -14,6 +14,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -246,6 +247,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void NotifyPinnedContainerOfActiveStateChange(SidePanelEntryKey key,
                                                 bool is_active);
 
+  void MaybeQueuePinPromo();
+  void ShowPinPromo();
+  void MaybeEndPinPromo(bool pinned);
+
   // SidePanelRegistryObserver:
   void OnEntryRegistered(SidePanelRegistry* registry,
                          SidePanelEntry* entry) override;
@@ -310,6 +315,13 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Used to update the visibility of the pin header button.
   raw_ptr<views::ToggleImageButton, AcrossTasksDanglingUntriaged>
       header_pin_button_ = nullptr;
+
+  // Provides delay on pinning promo.
+  base::OneShotTimer pin_promo_timer_;
+
+  // Set to the appropriate pin promo for the current side panel entry, or null
+  // if none. (Not set if e.g. already pinned.)
+  raw_ptr<const base::Feature> pending_pin_promo_ = nullptr;
 
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       extensions_model_observation_{this};

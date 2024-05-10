@@ -74,6 +74,18 @@ class FeaturePromoResult {
   //     : FeaturePromoResult::Success();
   static FeaturePromoResult Success();
 
+  // Returns true if the promo can never show again.
+  constexpr bool is_permanently_blocked() const {
+    return failure_ == kPermanentlyDismissed ||
+           failure_ == kExceededMaxShowCount;
+  }
+
+  // Returns true if the promo is unlikely to show in this browser instance.
+  constexpr bool is_blocked_this_instance() const {
+    return is_permanently_blocked() || failure_ == kFeatureDisabled ||
+           failure_ == kBlockedByContext;
+  }
+
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator bool() const { return !failure_.has_value(); }
   constexpr bool operator!() const { return failure_.has_value(); }

@@ -8851,6 +8851,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_GENERIC_PINNABLE_IPH_SCREENREADER" desc="The screen reader text of the IPH describing a side panel is pinnable. The phrase 'top right' should read as 'top left' in rtl languages.">
         To easily get back to the side panel, click Pin at the top right
       </message>
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH" desc="The body text of the IPH describing that the Lens Overlay panel is pinnable.">
+        You can pin this feature for easy access
+      </message>
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel is pinnable."
+          is_accessibility_with_no_ui="true">
+        You can pin this feature for easy access; click the Pin button at the top of the side panel
+      </message>
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH" desc="The body text of the IPH describing that the Lens Overlay panel has been pinned.">
+        Pinned! Use this feature again from the toolbar
+      </message>
+      <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER"
+          desc="The screen reader text of the IPH describing that the Lens Overlay panel has been pinned."
+          is_accessibility_with_no_ui="true">
+        Pinned! You can access this feature again from the new button on the toolbar
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS_SORT_BY_TYPE" desc="Menu item label for selecting the bookmarks sort type.">

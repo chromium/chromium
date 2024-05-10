@@ -42933,6 +42933,10 @@ should be able to be added at any place in this file.
       label="For Side Panel Pinning menu entries."/>
   <suffix name="SidePanelGenericPinnableFeature"
       label="For Side Panel Pinning pin feature."/>
+  <suffix name="SidePanelLensOverlayPinnableFeature"
+      label="For Lens Overlay Side Panel pin feature."/>
+  <suffix name="SidePanelLensOverlayPinnableFollowupFeature"
+      label="For Lens Overlay Side Panel pin feature follow-up."/>
   <suffix name="SideSearch" label="For the side search feature."/>
   <suffix name="SideSearchAutoTriggering"
       label="For side search feature automatic triggering."/>

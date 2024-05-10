@@ -12,6 +12,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -653,6 +655,49 @@ void MaybeRegisterChromeFeaturePromos(
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
             .SetMetadata(121, "corising@chromium.org",
                          "Triggered when a pinnable side panel is opened.")));
+
+    // kIPHSidePanelLensOverlayPinnableFeature:
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHSidePanelLensOverlayPinnableFeature,
+            kSidePanelPinButtonElementId,
+            IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH,
+            IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+            .SetMetadata(126, "dfried@chromium.org, jdonnelly@google.com",
+                         "Triggered when a pinnable lens overlay side panel is "
+                         "opened.")));
+
+    // kIPHSidePanelLensOverlayPinnableFeature:
+    registry.RegisterFeature(std::move(
+        FeaturePromoSpecification::CreateForToastPromo(
+            feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature,
+            kPinnedActionToolbarButtonElementId,
+            IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH,
+            IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER,
+            FeaturePromoSpecification::AcceleratorInfo())
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .SetMetadata(
+                126, "dfried@chromium.org, jdonnelly@google.com",
+                "Triggered when the lens overlay side panel is pinned.")
+            .SetAnchorElementFilter(base::BindRepeating(
+                [](const ui::ElementTracker::ElementList& elements)
+                    -> ui::TrackedElement* {
+                  // Locate the action button associated with the Lens Overlay
+                  // feature. The button must be present in the Actions
+                  // container in the toolbar.
+                  for (auto* element : elements) {
+                    auto* const button =
+                        views::AsViewClass<PinnedActionToolbarButton>(
+                            element->AsA<views::TrackedElementViews>()->view());
+                    if (button && button->GetActionId() ==
+                                      kActionSidePanelShowLensOverlayResults) {
+                      return element;
+                    }
+                  }
+                  return nullptr;
+                }))));
   }
 
   // kIPHTabOrganizationSuccessFeature:

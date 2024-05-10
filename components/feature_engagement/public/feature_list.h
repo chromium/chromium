@@ -336,6 +336,8 @@ DEFINE_VARIATION_PARAM(kIPHSidePanelGenericMenuFeature,
                        "IPH_SidePanelGenericMenuFeature");
 DEFINE_VARIATION_PARAM(kIPHSidePanelGenericPinnableFeature,
                        "IPH_SidePanelGenericPinnableFeature");
+DEFINE_VARIATION_PARAM(kIPHSidePanelLensOverlayPinnableFeature,
+                       "IPH_SidePanelLensOverlayPinnableFeature");
 DEFINE_VARIATION_PARAM(kIPHSideSearchAutoTriggeringFeature,
                        "IPH_SideSearchAutoTriggering");
 DEFINE_VARIATION_PARAM(kIPHSideSearchPageActionLabelFeature,

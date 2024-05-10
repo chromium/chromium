@@ -481,6 +481,10 @@ chromium-metrics-reviews@google.com.
       summary="side panel open from menu"/>
   <variant name="IPH_SidePanelGenericPinnableFeature"
       summary="side panel pinnable"/>
+  <variant name="IPH_SidePanelLensOverlayPinnableFeature"
+      summary="lens overlay side panel pinnable"/>
+  <variant name="IPH_SidePanelLensOverlayPinnableFollowupFeature"
+      summary="lens overlay side panel pinnable follow-up"/>
   <variant name="IPH_SideSearch" summary="side search discovery"/>
   <variant name="IPH_SideSearchAutoTriggering"
       summary="side search automatic triggering"/>
