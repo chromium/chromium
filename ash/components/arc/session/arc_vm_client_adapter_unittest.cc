@@ -31,7 +31,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -61,6 +60,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace arc {
 namespace {
@@ -887,11 +887,9 @@ TEST_F(ArcVmClientAdapterTest, DoesNotGetArcInstanceStoppedOnNestedInstance) {
   Observer child_observer(run_loop_factory, nullptr);
   Observer parent_observer(run_loop_factory, &child_observer);
   adapter()->AddObserver(&parent_observer);
-  base::ScopedClosureRunner teardown(base::BindOnce(
-      [](ArcClientAdapter* adapter, Observer* parent_observer) {
-        adapter->RemoveObserver(parent_observer);
-      },
-      adapter(), &parent_observer));
+  absl::Cleanup teardown = [this, &parent_observer] {
+    adapter()->RemoveObserver(&parent_observer);
+  };
 
   SendVmStoppedSignal(vm_tools::concierge::STOP_VM_REQUESTED);
 

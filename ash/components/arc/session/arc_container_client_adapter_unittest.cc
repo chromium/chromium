@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/arc/session/arc_container_client_adapter.h"
+
 #include <memory>
 
-#include "ash/components/arc/session/arc_container_client_adapter.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace arc {
 
@@ -110,11 +111,9 @@ TEST_F(ArcContainerClientAdapterTest,
   Observer child_observer(nullptr);
   Observer parent_observer(&child_observer);
   client_adapter()->AddObserver(&parent_observer);
-  base::ScopedClosureRunner teardown(base::BindOnce(
-      [](ArcClientAdapter* client_adapter, Observer* parent_observer) {
-        client_adapter->RemoveObserver(parent_observer);
-      },
-      client_adapter(), &parent_observer));
+  absl::Cleanup teardown = [this, &parent_observer] {
+    client_adapter()->RemoveObserver(&parent_observer);
+  };
 
   ash::FakeSessionManagerClient::Get()->NotifyArcInstanceStopped(
       login_manager::ArcContainerStopReason::USER_REQUEST);
