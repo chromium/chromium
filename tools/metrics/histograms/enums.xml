@@ -20187,6 +20187,7 @@ from previous Chrome versions.
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
+  <int value="-437937965" label="AccessibilityShakeToLocate:disabled"/>
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
   <int value="-436799973" label="FederatedService:enabled"/>
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
@@ -24727,6 +24728,7 @@ from previous Chrome versions.
   <int value="1563255033" label="memlog-stack-mode"/>
   <int value="1563267770"
       label="FencedFramesReportingAttestationsChanges:disabled"/>
+  <int value="1565467134" label="AccessibilityShakeToLocate:enabled"/>
   <int value="1566945988" label="PdfOcr:disabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"

@@ -7782,6 +7782,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityOverscrollSettingFeature)},
 
+    {"enable-accessibility-shake-to-locate",
+     flag_descriptions::kAccessibilityShakeToLocateName,
+     flag_descriptions::kAccessibilityShakeToLocateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityShakeToLocate)},
+
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

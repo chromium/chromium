@@ -237,6 +237,13 @@ bool IsAccessibilitySelectToSpeakShortcutEnabled() {
       ::features::kAccessibilitySelectToSpeakShortcut);
 }
 
+BASE_FEATURE(kAccessibilityShakeToLocate,
+             "AccessibilityShakeToLocate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityShakeToLocateEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

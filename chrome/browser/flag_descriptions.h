@@ -663,6 +663,9 @@ extern const char kAccessibilityOverscrollSettingFeatureDescription[];
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 
+extern const char kAccessibilityShakeToLocateName[];
+extern const char kAccessibilityShakeToLocateDescription[];
+
 extern const char kExperimentalAccessibilityColorEnhancementSettingsName[];
 extern const char
     kExperimentalAccessibilityColorEnhancementSettingsDescription[];

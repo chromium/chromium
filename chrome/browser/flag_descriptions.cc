@@ -1111,6 +1111,12 @@ const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "
     "accessibility features in the service.";
 
+const char kAccessibilityShakeToLocateName[] =
+    "Adds shake cursor to locate feature";
+const char kAccessibilityShakeToLocateDescription[] =
+    "This option enables the experimental Accessibility feature to make the "
+    "mouse cursor more visible when a shake is detected.";
+
 const char kExperimentalAccessibilityColorEnhancementSettingsName[] =
     "Experimental Accessibility color enhancement settings";
 const char kExperimentalAccessibilityColorEnhancementSettingsDescription[] =

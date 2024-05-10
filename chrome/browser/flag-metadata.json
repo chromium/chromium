@@ -2304,6 +2304,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-accessibility-shake-to-locate",
+    "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-accessibility-snapshot-stress-tests",
     "owners": [ "mschillaci@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 140

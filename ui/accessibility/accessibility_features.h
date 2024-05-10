@@ -179,6 +179,10 @@ AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakShortcut);
 AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakShortcutEnabled();
 
+// Controls whether the shake cursor to locate feature is available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
+AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
