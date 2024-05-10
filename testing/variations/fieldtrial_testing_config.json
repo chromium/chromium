@@ -16349,6 +16349,21 @@
             ]
         }
     ],
+    "RemoveDetectPortalFromChrome": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveDetectPortalFromChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveFontLinkFallbacks": [
         {
             "platforms": [
