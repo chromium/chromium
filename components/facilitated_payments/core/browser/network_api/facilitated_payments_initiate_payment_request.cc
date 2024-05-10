@@ -11,9 +11,13 @@ FacilitatedPaymentsInitiatePaymentRequest::
         std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
             request_details,
         FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
-            response_callback)
+            response_callback,
+        const std::string& app_locale,
+        const bool full_sync_enabled)
     : request_details_(std::move(request_details)),
-      response_callback_(std::move(response_callback)) {}
+      response_callback_(std::move(response_callback)),
+      app_locale_(app_locale),
+      full_sync_enabled_(full_sync_enabled) {}
 
 FacilitatedPaymentsInitiatePaymentRequest::
     ~FacilitatedPaymentsInitiatePaymentRequest() = default;

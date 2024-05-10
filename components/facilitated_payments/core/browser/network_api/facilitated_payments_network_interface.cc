@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 
+#include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
 
 namespace payments::facilitated {
@@ -24,9 +25,11 @@ FacilitatedPaymentsNetworkInterface::~FacilitatedPaymentsNetworkInterface() =
 void FacilitatedPaymentsNetworkInterface::InitiatePayment(
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
         request_details,
-    InitiatePaymentResponseCallback response_callback) {
+    InitiatePaymentResponseCallback response_callback,
+    const std::string& app_locale) {
   IssueRequest(std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
-      std::move(request_details), std::move(response_callback)));
+      std::move(request_details), std::move(response_callback), app_locale,
+      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
 }  // namespace payments::facilitated

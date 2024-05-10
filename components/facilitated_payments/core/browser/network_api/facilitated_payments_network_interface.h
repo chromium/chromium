@@ -52,7 +52,8 @@ class FacilitatedPaymentsNetworkInterface
   virtual void InitiatePayment(
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
           request_details,
-      InitiatePaymentResponseCallback response_callback);
+      InitiatePaymentResponseCallback response_callback,
+      const std::string& app_locale);
 };
 
 }  // namespace payments::facilitated

@@ -135,7 +135,8 @@ class MockFacilitatedPaymentsNetworkInterface
       void,
       InitiatePayment,
       (std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>,
-       InitiatePaymentResponseCallback),
+       InitiatePaymentResponseCallback,
+       const std::string&),
       (override));
 };
 
@@ -1225,7 +1226,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        SendInitiatePaymentRequest) {
   EXPECT_CALL(payments_network_interface_,
-              InitiatePayment(testing::_, testing::_));
+              InitiatePayment(testing::_, testing::_, testing::_));
 
   manager_->SendInitiatePaymentRequest();
 }

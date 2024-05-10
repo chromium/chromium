@@ -281,7 +281,8 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
         std::move(initiate_payment_request_details_),
         base::BindOnce(
             &FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived,
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetWeakPtr()),
+        client_->GetPersonalDataManager()->app_locale());
   }
 }
 

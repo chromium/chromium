@@ -25,7 +25,9 @@ class FacilitatedPaymentsInitiatePaymentRequest
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
           request_details,
       FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
-          response_callback);
+          response_callback,
+      const std::string& app_locale,
+      const bool full_sync_enabled);
   FacilitatedPaymentsInitiatePaymentRequest(
       const FacilitatedPaymentsInitiatePaymentRequest&) = delete;
   FacilitatedPaymentsInitiatePaymentRequest& operator=(
@@ -48,6 +50,8 @@ class FacilitatedPaymentsInitiatePaymentRequest
       response_details_;
   FacilitatedPaymentsNetworkInterface::InitiatePaymentResponseCallback
       response_callback_;
+  std::string app_locale_;
+  const bool full_sync_enabled_;
 };
 
 }  // namespace payments::facilitated
