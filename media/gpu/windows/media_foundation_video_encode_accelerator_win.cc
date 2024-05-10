@@ -1146,6 +1146,9 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   input_sample_->RemoveAllBuffers();
   bitstream_buffer_size_ = input_visible_size_.GetArea();
   bitstream_buffer_queue_.clear();
+  // Reset the input frame counter since MFT was notified to end the streaming
+  // and restart with new frame size.
+  input_since_keyframe_count_ = 0;
   client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
                                    bitstream_buffer_size_);
 }
