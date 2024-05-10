@@ -845,16 +845,26 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"perDeviceKeyboardKeyEscape",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
       {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"perDeviceKeyboardKeyRightAlt", IDS_KEYBOARD_RIGHT_ALT_LABEL},
-#else
-      {"perDeviceKeyboardKeyRightAlt",
-       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT},
-#endif
       {"perDeviceKeyboardKeyFunction",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // For official builds, only add the real string if the feature is enabled.
+  if (features::IsModifierSplitEnabled()) {
+    html_source->AddLocalizedString("perDeviceKeyboardKeyRightAlt",
+                                    IDS_KEYBOARD_RIGHT_ALT_LABEL);
+  } else {
+    html_source->AddLocalizedString(
+        "perDeviceKeyboardKeyRightAlt",
+        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT);
+  }
+#else
+  html_source->AddLocalizedString(
+      "perDeviceKeyboardKeyRightAlt",
+      IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT);
+#endif
 
   html_source->AddBoolean("enableModifierSplit",
                           ash::features::IsModifierSplitEnabled());
