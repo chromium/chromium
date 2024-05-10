@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
@@ -400,8 +401,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
-  const auto onc_blob =
-      test_utils::ReadTestData("valid_cellular_with_admin_apns.onc");
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_toplevel_with_multiple_cellular_and_admin_apns.onc");
   base::Value::List network_configs;
   base::Value::Dict global_network_config;
   base::Value::List certificates;
@@ -409,6 +410,125 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
       &network_configs, &global_network_config, &certificates));
+
+  // Expected custom APN list for the first network configuration
+  base::Value::List expected_custom_apns;
+
+  // First expected custom APN details for the first network configuration
+  base::Value::Dict first_custom_apn_details;
+  first_custom_apn_details.Set(::onc::cellular_apn::kId, "admin-apn-id-y");
+  first_custom_apn_details.Set(::onc::cellular_apn::kAccessPointName,
+                               "test-apn-admin-y");
+  first_custom_apn_details.Set(::onc::cellular_apn::kAuthentication, "");
+  first_custom_apn_details.Set(::onc::cellular_apn::kUsername,
+                               "test-username-y");
+  first_custom_apn_details.Set(::onc::cellular_apn::kPassword,
+                               "test-password-y");
+  first_custom_apn_details.Set(::onc::cellular_apn::kSource,
+                               ::onc::cellular_apn::kSourceAdmin);
+
+  // Second expected custom APN details for the first network configuration
+  base::Value::Dict second_custom_apn_details;
+  second_custom_apn_details.Set(::onc::cellular_apn::kId, "admin-apn-id-x");
+  second_custom_apn_details.Set(::onc::cellular_apn::kAccessPointName,
+                                "test-apn-admin-x");
+  second_custom_apn_details.Set(::onc::cellular_apn::kAuthentication, "");
+  second_custom_apn_details.Set(::onc::cellular_apn::kUsername,
+                                "test-username-x");
+  second_custom_apn_details.Set(::onc::cellular_apn::kPassword,
+                                "test-password-x");
+  second_custom_apn_details.Set(::onc::cellular_apn::kSource,
+                                ::onc::cellular_apn::kSourceAdmin);
+
+  // Add the APN details to the expected custom APN list for the first network
+  // configuration
+  expected_custom_apns.Append(std::move(first_custom_apn_details));
+  expected_custom_apns.Append(std::move(second_custom_apn_details));
+
+  // Get the actual APN list from the first network configuration
+  const auto* actual_custom_apns =
+      network_configs[0].GetDict().FindByDottedPath("Cellular.CustomAPNList");
+
+  // Verify that the actual APN list for the first network configuration matches
+  // the expected custom APN list
+  EXPECT_TRUE(actual_custom_apns->GetList() == expected_custom_apns);
+
+  // Expected custom APN list for the second network configuration
+  base::Value::List expected_custom_apns_2;
+
+  // First expected custom APN details for the second network configuration
+  base::Value::Dict first_custom_apn_details_2;
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kId, "admin-apn-id-z");
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kAccessPointName,
+                                 "test-apn-admin-z");
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kAuthentication, "");
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kUsername,
+                                 "test-username-z");
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kPassword,
+                                 "test-password-z");
+  first_custom_apn_details_2.Set(::onc::cellular_apn::kSource,
+                                 ::onc::cellular_apn::kSourceAdmin);
+
+  // Second expected custom APN details for the second network configuration
+  base::Value::Dict second_custom_apn_details_2;
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kId, "admin-apn-id-x");
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kAccessPointName,
+                                  "test-apn-admin-x");
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kAuthentication, "");
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kUsername,
+                                  "test-username-x");
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kPassword,
+                                  "test-password-x");
+  second_custom_apn_details_2.Set(::onc::cellular_apn::kSource,
+                                  ::onc::cellular_apn::kSourceAdmin);
+
+  // Add the APN details to the expected custom APN list for the second network
+  // configuration
+  expected_custom_apns_2.Append(std::move(first_custom_apn_details_2));
+  expected_custom_apns_2.Append(std::move(second_custom_apn_details_2));
+
+  // Get the actual APN list from the second network configuration
+  const auto* actual_custom_apns_2 =
+      network_configs[1].GetDict().FindByDottedPath("Cellular.CustomAPNList");
+
+  // Verify that the actual APN list for the second network configuration
+  // matches the expected custom APN list
+  EXPECT_TRUE(actual_custom_apns_2->GetList() == expected_custom_apns_2);
+
+  // Expected custom APN list for the third network configuration, which does
+  // not have a admin provided custom APN.
+  base::Value::List expected_custom_apns_3;
+
+  // The APN should remain unchanged since the admin assigned APN Ids field was
+  // not provided.
+  base::Value::Dict only_custom_apn_details_3;
+  only_custom_apn_details_3.Set(::onc::cellular_apn::kAccessPointName,
+                                "test-apn-3");
+  only_custom_apn_details_3.Set(::onc::cellular_apn::kAuthentication, "");
+  only_custom_apn_details_3.Set(::onc::cellular_apn::kUsername,
+                                "test-username-3");
+  only_custom_apn_details_3.Set(::onc::cellular_apn::kPassword,
+                                "test-password-3");
+
+  // Add the APN details to the expected custom APN list for the third network
+  // configuration
+  expected_custom_apns_3.Append(std::move(only_custom_apn_details_3));
+
+  // Get the actual APN list from the third network configuration
+  const auto* actual_custom_apns_3 =
+      network_configs[2].GetDict().FindByDottedPath("Cellular.CustomAPNList");
+
+  // Verify that the actual APN list for the third network configuration
+  // matches the expected custom APN list
+  EXPECT_TRUE(actual_custom_apns_3->GetList() == expected_custom_apns_3);
+
+  // Get the actual APN list from the fourth network configuration
+  const auto* actual_custom_apns_4 =
+      network_configs[3].GetDict().FindByDottedPath("Cellular.CustomAPNList");
+
+  // Verify that the custom APN list is empty if the admin provides an empty
+  // list of APN IDs.
+  EXPECT_TRUE(actual_custom_apns_4->GetList() == base::Value::List());
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvidedWithDuplicateIds) {

@@ -27,6 +27,8 @@
 namespace chromeos::onc {
 namespace {
 
+using IdToAPNMap = std::map<std::string, const base::Value::Dict*>;
+
 // Error messages that can be reported when decrypting encrypted ONC.
 constexpr char kUnableToDecrypt[] = "Unable to decrypt encrypted ONC";
 constexpr char kUnableToDecode[] = "Unable to decode encrypted ONC";
@@ -229,6 +231,145 @@ void FillInCellularDefaultsInNetworks(base::Value::List& network_configs) {
     FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
                                       network.GetDict());
   }
+}
+
+// Creates a map from APN IDs to their corresponding configuration dictionaries.
+IdToAPNMap BuildIdToAPNMap(const base::Value::List* apn_list) {
+  IdToAPNMap apn_map;
+
+  for (const base::Value& apn_value : *apn_list) {
+    const base::Value::Dict& apn_dict = apn_value.GetDict();
+    const std::string* apn_id = apn_dict.FindString(::onc::cellular_apn::kId);
+
+    if (apn_id) {
+      apn_map.emplace(*apn_id, &apn_dict);
+    }
+  }
+
+  return apn_map;
+}
+
+// Extracts a list of APN dictionaries based on a provided list of APN IDs, such
+// that |apn_id_list| is a list of string IDs representing the APNs to extract,
+// and |apn_map| is a map of all available APN dictionaries with key being APN
+// ID. Returns std::nullopt if IDs are successfully extracted and the source is
+// set successfully.
+std::optional<base::Value::List> ExtractAPNsByIdsAndSetAdminSource(
+    const base::Value::List* apn_id_list,
+    const IdToAPNMap& apn_map) {
+  base::Value::List result = base::Value::List();
+
+  for (const base::Value& apn_id_value : *apn_id_list) {
+    const std::string apn_id = apn_id_value.GetString();
+
+    // Find the APN in the map
+    auto it = apn_map.find(apn_id);
+    if (it == apn_map.end()) {
+      NET_LOG(ERROR)
+          << "Failed to find an admin provided APN associated to an ID of "
+          << apn_id;
+      return std::nullopt;
+    }
+    base::Value::Dict apn_cpy = it->second->Clone();
+    apn_cpy.Set(::onc::cellular_apn::kSource,
+                ::onc::cellular_apn::kSourceAdmin);
+
+    result.Append(std::move(apn_cpy));
+  }
+
+  return result;
+}
+
+// Updates a cellular network configuration with custom APN information from
+// admin-assigned APNs. Looks for a list of admin-assigned APN IDs in
+// |cellular_fields|. If found, it extracts the corresponding APN dictionaries
+// from |admin_apn_by_id| and sets the CustomAPNList field in |cellular_fields|.
+// Note that if |admin_apn_by_id| is null, no changes are made to
+// |cellular_fields|. Also note that each extracted APN will have a
+// |::onc::cellular_apn::kSource| of
+// |::onc::cellular_apn::kSourceAdmin|. Returns true if |cellular_fields| are
+// successfully updated.
+bool UpdateCellularFieldsWithAdminApns(base::Value::Dict& cellular_fields,
+                                       const IdToAPNMap& admin_apn_by_id) {
+  const base::Value::List* admin_apn_id_list =
+      cellular_fields.FindList(::onc::cellular::kAdminAssignedAPNIds);
+  if (!admin_apn_id_list) {
+    return true;
+  }
+
+  if (admin_apn_id_list->empty()) {
+    cellular_fields.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    return true;
+  }
+
+  std::optional<base::Value::List> admin_apns =
+      ExtractAPNsByIdsAndSetAdminSource(admin_apn_id_list, admin_apn_by_id);
+  if (!admin_apns.has_value()) {
+    NET_LOG(ERROR) << "Failed to extract admin APNs";
+    return false;
+  }
+
+  cellular_fields.Set(::onc::cellular::kCustomAPNList, std::move(*admin_apns));
+  return true;
+}
+
+// Recursively traverses the |onc_object|, searching for
+// cellular dictionaries. If found, it updates the 'CustomAPNList' field within
+// the Cellular dictionary using |admin_apn_by_id| if applicable.
+//
+// The recursion is guided by the |signature|, which defines the structure of
+// the ONC object and helps the function determine which fields to traverse.
+// Returns true if admin APNs are successfully applied.
+bool ApplyAdminApnsToOncObject(const OncValueSignature& signature,
+                               base::Value::Dict& onc_object,
+                               const IdToAPNMap& admin_apn_by_id) {
+  if (&signature == &kCellularSignature) {
+    return UpdateCellularFieldsWithAdminApns(onc_object, admin_apn_by_id);
+  }
+
+  // The function takes any ONC object and recursively searches until it finds a
+  // Cellular dictionary to set the Custom APN List.
+  for (auto it : onc_object) {
+    if (!it.second.is_dict()) {
+      continue;
+    }
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature) {
+      continue;
+    }
+
+    if (!ApplyAdminApnsToOncObject(*field_signature->value_signature,
+                                   it.second.GetDict(), admin_apn_by_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Processes a list of network configurations, identifying those of cellular
+// type. For each cellular configuration, it associates and embeds the
+// corresponding admin defined APN details found in |admin_apn_by_id|. This is
+// achieved by recursively traversing the cellular configuration's structure and
+// updating the APN information where applicable.
+//
+// The function relies on a top-level ONC configuration that contains a list of
+// APNs provided by administrators. Cellular networks within the configuration
+// may reference these APNs using unique identifiers (IDs).
+//
+// Ultimately, this function ensures that the cellular networks in the provided
+// |network_configs| list are populated with the complete APN configurations
+// that they are associated with. Otherwise, it returns false.
+bool ConfigureAdminApnsInCellularNetworks(base::Value::List& network_configs,
+                                          const IdToAPNMap& admin_apn_by_id) {
+  for (auto& network : network_configs) {
+    if (!ApplyAdminApnsToOncObject(kNetworkConfigurationSignature,
+                                   network.GetDict(), admin_apn_by_id)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Fills HexSSID fields in all entries in the |network_configs| list.
@@ -785,6 +926,19 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
     FillInCellularDefaultsInNetworks(*validated_networks_list);
+
+    base::Value::List* admin_apn_by_id =
+        validated_toplevel_onc->FindList(::onc::toplevel_config::kAdminAPNList);
+
+    if (admin_apn_by_id) {
+      // Sets the CustomAPNList for cellular networks if an AdminAPNList and
+      // AdminAssignedAPNIds have been specified for a cellular network.
+      if (!ConfigureAdminApnsInCellularNetworks(
+              *validated_networks_list, BuildIdToAPNMap(admin_apn_by_id))) {
+        success = false;
+      }
+    }
+
     // Set HiddenSSID to default value to solve the issue crbug.com/1171837
     SetHiddenSSIDFieldsInNetworks(*validated_networks_list);
 
