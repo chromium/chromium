@@ -111,11 +111,6 @@ bool FilterProtoRecursively(const MessageInfo* root,
 
   const uint32_t payload_size = output.size() - out_msg_start_offset;
 
-  // If there are any fields added, only then write the message to output.
-  if (payload_size == 0) {
-    return has_blocked_fields;
-  }
-
   // The format is <field id><payload size><message data>.
   // This function wrote the payload of the current message starting from the
   // end of output. We need to insert the preamble (<field id><payload size>),
@@ -132,12 +127,14 @@ bool FilterProtoRecursively(const MessageInfo* root,
       protozero::proto_utils::WriteVarInt(payload_size, payload_size_buf);
   const uint8_t payload_size_length = payload_size_end - payload_size_buf;
 
-  // Resize |output| and move the payload, by size of the preamble.
-  const size_t out_payload_start_offset =
-      out_msg_start_offset + field_id_length + payload_size_length;
   output.append(field_id_length + payload_size_length, 0);
-  memmove(OffsetToPtr(out_payload_start_offset, output),
-          OffsetToPtr(out_msg_start_offset, output), payload_size);
+  if (payload_size != 0) {
+    // Resize |output| and move the payload, by size of the preamble.
+    const size_t out_payload_start_offset =
+        out_msg_start_offset + field_id_length + payload_size_length;
+    memmove(OffsetToPtr(out_payload_start_offset, output),
+            OffsetToPtr(out_msg_start_offset, output), payload_size);
+  }
 
   // Insert field id and payload length.
   memcpy(OffsetToPtr(out_msg_start_offset, output), field_id_buf,
