@@ -94,6 +94,7 @@
 -org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync
 
 # crbug.com/339500648
+-org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testOnClose
 -org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testSendAndOnMessage
 
 # crbug.com/339501283
@@ -104,3 +105,9 @@
 
 # crbug.com/339658545
 -org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
+
+# crbug.com/339893726
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveButtonsGoneForPartnerBookmarks
+
+# crbug.com/339896162
+-org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithAnAccountOtherThanTheSignedInAccount
