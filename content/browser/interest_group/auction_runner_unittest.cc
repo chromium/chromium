@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -109,6 +110,10 @@ using InterestGroupKey = blink::InterestGroupKey;
 using PostAuctionSignals = InterestGroupAuction::PostAuctionSignals;
 using blink::FencedFrame::ReportingDestination;
 using PrivateAggregationRequests = AuctionRunner::PrivateAggregationRequests;
+using RealTimeReportingType =
+    blink::mojom::AuctionAdConfigNonSharedParams_RealTimeReportingType;
+using RealTimeReportingContributions =
+    std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
 // Same as the key in ad_auction_service_impl_unittest.cc.
 // Randomly generated using EVP_HPKE_KEY_generate.
@@ -248,6 +253,17 @@ auto ElementsAreRequests(Ts&... requests) {
           auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
   return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
+}
+
+// Helper to avoid excess boilerplate.
+template <typename... Ts>
+auto ElementsAreContributions(Ts&... contributions) {
+  static_assert(
+      std::conjunction<std::is_same<
+          std::remove_const_t<Ts>,
+          auction_worklet::mojom::RealTimeReportingContributionPtr>...>::value);
+  // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
+  return testing::UnorderedElementsAre(testing::Eq(std::ref(contributions))...);
 }
 
 // 0 `num_component_urls` means no component URLs, as opposed to an empty list
@@ -940,7 +956,7 @@ std::string MakeAuctionScriptReject2(
          kBasicReportResult;
 }
 
-std::string MakeAuctionScriptReject1And2WithDebugReporting(
+std::string MakeAuctionScriptReject1And2(
     const std::string& debug_loss_report_url = "",
     const std::string& debug_win_report_url = "") {
   constexpr char kReject1And2WithDebugReporting[] = R"(
@@ -1114,6 +1130,37 @@ std::string MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout() {
   )";
   return base::StringPrintf(kAuctionScript);
 }
+
+std::string MakeBidScriptWithRealTimeReporting(int bid) {
+  constexpr char kBidScript[] = R"(
+    const bid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      realTimeReporting.contributeToRealTimeHistogram(
+          100 + bid, {priorityWeight: 1.5});
+      return {
+        bid: bid,
+        render: interestGroup.ads[0].renderURL,
+        allowComponentAuction: true
+      };
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {}
+  )";
+  return base::StringPrintf(kBidScript, bid);
+}
+
+const char kDecisionScriptWithRealTimeReporting[] = R"(
+  function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+    realTimeReporting.contributeToRealTimeHistogram(
+        200 + bid, {priorityWeight: 1.5});
+    return {desirability: 2 * bid, bid: 10 * bid, allowComponentAuction: true};
+  }
+
+  function reportResult(auctionConfig, browserSignals) {}
+)";
 
 // Represents an entry in trusted bidding signal's `perInterestGroupData` field.
 struct BiddingSignalsPerInterestGroupData {
@@ -1295,6 +1342,14 @@ BuildPrivateAggregationForBaseValue(
           NewForEventContribution(contribution.Clone()),
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
+}
+
+// Builds a RealTimeReportingContribution with given `bucket`.
+const auction_worklet::mojom::RealTimeReportingContributionPtr
+BuildRealTimeContribution(int32_t bucket) {
+  return auction_worklet::mojom::RealTimeReportingContribution::New(
+      bucket, /*priority_weight=*/1.5,
+      /*latency_threshold=*/std::nullopt);
 }
 
 // Marks `ad` in `group` k-anonymous, double-checking that its url is `url`.
@@ -1514,6 +1569,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     std::vector<GURL> report_urls;
     std::vector<GURL> debug_loss_report_urls;
     std::vector<GURL> debug_win_report_urls;
+    std::map<url::Origin, RealTimeReportingContributions>
+        real_time_contributions;
     base::flat_map<blink::FencedFrame::ReportingDestination, url::Origin>
         ad_reporting_url_declarer_origins;
     base::flat_map<blink::FencedFrame::ReportingDestination,
@@ -1559,6 +1616,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     enabled_features.push_back(
         {blink::features::kAdAuctionReportingWithMacroApi, {}});
+    enabled_features.push_back({blink::features::kFledgeRealTimeReporting, {}});
 
     kanon_mode_ = kanon_mode;
     switch (kanon_mode) {
@@ -1826,6 +1884,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         CreateAuctionConfig(seller_decision_logic_url, interest_group_buyers_);
 
     auction_config.trusted_scoring_signals_url = trusted_scoring_signals_url_;
+    auction_config.non_shared_params.seller_real_time_reporting_type =
+        seller_real_time_reporting_type_;
+    auction_config.non_shared_params.per_buyer_real_time_reporting_types =
+        per_buyer_real_time_reporting_types_;
 
     for (const auto& component_auction : component_auctions_) {
       auction_config.non_shared_params.component_auctions.push_back(
@@ -2004,11 +2066,14 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.debug_win_report_urls.clear();
     result_.ad_beacon_map.clear();
     result_.interest_groups_that_bid.clear();
+    result_.real_time_contributions.clear();
 
     if (!reporter) {
       result_.debug_loss_report_urls =
           interest_group_manager_->TakeReportUrlsOfType(
               InterestGroupManagerImpl::ReportType::kDebugLoss);
+      result_.real_time_contributions =
+          interest_group_manager_->TakeRealTimeContributions();
       result_.interest_groups_that_bid =
           interest_group_manager_->TakeInterestGroupsThatBid();
 
@@ -2060,6 +2125,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.debug_win_report_urls =
         interest_group_manager_->TakeReportUrlsOfType(
             InterestGroupManagerImpl::ReportType::kDebugWin);
+    result_.real_time_contributions =
+        interest_group_manager_->TakeRealTimeContributions();
     result_.private_aggregation_event_map =
         reporter_->fenced_frame_reporter()
             ->GetPrivateAggregationEventMapForTesting();
@@ -3194,6 +3261,12 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       blink::AuctionConfig::NonSharedParams::AuctionReportBuyerDebugModeConfig>
       auction_report_buyer_debug_mode_config_;
 
+  std::optional<GURL> trusted_scoring_signals_url_;
+
+  std::optional<RealTimeReportingType> seller_real_time_reporting_type_;
+  std::optional<base::flat_map<url::Origin, RealTimeReportingType>>
+      per_buyer_real_time_reporting_types_;
+
   const url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://publisher1.com"));
   const url::Origin frame_origin_ =
@@ -3204,7 +3277,6 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       "https://lockout.publisher.com/auction.js"};
   const GURL kSellerUrlDebugReportCooldown{
       "https://cooldown.publisher.com/auction.js"};
-  std::optional<GURL> trusted_scoring_signals_url_;
 
   const GURL kComponentSeller1Url{"https://component.seller1.test/foo.js"};
   const url::Origin kComponentSeller1 =
@@ -16625,6 +16697,296 @@ TEST_F(AuctionRunnerTest,
                       blink::mojom::DebugModeDetails::New())))));
 }
 
+TEST_F(AuctionRunnerTest, RealTimeReportingAllOptedIn) {
+  // Optin all buyers and seller for real time reporting.
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+  per_buyer_real_time_reporting_types_.emplace();
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder1, type));
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder2, type));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+
+  // Bidder 2 won the auction.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::UnorderedElementsAre(
+          testing::Pair(kBidder1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/101))),
+          testing::Pair(kBidder2,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/102))),
+          testing::Pair(kSeller,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/201),
+                            BuildRealTimeContribution(/*bucket=*/202)))));
+}
+
+TEST_F(AuctionRunnerTest, RealTimeReportingNoOneOptedIn) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+
+  // Bidder 2 won the auction.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  EXPECT_TRUE(result_.real_time_contributions.empty());
+}
+
+TEST_F(AuctionRunnerTest, RealTimeReportingPartialOptedIn) {
+  // Optin seller and kBidder1 for real time reporting.
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+  per_buyer_real_time_reporting_types_.emplace();
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder1, type));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+
+  // Bidder 2 won the auction.
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.aborted_by_script);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  // No contribtion for kBidder2 since it didn't opt-in.
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::UnorderedElementsAre(
+          testing::Pair(kBidder1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/101))),
+          testing::Pair(kSeller,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/201),
+                            BuildRealTimeContribution(/*bucket=*/202)))));
+}
+
+// Real time contributions of the same origin are grouped together, no matter
+// what role it was.
+TEST_F(AuctionRunnerTest, RealTimeReportingComponentAuctionSharedBuyer) {
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+
+  // A buyer participated in two component auctions, and the top level seller
+  // has the same origin as the buyer. Two component auctions have the same
+  // component seller.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+
+  interest_group_buyers_.reset();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  // Enroll all component sellers/buyers for real time reporting.
+  component_auctions_[0].non_shared_params.seller_real_time_reporting_type =
+      type;
+  component_auctions_[0]
+      .non_shared_params.per_buyer_real_time_reporting_types.emplace();
+  component_auctions_[0]
+      .non_shared_params.per_buyer_real_time_reporting_types->insert(
+          std::make_pair(kBidder1, type));
+  component_auctions_[1].non_shared_params.seller_real_time_reporting_type =
+      type;
+  component_auctions_[1]
+      .non_shared_params.per_buyer_real_time_reporting_types.emplace();
+  component_auctions_[1]
+      .non_shared_params.per_buyer_real_time_reporting_types->insert(
+          std::make_pair(kBidder1, type));
+
+  // Custom interest group with two ads, so both bid URLs are valid.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(
+      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                        /*trusted_bidding_signals_url=*/std::nullopt,
+                        /*trusted_bidding_signals_keys=*/{}, kBidder1Url));
+  bidders[0].interest_group.ads->emplace_back(kBidder1Url, std::nullopt);
+
+  StartAuction(kComponentSeller1Url, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  // Both uses should get reported to the observer, however.
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre(kBidder1Key, kBidder1Key));
+
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::UnorderedElementsAre(
+          // contributions for kBidder1 from two component auctions.
+          testing::Pair(kBidder1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/101),
+                            BuildRealTimeContribution(/*bucket=*/101))),
+          // contributions for kComponentSeller1 from two component sellers and
+          // also two from the top-level seller.
+          testing::Pair(kComponentSeller1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/201),
+                            BuildRealTimeContribution(/*bucket=*/201),
+                            BuildRealTimeContribution(/*bucket=*/210),
+                            BuildRealTimeContribution(/*bucket=*/210)))));
+}
+
+// One origin can opt-in in some component auctions, and not opt-in in others.
+// Only contributions from opted-in auctions will be collected.
+TEST_F(AuctionRunnerTest,
+       RealTimeReportingComponentAuctionSameOriginPartialOptedIn) {
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+
+  // A buyer participated in two component auctions, and the top level seller
+  // has the same origin as the buyer. Two component auctions have the same
+  // component seller.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kComponentSeller1Url,
+                                         kDecisionScriptWithRealTimeReporting);
+
+  interest_group_buyers_.reset();
+
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+  component_auctions_.emplace_back(
+      CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
+
+  // Enroll all component sellers/buyers for real time reporting in one
+  // component auction, but not the other.
+  component_auctions_[0].non_shared_params.seller_real_time_reporting_type =
+      type;
+  component_auctions_[0]
+      .non_shared_params.per_buyer_real_time_reporting_types.emplace();
+  component_auctions_[0]
+      .non_shared_params.per_buyer_real_time_reporting_types->insert(
+          std::make_pair(kBidder1, type));
+
+  // Custom interest group with two ads, so both bid URLs are valid.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(
+      MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                        /*trusted_bidding_signals_url=*/std::nullopt,
+                        /*trusted_bidding_signals_keys=*/{}, kBidder1Url));
+  bidders[0].interest_group.ads->emplace_back(kBidder1Url, std::nullopt);
+
+  StartAuction(kComponentSeller1Url, std::move(bidders));
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  // Both uses should get reported to the observer, however.
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre(kBidder1Key, kBidder1Key));
+
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::UnorderedElementsAre(
+          // contributions for kBidder1 from one opted-in component auction.
+          testing::Pair(kBidder1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/101))),
+          // contributions for kComponentSeller1 from opted-in component sellers
+          // and also two from the top-level seller.
+          testing::Pair(kComponentSeller1,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(/*bucket=*/201),
+                            BuildRealTimeContribution(/*bucket=*/210),
+                            BuildRealTimeContribution(/*bucket=*/210)))));
+}
+
+// Real time reporting contributions are still collected when auction fails
+// (e.g., all bids rejected).
+TEST_F(AuctionRunnerTest, RealTimeReportingFailAuctionAllBidsRejected) {
+  // Optin all buyers and seller for real time reporting.
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+  per_buyer_real_time_reporting_types_.emplace();
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder1, type));
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder2, type));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScriptReject1And2());
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
+  // No winner since both bidders are rejected by seller.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+
+  EXPECT_THAT(result_.real_time_contributions,
+              testing::UnorderedElementsAre(
+                  testing::Pair(kBidder1,
+                                ElementsAreContributions(
+                                    BuildRealTimeContribution(/*bucket=*/101))),
+                  testing::Pair(kBidder2,
+                                ElementsAreContributions(
+                                    BuildRealTimeContribution(/*bucket=*/102))),
+                  // Has empty contributions instead of no entry for seller,
+                  // since seller opted in.
+                  testing::Pair(kSeller, ElementsAreContributions())));
+}
+
 class RoundingTest : public AuctionRunnerTest,
                      public ::testing::WithParamInterface<size_t> {
  public:
@@ -18372,7 +18734,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                     /*report_reject_reason=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
-      MakeAuctionScriptReject1And2WithDebugReporting(
+      MakeAuctionScriptReject1And2(
           base::StrCat(
               {kSellerDebugLossReportBaseUrl, kPostAuctionSignalsPlaceholder}),
           base::StrCat(
@@ -18568,9 +18930,8 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateAuctionConfig(kComponentSeller1Url, {{kBidder1}}));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kComponentSeller1Url,
-      MakeAuctionScriptReject1And2WithDebugReporting(
-          "https://component1-loss-reporting.test/?",
-          "https://component1-win-reporting.test/?"));
+      MakeAuctionScriptReject1And2("https://component1-loss-reporting.test/?",
+                                   "https://component1-win-reporting.test/?"));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",

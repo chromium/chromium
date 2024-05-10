@@ -23,6 +23,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -497,6 +498,10 @@ void AuctionRunner::FailAuction(
     interest_group_manager_->EnqueueReports(
         InterestGroupManagerImpl::ReportType::kDebugLoss,
         std::move(debug_loss_report_urls),
+        FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
+        *client_security_state_, url_loader_factory_);
+    interest_group_manager_->EnqueueRealTimeReports(
+        auction_.TakeRealTimeReportingContributions(),
         FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
         *client_security_state_, url_loader_factory_);
 

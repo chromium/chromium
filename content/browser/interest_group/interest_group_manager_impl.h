@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 
+#include <sys/types.h>
+
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -37,6 +39,7 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -68,6 +71,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
   using GetKAnonymityServiceDelegateCallback =
       InterestGroupKAnonymityManager::GetKAnonymityServiceDelegateCallback;
+  using RealTimeReportingContributions =
+      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Controls how auction worklets will be run. kDedicated will use
   // fully-isolated utility processes solely for worklet. kInRenderer will
@@ -320,6 +325,17 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // Similar to EnqueueReports(), but enqueues real time reporting
+  // contributions. Contributions will be sampled and converted to histograms by
+  // calling CalculateRealTimeReportingHistograms() before added to queue.
+  // Virtual for testing.
+  virtual void EnqueueRealTimeReports(
+      std::map<url::Origin, RealTimeReportingContributions> contributions,
+      int frame_tree_node_id,
+      const url::Origin& frame_origin,
+      const network::mojom::ClientSecurityState& client_security_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   // Update the interest group priority.
   void SetInterestGroupPriority(const blink::InterestGroupKey& group,
                                 double priority);
@@ -481,6 +497,9 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     ~ReportRequest();
 
     GURL report_url;
+    // Real time reporting histograms to be sent in POST request's body. Null
+    // for other report types.
+    std::optional<std::vector<uint8_t>> real_time_histogram;
     url::Origin frame_origin;
     network::mojom::ClientSecurityState client_security_state;
 

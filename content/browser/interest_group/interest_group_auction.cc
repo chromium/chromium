@@ -66,6 +66,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_priority_util.h"
+#include "content/browser/interest_group/interest_group_real_time_report_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -499,6 +500,21 @@ void TakePrivateAggregationRequestsForBidState(
             std::move(converted_request_value.request));
       }
     }
+  }
+}
+
+void TakeRealTimeContributionsForBidState(
+    InterestGroupAuction::BidState& state,
+    std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>&
+        contributions) {
+  for (auto& [origin, per_origin_contributions] :
+       state.real_time_contributions) {
+    InterestGroupAuction::RealTimeReportingContributions&
+        contributions_for_origin = contributions[origin];
+    contributions_for_origin.insert(
+        contributions_for_origin.end(),
+        std::move_iterator(per_origin_contributions.begin()),
+        std::move_iterator(per_origin_contributions.end()));
   }
 }
 
@@ -1378,6 +1394,17 @@ class InterestGroupAuction::BuyerHelper
     }
   }
 
+  // Takes real time contributions and saves to `contributions`, if there are
+  // any.
+  void TakeRealTimeContributions(
+      std::map<url::Origin,
+               InterestGroupAuction::RealTimeReportingContributions>&
+          contributions) {
+    for (std::unique_ptr<BidState>& state : bid_states_) {
+      TakeRealTimeContributionsForBidState(*state, contributions);
+    }
+  }
+
   void NotifyConfigPromisesResolved() {
     DCHECK(auction_->config_promises_resolved_);
 
@@ -1933,6 +1960,29 @@ class InterestGroupAuction::BuyerHelper
           non_kanon_pa_requests_for_bidder.end(),
           std::move_iterator(non_kanon_pa_requests.begin()),
           std::move_iterator(non_kanon_pa_requests.end()));
+    }
+
+    // Only keep real time reporting contributions when the buyer is opted-in.
+    // TODO(qingxinwu): Validate received real time reporting message, and
+    // report bad message if invalid.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFledgeRealTimeReporting) &&
+        auction_->config_->non_shared_params.per_buyer_real_time_reporting_types
+            .has_value() &&
+        auction_->config_->non_shared_params.per_buyer_real_time_reporting_types
+                .value()
+                .find(interest_group.owner) !=
+            auction_->config_->non_shared_params
+                .per_buyer_real_time_reporting_types.value()
+                .end()) {
+      RealTimeReportingContributions& real_time_contributions_for_origin =
+          state->real_time_contributions[interest_group.owner];
+      if (!real_time_contributions.empty()) {
+        real_time_contributions_for_origin.insert(
+            real_time_contributions_for_origin.end(),
+            std::move_iterator(real_time_contributions.begin()),
+            std::move_iterator(real_time_contributions.end()));
+      }
     }
 
     auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
@@ -2951,7 +3001,8 @@ InterestGroupAuction::CreateReporter(
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
       TakeReservedPrivateAggregationRequests(),
-      TakeNonReservedPrivateAggregationRequests());
+      TakeNonReservedPrivateAggregationRequests(),
+      TakeRealTimeReportingContributions());
 
   // Avoid dangling pointers for things transferred to the reporter.
   winner->bid->interest_group = nullptr;
@@ -3472,6 +3523,8 @@ void InterestGroupAuction::
       private_aggregation_requests_reserved;
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved;
+  std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
+      real_time_contributions;
 
   for (const auto& buyer_helper : buyer_helpers_) {
     ComputePostAuctionSignals(buyer_helper->owner(), signals,
@@ -3484,6 +3537,8 @@ void InterestGroupAuction::
         winner, non_kanon_winner, signals, top_level_signals,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
+
+    buyer_helper->TakeRealTimeContributions(real_time_contributions);
   }
 
   for (std::unique_ptr<BidState>& bid_state : bid_states_for_additional_bids_) {
@@ -3499,6 +3554,7 @@ void InterestGroupAuction::
         top_level_seller, debug_report_lockout_and_cooldowns_,
         new_debug_report_lockout_and_cooldowns_, debug_win_report_urls,
         debug_loss_report_urls);
+    TakeRealTimeContributionsForBidState(*bid_state, real_time_contributions);
   }
 
   for (auto& [key, requests] : private_aggregation_requests_reserved) {
@@ -3515,6 +3571,14 @@ void InterestGroupAuction::
     destination_vector.insert(destination_vector.end(),
                               std::move_iterator(requests.begin()),
                               std::move_iterator(requests.end()));
+  }
+
+  for (auto& [origin, contributions] : real_time_contributions) {
+    InterestGroupAuction::RealTimeReportingContributions& destination_vector =
+        real_time_contributions_[origin];
+    destination_vector.insert(destination_vector.end(),
+                              std::move_iterator(contributions.begin()),
+                              std::move_iterator(contributions.end()));
   }
 
   // Retrieve data from component auctions as well.
@@ -3573,6 +3637,22 @@ InterestGroupAuction::TakeNonReservedPrivateAggregationRequests() {
     }
   }
   return std::move(private_aggregation_requests_non_reserved_);
+}
+
+std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
+InterestGroupAuction::TakeRealTimeReportingContributions() {
+  for (auto& component_auction_info : component_auctions_) {
+    std::map<url::Origin, RealTimeReportingContributions> contributions_map =
+        component_auction_info.second->TakeRealTimeReportingContributions();
+    for (auto& [origin, contributions] : contributions_map) {
+      RealTimeReportingContributions& destination_vector =
+          real_time_contributions_[origin];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(contributions.begin()),
+                                std::move_iterator(contributions.end()));
+    }
+  }
+  return std::move(real_time_contributions_);
 }
 
 std::vector<std::string> InterestGroupAuction::TakeErrors() {
@@ -4690,6 +4770,24 @@ void InterestGroupAuction::OnScoreAdComplete(
           continue;
         }
         pa_requests_for_seller.emplace_back(std::move(request));
+      }
+    }
+
+    // Only keep real time reporting contributions when the seller is opted-in.
+    // TODO(qingxinwu): Validate received real time reporting message, and
+    // report bad message if invalid.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFledgeRealTimeReporting)) {
+      if (config_->non_shared_params.seller_real_time_reporting_type
+              .has_value()) {
+        RealTimeReportingContributions& real_time_contributions_for_origin =
+            bid->bid_state->real_time_contributions[config_->seller];
+        if (!real_time_contributions.empty()) {
+          real_time_contributions_for_origin.insert(
+              real_time_contributions_for_origin.end(),
+              std::move_iterator(real_time_contributions.begin()),
+              std::move_iterator(real_time_contributions.end()));
+        }
       }
     }
 

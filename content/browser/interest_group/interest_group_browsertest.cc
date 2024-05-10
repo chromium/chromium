@@ -24392,17 +24392,18 @@ class AuctionConfigRealTimeReportingEnabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/337132755): Real time reporting fields are not applied yet.
-// Test them after they are applied.
 IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
                        RealTimeReporting) {
   const char kHostA[] = "a.test";
+  const char kHostB[] = "b.test";
   GURL test_url =
       embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url =
       embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+  url::Origin test_origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL(kHostB, "/echo"));
 
   EXPECT_EQ(kSuccess,
             JoinInterestGroupAndVerify(
@@ -24419,18 +24420,32 @@ IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
   const char kConfigTemplate[] = R"({
     seller: $1,
     decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
+    interestGroupBuyers: [$3],
     sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
     perBuyerRealTimeReportingConfig: {
-      $1: {type: 'default-local-reporting'}
+      $3: {type: 'default-local-reporting'}
     }
   })";
 
   std::string auction_config =
-      JsReplace(kConfigTemplate, test_origin,
+      JsReplace(kConfigTemplate, test_origin_b,
                 embedded_https_test_server().GetURL(
-                    kHostA, "/interest_group/decision_logic.js"));
+                    kHostB, "/interest_group/decision_logic.js"),
+                test_origin);
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  // Both the buyer and the seller will receive a real time histogram, even
+  // though they didn't call the API, since they both opted-in.
+  const GURL kExpectedRealTimeReportUrls[] = {
+      embedded_https_test_server().GetURL(
+          "a.test", "/.well-known/interest-group/real-time-report"),
+      embedded_https_test_server().GetURL(
+          "b.test", "/.well-known/interest-group/real-time-report")};
+
+  for (const auto& expected_report_url : kExpectedRealTimeReportUrls) {
+    SCOPED_TRACE(expected_report_url);
+    WaitForUrl(expected_report_url);
+  }
 }
 
 }  // namespace

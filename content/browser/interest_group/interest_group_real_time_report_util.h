@@ -11,6 +11,7 @@
 
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom-forward.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -40,6 +41,9 @@ CalculateRealTimeReportingHistograms(
         url::Origin,
         std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>>
         contributions);
+
+// Get the destination of sending real time report.
+CONTENT_EXPORT GURL GetRealTimeReportDestination(const url::Origin& origin);
 
 }  // namespace content
 

@@ -15,9 +15,18 @@
 #include "base/rand_util.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+// The URL path for sending real time reporting histograms.
+constexpr char kRealTimeReportPath[] =
+    "/.well-known/interest-group/real-time-report";
+
+}  // namespace
 
 std::vector<uint8_t> Rappor(std::optional<int32_t> maybe_bucket,
                             double epsilon,
@@ -86,6 +95,10 @@ CalculateRealTimeReportingHistograms(
                blink::features::kFledgeRealTimeReportingNumBuckets.Get()));
   }
   return histograms;
+}
+
+GURL GetRealTimeReportDestination(const url::Origin& origin) {
+  return origin.GetURL().Resolve(kRealTimeReportPath);
 }
 
 }  // namespace content

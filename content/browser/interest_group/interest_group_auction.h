@@ -343,6 +343,12 @@ class CONTENT_EXPORT InterestGroupAuction
     // was non-positive).
     auction_worklet::mojom::RejectReason reject_reason =
         auction_worklet::mojom::RejectReason::kNotAvailable;
+
+    // Real time reporting contributions. Note that when an origin has no real
+    // time contributions, there's still an entry for it, and its value is an
+    // empty vector.
+    std::map<url::Origin, RealTimeReportingContributions>
+        real_time_contributions;
   };
 
   // Result of generated a bid. Contains information that needs to score a bid
@@ -675,6 +681,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // it takes ownership of stored reporting URLs.
   std::map<std::string, PrivateAggregationRequests>
   TakeNonReservedPrivateAggregationRequests();
+
+  // Retrieves all real time report contributions.
+  std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
+  TakeRealTimeReportingContributions();
 
   // Retrieves any errors from the auction. May only be called once, since it
   // takes ownership of stored errors.
@@ -1416,6 +1426,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // request's event type.
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
+
+  // Stores all real time reporting contributions. These will go through
+  // sampling and converting to histograms of 0 and 1s.
+  std::map<url::Origin, RealTimeReportingContributions>
+      real_time_contributions_;
 
   // Callback for checking who can participate in the auction.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;

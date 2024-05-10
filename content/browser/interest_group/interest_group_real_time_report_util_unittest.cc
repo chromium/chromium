@@ -217,4 +217,10 @@ TEST_F(InterestGroupRealTimeReportUtilTest,
   }
 }
 
+TEST_F(InterestGroupRealTimeReportUtilTest, GetRealTimeReportDestination) {
+  EXPECT_EQ(GURL("https://a.test/.well-known/interest-group/real-time-report"),
+            GetRealTimeReportDestination(
+                url::Origin::Create(GURL("https://a.test/"))));
+}
+
 }  // namespace content
