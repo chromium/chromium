@@ -260,9 +260,9 @@ void ContentCacheImpl::ReadBytes(
     ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "StartReadBytes {path = '" << file.file_path
-          << "', version_tag = '" << file.version_tag << "', offset = '"
-          << offset << "', length = '" << length << "'}";
+  VLOG(1) << "ReadBytes {path = '" << file.file_path << "', version_tag = '"
+          << file.version_tag << "', offset = '" << offset << "', length = '"
+          << length << "'}";
 
   ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
