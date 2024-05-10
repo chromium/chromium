@@ -41,9 +41,9 @@ enum OpResults {
 //   FileInfo info = {...};
 //   index->PutFileInfo(info);
 //   // Set the terms used with the file.
-//   index->UpdateFile({term_1, term_2}, info.file_url);
+//   index->UpdateTerms({term_1, term_2}, info.file_url);
 //   // Add new terms used with the file.
-//   index->AugmentFile({term_1, term_3}, info.file_url);
+//   index->AugmentTerms({term_1, term_3}, info.file_url);
 //   // Remove some terms used with the file.
 //   index->RemoveTerms({term_3}, info.file_url);
 //   // Search for matching files by a query.
@@ -60,7 +60,7 @@ class FileIndex {
   virtual OpResults Init() = 0;
 
   // Stores the given `file_info` in this index. This method must be called
-  // before any other methods that either update or augment terms associated
+  // before any other methods that either update or terms associated
   // with this file are called.
   virtual OpResults PutFileInfo(const FileInfo& file_info) = 0;
 
@@ -75,7 +75,7 @@ class FileIndex {
   // Term("label", "downloaded"), and then call this method with, say,
   // Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
-  // pass both terms in a single call or use the AugmentFile() method.
+  // pass both terms in a single call or use the AugmentTerms() method.
   //
   // It is an error to pass an empty term vector. Use the RemoveFile() method
   // instead.
@@ -86,8 +86,8 @@ class FileIndex {
   // the `terms` given as the first argument. Once this operation is finished,
   // the file can be retrieved by any existing terms that were associated with
   // it, or any new terms this call added. For example, if you first call the
-  // UpdateFile() method with Term("label", "downloaded") and then call
-  // AugmentFile() method with Term("label", "starred") you can retrieve the
+  // UpdateTerms() method with Term("label", "downloaded") and then call
+  // AugmentTerms() method with Term("label", "starred") you can retrieve the
   // file with the matching `url` (specified in both of these calls) by either
   // or both of the terms.
   virtual OpResults AugmentTerms(const std::vector<Term>& terms,

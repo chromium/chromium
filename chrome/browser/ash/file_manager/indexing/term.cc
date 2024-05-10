@@ -8,8 +8,8 @@
 
 namespace file_manager {
 
-Term::Term(const std::string& field, const std::u16string& text)
-    : field_(field), text_(text), text_bytes_(base::UTF16ToUTF8(text)) {}
+Term::Term(const std::string& field, const std::u16string& token)
+    : field_(field), token_(token), token_bytes_(base::UTF16ToUTF8(token)) {}
 
 Term::~Term() = default;
 

@@ -79,26 +79,26 @@ TEST_P(IndexStorageTest, Close) {
   EXPECT_TRUE(storage_->Close());
 }
 
+TEST_P(IndexStorageTest, GetTokenId) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  EXPECT_EQ(storage_->GetTokenId("foo"), -1);
+  EXPECT_EQ(storage_->GetOrCreateTokenId("foo"), 1);
+  EXPECT_EQ(storage_->GetTokenId("foo"), 1);
+  // Adding the same token twice does not create a second version of "foo".
+  EXPECT_EQ(storage_->GetOrCreateTokenId("foo"), 1);
+}
+
 TEST_P(IndexStorageTest, GetTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  EXPECT_EQ(storage_->GetTermId("foo"), -1);
-  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
-  EXPECT_EQ(storage_->GetTermId("foo"), 1);
-  // Adding the same term twice does not create a second version of "foo".
-  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
-}
-
-TEST_P(IndexStorageTest, GetAugmentedTermId) {
-  // Must initialize before use.
-  ASSERT_TRUE(storage_->Init());
-
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
-  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), 1);
-  EXPECT_EQ(storage_->GetAugmentedTermId(downloaded_), -1);
-  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_), 2);
+  EXPECT_EQ(storage_->GetTermId(pinned_), -1);
+  EXPECT_EQ(storage_->GetOrCreateTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetTermId(downloaded_), -1);
+  EXPECT_EQ(storage_->GetOrCreateTermId(downloaded_), 2);
 }
 
 TEST_P(IndexStorageTest, GetOrCreateUrlId) {
@@ -189,7 +189,7 @@ TEST_P(IndexStorageTest, AddToPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
+  int64_t pinned_id = storage_->GetOrCreateTermId(pinned_);
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
   EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
@@ -201,7 +201,7 @@ TEST_P(IndexStorageTest, DeleteFromPostingList) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
+  int64_t pinned_id = storage_->GetOrCreateTermId(pinned_);
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
 
   // Can delete something that was not added. Results in 0 changes.
@@ -221,62 +221,56 @@ TEST_P(IndexStorageTest, GetUrlIdsForTerm) {
   // Setup: prefetch URL IDs.
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
   int64_t bar_url_id = storage_->GetOrCreateUrlId(bar_url_);
-  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
+  int64_t pinned_id = storage_->GetOrCreateTermId(pinned_);
 
   // No terms were associated with any files, so the results must be empty.
-  EXPECT_TRUE(storage_->GetUrlIdsForAugmentedTermId(pinned_id).empty());
+  EXPECT_TRUE(storage_->GetUrlIdsForTermId(pinned_id).empty());
 
   // Associate pinned with foo.
   EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
+  EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded_ with foo.
-  int64_t downloaded_augmented_term_id =
-      storage_->GetOrCreateAugmentedTermId(downloaded_);
-  EXPECT_EQ(
-      1, storage_->AddToPostingList(downloaded_augmented_term_id, foo_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
+  int64_t downloaded_term_id = storage_->GetOrCreateTermId(downloaded_);
+  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_term_id, foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
-  EXPECT_THAT(
-      storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
-      testing::UnorderedElementsAre(foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTermId(downloaded_term_id),
+              testing::UnorderedElementsAre(foo_url_id));
 
   // Associate downloaded with bar.
-  EXPECT_EQ(
-      1, storage_->AddToPostingList(downloaded_augmented_term_id, bar_url_id));
-  EXPECT_THAT(storage_->GetUrlIdsForAugmentedTermId(pinned_id),
+  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_term_id, bar_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTermId(pinned_id),
               testing::UnorderedElementsAre(foo_url_id));
-  EXPECT_THAT(
-      storage_->GetUrlIdsForAugmentedTermId(downloaded_augmented_term_id),
-      testing::UnorderedElementsAre(foo_url_id, bar_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTermId(downloaded_term_id),
+              testing::UnorderedElementsAre(foo_url_id, bar_url_id));
 }
 
-TEST_P(IndexStorageTest, GetAugmentedTermIdsForUrl) {
+TEST_P(IndexStorageTest, GetTermIdsForUrl) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
   // Setup: prefetch URL IDs.
   int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
-  int64_t pinned_id = storage_->GetOrCreateAugmentedTermId(pinned_);
-  int64_t downloaded_id = storage_->GetOrCreateAugmentedTermId(downloaded_);
+  int64_t pinned_id = storage_->GetOrCreateTermId(pinned_);
+  int64_t downloaded_id = storage_->GetOrCreateTermId(downloaded_);
 
   // Before anything is associated with a given URL expect empty set.
-  EXPECT_TRUE(storage_->GetAugmentedTermIdsForUrl(foo_url_id).empty());
+  EXPECT_TRUE(storage_->GetTermIdsForUrl(foo_url_id).empty());
 
   EXPECT_EQ(1, storage_->AddToPostingList(pinned_id, foo_url_id));
-  EXPECT_THAT(storage_->GetAugmentedTermIdsForUrl(foo_url_id),
+  EXPECT_THAT(storage_->GetTermIdsForUrl(foo_url_id),
               testing::UnorderedElementsAre(pinned_id));
 
   EXPECT_EQ(1, storage_->AddToPostingList(downloaded_id, foo_url_id));
-  std::set<int64_t> augmented_ids_of_foo =
-      storage_->GetAugmentedTermIdsForUrl(foo_url_id);
-  EXPECT_THAT(augmented_ids_of_foo,
+  std::set<int64_t> ids_of_foo = storage_->GetTermIdsForUrl(foo_url_id);
+  EXPECT_THAT(ids_of_foo,
               testing::UnorderedElementsAre(pinned_id, downloaded_id));
 
   // Expect that no terms are left once we delete them for the given URL ID.
-  storage_->DeleteAugmentedTermIdsForUrl(augmented_ids_of_foo, foo_url_id);
-  EXPECT_TRUE(storage_->GetAugmentedTermIdsForUrl(foo_url_id).empty());
+  storage_->DeleteTermIdsForUrl(ids_of_foo, foo_url_id);
+  EXPECT_TRUE(storage_->GetTermIdsForUrl(foo_url_id).empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(Sql,

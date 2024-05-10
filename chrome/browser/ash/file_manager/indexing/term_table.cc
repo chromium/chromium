@@ -11,98 +11,99 @@ namespace file_manager {
 
 namespace {
 
-#define TERM_TABLE "term_table"
-#define TERM_ID "term_id"
-#define TERM "term"
-#define TERM_INDEX "term_index"
+#define TOKEN_TABLE "token_table"
+#define TOKEN_ID "token_id"
+#define TOKEN_BYTES "token_bytes"
+#define TOKEN_INDEX "token_index"
 
-// The statement used to create the term table.
-static constexpr char kCreateTermTableQuery[] =
+// The statement used to create the token table.
+static constexpr char kCreateTokenTableQuery[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS " TERM_TABLE "("
-      TERM_ID " INTEGER PRIMARY KEY AUTOINCREMENT,"
-      TERM " TEXT NOT NULL)";
+    "CREATE TABLE IF NOT EXISTS " TOKEN_TABLE "("
+      TOKEN_ID " INTEGER PRIMARY KEY AUTOINCREMENT,"
+      TOKEN_BYTES " TEXT NOT NULL)";
 // clang-format on
 
-// The statement used to delete a term from the database by term ID.
-static constexpr char kDeleteTermQuery[] =
+// The statement used to delete a token from the database by token ID.
+static constexpr char kDeleteTokenQuery[] =
     // clang-format off
-    "DELETE FROM " TERM_TABLE " WHERE " TERM_ID "=?";
+    "DELETE FROM " TOKEN_TABLE " WHERE " TOKEN_ID "=?";
 // clang-format on
 
-// The statement used fetch the ID of the term.
-static constexpr char kGetTermIdQuery[] =
+// The statement used fetch the ID of the token.
+static constexpr char kGetTokenIdQuery[] =
     // clang-format off
-    "SELECT " TERM_ID " FROM " TERM_TABLE " WHERE " TERM "=?";
+    "SELECT " TOKEN_ID " FROM " TOKEN_TABLE " WHERE " TOKEN_BYTES "=?";
 // clang-format on
 
-// The statement used fetch the ID of the term.
-static constexpr char kGetTermValueQuery[] =
+// The statement used fetch the ID of the token.
+static constexpr char kGetTokenValueQuery[] =
     // clang-format off
-    "SELECT " TERM " FROM " TERM_TABLE " WHERE " TERM_ID "=?";
+    "SELECT " TOKEN_BYTES " FROM " TOKEN_TABLE " WHERE " TOKEN_ID "=?";
 // clang-format on
 
-// The statement used to insert a new term into the table.
-static constexpr char kInsertTermQuery[] =
+// The statement used to insert a new token into the table.
+static constexpr char kInsertTokenQuery[] =
     // clang-format off
-    "INSERT INTO " TERM_TABLE "(" TERM ") VALUES (?) RETURNING " TERM_ID;
+    "INSERT INTO " TOKEN_TABLE "(" TOKEN_BYTES ") VALUES (?) RETURNING "
+    TOKEN_ID "";
 // clang-format on
 
-// The statement that creates an index on terms.
-static constexpr char kCreateTermIndexQuery[] =
+// The statement that creates an index on tokens.
+static constexpr char kCreateTokenIndexQuery[] =
     // clang-format off
-    "CREATE UNIQUE INDEX IF NOT EXISTS " TERM_INDEX " ON " TERM_TABLE
-    "(" TERM ")";
+    "CREATE UNIQUE INDEX IF NOT EXISTS " TOKEN_INDEX " ON " TOKEN_TABLE
+    "(" TOKEN_BYTES ")";
 // clang-format on
 
 }  // namespace
 
-TermTable::TermTable(sql::Database* db) : TextTable(db, "" TERM_TABLE "") {}
-TermTable::~TermTable() = default;
+TokenTable::TokenTable(sql::Database* db) : TextTable(db, "" TOKEN_TABLE "") {}
+TokenTable::~TokenTable() = default;
 
-int64_t TermTable::DeleteTerm(const std::string& term) {
-  return DeleteValue(term);
+int64_t TokenTable::DeleteToken(const std::string& token_bytes) {
+  return DeleteValue(token_bytes);
 }
 
-int64_t TermTable::GetTerm(int64_t term_id, std::string* term) const {
-  return GetValue(term_id, term);
+int64_t TokenTable::GetToken(int64_t token_id, std::string* token_bytes) const {
+  return GetValue(token_id, token_bytes);
 }
 
-int64_t TermTable::GetTermId(const std::string& term) const {
-  return GetValueId(term);
+int64_t TokenTable::GetTokenId(const std::string& token_bytes) const {
+  return GetValueId(token_bytes);
 }
 
-int64_t TermTable::GetOrCreateTermId(const std::string& term) {
-  return GetOrCreateValueId(term);
+int64_t TokenTable::GetOrCreateTokenId(const std::string& token_bytes) {
+  return GetOrCreateValueId(token_bytes);
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeGetValueIdStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeGetValueIdStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kGetTermIdQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetTokenIdQuery));
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeGetValueStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeGetValueStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kGetTermValueQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetTokenValueQuery));
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeInsertStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeInsertStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTermQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertTokenQuery));
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeDeleteStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeDeleteStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteTermQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteTokenQuery));
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeCreateTableStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeCreateTableStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTermTableQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTokenTableQuery));
 }
 
-std::unique_ptr<sql::Statement> TermTable::MakeCreateIndexStatement() const {
+std::unique_ptr<sql::Statement> TokenTable::MakeCreateIndexStatement() const {
   return std::make_unique<sql::Statement>(
-      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTermIndexQuery));
+      db_->GetCachedStatement(SQL_FROM_HERE, kCreateTokenIndexQuery));
 }
 }  // namespace file_manager

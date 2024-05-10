@@ -12,11 +12,11 @@ namespace file_manager {
 // Represents a term that can be associated with a file or used to query for a
 // file. An example term would be a label given to a file. If the file has
 // label "starred" associated with it, it would be represented by the
-// Term("label", "starred") object. Other terms could be generated from the
+// Term("label", u"starred") object. Other terms could be generated from the
 // files' content, name, path, etc.
 class Term {
  public:
-  Term(const std::string& field, const std::u16string& text);
+  Term(const std::string& field, const std::u16string& token);
   ~Term();
 
   // TODO(b:327535200): Reconsider copyability.
@@ -24,13 +24,13 @@ class Term {
   Term& operator=(const Term&) = default;
 
   const std::string& field() const { return field_; }
-  const std::u16string text() const { return text_; }
-  const std::string& text_bytes() const { return text_bytes_; }
+  const std::u16string token() const { return token_; }
+  const std::string& token_bytes() const { return token_bytes_; }
 
  private:
   std::string field_;
-  std::u16string text_;
-  std::string text_bytes_;
+  std::u16string token_;
+  std::string token_bytes_;
 };
 
 }  // namespace file_manager

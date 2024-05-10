@@ -17,8 +17,7 @@ RamStorage::RamStorage() = default;
 
 RamStorage::~RamStorage() = default;
 
-const std::set<int64_t> RamStorage::GetAugmentedTermIdsForUrl(
-    int64_t url_id) const {
+const std::set<int64_t> RamStorage::GetTermIdsForUrl(int64_t url_id) const {
   auto url_term_it = plain_index_.find(url_id);
   if (url_term_it == plain_index_.end()) {
     return empty_id_set_;
@@ -26,9 +25,8 @@ const std::set<int64_t> RamStorage::GetAugmentedTermIdsForUrl(
   return url_term_it->second;
 }
 
-const std::set<int64_t> RamStorage::GetUrlIdsForAugmentedTermId(
-    int64_t augmented_term_id) const {
-  auto term_match = posting_lists_.find(augmented_term_id);
+const std::set<int64_t> RamStorage::GetUrlIdsForTermId(int64_t term_id) const {
+  auto term_match = posting_lists_.find(term_id);
   if (term_match == posting_lists_.end()) {
     return empty_id_set_;
   }
@@ -63,47 +61,47 @@ int32_t RamStorage::DeleteFromPostingList(int64_t term_id, int64_t url_id) {
   return count;
 }
 
-int64_t RamStorage::GetTermId(const std::string& term_bytes) const {
-  auto it = term_map_.find(term_bytes);
-  if (it != term_map_.end()) {
+int64_t RamStorage::GetTokenId(const std::string& token_bytes) const {
+  auto it = token_map_.find(token_bytes);
+  if (it != token_map_.end()) {
     return it->second;
   }
   return -1;
 }
 
-int64_t RamStorage::GetOrCreateTermId(const std::string& term_bytes) {
-  int64_t term_id = GetTermId(term_bytes);
+int64_t RamStorage::GetOrCreateTokenId(const std::string& token_bytes) {
+  int64_t token_id = GetTokenId(token_bytes);
+  if (token_id >= 0) {
+    return token_id;
+  }
+  const int64_t this_token_id = ++token_id_;
+  token_map_.emplace(std::make_pair(token_bytes, this_token_id));
+  return this_token_id;
+}
+
+int64_t RamStorage::GetTermId(const Term& term) const {
+  int64_t token_id = GetTokenId(term.token_bytes());
+  if (token_id == -1) {
+    return -1;
+  }
+  std::tuple<std::string, int64_t> term_tuple{term.field(), token_id};
+  auto term_it = term_map_.find(term_tuple);
+  if (term_it == term_map_.end()) {
+    return -1;
+  }
+  return term_it->second;
+}
+
+int64_t RamStorage::GetOrCreateTermId(const Term& term) {
+  int64_t term_id = GetTermId(term);
   if (term_id >= 0) {
     return term_id;
   }
-  const int64_t this_term_id = ++term_id_;
-  term_map_.emplace(std::make_pair(term_bytes, this_term_id));
+  int64_t this_term_id = ++term_id_;
+  int64_t token_id = GetOrCreateTokenId(term.token_bytes());
+  term_map_.emplace(
+      std::make_pair(std::make_tuple(term.field(), token_id), this_term_id));
   return this_term_id;
-}
-
-int64_t RamStorage::GetAugmentedTermId(const Term& term) const {
-  int64_t term_id = GetTermId(term.text_bytes());
-  if (term_id == -1) {
-    return -1;
-  }
-  std::tuple<std::string, int64_t> augmented_term{term.field(), term_id};
-  auto augmented_term_it = augmented_term_map_.find(augmented_term);
-  if (augmented_term_it == augmented_term_map_.end()) {
-    return -1;
-  }
-  return augmented_term_it->second;
-}
-
-int64_t RamStorage::GetOrCreateAugmentedTermId(const Term& term) {
-  int64_t augmented_term_id = GetAugmentedTermId(term);
-  if (augmented_term_id >= 0) {
-    return augmented_term_id;
-  }
-  int64_t this_augmented_term_id = ++augmented_term_id_;
-  int64_t term_id = GetOrCreateTermId(term.text_bytes());
-  augmented_term_map_.emplace(std::make_pair(
-      std::make_tuple(term.field(), term_id), this_augmented_term_id));
-  return this_augmented_term_id;
 }
 
 int64_t RamStorage::GetUrlId(const GURL& url) const {
@@ -163,18 +161,16 @@ int64_t RamStorage::DeleteFileInfo(int64_t url_id) {
   return url_id;
 }
 
-void RamStorage::AddAugmentedTermIdsForUrl(
-    const std::set<int64_t>& augmented_term_ids,
-    int64_t url_id) {
-  for (const int64_t term_id : augmented_term_ids) {
+void RamStorage::AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                  int64_t url_id) {
+  for (const int64_t term_id : term_ids) {
     AddToPostingList(term_id, url_id);
   }
 }
 
-void RamStorage::DeleteAugmentedTermIdsForUrl(
-    const std::set<int64_t>& augmented_term_ids,
-    int64_t url_id) {
-  for (const int64_t term_id : augmented_term_ids) {
+void RamStorage::DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                     int64_t url_id) {
+  for (const int64_t term_id : term_ids) {
     DeleteFromPostingList(term_id, url_id);
   }
 }

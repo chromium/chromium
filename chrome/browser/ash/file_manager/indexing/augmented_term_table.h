@@ -12,39 +12,36 @@
 
 namespace file_manager {
 
-// Stores a mapping from augmented term IDs to an augmented term. The augmented
-// term is a combination of a term and a field name. The main job of this table
-// is to provide a unique ID for, say "label:starred" and "content:starred"
-// terms. The term table provides a unique value for "starred". However, we
-// need to be able to distinguish between "starred" being used a, say, label,
-// vs it being part of a content. This is what this table does.
-class AugmentedTermTable {
+// Stores a mapping from term IDs to an terms. A term term is a combination of
+// a token and a field name. The main job of this table is to provide a unique
+// ID for, say "label:starred" and "content:starred" terms. The token table
+// provides a unique value for "starred". However, we need to be able to
+// distinguish between "starred" being used a, say, label, vs it being part of
+// a content. This is what this table does.
+class TermTable {
  public:
-  // Creates a table that maps augmented term IDs to augmented terms. An
-  // augmented term consists of the field name and a term ID.
-  explicit AugmentedTermTable(sql::Database* db);
-  ~AugmentedTermTable();
+  // Creates a table that maps term IDs to terms. An term consists of the field
+  // name and a token ID.
+  explicit TermTable(sql::Database* db);
+  ~TermTable();
 
-  AugmentedTermTable(const AugmentedTermTable&) = delete;
-  AugmentedTermTable& operator=(const AugmentedTermTable&) = delete;
+  TermTable(const TermTable&) = delete;
+  TermTable& operator=(const TermTable&) = delete;
 
   // Initializes the table. Returns true on success, and false on failure.
   bool Init();
 
-  // Returns the ID corresponding to the given augmented term. If the augmented
-  // term cannot be located, the method returns -1.
-  int64_t GetAugmentedTermId(const std::string& field_name,
-                             int64_t term_id) const;
+  // Returns the ID corresponding to the given term. If the term cannot be
+  // located, the method returns -1.
+  int64_t GetTermId(const std::string& field_name, int64_t term_id) const;
 
-  // Returns the ID corresponding to the augmented term. If the augmented term
-  // cannot be located, a new ID is allocated and returned.
-  int64_t GetOrCreateAugmentedTermId(const std::string& field_name,
-                                     int64_t term_id);
+  // Returns the ID corresponding to the term. If the term cannot be located,
+  // a new ID is allocated and returned.
+  int64_t GetOrCreateTermId(const std::string& field_name, int64_t term_id);
 
-  // Attempts to remove the given augmented term by its ID from the database.
-  // If not present, this method returns -1. Otherwise, it returns the
-  // `augmented_term_id`.
-  int64_t DeleteAugmentedTermById(int64_t augmented_term_id);
+  // Attempts to remove the given term by its ID from the database. If not
+  // present, this method returns -1. Otherwise, it returns the `term_id`.
+  int64_t DeleteTermById(int64_t term_id);
 
  private:
   // The pointer to a database owned by the whoever created this table.

@@ -64,8 +64,8 @@ class FileIndexImpl : public FileIndex {
  private:
   OpResults SetFileTerms(const std::vector<Term>& terms, const GURL& url);
 
-  // Does a bulk conversion of given terms to augmented term IDs.
-  std::set<int64_t> ConvertToAugmentedTermIds(const std::vector<Term>& terms);
+  // Does a bulk conversion of given terms to term IDs.
+  std::set<int64_t> ConvertToTermIds(const std::vector<Term>& terms);
 
   // Actual storage for structures needed to implement the inverted index.
   std::unique_ptr<IndexStorage> storage_;

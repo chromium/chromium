@@ -55,43 +55,41 @@ class SqlStorage : public IndexStorage {
   // Closes the database. Returns true if successful.
   bool Close() override;
 
-  // Returns the set of URL IDs associated with the given augmented term ID.
-  const std::set<int64_t> GetUrlIdsForAugmentedTermId(
-      int64_t augmented_term_id) const override;
+  // Returns the set of URL IDs associated with the given term ID.
+  const std::set<int64_t> GetUrlIdsForTermId(int64_t term_id) const override;
 
-  // Returns augmented term IDs associated with the given URL.
-  const std::set<int64_t> GetAugmentedTermIdsForUrl(
-      int64_t url_id) const override;
+  // Returns term IDs associated with the given URL.
+  const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const override;
 
-  // Creates an association between `augmented_term_id` and `url_id`. This
+  // Creates an association between `term_id` and `url_id`. This
   // method is to be used when a file with the given `url_id` is known to
-  // "have" the given `augmented_term_id`. The "have" here may be either the
+  // "have" the given `term_id`. The "have" here may be either the
   // file contains that term, or the user or some system assigned this term
   // to the file (labelled the file). Returns the number of added
   // associations.
   int32_t AddToPostingList(int64_t term_id, int64_t url_id) override;
 
-  // Removes the association between `augmented_term_id` and `url_id`. This
+  // Removes the association between `term_id` and `url_id`. This
   // method is the opposite of the AddToPostingList() and means that a file
-  // with the given `url_id` no longer "has" the given `augmented_term_id`.
+  // with the given `url_id` no longer "has" the given `term_id`.
   // Returns the number of deleted associations.
   int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
 
-  // Returns the ID corresponding to the given term bytes. If the term bytes
+  // Returns the ID corresponding to the given token bytes. If the token bytes
   // cannot be located, we return -1.
-  int64_t GetTermId(const std::string& term_bytes) const override;
+  int64_t GetTokenId(const std::string& term_bytes) const override;
 
-  // Returns the ID corresponding to the given term bytes. If the term bytes
+  // Returns the ID corresponding to the given token bytes. If the token bytes
   // cannot be located, a new ID is created and returned.
-  int64_t GetOrCreateTermId(const std::string& term_bytes) override;
+  int64_t GetOrCreateTokenId(const std::string& token_bytes) override;
 
-  // Returns the ID corresponding to the given augmented term. If the augmented
-  // term cannot be located, the method returns -1.
-  int64_t GetAugmentedTermId(const Term& term) const override;
+  // Returns the ID corresponding to the given term. If the term cannot be
+  // located, the method returns -1.
+  int64_t GetTermId(const Term& term) const override;
 
-  // Returns the ID corresponding to the augmented term. If the augmented term
-  // cannot be located, a new ID is allocated and returned.
-  int64_t GetOrCreateAugmentedTermId(const Term& term) override;
+  // Returns the ID corresponding to the term. If the term cannot be located,
+  // a new ID is allocated and returned.
+  int64_t GetOrCreateTermId(const Term& term) override;
 
   // Gets an ID for the given URL. Creates a new one, if this URL is seen for
   // the first time.
@@ -119,10 +117,10 @@ class SqlStorage : public IndexStorage {
   int64_t DeleteFileInfo(int64_t url_id) override;
 
   // Miscellaneous.
-  void AddAugmentedTermIdsForUrl(const std::set<int64_t>& augmented_term_ids,
-                                 int64_t url_id) override;
-  void DeleteAugmentedTermIdsForUrl(const std::set<int64_t>& augmented_term_ids,
-                                    int64_t url_id) override;
+  void AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                        int64_t url_id) override;
+  void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
+                           int64_t url_id) override;
 
  private:
   // Error callback set on the database.
@@ -138,11 +136,11 @@ class SqlStorage : public IndexStorage {
   // The actual SQL Lite database.
   sql::Database db_;
 
-  // The table that holds a mapping from terms to term IDs.
-  TermTable term_table_;
+  // The table that holds a mapping from tokens to token IDs.
+  TokenTable token_table_;
 
-  // The table that holds a mapping from  augmented terms to their IDs.
-  AugmentedTermTable augmented_term_table_;
+  // The table that holds a mapping from terms to their IDs.
+  TermTable term_table_;
 
   // The table that holds a mapping from URLs to URL IDs.
   UrlTable url_table_;
@@ -150,7 +148,7 @@ class SqlStorage : public IndexStorage {
   // The table that holds a mapping from URL IDs to FileInfo objects.
   FileInfoTable file_info_table_;
 
-  // The table that holds associations between augmented term IDs and
+  // The table that holds associations between term IDs and
   // URL IDs. It also maintains indexes that allow fast retrieval of all
   // URL IDs associated with the given term ID and all term IDs present
   // in a file with the given URL ID.

@@ -12,17 +12,16 @@
 
 namespace file_manager {
 
-// Represents a posting list for augmented terms. A typical posting list
-// allows us to retrieve URL IDs for all files that contain some term. In other
-// words, there is a map from an augmented term ID to a set of URL IDs. For
-// SQL we use a table with two columns, augmented_term_id and url_id.
-// The pair (augmented_term_id, url_id) forms a unique key. In addition to this
-// table we create two indexes. One arranged by augmented_term_id. This one
-// allows for quick retrieval of all URL IDs that contain the given term. The
-// other index is created on URL IDs. This one allows us to quickly retrieve
-// all augmented term IDs associated with the given URL (and thus file). This
-// index allows us to quickly locate all entries that need to be removed when
-// the file is deleted.
+// Represents a posting list for terms. A typical posting list allows us to
+// retrieve URL IDs for all files that contain some term. In other words,
+// there is a map from an term ID to a set of URL IDs. For SQL we use a table
+// with two columns, term_id and url_id. The pair (term_id, url_id) forms
+// a unique key. In addition to this table we create two indexes. One arranged
+// by term_id. This one allows for quick retrieval of all URL IDs that contain
+// the given term. The other index is created on URL IDs. This one allows us
+// to quickly retrieve all term IDs associated with the given URL (and thus
+// file). This index allows us to quickly locate all entries that need to be
+// removed when the file is deleted.
 class PostingListTable {
  public:
   explicit PostingListTable(sql::Database* db);
@@ -36,20 +35,20 @@ class PostingListTable {
   bool Init();
 
   // Adds the given `url_id` to the posting list of the given
-  // `augmented_term_id`. Returns true if successful, false otherwise.
-  int32_t AddToPostingList(int64_t augmented_term_id, int64_t url_id);
+  // `term_id`. Returns true if successful, false otherwise.
+  int32_t AddToPostingList(int64_t term_id, int64_t url_id);
 
   // Deletes the given `url_id` to the posting list of the given
-  // `augmented_term_id`. Returns true if successful, false otherwise.
-  int32_t DeleteFromPostingList(int64_t augmented_term_id, int64_t url_id);
+  // `term_id`. Returns true if successful, false otherwise.
+  int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id);
 
   // For the given term ID it returns all known URL IDs that are associated
   // with that term.
-  std::set<int64_t> GetUrlIdsForTerm(int64_t augmented_term_id) const;
+  std::set<int64_t> GetUrlIdsForTerm(int64_t term_id) const;
 
-  // For the given `url_id` returns all known augmented_term_ids associated
+  // For the given `url_id` returns all known term_ids associated
   // with it.
-  const std::set<int64_t> GetAugmentedTermIdsForUrl(int64_t url_id) const;
+  const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const;
 
  private:
   raw_ptr<sql::Database> db_;

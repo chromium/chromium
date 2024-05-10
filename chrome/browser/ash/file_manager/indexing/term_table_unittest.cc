@@ -13,9 +13,9 @@ namespace file_manager {
 namespace {
 
 const base::FilePath::CharType kDatabaseName[] =
-    FILE_PATH_LITERAL("TermTableTest.db");
+    FILE_PATH_LITERAL("TokenTableTest.db");
 
-class TermTableTest : public testing::Test {
+class TokenTableTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -47,46 +47,46 @@ class TermTableTest : public testing::Test {
   std::unique_ptr<sql::Database> db_;
 };
 
-TEST_F(TermTableTest, Init) {
-  TermTable table(db_.get());
+TEST_F(TokenTableTest, Init) {
+  TokenTable table(db_.get());
   EXPECT_TRUE(table.Init());
 }
 
-TEST_F(TermTableTest, GetTermId) {
-  TermTable table(db_.get());
+TEST_F(TokenTableTest, GetTokenId) {
+  TokenTable table(db_.get());
   EXPECT_TRUE(table.Init());
 
-  EXPECT_EQ(table.GetTermId("hello"), -1);
-  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
-  EXPECT_EQ(table.GetTermId("hello"), 1);
-  EXPECT_EQ(table.GetOrCreateTermId("there"), 2);
-  EXPECT_EQ(table.GetTermId("there"), 2);
-  EXPECT_EQ(table.GetTermId("O'Neill"), -1);
-  EXPECT_EQ(table.GetOrCreateTermId("O'Neill"), 3);
+  EXPECT_EQ(table.GetTokenId("hello"), -1);
+  EXPECT_EQ(table.GetOrCreateTokenId("hello"), 1);
+  EXPECT_EQ(table.GetTokenId("hello"), 1);
+  EXPECT_EQ(table.GetOrCreateTokenId("there"), 2);
+  EXPECT_EQ(table.GetTokenId("there"), 2);
+  EXPECT_EQ(table.GetTokenId("O'Neill"), -1);
+  EXPECT_EQ(table.GetOrCreateTokenId("O'Neill"), 3);
 }
 
-TEST_F(TermTableTest, DeleteTerm) {
-  TermTable table(db_.get());
+TEST_F(TokenTableTest, DeleteToken) {
+  TokenTable table(db_.get());
   EXPECT_TRUE(table.Init());
 
-  EXPECT_EQ(table.DeleteTerm("hello"), -1);
-  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
-  EXPECT_EQ(table.DeleteTerm("hello"), 1);
+  EXPECT_EQ(table.DeleteToken("hello"), -1);
+  EXPECT_EQ(table.GetOrCreateTokenId("hello"), 1);
+  EXPECT_EQ(table.DeleteToken("hello"), 1);
 }
 
-TEST_F(TermTableTest, GetTerm) {
-  TermTable table(db_.get());
+TEST_F(TokenTableTest, GetToken) {
+  TokenTable table(db_.get());
   EXPECT_TRUE(table.Init());
 
-  std::string term;
-  EXPECT_EQ(table.GetTerm(1, &term), -1);
-  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
-  EXPECT_EQ(table.GetTerm(1, &term), 1);
-  EXPECT_EQ(term, "hello");
-  EXPECT_EQ(table.DeleteTerm("hello"), 1);
-  term = "";
-  EXPECT_EQ(table.GetTerm(1, &term), -1);
-  EXPECT_TRUE(term.empty());
+  std::string token;
+  EXPECT_EQ(table.GetToken(1, &token), -1);
+  EXPECT_EQ(table.GetOrCreateTokenId("hello"), 1);
+  EXPECT_EQ(table.GetToken(1, &token), 1);
+  EXPECT_EQ(token, "hello");
+  EXPECT_EQ(table.DeleteToken("hello"), 1);
+  token = "";
+  EXPECT_EQ(table.GetToken(1, &token), -1);
+  EXPECT_TRUE(token.empty());
 }
 
 }  // namespace

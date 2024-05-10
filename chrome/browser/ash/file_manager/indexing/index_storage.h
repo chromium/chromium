@@ -25,7 +25,7 @@ namespace file_manager {
 // device restarts.
 //
 // Please note that this class is optimized for performance. Therefore it
-// takes certain shortcuts. For example, when adding augmented term IDs it
+// takes certain shortcuts. For example, when adding term IDs it
 // allows us to specify the term_id of text_bytes() part of the term. This
 // term_id must be the same as generated from text_bytes(). However, for
 // performance reasons this task is left to the class that implements FileIndex.
@@ -45,53 +45,47 @@ class IndexStorage {
   // Closes the storage. Returns true if successful.
   virtual bool Close();
 
-  // For the given `augmented_term_id` this method returns all known URL IDs
+  // For the given `term_id` this method returns all known URL IDs
   // that are associated with that term.
-  virtual const std::set<int64_t> GetUrlIdsForAugmentedTermId(
-      int64_t augmented_term_id) const = 0;
+  virtual const std::set<int64_t> GetUrlIdsForTermId(int64_t term_id) const = 0;
 
   // Returns term IDs for the given URL.
-  virtual const std::set<int64_t> GetAugmentedTermIdsForUrl(
-      int64_t url_id) const = 0;
+  virtual const std::set<int64_t> GetTermIdsForUrl(int64_t url_id) const = 0;
 
   // Adds association between terms and the file. This method assumes that the
   // term list is not empty.
-  virtual void AddAugmentedTermIdsForUrl(
-      const std::set<int64_t>& augmented_term_ids,
-      int64_t url_id) = 0;
+  virtual void AddTermIdsForUrl(const std::set<int64_t>& term_ids,
+                                int64_t url_id) = 0;
 
   // Removes association between terms and the file.
-  virtual void DeleteAugmentedTermIdsForUrl(
-      const std::set<int64_t>& augmented_term_ids,
-      int64_t url_id) = 0;
-
-  // Adds to the posting list of the given `augmented_term_id` the given
-  // `url_id`. This may be no-op if the `url_id` already is associated with the
-  // given term_id. Returns the number of URL Ids added (1 or 0).
-  virtual int32_t AddToPostingList(int64_t augmented_term_id,
+  virtual void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
                                    int64_t url_id) = 0;
 
+  // Adds to the posting list of the given `term_id` the given
+  // `url_id`. This may be no-op if the `url_id` already is associated with the
+  // given term_id. Returns the number of URL Ids added (1 or 0).
+  virtual int32_t AddToPostingList(int64_t term_id, int64_t url_id) = 0;
+
   // This method removes the `url_id` from the posting lists of the specified
-  // `augmented_term_id`. This may be a no-op if the url_id is not present on
+  // `term_id`. This may be a no-op if the url_id is not present on
   // the posting list for the given term. Returns the number of URLs removed.
-  virtual int32_t DeleteFromPostingList(int64_t augmented_term_id,
-                                        int64_t url_id) = 0;
+  virtual int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) = 0;
 
-  // Returns the ID corresponding to the given augmented term. If the augmented
-  // term cannot be located, the method returns -1.
-  virtual int64_t GetAugmentedTermId(const Term& term) const = 0;
+  // Returns the ID corresponding to the given term. If the term cannot be
+  // located, the method returns -1.
+  virtual int64_t GetTermId(const Term& term) const = 0;
 
-  // Returns the ID corresponding to the augmented term. If the augmented term
-  // cannot be located, a new ID is allocated and returned.
-  virtual int64_t GetOrCreateAugmentedTermId(const Term& term) = 0;
+  // Returns the ID corresponding to the term. If the term cannot be located,
+  // a new ID is allocated and returned.
+  virtual int64_t GetOrCreateTermId(const Term& term) = 0;
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
   // cannot be located, the method returns -1.
-  virtual int64_t GetTermId(const std::string& term_bytes) const = 0;
+  virtual int64_t GetTokenId(const std::string& term_bytes) const = 0;
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
   // cannot be located, a new ID is allocated and returned.
-  virtual int64_t GetOrCreateTermId(const std::string& term_bytes) = 0;
+  virtual int64_t GetOrCreateTokenId(const std::string& term_bytes) = 0;
 
   // Returns the ID corresponding to the given file URL. If this is the first
   // time we see this file URL, we return -1.
