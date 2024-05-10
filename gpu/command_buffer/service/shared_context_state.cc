@@ -795,9 +795,10 @@ void SharedContextState::SubmitIfNecessary(
   if (graphite_context()) {
     // It's necessary to submit before dropping a scoped access since we want
     // the Dawn texture to be alive on submit.
-    // NOTE: Graphite uses Dawn, the Graphite SharedImage representation does
-    // not set semaphores, and we are not enabling DrDC with Graphite.
-    // TODO(crbug.com/328104159): Skip submit if supported by the shared image.
+    // NOTE: Graphite uses Dawn and the Graphite SharedImage representation does
+    // not set semaphores.
+    // TODO(crbug.com/328104159): Skip submit if supported by the shared image
+    // and DrDC is not enabled.
     CHECK(signal_semaphores.empty());
     graphite_context()->submit(skgpu::graphite::SyncToCpu::kNo);
     return;
