@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/crosapi",
   "+chromeos/lacros",
   "+gpu/command_buffer/client",
+  "+gpu/ipc/client/client_shared_image_interface.h",
   "+media/base",
   "+media/device_monitors",
   "+media/mojo",

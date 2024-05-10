@@ -6,11 +6,15 @@ include_rules = [
   # This dependency is safe because it's a leaf in the video_effects_service,
   # but //media shouldn't depend on anything else from services/video_effects.
   "+services/video_effects/public/mojom",
+  "+services/video_effects/public/cpp/buildflags.h",
   "+third_party/libyuv",
 ]
 
 specific_include_rules = {
   "video_capture_device_client_unittest\.cc": [
     "+services/video_effects/test",
-  ]
+  ],
+  "video_capture_effects_processor_unittest\.cc": [
+    "+components/viz/test",
+  ],
 }

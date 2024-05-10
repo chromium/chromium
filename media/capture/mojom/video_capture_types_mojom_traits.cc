@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
+#include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -1568,6 +1570,8 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
     case media::VideoCaptureFrameDropReason::kSubCaptureTargetVersionNotCurrent:
       return media::mojom::VideoCaptureFrameDropReason::
           kSubCaptureTargetVersionNotCurrent;
+    case media::VideoCaptureFrameDropReason::kPostProcessingFailed:
+      return media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed;
   }
   NOTREACHED_NORETURN();
 }
@@ -1713,6 +1717,9 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kSubCaptureTargetVersionNotCurrent:
       *output = media::VideoCaptureFrameDropReason::
           kSubCaptureTargetVersionNotCurrent;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed:
+      *output = media::VideoCaptureFrameDropReason::kPostProcessingFailed;
       return true;
   }
   NOTREACHED_NORETURN();

@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
+import("//services/video_effects/args.gni")
 import("//testing/test.gni")
 
 group("capture") {
@@ -157,10 +158,18 @@ component("capture_lib") {
     "//media/mojo/mojom",
     "//services/service_manager/public/cpp",
     "//services/video_capture/public/mojom",
+    "//services/video_effects:buildflags",
     "//third_party/libyuv",
     "//ui/display",
     "//ui/gfx",
   ]
+
+  if (enable_video_effects) {
+    sources += [
+      "video/video_capture_effects_processor.cc",
+      "video/video_capture_effects_processor.h",
+    ]
+  }
 
   if (is_android) {
     public_deps += [ "video/android" ]
@@ -252,7 +261,7 @@ component("capture_lib") {
   }
 
   # Establish GPU Channel
-  if (is_linux || is_win || is_chromeos_ash) {
+  if (is_linux || is_win || is_chromeos_ash || is_mac) {
     sources += [
       "video/video_capture_gpu_channel_host.cc",
       "video/video_capture_gpu_channel_host.h",
@@ -444,6 +453,10 @@ test("capture_unittests") {
     "video_capture_types_unittest.cc",
   ]
 
+  if (enable_video_effects) {
+    sources += [ "video/video_capture_effects_processor_unittest.cc" ]
+  }
+
   data = [ "//media/test/data/bear.mjpeg" ]
 
   deps = [
@@ -463,6 +476,10 @@ test("capture_unittests") {
     "//third_party/libyuv:libyuv",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_video_effects) {
+    deps += [ "//components/viz/test:test_support" ]
+  }
 
   if (is_linux || is_chromeos_lacros) {
     sources += [

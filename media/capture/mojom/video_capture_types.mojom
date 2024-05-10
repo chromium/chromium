@@ -298,6 +298,7 @@ enum VideoCaptureFrameDropReason {
   [MinVersion=1] kCropVersionNotCurrent_DEPRECATED,
   [MinVersion=5] kGpuMemoryBufferMapFailed,
   [MinVersion=12] kSubCaptureTargetVersionNotCurrent,
+  [MinVersion=13] kPostProcessingFailed,
 };
 
 [Stable]

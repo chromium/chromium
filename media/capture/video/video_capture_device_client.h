@@ -21,7 +21,12 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "media/capture/video/video_capture_effects_processor.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 namespace media {
 class VideoCaptureBufferPool;
@@ -170,6 +175,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       std::optional<base::TimeTicks> capture_begin_timestamp,
       int frame_feedback_id);
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  void OnPostProcessDone(base::expected<PostProcessDoneInfo,
+                                        video_effects::mojom::PostProcessError>
+                             post_process_info_or_error);
+#endif
+
   // The receiver to which we post events.
   const std::unique_ptr<VideoFrameReceiver> receiver_;
   std::vector<int> buffer_ids_known_by_receiver_;
@@ -185,15 +196,19 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
 
   VideoPixelFormat last_captured_pixel_format_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
-  mojo::Remote<video_effects::mojom::VideoEffectsProcessor> effects_processor_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  std::optional<VideoCaptureEffectsProcessor> effects_processor_;
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   // Thread collision warner to ensure that producer-facing API is not called
   // concurrently. Producers are allowed to call from multiple threads, but not
   // concurrently.
   DFAKE_MUTEX(call_from_producer_);
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  // Must be last:
+  base::WeakPtrFactory<VideoCaptureDeviceClient> weak_ptr_factory_{this};
+#endif
 };
 
 }  // namespace media
