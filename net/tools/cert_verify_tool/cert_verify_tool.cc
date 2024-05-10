@@ -8,7 +8,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_split.h"
@@ -31,6 +30,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 
@@ -418,8 +418,7 @@ int main(int argc, char** argv) {
     return 1;
   }
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("cert_verify_tool");
-  base::ScopedClosureRunner cleanup(
-      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
+  absl::Cleanup cleanup = [] { base::ThreadPoolInstance::Get()->Shutdown(); };
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   logging::LoggingSettings settings;
   settings.logging_dest =
