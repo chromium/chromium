@@ -2180,7 +2180,6 @@ ci.builder(
 Runs <a href="https://web-platform-tests.org">web platform tests</a> against
 Chrome.\
 """,
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
