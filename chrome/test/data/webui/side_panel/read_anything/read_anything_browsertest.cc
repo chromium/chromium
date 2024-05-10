@@ -91,13 +91,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContent) {
                    "mocha.run()");
 }
 
-// TODO(crbug.com/337936370): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AppReceivesToolbarChanges DISABLED_AppReceivesToolbarChanges
-#else
-#define MAYBE_AppReceivesToolbarChanges AppReceivesToolbarChanges
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, MAYBE_AppReceivesToolbarChanges) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
       "mocha.run()");
