@@ -837,6 +837,11 @@ extern const char kSafetyCheckMagicStackDescription[];
 extern const char kScreenTimeIntegrationName[];
 extern const char kScreenTimeIntegrationDescription[];
 
+// Title and description for the flag to enable caching Segmentation ranking for
+// the Home Magic Stack on Start.
+extern const char kSegmentationPlatformIosModuleRankerCachingName[];
+extern const char kSegmentationPlatformIosModuleRankerCachingDescription[];
+
 // Title and description for the flag to enable Segmentation ranking for the
 // Home Magic Stack.
 extern const char kSegmentationPlatformIosModuleRankerName[];

@@ -628,4 +628,7 @@ BASE_DECLARE_FEATURE(kPrefetchSystemCapabilitiesOnFirstRun);
 // Returns true if the system capabilities are prefetched on first run.
 bool IsPrefetchingSystemCapabilitiesOnFirstRun();
 
+// Feature flag for caching the ios module ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

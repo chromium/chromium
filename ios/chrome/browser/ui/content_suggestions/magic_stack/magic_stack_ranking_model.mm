@@ -345,7 +345,26 @@
           parcelTrackingFreshnessImpressionCount));
   __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
-  options.on_demand_execution = true;
+
+  if (base::FeatureList::IsEnabled(
+          kSegmentationPlatformIosModuleRankerCaching)) {
+    // Ignores tab resumption freshness since local tab always logs a freshness
+    // signal for Start.
+    BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
+                                parcelTrackingFreshnessImpressionCount != 0;
+    if (IsSafetyCheckMagicStackEnabled()) {
+      hasNoFreshnessSignal =
+          hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
+    }
+    if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {
+      options = segmentation_platform::PredictionOptions::ForCached(true);
+    } else {
+      options = segmentation_platform::PredictionOptions::ForOnDemand(true);
+    }
+    options.can_update_cache_for_future_requests = true;
+  } else {
+    options.on_demand_execution = true;
+  }
   _segmentationService->GetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, options, inputContext,
       base::BindOnce(
