@@ -1874,12 +1874,13 @@ message AnimationFrameScriptTimingInfo {
   optional string source_location_function_name = 7;
   optional int64 source_location_char_position = 8;
   enum InvokerType {
-    CLASSIC_SCRIPT = 0;
-    MODULE_SCRIPT = 1;
-    USER_CALLBACK = 2;
-    EVENT_HANDLER = 3;
-    PROMISE_RESOLVE = 4;
-    PROMISE_REJECT = 5;
+    UNDEFINED = 0;
+    CLASSIC_SCRIPT = 1;
+    MODULE_SCRIPT = 2;
+    USER_CALLBACK = 3;
+    EVENT_HANDLER = 4;
+    PROMISE_RESOLVE = 5;
+    PROMISE_REJECT = 6;
   }
   optional InvokerType invoker_type = 9;
 }

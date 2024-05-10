@@ -257,6 +257,7 @@ ToProtoEnum(ScriptTimingInfo::InvokerType type) {
     case ScriptTimingInfo::InvokerType::kPromiseReject:
       return ProtoType::PROMISE_REJECT;
   }
+  return ProtoType::UNDEFINED;
 }
 }  // namespace
 
