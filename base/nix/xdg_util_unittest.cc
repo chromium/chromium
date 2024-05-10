@@ -10,13 +10,13 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
 #include "base/nix/scoped_xdg_activation_token_injector.h"
 #include "base/process/launch.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -498,8 +498,9 @@ TEST(XDGUtilTest, LaunchOptionsWithXdgActivation) {
       }));
   EXPECT_TRUE(received_empty_launch_options);
 
-  ScopedClosureRunner reset_token_creator(base::BindOnce(
-      &SetXdgActivationTokenCreator, XdgActivationTokenCreator()));
+  absl::Cleanup reset_token_creator = [] {
+    SetXdgActivationTokenCreator(XdgActivationTokenCreator());
+  };
   SetXdgActivationTokenCreator(
       base::BindRepeating([](XdgActivationTokenCallback callback) {
         std::move(callback).Run(kXdgActivationTokenFromEnv);
