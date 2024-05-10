@@ -283,6 +283,11 @@ extern bool IsLensOverlaySelectionDraggingEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayGoogleDseRequired();
 
+// Returns the finch configured loading image URL for the results in Lens
+// Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayResultsSearchLoadingURL();
+
 }  // namespace lens::features
-   //
+
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

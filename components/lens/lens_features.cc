@@ -72,6 +72,11 @@ const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
 const base::FeatureParam<bool> kLensOverlaySelectionDraggingEnabled{
     &kLensOverlay, "enable-selection-dragging", false};
+const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
+    &kLensOverlay, "results-search-loading-url",
+    "https://www.gstatic.com/lens/chrome/"
+    "lens_overlay_sidepanel_results_ghostloader_light-"
+    "71af0ff0f00a1a03d3fe8abad71a2665.svg"};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -291,6 +296,10 @@ bool IsLensOverlaySelectionDraggingEnabled() {
 
 bool IsLensOverlayGoogleDseRequired() {
   return kLensOverlayGoogleDseRequired.Get();
+}
+
+std::string GetLensOverlayResultsSearchLoadingURL() {
+  return kResultsSearchLoadingUrl.Get();
 }
 
 }  // namespace lens::features

@@ -277,6 +277,9 @@ class LensOverlayController : public LensSearchboxClient,
   // side panel.
   void PopAndLoadQueryFromHistory();
 
+  // Sets whether the results frame should show its loading state.
+  virtual void SetSidePanelIsLoadingResults(bool is_loading);
+
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();

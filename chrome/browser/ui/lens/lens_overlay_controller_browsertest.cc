@@ -105,6 +105,9 @@ constexpr char kTestSuggestSignals[] = "suggest_signals";
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
 constexpr char kViewportWidthQueryParamKey[] = "biw";
 constexpr char kViewportHeightQueryParamKey[] = "bih";
+constexpr char kTextQueryParamKey[] = "q";
+
+constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
 const lens::mojom::GeometryPtr kTestGeometry =
     lens::mojom::Geometry::New(lens::mojom::CenterRotatedBox::New(
@@ -238,8 +241,24 @@ class LensOverlayControllerFake : public LensOverlayController {
         fake_overlay_page_receiver_.BindNewPipeAndPassRemote());
   }
 
+  void SetSidePanelIsLoadingResults(bool is_loading) override {
+    if (is_loading) {
+      is_side_panel_loading_set_to_true_++;
+      return;
+    }
+
+    is_side_panel_loading_set_to_false_++;
+  }
+
+  void ResetLoadingTracking() {
+    is_side_panel_loading_set_to_true_ = 0;
+    is_side_panel_loading_set_to_false_ = 0;
+  }
+
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
+  int is_side_panel_loading_set_to_true_ = 0;
+  int is_side_panel_loading_set_to_false_ = 0;
   LensOverlayPageFake fake_overlay_page_;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
       &fake_overlay_page_};
@@ -267,9 +286,11 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         &LensOverlayControllerBrowserTest::CreateTabFeatures,
         base::Unretained(this)));
     feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay, {
-                                          {"search-bubble", "true"},
-                                      });
+        lens::features::kLensOverlay,
+        {
+            {"search-bubble", "true"},
+            {"results-search-url", kResultsSearchBaseUrl},
+        });
   }
 
   void SetUp() override {
@@ -350,13 +371,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(has_start_time);
     processed_url = net::AppendOrReplaceQueryParameter(
         processed_url, kStartTimeQueryParamKey, std::nullopt);
-    processed_url = RemoveViewportSizeParams(processed_url);
-    return processed_url;
-  }
-
-  // Helper to remove the viewport size query params from the url.
-  GURL RemoveViewportSizeParams(const GURL& url_to_process) {
-    GURL processed_url = url_to_process;
     std::string actual_viewport_width;
     bool has_viewport_width = net::GetValueForKeyInQuery(
         GURL(url_to_process), kViewportWidthQueryParamKey,
@@ -374,6 +388,27 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     processed_url = net::AppendOrReplaceQueryParameter(
         processed_url, kViewportHeightQueryParamKey, std::nullopt);
     return processed_url;
+  }
+
+  void VerifyTextQueriesAreEqual(const GURL& url, const GURL& url_to_compare) {
+    std::string text_query;
+    bool has_text_query =
+        net::GetValueForKeyInQuery(GURL(url), kTextQueryParamKey, &text_query);
+    EXPECT_TRUE(has_text_query);
+
+    std::string query_to_compare;
+    bool has_query_to_compare = net::GetValueForKeyInQuery(
+        GURL(url_to_compare), kTextQueryParamKey, &query_to_compare);
+    EXPECT_TRUE(has_query_to_compare);
+
+    EXPECT_EQ(query_to_compare, text_query);
+  }
+
+  void VerifySearchQueryParameters(const GURL& url_to_process) {
+    EXPECT_THAT(
+        url_to_process.spec(),
+        testing::MatchesRegex(std::string(kResultsSearchBaseUrl) +
+                              ".*q=.*&gsc=1&masfc=c&hl=.*&biw=\\d+&bih=\\d+"));
   }
 
  private:
@@ -882,6 +917,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->GetSidePanelWebContentsForTesting()));
   int tabs = browser()->tab_strip_model()->count();
 
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetLoadingTracking();
+
   // The results frame should be the only child frame of the side panel web
   // contents.
   content::RenderFrameHost* results_frame = content::ChildFrameAt(
@@ -890,13 +931,28 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(results_frame);
 
   // Simulate a same-origin navigation on the results frame.
-  const GURL nav_url("https://www.google.com/search?q=apples&gsc=1&masfc=c");
+  const GURL nav_url("https://www.google.com/search?q=apples");
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
+  // Wait for the navigation to finish and the page to finish loading.
+  observer.WaitForNavigationFinished();
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
   // It should not open a new tab as this is a same-origin navigation.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+
+  VerifySearchQueryParameters(observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(observer.last_navigation_url(), nav_url);
+
+  // Verify the loading state was set correctly.
+  // Loading is set to true twice because the URL is originally malformed.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 2);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 1);
 
   // We should find that the input text on the searchbox is the same as the text
   // query of the nav_url.
@@ -948,6 +1004,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       0);
   EXPECT_TRUE(results_frame);
 
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetLoadingTracking();
+
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   const GURL nav_url("http://new.domain.com/");
   // Simulate a cross-origin navigation on the results frame.
@@ -959,6 +1021,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
+
+  // Verify the loading state was never set.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1004,6 +1070,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                        url::Origin::Create(search_url));
   EXPECT_TRUE(results_frame);
 
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetLoadingTracking();
+
   // Simulate a cross-origin navigation on the results frame.
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   EXPECT_TRUE(content::ExecJs(
@@ -1014,6 +1086,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
   EXPECT_EQ(new_tab->GetLastCommittedURL(), nav_url);
+  // Verify the loading state was never set.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1060,6 +1135,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                        url::Origin::Create(nav_url));
   EXPECT_TRUE(results_frame);
 
+  // Verify the fake controller exists and reset any loading that was done
+  // before as part of setup.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetLoadingTracking();
+
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kNewTabLinkClickScript, nav_url),
@@ -1068,6 +1149,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // It should not open a new tab as the initatior origin should not be
   // considered "trusted".
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  // Verify the loading state was never set.
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_true_, 0);
+  EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1145,9 +1229,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   auto loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  GURL url_without_viewport_size =
-      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_viewport_size, first_search_url);
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
@@ -1160,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   content::TestNavigationObserver observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->LoadURLInResultsFrame(second_search_url);
-  observer.Wait();
+  observer.WaitForNavigationFinished();
 
   // The search query history stack should have 1 entry and the currently loaded
   // query should be set to the new query
@@ -1168,21 +1252,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "kiwi");
-  url_without_viewport_size =
-      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_viewport_size, second_search_url);
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            second_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  url_without_viewport_size =
-      RemoveViewportSizeParams(observer.last_navigation_url());
-  EXPECT_EQ(url_without_viewport_size, second_search_url);
-
+  VerifySearchQueryParameters(observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(observer.last_navigation_url(), second_search_url);
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
       controller->GetSidePanelWebContentsForTesting());
   controller->PopAndLoadQueryFromHistory();
-  pop_observer.Wait();
+  pop_observer.WaitForNavigationFinished();
 
   // The search query history stack should be empty and the currently loaded
   // query should be set to the previous query.
@@ -1190,15 +1272,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   loaded_search_query = controller->GetLoadedSearchQueryForTesting();
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "oranges");
-  url_without_viewport_size =
-      RemoveViewportSizeParams(loaded_search_query->search_query_url_);
-  EXPECT_EQ(url_without_viewport_size, first_search_url);
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            first_search_url);
   EXPECT_TRUE(loaded_search_query->search_query_region_thumbnail_.empty());
   EXPECT_FALSE(loaded_search_query->search_query_region_);
   EXPECT_FALSE(loaded_search_query->selected_text_);
-  url_without_viewport_size =
-      RemoveViewportSizeParams(pop_observer.last_navigation_url());
-  EXPECT_EQ(url_without_viewport_size, first_search_url);
+  VerifySearchQueryParameters(pop_observer.last_navigation_url());
+  VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
+                            first_search_url);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

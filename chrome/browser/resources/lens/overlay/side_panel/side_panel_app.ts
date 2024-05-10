@@ -7,6 +7,7 @@ import '//resources/cr_components/searchbox/realbox.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -19,7 +20,10 @@ const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
 
 export interface LensSidePanelAppElement {
-  $: {results: HTMLIFrameElement};
+  $: {
+    results: HTMLIFrameElement,
+    loadingResultsImage: HTMLImageElement,
+  };
 }
 
 export class LensSidePanelAppElement extends PolymerElement {
@@ -31,9 +35,32 @@ export class LensSidePanelAppElement extends PolymerElement {
     return getTemplate();
   }
 
-  private browserProxy_: SidePanelBrowserProxy =
+  static get properties() {
+    return {
+      isLoadingResults: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
+      loadingImageUrl: {
+        type: String,
+        value: loadTimeData.getString('resultsLoadingUrl'),
+        readOnly: true,
+      },
+    };
+  }
+
+  // Whether the results iframe is currently loading. This needs to be done via
+  // browser because the iframe is cross-origin. Default true since the side
+  // panel can open before a navigation has started.
+  private isLoadingResults: boolean;
+  // The URL for the loading image shown when results frame is loading a new
+  // page.
+  private readonly loadingImageUrl: string;
+
+  private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
-  private listenerIds_: number[];
+  private listenerIds: number[];
 
   constructor() {
     super();
@@ -43,21 +70,27 @@ export class LensSidePanelAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.listenerIds_ = [
-      this.browserProxy_.callbackRouter.loadResultsInFrame.addListener(
-          this.loadResultsInFrame_.bind(this)),
+    this.listenerIds = [
+      this.browserProxy.callbackRouter.loadResultsInFrame.addListener(
+          this.loadResultsInFrame.bind(this)),
+      this.browserProxy.callbackRouter.setIsLoadingResults.addListener(
+          this.setIsLoadingResults.bind(this)),
     ];
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.listenerIds_.forEach(
-        id => assert(this.browserProxy_.callbackRouter.removeListener(id)));
-    this.listenerIds_ = [];
+    this.listenerIds.forEach(
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
-  private loadResultsInFrame_(resultsUrl: Url) {
+  private setIsLoadingResults(isLoading: boolean) {
+    this.isLoadingResults = isLoading;
+  }
+
+  private loadResultsInFrame(resultsUrl: Url) {
     const url = new URL(resultsUrl.url);
     const resultsBoundingRect = this.$.results.getBoundingClientRect();
     if (resultsBoundingRect.width > 0) {

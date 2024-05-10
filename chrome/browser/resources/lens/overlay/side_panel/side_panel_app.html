@@ -2,7 +2,8 @@
   :host {
     --cr-realbox-min-width: 340px
   }
-  #results {
+
+  .results-pane {
     border: none;
      /* Viewport height minus the realbox height and margin. */
     height: calc(100vh - 76px);
@@ -14,13 +15,33 @@
     inset-block-start: 76px;
     position: fixed;
     width: 100%;
+    /*
+     * This z-index allows us to hide the results and loading image without
+     * changing their visiblity. Changing their visiblity can result in ghost
+     * frames.
+     */
+    z-index: 1;
   }
+
+  /* Set z-index to hide results to prevent ghost frames when reshowing. */
+  :host([is-loading-results]) #results {
+    z-index: 0;
+  }
+
+  #loadingResultsImage {
+    background-color: white;
+  }
+
+  :host(:not([is-loading-results])) #loadingResultsImage {
+    z-index: 0;
+  }
+
   #realboxContainer {
     display: flex;
     font-family: Roboto, Arial, sans-serif;
     margin: 12px 8px;
     position: fixed;
-    z-index: 1;  /* Searchbox should render in front of the results iframe. */
+    z-index: 2;  /* Searchbox should render in front of the results iframe. */
     /* TODO(jdonnelly): Specify these in a color mixer. */
     --color-realbox-background: #ffffffff;
     --color-realbox-background-hovered: #ffffffff;
@@ -37,7 +58,10 @@
   <cr-realbox id="realbox"></cr-realbox>
 </div>
 
-<iframe name="results" id="results"
+<!-- Image that is only shown when results are loading. -->
+<img id="loadingResultsImage" class="results-pane" src="[[loadingImageUrl]]">
+
+<iframe name="results" id="results" class="results-pane"
     allow="cross-origin-isolated; display-capture; geolocation; microphone;"
     frameBorder="0">
 </iframe>

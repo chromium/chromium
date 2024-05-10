@@ -46,6 +46,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                                   IDS_LENS_OVERLAY_TRANSLATE_SUFFIX);
 
   // Add finch flags
+  html_source->AddString(
+      "resultsLoadingUrl",
+      lens::features::GetLensOverlayResultsSearchLoadingURL());
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
   html_source->AddBoolean("enableShimmer",
@@ -71,7 +74,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Allow data URLs to load in WebUI for full page screenshot.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src 'self' chrome-untrusted://resources data:;");
+      "img-src 'self' chrome-untrusted://resources "
+      "https://www.gstatic.com data:;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");

@@ -97,4 +97,11 @@ interface LensSidePanelPageHandler {};
 interface LensSidePanelPage {
   // Load a provided URL into the side panel results iframe.
   LoadResultsInFrame(url.mojom.Url results_url);
+
+  // Sets whether the results frame is currently loading. This cannot be done
+  // from the renderer because the results iframe is cross-origin. This prevents
+  // load events on the iframe from triggering reliably on every navigation.
+  // Instead, we listen for the start of the navigations in the browser and set
+  // the loading state appropriately.
+  SetIsLoadingResults(bool is_loading);
 };

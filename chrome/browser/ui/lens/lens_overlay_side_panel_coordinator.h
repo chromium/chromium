@@ -70,6 +70,7 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
                            bool renderer_initiated) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
   // Registers the entry in the side panel if it doesn't already exist.
   void RegisterEntry();

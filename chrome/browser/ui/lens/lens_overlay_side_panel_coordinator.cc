@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 
-#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -22,6 +22,7 @@
 #include "components/lens/lens_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -168,17 +169,23 @@ void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
 
 void LensOverlaySidePanelCoordinator::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Any navigation that the results iframe attempts to a different domain will
-  // fail. Since the navigation throttle may not be able to intercept certain
-  // navigations before they result in an error page, we should make sure these
-  // error pages don't commit and instead open these URLs in a new tab. We only
-  // need to do this for render initiated navigations in the results iframe.
-  if (!navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->GetParentFrame() &&
-      navigation_handle->GetParentFrame()->IsInPrimaryMainFrame() &&
-      navigation_handle->IsRendererInitiated() &&
-      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
-      !lens::IsValidSearchResultsUrl(navigation_handle->GetURL())) {
+  // We only care about the navigation if it is the results frame, is HTTPS,
+  // renderer initiated and NOT a same document navigation.
+  if (!navigation_handle->IsRendererInitiated() ||
+      !navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() ||
+      navigation_handle->IsSameDocument() ||
+      navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->GetParentFrame() ||
+      !navigation_handle->GetParentFrame()->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // Any navigation that the results iframe attempts to a different domain
+  // will fail. Since the navigation throttle may not be able to intercept
+  // certain navigations before they result in an error page, we should make
+  // sure these error pages don't commit and instead open these URLs in a new
+  // tab.
+  if (!lens::IsValidSearchResultsUrl(navigation_handle->GetURL())) {
     auto params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -188,7 +195,24 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
     }
     navigation_handle->SetSilentlyIgnoreErrors();
     browser->OpenURL(params, /*navigation_handle_callback=*/{});
+    return;
   }
+
+  // If we expect to load this URL in the side panel, show the loading
+  // page.
+  lens_overlay_controller_->SetSidePanelIsLoadingResults(true);
+}
+
+void LensOverlaySidePanelCoordinator::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  // We only care about loads that happen one level down in the side panel.
+  if (!render_frame_host->GetParent() ||
+      render_frame_host->GetParent()->GetParent() ||
+      !render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  lens_overlay_controller_->SetSidePanelIsLoadingResults(false);
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {

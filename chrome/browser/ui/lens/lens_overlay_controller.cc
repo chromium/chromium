@@ -555,6 +555,12 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   initialization_data_->currently_loaded_search_query_ = query;
 }
 
+void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
+  if (side_panel_page_) {
+    side_panel_page_->SetIsLoadingResults(is_loading);
+  }
+}
+
 void LensOverlayController::OnSidePanelEntryDeregistered() {
   CloseUIAsync();
 }
