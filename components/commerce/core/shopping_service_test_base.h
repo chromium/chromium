@@ -168,41 +168,36 @@ class MockWebWrapper : public WebWrapper {
 
   ~MockWebWrapper() override;
 
-  const GURL& GetLastCommittedURL() override;
-  const std::u16string& GetTitle() override;
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const std::u16string&, GetTitle, (), (override));
+  MOCK_METHOD(bool, IsFirstLoadForNavigationFinished, (), (override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (override));
+  MOCK_METHOD(void,
+              RunJavascript,
+              (const std::u16string& script,
+               base::OnceCallback<void(const base::Value)> callback),
+              (override));
+  MOCK_METHOD(ukm::SourceId, GetPageUkmSourceId, (), (override));
 
-  bool IsFirstLoadForNavigationFinished() override;
   void SetIsFirstLoadForNavigationFinished(bool finished);
 
-  bool IsOffTheRecord() override;
-
-  void RunJavascript(
-      const std::u16string& script,
-      base::OnceCallback<void(const base::Value)> callback) override;
-
-  ukm::SourceId GetPageUkmSourceId() override;
-
-  base::Value* GetMockExtractionResult();
-
  private:
-  const GURL last_committed_url_;
-  const bool is_off_the_record_;
-  bool is_first_load_finished_{true};
   const raw_ptr<base::Value> mock_js_result_;
-  const std::u16string title_;
 };
 
-class TestWebExtractor : public WebExtractor {
+class MockWebExtractor : public WebExtractor {
  public:
-  TestWebExtractor();
-  TestWebExtractor(const TestWebExtractor&) = delete;
-  TestWebExtractor operator=(const TestWebExtractor&) = delete;
+  MockWebExtractor();
+  MockWebExtractor(const MockWebExtractor&) = delete;
+  MockWebExtractor operator=(const MockWebExtractor&) = delete;
 
-  ~TestWebExtractor() override;
+  ~MockWebExtractor() override;
 
-  void ExtractMetaInfo(
-      WebWrapper* web_wrapper,
-      base::OnceCallback<void(const base::Value)> callback) override;
+  MOCK_METHOD(void,
+              ExtractMetaInfo,
+              (WebWrapper * web_wrapper,
+               base::OnceCallback<void(const base::Value)> callback),
+              (override));
 };
 
 class ShoppingServiceTestBase : public testing::Test {
