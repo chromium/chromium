@@ -74,13 +74,13 @@
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
     // triangle mesh API
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, HighEntropy, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
-                                                                              Mesh2DUVBuffer uv_buffer,
-                                                                              Mesh2DIndexBuffer index_buffer,
-                                                                              CanvasImageSource image);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, HighEntropy, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
+                                                                                                      Mesh2DUVBuffer uv_buffer,
+                                                                                                      Mesh2DIndexBuffer index_buffer,
+                                                                                                      CanvasImageSource image);
     // FIXME: factor out to CanvasDrawingStyles
     // line caps/joins
     attribute unrestricted double lineWidth; // (default 1)

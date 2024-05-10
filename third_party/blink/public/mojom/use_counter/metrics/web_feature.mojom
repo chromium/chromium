@@ -4363,6 +4363,8 @@ enum WebFeature {
   kPrivateAggregationApiFilteringIds = 4967,
   kHTMLInputInSelect = 4968,
 
+  kCanvas2DMesh = 4969,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
