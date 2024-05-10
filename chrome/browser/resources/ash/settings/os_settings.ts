@@ -243,7 +243,7 @@ export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interfa
 export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
-export {GeolocationAccessLevel} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
+export {GeolocationAccessLevel, ScheduleType} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
 export {PrivacyHubSensorSubpageUserAction} from './os_privacy_page/privacy_hub_metrics_util.js';
 export {SettingsPrivacyHubSystemServiceRow} from './os_privacy_page/privacy_hub_system_service_row.js';
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';

@@ -580,6 +580,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT},
       {"privacyHubSystemServicesSectionTitle",
        IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE},
+      {"privacyHubSystemServicesGeolocationNotConfigured",
+       IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_GEOLOCATION_NOT_CONFIGURED},
       {"privacyHubSystemServicesAllowedText",
        IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT},
       {"privacyHubSystemServicesBlockedText",

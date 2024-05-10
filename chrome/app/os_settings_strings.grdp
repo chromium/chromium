@@ -6725,6 +6725,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
     System services
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_GEOLOCATION_NOT_CONFIGURED" desc="The sub-label displayed in the rows of the System services section of the privacy hub geolocation subpage, when the respective feature is not configured to use geolocation service (e.g. time zone is selected from the static list, not set to be resolved automatically)">
+    Manually set, not using location
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_ALLOWED_TEXT" desc="The sub-label displayed in the rows of the System services section of the privacy hub sensor subpages when sensor access is allowed.">
     Allowed
   </message>

@@ -5,12 +5,12 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, LocalizedLinkElement, Router, routes, setAppPermissionProviderForTesting, SettingsDropdownMenuElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, LocalizedLinkElement, Router, routes, ScheduleType, setAppPermissionProviderForTesting, SettingsDropdownMenuElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
@@ -36,6 +36,34 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
             key: 'ash.user.geolocation_access_level',
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: GeolocationAccessLevel.ALLOWED,
+          },
+        },
+        dark_mode: {
+          schedule_type: {
+            key: 'ash.user.dark_mode.schedule_type',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ScheduleType.SUNSET_TO_SUNRISE,
+          },
+        },
+        night_light: {
+          schedule_type: {
+            key: 'ash.night_light.schedule_type',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: ScheduleType.SUNSET_TO_SUNRISE,
+          },
+        },
+      },
+      generated: {
+        resolve_timezone_by_geolocation_on_off: {
+          key: 'generated.resolve_timezone_by_geolocation_on_off',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
+      settings: {
+        ambient_mode: {
+          enabled: {
+            value: true,
           },
         },
       },
@@ -113,32 +141,67 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
                                                 '#appName')!.textContent;
   }
 
+  interface TextOptions {
+    notConfiguredText: string;
+    allowedText: string;
+    blockedText: string;
+  }
+
   function checkService(
-      systemService: SettingsPrivacyHubSystemServiceRow, nameVarName: string,
-      expectedName: string, allowedTextVarName: string, allowedText: string,
-      blockedText: string) {
+      systemService: SettingsPrivacyHubSystemServiceRow, expectedName: string,
+      isConfiguredToUseGeolocation: boolean,
+      expectedDescriptions: TextOptions) {
     // Check  service name.
-    assertEquals(expectedName, privacyHubGeolocationSubpage.i18n(nameVarName));
     assertEquals(expectedName, getSystemServiceName(systemService));
 
-    // Check subtext.
+    // Check subtext:
+    // Check when the system service is not configured to use geolocation (e.g.
+    // time zone is selected from the static list).
+    if (isConfiguredToUseGeolocation) {
+      assertEquals(
+          expectedDescriptions['notConfiguredText'],
+          getSystemServicePermissionText(systemService));
+      return;
+    }
+    // Check when the system service is using geolocation.
     switch (getGeolocationAccessLevel()) {
       case GeolocationAccessLevel.DISALLOWED:
         assertEquals(
-            blockedText, getSystemServicePermissionText(systemService));
+            expectedDescriptions['blockedText'],
+            getSystemServicePermissionText(systemService));
         break;
       case GeolocationAccessLevel.ALLOWED:
         // Falls through to ONLY_ALLOWED_FOR_SYSTEM
       case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
         assertEquals(
-            allowedText, privacyHubGeolocationSubpage.i18n(allowedTextVarName));
-        assertEquals(
-            allowedText, getSystemServicePermissionText(systemService));
+            expectedDescriptions['allowedText'],
+            getSystemServicePermissionText(systemService));
         break;
     }
   }
 
-  function checkServiceSection() {
+  function setAutomaticTimeZoneEnabled(enabled: boolean) {
+    privacyHubGeolocationSubpage.set(
+        'generated.resolve_timezone_by_geolocation_on_off.value', enabled);
+  }
+
+  function setNightLightScheduleType(scheduleType: ScheduleType) {
+    privacyHubGeolocationSubpage.set(
+        'ash.night_light.schedule_type.value', scheduleType);
+  }
+
+  function setLocalWeatherEnabled(enabled: boolean) {
+    privacyHubGeolocationSubpage.set(
+        'settings.ambient_mode.enabled.value', enabled);
+  }
+
+  function setDarkThemeScheduleType(scheduleType: ScheduleType) {
+    privacyHubGeolocationSubpage.set(
+        'ash.dark_mode.schedule_type.value', scheduleType);
+  }
+
+
+  async function checkServiceSection() {
     assertEquals(
         privacyHubGeolocationSubpage.i18n(
             'privacyHubSystemServicesSectionTitle'),
@@ -148,29 +211,76 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     const systemServices =
         getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
-
     assertEquals(4, systemServices.length);
-    checkService(
-        systemServices[0]!, 'privacyHubSystemServicesAutomaticTimeZoneName',
-        'Automatic time zone based on Wi-Fi or mobile networks',
-        'privacyHubSystemServicesAllowedText', 'Allowed',
-        'Blocked. Time zone is currently set to ' +
-            'Test Time Zone' +
-            ' and can only be updated manually.');
-    checkService(
-        systemServices[1]!, 'privacyHubSystemServicesSunsetScheduleName',
-        'Automatic sunset schedule', 'privacyHubSystemServicesAllowedText',
-        'Allowed',
-        'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
-            ' and can only be updated manually.');
-    checkService(
-        systemServices[2]!, 'privacyHubSystemServicesLocalWeatherName',
-        'Local weather', 'privacyHubSystemServicesAllowedText', 'Allowed',
-        'Blocked');
-    checkService(
-        systemServices[3]!, 'privacyHubSystemServicesDarkThemeName',
-        'Automatic light/dark theme', 'privacyHubSystemServicesAllowedText',
-        'Allowed', 'Blocked');
+
+    const i18n = privacyHubGeolocationSubpage.i18n;
+    for (const timeZoneAutomaticSetting of [true, false]) {
+      setAutomaticTimeZoneEnabled(timeZoneAutomaticSetting);
+      await waitAfterNextRender(privacyHubGeolocationSubpage);
+
+      checkService(
+          systemServices[0]!,
+          i18n('privacyHubSystemServicesAutomaticTimeZoneName'),
+          timeZoneAutomaticSetting, {
+            notConfiguredText:
+                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            blockedText: 'Blocked. Time zone is currently set to ' +
+                'Test Time Zone' +
+                ' and can only be updated manually.',
+          });
+    }
+
+    const allScheduleTypes: ScheduleType[] =
+        Object.values(ScheduleType)
+            .filter(value => typeof value === 'number') as ScheduleType[];
+    // Test Night Light
+    for (const scheduleType of allScheduleTypes) {
+      setNightLightScheduleType(scheduleType as ScheduleType);
+      await waitAfterNextRender(privacyHubGeolocationSubpage);
+
+      checkService(
+          systemServices[1]!,
+          i18n('privacyHubSystemServicesSunsetScheduleName'),
+          scheduleType === ScheduleType.SUNSET_TO_SUNRISE, {
+            notConfiguredText:
+                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            blockedText:
+                'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
+                ' and can only be updated manually.',
+          });
+    }
+
+    // Test Local Weather
+    for (const localWeatherEnabled of [true, false]) {
+      setLocalWeatherEnabled(localWeatherEnabled);
+      await waitAfterNextRender(privacyHubGeolocationSubpage);
+
+      checkService(
+          systemServices[2]!, i18n('privacyHubSystemServicesLocalWeatherName'),
+          localWeatherEnabled, {
+            notConfiguredText:
+                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            blockedText: 'Blocked',
+          });
+    }
+
+    // Test Dark Theme
+    for (const scheduleType of allScheduleTypes) {
+      setDarkThemeScheduleType(scheduleType as ScheduleType);
+      await waitAfterNextRender(privacyHubGeolocationSubpage);
+
+      checkService(
+          systemServices[3]!, i18n('privacyHubSystemServicesDarkThemeName'),
+          scheduleType === ScheduleType.SUNSET_TO_SUNRISE, {
+            notConfiguredText:
+                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            blockedText: 'Blocked',
+          });
+    }
   }
 
   test('Geolocation sub-label updates on location change', async () => {

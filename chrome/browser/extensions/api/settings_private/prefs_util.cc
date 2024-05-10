@@ -791,6 +791,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Ambient Mode.
+  (*s_allowlist)[ash::prefs::kDarkModeScheduleType] =
+      settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeEnabled] =
       settings_api::PrefType::kBoolean;
   // The following prefs are not displayed to the user but are configurable to

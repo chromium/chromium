@@ -44,6 +44,12 @@ export enum GeolocationAccessLevel {
   ONLY_ALLOWED_FOR_SYSTEM = 2,
 }
 
+export enum ScheduleType {
+  NONE = 0,
+  SUNSET_TO_SUNRISE = 1,
+  CUSTOM = 2,
+}
+
 export const GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE =
     Object.keys(GeolocationAccessLevel).length;
 
@@ -111,9 +117,9 @@ export class SettingsPrivacyHubGeolocationSubpage extends
       },
       automaticTimeZoneText_: {
         type: String,
-        notify: true,
         computed: 'computeAutomaticTimeZoneText_(' +
             'prefs.ash.user.geolocation_access_level.value,' +
+            'prefs.generated.resolve_timezone_by_geolocation_on_off.value,' +
             'currentTimeZoneName_)',
       },
       isSecondaryUser_: {
@@ -142,10 +148,22 @@ export class SettingsPrivacyHubGeolocationSubpage extends
       },
       sunsetScheduleText_: {
         type: String,
-        notify: true,
         computed: 'computeSunsetScheduleText_(' +
             'prefs.ash.user.geolocation_access_level.value,' +
+            `prefs.ash.night_light.schedule_type.value,` +
             'currentSunRiseTime_, currentSunSetTime_)',
+      },
+      localWeatherText_: {
+        type: String,
+        computed: 'computeLocalWeatherText_(' +
+            'prefs.ash.user.geolocation_access_level.value,' +
+            'prefs.settings.ambient_mode.enabled.value)',
+      },
+      darkThemeText_: {
+        type: String,
+        computed: `computeDarkThemeText_(` +
+            'prefs.ash.user.geolocation_access_level.value,' +
+            'prefs.ash.dark_mode.schedule_type.value)',
       },
     };
   }
@@ -277,7 +295,20 @@ export class SettingsPrivacyHubGeolocationSubpage extends
     }
   }
 
+  private isAutomaticTimeZoneConfigured_(): boolean {
+    return this.getPref('generated.resolve_timezone_by_geolocation_on_off')
+        .value;
+  }
+
   private computeAutomaticTimeZoneText_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (!this.isAutomaticTimeZoneConfigured_()) {
+      return this.i18n('privacyHubSystemServicesGeolocationNotConfigured');
+    }
+
     return this.geolocationAllowedForSystem_() ?
         this.i18n('privacyHubSystemServicesAllowedText') :
         this.i18n(
@@ -285,7 +316,20 @@ export class SettingsPrivacyHubGeolocationSubpage extends
             this.currentTimeZoneName_);
   }
 
+  private isNightLightConfiguredToUseGeolocation_(): boolean {
+    return this.getPref<ScheduleType>('ash.night_light.schedule_type').value ===
+        ScheduleType.SUNSET_TO_SUNRISE;
+  }
+
   private computeSunsetScheduleText_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (!this.isNightLightConfiguredToUseGeolocation_()) {
+      return this.i18n('privacyHubSystemServicesGeolocationNotConfigured');
+    }
+
     return this.geolocationAllowedForSystem_() ?
         this.i18n('privacyHubSystemServicesAllowedText') :
         this.i18n(
@@ -335,12 +379,42 @@ export class SettingsPrivacyHubGeolocationSubpage extends
                .value !== GeolocationAccessLevel.DISALLOWED;
   }
 
-  private getSystemServicesPermissionText_(): string {
+  private isLocalWeatherConfiguredToUseGeolocation_(): boolean {
+    return this.getPref('settings.ambient_mode.enabled').value;
+  }
+
+  private computeLocalWeatherText_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (!this.isLocalWeatherConfiguredToUseGeolocation_()) {
+      return this.i18n('privacyHubSystemServicesGeolocationNotConfigured');
+    }
+
     return this.geolocationAllowedForSystem_() ?
         this.i18n('privacyHubSystemServicesAllowedText') :
         this.i18n('privacyHubSystemServicesBlockedText');
   }
 
+  private isDarkThemeConfiguredToUseGeolocation_(): boolean {
+    return this.getPref<ScheduleType>('ash.dark_mode.schedule_type').value ===
+        ScheduleType.SUNSET_TO_SUNRISE;
+  }
+
+  private computeDarkThemeText_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (!this.isDarkThemeConfiguredToUseGeolocation_()) {
+      return this.i18n('privacyHubSystemServicesGeolocationNotConfigured');
+    }
+
+    return this.geolocationAllowedForSystem_() ?
+        this.i18n('privacyHubSystemServicesAllowedText') :
+        this.i18n('privacyHubSystemServicesBlockedText');
+  }
   private onTimeZoneChanged_(): void {
     this.browserProxy_.getCurrentTimeZoneName().then((timeZoneName) => {
       this.currentTimeZoneName_ = timeZoneName;
