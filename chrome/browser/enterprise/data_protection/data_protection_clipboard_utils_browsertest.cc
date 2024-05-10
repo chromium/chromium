@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,6 +26,9 @@
 namespace enterprise_data_protection {
 
 namespace {
+
+constexpr char kGoogleUrl[] = "https://google.com/";
+constexpr char kUserName[] = "test-user@chromium.org";
 
 content::ClipboardPasteData MakeClipboardPasteData(
     std::string text,
@@ -49,18 +53,33 @@ class DataControlsClipboardUtilsBrowserTest
   }
   ~DataControlsClipboardUtilsBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    event_report_validator_helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(
+        browser()->profile(), /*browser_test=*/true);
+  }
+
+  void TearDownOnMainThread() override {
+    event_report_validator_helper_.reset();
+  }
+
   content::WebContents* contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_features_;
+  std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
+      event_report_validator_helper_;
 };
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_NoSource) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectNoReport();
+
   data_controls::DataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
@@ -86,36 +105,28 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteAllowed_SameSource) {
-  data_controls::DataControlsDialogTestHelper helper(
-      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
-  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  PasteIfAllowedByPolicy(
-      /*source=*/content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL("https://google.com")),
-          base::BindLambdaForTesting(
-              [this]() { return contents()->GetBrowserContext(); }),
-          *contents()->GetPrimaryMainFrame()),
-      /*destination=*/
-      content::ClipboardEndpoint(
-          ui::DataTransferEndpoint(GURL("https://google.com")),
-          base::BindLambdaForTesting(
-              [this]() { return contents()->GetBrowserContext(); }),
-          *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
-      future.GetCallback());
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url=*/
+      kGoogleUrl,
+      /*expected_tab_url=*/kGoogleUrl,
+      /*source=*/"",
+      /*destination=*/kGoogleUrl,
+      /*mime_types=*/
+      []() {
+        static std::set<std::string> set = {"text/html"};
+        return &set;
+      }(),
+      /*trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/{{"id", "name"}},
+      /*event_result=*/"EVENT_RESULT_BLOCKED",
+      /*profile_username=*/kUserName,
+      /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
+      /*content_size=*/1234);
 
-  auto paste_data = future.Get();
-  EXPECT_TRUE(paste_data);
-  EXPECT_EQ(paste_data->text, u"text");
-  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
-            "image");
-
-  EXPECT_FALSE(helper.dialog());
-}
-
-IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
-                       PasteBlockedByDataControls_DestinationRule) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "name": "name",
+                    "rule_id": "id",
                     "destinations": {
                       "urls": ["google.com"]
                     },
@@ -135,8 +146,70 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
-      future.GetCallback());
+      /*metadata=*/
+      {
+          .size = 1234,
+          .format_type = ui::ClipboardFormatType::HtmlType(),
+      },
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+
+  auto paste_data = future.Get();
+  EXPECT_FALSE(paste_data);
+
+  helper.WaitForDialogToInitialize();
+  helper.CancelDialog();
+  helper.WaitForDialogToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
+                       PasteBlockedByDataControls_DestinationRule) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url=*/
+      kGoogleUrl,
+      /*expected_tab_url=*/kGoogleUrl,
+      /*source=*/"",
+      /*destination=*/kGoogleUrl,
+      /*mime_types=*/
+      []() {
+        static std::set<std::string> set = {"text/plain"};
+        return &set;
+      }(),
+      /*trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/{{"rule_id", "rule_name"}},
+      /*event_result=*/"EVENT_RESULT_BLOCKED",
+      /*profile_username=*/kUserName,
+      /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
+      /*content_size=*/1234);
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "name": "rule_name",
+                    "rule_id": "rule_id",
+                    "destinations": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteIfAllowedByPolicy(
+      /*source=*/content::ClipboardEndpoint(std::nullopt),
+      /*destination=*/
+      content::ClipboardEndpoint(
+          ui::DataTransferEndpoint(GURL("https://google.com")),
+          base::BindLambdaForTesting(
+              [this]() { return contents()->GetBrowserContext(); }),
+          *contents()->GetPrimaryMainFrame()),
+      /*metadata=*/
+      {
+          .size = 1234,
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
 
   auto paste_data = future.Get();
   EXPECT_FALSE(paste_data);
@@ -231,6 +304,9 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                        PasteBlockedByDataControls_SourceRule) {
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectNoReport();
+
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                     "destinations": {
                       "urls": ["google.com"]
@@ -268,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
                 return destination_profile.get();
               }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("text", "image", {}),
+      /*metadata=*/
+      {.size = 1234}, MakeClipboardPasteData("text", "image", {}),
       future.GetCallback());
 
   auto paste_data = future.Get();

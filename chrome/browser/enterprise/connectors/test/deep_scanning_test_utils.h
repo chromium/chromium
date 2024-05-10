@@ -272,10 +272,11 @@ class EventReportValidator {
   base::RepeatingClosure done_closure_;
 };
 
-// Helper class to set up unit tests to use `EventReportValidator`.
+// Helper class to set up tests to use `EventReportValidator`.
 class EventReportValidatorHelper {
  public:
-  explicit EventReportValidatorHelper(Profile* profile);
+  explicit EventReportValidatorHelper(Profile* profile,
+                                      bool browser_test = false);
   ~EventReportValidatorHelper();
 
   EventReportValidator CreateValidator();

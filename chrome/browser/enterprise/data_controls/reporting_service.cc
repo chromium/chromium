@@ -126,7 +126,7 @@ void ReportingService::ReportPaste(
 bool ReportingService::IncludeSourceInformation(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination) const {
-  if (source.browser_context()->IsOffTheRecord()) {
+  if (source.browser_context() && source.browser_context()->IsOffTheRecord()) {
     return false;
   }
 

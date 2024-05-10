@@ -833,24 +833,28 @@ void EventReportValidator::SetDoneClosure(base::RepeatingClosure closure) {
   done_closure_ = std::move(closure);
 }
 
-EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile)
+EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
+                                                       bool browser_test)
     : profile_(profile),
       client_(std::make_unique<policy::MockCloudPolicyClient>()) {
   DCHECK(profile);
 
   policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  client_->SetDMToken("dm_token");
 
-  extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-      ->SetTestingFactory(
-          profile, base::BindRepeating([](content::BrowserContext* context) {
-            return std::unique_ptr<KeyedService>(
-                new extensions::SafeBrowsingPrivateEventRouter(context));
-          }));
-  RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
-      profile, base::BindRepeating([](content::BrowserContext* context) {
-        return std::unique_ptr<KeyedService>(
-            new enterprise_connectors::RealtimeReportingClient(context));
-      }));
+  if (!browser_test) {
+    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
+        ->SetTestingFactory(
+            profile, base::BindRepeating([](content::BrowserContext* context) {
+              return std::unique_ptr<KeyedService>(
+                  new extensions::SafeBrowsingPrivateEventRouter(context));
+            }));
+    RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
+        profile, base::BindRepeating([](content::BrowserContext* context) {
+          return std::unique_ptr<KeyedService>(
+              new enterprise_connectors::RealtimeReportingClient(context));
+        }));
+  }
 
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetBrowserCloudPolicyClientForTesting(client_.get());
@@ -859,7 +863,6 @@ EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile)
   RealtimeReportingClientFactory::GetForProfile(profile)
       ->SetIdentityManagerForTesting(
           identity_test_environment_.identity_manager());
-
   SetOnSecurityEventReporting(profile->GetPrefs(), true);
 }
 

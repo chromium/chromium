@@ -13,9 +13,12 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
+#include "components/enterprise/data_controls/prefs.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/clipboard_types.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -224,6 +227,35 @@ void PasteIfAllowedByContentAnalysis(
   }
 }
 
+bool DataControlsAppliedToMachineScope(
+    content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+  return Profile::FromBrowserContext(browser_context)
+             ->GetPrefs()
+             ->GetInteger(data_controls::kDataControlsRulesScopePref) ==
+         policy::PolicyScope::POLICY_SCOPE_MACHINE;
+}
+
+void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
+                                  const content::ClipboardEndpoint& destination,
+                                  const content::ClipboardMetadata& metadata,
+                                  const data_controls::Verdict& verdict) {
+  // If the "DataControlsRules" is applied to the entire browser, the verdict
+  // only needs to be reported once for the keyed service of `destination`. If
+  // `destination` is incognito, that means no reporting will be done.
+  if (DataControlsAppliedToMachineScope(destination.browser_context())) {
+    auto* reporting_service =
+        data_controls::ReportingServiceFactory::GetForBrowserContext(
+            destination.browser_context());
+    if (reporting_service) {
+      reporting_service->ReportPaste(source, destination, metadata, verdict);
+    }
+    return;
+  } else {
+    // TODO(b/303640183): Handle per-profile rule trigger reporting.
+  }
+}
+
 void OnDataControlsPasteWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -261,11 +293,11 @@ void PasteIfAllowedByDataControls(
         std::move(verdict));
   }
 
-  // TODO(b/302340176): Add support for verdicts other than "block" and "warn".
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     data_controls::DataControlsDialog::Show(
         destination.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
+    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
     std::move(callback).Run(std::nullopt);
     return;
   } else if (verdict.level() == data_controls::Rule::Level::kWarn) {
