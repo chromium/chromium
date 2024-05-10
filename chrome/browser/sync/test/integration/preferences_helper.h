@@ -86,6 +86,10 @@ std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     const std::string& pref_name,
     fake_server::FakeServer* fake_server);
 
+// Converts `value` to the synced pref value, i.e. the value as it is sent via
+// the specifics.
+std::string ConvertPrefValueToValueInSpecifics(const base::Value& value);
+
 }  // namespace preferences_helper
 
 // Checker that blocks until pref has the specified value.

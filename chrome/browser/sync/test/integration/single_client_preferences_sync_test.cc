@@ -40,19 +40,13 @@
 namespace {
 
 using preferences_helper::ChangeBooleanPref;
+using preferences_helper::ConvertPrefValueToValueInSpecifics;
 using preferences_helper::GetPrefs;
 using preferences_helper::GetRegistry;
 using testing::Eq;
 using testing::Ne;
 using testing::NotNull;
 using user_prefs::PrefRegistrySyncable;
-
-std::string ConvertToSyncedPrefValue(const base::Value& value) {
-  std::string result;
-  bool success = base::JSONWriter::Write(value, &result);
-  DCHECK(success);
-  return result;
-}
 
 sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
     syncer::ModelType model_type,
@@ -91,7 +85,7 @@ class SingleClientPreferencesSyncTest : public SyncTest {
     sync_pb::PreferenceSpecifics* preference_specifics =
         GetPreferenceSpecifics(model_type, specifics);
     preference_specifics->set_name(name);
-    preference_specifics->set_value(ConvertToSyncedPrefValue(value));
+    preference_specifics->set_value(ConvertPrefValueToValueInSpecifics(value));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -378,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
 
   // Disable syncing preferences.
@@ -422,14 +416,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
   // Not the right way to test this but the non-syncable pref has not been
   // synced to the new value.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES, kNonSyncablePref,
-                  ConvertToSyncedPrefValue(base::Value("account value")))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::ModelType::PREFERENCES, kNonSyncablePref,
+          ConvertPrefValueToValueInSpecifics(base::Value("account value")))
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -492,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                 sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
                 GetFakeServer())
                 ->value(),
-            ConvertToSyncedPrefValue(base::Value(new_value.Clone())));
+            ConvertPrefValueToValueInSpecifics(base::Value(new_value.Clone())));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -538,11 +533,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
       new_value);
 
   // New value is synced to account.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
-                  sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value(new_value.Clone())))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::ModelType::PREFERENCES,
+          sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value(new_value.Clone())))
+          .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
@@ -975,12 +971,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
                                   .Set("cnn.com", "deny")
                                   .Set("facebook.com", "allow")
                                   .Set("microsoft.com", "deny");
-  EXPECT_TRUE(
-      FakeServerPrefMatchesValueChecker(
-          syncer::ModelType::PREFERENCES,
-          sync_preferences::kSyncableMergeableDictPrefForTesting,
-          ConvertToSyncedPrefValue(base::Value(updated_server_value.Clone())))
-          .Wait());
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES,
+                  sync_preferences::kSyncableMergeableDictPrefForTesting,
+                  ConvertPrefValueToValueInSpecifics(
+                      base::Value(updated_server_value.Clone())))
+                  .Wait());
 
   // Disable syncing preferences.
   ASSERT_TRUE(GetClient(0)->DisableSyncForType(
@@ -1096,7 +1092,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::PREFERENCES,
                   sync_preferences::kSyncableMergeableListPrefForTesting,
-                  ConvertToSyncedPrefValue(base::Value(updated_value.Clone())))
+                  ConvertPrefValueToValueInSpecifics(
+                      base::Value(updated_value.Clone())))
                   .Wait());
 
   // Disable syncing preferences.

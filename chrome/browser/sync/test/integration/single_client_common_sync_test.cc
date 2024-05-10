@@ -163,17 +163,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   const syncer::ModelTypeSet kInterestingDataTypes{syncer::BOOKMARKS,
                                                    syncer::PREFERENCES};
 
-  ASSERT_TRUE(SetupClients());
-
+  ASSERT_TRUE(SetupSync());
   // Set the preference to false initially which should get synced.
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
-  ASSERT_TRUE(SetupSync());
-  std::optional<sync_pb::PreferenceSpecifics> server_value =
-      preferences_helper::GetPreferenceInFakeServer(
-          syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
-          GetFakeServer());
-  ASSERT_TRUE(server_value.has_value());
-  ASSERT_EQ(server_value->value(), "false");
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                  preferences_helper::ConvertPrefValueToValueInSpecifics(
+                      base::Value(false)))
+                  .Wait());
 
   {
     // No types have unsynced data.

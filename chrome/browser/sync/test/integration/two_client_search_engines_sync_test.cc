@@ -335,14 +335,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
                        DeleteSyncedDefaultWithoutPrefSync) {
   ASSERT_TRUE(SetupClients());
-
   AddSearchEngine(/*profile_index=*/0, "test0");
   AddSearchEngine(/*profile_index=*/0, "test1");
   AddSearchEngine(/*profile_index=*/1, "test0");
   AddSearchEngine(/*profile_index=*/1, "test1");
-  ChangeDefaultSearchProvider(/*profile_index=*/0, "test0");
 
   ASSERT_TRUE(SetupSync());
+
+  ChangeDefaultSearchProvider(/*profile_index=*/0, "test0");
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 
   // Throttle PREFERENCES to block any commits to them, which in this case

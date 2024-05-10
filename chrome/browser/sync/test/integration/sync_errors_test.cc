@@ -389,20 +389,14 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
   const std::string kBookmarkFolderTitle = "title1";
 
-  ASSERT_TRUE(SetupClients());
-
+  ASSERT_TRUE(SetupSync());
   // Set the preference to false initially which should get synced.
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(preferences_helper::GetPreferenceInFakeServer(
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
                   syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
-                  GetFakeServer())
-                  .has_value());
-  ASSERT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
-                GetFakeServer())
-                ->value(),
-            "false");
+                  preferences_helper::ConvertPrefValueToValueInSpecifics(
+                      base::Value(false)))
+                  .Wait());
 
   // Start throttling PREFERENCES so further commits will be rejected by the
   // server.

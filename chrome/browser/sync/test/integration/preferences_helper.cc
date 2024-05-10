@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -151,6 +152,13 @@ std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
   }
 
   return std::nullopt;
+}
+
+std::string ConvertPrefValueToValueInSpecifics(const base::Value& value) {
+  std::string result;
+  bool success = base::JSONWriter::Write(value, &result);
+  DCHECK(success);
+  return result;
 }
 
 }  // namespace preferences_helper
