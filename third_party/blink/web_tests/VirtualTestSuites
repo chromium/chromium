@@ -1347,6 +1347,22 @@
     "expires": "December 1, 2024"
   },
   {
+    "prefix": "view-transition-software",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["view-transitions-api@chromium.org"],
+    "bases": ["external/wpt/css/css-view-transitions/3d-transform-incoming.html",
+              "external/wpt/css/css-view-transitions/3d-transform-outgoing.html",
+              "external/wpt/css/css-view-transitions/animating-new-content-subset.html",
+              "external/wpt/css/css-view-transitions/animating-new-content.html",
+              "external/wpt/css/css-view-transitions/backdrop-filter-animated.html",
+              "external/wpt/css/css-view-transitions/backdrop-filter-captured.html",
+              "external/wpt/css/css-view-transitions/block-with-overflowing-text.html",
+              "external/wpt/css/css-view-transitions/break-inside-avoid-child.html"],
+    "args": ["--enable-threaded-compositing", "--disable-gpu"],
+    "exclusive_tests": "ALL",
+    "expires": "December 1, 2024"
+  },
+  {
     "prefix": "view-transition-on-navigation",
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["view-transitions-api@chromium.org"],

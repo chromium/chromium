@@ -142,18 +142,28 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       kResultFormat, kResultDestination,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetMutableWeakPtr(), shared_pass_index,
-                     draw_data));
+                     draw_data, is_software));
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  if (!is_software && shared_image_interface_) {
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                     gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  if (shared_image_interface_) {
     scoped_refptr<gpu::ClientSharedImage>& shared_image =
         blit_shared_images_[shared_pass_index];
-    shared_image = shared_image_interface_->CreateSharedImage(
-        {SinglePlaneFormat::kRGBA_8888, draw_data.size, gfx::ColorSpace(),
-         flags, "ViewTransitionTexture"},
-        gpu::kNullSurfaceHandle);
+    if (is_software) {
+      uint32_t flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
+      shared_image = shared_image_interface_
+                         ->CreateSharedImage({SinglePlaneFormat::kBGRA_8888,
+                                              draw_data.size,
+                                              gfx::ColorSpace::CreateSRGB(),
+                                              flags, "ViewTransitionTexture"})
+                         .shared_image;
+    } else {
+      uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+      shared_image = shared_image_interface_->CreateSharedImage(
+          {SinglePlaneFormat::kRGBA_8888, draw_data.size, gfx::ColorSpace(),
+           flags, "ViewTransitionTexture"},
+          gpu::kNullSurfaceHandle);
+    }
     request->set_result_selection(gfx::Rect(draw_data.size));
     request->set_blit_request(
         BlitRequest(gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
@@ -182,6 +192,7 @@ size_t SurfaceSavedFrame::ExpectedResultCount() const {
 void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     size_t shared_index,
     const RenderPassDrawData& data,
+    bool is_software,
     std::unique_ptr<CopyOutputResult> output_copy) {
   DCHECK_GT(copy_request_count_, 0u);
   // Even if we early out, we update the count since we are no longer waiting
@@ -214,6 +225,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   DCHECK_EQ(output_copy->format(), CopyOutputResult::Format::RGBA);
   if (output_copy->destination() ==
       CopyOutputResult::Destination::kSystemMemory) {
+    DCHECK(is_software);
     slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
     slot->is_software = true;
   } else {
@@ -222,17 +234,18 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     slot->sync_token = output_copy_texture.mailbox_holders[0].sync_token;
     slot->color_space = output_copy_texture.color_space;
 
-    slot->is_software = false;
+    slot->is_software = is_software;
   }
 
   if (auto it = blit_shared_images_.find(shared_index);
       it != blit_shared_images_.end()) {
-    // TODO(vmpstr): This needs to change once we support software.
     CHECK_EQ(output_copy->destination(),
              CopyOutputResult::Destination::kNativeTextures);
 
     CHECK_EQ(output_copy->size(), data.size);
     CHECK_EQ(output_copy->format(), CopyOutputResult::Format::RGBA);
+
+    slot->shared_image = it->second;
 
     slot->release_callback = base::BindOnce(
         [](scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -313,6 +326,8 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
 
   bitmap = std::move(other.bitmap);
   other.bitmap = SkBitmap();
+
+  shared_image = std::move(other.shared_image);
 
   draw_data = std::move(other.draw_data);
 

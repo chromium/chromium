@@ -47,13 +47,17 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     OutputCopyResult& operator=(OutputCopyResult&& other);
 
-    // Texture representation.
-    gpu::Mailbox mailbox;
     gpu::SyncToken sync_token;
     gfx::ColorSpace color_space;
 
+    // Texture representation.
+    gpu::Mailbox mailbox;
+
     // Software bitmap representation.
     SkBitmap bitmap;
+
+    // Software image representation.
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // This is information needed to draw the texture as if it was a part of the
     // original frame.
@@ -111,6 +115,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   void NotifyCopyOfOutputComplete(size_t shared_index,
                                   const RenderPassDrawData& info,
+                                  bool is_software,
                                   std::unique_ptr<CopyOutputResult> result);
 
   size_t ExpectedResultCount() const;

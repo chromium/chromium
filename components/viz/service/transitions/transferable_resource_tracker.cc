@@ -74,25 +74,30 @@ TransferableResourceTracker::ImportResource(
 
   TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.is_software) {
-    DCHECK(output_copy.mailbox.IsZero());
-    DCHECK(!output_copy.release_callback);
-
-    SharedBitmapId id = SharedBitmap::GenerateId();
-    shared_bitmap_manager_->LocalAllocatedSharedBitmap(
-        std::move(output_copy.bitmap), id);
-    resource = TransferableResource::MakeSoftwareSharedBitmap(
-        id, gpu::SyncToken(), output_copy.draw_data.size,
-        SinglePlaneFormat::kRGBA_8888,
-        TransferableResource::ResourceSource::kSharedElementTransition);
-
-    // Remove the bitmap from shared bitmap manager when no longer in use.
-    release_callback = base::BindOnce(
-        [](SharedBitmapManager* manager, const TransferableResource& resource,
-           const gpu::SyncToken& sync_token) {
-          const SharedBitmapId& id = resource.shared_bitmap_id();
-          manager->ChildDeletedSharedBitmap(id);
-        },
-        shared_bitmap_manager_);
+    // TODO(vmpstr): Clean this up after verifying that non-shared_image path
+    // can't be reached.
+    if (output_copy.shared_image) {
+      resource = TransferableResource::MakeSoftwareSharedImage(
+          output_copy.shared_image, gpu::SyncToken(),
+          output_copy.draw_data.size, output_copy.shared_image->format());
+    } else {
+      SharedBitmapId id = SharedBitmap::GenerateId();
+      shared_bitmap_manager_->LocalAllocatedSharedBitmap(
+          std::move(output_copy.bitmap), id);
+      resource = TransferableResource::MakeSoftwareSharedBitmap(
+          id, gpu::SyncToken(), output_copy.draw_data.size,
+          SinglePlaneFormat::kRGBA_8888,
+          TransferableResource::ResourceSource::kSharedElementTransition);
+      // Remove the bitmap from shared bitmap manager when no longer in use.
+      DCHECK(!output_copy.release_callback);
+      release_callback = base::BindOnce(
+          [](SharedBitmapManager* manager, const TransferableResource& resource,
+             const gpu::SyncToken& sync_token) {
+            const SharedBitmapId& id = resource.shared_bitmap_id();
+            manager->ChildDeletedSharedBitmap(id);
+          },
+          shared_bitmap_manager_);
+    }
   } else {
     DCHECK(output_copy.bitmap.drawsNothing());
 
@@ -102,16 +107,16 @@ TransferableResourceTracker::ImportResource(
         /*is_overlay_candidate=*/false,
         TransferableResource::ResourceSource::kSharedElementTransition);
     resource.color_space = output_copy.color_space;
+  }
 
-    // Run the SingleReleaseCallback when no longer in use.
-    if (output_copy.release_callback) {
-      release_callback = base::BindOnce(
-          [](ReleaseCallback callback, const TransferableResource& resource,
-             const gpu::SyncToken& sync_token) {
-            std::move(callback).Run(sync_token, /*is_lost=*/false);
-          },
-          std::move(output_copy.release_callback));
-    }
+  if (output_copy.release_callback) {
+    DCHECK(!release_callback);
+    release_callback = base::BindOnce(
+        [](ReleaseCallback callback, const TransferableResource& resource,
+           const gpu::SyncToken& sync_token) {
+          std::move(callback).Run(sync_token, /*is_lost=*/false);
+        },
+        std::move(output_copy.release_callback));
   }
 
   resource.id = id_tracker_->AllocId(/*initial_ref_count=*/1);

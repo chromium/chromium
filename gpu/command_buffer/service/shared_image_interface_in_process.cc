@@ -31,6 +31,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_implementation.h"
 
 namespace gpu {
 
@@ -198,6 +199,10 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
 }
 
 bool SharedImageInterfaceInProcess::MakeContextCurrent(bool needs_gl) {
+  if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
+    return true;
+  }
+
   if (!context_state_)
     return false;
 
