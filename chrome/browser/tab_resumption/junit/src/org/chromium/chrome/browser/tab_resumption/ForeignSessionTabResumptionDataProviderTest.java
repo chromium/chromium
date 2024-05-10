@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,8 +20,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
@@ -30,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/** Unit tests for ForeignSessionTabResumptionDataProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
@@ -48,6 +53,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     private SourceDataChangedObserver mSourceDataChangedObserver;
 
     private int mStatusChangedCallbackCounter;
+    private boolean mFetchSuggestionsAndCheckCallFlag;
 
     @Before
     public void setUp() {
@@ -78,9 +84,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         when(mSource.canUseData()).thenReturn(true);
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
         // Initial fetch yields TENTATIVE results.
-        when(mSource.getSuggestions())
-                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -95,8 +100,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         mDataProvider.onDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
         // Fetch now yields STABLE results.
-        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.STABLE);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -112,8 +117,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
 
         // However, fetching would still yield updated data. This is useful for forced refresh.
-        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.STABLE);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -125,8 +130,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(2, mStatusChangedCallbackCounter);
         // Fetch now yields FORCED_NULL results with null suggestions, not actual suggestions.
-        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -143,9 +148,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         when(mSource.canUseData()).thenReturn(true);
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
         // Initial fetch yields TENTATIVE results.
-        when(mSource.getSuggestions())
-                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.TENTATIVE);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -173,8 +177,8 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         mDataProvider.onDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(1, mStatusChangedCallbackCounter);
         // Fetch now yields FORCED_NULL results with null suggestions, ignoring existing data.
-        when(mSource.getSuggestions()).thenReturn(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
                     List<SuggestionEntry> suggestions = result.suggestions;
@@ -190,14 +194,39 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     public void testCannotUseData() {
         when(mSource.canUseData()).thenReturn(false);
         when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS);
-        when(mSource.getSuggestions())
-                .thenReturn(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
-
-        mDataProvider.fetchSuggestions(
+        plantSourceGetSuggestionsResult(new ArrayList<>(Arrays.asList(ENTRY1, ENTRY2, ENTRY3)));
+        fetchSuggestionsAndCheck(
                 (SuggestionsResult result) -> {
                     Assert.assertEquals(result.strength, ResultStrength.FORCED_NULL);
                     List<SuggestionEntry> suggestions = result.suggestions;
                     Assert.assertNull(suggestions);
                 });
+    }
+
+    /**
+     * Plants callback-passed results for mSource.getSuggestions(), similar to
+     * when(...).thenReturn(...) and less committal than using ArgumentCaptor.
+     */
+    private void plantSourceGetSuggestionsResult(List<SuggestionEntry> suggestions) {
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            ((Callback<List<SuggestionEntry>>) invocation.getArguments()[0])
+                                    .onResult(suggestions);
+                            return null;
+                        })
+                .when(mSource)
+                .getSuggestions(any(Callback.class));
+    }
+
+    /** Calls `mDataProvider.fetchSuggestions` using passed `callback`, whose call is asserted. */
+    private void fetchSuggestionsAndCheck(Callback<SuggestionsResult> callback) {
+        mFetchSuggestionsAndCheckCallFlag = false;
+        // The test setup ensures that the passed lambda is eagerly called.
+        mDataProvider.fetchSuggestions(
+                (SuggestionsResult result) -> {
+                    callback.onResult(result);
+                    mFetchSuggestionsAndCheckCallFlag = true;
+                });
+        assert mFetchSuggestionsAndCheckCallFlag;
     }
 }

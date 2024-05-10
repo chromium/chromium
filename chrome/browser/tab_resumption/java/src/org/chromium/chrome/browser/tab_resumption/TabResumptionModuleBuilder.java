@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -37,10 +38,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final boolean mUseSalientImage;
 
-    // Foreign Session data source that listens to login / sync status changes. Shared among data
+    // SuggestionEntry data source that listens to login / sync status changes. Shared among data
     // providers to reduce resource use, and ref-counted to ensure proper resource management.
-    private SyncDerivedSuggestionEntrySource mSyncDerivedSuggestionEntrySource;
-    private int mSyncDerivedSuggestionEntrySourceRefCount;
+    private SyncDerivedSuggestionEntrySource mSuggestionEntrySource;
+    private int mSuggestionEntrySourceRefCount;
 
     @Nullable private ImageServiceBridge mImageServiceBridge;
 
@@ -138,22 +139,24 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 
-    private void addRefToSuggestionSource() {
-        if (mSyncDerivedSuggestionEntrySourceRefCount == 0) {
-            assert mSyncDerivedSuggestionEntrySource == null;
+    private void addRefToSuggestionEntrySource() {
+        if (mSuggestionEntrySourceRefCount == 0) {
+            assert mSuggestionEntrySource == null;
             Profile profile = getRegularProfile();
-            mSyncDerivedSuggestionEntrySource =
-                    SyncDerivedSuggestionEntrySource.createFromProfile(profile);
+            SuggestionBackend suggestionBackend =
+                    new ForeignSessionSuggestionBackend(new ForeignSessionHelper(profile));
+            mSuggestionEntrySource =
+                    SyncDerivedSuggestionEntrySource.createFromProfile(profile, suggestionBackend);
         }
-        ++mSyncDerivedSuggestionEntrySourceRefCount;
+        ++mSuggestionEntrySourceRefCount;
     }
 
-    private void removeRefToSuggestionSource() {
-        assert mSyncDerivedSuggestionEntrySource != null;
-        --mSyncDerivedSuggestionEntrySourceRefCount;
-        if (mSyncDerivedSuggestionEntrySourceRefCount == 0) {
-            mSyncDerivedSuggestionEntrySource.destroy();
-            mSyncDerivedSuggestionEntrySource = null;
+    private void removeRefToSuggestionEntrySource() {
+        assert mSuggestionEntrySource != null;
+        --mSuggestionEntrySourceRefCount;
+        if (mSuggestionEntrySourceRefCount == 0) {
+            mSuggestionEntrySource.destroy();
+            mSuggestionEntrySource = null;
         }
     }
 
@@ -173,10 +176,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
 
         if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
-            addRefToSuggestionSource();
+            addRefToSuggestionEntrySource();
             foreignSessionProvider =
                     new ForeignSessionTabResumptionDataProvider(
-                            mSyncDerivedSuggestionEntrySource, this::removeRefToSuggestionSource);
+                            mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
         }
         return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
     }

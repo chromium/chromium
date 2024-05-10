@@ -86,9 +86,11 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
         if (mStrength == ResultStrength.TENTATIVE && mTentativeSuggestionTime == 0) {
             mTentativeSuggestionTime = mEntrySource.getCurrentTimeMs();
         }
-        List<SuggestionEntry> suggestions = mEntrySource.getSuggestions();
-        assert suggestions != null; // Not null, but may be empty.
-        suggestionsCallback.onResult(new SuggestionsResult(mStrength, suggestions));
+        mEntrySource.getSuggestions(
+                (List<SuggestionEntry> suggestions) -> {
+                    assert suggestions != null; // Not null, but may be empty.
+                    suggestionsCallback.onResult(new SuggestionsResult(mStrength, suggestions));
+                });
     }
 
     /** Implements {@link SyncDerivedSuggestionEntrySource.SourceDataChangedObserver} */

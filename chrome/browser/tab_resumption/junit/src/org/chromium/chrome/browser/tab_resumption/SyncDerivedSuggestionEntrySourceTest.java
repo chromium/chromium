@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -21,44 +22,48 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
-import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/** Unit tests for SyncDerivedSuggestionEntrySource. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
-    @Mock private ForeignSessionHelper mForeignSessionHelper;
+    @Mock private SuggestionBackend mSuggestionBackend;
 
-    @Captor private ArgumentCaptor<ForeignSessionCallback> mForeignSessionCallbackCaptor;
+    @Captor private ArgumentCaptor<Runnable> mUpdateObserverCaptor;
     @Captor private ArgumentCaptor<SignInStateObserver> mSignInStateObserverCaptor;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mReadCachedCallbackCaptor;
 
     private long mFakeTime;
     private List<ForeignSession> mFakeSuggestions;
 
     private SyncDerivedSuggestionEntrySource mSource;
-    ForeignSessionCallback mForeignSessionCallback;
+    private Runnable mUpdateObserver;
 
     private int mDataChangedCounter;
     private boolean mLastIsPermissionUpdate;
     private SourceDataChangedObserver mSourceDataChangedObserver;
+
+    private boolean mGetSuggestionsSyncCallFlag;
 
     @Before
     public void setUp() {
@@ -83,50 +88,50 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Test
     @SmallTest
     public void testMainFlow() {
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
+        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
 
         createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
         Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
-        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(1)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions1);
+        List<SuggestionEntry> suggestions1 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(1)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
 
         // Load suggestions again: There should be no change.
-        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(2)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions2);
+        List<SuggestionEntry> suggestions2 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(2)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions2);
         Assert.assertEquals(0, mDataChangedCounter);
 
         // 3s elapses, change ForeignSession data, trigger update.
         mFakeTime += TimeUnit.SECONDS.toMillis(3);
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsB());
-        mForeignSessionCallback.onUpdated();
+        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsB());
+        mUpdateObserver.run();
 
         // Check data update callback.
         Assert.assertEquals(1, mDataChangedCounter);
         Assert.assertFalse(mLastIsPermissionUpdate);
 
         // Load suggestions, which should have changed.
-        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(3)).triggerSessionSync();
-        expectFilteredSortedSuggestionsB(suggestions3);
+        List<SuggestionEntry> suggestions3 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(3)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsB(), suggestions3);
     }
 
     @Test
     @SmallTest
     public void testPermissionChange() {
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
+        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
 
         createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
         Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
-        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(1)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions1);
+        List<SuggestionEntry> suggestions1 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(1)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
 
         // Disable sync, check data update callback.
@@ -136,9 +141,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(1)).triggerSessionSync();
-        expectEmptySuggestions(suggestions2);
+        List<SuggestionEntry> suggestions2 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(1)).triggerUpdate();
+        assertEmptySuggestions(suggestions2);
 
         // Re-enable sync, check data update callback.
         toggleIsSyncedThenNotify(true);
@@ -147,9 +152,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertTrue(mSource.canUseData());
 
         // Suggestions are available again.
-        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(2)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions3);
+        List<SuggestionEntry> suggestions3 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(2)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions3);
         Assert.assertEquals(2, mDataChangedCounter);
 
         // Log out, check data update callback.
@@ -159,9 +164,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions4 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(2)).triggerSessionSync();
-        expectEmptySuggestions(suggestions4);
+        List<SuggestionEntry> suggestions4 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(2)).triggerUpdate();
+        assertEmptySuggestions(suggestions4);
 
         // Re-log in, check data update callback.
         toggleIsSignedInThenNotify(true);
@@ -170,25 +175,25 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertTrue(mSource.canUseData());
 
         // Suggestions are available again.
-        List<SuggestionEntry> suggestions5 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(3)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions5);
+        List<SuggestionEntry> suggestions5 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(3)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions5);
         Assert.assertEquals(4, mDataChangedCounter);
     }
 
     @Test
     @SmallTest
     public void testInitiallyNotSignedIn() {
-        when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
+        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
 
         // Initially not signed in, and sync is off.
         createEntrySource(/* isSignedIn= */ false, /* isSynced= */ false);
         Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
-        List<SuggestionEntry> suggestions1 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(0)).triggerSessionSync();
-        expectEmptySuggestions(suggestions1);
+        List<SuggestionEntry> suggestions1 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(0)).triggerUpdate();
+        assertEmptySuggestions(suggestions1);
         Assert.assertEquals(0, mDataChangedCounter);
 
         // Sign in.
@@ -198,9 +203,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: Still none, since sync is off.
-        List<SuggestionEntry> suggestions2 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(0)).triggerSessionSync();
-        expectEmptySuggestions(suggestions2);
+        List<SuggestionEntry> suggestions2 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(0)).triggerUpdate();
+        assertEmptySuggestions(suggestions2);
         Assert.assertEquals(1, mDataChangedCounter);
 
         // Enable sync.
@@ -210,9 +215,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertTrue(mSource.canUseData());
 
         // Load suggestions: Now things should work.
-        List<SuggestionEntry> suggestions3 = mSource.getSuggestions();
-        verify(mForeignSessionHelper, times(1)).triggerSessionSync();
-        expectFilteredSortedSuggestionsA(suggestions3);
+        List<SuggestionEntry> suggestions3 = getSuggestionsSync();
+        verify(mSuggestionBackend, times(1)).triggerUpdate();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions3);
         Assert.assertEquals(2, mDataChangedCounter);
     }
 
@@ -224,7 +229,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
                         /* signinManager= */ mSigninManager,
                         /* identityManager= */ mIdentityManager,
                         /* syncService= */ mSyncService,
-                        /* foreignSessionHelper= */ mForeignSessionHelper) {
+                        /* foreignSessionHelper= */ mSuggestionBackend) {
                     @Override
                     long getCurrentTimeMs() {
                         return mFakeTime;
@@ -234,12 +239,11 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
 
         verify(mSigninManager).addSignInStateObserver(mSignInStateObserverCaptor.capture());
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        verify(mForeignSessionHelper)
-                .setOnForeignSessionCallback(mForeignSessionCallbackCaptor.capture());
+        verify(mSuggestionBackend).setUpdateObserver(mUpdateObserverCaptor.capture());
         Assert.assertEquals(mSource, mSignInStateObserverCaptor.getValue());
         Assert.assertEquals(mSource, mSyncStateChangedListenerCaptor.getValue());
-        mForeignSessionCallback = mForeignSessionCallbackCaptor.getValue();
-        Assert.assertNotNull(mForeignSessionCallback);
+        mUpdateObserver = mUpdateObserverCaptor.getValue();
+        Assert.assertNotNull(mUpdateObserver);
     }
 
     private void toggleIsSignedInThenNotify(boolean isSignedIn) {
@@ -258,43 +262,32 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
     }
 
-    private void checkSuggestionListIsSorted(List<SuggestionEntry> suggestions) {
-        SuggestionEntry prevEntry = null;
-        for (SuggestionEntry entry : suggestions) {
-            if (prevEntry != null) {
-                Assert.assertTrue(prevEntry.compareTo(entry) < 0);
-            }
-            prevEntry = entry;
-        }
+    /**
+     * Plants callback-passed results for mSuggestionBackend.readCached(), similar to
+     * when(...).thenReturn(...) and less committal than using ArgumentCaptor.
+     */
+    private void plantSuggestionBackendReadCachedResult(List<SuggestionEntry> suggestions) {
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            ((Callback<List<SuggestionEntry>>) invocation.getArguments()[0])
+                                    .onResult(suggestions);
+                            return null;
+                        })
+                .when(mSuggestionBackend)
+                .readCached(any(Callback.class));
     }
 
-    private void expectFilteredSortedSuggestionsA(@Nullable List<SuggestionEntry> suggestions) {
-        // There are 7 tabs total, but TAB3 is invalid, and TAB2 is stale, resulting in 5.
-        Assert.assertEquals(5, suggestions.size());
-        checkSuggestionListIsSorted(suggestions);
-        // Just check values for the first entry, which should be TAB6, being the most recent.
-        SuggestionEntry firstEntry = suggestions.get(0);
-        Assert.assertEquals("My Tablet", firstEntry.sourceName);
-        Assert.assertEquals(JUnitTestGURLs.INITIAL_URL, firstEntry.url);
-        Assert.assertEquals("Initial", firstEntry.title);
-        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.lastActiveTime);
-        Assert.assertEquals(106, firstEntry.id);
-    }
-
-    private void expectFilteredSortedSuggestionsB(@Nullable List<SuggestionEntry> suggestions) {
-        // Only TAB5 and TAB7 are open, and they got selected.
-        Assert.assertEquals(2, suggestions.size());
-        checkSuggestionListIsSorted(suggestions);
-        // Just check values for the first entry, which should be TAB5.
-        SuggestionEntry firstEntry = suggestions.get(0);
-        Assert.assertEquals("My Tablet", firstEntry.sourceName);
-        Assert.assertEquals(JUnitTestGURLs.MAPS_URL, firstEntry.url);
-        Assert.assertEquals("Maps", firstEntry.title);
-        Assert.assertEquals(makeTimestamp(4, 0, 0), firstEntry.lastActiveTime);
-        Assert.assertEquals(105, firstEntry.id);
-    }
-
-    private void expectEmptySuggestions(@Nullable List<SuggestionEntry> suggestions) {
-        Assert.assertEquals(0, suggestions.size());
+    /** Adapts `mSource.getSuggestions()` call to return results synchronously. */
+    private List<SuggestionEntry> getSuggestionsSync() {
+        List<SuggestionEntry> ret = new ArrayList<SuggestionEntry>();
+        mGetSuggestionsSyncCallFlag = false;
+        // The test setup ensures that the passed lambda is eagerly called.
+        mSource.getSuggestions(
+                (List<SuggestionEntry> suggestions) -> {
+                    ret.addAll(suggestions);
+                    mGetSuggestionsSyncCallFlag = true;
+                });
+        assert mGetSuggestionsSyncCallFlag;
+        return ret;
     }
 }

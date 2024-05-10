@@ -6,63 +6,49 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Adapter for ForeignSessionHelper with additional features:
- *
- * <pre>
- * * Support to observe "data change events", which combines:
- *   * Permission updates from signin and sync status changes.
- *   * ForeignSessionCallback in response of new data after triggerSessionSync() call.
- * * Synchronous getSuggestions() to get tab resumption module suggestions computed from potentially
- *   stale Foreign Sessions data. This also calls triggerSessionSync(), which allows callers to get
- *   up-to-date results (although this requires another getSuggestions() call).
- * </pre>
+ * A shareable, self-updating, and cached source of SuggestionEntry instances that also observes
+ * permission updates from signin and sync status changes.
  */
 public class SyncDerivedSuggestionEntrySource
         implements SignInStateObserver, SyncStateChangedListener {
 
-    // Suggestions older than 24h are considered stale, and rejected.
-    private static final long STALENESS_THRESHOLD_MS = TimeUnit.HOURS.toMillis(24);
-
-    /** Interface to observe "data change events" in the Source. */
+    /**
+     * Interface for Source caller to observe "data change events", which can be non-permission
+     * updates (suggestion changes) or permission updates (signin or sync status changes).
+     */
     public interface SourceDataChangedObserver {
         public void onDataChanged(boolean isPermissionUpdate);
     }
 
     private final SigninManager mSigninManager;
     private final SyncService mSyncService;
-    private final ForeignSessionHelper mForeignSessionHelper;
+    private final SuggestionBackend mSuggestionBackend;
 
     private final ObserverList<SourceDataChangedObserver> mSourceDataChangedObservers;
 
     private boolean mIsSignedIn;
     private boolean mIsSynced;
 
-    // Flag to indicate whether a computation of suggestions is needed.
-    private boolean mRequireSuggestionsCompute;
+    // Flag to indicate whether `mCachedSuggestionEntries` can be passed without update.
+    private boolean mPassUseCachedResults;
 
-    private final ArrayList<SuggestionEntry> mSuggestions;
+    private final ArrayList<SuggestionEntry> mCachedSuggestionEntries;
 
     /**
      * @param signinManager To observe signin state changes.
@@ -75,11 +61,12 @@ public class SyncDerivedSuggestionEntrySource
             SigninManager signinManager,
             IdentityManager identityManager,
             SyncService syncService,
-            ForeignSessionHelper foreignSessionHelper) {
+            SuggestionBackend suggestionBackend) {
         super();
         mSigninManager = signinManager;
         mSyncService = syncService;
-        mForeignSessionHelper = foreignSessionHelper;
+        mSuggestionBackend = suggestionBackend;
+
         mSourceDataChangedObservers = new ObserverList<SourceDataChangedObserver>();
 
         mSigninManager.addSignInStateObserver(this);
@@ -87,21 +74,22 @@ public class SyncDerivedSuggestionEntrySource
         mIsSignedIn = identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         mIsSynced = mSyncService.hasKeepEverythingSynced();
 
-        mRequireSuggestionsCompute = true;
-        mSuggestions = new ArrayList<SuggestionEntry>();
+        mPassUseCachedResults = false;
+        mCachedSuggestionEntries = new ArrayList<SuggestionEntry>();
 
-        mForeignSessionHelper.setOnForeignSessionCallback(
+        mSuggestionBackend.setUpdateObserver(
                 () -> {
                     dispatchSourceDataChangedObservers(false);
                 });
     }
 
-    public static SyncDerivedSuggestionEntrySource createFromProfile(Profile profile) {
+    public static SyncDerivedSuggestionEntrySource createFromProfile(
+            Profile profile, SuggestionBackend suggestionBackend) {
         return new SyncDerivedSuggestionEntrySource(
                 /* signinManager= */ IdentityServicesProvider.get().getSigninManager(profile),
                 /* identityManager= */ IdentityServicesProvider.get().getIdentityManager(profile),
                 /* syncService= */ SyncServiceFactory.getForProfile(profile),
-                /* foreignSessionHelper= */ new ForeignSessionHelper(profile));
+                /* suggestionBackend= */ suggestionBackend);
     }
 
     /** Implements {@link TabResumptionDataProvider} */
@@ -109,11 +97,11 @@ public class SyncDerivedSuggestionEntrySource
         mSyncService.removeSyncStateChangedListener(this);
         mSigninManager.removeSignInStateObserver(this);
         mSourceDataChangedObservers.clear();
-        mForeignSessionHelper.destroy();
+        mSuggestionBackend.destroy();
     }
 
     /**
-     * @return Whether user settings permit Foreign Session data to be used.
+     * @return Whether user settings permit SuggestionBackend data to be used.
      */
     public boolean canUseData() {
         return mIsSignedIn && mIsSynced;
@@ -154,22 +142,35 @@ public class SyncDerivedSuggestionEntrySource
     }
 
     /**
-     * Computes and returns suggestions entries based on most recently fetched Foreign Session data,
-     * and schecules new sync. Returned results can be shared, so the caller should not modify them,
-     * except perhaps to add shareable cached data (e.g., favicons).
+     * Computes and passes back suggestions entries based on most recently fetched SuggestionBackend
+     * data, and schecules new sync. Returned results may be shared, so the caller should not modify
+     * them.
      */
-    List<SuggestionEntry> getSuggestions() {
+    void getSuggestions(Callback<List<SuggestionEntry>> callback) {
         if (canUseData()) {
-            // Use existing data but trigger sync. If there's no new data then existing data is good
+            // Read cached data but trigger sync. If there's no new data then cached data is good
             // enough. Otherwise new data would notify all observers, which might cause caller to
             // call getSuggestion() again for data update.
-            mForeignSessionHelper.triggerSessionSync();
-            maybeComputeSuggestions();
+            mSuggestionBackend.triggerUpdate();
+
+            if (mPassUseCachedResults) {
+                callback.onResult(mCachedSuggestionEntries);
+            } else {
+                mPassUseCachedResults = true;
+
+                mSuggestionBackend.readCached(
+                        (List<SuggestionEntry> suggestions) -> {
+                            mCachedSuggestionEntries.clear();
+                            mCachedSuggestionEntries.addAll(suggestions);
+                            callback.onResult(mCachedSuggestionEntries);
+                        });
+            }
+
         } else {
-            mSuggestions.clear();
-            mRequireSuggestionsCompute = true;
+            mPassUseCachedResults = false;
+            mCachedSuggestionEntries.clear();
+            callback.onResult(mCachedSuggestionEntries);
         }
-        return mSuggestions;
     }
 
     /** Returns the current time in ms since the epoch. */
@@ -177,40 +178,8 @@ public class SyncDerivedSuggestionEntrySource
         return System.currentTimeMillis();
     }
 
-    void maybeComputeSuggestions() {
-        if (!mRequireSuggestionsCompute) return;
-
-        long currentTimeMs = getCurrentTimeMs();
-        mSuggestions.clear();
-        List<ForeignSession> foreignSessions = mForeignSessionHelper.getForeignSessions();
-        for (ForeignSession session : foreignSessions) {
-            for (ForeignSessionWindow window : session.windows) {
-                for (ForeignSessionTab tab : window.tabs) {
-                    if (isForeignSessionTabUsable(tab)
-                            && currentTimeMs - tab.lastActiveTime <= STALENESS_THRESHOLD_MS) {
-                        mSuggestions.add(
-                                new SuggestionEntry(
-                                        session.name,
-                                        tab.url,
-                                        tab.title,
-                                        tab.lastActiveTime,
-                                        tab.id));
-                    }
-                }
-            }
-        }
-        Collections.sort(mSuggestions);
-
-        mRequireSuggestionsCompute = false;
-    }
-
-    private boolean isForeignSessionTabUsable(ForeignSessionTab tab) {
-        String scheme = tab.url.getScheme();
-        return scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME);
-    }
-
     private void dispatchSourceDataChangedObservers(boolean isPermissionUpdate) {
-        mRequireSuggestionsCompute = true;
+        mPassUseCachedResults = false;
         for (SourceDataChangedObserver observer : mSourceDataChangedObservers) {
             observer.onDataChanged(isPermissionUpdate);
         }
