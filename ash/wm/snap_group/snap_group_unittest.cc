@@ -7148,6 +7148,43 @@ TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   histogram_tester_.ExpectTotalCount(snap_groups_count_histogram, 3);
 }
 
+TEST_F(SnapGroupHistogramTest, SnapGroupUserActions) {
+  UpdateDisplay("800x600");
+  base::UserActionTester user_action_tester;
+
+  // Add a snap group, which will incidentally start partial overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("SnapGroups_StartPartialOverview"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_AddSnapGroup"), 1);
+
+  // Snap to replace.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapToReplace"), 1);
+
+  // Snap via the window layout menu with a ratio >
+  // kSnapToReplaceRatioDiffThreshold to directly snap on top.
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapDirect"), 1);
+
+  // Remove the snap group.
+  w3.reset();
+  ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
+  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RemoveSnapGroup"), 1);
+}
+
 TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
   UpdateDisplay("800x600");
   base::UserActionTester user_action_tester;

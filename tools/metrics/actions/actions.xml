@@ -37433,6 +37433,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SnapGroups_AddSnapGroup">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>Recorded when a snap group is added.</description>
+</action>
+
 <action name="SnapGroups_RecallSnapGroup">
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
@@ -37441,6 +37447,36 @@ should be able to be added at any place in this file.
     all recall inactive group scenarios, including if one of the windows in the
     group was active, then overview was started, then the same group was brought
     back from overview.
+  </description>
+</action>
+
+<action name="SnapGroups_RemoveSnapGroup">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>Recorded when a snap group is removed.</description>
+</action>
+
+<action name="SnapGroups_SnapDirect">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a window is snapped directly on top of a snap group.
+  </description>
+</action>
+
+<action name="SnapGroups_SnapToReplace">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a window is snapped to replace in a snap group.
+  </description>
+</action>
+
+<action name="SnapGroups_StartPartialOverview">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when split view overview session is started.
   </description>
 </action>
 

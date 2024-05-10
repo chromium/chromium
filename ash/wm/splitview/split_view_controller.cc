@@ -38,6 +38,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/auto_snap_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -2262,6 +2263,10 @@ void SplitViewController::OnWindowSnapped(
   }
 
   if (WillStartPartialOverview(window)) {
+    if (!InTabletMode()) {
+      base::RecordAction(
+          base::UserMetricsAction("SnapGroups_StartPartialOverview"));
+    }
     RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
         window, overview_start_action_, enter_exit_overview_type_,
         snap_action_source);

@@ -26,6 +26,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
@@ -112,6 +113,7 @@ SnapGroup* SnapGroupController::AddSnapGroup(
 
   if (!replace) {
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
+    base::RecordAction(base::UserMetricsAction("SnapGroups_AddSnapGroup"));
   }
 
   return snap_group_ptr;
@@ -140,6 +142,7 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group, bool replace) {
     RecordSnapGroupPersistenceDuration(base::TimeTicks::Now() -
                                        snap_group->carry_over_creation_time_);
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
+    base::RecordAction(base::UserMetricsAction("SnapGroups_RemoveSnapGroup"));
   }
 
   // We should always record the actual duration of the Snap Group upon removal.
@@ -227,6 +230,7 @@ bool SnapGroupController::OnSnappingWindow(
     // Disallow snap-to-replace if the snap ratio difference exceeds the allowed
     // threshold.
     if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
+      base::RecordAction(base::UserMetricsAction("SnapGroups_SnapDirect"));
       return false;
     }
   }
@@ -245,6 +249,7 @@ bool SnapGroupController::OnSnappingWindow(
       new_primary_window, new_secondary_window, /*replace=*/true,
       /*carry_over_creation_time=*/
       std::make_optional<base::TimeTicks>(carry_over_creation_time));
+  base::RecordAction(base::UserMetricsAction("SnapGroups_SnapToReplace"));
 
   // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
   // snap ratio of the `group_to_replace` is preserved.
