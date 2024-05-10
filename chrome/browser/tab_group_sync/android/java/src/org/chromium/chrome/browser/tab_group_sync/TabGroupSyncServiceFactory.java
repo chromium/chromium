@@ -28,6 +28,7 @@ public final class TabGroupSyncServiceFactory {
             return sTabGroupSyncServiceForTesting;
         }
 
+        assert !profile.isOffTheRecord();
         return TabGroupSyncServiceFactoryJni.get().getForProfile(profile);
     }
 

@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 public final class TabGroupSyncFeatures {
     /** Whether tab group sync is enabled. */
     public static boolean isTabGroupSyncEnabled(Profile profile) {
+        if (profile.isOffTheRecord()) return false;
         return TabGroupSyncFeaturesJni.get().isTabGroupSyncEnabled(profile);
     }
 
