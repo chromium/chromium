@@ -14,6 +14,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import gpu_helper
+from gpu_tests.util import host_information
 
 import gpu_path_util
 
@@ -88,6 +89,11 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash',
         'ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
     }
+    if host_information.IsMac():
+      serial_tests |= {
+          # crbug.com/338574390, flaky on Mac/ASan.
+          'ContextLost_WebGLContextRestoredInHiddenTab',
+      }
     return serial_tests
 
   @classmethod
