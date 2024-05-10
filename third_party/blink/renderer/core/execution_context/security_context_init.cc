@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
@@ -195,10 +197,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   if (isolated_app_policy) {
     DCHECK(frame.IsOutermostMainFrame());
     std::unique_ptr<PermissionsPolicy> permissions_policy =
-        PermissionsPolicy::CreateFromParsedPolicy(isolated_app_policy.value(),
-                                                  origin);
-    permissions_policy->SetHeaderPolicyForIsolatedApp(
-        permissions_policy_header_);
+        PermissionsPolicy::CreateFromParsedPolicy(permissions_policy_header_,
+                                                  isolated_app_policy, origin);
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
   } else {
@@ -219,6 +219,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
             PermissionsPolicy::CreateFromParsedPolicy(
                 fenced_frame_properties->parent_permissions_info()
                     ->parsed_permissions_policy,
+                /*base_policy=*/std::nullopt,
                 fenced_frame_properties->parent_permissions_info()->origin);
 
         permissions_policy = PermissionsPolicy::CreateFlexibleForFencedFrame(

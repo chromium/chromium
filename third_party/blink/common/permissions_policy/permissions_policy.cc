@@ -114,19 +114,25 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CopyStateFrom(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
     const ParsedPermissionsPolicy& parsed_policy,
+    const std::optional<ParsedPermissionsPolicy>& base_policy,
     const url::Origin& origin) {
-  return CreateFromParsedPolicy(parsed_policy, origin,
+  return CreateFromParsedPolicy(parsed_policy, base_policy, origin,
                                 GetPermissionsPolicyFeatureList(origin));
 }
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
     const ParsedPermissionsPolicy& parsed_policy,
+    const std::optional<ParsedPermissionsPolicy>&
+        parsed_policy_for_isolated_app,
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features) {
   PermissionsPolicyFeatureState inherited_policies;
   AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints =
-      CreateAllowlistsAndReportingEndpoints(parsed_policy);
+      parsed_policy_for_isolated_app
+          ? CombinePolicies(parsed_policy_for_isolated_app.value(),
+                            parsed_policy)
+          : CreateAllowlistsAndReportingEndpoints(parsed_policy);
   for (const auto& feature : features) {
     inherited_policies[feature.first] =
         base::Contains(allow_lists_and_reporting_endpoints.allowlists_,
@@ -321,45 +327,55 @@ PermissionsPolicy::CreateAllowlistsAndReportingEndpoints(
   return allow_lists_and_reporting_endpoints;
 }
 
-void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
-    const ParsedPermissionsPolicy& parsed_header) {
-  DCHECK(!disallow_updates_);
+// static
+PermissionsPolicy::AllowlistsAndReportingEndpoints
+PermissionsPolicy::CombinePolicies(
+    const ParsedPermissionsPolicy& base_policy,
+    const ParsedPermissionsPolicy& second_policy) {
+  PermissionsPolicy::AllowlistsAndReportingEndpoints
+      allow_lists_and_reporting_endpoints =
+          CreateAllowlistsAndReportingEndpoints(base_policy);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
-       parsed_header) {
+       second_policy) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    const auto header_allowlist =
-        Allowlist::FromDeclaration(parsed_declaration);
-    auto& isolated_app_allowlist = allowlists_.at(feature);
+    const auto& second_allowlist =
+        PermissionsPolicy::Allowlist::FromDeclaration(parsed_declaration);
+    auto& base_allowlist =
+        allow_lists_and_reporting_endpoints.allowlists_.at(feature);
 
     // If the header does not specify further restrictions we do not need to
     // modify the policy.
-    if (header_allowlist.MatchesAll())
+    if (second_allowlist.MatchesAll()) {
       continue;
+    }
 
-    const auto header_allowed_origins = header_allowlist.AllowedOrigins();
+    const auto& second_allowed_origins = second_allowlist.AllowedOrigins();
     // If the manifest allows all origins access to this feature, use the more
     // restrictive header policy.
-    if (isolated_app_allowlist.MatchesAll()) {
-      // TODO(crbug.com/1336275): Refactor to use Allowlist::clone() after
-      // clone() is implemented.
-      isolated_app_allowlist.SetAllowedOrigins(header_allowed_origins);
-      isolated_app_allowlist.RemoveMatchesAll();
-      isolated_app_allowlist.AddSelf(header_allowlist.SelfIfMatches());
+    if (base_allowlist.MatchesAll()) {
+      // TODO(https://crbug.com/40847608): Refactor to use Allowlist::clone()
+      // after clone() is implemented.
+      base_allowlist.SetAllowedOrigins(second_allowed_origins);
+      base_allowlist.RemoveMatchesAll();
+      base_allowlist.AddSelf(second_allowlist.SelfIfMatches());
       continue;
     }
 
     // Otherwise, we use the intersection of origins in the manifest and the
     // header.
-    auto manifest_allowed_origins = isolated_app_allowlist.AllowedOrigins();
+    auto manifest_allowed_origins = base_allowlist.AllowedOrigins();
     std::vector<blink::OriginWithPossibleWildcards> final_allowed_origins;
+    // TODO(https://crbug.com/339404063): consider rewriting this to not be
+    // O(N^2).
     for (const auto& origin : manifest_allowed_origins) {
-      if (base::Contains(header_allowed_origins, origin)) {
+      if (base::Contains(second_allowed_origins, origin)) {
         final_allowed_origins.push_back(origin);
       }
     }
-    isolated_app_allowlist.SetAllowedOrigins(final_allowed_origins);
+    base_allowlist.SetAllowedOrigins(final_allowed_origins);
   }
+  return allow_lists_and_reporting_endpoints;
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::WithClientHints(

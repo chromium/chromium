@@ -196,8 +196,12 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       base::span<const blink::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
 
+  // Creates a PermissionsPolicy from a parsed policy. If `base_policy` is
+  // supplied, it will be used first and the `parsed_policy` may further
+  // restrict the policy.
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
+      const std::optional<ParsedPermissionsPolicy>& base_policy,
       const url::Origin& origin);
 
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
@@ -231,14 +235,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   std::optional<std::string> GetEndpointForFeature(
       mojom::PermissionsPolicyFeature feature) const;
-
-  // Further restricts the policy for Isolated Apps that have a
-  // Permissions-Policy HTTP header, |parsed_header|, that might be more
-  // restrictive than its permissions policy declared in the Web App Manifest.
-  // TODO(crbug.com/1336701): Rename to something more generic so Permissions
-  // Policy remains unaware of isolated apps.
-  void SetHeaderPolicyForIsolatedApp(
-      const ParsedPermissionsPolicy& parsed_header);
 
   // Returns a new permissions policy, based on this policy and a client hint
   // header policy set via the accept-ch meta tag. It will fail if header
@@ -277,6 +273,17 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static AllowlistsAndReportingEndpoints CreateAllowlistsAndReportingEndpoints(
       const ParsedPermissionsPolicy& parsed_header);
 
+  // Merges |base_policy| with |second_policy|. For each feature, if
+  // |base_policy| allows all domains then the |second_policy| overrides it if
+  // it specifies an allowlist. If both policies specify an allowlist then the
+  // combined allowlist will be the intersection of the two.
+  //
+  // This is used e.g. for merging the policy in an isolated app manifest with
+  // a policy received in an HTTP header.
+  static AllowlistsAndReportingEndpoints CombinePolicies(
+      const ParsedPermissionsPolicy& base_policy,
+      const ParsedPermissionsPolicy& second_policy);
+
   PermissionsPolicy(
       url::Origin origin,
       AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
@@ -291,6 +298,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
+      const std::optional<ParsedPermissionsPolicy>&
+          parsed_policy_for_isolated_app,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 

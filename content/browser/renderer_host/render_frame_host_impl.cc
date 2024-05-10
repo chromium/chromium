@@ -12287,14 +12287,17 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
   auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
 
   if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
-    // In Isolated Apps, the top level frame should use the policy declared in
-    // the Web App Manifest.
-    if (auto isolated_web_app_permissions_policy =
-            delegate_->GetPermissionsPolicyForIsolatedWebApp(this)) {
-      permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
-          *isolated_web_app_permissions_policy, last_committed_origin_);
-      return;
-    }
+    // Isolated Apps start with a base policy as defined by the
+    // permissions_policy field in its Web App Manifest, which is an allowlist,
+    // and then have headers further restrict the policy if applicable. This
+    // needs to be handled differently than the normal permissions policy
+    // behavior, which uses a fully permissive policy as its base permissions
+    // policy and accepts rules specifying which permissions policy features
+    // should be blocked, aka a blocklist.
+    permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
+        header_policy, delegate_->GetPermissionsPolicyForIsolatedWebApp(this),
+        last_committed_origin_);
+    return;
   }
 
   RenderFrameHostImpl* parent_frame_host = GetParent();
@@ -14032,20 +14035,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   ResetPermissionsPolicy(params.permissions_policy_header);
 
   permissions_policy_header_ = params.permissions_policy_header;
-  auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
-  // Isolated Apps start with a base policy as defined by the permissions_policy
-  // field in its Web App Manifest, which is an allowlist, and then have headers
-  // further restrict the policy if applicable. This needs to be handled
-  // differently than the normal permissions policy behavior, which uses a fully
-  // permissive policy as its base permissions policy and accepts rules
-  // specifying which permissions policy features should be blocked, aka a
-  // blocklist.
-  if (isolation_info.is_isolated_application() && IsOutermostMainFrame()) {
-    // If we reach this code then in ResetPermissionsPolicy, we created the
-    // PermissionsPolicy object using the policy from the manifest.
-    permissions_policy_->SetHeaderPolicyForIsolatedApp(
-        params.permissions_policy_header);
-  }
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
       params.document_policy_header,  // document_policy_header
       {},                             // endpoint_map

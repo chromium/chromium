@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+
+#include <optional>
 #include <unordered_set>
 
 #include "base/containers/contains.h"
@@ -81,8 +83,8 @@ class PermissionsPolicyTest : public testing::Test {
   std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
       const url::Origin& origin) {
-    return PermissionsPolicy::CreateFromParsedPolicy(parsed_policy, origin,
-                                                     feature_list_);
+    return PermissionsPolicy::CreateFromParsedPolicy(
+        parsed_policy, std::nullopt, origin, feature_list_);
   }
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentWithFramePolicy(
