@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -248,11 +247,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
-            if (!IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) {
-                WarmupManager.getInstance()
-                        .maybePreconnectUrlAndSubResources(
-                                ProfileManager.getLastUsedRegularProfile(), url);
-            }
+            if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) return;
+            assert getProfileProviderSupplier().hasValue();
+            getProfileProviderSupplier()
+                    .runSyncOrOnAvailable(
+                            (profileProvider) -> {
+                                WarmupManager.getInstance()
+                                        .maybePreconnectUrlAndSubResources(
+                                                profileProvider.getOriginalProfile(), url);
+                            });
         } finally {
             TraceEvent.end("maybePreconnect");
         }
