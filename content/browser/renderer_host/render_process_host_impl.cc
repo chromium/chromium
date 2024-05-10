@@ -1573,8 +1573,11 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   UnregisterHost(GetID());
 
   // Remove the cache handles for the client at teardown if relevant.
-  if (GetGpuDiskCacheFactorySingleton()) {
-    gpu_client_->RemoveDiskCacheHandles();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGpuShaderDiskCache)) {
+    if (GetGpuDiskCacheFactorySingleton()) {
+        gpu_client_->RemoveDiskCacheHandles();
+    }
   }
 
   // "Cleanup in progress"
