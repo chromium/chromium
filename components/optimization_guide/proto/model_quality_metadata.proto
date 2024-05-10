@@ -185,4 +185,8 @@ message TextSafetyModelResponse {
   // The language code of the detected language. If detection was indeterminate,
   // this is "und" per ISO 639-2.
   string language_code = 4;
+
+  // The confidence score for the detected language. Will be a value from
+  // [0.0, 1.0].
+  float language_confidence = 5;
 }
