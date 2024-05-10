@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -23,6 +25,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link ModuleRegistry}. */
@@ -42,12 +46,16 @@ public class ModuleRegistryUnitTest {
     @Mock private SimpleRecyclerViewAdapter mAdapter;
     @Mock private ModuleRegistry.OnViewCreatedCallback mOnViewCreatedCallback;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+    @Mock private ActivityLifecycleDispatcherImpl mActivityLifecycleDispatcher;
+    @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverArgumentCaptor;
 
     private ModuleRegistry mModuleRegistry;
 
     @Before
     public void setUp() {
-        mModuleRegistry = new ModuleRegistry(mHomeModulesConfigManager);
+        mModuleRegistry =
+                new ModuleRegistry(mHomeModulesConfigManager, mActivityLifecycleDispatcher);
+        verify(mActivityLifecycleDispatcher).register(mLifecycleObserverArgumentCaptor.capture());
     }
 
     @After
@@ -77,5 +85,23 @@ public class ModuleRegistryUnitTest {
         mModuleRegistry.registerAdapter(mAdapter, mOnViewCreatedCallback);
         verify(mAdapter).registerType(eq(REGISTERED_MODULE_TYPE), any(), any());
         verify(mAdapter, never()).registerType(eq(UNREGISTERED_MODULE_TYPE), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroy() {
+        mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder1);
+        mModuleRegistry.destroy();
+        verify(mModuleProviderBuilder1).destroy();
+        verify(mActivityLifecycleDispatcher).unregister(mLifecycleObserverArgumentCaptor.capture());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnPauseWithNative() {
+        mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder1);
+
+        mLifecycleObserverArgumentCaptor.getValue().onPauseWithNative();
+        verify(mModuleProviderBuilder1).onPauseWithNative();
     }
 }

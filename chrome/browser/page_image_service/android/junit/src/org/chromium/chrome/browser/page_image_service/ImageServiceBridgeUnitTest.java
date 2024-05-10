@@ -102,4 +102,11 @@ public final class ImageServiceBridgeUnitTest {
         verify(mImageServiceBridgeJni).destroy(anyLong());
         verify(mImageFetcher).destroy();
     }
+
+    @Test
+    @SmallTest
+    public void testClear() {
+        mImageServiceBridge.clear();
+        verify(mImageFetcher).clear();
+    }
 }

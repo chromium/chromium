@@ -2387,7 +2387,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void maybeRegisterHomeModules() {
         if (!StartSurfaceConfiguration.useMagicStack()) return;
 
-        ModuleRegistry moduleRegistry = new ModuleRegistry(HomeModulesConfigManager.getInstance());
+        ModuleRegistry moduleRegistry =
+                new ModuleRegistry(
+                        HomeModulesConfigManager.getInstance(), getLifecycleDispatcher());
         SingleTabModuleBuilder singleTabModuleBuilder =
                 new SingleTabModuleBuilder(
                         this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());

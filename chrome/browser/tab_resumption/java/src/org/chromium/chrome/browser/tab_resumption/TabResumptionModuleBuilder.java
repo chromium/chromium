@@ -115,6 +115,13 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         }
     }
 
+    @Override
+    public void onPauseWithNative() {
+        if (mImageServiceBridge != null) {
+            mImageServiceBridge.clear();
+        }
+    }
+
     // ModuleEligibilityChecker implementation:
 
     @Override

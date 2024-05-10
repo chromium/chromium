@@ -10,12 +10,14 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
 public class ModuleRegistry {
@@ -31,8 +33,27 @@ public class ModuleRegistry {
 
     private final HomeModulesConfigManager mHomeModulesConfigManager;
 
-    public ModuleRegistry(HomeModulesConfigManager homeModulesConfigManager) {
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private LifecycleObserver mLifecycleObserver;
+
+    public ModuleRegistry(
+            @NonNull HomeModulesConfigManager homeModulesConfigManager,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mHomeModulesConfigManager = homeModulesConfigManager;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mLifecycleObserver =
+                new PauseResumeWithNativeObserver() {
+                    @Override
+                    public void onResumeWithNative() {}
+
+                    @Override
+                    public void onPauseWithNative() {
+                        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
+                            builder.onPauseWithNative();
+                        }
+                    }
+                };
+        mActivityLifecycleDispatcher.register(mLifecycleObserver);
     }
 
     /**
@@ -96,14 +117,14 @@ public class ModuleRegistry {
 
     /** Destroys the registry. */
     public void destroy() {
+        if (mActivityLifecycleDispatcher == null) return;
+
         for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
             builder.destroy();
         }
         mModuleBuildersMap.clear();
-    }
-
-    /** Returns the set which contains all the module types that are registered. */
-    public @ModuleType Set<Integer> getRegisteredModuleTypes() {
-        return mModuleBuildersMap.keySet();
+        mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
+        mLifecycleObserver = null;
+        mActivityLifecycleDispatcher = null;
     }
 }

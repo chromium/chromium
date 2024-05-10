@@ -48,4 +48,10 @@ public interface ModuleProviderBuilder {
 
     /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
     default void destroy() {}
+
+    /**
+     * Called when Chrome is paused (e.g. moved to the background). It allows the
+     * ModuleProviderBuilder to do some cleanup.
+     */
+    default void onPauseWithNative() {}
 }

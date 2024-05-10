@@ -58,6 +58,12 @@ public class ImageServiceBridge {
         mImageFetcher.destroy();
     }
 
+    /** Cleanup any cached bitmap or URLs in memory. */
+    public void clear() {
+        mSalientImageUrlCache.clear();
+        mImageFetcher.clear();
+    }
+
     /**
      * Fetch the salient image {@link GURL} for the given page {@link GURL}.
      *
