@@ -433,6 +433,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       assert(anchorNodeId && focusNodeId, 'anchor or focus node is undefined');
       chrome.readingMode.onSelectionChange(
           anchorNodeId, adjustedAnchorOffset, focusNodeId, adjustedFocusOffset);
+      // If there's been a selection, clear the current
+      // Read Aloud highlight.
+      const element = document.querySelector('.' + currentReadHighlightClass);
+      if (element && anchorNodeId && focusNodeId) {
+        element.classList.remove(currentReadHighlightClass);
+      }
     };
 
     document.onscroll = () => {
