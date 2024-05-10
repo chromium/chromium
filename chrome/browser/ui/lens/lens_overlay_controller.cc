@@ -30,6 +30,7 @@
 #include "components/lens/lens_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -39,6 +40,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -307,71 +309,34 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
-void LensOverlayController::CloseUI(DismissalSource dismissal_source) {
-  if (state_ == State::kOff) {
+void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
+  if (state_ == State::kOff || state_ == State::kClosing) {
+    return;
+  }
+  state_ = State::kClosing;
+
+  // If the tab is in the background, the async processes needed if the callback
+  // is coming from the WebUI don't apply and we can call CloseUI directly.
+  if (!tab_->IsInForeground()) {
+    CloseUIPart2(dismissal_source);
     return;
   }
 
-  // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
-  state_ = State::kClosing;
-
-  // Destroy the glue to avoid UaF. This must be done before destroying
-  // `results_side_panel_coordinator_` or `overlay_widget_`.
-  // This logic results on the assumption that the only way to destroy the
-  // instances of views::WebView being glued is through this method. Any changes
-  // to this assumption will likely need to restructure the concept of
-  // `glued_webviews_`.
-  while (!glued_webviews_.empty()) {
-    RemoveGlueForWebView(glued_webviews_.front());
-  }
-  glued_webviews_.clear();
-
-  // Closes lens search bubble if it exists.
-  CloseSearchBubble();
-
-  // A permission prompt may be suspended if the overlay was showing when the
-  // permission was queued. Restore the suspended prompt if possible.
-  // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
-  content::WebContents* contents = tab_->GetContents();
-  CHECK(contents);
-  auto* permission_request_manager =
-      permissions::PermissionRequestManager::FromWebContents(contents);
-  if (permission_request_manager &&
-      permission_request_manager->CanRestorePrompt()) {
-    permission_request_manager->RestorePrompt();
-  }
-
-  permission_bubble_controller_.reset();
-
-  results_side_panel_coordinator_.reset();
-
-  // Widget destruction can be asynchronous. We want to synchronously release
-  // resources, so we clear the contents view immediately.
-  overlay_web_view_ = nullptr;
-  if (overlay_widget_) {
-    overlay_widget_->SetContentsView(std::make_unique<views::View>());
-  }
-  overlay_widget_.reset();
-  tab_contents_observer_.reset();
-
-  searchbox_handler_.reset();
-  side_panel_receiver_.reset();
-  side_panel_page_.reset();
-  receiver_.reset();
-  page_.reset();
-  initialization_data_.reset();
-  lens_overlay_query_controller_.reset();
-  scoped_tab_modal_ui_.reset();
-  pending_side_panel_url_.reset();
-  pending_text_query_.reset();
-  pending_thumbnail_uri_.reset();
-  thumbnail_uri_.clear();
-
+  // To avoid flickering, we need to remove the background blur and wait for a
+  // paint before closing the rest of the overlay.
   RemoveBackgroundBlur();
 
-  state_ = State::kOff;
-
-  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+  // This callback can come from the WebUI. CloseUI synchronously destroys the
+  // WebUI. Therefore it is important to dispatch to the call to CloseUIAsync to
+  // avoid re-entrancy.
+  auto* ui_layer_compositor = tab_->GetBrowserWindowInterface()
+                                  ->GetWebView()
+                                  ->holder()
+                                  ->GetUILayer()
+                                  ->GetCompositor();
+  ui_layer_compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(&LensOverlayController::OnBackgroundUnblurred,
+                     weak_factory_.GetWeakPtr(), dismissal_source));
 }
 
 // static
@@ -687,7 +652,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // this is a multi-process, multi-threaded environment so there may be a
   // TOCTTOU race condition.
   if (bitmap.drawsNothing()) {
-    CloseUI(DismissalSource::kErrorScreenshotCreationFailed);
+    CloseUIAsync(DismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
 
@@ -697,7 +662,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
           bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
           &data)) {
     // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
-    CloseUI(DismissalSource::kErrorScreenshotEncodingFailed);
+    CloseUIAsync(DismissalSource::kErrorScreenshotEncodingFailed);
     return;
   }
 
@@ -757,10 +722,87 @@ void LensOverlayController::ShowOverlayWidget() {
 }
 
 void LensOverlayController::BackgroundUI() {
-  overlay_widget_->Hide();
   RemoveBackgroundBlur();
+  overlay_widget_->Hide();
   state_ = State::kBackground;
   // TODO(b/335516480): Schedule the UI to be suspended.
+}
+
+void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
+  if (state_ == State::kOff) {
+    return;
+  }
+
+  // Ensure that this path is not being used to close the overlay if the overlay
+  // is currently showing. If the overlay is currently showing, CloseUIAsync
+  // should be used instead.
+  CHECK(state_ != State::kOverlay);
+  CHECK(state_ != State::kOverlayAndResults);
+
+  // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
+  state_ = State::kClosing;
+
+  // Destroy the glue to avoid UaF. This must be done before destroying
+  // `results_side_panel_coordinator_` or `overlay_widget_`.
+  // This logic results on the assumption that the only way to destroy the
+  // instances of views::WebView being glued is through this method. Any changes
+  // to this assumption will likely need to restructure the concept of
+  // `glued_webviews_`.
+  while (!glued_webviews_.empty()) {
+    RemoveGlueForWebView(glued_webviews_.front());
+  }
+  glued_webviews_.clear();
+
+  // Closes lens search bubble if it exists.
+  CloseSearchBubble();
+
+  // A permission prompt may be suspended if the overlay was showing when the
+  // permission was queued. Restore the suspended prompt if possible.
+  // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
+  content::WebContents* contents = tab_->GetContents();
+  CHECK(contents);
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(contents);
+  if (permission_request_manager &&
+      permission_request_manager->CanRestorePrompt()) {
+    permission_request_manager->RestorePrompt();
+  }
+
+  permission_bubble_controller_.reset();
+  results_side_panel_coordinator_.reset();
+
+  // Widget destruction can be asynchronous. We want to synchronously release
+  // resources, so we clear the contents view immediately.
+  overlay_web_view_ = nullptr;
+  if (overlay_widget_) {
+    overlay_widget_->SetContentsView(std::make_unique<views::View>());
+  }
+  overlay_widget_.reset();
+  tab_contents_observer_.reset();
+
+  searchbox_handler_.reset();
+  side_panel_receiver_.reset();
+  side_panel_page_.reset();
+  receiver_.reset();
+  page_.reset();
+  initialization_data_.reset();
+  lens_overlay_query_controller_.reset();
+  scoped_tab_modal_ui_.reset();
+  pending_side_panel_url_.reset();
+  pending_text_query_.reset();
+  pending_thumbnail_uri_.reset();
+  thumbnail_uri_.clear();
+
+  state_ = State::kOff;
+
+  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+}
+
+void LensOverlayController::OnBackgroundUnblurred(
+    DismissalSource dismissal_source,
+    const viz::FrameTimingDetails& details) {
+  // We only finish the closing process once the background has been unblurred.
+  CloseUIPart2(dismissal_source);
 }
 
 void LensOverlayController::InitializeOverlayUI(
@@ -922,7 +964,7 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // This is still possible when the controller is in state kScreenshot and the
   // tab was backgrounded. We should close the UI as the overlay has not been
   // created yet.
-  CloseUI(DismissalSource::kTabBackgroundedWhileScreenshotting);
+  CloseUIAsync(DismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
 void LensOverlayController::WillDiscardContents(
@@ -930,7 +972,7 @@ void LensOverlayController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   // Background tab contents discarded.
-  CloseUI(DismissalSource::kTabContentsDiscarded);
+  CloseUIAsync(DismissalSource::kTabContentsDiscarded);
   old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
   LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
 }
@@ -1046,19 +1088,6 @@ void LensOverlayController::CloseSearchBubble() {
       controller->Close();
     }
   }
-}
-
-void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
-  if (state_ == State::kOff) {
-    return;
-  }
-  state_ = State::kClosing;
-
-  // This callback comes from WebUI. CloseUI synchronously destroys the WebUI.
-  // Dispatch to avoid re-entrancy.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
-                                weak_factory_.GetWeakPtr(), dismissal_source));
 }
 
 void LensOverlayController::IssueSearchBoxRequest(

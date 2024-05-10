@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -174,10 +175,10 @@ class LensOverlayController : public LensSearchboxClient,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
 
-  // Closes the overlay UI and sets state to kOff. This method should be
-  // idempotent. This synchronously destroys any associated WebUIs, so should
-  // not be invoked in callbacks from those WebUIs.
-  void CloseUI(DismissalSource dismissal_source);
+  // Starts the closing process of the overlay. This is an asynchronous process
+  // because we first must unblur the background, before closing the overlay
+  // whether. Eventually Calls CloseUI() asynchronously.
+  void CloseUIAsync(DismissalSource dismissal_source);
 
   // Given an instance of `web_ui` created by the LensOverlayController, returns
   // the LensOverlayController. This method is necessary because WebUIController
@@ -455,6 +456,17 @@ class LensOverlayController : public LensSearchboxClient,
   // Backgrounds the UI by hiding the overlay.
   void BackgroundUI();
 
+  // Closes the overlay UI and sets state to kOff. This method is the final
+  // cleanup of closing the overlay UI and should only be called by
+  // CloseUIAsync. Anyone called trying to close the UI should go through
+  // CloseUIAsync.
+  void CloseUIPart2(DismissalSource dismissal_source);
+
+  // Passed into the compositor layer to know when the background is done being
+  // unblurred and it is safe to close the overlay.
+  void OnBackgroundUnblurred(DismissalSource dismissal_source,
+                             const viz::FrameTimingDetails& details);
+
   // Initializes the overlay UI after it has been created with data fetched
   // before its creation.
   void InitializeOverlayUI(const OverlayInitializationData& init_data);
@@ -514,9 +526,6 @@ class LensOverlayController : public LensSearchboxClient,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
-
-  // Calls CloseUI() asynchronously.
-  void CloseUIAsync(DismissalSource dismissal_source);
 
   // Handles the response to the Lens start query request.
   void HandleStartQueryResponse(

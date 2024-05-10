@@ -446,6 +446,13 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
                               ".*q=.*&gsc=1&masfc=c&hl=.*&biw=\\d+&bih=\\d+"));
   }
 
+  void CloseOverlayAndWaitForOff(LensOverlayController* controller,
+                                 DismissalSource dismissal_source) {
+    controller->CloseUIAsync(dismissal_source);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return controller->state() == State::kOff; }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -779,9 +786,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(observer.request_shown());
 
   // Close overlay
-  controller->CloseUI(DismissalSource::kOverlayCloseButton);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
 
   // Verify a prompt was shown
   ASSERT_TRUE(base::test::RunUntil([&]() { return observer.request_shown(); }));
@@ -1627,14 +1632,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/1);
-  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kOverlayCloseButton,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/1);
 
-  // Attenmpting to invoke the overlay twice without closing it in between
+  // Attempting to invoke the overlay twice without closing it in between
   // should record only a single new entry.
   controller->ShowUI(InvocationSource::kAppMenu);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
@@ -1651,13 +1656,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Attempting to close the overlay twice without opening it in between should
   // only record a single entry.
-  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kOverlayCloseButton,
                                      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/2);
-  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kOverlayCloseButton,
                                      /*expected_count=*/2);
@@ -1672,7 +1677,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/3);
-  controller->CloseUI(DismissalSource::kOverlayBackgroundClick);
+  CloseOverlayAndWaitForOff(controller,
+                            DismissalSource::kOverlayBackgroundClick);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kOverlayBackgroundClick,
                                      /*expected_count=*/1);
@@ -1685,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/4);
-  controller->CloseUI(DismissalSource::kSidePanelCloseButton);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kSidePanelCloseButton);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kSidePanelCloseButton,
                                      /*expected_count=*/1);
@@ -1698,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/5);
-  controller->CloseUI(DismissalSource::kToolbar);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kToolbar);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kToolbar,
                                      /*expected_count=*/1);
@@ -1711,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/6);
-  controller->CloseUI(DismissalSource::kPageChanged);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kPageChanged);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kPageChanged,
                                      /*expected_count=*/1);
@@ -1724,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/7);
-  controller->CloseUI(DismissalSource::kTabContentsDiscarded);
+  CloseOverlayAndWaitForOff(controller, DismissalSource::kTabContentsDiscarded);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
                                      DismissalSource::kTabContentsDiscarded,
                                      /*expected_count=*/1);
