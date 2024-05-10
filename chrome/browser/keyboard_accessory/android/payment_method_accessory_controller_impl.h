@@ -85,6 +85,9 @@ class PaymentMethodAccessoryControllerImpl
   void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* credit_card);
 
+  // Applies the given `value` to the `last_focused_field_id_` if applicable.
+  void ApplyToField(const std::u16string& value);
+
   // Gets promo code offers from personal data manager.
   std::vector<const AutofillOfferData*> GetPromoCodeOffers() const;
 
@@ -97,6 +100,14 @@ class PaymentMethodAccessoryControllerImpl
   BrowserAutofillManager* GetAutofillManager();
 
   content::WebContents& GetWebContents() const;
+
+  // Returns true if the given `selection_id` represents an existing credit
+  // card. This method also tries to fetch credit card and fill the form field.
+  bool FetchIfCreditCardId(const std::string& selection_id);
+
+  // Returns true if the given `selection_id` represents an existing IBAN. This
+  // method also tries to fetch IBAN and fill the form field.
+  bool FetchIfIban(const std::string& selection_id);
 
   base::WeakPtr<ManualFillingController> mf_controller_;
   const raw_ptr<PersonalDataManager> personal_data_manager_;

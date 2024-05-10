@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
@@ -141,6 +142,11 @@ class PaymentMethodAccessoryControllerTest
 
   TestBrowserAutofillManager& autofill_manager() {
     return *autofill_manager_injector_[web_contents()];
+  }
+
+  MockIbanAccessManager& iban_access_manager() {
+    return *static_cast<MockIbanAccessManager*>(
+        autofill_client().GetIbanAccessManager());
   }
 
   syncer::TestSyncService sync_service_;
@@ -590,6 +596,65 @@ TEST_F(PaymentMethodAccessoryControllerTest,
                 .AddIbanInfo(iban.GetIdentifierStringForAutofillDisplay(),
                              iban.value(), guid)
                 .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
+  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
+
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  std::string guid =
+      data_manager_.test_payments_data_manager().AddAsLocalIban(iban);
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  AccessorySheetField field(iban.GetIdentifierStringForAutofillDisplay(),
+                            /*text_to_fill=*/iban.value(),
+                            iban.GetIdentifierStringForAutofillDisplay(),
+                            /*id=*/"",
+                            /*is_obfuscated=*/false,
+                            /*selectable=*/true);
+
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                               mojom::ActionPersistence::kFill, field_id,
+                               iban.value()));
+
+  controller()->OnFillingTriggered(field_id, field);
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, FetchServerIban) {
+  controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
+
+  Iban iban = test::GetServerIban();
+  data_manager_.test_payments_data_manager().AddServerIban(iban);
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  AccessorySheetField field(iban.GetIdentifierStringForAutofillDisplay(),
+                            /*text_to_fill=*/iban.value(),
+                            iban.GetIdentifierStringForAutofillDisplay(),
+                            /*id=*/base::NumberToString(iban.instrument_id()),
+                            /*is_obfuscated=*/false,
+                            /*selectable=*/true);
+
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  EXPECT_CALL(iban_access_manager(), FetchValue);
+
+  controller()->OnFillingTriggered(field_id, field);
 }
 
 }  // namespace autofill
