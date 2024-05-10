@@ -37,6 +37,7 @@
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 
@@ -751,7 +752,7 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
-        return NewNotSupportedError("This operator is not implemented.");
+        return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }
 
@@ -1531,12 +1532,11 @@ GraphBuilder::AddOperationForElementwiseUnary(
             input_data_type ==
                 CoreML::Specification::MILSpec::DataType::INT32 ||
             input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
-      return NewNotSupportedError("This operator (neg) is not implemented.");
+      return NewNotSupportedError(NotSupportedOperatorError(operation));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       CHECK_EQ(input_data_type,
                CoreML::Specification::MILSpec::DataType::UINT8);
-      return NewNotSupportedError(
-          "This operator (logicalNot) is not implemented.");
+      return NewNotSupportedError(NotSupportedOperatorError(operation));
   }
 }
 

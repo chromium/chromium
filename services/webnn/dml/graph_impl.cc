@@ -5468,9 +5468,7 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       default: {
-        std::string error_message = "This operator (" +
-                                    OpTagToString(operation->which()) +
-                                    ") is not supported.";
+        std::string error_message = NotSupportedOperatorError(*operation);
         DLOG(ERROR) << error_message;
         create_operator_result = base::unexpected(CreateError(
             mojom::Error::Code::kNotSupportedError, std::move(error_message)));

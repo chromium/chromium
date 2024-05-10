@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -417,27 +418,17 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = SerializeWhere(*op.get_where());
       break;
     case mojom::Operation::Tag::kBatchNormalization:
-      return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kExpand:
-      return base::unexpected("expand is not implemented");
     case mojom::Operation::Tag::kGelu:
-      return base::unexpected("gelu is not implemented");
     case mojom::Operation::Tag::kGru:
-      return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kGruCell:
-      return base::unexpected("gruCell is not implemented");
     case mojom::Operation::Tag::kLayerNormalization:
-      return base::unexpected("layerNormalization is not implemented");
     case mojom::Operation::Tag::kInstanceNormalization:
-      return base::unexpected("instanceNormalization is not implemented");
     case mojom::Operation::Tag::kLstm:
-      return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kLstmCell:
-      return base::unexpected("lstmCell is not implemented");
     case mojom::Operation::Tag::kSoftsign:
-      return base::unexpected("softsign is not implemented");
     case mojom::Operation::Tag::kTriangular:
-      return base::unexpected("triangular is not implemented");
+      return base::unexpected(NotSupportedOperatorError(op));
   }
   operators_.emplace_back(operator_offset);
 

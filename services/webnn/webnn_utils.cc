@@ -4,7 +4,55 @@
 
 #include "services/webnn/webnn_utils.h"
 
+#include "base/strings/strcat.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
+
 namespace webnn {
+
+namespace {
+
+std::string OpKindToString(mojom::Conv2d::Kind kind) {
+  switch (kind) {
+    case mojom::Conv2d::Kind::kDirect:
+      return "conv2d";
+    case mojom::Conv2d::Kind::kTransposed:
+      return "convTranspose2d";
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string OpKindToString(mojom::Pool2d::Kind kind) {
+  switch (kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      return "averagePool2d";
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      return "l2Pool2d";
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      return "maxPool2d";
+  }
+}
+
+std::string GetOpName(const mojom::Operation& op) {
+  const mojom::Operation::Tag& tag = op.which();
+  switch (tag) {
+    case mojom::Operation::Tag::kArgMinMax:
+      return webnn::OpKindToString(op.get_arg_min_max()->kind);
+    case mojom::Operation::Tag::kConv2d:
+      return OpKindToString(op.get_conv2d()->kind);
+    case mojom::Operation::Tag::kElementWiseBinary:
+      return webnn::OpKindToString(op.get_element_wise_binary()->kind);
+    case mojom::Operation::Tag::kElementWiseUnary:
+      return webnn::OpKindToString(op.get_element_wise_unary()->kind);
+    case mojom::Operation::Tag::kReduce:
+      return webnn::OpKindToString(op.get_reduce()->kind);
+    case mojom::Operation::Tag::kPool2d:
+      return OpKindToString(op.get_pool2d()->kind);
+    default:
+      return OpTagToString(tag);
+  }
+}
+
+}  // namespace
 
 std::string OpTagToString(mojom::Operation::Tag tag) {
   switch (tag) {
@@ -129,7 +177,6 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return "lesserOrEqual";
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
@@ -165,7 +212,6 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
     case mojom::ElementWiseUnary::Kind::kCast:
       return "cast";
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string OpKindToString(mojom::Reduce::Kind kind) {
@@ -191,7 +237,6 @@ std::string OpKindToString(mojom::Reduce::Kind kind) {
     case mojom::Reduce::Kind::kSumSquare:
       return "ReduceSumSquare";
   }
-  NOTREACHED_NORETURN();
 }
 
 std::string DataTypeToString(mojom::Operand::DataType type) {
@@ -213,7 +258,14 @@ std::string DataTypeToString(mojom::Operand::DataType type) {
     case mojom::Operand::DataType::kUint64:
       return "uint64";
   }
-  NOTREACHED_NORETURN();
+}
+
+std::string NotSupportedOperatorError(const mojom::Operation& op) {
+  return base::StrCat({"Unsupported operator ", GetOpName(op)});
+}
+
+std::string NotSupportedOperatorError(const mojom::ElementWiseUnary& op) {
+  return base::StrCat({"Unsupported operator ", OpKindToString(op.kind)});
 }
 
 }  // namespace webnn

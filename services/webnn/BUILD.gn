@@ -22,6 +22,7 @@ if (is_posix) {
       "coreml/graph_builder.h",
     ]
     deps = [
+      ":webnn_utils",
       "//base",
       "//services/webnn/public/mojom",
       "//third_party/coremltools:modelformat_proto",

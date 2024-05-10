@@ -24,6 +24,10 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
     OpKindToString(mojom::Reduce::Kind kind);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     DataTypeToString(mojom::Operand::DataType type);
+std::string COMPONENT_EXPORT(WEBNN_UTILS)
+    NotSupportedOperatorError(const mojom::Operation& op);
+std::string COMPONENT_EXPORT(WEBNN_UTILS)
+    NotSupportedOperatorError(const mojom::ElementWiseUnary& op);
 
 }  // namespace webnn
 
