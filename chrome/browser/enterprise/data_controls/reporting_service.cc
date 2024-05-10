@@ -103,7 +103,8 @@ void ReportingService::ReportPaste(
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           &profile_.get());
-  if (!router) {
+
+  if (!router || verdict.triggered_rules().empty()) {
     return;
   }
 

@@ -154,6 +154,46 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
       Verdict::Warn({{"rule_1_id", "rule_1_name"}}));
 }
 
+TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
+  auto* service =
+      ReportingServiceFactory::GetForBrowserContext(managed_profile_);
+  {
+    auto validator = helper_->CreateValidator();
+    validator.ExpectNoReport();
+    service->ReportPaste(
+        managed_endpoint(GURL(kGoogleUrl)),
+        managed_endpoint(GURL(kChromiumUrl)),
+        {
+            .size = 1234,
+            .format_type = ui::ClipboardFormatType::PlainTextType(),
+        },
+        Verdict::Warn({}));
+  }
+  {
+    auto validator = helper_->CreateValidator();
+    validator.ExpectNoReport();
+    service->ReportPasteWarningBypass(
+        incognito_managed_endpoint(GURL(kGoogleUrl)),
+        managed_endpoint(GURL(kChromiumUrl)),
+        {
+            .size = 1234,
+            .format_type = ui::ClipboardFormatType::PlainTextType(),
+        },
+        Verdict::Block({}));
+  }
+  {
+    auto validator = helper_->CreateValidator();
+    validator.ExpectNoReport();
+    service->ReportPaste(unmanaged_endpoint(GURL(kGoogleUrl)),
+                         managed_endpoint(GURL(kChromiumUrl)),
+                         {
+                             .size = 1234,
+                             .format_type = ui::ClipboardFormatType::SvgType(),
+                         },
+                         Verdict::Report({}));
+  }
+}
+
 TEST_F(DataControlsReportingServiceTest,
        PasteInManagedProfile_ManagedSourceProfile) {
   Verdict::TriggeredRules triggered_rules = {{"rule_1_id", "rule_1_name"}};
