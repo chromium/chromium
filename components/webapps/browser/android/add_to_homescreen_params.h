@@ -26,7 +26,7 @@ struct AddToHomescreenParams {
     WEBAPK,
     SHORTCUT,
     WEBAPK_DIY,
-    COUNT = WEBAPK_DIY,
+    kMaxValue = WEBAPK_DIY,
   };
 
   AddToHomescreenParams() = delete;

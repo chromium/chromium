@@ -32,6 +32,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
@@ -114,18 +115,34 @@ bool AppWasUsedRecentlyComparedTo(const sync_pb::WebApkSpecifics* specifics,
   return time - app_last_used < kRecentAppMaxAge;
 }
 
+// Create a |webapps::ShortcutInfo| from the synced |webapk_specifics|.
+// If the data is invalid, returns nullptr.
 std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
     const sync_pb::WebApkSpecifics& webapk_specifics) {
-  auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(
-      GURL(webapk_specifics.start_url()));
-  shortcut_info->manifest_id = GURL(webapk_specifics.manifest_id());
-  shortcut_info->scope = GURL(webapk_specifics.scope());
-  shortcut_info->user_title = base::UTF8ToUTF16(webapk_specifics.name());
-  shortcut_info->name = shortcut_info->user_title;
-  shortcut_info->short_name = shortcut_info->user_title;
+  GURL start_url(GURL(webapk_specifics.start_url()));
+  if (!start_url.is_valid()) {
+    return nullptr;
+  }
+  auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(start_url);
+  GURL manifest_id(webapk_specifics.manifest_id());
+  if (manifest_id.is_valid()) {
+    shortcut_info->manifest_id = manifest_id;
+  }
+  GURL scope(webapk_specifics.scope());
+  if (scope.is_valid()) {
+    shortcut_info->scope = scope;
+  }
+  std::u16string name = base::UTF8ToUTF16(webapk_specifics.name());
+  shortcut_info->user_title = name;
+  shortcut_info->name = name;
+  shortcut_info->short_name = name;
   if (webapk_specifics.icon_infos().size() > 0) {
     shortcut_info->best_primary_icon_url =
         GURL(webapk_specifics.icon_infos(0).url());
+    shortcut_info->is_primary_icon_maskable =
+        webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons() &&
+        webapk_specifics.icon_infos(0).purpose() ==
+            sync_pb::WebApkIconInfo_Purpose_MASKABLE;
   }
   return shortcut_info;
 }
@@ -417,10 +434,13 @@ std::vector<WebApkRestoreData> WebApkSyncBridge::GetRestorableAppsShortcutInfo()
   for (auto const& [appId, proto] : registry_) {
     if (!proto->is_locally_installed() &&
         AppWasUsedRecently(&proto->sync_data())) {
-      results.emplace_back(WebApkRestoreData(
-          appId, CreateShortcutInfoFromSpecifics(proto->sync_data()),
-          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-              proto->sync_data().last_used_time_windows_epoch_micros()))));
+      auto restore_info = CreateShortcutInfoFromSpecifics(proto->sync_data());
+      if (restore_info) {
+        results.emplace_back(WebApkRestoreData(
+            appId, std::move(restore_info),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+                proto->sync_data().last_used_time_windows_epoch_micros()))));
+      }
     }
   }
   return results;

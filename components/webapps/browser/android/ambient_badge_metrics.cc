@@ -21,18 +21,15 @@ constexpr char kAmbientBadgeTerminateHistogram[] =
 }  // namespace
 
 void RecordAmbientBadgeDisplayEvent(AddToHomescreenParams::AppType type) {
-  base::UmaHistogramEnumeration(kAmbientBadgeDisplayEventHistogram, type,
-                                AddToHomescreenParams::AppType::COUNT);
+  base::UmaHistogramEnumeration(kAmbientBadgeDisplayEventHistogram, type);
 }
 
 void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type) {
-  base::UmaHistogramEnumeration(kAmbientBadgeDismissEventHistogram, type,
-                                AddToHomescreenParams::AppType::COUNT);
+  base::UmaHistogramEnumeration(kAmbientBadgeDismissEventHistogram, type);
 }
 
 void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type) {
-  base::UmaHistogramEnumeration(kAmbientBadgeClickEventHistogram, type,
-                                AddToHomescreenParams::AppType::COUNT);
+  base::UmaHistogramEnumeration(kAmbientBadgeClickEventHistogram, type);
 }
 
 void RecordAmbientBadgeTeminateState(AmbientBadgeManager::State state) {

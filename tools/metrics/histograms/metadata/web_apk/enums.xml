@@ -138,6 +138,8 @@ chromium-metrics-reviews@google.com.
   <int value="5200" label="ERROR_DOWNLOAD_FAILED"/>
 </enum>
 
+<!-- LINT.IfChange(WebApkInstallResult) -->
+
 <enum name="WebApkInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Play install failed"/>
@@ -149,7 +151,21 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Request invalid"/>
   <int value="8" label="Not enough space"/>
   <int value="9" label="Download icon and hash error"/>
+  <int value="11" label="Install already in progress"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/webapps/browser/android/webapk/webapk_types.h:WebApkInstallResult) -->
+
+<!-- LINT.IfChange(WebApkRestoreFallbackReason) -->
+
+<enum name="WebApkRestoreFallbackReason">
+  <int value="0" label="Installing fetched WebAPK (not fallback)"/>
+  <int value="1" label="Failed to load URL"/>
+  <int value="2" label="Manifest ID mismatch"/>
+  <int value="3" label="Fetch result is not WebAPK Compatible"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/android/webapk/webapk_restore_task.h:WebApkRestoreFallbackReason) -->
 
 <enum name="WebApkSyncAddOrModifyType">
   <int value="0" label="New install on device, and new addition to Sync"/>

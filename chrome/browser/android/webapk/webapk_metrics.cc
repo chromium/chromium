@@ -27,8 +27,7 @@ void TrackInstallEvent(InstallEvent event) {
 }
 
 void TrackInstallResult(webapps::WebApkInstallResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kInstallResultHistogram, result,
-                            webapps::WebApkInstallResult::RESULT_MAX);
+  UMA_HISTOGRAM_ENUMERATION(kInstallResultHistogram, result);
 }
 
 }  // namespace webapk

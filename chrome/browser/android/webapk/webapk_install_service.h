@@ -49,11 +49,8 @@ class WebApkInstallService : public KeyedService {
                                                  bool,
                                                  const std::string&)>;
 
-  // Called when the installation of a WebAPK that was scheduled by the
-  // WebApkInstallCoordinatorService finished or failed to pass the result back
-  // to the WebapkInstallCoordinatorBridge which is passing it along to the
-  // connecting client.
-  using ServiceInstallFinishCallback =
+  // Called when the installation of a WebAPK finished or failed.
+  using InstallFinishCallback =
       base::OnceCallback<void(webapps::WebApkInstallResult)>;
 
   static WebApkInstallService* Get(content::BrowserContext* browser_context);
@@ -76,6 +73,12 @@ class WebApkInstallService : public KeyedService {
                     const SkBitmap& primary_icon,
                     webapps::WebappInstallSource install_source);
 
+  void InstallRestoreAsync(content::WebContents* web_contents,
+                           const webapps::ShortcutInfo& shortcut_info,
+                           const SkBitmap& primary_icon,
+                           webapps::WebappInstallSource install_source,
+                           InstallFinishCallback finish_callback);
+
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
   // the Google Play server to install the downloaded WebAPK.
   // |update_request_path| is the path of the file with the update request.
@@ -92,16 +95,23 @@ class WebApkInstallService : public KeyedService {
                          bool relax_updates,
                          const std::string& webapk_package_name);
 
+  void OnFinishedInstallRestore(const webapps::ShortcutInfo& shortcut_info,
+                                const SkBitmap& primary_icon,
+                                InstallFinishCallback finish_callback,
+                                webapps::WebApkInstallResult result,
+                                bool /* relax_updates */,
+                                const std::string& webapk_package_name);
+
   // Removes current notifications about an ongoing install and adds a
   // installed-notification if the installation was successful.
-  void HandleFinishInstallNotifications(
-      const GURL& manifest_url,
-      const GURL& url,
-      const std::u16string& short_name,
-      const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable,
-      webapps::WebApkInstallResult result,
-      const std::string& webapk_package_name);
+  void HandleFinishInstallNotifications(const GURL& manifest_url,
+                                        const GURL& url,
+                                        const std::u16string& short_name,
+                                        const SkBitmap& primary_icon,
+                                        bool is_primary_icon_maskable,
+                                        webapps::WebApkInstallResult result,
+                                        const std::string& webapk_package_name,
+                                        bool show_failure_notification);
 
   // Shows a notification that an install is in progress.
   static void ShowInstallInProgressNotification(

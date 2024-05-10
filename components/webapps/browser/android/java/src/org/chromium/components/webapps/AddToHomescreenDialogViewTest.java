@@ -274,7 +274,7 @@ public class AddToHomescreenDialogViewTest {
         setUpDialog(/* showAddToHomeScreen= */ true);
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
 
-        for (int i = 0; i <= AppType.COUNT; i++) {
+        for (int i = 0; i <= AppType.MAX_VALUE; i++) {
             mAddToHomescreenDialogView.setType(i);
 
             mAddToHomescreenDialogView.setTitle("");
@@ -299,7 +299,7 @@ public class AddToHomescreenDialogViewTest {
         PropertyModel shownDialogModel = mModalDialogManager.getShownDialogModel();
         mAddToHomescreenDialogView.setTitle(TEST_TITLE);
 
-        for (int i = 0; i <= AppType.COUNT; i++) {
+        for (int i = 0; i <= AppType.MAX_VALUE; i++) {
             mAddToHomescreenDialogView.setType(i);
             TextView titleText = mAddToHomescreenDialogView.getAppNameView();
             // Only run when title is editable.

@@ -70,6 +70,35 @@ void WebApkInstallService::InstallAsync(
                      shortcut_info, primary_icon));
 }
 
+void WebApkInstallService::InstallRestoreAsync(
+    content::WebContents* web_contents,
+    const webapps::ShortcutInfo& shortcut_info,
+    const SkBitmap& primary_icon,
+    webapps::WebappInstallSource install_source,
+    InstallFinishCallback finish_callback) {
+  if (IsInstallInProgress(shortcut_info.manifest_id)) {
+    std::move(finish_callback)
+        .Run(webapps::WebApkInstallResult::INSTALL_ALREADY_IN_PROGRESS);
+    return;
+  }
+
+  install_ids_.insert(shortcut_info.manifest_id);
+  webapps::InstallableMetrics::TrackInstallEvent(install_source);
+
+  ShowInstallInProgressNotification(
+      shortcut_info.manifest_id, shortcut_info.short_name, shortcut_info.url,
+      primary_icon, shortcut_info.is_primary_icon_maskable);
+
+  // We pass an weak ptr to a WebContents to the callback, since the
+  // installation may take more than 10 seconds so there is a chance that the
+  // WebContents has been destroyed before the install is finished.
+  WebApkInstaller::InstallAsync(
+      browser_context_, web_contents, shortcut_info, install_source,
+      base::BindOnce(&WebApkInstallService::OnFinishedInstallRestore,
+                     weak_ptr_factory_.GetWeakPtr(), shortcut_info,
+                     primary_icon, std::move(finish_callback)));
+}
+
 void WebApkInstallService::UpdateAsync(
     const base::FilePath& update_request_path,
     FinishCallback finish_callback) {
@@ -85,13 +114,15 @@ void WebApkInstallService::OnFinishedInstall(
     bool relax_updates,
     const std::string& webapk_package_name) {
   install_ids_.erase(shortcut_info.manifest_id);
-  HandleFinishInstallNotifications(shortcut_info.manifest_id, shortcut_info.url,
-                                   shortcut_info.short_name, primary_icon,
-                                   shortcut_info.is_primary_icon_maskable,
-                                   result, webapk_package_name);
 
-  if (base::FeatureList::IsEnabled(
-          webapps::features::kWebApkInstallFailureNotification)) {
+  bool show_failure_notification = base::FeatureList::IsEnabled(
+      webapps::features::kWebApkInstallFailureNotification);
+  HandleFinishInstallNotifications(
+      shortcut_info.manifest_id, shortcut_info.url, shortcut_info.short_name,
+      primary_icon, shortcut_info.is_primary_icon_maskable, result,
+      webapk_package_name, show_failure_notification);
+
+  if (show_failure_notification) {
     return;
   }
 
@@ -111,6 +142,22 @@ void WebApkInstallService::OnFinishedInstall(
   }
 }
 
+void WebApkInstallService::OnFinishedInstallRestore(
+    const webapps::ShortcutInfo& shortcut_info,
+    const SkBitmap& primary_icon,
+    InstallFinishCallback finish_callback,
+    webapps::WebApkInstallResult result,
+    bool /* relax_updates */,
+    const std::string& webapk_package_name) {
+  install_ids_.erase(shortcut_info.manifest_id);
+  HandleFinishInstallNotifications(
+      shortcut_info.manifest_id, shortcut_info.url, shortcut_info.short_name,
+      primary_icon, shortcut_info.is_primary_icon_maskable, result,
+      webapk_package_name, /* show_failure_notification= */ true);
+
+  std::move(finish_callback).Run(result);
+}
+
 void WebApkInstallService::HandleFinishInstallNotifications(
     const GURL& notification_id,
     const GURL& url,
@@ -118,10 +165,15 @@ void WebApkInstallService::HandleFinishInstallNotifications(
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     webapps::WebApkInstallResult result,
-    const std::string& webapk_package_name) {
+    const std::string& webapk_package_name,
+    bool show_failure_notification) {
   if (result == webapps::WebApkInstallResult::SUCCESS) {
     ShowInstalledNotification(notification_id, short_name, url, primary_icon,
                               is_primary_icon_maskable, webapk_package_name);
+  } else if (show_failure_notification) {
+    ShowInstallFailedNotification(notification_id, short_name, url,
+                                  primary_icon, is_primary_icon_maskable,
+                                  result);
   } else {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jstring> java_notification_id =
@@ -145,7 +197,7 @@ void WebApkInstallService::ShowInstallInProgressNotification(
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-      gfx::ConvertToJavaBitmap(primary_icon);
+      !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstallInProgressNotification(
       env, java_notification_id, java_short_name, java_url, java_primary_icon,
@@ -170,7 +222,7 @@ void WebApkInstallService::ShowInstalledNotification(
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-      gfx::ConvertToJavaBitmap(primary_icon);
+      !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstalledNotification(
       env, java_webapk_package, java_notification_id, java_short_name, java_url,
@@ -193,7 +245,7 @@ void WebApkInstallService::ShowInstallFailedNotification(
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-      gfx::ConvertToJavaBitmap(primary_icon);
+      !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstallFailedNotification(
       env, java_notification_id, java_short_name, java_url, java_primary_icon,

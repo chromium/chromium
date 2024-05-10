@@ -62,6 +62,16 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
   using CompleteCallback =
       base::OnceCallback<void(const GURL&, webapps::WebApkInstallResult)>;
 
+  // LINT.IfChange(WebApkRestoreFallbackReason)
+  enum class FallbackReason {
+    kNone = 0,
+    kLoadUrl = 1,
+    kManifestIdMismatch = 2,
+    kNotWebApkCompatible = 3,
+    kMaxValue = kNotWebApkCompatible,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/web_apk/enums.xml:WebApkRestoreFallbackReason)
+
   virtual void Start(CompleteCallback complete_callback);
 
   void DownloadIcon(base::OnceClosure fetch_icon_callback);
@@ -90,9 +100,13 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
                        webapps::AddToHomescreenParams::AppType app_type,
                        webapps::InstallableStatusCode status_code) override;
 
-  void OnFinishedInstall(webapps::WebApkInstallResult result,
-                         bool relax_updates,
-                         const std::string& webapk_package_name);
+  std::unique_ptr<webapps::ShortcutInfo> UpdateFetchedInfoWithFallbackInfo(
+      const webapps::ShortcutInfo& fetched_info);
+
+  void Install(const webapps::ShortcutInfo& restore_info,
+               const SkBitmap& display_icon,
+               FallbackReason fallback_reason);
+  void OnFinishedInstall(bool is_fallback, webapps::WebApkInstallResult result);
 
   raw_ptr<Profile> profile_;
   base::WeakPtr<WebApkRestoreWebContentsManager> web_contents_manager_;
