@@ -93,7 +93,6 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityAutoclickStabilizePosition,
     ash::prefs::kAccessibilityAutoclickMovementThreshold,
     ash::prefs::kAccessibilityMouseKeysEnabled,
-    ash::prefs::kAccessibilityMouseKeysShortcutToPauseEnabled,
     ash::prefs::kAccessibilityMouseKeysDisableInTextFields,
     ash::prefs::kAccessibilityMouseKeysAcceleration,
     ash::prefs::kAccessibilityMouseKeysMaxSpeed,

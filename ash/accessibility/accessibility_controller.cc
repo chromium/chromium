@@ -260,7 +260,6 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityReducedAnimationsEnabled,
     prefs::kAccessibilityMouseKeysEnabled,
-    prefs::kAccessibilityMouseKeysShortcutToPauseEnabled,
     prefs::kAccessibilityMouseKeysDisableInTextFields,
     prefs::kAccessibilityMouseKeysAcceleration,
     prefs::kAccessibilityMouseKeysMaxSpeed,
@@ -1261,8 +1260,6 @@ void AccessibilityController::RegisterProfilePrefs(
                                kDefaultAccessibilityChromeVoxVoiceName);
 
   // TODO(b/259372916): Enable sync for Mouse Keys settings before launch.
-  registry->RegisterBooleanPref(
-      prefs::kAccessibilityMouseKeysShortcutToPauseEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMouseKeysDisableInTextFields, true);
   registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysAcceleration,

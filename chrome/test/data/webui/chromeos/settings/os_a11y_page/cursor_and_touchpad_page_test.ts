@@ -653,45 +653,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertNull(enableMouseKeysToggle);
   });
 
-  test('Mouse keys: Ctrl to disable', async () => {
-    await initPage();
-
-    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
-      // Skip if the flag isn't enabled.
-      return;
-    }
-
-    // If the flag is enabled, check that the UI works.
-    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
-
-    const enableMouseKeysToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeys');
-    assert(enableMouseKeysToggle);
-    assertTrue(isVisible(enableMouseKeysToggle));
-
-    enableMouseKeysToggle.click();
-    await waitBeforeNextRender(page);
-    flush();
-
-    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
-
-    // kAccessibilityMouseKeysShortcutToPauseEnabled
-    assertTrue(page.prefs.settings.a11y.mouse_keys.ctrl_to_pause_enabled.value);
-    const enableMouseKeysShortcutToPauseEnabledToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeysShortcutToPause');
-    assert(enableMouseKeysShortcutToPauseEnabledToggle);
-    assertTrue(isVisible(enableMouseKeysShortcutToPauseEnabledToggle));
-
-    enableMouseKeysShortcutToPauseEnabledToggle.click();
-    await waitBeforeNextRender(page);
-    flush();
-
-    assertFalse(
-        page.prefs.settings.a11y.mouse_keys.ctrl_to_pause_enabled.value);
-  });
-
   test('Moust keys: Disable in text fields', async () => {
     await initPage();
 
