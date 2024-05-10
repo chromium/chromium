@@ -108,6 +108,9 @@ public class TabbedAppMenuPTTest {
 
         verifyPresentItems(menu);
         assertFinalDestination(newTabPage, menu);
+
+        // Clean up for next tests in batch
+        menu.clickOutsideToClose();
     }
 
     /**
@@ -126,6 +129,9 @@ public class TabbedAppMenuPTTest {
 
         verifyPresentItems(menu);
         assertFinalDestination(incognitoNewTabPage, menu);
+
+        // Clean up for next tests in batch
+        menu.clickOutsideToClose();
     }
 
     /**
@@ -141,6 +147,9 @@ public class TabbedAppMenuPTTest {
 
         verifyPresentItems(menu);
         assertFinalDestination(blankPage, menu);
+
+        // Clean up for next tests in batch
+        menu.clickOutsideToClose();
     }
 
     /**
@@ -164,6 +173,9 @@ public class TabbedAppMenuPTTest {
 
         verifyPresentItems(menu);
         assertFinalDestination(pageOne, menu);
+
+        // Clean up for next tests in batch
+        menu.clickOutsideToClose();
     }
 
     /**

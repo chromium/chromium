@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -15,6 +16,9 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
+import androidx.test.espresso.action.GeneralClickAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Tap;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -188,5 +192,22 @@ public abstract class AppMenuFacility<HostStationT extends Station>
                 return listItem.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id;
             }
         };
+    }
+
+    /** Clicks outside the menu to close it. */
+    public void clickOutsideToClose() {
+        GeneralClickAction clickBetweenViewAndLeftEdge =
+                new GeneralClickAction(
+                        Tap.SINGLE,
+                        view -> {
+                            int[] menuListXy = new int[2];
+                            view.getLocationOnScreen(menuListXy);
+                            float clickX = (float) menuListXy[0] / 2;
+                            assert clickX > 0 : "No space between app menu and edge of screen";
+                            float clickY = menuListXy[1];
+                            return new float[] {clickX, clickY};
+                        },
+                        Press.FINGER);
+        Facility.exitSync(this, () -> onView(MENU_LIST).perform(clickBetweenViewAndLeftEdge));
     }
 }
