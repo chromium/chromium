@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
+import android.content.res.Resources;
+import android.os.Looper;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,19 +29,32 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -52,14 +70,22 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 })
 public class PriceTrackingButtonControllerUnitTest {
     @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private Activity mActivity;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private ObservableSupplierImpl<Boolean> mPriceTrackingStateSupplier;
     @Mock private Tab mMockTab;
-    @Mock private ObservableSupplier<Tab> mMockTabSupplier;
     @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private TabBookmarker mMockTabBookmarker;
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private ModalDialogManager mMockModalDialogManager;
+    @Mock private SnackbarManager mMockSnackbarManager;
+    @Mock private Profile mMockProfile;
+    @Mock private BookmarkModel mMockBookmarkModel;
+    @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Before
@@ -69,21 +95,51 @@ public class PriceTrackingButtonControllerUnitTest {
 
         MockitoAnnotations.initMocks(this);
 
+        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+        mPriceTrackingStateSupplier = new ObservableSupplierImpl<>(false);
+        mProfileSupplier = new ObservableSupplierImpl<>(mMockProfile);
+        mBookmarkModelSupplier = new ObservableSupplierImpl<>(mMockBookmarkModel);
+        mTabSupplier = new ObservableSupplierImpl<>(mMockTab);
         when(mMockTab.getContext()).thenReturn(mActivity);
-        when(mMockTabSupplier.get()).thenReturn(mMockTab);
         when(mMockTabBookmarkerSupplier.get()).thenReturn(mMockTabBookmarker);
+    }
+
+    private PriceTrackingButtonController createButtonController() {
+        return new PriceTrackingButtonController(
+                mActivity,
+                mTabSupplier,
+                mMockModalDialogManager,
+                mMockBottomSheetController,
+                mMockSnackbarManager,
+                mMockTabBookmarkerSupplier,
+                mProfileSupplier,
+                mBookmarkModelSupplier,
+                mPriceTrackingStateSupplier);
+    }
+
+    @Test
+    public void testButtonShouldUpdateOnPriceTrackingChange() {
+        ButtonDataObserver mockButtonObserver = mock(ButtonDataObserver.class);
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
+        priceTrackingButtonController.addObserver(mockButtonObserver);
+
+        ButtonSpec originalButtonSpec = priceTrackingButtonController.get(mMockTab).getButtonSpec();
+
+        mPriceTrackingStateSupplier.set(true);
+        verify(mockButtonObserver).buttonDataChanged(true);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        ButtonSpec updatedButtonSpec = priceTrackingButtonController.get(mMockTab).getButtonSpec();
+
+        Assert.assertNotEquals(
+                originalButtonSpec.getContentDescription(),
+                updatedButtonSpec.getContentDescription());
+        Assert.assertNotEquals(originalButtonSpec.getDrawable(), updatedButtonSpec.getDrawable());
     }
 
     @Test
     public void testPriceTrackingButtonClick() {
-        PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(
-                        mActivity,
-                        mMockTabSupplier,
-                        mMockModalDialogManager,
-                        mMockBottomSheetController,
-                        mock(Drawable.class),
-                        mMockTabBookmarkerSupplier);
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
         buttonData.getButtonSpec().getOnClickListener().onClick(null);
@@ -92,15 +148,40 @@ public class PriceTrackingButtonControllerUnitTest {
     }
 
     @Test
+    public void testPriceTrackingButtonClick_shouldRemoveTrackingWhenAlreadyTracking() {
+        View mockView = Mockito.mock(View.class);
+        Resources mockResources = Mockito.mock(Resources.class);
+        when(mockView.getResources()).thenReturn(mockResources);
+
+        BookmarkId bookmarkId = new BookmarkId(1234, BookmarkType.NORMAL);
+        when(mMockBookmarkModel.getUserBookmarkIdForTab(mMockTab)).thenReturn(bookmarkId);
+        ArgumentCaptor<Callback<Boolean>> jniCallbackArgumentCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
+        mPriceTrackingStateSupplier.set(true);
+
+        ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
+
+        buttonData.getButtonSpec().getOnClickListener().onClick(mockView);
+
+        verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(mMockTab);
+        verify(mMockPriceTrackingUtilsJni)
+                .setPriceTrackingStateForBookmark(
+                        eq(mMockProfile),
+                        eq(bookmarkId.getId()),
+                        eq(false),
+                        jniCallbackArgumentCaptor.capture(),
+                        eq(false));
+
+        jniCallbackArgumentCaptor.getValue().onResult(true);
+
+        verify(mMockSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
     public void testPriceTrackingButton_IsDisabledWhenBottomSheetAppears() {
-        PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(
-                        mActivity,
-                        mMockTabSupplier,
-                        mMockModalDialogManager,
-                        mMockBottomSheetController,
-                        mock(Drawable.class),
-                        mMockTabBookmarkerSupplier);
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =
                 Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);
         priceTrackingButtonController.addObserver(buttonDataObserver);
@@ -119,14 +200,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Test
     public void testPriceTrackingButton_IsReenabledWhenBottomSheetDismissed() {
-        PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(
-                        mActivity,
-                        mMockTabSupplier,
-                        mMockModalDialogManager,
-                        mMockBottomSheetController,
-                        mock(Drawable.class),
-                        mMockTabBookmarkerSupplier);
+        PriceTrackingButtonController priceTrackingButtonController = createButtonController();
 
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =
                 Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);

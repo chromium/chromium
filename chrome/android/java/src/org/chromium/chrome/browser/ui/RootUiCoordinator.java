@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
@@ -1279,15 +1280,20 @@ public class RootUiCoordinator
             mIdentityDiscController =
                     new IdentityDiscController(
                             mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+            CurrentTabPriceTrackingStateSupplier currentTabPriceTrackingStateSupplier =
+                    new CurrentTabPriceTrackingStateSupplier(
+                            mActivityTabProvider, mProfileSupplier);
             PriceTrackingButtonController priceTrackingButtonController =
                     new PriceTrackingButtonController(
                             mActivity,
                             mActivityTabProvider,
                             mModalDialogManagerSupplier.get(),
                             getBottomSheetController(),
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.price_tracking_disabled),
-                            mTabBookmarkerSupplier);
+                            mSnackbarManagerSupplier.get(),
+                            mTabBookmarkerSupplier,
+                            mProfileSupplier,
+                            mBookmarkModelSupplier,
+                            currentTabPriceTrackingStateSupplier);
             ReaderModeToolbarButtonController readerModeToolbarButtonController =
                     new ReaderModeToolbarButtonController(
                             mActivity,

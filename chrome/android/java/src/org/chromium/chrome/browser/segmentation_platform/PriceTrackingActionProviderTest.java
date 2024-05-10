@@ -126,25 +126,6 @@ public class PriceTrackingActionProviderTest {
     }
 
     @Test
-    public void priceTrackingNotShownForAlreadyPriceTrackedPages() {
-        List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
-        providers.add(provider);
-        SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
-        // URL supports price tracking.
-        setIsUrlPriceTrackableResult(true);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        // URL is already bookmarked.
-        doReturn(new BookmarkId(1L, 0)).when(mBookmarkModel).getUserBookmarkIdForTab(mMockTab);
-        // Bookmark has price tracking information.
-        setIsBookmarkPriceTrackedResult(true);
-        provider.getAction(mMockTab, accumulator);
-        Assert.assertFalse(accumulator.hasPriceTracking());
-    }
-
-    @Test
     public void priceTrackingNotShownForNonTrackablePages() {
         List<ActionProvider> providers = new ArrayList<>();
         PriceTrackingActionProvider provider =
