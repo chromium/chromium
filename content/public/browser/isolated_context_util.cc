@@ -16,8 +16,10 @@ namespace content {
 namespace {
 
 bool IsIsolatedContextAllowedByEmbedder(RenderProcessHost* process) {
-  return GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-      process->GetBrowserContext(), process->GetProcessLock().lock_url());
+  const ProcessLock& process_lock = process->GetProcessLock();
+  return !process_lock.is_sandboxed() &&
+         GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
+             process->GetBrowserContext(), process_lock.lock_url());
 }
 
 }  // namespace

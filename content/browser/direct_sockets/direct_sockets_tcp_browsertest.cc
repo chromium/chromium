@@ -40,7 +40,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
@@ -268,8 +268,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
-    client_ = std::make_unique<test::IsolatedWebAppContentBrowserClient>(
-        url::Origin::Create(GetTestPageURL()));
+    client_ = CreateContentBrowserClient();
     runner_ =
         std::make_unique<content::test::AsyncJsRunner>(shell()->web_contents());
 
@@ -282,6 +281,11 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
+  virtual std::unique_ptr<ContentBrowserClient> CreateContentBrowserClient() {
+    return std::make_unique<test::IsolatedWebAppContentBrowserClient>(
+        url::Origin::Create(GetTestPageURL()));
+  }
+
  private:
   BrowserContext* browser_context() {
     return shell()->web_contents()->GetBrowserContext();
@@ -291,7 +295,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
-  std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
+  std::unique_ptr<ContentBrowserClient> client_;
   std::unique_ptr<content::test::AsyncJsRunner> runner_;
 };
 
@@ -803,6 +807,63 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, NotInCrossOriginIframe) {
   EXPECT_EQ(cross_origin_corp_url, iframe_rfh->GetLastCommittedURL());
   EXPECT_EQ(true, EvalJs(iframe_rfh, "self.crossOriginIsolated"));
   EXPECT_TRUE(ExecJs(shell(), "TCPSocket === undefined"));
+}
+
+class IsolatedContextContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
+                                      const GURL& lock_url) override {
+    return lock_url.is_valid();
+  }
+};
+
+class DirectSocketsIsolatedContextTcpBrowserTest
+    : public DirectSocketsTcpBrowserTest {
+ protected:
+  std::unique_ptr<ContentBrowserClient> CreateContentBrowserClient() override {
+    return std::make_unique<IsolatedContextContentBrowserClient>();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kIsolateSandboxedIframes};
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsIsolatedContextTcpBrowserTest,
+                       NotAvailableInSandboxedIframes) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  ASSERT_EQ(true, EvalJs(shell(), "'TCPSocket' in window"));
+
+  // Verify that non-sandboxed iframes have TCPSocket.
+  ASSERT_TRUE(ExecJs(shell(), content::JsReplace(R"(
+      new Promise(resolve => {
+        let f = document.createElement('iframe');
+        f.src = $1;
+        f.addEventListener('load', () => resolve());
+        document.body.appendChild(f);
+      });
+  )",
+                                                 GetTestOpenPageURL())));
+  content::RenderFrameHost* iframe1_rfh = content::ChildFrameAt(shell(), 0);
+
+  ASSERT_EQ(true, EvalJs(iframe1_rfh, "'TCPSocket' in window"));
+
+  // Verify that sandboxed iframes don't have TCPSocket.
+  ASSERT_TRUE(ExecJs(shell(), content::JsReplace(R"(
+      new Promise(resolve => {
+        let f = document.createElement('iframe');
+        f.src = $1;
+        f.sandbox = 'allow-scripts';
+        f.addEventListener('load', () => resolve());
+        document.body.appendChild(f);
+      });
+  )",
+                                                 GetTestOpenPageURL())));
+  content::RenderFrameHost* iframe2_rfh = content::ChildFrameAt(shell(), 1);
+
+  ASSERT_EQ(false, EvalJs(iframe2_rfh, "'TCPSocket' in window"));
 }
 
 }  // namespace content
