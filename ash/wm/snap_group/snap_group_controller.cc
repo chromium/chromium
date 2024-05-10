@@ -405,6 +405,7 @@ void SnapGroupController::RestoreSnapState(SnapGroup* snap_group) {
 void SnapGroupController::OnTabletModeStarted() {
   // TODO(b/327269057): Define tablet <-> clamshell transition.
   while (!snap_groups_.empty()) {
+    RecordSnapGroupExitPoint(SnapGroupExitPoint::kTabletTransition);
     RemoveSnapGroup(snap_groups_.back().get());
   }
 }

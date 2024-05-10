@@ -6849,6 +6849,92 @@ TEST_F(SnapGroupHistogramTest, SnapGroupDuration) {
                                       /*sample=*/10, /*expected_count=*/2);
 }
 
+// Verify `SnapGroupExitPoint` is correctly recorded across various Snap Group
+// exit points (drag, window state change, destruction, tablet transition).
+TEST_F(SnapGroupHistogramTest, SnapGroupExitPoint) {
+  const std::string snap_group_exit_point =
+      BuildHistogramName(kSnapGroupExitPointRootWord);
+  histogram_tester_.ExpectTotalCount(snap_group_exit_point, 0);
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SCOPED_TRACE("Test case 1: drag window out to exit");
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().top_center());
+  aura::test::TestWindowDelegate test_window_delegate;
+  test_window_delegate.set_window_component(HTCAPTION);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(50, 200);
+  EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
+  histogram_tester_.ExpectBucketCount(snap_group_exit_point,
+                                      SnapGroupExitPoint::kDragWindowOut, 1);
+  MaximizeToClearTheSession(w2.get());
+
+  SCOPED_TRACE("Test case 2: maximize window to exit");
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w2.get(), w3.get());
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
+  WindowState* w2_state = WindowState::Get(w2.get());
+  w2_state->Maximize();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w2.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
+  histogram_tester_.ExpectBucketCount(
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 1);
+  MaximizeToClearTheSession(w2.get());
+
+  SCOPED_TRACE("Test case 3: minimize window to exit");
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  SnapTwoTestWindows(w3.get(), w4.get());
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
+  WindowState* w3_state = WindowState::Get(w3.get());
+  w3_state->Minimize();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
+  histogram_tester_.ExpectBucketCount(
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 2);
+  MaximizeToClearTheSession(w4.get());
+
+  SCOPED_TRACE("Test case 4: float window to exit");
+  std::unique_ptr<aura::Window> w5(CreateAppWindow());
+  SnapTwoTestWindows(w4.get(), w5.get());
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w4.get(), w5.get()));
+  WindowState* w4_state = WindowState::Get(w4.get());
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
+  w4_state->OnWMEvent(&float_event);
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w5.get()));
+  histogram_tester_.ExpectBucketCount(
+      snap_group_exit_point, SnapGroupExitPoint::kWindowStateChange, 3);
+  MaximizeToClearTheSession(w5.get());
+
+  SCOPED_TRACE("Test case 5: window destruction to exit");
+  std::unique_ptr<aura::Window> w6(CreateAppWindow());
+  SnapTwoTestWindows(w5.get(), w6.get());
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w5.get(), w6.get()));
+  w5.reset();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w6.get()));
+  histogram_tester_.ExpectBucketCount(
+      snap_group_exit_point, SnapGroupExitPoint::kWindowDestruction, 1);
+
+  SCOPED_TRACE("Test case 6: switch to tablet mode to exit");
+  std::unique_ptr<aura::Window> w7(CreateAppWindow());
+  SnapTwoTestWindows(w6.get(), w7.get());
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w6.get(), w7.get()));
+  SwitchToTabletMode();
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w6.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w7.get()));
+  histogram_tester_.ExpectBucketCount(snap_group_exit_point,
+                                      SnapGroupExitPoint::kTabletTransition, 1);
+}
+
 TEST_F(SnapGroupHistogramTest, SnapGroupsCount) {
   UpdateDisplay("800x600");
 

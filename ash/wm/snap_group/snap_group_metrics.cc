@@ -38,6 +38,11 @@ void RecordSnapGroupActualDuration(base::TimeDelta actual_duration) {
       /*buckets=*/50);
 }
 
+void RecordSnapGroupExitPoint(SnapGroupExitPoint exit_point) {
+  base::UmaHistogramEnumeration(BuildHistogramName(kSnapGroupExitPointRootWord),
+                                exit_point);
+}
+
 void ReportSnapGroupsCountHistogram(int count) {
   UMA_HISTOGRAM_EXACT_LINEAR(BuildHistogramName(kSnapGroupsCountRootWord),
                              count,

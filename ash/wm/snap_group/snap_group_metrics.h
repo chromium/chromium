@@ -38,7 +38,22 @@ inline constexpr char kSnapGroupPersistenceDurationRootWord[] =
 inline constexpr char kSnapGroupActualDurationRootWord[] =
     "SnapGroupActualDuration";
 
+inline constexpr char kSnapGroupExitPointRootWord[] = "SnapGroupExitPoint";
+
 inline constexpr char kSnapGroupsCountRootWord[] = "SnapGroupsCount";
+
+// Enumeration of Snap Group exit point.
+// Note values are persisted to histograms so existing values should
+// remain unchanged and new values should be added to the end. This should be
+// kept in sync with `SnapGroupExitPoint` enum in
+// tools/metrics/histograms/metadata/ash/enums.xml.
+enum class SnapGroupExitPoint {
+  kDragWindowOut,
+  kWindowStateChange,
+  kWindowDestruction,
+  kTabletTransition,
+  kMaxValue = kTabletTransition,
+};
 
 // Records the partial overview metrics for `item`. Should only be called while
 // overview is in session.
@@ -47,6 +62,8 @@ void RecordPartialOverviewMetrics(OverviewItemBase* item);
 void RecordSnapGroupPersistenceDuration(base::TimeDelta persistence_duration);
 
 void RecordSnapGroupActualDuration(base::TimeDelta actual_duration);
+
+void RecordSnapGroupExitPoint(SnapGroupExitPoint exit_point);
 
 // Records the number of snap groups, up to 101.
 void ReportSnapGroupsCountHistogram(int count);

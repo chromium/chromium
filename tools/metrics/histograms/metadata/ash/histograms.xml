@@ -7708,6 +7708,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SnapGroups.SnapGroupExitPoint" enum="SnapGroupExitPoint"
+    expires_after="2025-05-08">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>Records the exit point of a Snap Group.</summary>
+</histogram>
+
+<histogram name="Ash.SnapGroups.SnapGroupPersistenceDuration" units="seconds"
+    expires_after="2025-05-08">
+  <owner>michelefan@chromium.org</owner>
+  <owner>sophiewen@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Records the duration of a Snap Group where one of the windows remains in the
+    Snap Group even after the other window is replaced using 'Snap to Replace'.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SnapGroups.SnapGroupsCount" units="int"
     expires_after="2025-05-08">
   <owner>sophiewen@chromium.org</owner>
@@ -7716,17 +7735,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when there's a change in the number of snap groups, i.e. a group is
     added or removed. Specifies the number of available snap groups.
-  </summary>
-</histogram>
-
-<histogram name="Ash.SnapGroups.SnapGroupStickyDuration" units="seconds"
-    expires_after="2025-05-08">
-  <owner>michelefan@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
-  <owner>xdai@chromium.org</owner>
-  <summary>
-    Records the duration of a Snap Group where one of the windows remains in the
-    Snap Group even after the other window is replaced using 'Snap to Replace'.
   </summary>
 </histogram>
 

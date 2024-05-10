@@ -2028,6 +2028,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Shutdown confirmation bubbble dismissed by clicking ouside"/>
 </enum>
 
+<enum name="SnapGroupExitPoint">
+  <int value="0" label="Drag window out"/>
+  <int value="1" label="Window state change"/>
+  <int value="2" label="Window destruction"/>
+  <int value="3" label="Tablet transition"/>
+</enum>
+
 <enum name="SpeechRecognitionEndState">
   <int value="0" label="Speech recognition successfully stopped"/>
   <int value="1" label="Speech recognition enountered error while recognizing"/>

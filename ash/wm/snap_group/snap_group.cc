@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
@@ -158,6 +159,7 @@ void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
   // the group to avoid re-stacking the divider on top of the dragged window.
   if (window1_->Contains(target) || window2_->Contains(target)) {
     SnapGroupController::Get()->RemoveSnapGroup(this);
+    RecordSnapGroupExitPoint(SnapGroupExitPoint::kDragWindowOut);
   }
 }
 
@@ -175,6 +177,7 @@ void SnapGroup::MinimizeWindows() {
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
   DCHECK(window == window1_ || window == window2_);
+  RecordSnapGroupExitPoint(SnapGroupExitPoint::kWindowDestruction);
   // `this` will be shut down and removed from the controller immediately, and
   // then destroyed asynchronously soon.
   SnapGroupController::Get()->RemoveSnapGroup(this);
@@ -229,6 +232,7 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
   CHECK(old_type == WindowStateType::kPrimarySnapped ||
         old_type == WindowStateType::kSecondarySnapped);
   if (window_state->GetStateType() != old_type) {
+    RecordSnapGroupExitPoint(SnapGroupExitPoint::kWindowStateChange);
     // `this` will be shut down and removed from the controller immediately, and
     // then destroyed asynchronously soon.
     SnapGroupController::Get()->RemoveSnapGroup(this);
