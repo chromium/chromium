@@ -84,6 +84,9 @@ public class TabResumptionModuleMetricsUtils {
     static final String HISTOGRAM_IS_SALIENT_IMAGE_AVAILABLE =
             "MagicStack.Clank.TabResumption.IsSalientImageAvailable";
 
+    static final String HISTOGRAM_SEE_MORE_LINK_CLICKED =
+            "MagicStack.Clank.TabResumption.SeeMoreLinkClicked";
+
     /** Maps specification of a clicked tile to a ClickInfo for logging. */
     static @ClickInfo int computeClickInfo(@ModuleShowConfig int moduleShowConfig, int tileIndex) {
         switch (moduleShowConfig) {
@@ -161,5 +164,13 @@ public class TabResumptionModuleMetricsUtils {
     /** Records whether a salient image fetch attempt was successful. */
     static void recordSalientImageAvailability(boolean isAvailable) {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_IS_SALIENT_IMAGE_AVAILABLE, isAvailable);
+    }
+
+    /**
+     * Records the configuration of the tab resumption module when the "see more" link is clicked.
+     */
+    static void recordSeeMoreLinkClicked(@ModuleShowConfig int config) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SEE_MORE_LINK_CLICKED, config, ModuleShowConfig.NUM_ENTRIES);
     }
 }

@@ -12,6 +12,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 
 /** Unit tests for {@link TabResumptionModuleMetricsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -30,6 +31,17 @@ public class TabResumptionModuleMetricsUtilsUnitTest {
         histogramWatcher =
                 HistogramWatcher.newBuilder().expectBooleanRecord(histogramName, false).build();
         TabResumptionModuleMetricsUtils.recordSalientImageAvailability(false);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecord() {
+        String histogramName = "MagicStack.Clank.TabResumption.SeeMoreLinkClicked";
+        @ModuleShowConfig int config = ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder().expectIntRecord(histogramName, config).build();
+        TabResumptionModuleMetricsUtils.recordSeeMoreLinkClicked(config);
         histogramWatcher.assertExpected();
     }
 }

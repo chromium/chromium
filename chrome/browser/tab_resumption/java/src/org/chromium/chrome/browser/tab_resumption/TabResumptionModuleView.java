@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 
@@ -69,7 +70,15 @@ public class TabResumptionModuleView extends LinearLayout {
 
     void setSeeMoreLinkClickCallback(Runnable seeMoreClickCallback) {
         ((TextView) findViewById(R.id.tab_resumption_see_more_link))
-                .setOnClickListener(v -> seeMoreClickCallback.run());
+                .setOnClickListener(
+                        v -> {
+                            seeMoreClickCallback.run();
+                            @ModuleShowConfig
+                            int config =
+                                    TabResumptionModuleMetricsUtils.computeModuleShowConfig(
+                                            mBundle);
+                            TabResumptionModuleMetricsUtils.recordSeeMoreLinkClicked(config);
+                        });
     }
 
     void setClickCallbacks(SuggestionClickCallbacks clickCallbacks) {

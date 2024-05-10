@@ -2508,12 +2508,14 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
     {"enable_v2", "true"}};
 const FeatureEntry::FeatureParam kTabResumptionModules_salient_image[] = {
+    {"show_see_more", "true"},
     {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam
     kTabResumptionModule_single_tile_with_salient_image[] = {
-        {"use_salient_image", "true"},
         {"max_tiles_number", "1"},
+        {"show_see_more", "true"},
+        {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"V2", kTabResumptionModule_enable_v2,
