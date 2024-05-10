@@ -32,6 +32,7 @@ class DragHandle;
 class FocusCycler;
 class HotseatWidget;
 class LoginShelfView;
+class OverviewController;
 class Shelf;
 class ShelfLayoutManager;
 class ShelfNavigationWidget;
@@ -228,6 +229,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   raw_ptr<LoginShelfView> login_shelf_view_;
 
   ScopedSessionObserver scoped_session_observer_;
+
+  base::ScopedObservation<OverviewController, OverviewObserver>
+      overview_observation_{this};
 
   size_t force_show_hotseat_count_ = 0;
 

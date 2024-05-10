@@ -35,6 +35,7 @@
 #include "ash/style/style_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/utility/forest_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
@@ -703,6 +704,8 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
 
   background_animator_.AddObserver(delegate_view_);
   shelf_->AddObserver(this);
+
+  overview_observation_.Observe(OverviewController::Get());
 
   // Sets initial session state to make sure the UI is properly shown.
   OnSessionStateChanged(Shell::Get()->session_controller()->GetSessionState());
