@@ -349,9 +349,9 @@ void CountersAttachmentContext::RemoveCounterIfAncestorExists(
     return;
   }
   CounterStack& counter_stack = *counter_stack_it->value;
-  DCHECK(!counter_stack.empty());
   // Don't remove the last on stack counter or style containment boundary.
-  if (counter_stack.size() == 1 || counter_stack.back() == nullptr) {
+  if (counter_stack.empty() || counter_stack.size() == 1 ||
+      counter_stack.back() == nullptr) {
     return;
   }
   const Element* element = counter_stack.back();
