@@ -11577,6 +11577,46 @@
             ]
         }
     ],
+    "MemoryPurgeInBackground": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ShortDelay",
+                    "params": {
+                        "memory_purge_background_max_delay": "45s",
+                        "memory_purge_background_min_delay": "30s"
+                    },
+                    "enable_features": [
+                        "MemoryPurgeInBackground"
+                    ]
+                },
+                {
+                    "name": "LongDelay",
+                    "params": {
+                        "memory_purge_background_max_delay": "11m",
+                        "memory_purge_background_min_delay": "10m"
+                    },
+                    "enable_features": [
+                        "MemoryPurgeInBackground"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "MemoryPurgeInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "MessagePumpEpoll": [
         {
             "platforms": [
