@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -35,6 +34,7 @@
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace download {
 namespace {
@@ -699,8 +699,9 @@ void ControllerImpl::AttemptToFinalizeSetup() {
          controller_state_ == State::RECOVERING);
 
   // Always notify the LogSink no matter what path this function takes.
-  base::ScopedClosureRunner state_notifier(base::BindOnce(
-      &LogSink::OnServiceStatusChanged, base::Unretained(log_sink_)));
+  absl::Cleanup state_notifier = [this] {
+    log_sink_->OnServiceStatusChanged();
+  };
 
   if (!startup_status_.Complete())
     return;
