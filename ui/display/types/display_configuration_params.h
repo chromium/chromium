@@ -21,11 +21,8 @@ struct DISPLAY_TYPES_EXPORT DisplayConfigurationParams {
   DisplayConfigurationParams(DisplayConfigurationParams&& other);
   DisplayConfigurationParams(int64_t id,
                              const gfx::Point& origin,
-                             const display::DisplayMode* pmode);
-  DisplayConfigurationParams(int64_t id,
-                             const gfx::Point& origin,
                              const display::DisplayMode* pmode,
-                             bool enable_vrr);
+                             bool enable_vrr = false);
   ~DisplayConfigurationParams();
 
   int64_t id = 0;
