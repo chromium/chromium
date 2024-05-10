@@ -19,6 +19,7 @@
 namespace ash {
 
 class LocaleSwitchView;
+class ScopedSessionRefresher;
 
 // This screen waits for account information (locale and account capabilities)
 // to be fetched and handles OOBE locale switch for the post-login screens.
@@ -82,6 +83,9 @@ class LocaleSwitchScreen : public BaseScreen,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::OneShotTimer timeout_waiter_;
 
