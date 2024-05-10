@@ -6,8 +6,6 @@
 
 #include <optional>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -16,6 +14,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace reporting {
 
@@ -31,27 +30,21 @@ void WebsiteUsageTelemetrySampler::MaybeCollect(
     OptionalMetricCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<MetricData> metric_data;
-  base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
-      [](base::WeakPtr<WebsiteUsageTelemetrySampler> self,
-         OptionalMetricCallback callback,
-         std::optional<MetricData>* metric_data) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-        if (!metric_data->has_value()) {
-          std::move(callback).Run(std::move(*metric_data));
-          return;
-        }
+  absl::Cleanup run_callback_on_return = [this, &callback, &metric_data] {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!metric_data.has_value()) {
+      std::move(callback).Run(std::move(metric_data));
+      return;
+    }
 
-        // Report metric data and delete tracked website usage data from the
-        // pref store.
-        const auto& website_usage_data = metric_data->value()
-                                             .telemetry_data()
-                                             .website_telemetry()
-                                             .website_usage_data();
-        CHECK(!website_usage_data.website_usage().empty());
-        std::move(callback).Run(std::move(*metric_data));
-        self->DeleteWebsiteUsageDataFromPrefStore(&website_usage_data);
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), &metric_data));
+    // Report metric data and delete tracked website usage data from the
+    // pref store.
+    const auto& website_usage_data =
+        metric_data->telemetry_data().website_telemetry().website_usage_data();
+    CHECK(!website_usage_data.website_usage().empty());
+    std::move(callback).Run(std::move(metric_data));
+    DeleteWebsiteUsageDataFromPrefStore(&website_usage_data);
+  };
   if (!profile_) {
     // Profile has been destructed. Return.
     return;
