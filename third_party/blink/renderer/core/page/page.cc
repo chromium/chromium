@@ -87,7 +87,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
-#include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -254,12 +253,6 @@ Page::Page(base::PassKey<Page>,
                                !color_provider_colors->IsEmpty()
                            ? *color_provider_colors
                            : ColorProviderColorMaps::CreateDefault());
-  if (is_ordinary_) {
-    // TODO(crbug.com/336382906): We will revisit where we'll be doing this in
-    // production.
-    IsolatedSVGDocumentHostInitializer::Get()
-        ->MaybePrepareIsolatedSVGDocumentHost();
-  }
 }
 
 Page::~Page() {
@@ -1251,12 +1244,6 @@ void Page::WillBeDestroyed() {
     close_task_handler_->SetPage(nullptr);
     close_task_handler_ = nullptr;
   }
-
-  // Clear speculatively created resources for SVGImage when there are no
-  // ordinary pages. This is desirable to shutdown renderer gracefully.
-  if (is_ordinary_ && OrdinaryPages().empty()) {
-    IsolatedSVGDocumentHostInitializer::Get()->Clear();
-  }
 }
 
 void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
@@ -1461,9 +1448,6 @@ void Page::PrepareForLeakDetection() {
     // the page becomes interactive. Give it a chance to clean up.
     page->v8_compile_hints_producer_->ClearData();
   }
-
-  // Clear speculatively created resources for SVGImage.
-  IsolatedSVGDocumentHostInitializer::Get()->Clear();
 }
 
 // Ensure the 10 bits reserved for connected frame count in NodeRareData are

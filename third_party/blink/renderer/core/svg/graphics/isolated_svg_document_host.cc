@@ -27,10 +27,8 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 
-#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -40,9 +38,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
-#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 
 namespace blink {
 
@@ -272,111 +267,6 @@ IsolatedSVGDocumentHost::~IsolatedSVGDocumentHost() {
 void IsolatedSVGDocumentHost::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
   visitor->Trace(frame_client_);
-}
-
-// static
-IsolatedSVGDocumentHostInitializer* IsolatedSVGDocumentHostInitializer::Get() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<IsolatedSVGDocumentHostInitializer>, initializer,
-      (MakeGarbageCollected<IsolatedSVGDocumentHostInitializer>()));
-  return initializer;
-}
-
-IsolatedSVGDocumentHostInitializer::IsolatedSVGDocumentHostInitializer()
-    : max_pre_initialize_count_(
-          base::checked_cast<wtf_size_t>(
-              !base::SysInfo::IsLowEndDevice() &&
-              base::FeatureList::IsEnabled(
-                  features::kPreInitializePageAndFrameForSVGImage))
-              ? features::kMaxCountOfPreInitializePageAndFrameForSVGImage.Get()
-              : 0),
-      agent_group_scheduler_(Thread::MainThread()
-                                 ->Scheduler()
-                                 ->ToMainThreadScheduler()
-                                 ->CreateAgentGroupScheduler()),
-      task_runner_(agent_group_scheduler_->DefaultTaskRunner()) {}
-
-std::pair<SVGImageChromeClient*, IsolatedSVGDocumentHost*>
-IsolatedSVGDocumentHostInitializer::GetOrCreate() {
-  if (max_pre_initialize_count_ > 0 &&
-      !chrome_clients_and_document_hosts_.empty()) {
-    TRACE_EVENT("blink", "IsolatedSVGDocumentHostInitializer::GetOrCreate",
-                "return_from_cache", true);
-    auto [chrome_client, document_host] =
-        chrome_clients_and_document_hosts_.back();
-    chrome_clients_and_document_hosts_.pop_back();
-    return {chrome_client, document_host};
-  }
-
-  TRACE_EVENT("blink", "IsolatedSVGDocumentHostInitializer::GetOrCreate",
-              "return_from_cache", false);
-  return Create();
-}
-
-void IsolatedSVGDocumentHostInitializer::MaybePrepareIsolatedSVGDocumentHost() {
-  if (chrome_clients_and_document_hosts_.size() >= max_pre_initialize_count_) {
-    return;
-  }
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(
-          [](IsolatedSVGDocumentHostInitializer* initializer) {
-            if (initializer->chrome_clients_and_document_hosts_.size() >=
-                initializer->max_pre_initialize_count_) {
-              return;
-            }
-            TRACE_EVENT("blink",
-                        "IsolatedSVGDocumentHostInitializer::"
-                        "MaybePrepareIsolatedSVGDocumentHost");
-            initializer->chrome_clients_and_document_hosts_.push_back(
-                initializer->Create());
-            initializer->MaybePrepareIsolatedSVGDocumentHost();
-          },
-          WrapWeakPersistent(this)));
-}
-
-std::pair<SVGImageChromeClient*, IsolatedSVGDocumentHost*>
-IsolatedSVGDocumentHostInitializer::Create() {
-  // SVG will be shared via MemoryCache (which is renderer process
-  // global cache) across multiple AgentSchedulingGroups. That's
-  // why we can't use an existing AgentSchedulingGroup for now. If
-  // we incorrectly use the existing ASG/AGS and if we freeze task
-  // queues on a AGS, it will affect SVGs on other AGS. To
-  // mitigate this problem, we need to split the MemoryCache into
-  // smaller granularity. There is an active effort to mitigate
-  // this which is called "Memory Cache Per Context"
-  // (https://crbug.com/1127971).
-  AgentGroupScheduler* agent_group_scheduler =
-      Thread::MainThread()
-          ->Scheduler()
-          ->ToMainThreadScheduler()
-          ->CreateAgentGroupScheduler();
-
-  SVGImageChromeClient* chrome_client =
-      MakeGarbageCollected<SVGImageChromeClient>();
-
-  chrome_client->InitAnimationTimer(
-      agent_group_scheduler->CompositorTaskRunner());
-
-  IsolatedSVGDocumentHost* isolated_svg_document_host =
-      MakeGarbageCollected<IsolatedSVGDocumentHost>(*chrome_client,
-                                                    *agent_group_scheduler);
-
-  return {chrome_client, isolated_svg_document_host};
-}
-
-void IsolatedSVGDocumentHostInitializer::Clear() {
-  for (auto [svg_image_chrome_client, isolated_svg_document_host] :
-       chrome_clients_and_document_hosts_) {
-    isolated_svg_document_host->Shutdown();
-  }
-  chrome_clients_and_document_hosts_.clear();
-}
-
-void IsolatedSVGDocumentHostInitializer::Trace(Visitor* visitor) const {
-  visitor->Trace(chrome_clients_and_document_hosts_);
-  visitor->Trace(agent_group_scheduler_);
 }
 
 }  // namespace blink
