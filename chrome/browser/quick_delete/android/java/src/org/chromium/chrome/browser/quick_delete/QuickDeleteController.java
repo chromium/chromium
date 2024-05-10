@@ -90,6 +90,9 @@ public class QuickDeleteController {
         mPropertyModel =
                 new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
                         .with(QuickDeleteProperties.CONTEXT, mContext)
+                        .with(
+                                QuickDeleteProperties.HAS_MULTI_WINDOWS,
+                                delegate.isInMultiWindowMode())
                         .build();
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -135,8 +138,12 @@ public class QuickDeleteController {
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
                 @TimePeriod int timePeriod = mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD);
+                boolean isTabClosureDisabled =
+                        mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS);
+
                 mDelegate.performQuickDelete(
-                        () -> onBrowsingDataDeletionFinished(timePeriod), timePeriod);
+                        () -> onBrowsingDataDeletionFinished(timePeriod, isTabClosureDisabled),
+                        timePeriod);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
@@ -150,13 +157,18 @@ public class QuickDeleteController {
         destroy();
     }
 
-    private void onBrowsingDataDeletionFinished(@TimePeriod int timePeriod) {
+    private void onBrowsingDataDeletionFinished(
+            @TimePeriod int timePeriod, boolean isTabClosureDisabled) {
         // Ensure that no in-product help is triggered during tab closure and the post-deletion
         // experience.
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
         Tracker.DisplayLockHandle trackerLock = tracker.acquireDisplayLock();
 
-        navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
+        if (isTabClosureDisabled) {
+            showPostDeleteFeedback(timePeriod, trackerLock);
+        } else {
+            navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
+        }
     }
 
     private void maybeShowQuickDeleteAnimation(
@@ -167,15 +179,20 @@ public class QuickDeleteController {
         if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
             List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
             mDelegate.showQuickDeleteAnimation(
-                    () -> showPostDeleteFeedback(timePeriod, trackerLock), tabs);
+                    () -> closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock), tabs);
         } else {
-            showPostDeleteFeedback(timePeriod, trackerLock);
+            closeTabsAndShowPostDeleteFeedback(timePeriod, trackerLock);
         }
+    }
+
+    private void closeTabsAndShowPostDeleteFeedback(
+            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
+        mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
+        showPostDeleteFeedback(timePeriod, trackerLock);
     }
 
     private void showPostDeleteFeedback(
             @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
-        mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         triggerHapticFeedback();
         showSnackbar(timePeriod);
 

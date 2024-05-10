@@ -69,17 +69,16 @@ abstract class QuickDeleteDelegate {
      * Performs the data deletion for the quick delete feature.
      *
      * @param onDeleteFinished A {@link Runnable} to be called once the browsing data has been
-     *                         cleared.
+     *     cleared.
      * @param timePeriod The {@link TimePeriod} of the browsing data to delete.
      */
-    void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {}
+    abstract void performQuickDelete(
+            @NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod);
 
     /**
      * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
      */
-    SettingsLauncher getSettingsLauncher() {
-        return null;
-    }
+    abstract SettingsLauncher getSettingsLauncher();
 
     /**
      * Show the Quick Delete animation on the tab list.
@@ -88,5 +87,11 @@ abstract class QuickDeleteDelegate {
      * @param tabs The tabs to fade with the animation. These tabs will get closed after the
      *     animation is complete.
      */
-    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {}
+    abstract void showQuickDeleteAnimation(
+            @NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs);
+
+    /**
+     * @return True if the user has more than one restorable window.
+     */
+    abstract boolean isInMultiWindowMode();
 }

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -298,6 +299,23 @@ public class QuickDeleteDialogDelegateTest {
                         .getCurrentDialogForTest()
                         .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog-no-tabs-or-history");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testQuickDeleteDialogView_MultiInstance() throws IOException {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        openQuickDeleteDialog();
+
+        onView(withId(R.id.quick_delete_tabs_row_subtitle)).check(matches(isDisplayed()));
+
+        View dialogView =
+                mActivity
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
+        mRenderTestRule.render(dialogView, "quick_delete_dialog-tabs-disabled");
     }
 
     @Test

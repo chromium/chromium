@@ -52,9 +52,16 @@ class QuickDeleteMediator
 
         mPropertyModel.set(
                 QuickDeleteProperties.IS_SIGNED_IN, QuickDeleteDelegate.isSignedIn(mProfile));
-        mPropertyModel.set(
-                QuickDeleteProperties.CLOSED_TABS_COUNT,
-                mQuickDeleteTabsFilter.getListOfTabsFilteredToBeClosed().size());
+
+        // Disable tabs if the user is in multi-window mode.
+        // TODO(b/333036591): Remove this check once tab closure works properly across
+        // multi-instances.
+        if (!mPropertyModel.get(QuickDeleteProperties.HAS_MULTI_WINDOWS)) {
+            mPropertyModel.set(
+                    QuickDeleteProperties.CLOSED_TABS_COUNT,
+                    mQuickDeleteTabsFilter.getListOfTabsFilteredToBeClosed().size());
+        }
+
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
 
         mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);

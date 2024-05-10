@@ -27,6 +27,8 @@ class QuickDeleteProperties {
 
     public static final PropertyModel.ReadableObjectPropertyKey<Context> CONTEXT =
             new PropertyModel.ReadableObjectPropertyKey();
+    public static final PropertyModel.ReadableBooleanPropertyKey HAS_MULTI_WINDOWS =
+            new PropertyModel.ReadableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         TIME_PERIOD,
@@ -35,6 +37,7 @@ class QuickDeleteProperties {
         IS_SIGNED_IN,
         IS_SYNCING_HISTORY,
         IS_DOMAIN_VISITED_DATA_PENDING,
-        CONTEXT
+        CONTEXT,
+        HAS_MULTI_WINDOWS
     };
 }

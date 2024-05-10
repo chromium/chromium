@@ -5927,6 +5927,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_QUICK_DELETE_DIALOG_TABS_CLOSED_TEXT" desc="Text indicating that the tabs which a user recently used to visit a website within the specified time range would be closed.">
         {NUM_TABS, plural, =1 {1 tab on this device} other {# tabs on this device}}
       </message>
+      <message name="IDS_QUICK_DELETE_TABS_TITLE" desc="Title for the tabs row in the Quick Delete dialog.">
+        Tabs on this device
+      </message>
       <message name="IDS_QUICK_DELETE_DIALOG_ZERO_TABS_CLOSED_ALL_TIME_TEXT" desc="Text indicating that no tabs would be closed.">
         No tabs on this device
       </message>

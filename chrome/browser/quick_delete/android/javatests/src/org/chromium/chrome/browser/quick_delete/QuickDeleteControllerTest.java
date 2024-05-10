@@ -49,6 +49,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridgeJni;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -392,5 +394,19 @@ public class QuickDeleteControllerTest {
                                 .waitForMonitorWithTimeout(activityMonitor, ACTIVITY_WAIT_LONG_MS);
 
         assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragmentAdvanced);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
+    public void testQuickDeleteTabsNotClosed_WithMultiInstance() {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        mActivityTestRule.loadUrl("https://www.google.com/");
+        assertEquals(1, mActivity.getCurrentTabModel().getCount());
+
+        openQuickDeleteDialog();
+
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        assertEquals(1, mActivity.getCurrentTabModel().getCount());
     }
 }
