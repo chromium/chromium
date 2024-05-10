@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -48,6 +47,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace crosapi {
 namespace {
@@ -201,8 +201,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
       base::test::TaskEnvironment::MainThreadType::IO};
 
   ash::LoginState::Initialize();
-  base::ScopedClosureRunner login_state_teardown(
-      base::BindOnce(&ash::LoginState::Shutdown));
+  absl::Cleanup login_state_teardown = &ash::LoginState::Shutdown;
 
   // Constructing CrosapiManager requires ProfileManager.
   // Also, constructing BrowserInitParams requires local state prefs.
@@ -214,8 +213,9 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   user_manager::FakeUserManager user_manager(
       TestingBrowserProcess::GetGlobal()->local_state());
   user_manager.Initialize();
-  base::ScopedClosureRunner user_manager_teardown(base::BindLambdaForTesting(
-      [&user_manager]() { user_manager.Destroy(); }));
+  absl::Cleanup user_manager_teardown = [&user_manager] {
+    user_manager.Destroy();
+  };
   const AccountId account = AccountId::FromUserEmail("test@test");
   const user_manager::User* user = user_manager.AddUser(account);
   user_manager.UserLoggedIn(account, user->username_hash(), false, false);
@@ -260,12 +260,12 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestBrowserServiceHostObserver observer(2, run_loop2.QuitClosure());
   crosapi_manager->crosapi_ash()->browser_service_host_ash()->AddObserver(
       &observer);
-  base::ScopedClosureRunner observer_reset(base::BindOnce(
-      base::BindLambdaForTesting([&observer, &crosapi_manager]() {
+  absl::Cleanup observer_reset =
+      [&observer, &crosapi_manager] {
         crosapi_manager->crosapi_ash()
             ->browser_service_host_ash()
             ->RemoveObserver(&observer);
-      })));
+      };
 
   // Then launch two subprocesses running in parallel.
   // These will connect BrowserService mojo.

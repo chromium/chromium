@@ -8,9 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crosapi/test/ash_crosapi_tests_env.h"
@@ -22,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace crosapi {
 namespace {
@@ -83,11 +81,10 @@ TEST_F(FileManagerCrosapiTest, ShowItemInFolder) {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     EXPECT_TRUE(base::WriteFile(file_path, ""));
   }
-  base::ScopedClosureRunner scoped_closure_runner(
-      base::BindLambdaForTesting([&]() {
-        base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-        EXPECT_TRUE(base::DeleteFile(file_path));
-      }));
+  absl::Cleanup scoped_cleanup = [&] {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    EXPECT_TRUE(base::DeleteFile(file_path));
+  };
 
   base::test::TestFuture<mojom::OpenResult> future3;
   file_manager_->ShowItemInFolder(file_path, future3.GetCallback());
@@ -112,11 +109,10 @@ TEST_F(FileManagerCrosapiTest, OpenFolder) {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     EXPECT_TRUE(base::WriteFile(file_path, ""));
   }
-  base::ScopedClosureRunner scoped_closure_runner(
-      base::BindLambdaForTesting([&]() {
-        base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-        EXPECT_TRUE(base::DeleteFile(file_path));
-      }));
+  absl::Cleanup scoped_cleanup = [&] {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    EXPECT_TRUE(base::DeleteFile(file_path));
+  };
   base::test::TestFuture<mojom::OpenResult> future3;
   file_manager_->OpenFolder(file_path, future3.GetCallback());
   EXPECT_EQ(future3.Get(), mojom::OpenResult::kFailedInvalidType);
@@ -142,11 +138,10 @@ TEST_F(FileManagerCrosapiTest, DISABLED_OpenFileWithAppInstalled) {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     EXPECT_TRUE(base::WriteFile(pakfile_path, ""));
   }
-  base::ScopedClosureRunner scoped_closure_runner(
-      base::BindLambdaForTesting([&]() {
-        base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-        EXPECT_TRUE(base::DeleteFile(pakfile_path));
-      }));
+  absl::Cleanup scoped_cleanup = [&] {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    EXPECT_TRUE(base::DeleteFile(pakfile_path));
+  };
   // A valid file but there is no application to open .pak file.
   base::test::TestFuture<mojom::OpenResult> future1;
   file_manager_->OpenFile(pakfile_path, future1.GetCallback());
