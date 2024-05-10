@@ -1,0 +1,2 @@
+Test that Storage.setAttributionReportingTracking is idempotent and does not crash when called redundantly.
+

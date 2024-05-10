@@ -2222,7 +2222,11 @@ Response StorageHandler::SetAttributionReportingTracking(bool enable) {
     if (!manager) {
       return Response::ServerError("Attribution Reporting is disabled.");
     }
-    attribution_observation_.Observe(manager);
+    // Prevent `DCHECK` crashes in `base::ScopedObservation::Observe()` when we
+    // are already observing.
+    if (!attribution_observation_.IsObserving()) {
+      attribution_observation_.Observe(manager);
+    }
   } else {
     attribution_observation_.Reset();
   }
