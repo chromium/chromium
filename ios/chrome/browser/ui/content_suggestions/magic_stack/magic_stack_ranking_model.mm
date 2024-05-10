@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import "base/metrics/histogram_macros.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
@@ -65,6 +67,7 @@
   ParcelTrackingMediator* _parcelTrackingMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  base::TimeTicks ranking_fetch_start_time_;
 }
 
 - (instancetype)initWithSegmentationService:
@@ -365,6 +368,7 @@
   } else {
     options.on_demand_execution = true;
   }
+  ranking_fetch_start_time_ = base::TimeTicks::Now();
   _segmentationService->GetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, options, inputContext,
       base::BindOnce(
@@ -378,6 +382,14 @@
     (const segmentation_platform::ClassificationResult&)result {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
     return;
+  }
+
+  if ([self.homeStartDataSource isStartSurface]) {
+    LOCAL_HISTOGRAM_TIMES(kMagicStackStartSegmentationRankingFetchTimeHistogram,
+                          base::TimeTicks::Now() - ranking_fetch_start_time_);
+  } else {
+    LOCAL_HISTOGRAM_TIMES(kMagicStackNTPSegmentationRankingFetchTimeHistogram,
+                          base::TimeTicks::Now() - ranking_fetch_start_time_);
   }
 
   NSMutableArray* magicStackOrder = [NSMutableArray array];

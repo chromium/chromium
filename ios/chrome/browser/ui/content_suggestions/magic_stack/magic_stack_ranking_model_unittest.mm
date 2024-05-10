@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
@@ -348,6 +349,8 @@ TEST_F(MagicStackRankingModelTest, TestMagicStackOrderSegmentationServiceCall) {
         return _magicStackRankingModel.hasReceivedMagicStackResponse;
       }));
   EXPECT_OCMOCK_VERIFY(consumer_);
+  histogram_tester_->ExpectTotalCount(
+      kMagicStackNTPSegmentationRankingFetchTimeHistogram, 1);
 }
 
 // Tests that the -setMagicStackOrder: consumer call is executed with the

@@ -39,3 +39,8 @@ const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[] =
     "IOS.MagicStack.Module.Click.ParcelTracking";
 const char kContentNotificationSnackbarEventHistogram[] =
     "ContentNotifications.Promo.Snackbar.Event";
+
+const char kMagicStackStartSegmentationRankingFetchTimeHistogram[] =
+    "IOS.MagicStack.Start.SegmentationRankingFetchTime";
+const char kMagicStackNTPSegmentationRankingFetchTimeHistogram[] =
+    "IOS.MagicStack.NTP.SegmentationRankingFetchTime";

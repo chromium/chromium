@@ -31,4 +31,9 @@ extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
 extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
 
+// The name of the histogram that records fetch time for the Segmentation
+// ranking for Magic Stack.
+extern const char kMagicStackStartSegmentationRankingFetchTimeHistogram[];
+extern const char kMagicStackNTPSegmentationRankingFetchTimeHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_METRICS_CONSTANTS_H_

@@ -1594,6 +1594,25 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.NTP.SegmentationRankingFetchTime" units="ms"
+    expires_after="2024-11-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the fetch time for the Segmentation ranking for Magic Stack on NTP.
+  </summary>
+</histogram>
+
+<histogram name="IOS.MagicStack.Start.SegmentationRankingFetchTime" units="ms"
+    expires_after="2024-11-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the fetch time for the Segmentation ranking for Magic Stack on
+    Start.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MainFrameNavigationIsInBrowserLockdownMode" enum="Boolean"
     expires_after="2024-11-03">
   <owner>joemerramos@chromium.org</owner>
