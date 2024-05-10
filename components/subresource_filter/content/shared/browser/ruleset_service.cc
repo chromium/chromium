@@ -14,8 +14,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -46,10 +48,11 @@ namespace subresource_filter {
 namespace {
 
 void RecordIndexAndWriteRulesetResult(
+    std::string_view uma_tag,
     RulesetService::IndexAndWriteRulesetResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "SubresourceFilter.WriteRuleset.Result", static_cast<int>(result),
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::MAX));
+  base::UmaHistogramEnumeration(
+      base::StrCat({uma_tag, ".WriteRuleset.Result"}), result,
+      RulesetService::IndexAndWriteRulesetResult::MAX);
 }
 
 // Implements operations on a `sentinel file`, which is used as a safeguard to
@@ -275,6 +278,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 
   if (!unindexed_ruleset_stream_generator.ruleset_stream()) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::FAILED_OPENING_UNINDEXED_RULESET);
     return IndexedRulesetVersion(config.filter_tag);
   }
@@ -288,6 +292,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 
   if (!base::CreateDirectory(indexed_ruleset_version_dir)) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::FAILED_CREATING_VERSION_DIR);
     return IndexedRulesetVersion(config.filter_tag);
   }
@@ -295,12 +300,14 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   SentinelFile sentinel_file(indexed_ruleset_version_dir);
   if (sentinel_file.IsPresent()) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::ABORTED_BECAUSE_SENTINEL_FILE_PRESENT);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
   if (!sentinel_file.Create()) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::FAILED_CREATING_SENTINEL_FILE);
     return IndexedRulesetVersion(config.filter_tag);
   }
@@ -311,8 +318,10 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   // will prevent this version of the ruleset from ever being indexed again.
 
   RulesetIndexer indexer;
-  if (!(*g_index_ruleset_func)(&unindexed_ruleset_stream_generator, &indexer)) {
+  if (!(*g_index_ruleset_func)(config, &unindexed_ruleset_stream_generator,
+                               &indexer)) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::FAILED_PARSING_UNINDEXED_RULESET);
     return IndexedRulesetVersion(config.filter_tag);
   }
@@ -321,6 +330,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   indexed_version.checksum = indexer.GetChecksum();
   if (!sentinel_file.Remove()) {
     RecordIndexAndWriteRulesetResult(
+        config.uma_tag,
         IndexAndWriteRulesetResult::FAILED_DELETING_SENTINEL_FILE);
     return IndexedRulesetVersion(config.filter_tag);
   }
@@ -328,7 +338,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   IndexAndWriteRulesetResult result =
       WriteRuleset(indexed_ruleset_version_dir,
                    unindexed_ruleset_info.license_path, indexer.data());
-  RecordIndexAndWriteRulesetResult(result);
+  RecordIndexAndWriteRulesetResult(config.uma_tag, result);
   if (result != IndexAndWriteRulesetResult::SUCCESS)
     return IndexedRulesetVersion(config.filter_tag);
 
@@ -338,13 +348,17 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 
 // static
 bool RulesetService::IndexRuleset(
+    const RulesetConfig& config,
     UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
     RulesetIndexer* indexer) {
-  // TODO(crbug.com/40280666): Change the way metrics are recorded to support
-  // different names depending on the filter the RulesetService is used for.
-  SCOPED_UMA_HISTOGRAM_TIMER("SubresourceFilter.IndexRuleset.WallDuration");
-  SCOPED_UMA_HISTOGRAM_THREAD_TIMER(
-      "SubresourceFilter.IndexRuleset.CPUDuration");
+  // TODO(crbug.com/336333963): Re-implement these macros as functions so
+  // metrics may be collected for different filters. Until then, only record
+  // metrics for Safe Browsing. This is a stopgap and will be removed.
+  if (config.uma_tag == "SubresourceFilter") {
+    SCOPED_UMA_HISTOGRAM_TIMER("SubresourceFilter.IndexRuleset.WallDuration");
+    SCOPED_UMA_HISTOGRAM_THREAD_TIMER(
+        "SubresourceFilter.IndexRuleset.CPUDuration");
+  }
 
   int64_t unindexed_ruleset_size =
       unindexed_ruleset_stream_generator->ruleset_size();
@@ -363,8 +377,8 @@ bool RulesetService::IndexRuleset(
   }
   indexer->Finish();
 
-  UMA_HISTOGRAM_COUNTS_10000(
-      "SubresourceFilter.IndexRuleset.NumUnsupportedRules",
+  base::UmaHistogramCounts10000(
+      base::StrCat({config.uma_tag, ".IndexRuleset.NumUnsupportedRules"}),
       num_unsupported_rules);
 
   return reader.num_bytes_read() == unindexed_ruleset_size;

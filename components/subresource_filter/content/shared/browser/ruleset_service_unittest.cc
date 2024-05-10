@@ -166,12 +166,14 @@ bool MockFailingReplaceFile(const base::FilePath&,
 }
 
 #if GTEST_HAS_DEATH_TEST
-bool MockCrashingIndexRuleset(UnindexedRulesetStreamGenerator*,
+bool MockCrashingIndexRuleset(const RulesetConfig&,
+                              UnindexedRulesetStreamGenerator*,
                               RulesetIndexer*) {
   LOG(FATAL) << "Synthetic crash.";
 }
 #else
-bool MockFailingIndexRuleset(UnindexedRulesetStreamGenerator*,
+bool MockFailingIndexRuleset(const RulesetConfig&,
+                             UnindexedRulesetStreamGenerator*,
                              RulesetIndexer*) {
   return false;
 }

@@ -222,6 +222,7 @@ class RulesetService {
   // Reads the rules via the |unindexed_ruleset_stream_generator|, and indexes
   // them using |indexer|. Returns whether the entire ruleset could be parsed.
   static bool IndexRuleset(
+      const RulesetConfig& config,
       UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
       RulesetIndexer* indexer);
 

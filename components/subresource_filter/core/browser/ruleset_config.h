@@ -14,9 +14,12 @@ namespace subresource_filter {
 // Metadata used to configure where to write ruleset files and metrics for a
 // particular instance of the RulesetService, which depends on which filter it
 // is being used for.
+// NOTE: The members on this struct should have static storage duration
+// (e.g. be marked extern).
 struct RulesetConfig {
   const std::string_view filter_tag;
   const base::FilePath::StringPieceType top_level_directory;
+  const std::string_view uma_tag;
 };
 
 }  // namespace subresource_filter

@@ -15,7 +15,8 @@ constexpr subresource_filter::RulesetConfig
     kFingerprintingProtectionRulesetConfig = {
         .filter_tag = std::string_view("fingerprinting_protection_filter"),
         .top_level_directory =
-            FILE_PATH_LITERAL("Fingerprinting Protection Filter")};
+            FILE_PATH_LITERAL("Fingerprinting Protection Filter"),
+        .uma_tag = std::string_view("FingerprintingProtection")};
 
 constexpr base::FilePath::CharType kUnindexedRulesetDataFileName[] =
     FILE_PATH_LITERAL("filtering_rules");

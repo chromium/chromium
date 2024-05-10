@@ -43,6 +43,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FingerprintingProtection.IndexRuleset.NumUnsupportedRules"
+    units="rules" expires_after="2025-04-30">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <summary>
+    The number of rules that could be not be successfully indexed and therefore
+    have been ignored. Recorded every time the RulesetService kicks off a
+    ruleset indexing process and it reaches the point where rules are getting
+    indexed. This is logged when a new ruleset is indexed for the first time on
+    Chrome start for Fingerprinting Protection.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.WriteRuleset.Result"
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-04-30">
+  <owner>rizvis@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <summary>
+    Whether indexing a version of the ruleset and writing it to disk succeeded,
+    or failed at a particular step. Recorded every time the RulesetService kicks
+    off a ruleset indexing process for Fingerprinting Protection.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
