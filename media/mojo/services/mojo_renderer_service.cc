@@ -158,6 +158,15 @@ void MojoRendererService::SetCdm(
                                    weak_this_, std::move(callback)));
 }
 
+void MojoRendererService::SetLatencyHint(
+    std::optional<base::TimeDelta> latency_hint) {
+  if (latency_hint.has_value() && latency_hint->is_negative()) {
+    mojo::ReportBadMessage("Latency hint should be non-negative");
+    return;
+  }
+  renderer_->SetLatencyHint(latency_hint);
+}
+
 void MojoRendererService::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   state_ = STATE_ERROR;

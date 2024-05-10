@@ -76,6 +76,10 @@ class RendererCommandForwarder : public media::mojom::Renderer {
     owning_renderer_->MojoRendererSetCdm(cdm_id, std::move(callback));
   }
 
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override {
+    NOTIMPLEMENTED();
+  }
+
  private:
   const raw_ptr<PlaybackCommandForwardingRenderer> owning_renderer_;
   mojo::Receiver<media::mojom::Renderer> playback_controller_;

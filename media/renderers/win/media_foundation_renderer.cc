@@ -313,10 +313,14 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
                                     CLSCTX_INPROC_SERVER,
                                     IID_PPV_ARGS(&class_factory)));
-  // TODO(frankli): Use MF_MEDIA_ENGINE_REAL_TIME_MODE for low latency hint
-  // instead of 0.
-  RETURN_IF_FAILED(class_factory->CreateInstance(0, creation_attributes.Get(),
-                                                 &mf_media_engine_));
+
+  DWORD creation_flags = 0;
+  // Enable low-latency mode if latency hint is low.
+  if (latency_hint_.has_value() && (*latency_hint_ <= base::Milliseconds(50))) {
+    creation_flags |= MF_MEDIA_ENGINE_REAL_TIME_MODE;
+  }
+  RETURN_IF_FAILED(class_factory->CreateInstance(
+      creation_flags, creation_attributes.Get(), &mf_media_engine_));
 
   // The Media Foundation Media Engine has an initial playback rate of 1.0, but
   // chromium uses an initial playback rate of 0.0. The Media Engine's topology
@@ -494,10 +498,15 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRenderer::SetLatencyHint(
-    std::optional<base::TimeDelta> /*latency_hint*/) {
-  // TODO(frankli): Ensure MFMediaEngine rendering pipeline is in real time
-  // mode.
-  NOTIMPLEMENTED() << "We do not use the latency hint today";
+    std::optional<base::TimeDelta> latency_hint) {
+  DVLOG_FUNC(1);
+
+  if (latency_hint.has_value()) {
+    DLOG_IF(WARNING, mf_media_engine_)
+        << "Latency hint is not utilized after MF media engine creation.";
+    CHECK(*latency_hint >= base::Milliseconds(0));
+  }
+  latency_hint_ = latency_hint;
 }
 
 void MediaFoundationRenderer::OnCdmProxyReceived() {

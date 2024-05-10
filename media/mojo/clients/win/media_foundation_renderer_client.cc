@@ -151,8 +151,8 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererClient::SetLatencyHint(
-    std::optional<base::TimeDelta> /*latency_hint*/) {
-  NOTIMPLEMENTED() << "Latency hint not supported in MediaFoundationRenderer";
+    std::optional<base::TimeDelta> latency_hint) {
+  mojo_renderer_->SetLatencyHint(latency_hint);
 }
 
 void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {

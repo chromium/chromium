@@ -71,6 +71,7 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   void SetVolume(float volume) final;
   void SetCdm(const std::optional<base::UnguessableToken>& cdm_id,
               SetCdmCallback callback) final;
+  void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) final;
 
  private:
   enum State {

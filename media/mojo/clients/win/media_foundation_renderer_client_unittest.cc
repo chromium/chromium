@@ -47,6 +47,10 @@ class FakeMojomRenderer : public mojom::Renderer {
               SetCdm,
               (const std::optional<base::UnguessableToken>&, SetCdmCallback),
               (override));
+  MOCK_METHOD(void,
+              SetLatencyHint,
+              (std::optional<base::TimeDelta>),
+              (override));
 };
 
 class FakeMediaFoundationRendererExtension

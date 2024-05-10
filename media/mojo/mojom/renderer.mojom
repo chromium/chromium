@@ -53,6 +53,13 @@ interface Renderer {
   // Attaches the CDM associated with `cdm_id` to the renderer service,
   // executing the callback with whether the CDM was successfully attached.
   SetCdm(mojo_base.mojom.UnguessableToken? cdm_id) => (bool success);
+
+  // Sets the latency hint for the renderer, which affects the amount of
+  // decoded output buffering before playback.
+  // `latency_hint` should be non-negative, and nullopt values indicate the
+  // user is clearing their preference and the renderer should restore its
+  // default buffering thresholds.
+  SetLatencyHint(mojo_base.mojom.TimeDelta? latency_hint);
 };
 
 // A Mojo equivalent of media::RendererClient. See media/mojo/README.md
