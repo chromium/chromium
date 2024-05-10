@@ -74,9 +74,8 @@ int GetExtraHeightForWidth(views::View* view, int width) {
     return 0;
   }
 
-  int extra_height = maximum_size.height() - view->GetHeightForWidth(width);
-  CHECK_GE(extra_height, 0);
-  return extra_height;
+  // TODO(b/339166296): consider if we can make this test code only check.
+  return std::max(0, maximum_size.height() - view->GetHeightForWidth(width));
 }
 
 gfx::Point GetWidgetOrigin(const gfx::Rect& context_menu,

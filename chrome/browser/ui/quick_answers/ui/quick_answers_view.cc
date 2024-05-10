@@ -129,7 +129,7 @@ class ReportQueryView : public views::Button {
   METADATA_HEADER(ReportQueryView, views::Button)
 
  public:
-  static constexpr size_t kMaximumHeight = kReportQueryViewFontSize;
+  static constexpr size_t kMaximumHeight = kDogfoodIconBorderDip * 2;
 
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
