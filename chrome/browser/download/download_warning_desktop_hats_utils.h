@@ -48,7 +48,8 @@ class DownloadWarningHatsProductSpecificData {
         "Automatic download bubble enabled (\"Show downloads when they're "
         "done\" setting)";
     // Whether the user interacted with the partial view (true) or main view
-    // (false). Only logged for download bubble triggers.
+    // (false). Only logged for download bubble triggers. Must be added after
+    // Create(). Defaults to false if no value is added.
     static constexpr char kPartialViewInteraction[] =
         "User interacted with automatic download bubble";
     // Whether the download was initiated by a user gesture.
@@ -72,12 +73,14 @@ class DownloadWarningHatsProductSpecificData {
     // Client channel, "Stable", "Beta", etc.
     static constexpr char kChannel[] = "Chrome channel";
     // How many total warned downloads were on the downloads page. Only logged
-    // for downloads page triggers.
+    // for downloads page triggers. Must be added after Create(). Defaults to
+    // a placeholder if no value is added.
     static constexpr char kNumPageWarnings[] =
         "Number of warnings on downloads page";
     // The user's interactions with this specific warning, as a
     // comma-separated string of timestamped actions.
     // Only logged for users with Enhanced Safe Browsing.
+    // Other users will have a placeholder value.
     static constexpr char kWarningInteractions[] =
         "User interactions with this download warning with timestamps (ms)";
     // The time elapsed since the download started, in seconds.
@@ -88,10 +91,12 @@ class DownloadWarningHatsProductSpecificData {
         "Time since warning shown (s)";
     // URLs of the downloaded file and referring page.
     // These are only logged for users with Safe Browsing enabled.
+    // Other users will have a placeholder value.
     static constexpr char kUrlDownload[] = "Download URL";
     static constexpr char kUrlReferrer[] = "Referrer URL";
     // Download filename.
     // Only logged for users with Safe Browsing enabled.
+    // Other users will have a placeholder value.
     static constexpr char kFilename[] = "Download filename";
     // TODO(chlily): Add kIgnoreTimeout.
     // Timeout used for "ignore" survey trigger. Only added if the outcome was
@@ -105,16 +110,23 @@ class DownloadWarningHatsProductSpecificData {
       DownloadWarningHatsType survey_type,
       download::DownloadItem* download_item);
 
-  // Methods to add PSD fields that the caller supplies.
+  // Methods to add PSD fields that the caller supplies:
+  // Must be called for any downloads page trigger before sending the survey.
   void AddNumPageWarnings(int num);
+  // Must be called for any download bubble trigger before sending the survey.
   void AddPartialViewInteraction(bool partial_view_interaction);
 
   // Returns the names of the PSD fields, used in creating the survey configs.
   // These are CHECKed against the fields ultimately passed to the HaTS
   // service.
-  static std::vector<std::string> GetBitsDataFields();
-  static std::vector<std::string> GetStringDataFields();
+  static std::vector<std::string> GetBitsDataFields(
+      DownloadWarningHatsType survey_type);
+  static std::vector<std::string> GetStringDataFields(
+      DownloadWarningHatsType survey_type);
 
+  // Note that the applicable fields must all be present before using this
+  // object, so AddNumPageWarnings or AddPartialViewInteraction must have been
+  // called, otherwise using this object will cause a CHECK failure.
   const SurveyBitsData& bits_data() const { return bits_data_; }
   const SurveyStringData& string_data() const { return string_data_; }
 

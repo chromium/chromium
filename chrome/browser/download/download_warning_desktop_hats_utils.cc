@@ -32,6 +32,13 @@
 
 namespace {
 
+// Placeholder strings for fields that are not logged.
+constexpr char kNotAvailable[] = "Not available";
+constexpr char kNotLoggedNoSafeBrowsing[] =
+    "Not logged because Safe Browsing is off";
+constexpr char kNotLoggedNoEnhancedProtection[] =
+    "Not logged because Enhanced Protection is off";
+
 bool IsDownloadBubbleTrigger(DownloadWarningHatsType type) {
   return type == DownloadWarningHatsType::kDownloadBubbleBypass ||
          type == DownloadWarningHatsType::kDownloadBubbleHeed ||
@@ -170,6 +177,15 @@ DownloadWarningHatsProductSpecificData::Create(
 
   DownloadWarningHatsProductSpecificData psd{survey_type};
 
+  // Add placeholders for the fields that must be added later, to avoid CHECKing
+  // even if they are forgotten.
+  if (IsDownloadBubbleTrigger(survey_type)) {
+    psd.bits_data_.insert({Fields::kPartialViewInteraction, false});
+  }
+  if (IsDownloadsPageTrigger(survey_type)) {
+    psd.string_data_.insert({Fields::kNumPageWarnings, kNotAvailable});
+  }
+
   psd.string_data_.insert(
       {Fields::kChannel,
        std::string(version_info::GetChannelString(chrome::GetChannel()))});
@@ -190,6 +206,8 @@ DownloadWarningHatsProductSpecificData::Create(
     psd.string_data_.insert(
         {Fields::kSecondsSinceWarningShown,
          ElapsedTimeToSecondsString(base::Time::Now() - warning_shown_time)});
+  } else {
+    psd.string_data_.insert({Fields::kSecondsSinceWarningShown, kNotAvailable});
   }
 
   psd.bits_data_.insert(
@@ -210,6 +228,12 @@ DownloadWarningHatsProductSpecificData::Create(
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download_item));
   if (!profile) {
+    psd.string_data_.insert({Fields::kSafeBrowsingState, kNotAvailable});
+    psd.string_data_.insert({Fields::kPartialViewEnabled, kNotAvailable});
+    psd.string_data_.insert({Fields::kUrlDownload, kNotAvailable});
+    psd.string_data_.insert({Fields::kUrlReferrer, kNotAvailable});
+    psd.string_data_.insert({Fields::kFilename, kNotAvailable});
+    psd.string_data_.insert({Fields::kWarningInteractions, kNotAvailable});
     return psd;
   }
 
@@ -233,6 +257,10 @@ DownloadWarningHatsProductSpecificData::Create(
         {Fields::kFilename,
          base::UTF16ToUTF8(
              download_item->GetFileNameToReportUser().LossyDisplayName())});
+  } else {
+    psd.string_data_.insert({Fields::kUrlDownload, kNotLoggedNoSafeBrowsing});
+    psd.string_data_.insert({Fields::kUrlReferrer, kNotLoggedNoSafeBrowsing});
+    psd.string_data_.insert({Fields::kFilename, kNotLoggedNoSafeBrowsing});
   }
 
   // Interaction details logged only for ESB users.
@@ -248,6 +276,9 @@ DownloadWarningHatsProductSpecificData::Create(
         {Fields::kWarningInteractions,
          SerializeWarningActionEvents(*warning_first_shown_surface,
                                       warning_action_events)});
+  } else {
+    psd.string_data_.insert(
+        {Fields::kWarningInteractions, kNotLoggedNoEnhancedProtection});
   }
 
   return psd;
@@ -255,36 +286,42 @@ DownloadWarningHatsProductSpecificData::Create(
 
 void DownloadWarningHatsProductSpecificData::AddNumPageWarnings(int num) {
   if (IsDownloadsPageTrigger(survey_type_)) {
-    string_data_.insert({Fields::kNumPageWarnings, base::NumberToString(num)});
+    string_data_.insert_or_assign(Fields::kNumPageWarnings,
+                                  base::NumberToString(num));
   }
 }
 
 void DownloadWarningHatsProductSpecificData::AddPartialViewInteraction(
     bool partial_view_interaction) {
   if (IsDownloadBubbleTrigger(survey_type_)) {
-    bits_data_.insert(
-        {Fields::kPartialViewInteraction, partial_view_interaction});
+    bits_data_.insert_or_assign(Fields::kPartialViewInteraction,
+                                partial_view_interaction);
   }
 }
 
 // static
 std::vector<std::string>
-DownloadWarningHatsProductSpecificData::GetBitsDataFields() {
-  return {Fields::kPartialViewEnabled, Fields::kPartialViewInteraction,
-          Fields::kUserGesture};
+DownloadWarningHatsProductSpecificData::GetBitsDataFields(
+    DownloadWarningHatsType survey_type) {
+  std::vector<std::string> fields = {Fields::kPartialViewEnabled,
+                                     Fields::kUserGesture};
+  if (IsDownloadBubbleTrigger(survey_type)) {
+    fields.push_back(Fields::kPartialViewInteraction);
+  }
+  return fields;
 }
 
 // static
 std::vector<std::string>
-DownloadWarningHatsProductSpecificData::GetStringDataFields() {
-  return {
+DownloadWarningHatsProductSpecificData::GetStringDataFields(
+    DownloadWarningHatsType survey_type) {
+  std::vector<std::string> fields = {
       Fields::kOutcome,
       Fields::kSurface,
       Fields::kDangerType,
       Fields::kWarningType,
       Fields::kSafeBrowsingState,
       Fields::kChannel,
-      Fields::kNumPageWarnings,
       Fields::kWarningInteractions,
       Fields::kSecondsSinceDownloadStarted,
       Fields::kSecondsSinceWarningShown,
@@ -293,6 +330,10 @@ DownloadWarningHatsProductSpecificData::GetStringDataFields() {
       Fields::kFilename,
       // TODO(chlily): Add kIgnoreTimeout.
   };
+  if (IsDownloadsPageTrigger(survey_type)) {
+    fields.push_back(Fields::kNumPageWarnings);
+  }
+  return fields;
 }
 
 std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(

@@ -36,10 +36,11 @@ using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
-using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr char kUrl[] = "https://www.site.example/file.pdf";
 constexpr char kReferrerUrl[] = "https://www.site.example/referrer";
+constexpr char kPlaceholderPrefix[] = "Not logged";
 const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("my_file.pdf");
 
 // Matcher that checks for the presence of a particular bits data field and
@@ -61,11 +62,15 @@ MATCHER_P2(StringDataMatches, field, matcher, "") {
   return ExplainMatchResult(matcher, it->second, result_listener);
 }
 
-// Returns a matcher that checks for the argument (a map) having keys equal to
-// the given `keys`, in some order.
-template <typename... Keys>
-auto UnorderedKeysAre(Keys... keys) {
-  return UnorderedElementsAre(Key(Eq(keys))...);
+// Checks that the `fields` (vector of strings) exactly matches the keys in the
+// `arg` (map of string->T).
+MATCHER_P(UnorderedKeysAre, fields, "") {
+  std::vector<std::string> keys;
+  for (const auto& [key, val] : arg) {
+    keys.push_back(key);
+  }
+  return ExplainMatchResult(UnorderedElementsAreArray(fields), keys,
+                            result_listener);
 }
 
 class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
@@ -156,12 +161,28 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
     EXPECT_THAT(psd, StringDataMatches(Fields::kFilename, "my_file.pdf"));
   }
 
+  void ExpectPlaceholderForSafeBrowsing(
+      const DownloadWarningHatsProductSpecificData& psd) {
+    EXPECT_THAT(psd, StringDataMatches(Fields::kUrlDownload,
+                                       HasSubstr(kPlaceholderPrefix)));
+    EXPECT_THAT(psd, StringDataMatches(Fields::kUrlReferrer,
+                                       HasSubstr(kPlaceholderPrefix)));
+    EXPECT_THAT(psd, StringDataMatches(Fields::kFilename,
+                                       HasSubstr(kPlaceholderPrefix)));
+  }
+
   void ExpectDefaultPsdForEnhancedSafeBrowsing(
       const DownloadWarningHatsProductSpecificData& psd) {
     EXPECT_THAT(
         psd, StringDataMatches(Fields::kWarningInteractions,
                                "BUBBLE_MAINPAGE:SHOWN:0,BUBBLE_MAINPAGE:OPEN_"
                                "SUBPAGE:1000,BUBBLE_SUBPAGE:CLOSE:2000"));
+  }
+
+  void ExpectPlaceholderForEnhancedSafeBrowsing(
+      const DownloadWarningHatsProductSpecificData& psd) {
+    EXPECT_THAT(psd, StringDataMatches(Fields::kWarningInteractions,
+                                       HasSubstr(kPlaceholderPrefix)));
   }
 
  protected:
@@ -182,27 +203,29 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   auto psd = DownloadWarningHatsProductSpecificData::Create(
       DownloadWarningHatsType::kDownloadBubbleBypass, &item_);
 
-  // SSB and ESB only fields are not included.
-  EXPECT_THAT(psd.bits_data(), UnorderedKeysAre(Fields::kUserGesture,
-                                                Fields::kPartialViewEnabled));
-  EXPECT_THAT(
-      psd.string_data(),
-      UnorderedKeysAre(Fields::kChannel, Fields::kOutcome, Fields::kSurface,
-                       Fields::kSecondsSinceDownloadStarted,
-                       Fields::kSecondsSinceWarningShown, Fields::kDangerType,
-                       Fields::kWarningType, Fields::kSafeBrowsingState));
+  // Test the PSD fields added afterwards.
+  // This shouldn't do anything because this is a download bubble trigger.
+  psd.AddNumPageWarnings(10);
+  psd.AddPartialViewInteraction(true);
+
+  // All fields for download bubble are included.
+  EXPECT_THAT(psd.bits_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetBitsDataFields(
+                      DownloadWarningHatsType::kDownloadBubbleBypass)));
+  EXPECT_THAT(psd.string_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetStringDataFields(
+                      DownloadWarningHatsType::kDownloadBubbleBypass)));
 
   ExpectDefaultPsd(psd);
+  ExpectPlaceholderForSafeBrowsing(psd);
+  ExpectPlaceholderForEnhancedSafeBrowsing(psd);
 
   EXPECT_THAT(
       psd, StringDataMatches(Fields::kSafeBrowsingState, "No Safe Browsing"));
   EXPECT_THAT(psd, StringDataMatches(Fields::kOutcome, HasSubstr("Bypass")));
   EXPECT_THAT(psd, StringDataMatches(Fields::kSurface, HasSubstr("bubble")));
-
-  // Test the PSD fields added afterwards.
-  // This shouldn't do anything because this is a download bubble trigger.
-  psd.AddNumPageWarnings(10);
-  psd.AddPartialViewInteraction(true);
 
   EXPECT_THAT(psd, BitsDataMatches(Fields::kPartialViewInteraction, true));
   EXPECT_THAT(psd, Not(StringDataMatches(Fields::kNumPageWarnings, _)));
@@ -219,30 +242,29 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   auto psd = DownloadWarningHatsProductSpecificData::Create(
       DownloadWarningHatsType::kDownloadsPageHeed, &item_);
 
-  // ESB only fields are not included.
-  EXPECT_THAT(psd.bits_data(), UnorderedKeysAre(Fields::kUserGesture,
-                                                Fields::kPartialViewEnabled));
-  EXPECT_THAT(
-      psd.string_data(),
-      UnorderedKeysAre(Fields::kChannel, Fields::kOutcome, Fields::kSurface,
-                       Fields::kSecondsSinceDownloadStarted,
-                       Fields::kSecondsSinceWarningShown, Fields::kDangerType,
-                       Fields::kWarningType, Fields::kSafeBrowsingState,
-                       Fields::kUrlDownload, Fields::kUrlReferrer,
-                       Fields::kFilename));
+  // Test the PSD fields added afterwards.
+  psd.AddNumPageWarnings(10);
+  // This shouldn't do anything because this is a download page trigger.
+  psd.AddPartialViewInteraction(true);
+
+  // All fields for downloads page are included.
+  EXPECT_THAT(psd.bits_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetBitsDataFields(
+                      DownloadWarningHatsType::kDownloadsPageHeed)));
+  EXPECT_THAT(psd.string_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetStringDataFields(
+                      DownloadWarningHatsType::kDownloadsPageHeed)));
 
   ExpectDefaultPsd(psd);
   ExpectDefaultPsdForSafeBrowsing(psd);
+  ExpectPlaceholderForEnhancedSafeBrowsing(psd);
 
   EXPECT_THAT(psd, StringDataMatches(Fields::kSafeBrowsingState,
                                      "Standard Protection"));
   EXPECT_THAT(psd, StringDataMatches(Fields::kOutcome, HasSubstr("Heed")));
   EXPECT_THAT(psd, StringDataMatches(Fields::kSurface, HasSubstr("page")));
-
-  // Test the PSD fields added afterwards.
-  psd.AddNumPageWarnings(10);
-  // This shouldn't do anything because this is a download page trigger.
-  psd.AddPartialViewInteraction(true);
 
   EXPECT_THAT(psd, StringDataMatches(Fields::kNumPageWarnings, "10"));
   EXPECT_THAT(psd, Not(BitsDataMatches(Fields::kPartialViewInteraction, _)));
@@ -259,16 +281,20 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   auto psd = DownloadWarningHatsProductSpecificData::Create(
       DownloadWarningHatsType::kDownloadBubbleIgnore, &item_);
 
-  EXPECT_THAT(psd.bits_data(), UnorderedKeysAre(Fields::kUserGesture,
-                                                Fields::kPartialViewEnabled));
-  EXPECT_THAT(
-      psd.string_data(),
-      UnorderedKeysAre(Fields::kChannel, Fields::kOutcome, Fields::kSurface,
-                       Fields::kSecondsSinceDownloadStarted,
-                       Fields::kSecondsSinceWarningShown, Fields::kDangerType,
-                       Fields::kWarningType, Fields::kSafeBrowsingState,
-                       Fields::kUrlDownload, Fields::kUrlReferrer,
-                       Fields::kFilename, Fields::kWarningInteractions));
+  // Test the PSD fields added afterwards.
+  // This shouldn't do anything because this is a download bubble trigger.
+  psd.AddNumPageWarnings(10);
+  psd.AddPartialViewInteraction(true);
+
+  // All fields for download bubble are included.
+  EXPECT_THAT(psd.bits_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetBitsDataFields(
+                      DownloadWarningHatsType::kDownloadBubbleIgnore)));
+  EXPECT_THAT(psd.string_data(),
+              UnorderedKeysAre(
+                  DownloadWarningHatsProductSpecificData::GetStringDataFields(
+                      DownloadWarningHatsType::kDownloadBubbleIgnore)));
 
   ExpectDefaultPsd(psd);
   ExpectDefaultPsdForSafeBrowsing(psd);
@@ -278,11 +304,6 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
                                      "Enhanced Protection"));
   EXPECT_THAT(psd, StringDataMatches(Fields::kOutcome, HasSubstr("Ignore")));
   EXPECT_THAT(psd, StringDataMatches(Fields::kSurface, HasSubstr("bubble")));
-
-  // Test the PSD fields added afterwards.
-  // This shouldn't do anything because this is a download bubble trigger.
-  psd.AddNumPageWarnings(10);
-  psd.AddPartialViewInteraction(true);
 
   EXPECT_THAT(psd, BitsDataMatches(Fields::kPartialViewInteraction, true));
   EXPECT_THAT(psd, Not(StringDataMatches(Fields::kNumPageWarnings, _)));
