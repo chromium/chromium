@@ -45,7 +45,8 @@ class CORE_EXPORT V8LocalCompileHintsProducer
 
  private:
   HeapVector<Member<CachedMetadataHandler>> cache_handlers_;
-  WTF::Vector<v8::Global<v8::Script>> v8_scripts_;
+  HeapVector<v8::TracedReference<v8::CompileHintsCollector>>
+      compile_hints_collectors_;
   bool should_generate_data_;
   Member<LocalFrame> frame_;
 };

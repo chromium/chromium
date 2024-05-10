@@ -92,10 +92,11 @@ void V8CrowdsourcedCompileHintsProducer::RecordScript(
   uint32_t script_name_hash =
       ScriptNameHash(script->GetResourceName(), context, isolate);
 
-  scripts_.emplace_back(v8::TracedReference<v8::Script>(isolate, script));
+  compile_hints_collectors_.emplace_back(isolate,
+                                         script->GetCompileHintsCollector());
   script_name_hashes_.emplace_back(script_name_hash);
 
-  if (scripts_.size() == 1) {
+  if (compile_hints_collectors_.size() == 1) {
     ScheduleDataDeletionTask(execution_context);
   }
 }
@@ -115,13 +116,13 @@ void V8CrowdsourcedCompileHintsProducer::GenerateData() {
 
 void V8CrowdsourcedCompileHintsProducer::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
-  visitor->Trace(scripts_);
+  visitor->Trace(compile_hints_collectors_);
 }
 
 void V8CrowdsourcedCompileHintsProducer::ClearData() {
   // Stop logging script executions for this page.
   state_ = State::kFinishedOrDisabled;
-  scripts_.clear();
+  compile_hints_collectors_.clear();
   script_name_hashes_.clear();
 }
 
@@ -177,7 +178,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   v8::HandleScope handle_scope(isolate);
   int total_funcs = 0;
 
-  DCHECK_EQ(scripts_.size(), script_name_hashes_.size());
+  DCHECK_EQ(compile_hints_collectors_.size(), script_name_hashes_.size());
 
   // Create a Bloom filter w/ 16 key bits. This results in a Bloom filter
   // containing 2 ^ 16 bits, which equals to 1024 64-bit ints.
@@ -185,9 +186,12 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
                 kBloomFilterInt32Count);
   WTF::BloomFilter<kBloomFilterKeySize> bloom;
 
-  for (wtf_size_t script_ix = 0; script_ix < scripts_.size(); ++script_ix) {
-    v8::Local<v8::Script> script = scripts_[script_ix].Get(isolate);
-    std::vector<int> compile_hints = script->GetProducedCompileHints();
+  for (wtf_size_t script_ix = 0; script_ix < compile_hints_collectors_.size();
+       ++script_ix) {
+    v8::Local<v8::CompileHintsCollector> compile_hints_collector =
+        compile_hints_collectors_[script_ix].Get(isolate);
+    std::vector<int> compile_hints =
+        compile_hints_collector->GetCompileHints(isolate);
     for (int function_position : compile_hints) {
       uint32_t hash =
           CombineHash(script_name_hashes_[script_ix], function_position);
