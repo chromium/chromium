@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -25,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -1096,9 +1096,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   event_data_->event_from = update.event_from;
   event_data_->event_from_action = update.event_from_action;
   event_data_->event_intents = update.event_intents;
-  base::ScopedClosureRunner clear_event_data(base::BindOnce(
-      [](std::unique_ptr<AXEvent>* event_data) { event_data->reset(); },
-      &event_data_));
+  absl::Cleanup clear_event_data = [this] { event_data_.reset(); };
 
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
