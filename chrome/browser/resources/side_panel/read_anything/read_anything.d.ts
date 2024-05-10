@@ -274,6 +274,9 @@ declare namespace chrome {
     // toolbar and are ready to consume.
     function updateTheme(): void;
 
+    // Read Aloud state should be updated if the lock screen state changes.
+    function onLockScreen(): void;
+
     // Called with the response of sendGetVoicePackInfoRequest()
     function updateVoicePackStatus(lang: string, status: string): void;
 

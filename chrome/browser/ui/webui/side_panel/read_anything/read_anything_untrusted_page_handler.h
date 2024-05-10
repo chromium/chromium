@@ -27,6 +27,10 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/session/session_observer.h"
+#endif
+
 namespace content {
 class ScopedAccessibilityMode;
 }
@@ -76,14 +80,17 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 //  This class is created and owned by ReadAnythingUntrustedUI and has the same
 //  lifetime as the Side Panel view.
 //
-class ReadAnythingUntrustedPageHandler
-    : public ui::AXActionHandlerObserver,
-      public read_anything::mojom::UntrustedPageHandler,
-      public ReadAnythingModel::Observer,
-      public ReadAnythingCoordinator::Observer,
-      public ReadAnythingSidePanelController::Observer,
-      public translate::TranslateDriver::LanguageDetectionObserver,
-      public TabStripModelObserver {
+class ReadAnythingUntrustedPageHandler :
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    public ash::SessionObserver,
+#endif
+    public ui::AXActionHandlerObserver,
+    public read_anything::mojom::UntrustedPageHandler,
+    public ReadAnythingModel::Observer,
+    public ReadAnythingCoordinator::Observer,
+    public ReadAnythingSidePanelController::Observer,
+    public translate::TranslateDriver::LanguageDetectionObserver,
+    public TabStripModelObserver {
  public:
   ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
@@ -104,6 +111,11 @@ class ReadAnythingUntrustedPageHandler
   void OnVoiceChange(const std::string& voice,
                      const std::string& lang) override;
   void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
+
+  // ash::SessionObserver
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnLockStateChanged(bool locked) override;
+#endif
 
  private:
   // TranslateDriver::LanguageDetectionObserver:

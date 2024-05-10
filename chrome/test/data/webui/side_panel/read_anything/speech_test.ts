@@ -187,6 +187,12 @@ suite('Speech', () => {
         assertTrue(speechSynthesis.canceled);
       });
     });
+
+    test('lock screen stays paused', () => {
+      chrome.readingMode.onLockScreen();
+      assertFalse(speechSynthesis.canceled);
+      assertTrue(speechSynthesis.paused);
+    });
   });
 
   test('next granularity plays from there', () => {
@@ -283,6 +289,12 @@ suite('Speech', () => {
       emitEvent(app, RATE_EVENT, {detail: {rate: 0.8}});
 
       assertGT(speechSynthesis.spokenUtterances.length, 0);
+      assertTrue(speechSynthesis.canceled);
+      assertFalse(speechSynthesis.paused);
+    });
+
+    test('lock screen cancels speech', () => {
+      chrome.readingMode.onLockScreen();
       assertTrue(speechSynthesis.canceled);
       assertFalse(speechSynthesis.paused);
     });

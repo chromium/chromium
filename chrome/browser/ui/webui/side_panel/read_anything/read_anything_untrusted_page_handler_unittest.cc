@@ -63,6 +63,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_METHOD(void, OnDeviceLocked, ());
+#endif
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };

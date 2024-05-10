@@ -178,6 +178,12 @@ if (chrome.readingMode) {
     assert(readAnythingApp, 'no app');
     readAnythingApp.languageChanged();
   };
+
+  chrome.readingMode.onLockScreen = () => {
+    const readAnythingApp = document.querySelector('read-anything-app');
+    assert(readAnythingApp, 'no app');
+    readAnythingApp.onLockScreen();
+  };
 }
 
 
@@ -2094,6 +2100,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     document.documentElement.style.setProperty(
         '--selection-text-color',
         this.getSelectionTextColorVar(skColorToRgba(backgroundColor)));
+  }
+
+  // If the screen is locked during speech, we should stop speaking.
+  onLockScreen() {
+    if (!this.speechPlayingState.paused) {
+      this.stopSpeech(PauseActionSource.DEFAULT);
+    }
   }
 
   languageChanged() {

@@ -48,6 +48,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/session/session_controller.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 using ash::language_packs::LanguagePackManager;
 using ash::language_packs::PackResult;
@@ -314,6 +315,13 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   }
 
   OnActiveWebContentsChanged();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* session_controller = ash::SessionController::Get();
+  if (session_controller) {
+    session_controller->AddObserver(this);
+  }
+#endif
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
@@ -336,6 +344,13 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
     coordinator_->RemoveObserver(this);
     coordinator_->RemoveModelObserver(this);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* session_controller = ash::SessionController::Get();
+  if (session_controller) {
+    session_controller->RemoveObserver(this);
+  }
+#endif
 }
 
 void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
@@ -836,3 +851,12 @@ void ReadAnythingUntrustedPageHandler::ObserveWebContentsSidePanelController(
     tab_helper_->AddPageHandlerAsObserver(weak_factory_.GetWeakPtr());
   }
 }
+
+// ash::SessionObserver
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ReadAnythingUntrustedPageHandler::OnLockStateChanged(bool locked) {
+  if (locked) {
+    page_->OnDeviceLocked();
+  }
+}
+#endif

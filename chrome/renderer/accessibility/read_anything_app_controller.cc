@@ -1552,6 +1552,14 @@ void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
   ExecuteJavaScript("chrome.readingMode.languageChanged();");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ReadAnythingAppController::OnDeviceLocked() {
+  // Signal to the WebUI that the device has been locked. We'll only receive
+  // this callback on ChromeOS.
+  ExecuteJavaScript("chrome.readingMode.onLockScreen();");
+}
+#endif
+
 // TODO(b/336596926): Use the default language code as a fallback when
 // we get a language-unavailable error.
 void ReadAnythingAppController::SetDefaultLanguageCode(

@@ -113,6 +113,9 @@ class ReadAnythingAppController
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnDeviceLocked() override;
+#endif
 
   // gin templates:
   ui::AXNodeID RootId() const;
