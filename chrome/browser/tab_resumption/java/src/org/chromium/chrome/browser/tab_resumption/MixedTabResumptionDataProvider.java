@@ -16,85 +16,86 @@ import java.util.List;
 
 /**
  * TabResumptionDataProvider that encapsulates "sub-providers" LocalTabTabResumptionDataProvider and
- * ForeignSessionTabResumptionDataProvider to create suggestions mixing results from both.
+ * SyncDerivedTabResumptionDataProvider to create suggestions mixing results from both.
  */
 public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
 
     /** Container for sub-provider fetchSuggestions() results. */
     private class ResultMixer {
         private @NonNull final Callback<SuggestionsResult> mSuggestionsCallback;
-        private @Nullable SuggestionsResult mLocalTab;
-        private @Nullable SuggestionsResult mForeignSession;
+        private @Nullable SuggestionsResult mLocalTabResult;
+        private @Nullable SuggestionsResult mSyncDerivedResult;
 
         ResultMixer(@NonNull Callback<SuggestionsResult> suggestionsCallback) {
             mSuggestionsCallback = suggestionsCallback;
         }
 
-        void onLocalTabResults(SuggestionsResult localTab) {
+        void onLocalTabResultAvailable(SuggestionsResult localTab) {
             if (!mIsAlive) return;
 
-            mLocalTab = localTab;
+            mLocalTabResult = localTab;
             maybeDispatch();
         }
 
-        void onForeignSessionResults(SuggestionsResult foreignSession) {
+        void onSyncDerivedResultAvailable(SuggestionsResult foreignSession) {
             if (!mIsAlive) return;
 
-            mForeignSession = foreignSession;
+            mSyncDerivedResult = foreignSession;
             maybeDispatch();
         }
 
-        private SuggestionsResult computeMixedResults() {
+        private SuggestionsResult computeMixedResult() {
             // Joint strength is the minimum of sub-provider strengths, due to the irreversible
             // nature of TENTATIVE -> STABLE -> FORCED_NULL. The resulting sequence of `strength`
             // also satisfies the monotonic increasing property.
-            @ResultStrength int strength = Math.min(mLocalTab.strength, mForeignSession.strength);
-            int size = mLocalTab.size() + mForeignSession.size();
+            @ResultStrength
+            int strength = Math.min(mLocalTabResult.strength, mSyncDerivedResult.strength);
+            int size = mLocalTabResult.size() + mSyncDerivedResult.size();
             if (size == 0) return new SuggestionsResult(strength, null);
 
             List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>(size);
             // Concatenate suggestions, with local suggestion appearing first always.
-            if (mLocalTab.size() > 0) {
-                assert mLocalTab.size() == 1;
-                suggestions.addAll(mLocalTab.suggestions);
+            if (mLocalTabResult.size() > 0) {
+                assert mLocalTabResult.size() == 1;
+                suggestions.addAll(mLocalTabResult.suggestions);
             }
-            if (mForeignSession.size() > 0) {
-                suggestions.addAll(mForeignSession.suggestions);
+            if (mSyncDerivedResult.size() > 0) {
+                suggestions.addAll(mSyncDerivedResult.suggestions);
             }
             return new SuggestionsResult(strength, suggestions);
         }
 
         private void maybeDispatch() {
-            if (mLocalTab != null && mForeignSession != null) {
-                mSuggestionsCallback.onResult(computeMixedResults());
+            if (mLocalTabResult != null && mSyncDerivedResult != null) {
+                mSuggestionsCallback.onResult(computeMixedResult());
             }
         }
     }
 
     private final @Nullable LocalTabTabResumptionDataProvider mLocalTabProvider;
-    private final @Nullable ForeignSessionTabResumptionDataProvider mForeignSessionProvider;
+    private final @Nullable SyncDerivedTabResumptionDataProvider mSyncDerivedProvider;
     private boolean mIsAlive;
 
     /**
      * @param localTabProvider Sub-provider for Local Tab suggestions.
-     * @param foreignSessionProvider Sub-provider for Foreign Session suggestions.
+     * @param foreignSessionProvider Sub-provider for Sync Derived suggestions.
      */
     public MixedTabResumptionDataProvider(
             @Nullable LocalTabTabResumptionDataProvider localTabProvider,
-            @Nullable ForeignSessionTabResumptionDataProvider foreignSessionProvider) {
+            @Nullable SyncDerivedTabResumptionDataProvider foreignSessionProvider) {
         super();
         mIsAlive = true;
         assert localTabProvider != null || foreignSessionProvider != null;
         mLocalTabProvider = localTabProvider;
-        mForeignSessionProvider = foreignSessionProvider;
+        mSyncDerivedProvider = foreignSessionProvider;
     }
 
     /** Implements {@link TabResumptionDataProvider} */
     @Override
     public void destroy() {
-        if (mForeignSessionProvider != null) {
-            mForeignSessionProvider.setStatusChangedCallback(null);
-            mForeignSessionProvider.destroy();
+        if (mSyncDerivedProvider != null) {
+            mSyncDerivedProvider.setStatusChangedCallback(null);
+            mSyncDerivedProvider.destroy();
         }
         if (mLocalTabProvider != null) {
             mLocalTabProvider.setStatusChangedCallback(null);
@@ -107,13 +108,13 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
     @Override
     public void fetchSuggestions(Callback<SuggestionsResult> suggestionsCallback) {
         if (mLocalTabProvider == null) {
-            mForeignSessionProvider.fetchSuggestions(suggestionsCallback);
-        } else if (mForeignSessionProvider == null) {
+            mSyncDerivedProvider.fetchSuggestions(suggestionsCallback);
+        } else if (mSyncDerivedProvider == null) {
             mLocalTabProvider.fetchSuggestions(suggestionsCallback);
         } else {
             ResultMixer mixer = new ResultMixer(suggestionsCallback);
-            mLocalTabProvider.fetchSuggestions(mixer::onLocalTabResults);
-            mForeignSessionProvider.fetchSuggestions(mixer::onForeignSessionResults);
+            mLocalTabProvider.fetchSuggestions(mixer::onLocalTabResultAvailable);
+            mSyncDerivedProvider.fetchSuggestions(mixer::onSyncDerivedResultAvailable);
         }
     }
 
@@ -121,8 +122,8 @@ public class MixedTabResumptionDataProvider extends TabResumptionDataProvider {
     @Override
     public void setStatusChangedCallback(@Nullable Runnable statusChangedCallback) {
         // No need to call super.setStatusChangedCallback().
-        if (mForeignSessionProvider != null) {
-            mForeignSessionProvider.setStatusChangedCallback(statusChangedCallback);
+        if (mSyncDerivedProvider != null) {
+            mSyncDerivedProvider.setStatusChangedCallback(statusChangedCallback);
         }
         if (mLocalTabProvider != null) {
             mLocalTabProvider.setStatusChangedCallback(statusChangedCallback);

@@ -31,12 +31,12 @@ import java.util.Arrays;
 @Config(manifest = Config.NONE)
 public class MixedTabResumptionDataProviderTest extends TestSupport {
     @Mock private LocalTabTabResumptionDataProvider mLocalTabProvider;
-    @Mock private ForeignSessionTabResumptionDataProvider mForeignSessionProvider;
+    @Mock private SyncDerivedTabResumptionDataProvider mSyncDerivedProvider;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mLocalTabCallbackCaptor;
-    @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mForeignSessionCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mSyncDerivedCallbackCaptor;
     Callback<SuggestionsResult> mLocalTabCallback;
-    Callback<SuggestionsResult> mForeignSessionCallback;
+    Callback<SuggestionsResult> mSyncDerivedCallback;
 
     private MixedTabResumptionDataProvider mMixedProvider;
     private SuggestionsResult mResults;
@@ -54,7 +54,7 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         mMixedProvider = new MixedTabResumptionDataProvider(mLocalTabProvider, null);
 
         // Empty Local Tab result, which is necessarily FORCED_NULL.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ false);
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -68,7 +68,7 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         mMixedProvider = new MixedTabResumptionDataProvider(mLocalTabProvider, null);
 
         // Non-empty Local Tab result, which is STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ false);
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
@@ -76,7 +76,7 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
         // Local Tab result becomes empty. This can happen if user closes the suggested tab.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ false);
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ false);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
@@ -85,26 +85,26 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testForeignSessionOnlyEmpty() {
-        mMixedProvider = new MixedTabResumptionDataProvider(null, mForeignSessionProvider);
+    public void testSyncDerivedOnlyEmpty() {
+        mMixedProvider = new MixedTabResumptionDataProvider(null, mSyncDerivedProvider);
 
-        // Empty Foreign Session result, initilaly TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
+        // Empty Sync Derived result, initilaly TENTATIVE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertNoSuggestions();
 
-        // Empty Foreign Session result becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
+        // Empty Sync Derived result becomes STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertNoSuggestions();
 
-        // Foreign Session result becomes FORCED_NULL. This can happen if user disables sync.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
+        // Sync Derived result becomes FORCED_NULL. This can happen if user disables sync.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
         assertNoSuggestions();
@@ -112,26 +112,26 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testForeignSessionOnlyVarious() {
-        mMixedProvider = new MixedTabResumptionDataProvider(null, mForeignSessionProvider);
+    public void testSyncDerivedOnlyVarious() {
+        mMixedProvider = new MixedTabResumptionDataProvider(null, mSyncDerivedProvider);
 
-        // Start from non-empty TENTATIVE Foreign Session result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
+        // Start from non-empty TENTATIVE Sync Derived result.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertOneSuggestionWithTitle("Google Dog");
 
-        // Different non-empty Foreign Session result, now STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
+        // Different non-empty Sync Derived result, now STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertTwoSuggestionsWithTitles("Google Cat", "Google Dog");
 
-        // Foreign Session result becomes FORCED_NULL, e.g., if user disables sync.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
+        // Sync Derived result becomes FORCED_NULL, e.g., if user disables sync.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ false, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
         assertNoSuggestions();
@@ -141,22 +141,22 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
     @SmallTest
     public void testMixedEmpty() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mForeignSessionProvider);
+                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
 
-        // Empty results, with Foreign Session result TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Empty results, with Sync Derived result TENTATIVE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         // Callback passed to MixedTabResumptionDataProvider.fetchSuggestions() only gets called
         // after the callback of both sub-providers' fetchSuggestions() are called.
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertNoSuggestions();
 
-        // Empty Foreign Session result now STABLE, swap order for variety,
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
+        // Empty Sync Derived result now STABLE, swap order for variety,
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.STABLE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
@@ -164,10 +164,10 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         assertNoSuggestions();
 
         // Everything is empty and FORCED_NULL.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.FORCED_NULL, mResults.strength);
         assertNoSuggestions();
@@ -175,24 +175,24 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testMixedSingleForeignSession() {
+    public void testMixedSingleSyncDerived() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mForeignSessionProvider);
+                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
 
-        // Non-empty Foreign Session result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
+        // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertOneSuggestionWithTitle("Google Dog");
 
-        // Foreign Session result changes and becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Sync Derived result changes and becomes STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1));
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertOneSuggestionWithTitle("Google Cat");
@@ -200,24 +200,24 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testMixedDoubleForeignSession() {
+    public void testMixedDoubleSyncDerived() {
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mForeignSessionProvider);
+                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
 
-        // Non-empty Foreign Session result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertTwoSuggestionsWithTitles("Google Dog", "Google Cat");
 
-        // Non-empty Foreign Session result becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Non-empty Sync Derived result becomes STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 1, 0));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         assertTwoSuggestionsWithTitles("Google Cat", "Google Dog");
@@ -225,34 +225,34 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testMixedSingleLocalTabToSingleForeignSession() {
+    public void testMixedSingleLocalTabToSingleSyncDerived() {
         Tab tab = makeMockBrowserTab();
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mForeignSessionProvider);
+                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
 
-        // Non-empty Local Tab result starts out STABLE; empty Foreign Session result is TENTATIVE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Non-empty Local Tab result starts out STABLE; empty Sync Derived result is TENTATIVE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
-        // Empty Foreign Session result starts out TENTATIVE (gets ignored).
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
+        // Empty Sync Derived result starts out TENTATIVE (gets ignored).
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertOneSuggestionWithTitle("Blue 1");
         Assert.assertEquals(tab, ((LocalTabSuggestionEntry) mResults.suggestions.get(0)).tab);
 
-        // Local Tab result becomes empty, no change in Foreign Session results.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
+        // Local Tab result becomes empty, no change in Sync Derived results.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(new SuggestionsResult(ResultStrength.TENTATIVE, null));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.TENTATIVE, mResults.strength);
         assertNoSuggestions();
 
-        // Foreign Session result becomes non-empty and STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 0));
+        // Sync Derived result becomes non-empty and STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.STABLE, 0));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
@@ -262,17 +262,17 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
 
     @Test
     @SmallTest
-    public void testMixedDoubleLocalTabAndForeignSession() {
+    public void testMixedDoubleLocalTabAndSyncDerived() {
         Tab tab = makeMockBrowserTab();
-        SuggestionsResult stableForeignSessionResult =
+        SuggestionsResult stableSyncDerivedResult =
                 makeSuggestionResult(ResultStrength.STABLE, 1, 0);
 
         mMixedProvider =
-                new MixedTabResumptionDataProvider(mLocalTabProvider, mForeignSessionProvider);
+                new MixedTabResumptionDataProvider(mLocalTabProvider, mSyncDerivedProvider);
 
-        // Non-empty Foreign Session result starts out TENTATIVE, no Local Tab result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
-        mForeignSessionCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
+        // Non-empty Sync Derived result starts out TENTATIVE, no Local Tab result.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
+        mSyncDerivedCallback.onResult(makeSuggestionResult(ResultStrength.TENTATIVE, 0, 1));
         Assert.assertEquals(0, mFetchSuggestionsCallbackCounter);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
@@ -280,36 +280,34 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         // Local Tab results always show up first.
         assertTwoSuggestionsWithTitles("Blue 1", "Google Dog");
 
-        // Non-empty Foreign Session result change and becomes STABLE.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Non-empty Sync Derived result change and becomes STABLE.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(makeLocalTabSuggestionResult(ResultStrength.STABLE, tab));
         Assert.assertEquals(1, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(stableForeignSessionResult);
+        mSyncDerivedCallback.onResult(stableSyncDerivedResult);
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
         // Local Tab results always show up first.
         assertTwoSuggestionsWithTitles("Blue 1", "Google Cat");
 
-        // Local Tab result becomes empty; no change to Foreign Session result.
-        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasForeignSession= */ true);
+        // Local Tab result becomes empty; no change to Sync Derived result.
+        startFetchAndCaptureCallbacks(/* hasLocalTab= */ true, /* hasSyncDerived= */ true);
         mLocalTabCallback.onResult(new SuggestionsResult(ResultStrength.FORCED_NULL, null));
         Assert.assertEquals(2, mFetchSuggestionsCallbackCounter);
-        mForeignSessionCallback.onResult(stableForeignSessionResult);
+        mSyncDerivedCallback.onResult(stableSyncDerivedResult);
         Assert.assertEquals(3, mFetchSuggestionsCallbackCounter);
         Assert.assertEquals(ResultStrength.STABLE, mResults.strength);
-        // Now Foreign Session results take up both tiles.
+        // Now Sync Derived results take up both tiles.
         assertTwoSuggestionsWithTitles("Google Cat", "Google Dog");
-
-        // Foreign Session become
     }
 
     /**
      * @param hasLocalTab Whether to expect Local Tab Provider usage, and to capture callback as
      *     `mLocalTabCallback` to inject suggestions.
-     * @param hasForeignSession Whether to expect Foreign Session provider usage, and to capture
-     *     callback as `mForeignSessionCallback` to inject suggestions.
+     * @param hasSyncDerived Whether to expect Sync Derived provider usage, and to capture callback
+     *     as `mSyncDerivedCallback` to inject suggestions.
      */
-    private void startFetchAndCaptureCallbacks(boolean hasLocalTab, boolean hasForeignSession) {
+    private void startFetchAndCaptureCallbacks(boolean hasLocalTab, boolean hasSyncDerived) {
         mMixedProvider.fetchSuggestions(
                 (SuggestionsResult results) -> {
                     mResults = results;
@@ -322,11 +320,11 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
             mLocalTabCallback = mLocalTabCallbackCaptor.getValue();
             Assert.assertNotNull(mLocalTabCallback);
         }
-        if (hasForeignSession) {
-            verify(mForeignSessionProvider, times(mFetchCount))
-                    .fetchSuggestions(mForeignSessionCallbackCaptor.capture());
-            mForeignSessionCallback = mForeignSessionCallbackCaptor.getValue();
-            Assert.assertNotNull(mForeignSessionCallback);
+        if (hasSyncDerived) {
+            verify(mSyncDerivedProvider, times(mFetchCount))
+                    .fetchSuggestions(mSyncDerivedCallbackCaptor.capture());
+            mSyncDerivedCallback = mSyncDerivedCallbackCaptor.getValue();
+            Assert.assertNotNull(mSyncDerivedCallback);
         }
     }
 
@@ -335,19 +333,18 @@ public class MixedTabResumptionDataProviderTest extends TestSupport {
         return new SuggestionsResult(strength, Arrays.asList(new LocalTabSuggestionEntry(tab)));
     }
 
-    /** Helper to make a Foreign Session suggestion result with 1 suggestion. */
+    /** Helper to make a Derived suggestion result with 1 suggestion. */
     private SuggestionsResult makeSuggestionResult(@ResultStrength int strength, int index1) {
-        return new SuggestionsResult(strength, Arrays.asList(makeForeignSessionSuggestion(index1)));
+        return new SuggestionsResult(strength, Arrays.asList(makeSyncDerivedSuggestion(index1)));
     }
 
-    /** Helper to make a Foreign Session suggestion result with 2 suggestions. */
+    /** Helper to make a Derived suggestion result with 2 suggestions. */
     private SuggestionsResult makeSuggestionResult(
             @ResultStrength int strength, int index1, int index2) {
         return new SuggestionsResult(
                 strength,
                 Arrays.asList(
-                        makeForeignSessionSuggestion(index1),
-                        makeForeignSessionSuggestion(index2)));
+                        makeSyncDerivedSuggestion(index1), makeSyncDerivedSuggestion(index2)));
     }
 
     /** Helper to assert that suggestion results are empty. */

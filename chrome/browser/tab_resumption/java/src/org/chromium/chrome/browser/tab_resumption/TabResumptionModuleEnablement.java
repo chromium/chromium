@@ -39,7 +39,7 @@ public class TabResumptionModuleEnablement {
         }
     }
 
-    static class ForeignSession {
+    static class SyncDerived {
         static boolean isFeatureEnabled() {
             return ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
         }
@@ -72,7 +72,7 @@ public class TabResumptionModuleEnablement {
      * feature enablement, ignoring other user settings and data availability.
      */
     static boolean isFeatureEnabled() {
-        return LocalTab.isFeatureEnabled() || ForeignSession.isFeatureEnabled();
+        return LocalTab.isFeatureEnabled() || SyncDerived.isFeatureEnabled();
     }
 
     /**
@@ -86,13 +86,13 @@ public class TabResumptionModuleEnablement {
             ModuleDelegate moduleDelegate, Profile profile) {
         if (LocalTab.isFeatureEnabled() && LocalTab.hasData(moduleDelegate)) return null;
 
-        if (!ForeignSession.isFeatureEnabled()) return ModuleNotShownReason.FEATURE_DISABLED;
+        if (!SyncDerived.isFeatureEnabled()) return ModuleNotShownReason.FEATURE_DISABLED;
 
-        if (!ForeignSession.isAllowedByConfig()) return ModuleNotShownReason.FEATURE_DISABLED;
+        if (!SyncDerived.isAllowedByConfig()) return ModuleNotShownReason.FEATURE_DISABLED;
 
-        if (!ForeignSession.isSignedIn(profile)) return ModuleNotShownReason.NOT_SIGNED_IN;
+        if (!SyncDerived.isSignedIn(profile)) return ModuleNotShownReason.NOT_SIGNED_IN;
 
-        if (!ForeignSession.isSyncEnabled(profile)) return ModuleNotShownReason.NOT_SYNC;
+        if (!SyncDerived.isSyncEnabled(profile)) return ModuleNotShownReason.NOT_SYNC;
 
         return null;
     }

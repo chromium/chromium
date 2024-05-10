@@ -24,8 +24,8 @@ import java.util.concurrent.TimeUnit;
  *    path data is already the most recent.
  * 3. Stability: Slow path data may produced unwanted result in some edge cases:
  *    (a) Arrive in quick succession from surge of updates, e.g., from multiple devices.
- *    (b) Arrive late if no new Foreign Session data exists when the module loads (so fast path data
- *        is correct), but then new Foreign Session data appears
+ *    (b) Arrive late if no new suggestion data exists when the module loads (so fast path data is
+ *        correct), but then new suggestion data appears
  *    These results should be rejected to ensure results stability.
  * 4. Permission change: Handle suggestion (and module) removal if the permission changes.
  * </pre>
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * refresh via onDataChanged() -> (caller) -> fetchSuggestions(). Therefore some suggestions
  * filtering decisions are made in onDataChanged().
  */
-public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataProvider
+public class SyncDerivedTabResumptionDataProvider extends TabResumptionDataProvider
         implements SourceDataChangedObserver {
 
     // Duration after initial suggestion for which non-permission data changes will be ignored, to
@@ -55,7 +55,7 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
      * @param cleanupCallback To be invoked in destroy() for potential cleanup of external data.
      */
     @VisibleForTesting
-    public ForeignSessionTabResumptionDataProvider(
+    public SyncDerivedTabResumptionDataProvider(
             SyncDerivedSuggestionEntrySource entrySource, Runnable cleanupCallback) {
         super();
         mEntrySource = entrySource;

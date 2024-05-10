@@ -34,10 +34,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/** Unit tests for ForeignSessionTabResumptionDataProvider. */
+/** Unit tests for SyncDerivedTabResumptionDataProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
+public class SyncDerivedTabResumptionDataProviderTest extends TestSupport {
     static final SuggestionEntry ENTRY1 =
             new SuggestionEntry("My Tablet", TAB6.url, TAB6.title, TAB6.lastActiveTime, TAB6.id);
     static final SuggestionEntry ENTRY2 =
@@ -49,7 +49,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
 
     @Captor private ArgumentCaptor<SourceDataChangedObserver> mSourceDataChangedObserverCaptor;
 
-    private ForeignSessionTabResumptionDataProvider mDataProvider;
+    private SyncDerivedTabResumptionDataProvider mDataProvider;
     private SourceDataChangedObserver mSourceDataChangedObserver;
 
     private int mStatusChangedCallbackCounter;
@@ -59,7 +59,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mDataProvider = new ForeignSessionTabResumptionDataProvider(mSource, () -> {});
+        mDataProvider = new SyncDerivedTabResumptionDataProvider(mSource, () -> {});
         mDataProvider.setStatusChangedCallback(
                 () -> {
                     ++mStatusChangedCallbackCounter;

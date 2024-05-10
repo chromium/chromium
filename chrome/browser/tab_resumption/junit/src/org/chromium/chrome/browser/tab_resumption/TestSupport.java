@@ -187,7 +187,7 @@ public class TestSupport {
         return suggestions;
     }
 
-    static SuggestionEntry makeForeignSessionSuggestion(int index) {
+    static SuggestionEntry makeSyncDerivedSuggestion(int index) {
         assert index == 0 || index == 1;
         GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
         String[] titleChoices = {"Google Dog", "Google Cat"};

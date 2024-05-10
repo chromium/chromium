@@ -180,12 +180,12 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                         ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
                         : null;
 
-        ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
+        SyncDerivedTabResumptionDataProvider foreignSessionProvider = null;
 
-        if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
+        if (TabResumptionModuleEnablement.SyncDerived.shouldMakeProvider(profile)) {
             addRefToSuggestionEntrySource();
             foreignSessionProvider =
-                    new ForeignSessionTabResumptionDataProvider(
+                    new SyncDerivedTabResumptionDataProvider(
                             mSuggestionEntrySource, this::removeRefToSuggestionEntrySource);
         }
         return new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
