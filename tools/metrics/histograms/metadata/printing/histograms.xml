@@ -103,28 +103,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Printing.CUPS.AutomaticIppSetupResultOfUsbPrinterWithPpd"
-    enum="PrinterSetupResult" expires_after="2024-06-02">
-  <owner>pawliczek@chromium.org</owner>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    The success or error code for the Ipp Everywhere setup of a USB printer. The
-    result is recorded only if all the following conditions are fulfilled: 1.
-    The setup procedure was initiated automatically when a USB printer was
-    physically connected to the device. 2. There is a matching PPD file that can
-    be used to setup the printer. 3. The printer supports IPP over USB protocol.
-  </summary>
-</histogram>
-
 <histogram
-    name="Printing.CUPS.AutomaticPpdSetupResultOfUsbPrinterSupportingIpp"
-    enum="PrinterSetupResult" expires_after="2024-10-06">
+    name="Printing.CUPS.AutomaticSetupResultOfUsbPrinterSupportingIppAndPpd"
+    enum="PrinterSetupResult" expires_after="2025-01-15">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
-    The success or error code for the PPD-based setup of a USB printer. The
+    The success or error code for the automatic setup of a USB printer. The
     result is recorded only if all the following conditions are fulfilled: 1.
     The setup procedure was initiated automatically when a USB printer was
     physically connected to the device. 2. There is a matching PPD file that can
