@@ -27,8 +27,7 @@ namespace {
 // it.
 void WaitForThenTapText(NSString* text) {
   id item = chrome_test_util::ContainsPartialText(text);
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:item];
-  [[EarlGrey selectElementWithMatcher:item] performAction:grey_tap()];
+  [ChromeEarlGrey waitForAndTapButton:item];
 }
 
 // Taps a view containing a partial match to the given `text`.

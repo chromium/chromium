@@ -69,6 +69,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a notification of the given `type` should be sent.
   bool ShouldSendNotification(TipsNotificationType type);
 
+  // Returns true if a Default Browser notification should be sent.
+  bool ShouldSendDefaultBrowser();
+
   // Returns true if a Signin notification should be sent.
   bool ShouldSendSignin();
 

@@ -64,6 +64,24 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   }
 }
 
+// Returns true if a Default Browser Promo was canceled.
+bool DefaultBrowserPromoCanceled() {
+  std::optional<IOSDefaultBrowserPromoAction> action =
+      DefaultBrowserPromoLastAction();
+  if (!action.has_value()) {
+    return false;
+  }
+
+  switch (action.value()) {
+    case IOSDefaultBrowserPromoAction::kCancel:
+      return true;
+    case IOSDefaultBrowserPromoAction::kActionButton:
+    case IOSDefaultBrowserPromoAction::kRemindMeLater:
+    case IOSDefaultBrowserPromoAction::kDismiss:
+      return false;
+  }
+}
+
 }  // namespace
 
 TipsNotificationClient::TipsNotificationClient()
@@ -283,7 +301,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (type) {
     case TipsNotificationType::kDefaultBrowser:
-      return !IsChromeLikelyDefaultBrowser();
+      return ShouldSendDefaultBrowser();
     case TipsNotificationType::kWhatsNew:
       return ShouldSendWhatsNew();
     case TipsNotificationType::kSignin:
@@ -291,6 +309,11 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kError:
       NOTREACHED_NORETURN();
   }
+}
+
+bool TipsNotificationClient::ShouldSendDefaultBrowser() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return !IsChromeLikelyDefaultBrowser() && !DefaultBrowserPromoCanceled();
 }
 
 bool TipsNotificationClient::ShouldSendWhatsNew() {

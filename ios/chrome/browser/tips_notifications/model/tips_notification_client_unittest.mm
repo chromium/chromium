@@ -192,6 +192,13 @@ class TipsNotificationClientTest : public PlatformTest {
   // Ensures that Chrome is not considered as default browser.
   void SetFalseChromeLikelyDefaultBrowser() { ClearDefaultBrowserPromoData(); }
 
+  // Clears the pref that stores the last action the user took with a Default
+  // Browser promo.
+  void ClearDefaultBrowserPromoLastAction() {
+    GetApplicationContext()->GetLocalState()->ClearPref(
+        prefs::kIosDefaultBrowserPromoLastAction);
+  }
+
   base::test::TaskEnvironment task_environment_;
   const base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
@@ -240,6 +247,7 @@ TEST_F(TipsNotificationClientTest, ClearNotification) {
 TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
   WriteFirstRunSentinel();
   SetFalseChromeLikelyDefaultBrowser();
+  ClearDefaultBrowserPromoLastAction();
   StubGetPendingRequests(nil);
   SetSentNotifications(
       {TipsNotificationType::kWhatsNew, TipsNotificationType::kSignin});
