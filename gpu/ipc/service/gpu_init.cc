@@ -1130,9 +1130,15 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   InitializeDawnProcs();
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
-    // For non-Android platforms in-process GPU is only used in tests. Just
-    // crash if it doesn't work to expose the test failures early.
-    CHECK(InitializeDawn());
+    if (!InitializeDawn()) {
+      if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
+          kGpuFeatureStatusEnabled) {
+        // SkiaGraphite is disabled by software_rendering_list.json
+        gpu_preferences_.gr_context_type = GrContextType::kGL;
+      } else {
+        LOG(FATAL) << "InitializeDawn() failed!";
+      }
+    }
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
