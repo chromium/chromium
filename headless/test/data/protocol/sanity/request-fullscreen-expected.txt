@@ -1,0 +1,2 @@
+Tests element requestFullscreen.
+Entered fullscreen mode: fullscreen-div

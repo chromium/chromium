@@ -50,6 +50,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -214,10 +215,61 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         blink::mojom::PointerLockResult::kSuccess);
   }
 
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override {
+    SetFullscreenModeForTab(
+        content::WebContents::FromRenderFrameHost(requesting_frame),
+        /*fullscreen=*/true);
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    SetFullscreenModeForTab(web_contents, /*fullscreen=*/false);
+  }
+
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    return is_fullscreen_;
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
+  void SetFullscreenModeForTab(content::WebContents* web_contents,
+                               bool fullscreen) {
+    if (is_fullscreen_ == fullscreen) {
+      return;
+    }
+
+    is_fullscreen_ = fullscreen;
+
+    content::RenderViewHost* rvh =
+        web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
+    CHECK(rvh);
+
+    content::RenderWidgetHostView* view = rvh->GetWidget()->GetView();
+    if (view) {
+      if (fullscreen) {
+        // Headless chrome does not have screen to set the view bounds to, so
+        // just double the size of the existing view to trigger the expected
+        // window size change notifications.
+        before_fullscreen_bounds_ = view->GetViewBounds();
+        gfx::Rect bounds = before_fullscreen_bounds_;
+        bounds.set_width(bounds.width() * 2);
+        bounds.set_height(bounds.height() * 2);
+        view->SetBounds(bounds);
+      } else {
+        view->SetBounds(before_fullscreen_bounds_);
+      }
+    }
+
+    rvh->GetWidget()->SynchronizeVisualProperties();
+  }
+
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
+
+  bool is_fullscreen_ = false;
+  gfx::Rect before_fullscreen_bounds_;
 };
 
 namespace {
