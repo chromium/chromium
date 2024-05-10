@@ -1042,6 +1042,10 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
+
+  "This pair of test suites never expire because they test a feature that is",
+  "enabled by default for Chrome, but not by default in content/ so as to not",
+  "affect other embedders",
   {
     "prefix": "split-http-cache",
     "platforms": ["Linux", "Mac", "Win"],
@@ -1050,7 +1054,7 @@
     "exclusive_tests": ["external/wpt/fetch/http-cache"],
     "args": ["--enable-features=SplitCacheByNetworkIsolationKey",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "not-split-http-cache",
@@ -1059,8 +1063,9 @@
     "exclusive_tests": "ALL",
     "args": ["--disable-features=SplitCacheByNetworkIsolationKey",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
+
   {
     "prefix": "web-bluetooth-new-permissions-backend",
     "platforms": ["Linux", "Mac", "Win"],
