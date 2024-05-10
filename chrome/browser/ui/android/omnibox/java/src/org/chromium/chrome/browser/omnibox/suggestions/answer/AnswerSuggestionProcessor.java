@@ -45,7 +45,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
-        return suggestion.hasAnswer() || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
+        return suggestion.getAnswerTemplate() != null
+                || suggestion.hasAnswer()
+                || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
     }
 
     @Override
@@ -73,12 +75,17 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                         ? AnswerType.INVALID
                         : suggestion.getAnswer().getType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
-        AnswerText[] details =
-                AnswerTextNewLayout.from(
-                        mContext,
-                        suggestion,
-                        mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                        suggestionTextColorReversal);
+        AnswerText[] details;
+        if (suggestion.getAnswerTemplate() != null) {
+            details = RichAnswerText.from(mContext, suggestion.getAnswerTemplate());
+        } else {
+            details =
+                    AnswerTextNewLayout.from(
+                            mContext,
+                            suggestion,
+                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                            suggestionTextColorReversal);
+        }
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].getText());
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].getText());
@@ -96,6 +103,11 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         setTabSwitchOrRefineAction(model, suggestion, position);
         if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
             fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));
+        } else if (suggestion.getAnswerTemplate() != null
+                && suggestion.getAnswerTemplate().getAnswers(0).hasImage()) {
+            fetchImage(
+                    model,
+                    new GURL(suggestion.getAnswerTemplate().getAnswers(0).getImage().getUrl()));
         }
     }
 
