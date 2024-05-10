@@ -109,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(DiagnosticsAppBrowserTest, MemoryCard) {
   RunTestAtPath("memory_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(DiagnosticsAppBrowserTest, NetworkCard) {
+// TODO(crbug.com/339850572): Flaky
+IN_PROC_BROWSER_TEST_F(DiagnosticsAppBrowserTest, DISABLED_NetworkCard) {
   RunTestAtPath("network_card_test.js");
 }
 
