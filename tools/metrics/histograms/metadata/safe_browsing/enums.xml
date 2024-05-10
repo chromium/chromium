@@ -558,6 +558,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNABLE_TO_RENAME_FAILURE"/>
 </enum>
 
+<enum name="SafetyCheckWarningReason">
+  <int value="1" label="Unpublished"/>
+  <int value="2" label="Policy"/>
+  <int value="3" label="Malware"/>
+  <int value="4" label="Offstore"/>
+  <int value="5" label="Unwanted"/>
+  <int value="6" label="No Privacy Practice"/>
+</enum>
+
 <enum name="SBExtensionTelemetryDisableReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Malware"/>

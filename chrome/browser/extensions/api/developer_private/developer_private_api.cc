@@ -1119,6 +1119,10 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
     ExtensionPrefs::Get(browser_context())
         ->SetBooleanPref(extension->id(), kPrefAcknowledgeSafetyCheckWarning,
                          *update.acknowledge_safety_check_warning);
+    ExtensionPrefs::Get(browser_context())
+        ->SetIntegerPref(
+            extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,
+            static_cast<int>(update.acknowledge_safety_check_warning_reason));
     DeveloperPrivateEventRouter* event_router =
         DeveloperPrivateAPI::Get(browser_context())
             ->developer_private_event_router();

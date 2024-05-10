@@ -411,6 +411,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
             Object.assign({}, this.getData_(eventData.item_id), {
               acknowledgeSafetyCheckWarning:
                   eventData.extensionInfo?.acknowledgeSafetyCheckWarning,
+              safetyCheckText: eventData.extensionInfo?.safetyCheckText,
             }));
         break;
       default:

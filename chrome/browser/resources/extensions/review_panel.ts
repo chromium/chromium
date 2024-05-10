@@ -20,12 +20,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 import type {ItemDelegate} from './item.js';
+import {convertSafetyCheckReason, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE} from './item_util.js';
 import {getTemplate} from './review_panel.html.js';
-
-export interface ReviewItemDelegate {
-  setItemSafetyCheckWarningAcknowledged(id: string): void;
-  uninstallItem(id: string): Promise<void>;
-}
 
 export interface ExtensionsReviewPanelElement {
   $: {
@@ -149,7 +145,7 @@ export class ExtensionsReviewPanelElement extends
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
-  delegate: ItemDelegate&ReviewItemDelegate;
+  delegate: ItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
   private numberOfExtensionsChanged_: number;
   private reviewPanelShown_: boolean;
@@ -164,6 +160,8 @@ export class ExtensionsReviewPanelElement extends
   private shouldShowUnsafeExtensions_: boolean;
   private shouldHideUnsafePanel_: boolean;
   private lastClickedExtensionId_: string;
+  private lastClickedExtensionTriggerReason_:
+      chrome.developerPrivate.SafetyCheckWarningReason;
 
   private async onExtensionsChanged_() {
     this.unsafeExtensions_ = this.getUnsafeExtensions_(this.extensions);
@@ -185,7 +183,6 @@ export class ExtensionsReviewPanelElement extends
         extension =>
             !!(extension.safetyCheckText &&
                extension.safetyCheckText.panelString &&
-               !extension.controlledInfo &&
                extension.acknowledgeSafetyCheckWarning !== true));
   }
 
@@ -213,6 +210,12 @@ export class ExtensionsReviewPanelElement extends
     if (updatedUnsafeExtensions.length !== 0) {
       if (!this.shouldShowUnsafeExtensions_) {
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewPanelShown');
+        for (const extension of updatedUnsafeExtensions) {
+          chrome.metricsPrivate.recordEnumerationValue(
+              SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME,
+              convertSafetyCheckReason(extension.safetyCheckWarningReason),
+              SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+        }
       }
       this.completionMetricLogged_ = false;
       this.reviewPanelShown_ = true;
@@ -240,6 +243,8 @@ export class ExtensionsReviewPanelElement extends
   private onMakeExceptionMenuClick_(
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>) {
     this.lastClickedExtensionId_ = e.model.item.id;
+    this.lastClickedExtensionTriggerReason_ =
+        e.model.item.safetyCheckWarningReason;
     this.$.makeExceptionMenu.showAt(e.target as HTMLElement);
   }
 
@@ -249,11 +254,16 @@ export class ExtensionsReviewPanelElement extends
   private onKeepExtensionClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelKeepClicked');
+    chrome.metricsPrivate.recordEnumerationValue(
+        SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME,
+        convertSafetyCheckReason(this.lastClickedExtensionTriggerReason_),
+        SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     ExtensionsHatsBrowserProxyImpl.getInstance().extensionKeptAction();
     this.$.makeExceptionMenu.close();
     if (this.lastClickedExtensionId_) {
       this.delegate.setItemSafetyCheckWarningAcknowledged(
-          this.lastClickedExtensionId_);
+          this.lastClickedExtensionId_,
+          this.lastClickedExtensionTriggerReason_);
     }
   }
 
@@ -271,6 +281,10 @@ export class ExtensionsReviewPanelElement extends
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveClicked');
+    chrome.metricsPrivate.recordEnumerationValue(
+        SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
+        convertSafetyCheckReason(e.model.item.safetyCheckWarningReason),
+        SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     ExtensionsHatsBrowserProxyImpl.getInstance().extensionRemovedAction();
     try {
       await this.delegate.uninstallItem(e.model.item.id);
@@ -288,6 +302,12 @@ export class ExtensionsReviewPanelElement extends
     event.stopPropagation();
     try {
       this.numberOfExtensionsChanged_ = this.unsafeExtensions_.length;
+      this.unsafeExtensions_.forEach(extension => {
+        chrome.metricsPrivate.recordEnumerationValue(
+            SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
+            convertSafetyCheckReason(extension.safetyCheckWarningReason),
+            SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+      });
       await this.delegate.deleteItems(
           this.unsafeExtensions_.map(extension => extension.id));
     } catch (_) {

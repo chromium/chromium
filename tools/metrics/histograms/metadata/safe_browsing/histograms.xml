@@ -813,6 +813,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionSafetyHub.Trigger.{Action}"
+    enum="SafetyCheckWarningReason" expires_after="2025-03-19">
+  <owner>psarouthakis@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extensions that trigger a safety check review are displayed to the user via
+    a panel on the chrome://extensions/ page. These extensions should be
+    reviewed by the user and acknowledged or removed. This metric records when
+    an extension is {Action} in the extension review panel on the
+    chrome://extensions/ page.
+  </summary>
+  <token key="Action">
+    <variant name="Kept" summary="kept"/>
+    <variant name="Removed" summary="removed"/>
+    <variant name="Shown" summary="shown"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration"
     units="ms" expires_after="2024-09-22">
   <owner>richche@google.com</owner>

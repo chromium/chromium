@@ -7,6 +7,17 @@ import './strings.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+// This `SafetyCheckWarningReason` enum should match the enum of the same
+// name defined in the developer_private.idl and enums.xml files.
+export enum SafetyCheckWarningReason {
+  UNPUBLISHED = 1,
+  POLICY = 2,
+  MALWARE = 3,
+  OFFSTORE = 4,
+  UNWANTED = 5,
+  NO_PRIVACY_PRACTICE = 6,
+}
+
 export enum SourceType {
   WEBSTORE = 'webstore',
   POLICY = 'policy',
@@ -30,6 +41,17 @@ export enum UserAction {
   SPECIFIC_TOGGLED_OFF = 'Extensions.Settings.HostList.SpecificHostToggledOff',
   LEARN_MORE = 'Extensions.Settings.HostList.LearnMoreActivated',
 }
+
+// Values for logging Extension Safety Hub metrics.
+export const SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME =
+    'SafeBrowsing.ExtensionSafetyHub.Trigger.Kept';
+export const SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME =
+    'SafeBrowsing.ExtensionSafetyHub.Trigger.Removed';
+export const SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME =
+    `SafeBrowsing.ExtensionSafetyHub.Trigger.Shown`;
+// This number should match however many entries are defined in the
+// `SafetyCheckWarningReason` defined in the `enums.xml` file.
+export const SAFETY_HUB_WARNING_REASON_MAX_SIZE = 7;
 
 /**
  * Returns true if the extension is enabled, including terminated
@@ -120,6 +142,38 @@ export function getItemSourceString(source: SourceType): string {
       return '';
     default:
       assertNotReached();
+  }
+}
+
+// This converter is used to convert the `SafetyCheckWarningReason` enum
+// defined in the developer_private.idl file for metrics logging
+// reasons. It needs to be kept in sync with the corresponding enum in
+// the developer_private.idl and enums.xml files.
+export function convertSafetyCheckReason(
+    reason: chrome.developerPrivate.SafetyCheckWarningReason):
+    SafetyCheckWarningReason {
+  switch (reason) {
+    case chrome.developerPrivate.SafetyCheckWarningReason.UNPUBLISHED: {
+      return SafetyCheckWarningReason.UNPUBLISHED;
+    }
+    case chrome.developerPrivate.SafetyCheckWarningReason.POLICY: {
+      return SafetyCheckWarningReason.POLICY;
+    }
+    case chrome.developerPrivate.SafetyCheckWarningReason.MALWARE: {
+      return SafetyCheckWarningReason.MALWARE;
+    }
+    case chrome.developerPrivate.SafetyCheckWarningReason.OFFSTORE: {
+      return SafetyCheckWarningReason.OFFSTORE;
+    }
+    case chrome.developerPrivate.SafetyCheckWarningReason.UNWANTED: {
+      return SafetyCheckWarningReason.UNWANTED;
+    }
+    case chrome.developerPrivate.SafetyCheckWarningReason.NO_PRIVACY_PRACTICE: {
+      return SafetyCheckWarningReason.NO_PRIVACY_PRACTICE;
+    }
+    default: {
+      assertNotReached();
+    }
   }
 }
 

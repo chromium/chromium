@@ -37,7 +37,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getTemplate} from './detail_view.html.js';
 import type {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, convertSafetyCheckReason, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
@@ -298,6 +298,10 @@ export class ExtensionsDetailViewElement extends
   private onRemoveClick_() {
     if (this.showSafetyCheck_) {
       chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailRemoveClicked');
+      chrome.metricsPrivate.recordEnumerationValue(
+          SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
+          convertSafetyCheckReason(this.data.safetyCheckWarningReason),
+          SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     }
     this.delegate.deleteItem(this.data.id);
   }
@@ -305,8 +309,13 @@ export class ExtensionsDetailViewElement extends
   private onKeepClick_() {
     if (this.showSafetyCheck_) {
       chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailKeepClicked');
+      chrome.metricsPrivate.recordEnumerationValue(
+          SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME,
+          convertSafetyCheckReason(this.data.safetyCheckWarningReason),
+          SAFETY_HUB_WARNING_REASON_MAX_SIZE);
     }
-    this.delegate.setItemSafetyCheckWarningAcknowledged(this.data.id);
+    this.delegate.setItemSafetyCheckWarningAcknowledged(
+        this.data.id, this.data.safetyCheckWarningReason);
   }
 
   private onRepairClick_() {

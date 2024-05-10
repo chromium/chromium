@@ -187,10 +187,13 @@ export class Service implements ServiceInterface {
     });
   }
 
-  setItemSafetyCheckWarningAcknowledged(id: string): Promise<void> {
+  setItemSafetyCheckWarningAcknowledged(
+      id: string,
+      reason: chrome.developerPrivate.SafetyCheckWarningReason): Promise<void> {
     return chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       acknowledgeSafetyCheckWarning: true,
+      acknowledgeSafetyCheckWarningReason: reason,
     });
   }
 

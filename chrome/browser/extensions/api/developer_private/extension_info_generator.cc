@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
@@ -52,7 +53,6 @@
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
-#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
@@ -66,7 +66,6 @@
 #include "extensions/common/permissions/permission_message_util.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "extensions/strings/grit/extensions_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -116,6 +115,137 @@ developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
       NOTREACHED();
   }
   return type;
+}
+
+// Converts the `SafetyCheckWarningReason` enum into its corresponding
+// warning level. The higher the return value the more severe the
+// trigger.
+int GetSafetyCheckWarningLevel(
+    developer::SafetyCheckWarningReason safety_check_warning) {
+  switch (safety_check_warning) {
+    case developer::SafetyCheckWarningReason::kMalware:
+      return 6;
+    case developer::SafetyCheckWarningReason::kPolicy:
+      return 5;
+    case developer::SafetyCheckWarningReason::kUnwanted:
+      return 4;
+    case developer::SafetyCheckWarningReason::kUnpublished:
+      return 3;
+    case developer::SafetyCheckWarningReason::kNoPrivacyPractice:
+      return 2;
+    case developer::SafetyCheckWarningReason::kOffstore:
+      return 1;
+    case developer::SafetyCheckWarningReason::kNone:
+      return 0;
+  }
+}
+
+// Compares the `acknowledged_reason` and the warning_reason levels and
+// returns if the `acknowledged_reason` is greater than or equal to the
+// warning_reason. If it is the user has acknowledged the current or
+// more severe triggers and shouldn't be shown to the user.
+bool SafetyCheckAcknowledgedWarning(
+    developer::SafetyCheckWarningReason acknowledged_reason,
+    developer::SafetyCheckWarningReason warning_reason) {
+  int acknowledged_reason_level =
+      GetSafetyCheckWarningLevel(acknowledged_reason);
+  int warning_reason_level = GetSafetyCheckWarningLevel(warning_reason);
+  return acknowledged_reason_level >= warning_reason_level;
+}
+
+// Returns if the Safety Check should display a malware warning.
+bool SafetyCheckShouldShowMalware(
+    BitMapBlocklistState blocklist_state,
+    bool valid_cws_info,
+    const std::optional<CWSInfoService::CWSInfo> cws_info) {
+  bool has_safe_browsing_malware_rating =
+      blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE;
+  bool has_cws_malware_rating =
+      valid_cws_info &&
+      cws_info->violation_type == CWSInfoService::CWSViolationType::kMalware;
+  bool is_malware = has_safe_browsing_malware_rating || has_cws_malware_rating;
+  return is_malware;
+}
+
+// Returns if the Safety Check should display a policy violation warning.
+bool SafetyCheckShouldShowPolicyViolation(
+    BitMapBlocklistState blocklist_state,
+    bool valid_cws_info,
+    const std::optional<CWSInfoService::CWSInfo> cws_info) {
+  bool has_safe_browsing_policy_rating =
+      blocklist_state == BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION;
+  bool has_cws_policy_rating =
+      valid_cws_info &&
+      cws_info->violation_type == CWSInfoService::CWSViolationType::kPolicy;
+  bool is_policy_violation =
+      has_safe_browsing_policy_rating || has_cws_policy_rating;
+  return is_policy_violation;
+}
+
+// Returns if the Safety Check should display an unwanted software warning.
+bool SafetyCheckShouldShowPotentiallyUnwanted(
+    BitMapBlocklistState blocklist_state,
+    bool valid_cws_info,
+    const std::optional<CWSInfoService::CWSInfo> cws_info) {
+  bool is_potentially_unwanted =
+      blocklist_state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
+  bool potentially_unwanted_enabled =
+      base::FeatureList::IsEnabled(features::kSafetyHubExtensionsUwSTrigger);
+  return potentially_unwanted_enabled && is_potentially_unwanted;
+}
+
+// Returns if the Safety Check should display a no privacy practice warning.
+bool SafetyCheckShouldShowNoPrivacyPractice(
+    BitMapBlocklistState blocklist_state,
+    bool valid_cws_info,
+    const std::optional<CWSInfoService::CWSInfo> cws_info) {
+  bool no_privacy_practice_enabled = base::FeatureList::IsEnabled(
+      features::kSafetyHubExtensionsNoPrivacyPracticesTrigger);
+  bool has_no_privacy_practice_rating =
+      valid_cws_info && cws_info->no_privacy_practice;
+  return no_privacy_practice_enabled && has_no_privacy_practice_rating;
+}
+
+bool SafetyCheckShouldShowOffstoreExtension(
+    const Extension& extension,
+    content::BrowserContext* browser_context,
+    bool updates_from_webstore,
+    bool valid_cws_info,
+    const std::optional<CWSInfoService::CWSInfo> cws_info) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSafetyHubExtensionsOffStoreTrigger)) {
+    return false;
+  }
+  // There is a chance that extensions installed by the command line
+  // will not follow normal extension behavior for installing and
+  // uninstalling. To avoid confusing the user, the Safety Hub
+  // will not show command line extensions.
+  if (extension.location() == mojom::ManifestLocation::kCommandLine) {
+    return false;
+  }
+  // Calculate if the extension triggers a off store extension warning such as
+  // extensions that are no longer on the Chrome Web Store.
+  if (Manifest::IsUnpackedLocation(extension.location())) {
+    // Extensions that are unpacked will only trigger a review if dev
+    // mode is not enabled.
+    bool dev_mode = Profile::FromBrowserContext(browser_context)
+                        ->GetPrefs()
+                        ->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    return !dev_mode;
+  }
+  if (updates_from_webstore) {
+    if (cws_info.has_value() && !cws_info->is_present) {
+      // If the extension has a webstore update URL but is not present
+      // in the webstore itself, then we will not consider it from
+      // the webstore.
+      return true;
+    }
+  } else {
+    // Extension does not update from the webstore.
+    return true;
+  }
+
+  return false;
 }
 
 // Populates the common fields of an extension error.
@@ -329,6 +459,26 @@ bool CanAccessSiteData(PermissionsManager* permissions_manager,
              .ShouldWarnAllHosts() ||
          PermissionsParser::GetOptionalPermissions(&extension)
              .ShouldWarnAllHosts();
+}
+
+// Return the `PrefAcknowledgeSafetyCheckWarningReason` pref as an enum.
+developer::SafetyCheckWarningReason GetPrefAcknowledgeSafetyCheckWarningReason(
+    const Extension& extension,
+    const ExtensionPrefs* extension_prefs) {
+  int kept_reason_int = 0;
+  int max_enum_value =
+      static_cast<int>(developer::SafetyCheckWarningReason::kMaxValue);
+  developer::SafetyCheckWarningReason acknowledged_reason =
+      developer::SafetyCheckWarningReason::kNone;
+  // Validate `kept_reason_int` was not corrupted during the read.
+  if (extension_prefs->ReadPrefAsInteger(
+          extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarningReason,
+          &kept_reason_int) &&
+      kept_reason_int >= 0 && kept_reason_int <= max_enum_value) {
+    acknowledged_reason =
+        static_cast<developer::SafetyCheckWarningReason>(kept_reason_int);
+  }
+  return acknowledged_reason;
 }
 
 // Populates the |permissions| data for the given |extension|.
@@ -566,9 +716,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
     info->controlled_info->text =
         l10n_util::GetStringUTF8(IDS_EXTENSIONS_INSTALL_LOCATION_ENTERPRISE);
   } else {
-    // Create Safety Hub strings for any non-enterprise extension.
-    info->safety_check_text = CreateSafetyCheckDisplayString(
-        extension, updates_from_web_store, state, blocklist_state);
+    // Create Safety Hub information for any non-enterprise extension.
+    PopulateSafetyCheckInfo(extension, updates_from_web_store, state,
+                            blocklist_state, *info);
   }
 
   bool is_enabled = state == developer::ExtensionState::kEnabled;
@@ -827,109 +977,104 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   }
 }
 
-developer::SafetyCheckStrings
-ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+void ExtensionInfoGenerator::PopulateSafetyCheckInfo(
     const Extension& extension,
     bool updates_from_webstore,
     developer::ExtensionState state,
-    BitMapBlocklistState blocklist_state) {
+    BitMapBlocklistState blocklist_state,
+    developer::ExtensionInfo& extension_info) {
+  // When a extension triggers a Safety Hub Review, the user has the option to
+  // keep it, when kept the trigger reason is stored in the extension prefs.
+  // This is a different from the `safety_check_warning_reason` which
+  // represents the reason the safety check is showing an extension that has
+  // not been kept.
   developer::SafetyCheckStrings display_strings;
   int detail_string_id = -1;
   int panel_string_id = -1;
+  developer::SafetyCheckWarningReason top_warning_reason =
+      developer::SafetyCheckWarningReason::kNone;
+  developer::SafetyCheckWarningReason acknowledged_reason =
+      GetPrefAcknowledgeSafetyCheckWarningReason(extension, extension_prefs_);
   std::optional<CWSInfoService::CWSInfo> cws_info;
-  bool valid_cws_info = false;
 
+  bool valid_cws_info = false;
   if (base::FeatureList::IsEnabled(kCWSInfoService)) {
     cws_info = cws_info_service_->GetCWSInfo(extension);
     valid_cws_info = cws_info.has_value() && cws_info->is_present;
   }
 
-  bool malware =
-      blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
-      (valid_cws_info &&
-       cws_info->violation_type == CWSInfoService::CWSViolationType::kMalware);
-  bool policy_violation =
-      blocklist_state ==
-          BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION ||
-      (valid_cws_info &&
-       cws_info->violation_type == CWSInfoService::CWSViolationType::kPolicy);
-  bool potentially_unwanted =
-      base::FeatureList::IsEnabled(features::kSafetyHubExtensionsUwSTrigger) &&
-      blocklist_state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
-  bool no_privacy_practice =
-      base::FeatureList::IsEnabled(
-          features::kSafetyHubExtensionsNoPrivacyPracticesTrigger) &&
-      (valid_cws_info && cws_info->no_privacy_practice);
+  if (SafetyCheckShouldShowMalware(blocklist_state, valid_cws_info, cws_info)) {
+    top_warning_reason = developer::SafetyCheckWarningReason::kMalware;
+  } else if (SafetyCheckShouldShowPolicyViolation(blocklist_state,
+                                                  valid_cws_info, cws_info)) {
+    top_warning_reason = developer::SafetyCheckWarningReason::kPolicy;
+  } else if (SafetyCheckShouldShowPotentiallyUnwanted(
+                 blocklist_state, valid_cws_info, cws_info)) {
+    top_warning_reason = developer::SafetyCheckWarningReason::kUnwanted;
+  } else if (valid_cws_info && cws_info->unpublished_long_ago) {
+    top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;
 
-  bool warn_for_offstore_extension = false;
-  if (base::FeatureList::IsEnabled(
-          features::kSafetyHubExtensionsOffStoreTrigger)) {
-    // There is a chance that extensions installed by the command line
-    // will not follow normal extension behavior for installing and
-    // uninstalling. To avoid confusing the user, the Safety Hub
-    // will not show command line extensions.
-    if (extension.location() != mojom::ManifestLocation::kCommandLine) {
-      bool dev_mode = Profile::FromBrowserContext(browser_context_)
-                          ->GetPrefs()
-                          ->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-      if (Manifest::IsUnpackedLocation(extension.location())) {
-        // Extensions that are unpacked will only trigger a review if dev
-        // mode is not enabled.
-        warn_for_offstore_extension = !dev_mode;
-      } else {
-        if (updates_from_webstore) {
-          if (cws_info.has_value() && !cws_info->is_present) {
-            // If the extension has a webstore update URL but is not present
-            // in the webstore itself, then we will not consider it from
-            // the webstore.
-            warn_for_offstore_extension = true;
-          }
-        } else {
-          // extension does not update from the webstore.
-          warn_for_offstore_extension = true;
-        }
-      }
+  } else if (SafetyCheckShouldShowNoPrivacyPractice(blocklist_state,
+                                                    valid_cws_info, cws_info)) {
+    top_warning_reason =
+        developer::SafetyCheckWarningReason::kNoPrivacyPractice;
+
+  } else if (SafetyCheckShouldShowOffstoreExtension(extension, browser_context_,
+                                                    updates_from_webstore,
+                                                    valid_cws_info, cws_info)) {
+    top_warning_reason = developer::SafetyCheckWarningReason::kOffstore;
+  }
+
+  // If user has not chosen to keep the extension for the current, or a higher
+  // trigger reason, we update the detail page and panel strings.
+  if (!SafetyCheckAcknowledgedWarning(acknowledged_reason,
+                                      top_warning_reason)) {
+    switch (top_warning_reason) {
+      case developer::SafetyCheckWarningReason::kMalware:
+        detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
+        panel_string_id = IDS_EXTENSIONS_SC_MALWARE;
+        break;
+      case developer::SafetyCheckWarningReason::kPolicy:
+        detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
+        panel_string_id = state == developer::ExtensionState::kEnabled
+                              ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                              : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+        break;
+      case developer::SafetyCheckWarningReason::kUnwanted:
+        detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
+        panel_string_id = state == developer::ExtensionState::kEnabled
+                              ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                              : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+        break;
+      case developer::SafetyCheckWarningReason::kUnpublished:
+        detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+        panel_string_id = state == developer::ExtensionState::kEnabled
+                              ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                              : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+        break;
+      case developer::SafetyCheckWarningReason::kNoPrivacyPractice:
+        detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES;
+        panel_string_id =
+            state == developer::ExtensionState::kEnabled
+                ? IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON
+                : IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF;
+        break;
+      case developer::SafetyCheckWarningReason::kOffstore:
+        detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
+        panel_string_id = state == developer::ExtensionState::kEnabled
+                              ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
+                              : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
+        break;
+      case developer::SafetyCheckWarningReason::kNone:
+        break;
     }
   }
-
-  if (malware) {
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
-    panel_string_id = IDS_EXTENSIONS_SC_MALWARE;
-  } else if (policy_violation) {
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
-    panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
-                          : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
-  } else if (potentially_unwanted) {
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
-    panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
-                          : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
-  } else if (valid_cws_info && cws_info->unpublished_long_ago) {
-    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
-    panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
-                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
-  } else if (no_privacy_practice) {
-    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES;
-    panel_string_id =
-        state == developer::ExtensionState::kEnabled
-            ? IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON
-            : IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF;
-  } else if (warn_for_offstore_extension) {
-    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
-    panel_string_id = state == developer::ExtensionState::kEnabled
-                          ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
-                          : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
-  }
-
   if (detail_string_id != -1) {
     display_strings.detail_string = l10n_util::GetStringUTF8(detail_string_id);
-  }
-  if (panel_string_id != -1) {
     display_strings.panel_string = l10n_util::GetStringUTF8(panel_string_id);
   }
-  return display_strings;
+  extension_info.safety_check_warning_reason = top_warning_reason;
+  extension_info.safety_check_text = std::move(display_strings);
 }
 
 std::string ExtensionInfoGenerator::GetDefaultIconUrl(const std::string& name) {

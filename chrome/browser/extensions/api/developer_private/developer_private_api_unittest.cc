@@ -605,6 +605,14 @@ TEST_F(DeveloperPrivateApiUnitTest,
                           base::Unretained(&helper), id),
       "showAccessRequestsInToolbar", id, /*expected_default_value=*/true);
 
+  // Check to ensure the `kPrefAcknowledgeSafetyCheckWarningReason` is not
+  // set yet.
+  int warning_reason = 0;
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+  EXPECT_FALSE(extension_prefs->ReadPrefAsInteger(
+      id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
+      &warning_reason));
+
   auto has_acknowledged_safety_check = [&]() {
     bool has_acknowledged = false;
     return ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
@@ -615,6 +623,37 @@ TEST_F(DeveloperPrivateApiUnitTest,
   TestExtensionPrefSetting(
       base::BindLambdaForTesting(has_acknowledged_safety_check),
       "acknowledgeSafetyCheckWarning", id, /*expected_default_value=*/false);
+
+  api::developer_private::SafetyCheckWarningReason warning_reason_enum;
+  EXPECT_TRUE(extension_prefs->ReadPrefAsInteger(
+      id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
+      &warning_reason));
+  warning_reason_enum =
+      static_cast<api::developer_private::SafetyCheckWarningReason>(
+          warning_reason);
+  EXPECT_EQ(warning_reason_enum,
+            api::developer_private::SafetyCheckWarningReason::kNone);
+
+  // Test `acknowledgeSafetyCheckWarningReason` pref.
+  base::Value::List args;
+  args.Append(base::Value::Dict()
+                  .Set("extensionId", id)
+                  .Set("acknowledgeSafetyCheckWarning", true)
+                  .Set("acknowledgeSafetyCheckWarningReason", "MALWARE"));
+
+  ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
+  EXPECT_TRUE(RunFunction(function, args));
+
+  extension_prefs->ReadPrefAsInteger(
+      id, extensions::kPrefAcknowledgeSafetyCheckWarningReason,
+      &warning_reason);
+  warning_reason_enum =
+      static_cast<api::developer_private::SafetyCheckWarningReason>(
+          warning_reason);
+  EXPECT_EQ(warning_reason_enum,
+            api::developer_private::SafetyCheckWarningReason::kMalware);
 }
 
 // Test developerPrivate.reload.
