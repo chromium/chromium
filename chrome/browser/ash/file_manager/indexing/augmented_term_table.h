@@ -16,7 +16,7 @@ namespace file_manager {
 // term is a combination of a term and a field name. The main job of this table
 // is to provide a unique ID for, say "label:starred" and "content:starred"
 // terms. The term table provides a unique value for "starred". However, we
-// need to be able to distinguish beteewn "starred" being used a, say, label,
+// need to be able to distinguish between "starred" being used a, say, label,
 // vs it being part of a content. This is what this table does.
 class AugmentedTermTable {
  public:

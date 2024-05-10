@@ -72,7 +72,7 @@ class SqlStorage : public IndexStorage {
   int32_t AddToPostingList(int64_t term_id, int64_t url_id) override;
 
   // Removes the association between `augmented_term_id` and `url_id`. This
-  // method is the oppositive of the AddToPostingList() and means that a file
+  // method is the opposite of the AddToPostingList() and means that a file
   // with the given `url_id` no longer "has" the given `augmented_term_id`.
   // Returns the number of deleted associations.
   int32_t DeleteFromPostingList(int64_t term_id, int64_t url_id) override;
@@ -104,7 +104,7 @@ class SqlStorage : public IndexStorage {
   // seen before, this method returns -1.
   int64_t DeleteUrl(const GURL& url) override;
 
-  // Stores the gile info. The file info is stored using the ID generated from
+  // Stores the file info. The file info is stored using the ID generated from
   // the file_url. This ID is returned when the `file_info` is stored
   // successfully. Otherwise this method returns -1.
   int64_t PutFileInfo(const FileInfo& file_info) override;
@@ -152,7 +152,7 @@ class SqlStorage : public IndexStorage {
 
   // The table that holds associations between augmented term IDs and
   // URL IDs. It also maintains indexes that allow fast retrieval of all
-  // URL IDs associatiated with the given term ID and all term IDs present
+  // URL IDs associated with the given term ID and all term IDs present
   // in a file with the given URL ID.
   PostingListTable posting_list_table_;
 

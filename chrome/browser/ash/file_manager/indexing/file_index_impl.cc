@@ -12,8 +12,8 @@ FileIndexImpl::FileIndexImpl(std::unique_ptr<IndexStorage> storage)
     : storage_(std::move(storage)) {}
 FileIndexImpl::~FileIndexImpl() = default;
 
-bool FileIndexImpl::Init() {
-  return storage_->Init();
+OpResults FileIndexImpl::Init() {
+  return storage_->Init() ? OpResults::kSuccess : OpResults::kUninitialized;
 }
 
 OpResults FileIndexImpl::PutFileInfo(const FileInfo& file_info) {

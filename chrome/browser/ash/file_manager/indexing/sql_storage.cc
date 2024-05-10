@@ -30,7 +30,9 @@ SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
       augmented_term_table_(&db_),
       url_table_(&db_),
       file_info_table_(&db_),
-      posting_list_table_(&db_) {}
+      posting_list_table_(&db_) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 SqlStorage::~SqlStorage() {
   db_.reset_error_callback();

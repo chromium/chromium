@@ -13,7 +13,7 @@ namespace file_manager {
 // file. An example term would be a label given to a file. If the file has
 // label "starred" associated with it, it would be represented by the
 // Term("label", "starred") object. Other terms could be generated from the
-// files's content, name, path, etc.
+// files' content, name, path, etc.
 class Term {
  public:
   Term(const std::string& field, const std::u16string& text);

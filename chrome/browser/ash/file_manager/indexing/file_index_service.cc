@@ -4,24 +4,24 @@
 
 #include "chrome/browser/ash/file_manager/indexing/file_index_service.h"
 
-#include "chrome/browser/ash/file_manager/indexing/file_index_impl.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/ash/file_manager/indexing/file_index.h"
 #include "chrome/browser/ash/file_manager/indexing/sql_storage.h"
 
 namespace file_manager {
 
-// Currently FileIndexService implements FileIndex interface. It also
-// uses FileIndexImpl that implements the same interface to delegate
-// all details to it. This gives us a lean FileIndexService, though
-// in practive all code from FileIndexImpl could be moved here. The
-// current structure of the classes is as follows:
+// FileIndexService provides asynchronous version of operations defined in
+// the FileIndex interface. It uses FileIndexImpl that implements the FileIndex
+// interface to delegate all details to it. The current structure of the classes
+// is as follows:
 //
-//      [ File Index  ]
-//      [ (interface) ]
-//             ^
-//             |
-//             +------------------.
-//             |                  |
-//  [ FileIndexService ]----<>[ FileIndexImpl ]
+//                                           [ File Index  ]
+//                                           [ (interface) ]
+//                                                  ^
+//                                                  |
+//                                                  |
+//                                                  |
+//  [ FileIndexService ]----<>[ SequenceBound<FileIndexImpl> ]
 //                                 |
 //                                 |
 //             [ IndexStorage ]<>--'
@@ -46,67 +46,96 @@ constexpr char kSqlDatabaseUmaTag[] =
 }  // namespace
 
 FileIndexService::FileIndexService(Profile* profile)
-    : file_index_impl_(std::make_unique<FileIndexImpl>(
-          std::make_unique<SqlStorage>(MakeDbPath(profile),
-                                       kSqlDatabaseUmaTag))) {}
-
-bool FileIndexService::Init() {
-  if (inited_) {
-    return true;
-  }
-  if (!file_index_impl_->Init()) {
-    return false;
-  }
-  inited_ = true;
-  return true;
-}
-
+    : file_index_impl_(base::ThreadPool::CreateSequencedTaskRunner(
+                           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+                       std::make_unique<SqlStorage>(MakeDbPath(profile),
+                                                    kSqlDatabaseUmaTag)) {}
 FileIndexService::~FileIndexService() = default;
 
-OpResults FileIndexService::PutFileInfo(const FileInfo& file_info) {
-  if (!inited_) {
-    return kUninitialized;
+void FileIndexService::Init(IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kUndefined) {
+    std::move(callback).Run(inited_);
+    return;
   }
-  return file_index_impl_->PutFileInfo(file_info);
+  file_index_impl_.AsyncCall(&FileIndexImpl::Init)
+      .Then(base::BindOnce(
+          [](IndexingOperationCallback callback, OpResults* inited,
+             OpResults result) {
+            *inited = result;
+            std::move(callback).Run(result);
+          },
+          std::move(callback), &inited_));
 }
 
-OpResults FileIndexService::UpdateFile(const std::vector<Term>& terms,
-                                       const GURL& url) {
-  if (!inited_) {
-    return kUninitialized;
+void FileIndexService::PutFileInfo(const FileInfo& file_info,
+                                   IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(OpResults::kUninitialized);
+    return;
   }
-  return file_index_impl_->UpdateFile(terms, url);
+  file_index_impl_.AsyncCall(&FileIndexImpl::PutFileInfo)
+      .WithArgs(file_info)
+      .Then(std::move(callback));
 }
 
-OpResults FileIndexService::AugmentFile(const std::vector<Term>& terms,
-                                        const GURL& url) {
-  if (!inited_) {
-    return kUninitialized;
+void FileIndexService::UpdateFile(const std::vector<Term>& terms,
+                                  const GURL& url,
+                                  IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(kUninitialized);
+    return;
   }
-  return file_index_impl_->AugmentFile(terms, url);
+  file_index_impl_.AsyncCall(&FileIndexImpl::UpdateFile)
+      .WithArgs(terms, url)
+      .Then(std::move(callback));
 }
 
-OpResults FileIndexService::RemoveFile(const GURL& url) {
-  if (!inited_) {
-    return kUninitialized;
+void FileIndexService::AugmentFile(const std::vector<Term>& terms,
+                                   const GURL& url,
+                                   IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(kUninitialized);
+    return;
   }
-  return file_index_impl_->RemoveFile(url);
+  file_index_impl_.AsyncCall(&FileIndexImpl::AugmentFile)
+      .WithArgs(terms, url)
+      .Then(std::move(callback));
 }
 
-OpResults FileIndexService::RemoveTerms(const std::vector<Term>& terms,
-                                        const GURL& url) {
-  if (!inited_) {
-    return kUninitialized;
+void FileIndexService::RemoveFile(const GURL& url,
+                                  IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(kUninitialized);
+    return;
   }
-  return file_index_impl_->RemoveTerms(terms, url);
+  file_index_impl_.AsyncCall(&FileIndexImpl::RemoveFile)
+      .WithArgs(url)
+      .Then(std::move(callback));
+}
+
+void FileIndexService::RemoveTerms(const std::vector<Term>& terms,
+                                   const GURL& url,
+                                   IndexingOperationCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(kUninitialized);
+    return;
+  }
+  file_index_impl_.AsyncCall(&FileIndexImpl::RemoveTerms)
+      .WithArgs(terms, url)
+      .Then(std::move(callback));
 }
 
 // Searches the index for file info matching the specified query.
-SearchResults FileIndexService::Search(const Query& query) {
-  if (!inited_) {
-    return SearchResults();
+void FileIndexService::Search(const Query& query,
+                              SearchResultsCallback callback) {
+  if (inited_ != OpResults::kSuccess) {
+    std::move(callback).Run(SearchResults());
+    return;
   }
-  return file_index_impl_->Search(query);
+  file_index_impl_.AsyncCall(&FileIndexImpl::Search)
+      .WithArgs(query)
+      .Then(std::move(callback));
 }
 
 }  // namespace file_manager

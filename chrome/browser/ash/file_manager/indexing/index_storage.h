@@ -24,7 +24,7 @@ namespace file_manager {
 // top of SQL. It offers a slower performance, but keeps the state between
 // device restarts.
 //
-// Please note that this class is optimzied for performance. Therefore it
+// Please note that this class is optimized for performance. Therefore it
 // takes certain shortcuts. For example, when adding augmented term IDs it
 // allows us to specify the term_id of text_bytes() part of the term. This
 // term_id must be the same as generated from text_bytes(). However, for
@@ -106,7 +106,7 @@ class IndexStorage {
   virtual int64_t DeleteUrl(const GURL& url) = 0;
 
   // Stores FileInfo. If successful, returns the ID generated from `file_url`
-  // field fo the `file_info`. Otherwise, it returns -1.
+  // field of the `file_info`. Otherwise, it returns -1.
   virtual int64_t PutFileInfo(const FileInfo& file_info) = 0;
 
   // Attempts to retrieve the unique FileInfo associated with the given URL.

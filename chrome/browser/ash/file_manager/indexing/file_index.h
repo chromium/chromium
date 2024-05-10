@@ -17,7 +17,7 @@ namespace file_manager {
 // Results of an indexing operation.
 enum OpResults {
   // A value reserved for indicating lack of valid error handling.
-  kUndefineD = 0,
+  kUndefined = 0,
   // Successful operation. This may mean no-op operation. For example, asking
   // the index to remove a file that was never part of it, is considered a
   // success.
@@ -57,7 +57,7 @@ class FileIndex {
 
   // Initializes this index; must be called before any index operations are
   // invoked. Returns false if the initialization failed.
-  virtual bool Init() = 0;
+  virtual OpResults Init() = 0;
 
   // Stores the given `file_info` in this index. This method must be called
   // before any other methods that either update or augment terms associated

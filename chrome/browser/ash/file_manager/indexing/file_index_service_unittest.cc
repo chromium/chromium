@@ -8,6 +8,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/query.h"
@@ -22,13 +25,15 @@ namespace file_manager {
 namespace {
 
 GURL MakeLocalURL(const std::string& file_name) {
-  return GURL("filesystem:chrome://file-manager/external/Downloads-user123/" +
-              file_name);
+  return GURL(base::StrCat(
+      {"filesystem:chrome://file-manager/external/Downloads-user123/",
+       file_name}));
 }
 
 GURL MakeDriveURL(const std::string& file_name) {
-  return GURL("filesystem:chrome://file-manager/external/drivefs-987654321/" +
-              file_name);
+  return GURL(base::StrCat(
+      {"filesystem:chrome://file-manager/external/drivefs-987654321/",
+       file_name}));
 }
 
 MATCHER_P(ContainsFiles, expected_files, "") {
@@ -55,10 +60,96 @@ class FileIndexServiceTest : public testing::Test {
 
   void SetUp() override {
     index_service_ = std::make_unique<FileIndexService>(&profile_);
-    ASSERT_TRUE(index_service_->Init());
+    ASSERT_EQ(Init(), OpResults::kSuccess);
   }
 
   void TearDown() override { index_service_.reset(); }
+
+  // Convenience methods that convert asynchronous results to synchronous.
+
+  OpResults Init() {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->Init(base::BindLambdaForTesting([&](OpResults results) {
+      outcome = results;
+      run_loop.Quit();
+    }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  SearchResults Search(const Query& query) {
+    base::RunLoop run_loop;
+    SearchResults outcome;
+    index_service_->Search(
+        query, base::BindLambdaForTesting([&](SearchResults results) {
+          outcome.total_matches = results.total_matches;
+          outcome.matches = results.matches;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  OpResults PutFileInfo(const FileInfo& file_info) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->PutFileInfo(
+        file_info, base::BindLambdaForTesting([&](OpResults results) {
+          outcome = results;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  OpResults UpdateFile(const std::vector<Term> terms, const GURL& url) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->UpdateFile(
+        terms, url, base::BindLambdaForTesting([&](OpResults results) {
+          outcome = results;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  OpResults AugmentFile(const std::vector<Term> terms, const GURL& url) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->AugmentFile(
+        terms, url, base::BindLambdaForTesting([&](OpResults results) {
+          outcome = results;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  OpResults RemoveTerms(const std::vector<Term> terms, const GURL& url) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->RemoveTerms(
+        terms, url, base::BindLambdaForTesting([&](OpResults results) {
+          outcome = results;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  OpResults RemoveFile(const GURL& url) {
+    base::RunLoop run_loop;
+    OpResults outcome;
+    index_service_->RemoveFile(
+        url, base::BindLambdaForTesting([&](OpResults results) {
+          outcome = results;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return outcome;
+  }
 
   std::unique_ptr<FileIndexService> index_service_;
   Term pinned_;
@@ -74,171 +165,152 @@ typedef std::vector<FileInfo> FileInfoList;
 
 TEST_F(FileIndexServiceTest, EmptySearch) {
   // Empty query on an empty index.
-  EXPECT_THAT(index_service_->Search(Query({})), ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({})), ContainsFiles(FileInfoList{}));
 
   FileInfo file_info(foo_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info.file_url),
-            OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
 
   // Empty query on an non-empty index.
-  EXPECT_THAT(index_service_->Search(Query({})), ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({})), ContainsFiles(FileInfoList{}));
 }
 
 TEST_F(FileIndexServiceTest, SimpleMatch) {
   FileInfo file_info(foo_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({pinned_})),
-              ContainsFiles(FileInfoList{file_info}));
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, MultiTermMatch) {
   FileInfo file_info(foo_url_, 1024, base::Time());
 
   // Label file_info as pinned and starred.
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({pinned_, starred_}, file_info.file_url),
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({pinned_, starred_}, file_info.file_url),
             OpResults::kSuccess);
 
-  EXPECT_THAT(index_service_->Search(Query({pinned_})),
+  EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
+
+  EXPECT_THAT(Search(Query({starred_})),
               ContainsFiles(FileInfoList{file_info}));
 
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{file_info}));
-
-  EXPECT_THAT(index_service_->Search(Query({pinned_, starred_})),
+  EXPECT_THAT(Search(Query({pinned_, starred_})),
               ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, AugmentTerms) {
   FileInfo file_info(foo_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
   // Label file_info as pinned and starred.
-  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info.file_url),
-            OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
 
   // Can find by downloaded.
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
   // Cannot find by starred.
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
 
-  EXPECT_EQ(index_service_->AugmentFile({starred_}, foo_url_),
-            OpResults::kSuccess);
+  EXPECT_EQ(AugmentFile({starred_}, foo_url_), OpResults::kSuccess);
   // Can find by downloaded.
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
   // And by starred.
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
+  EXPECT_THAT(Search(Query({starred_})),
               ContainsFiles(FileInfoList{file_info}));
   // And by starred and downloaded.
-  EXPECT_THAT(index_service_->Search(Query({starred_, downloaded_})),
+  EXPECT_THAT(Search(Query({starred_, downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, ReplaceTerms) {
   FileInfo file_info(foo_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
   // Start with the single label: downloaded.
-  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
 
   // Just adding more labels: both downloaded and starred.
-  EXPECT_EQ(
-      index_service_->UpdateFile({downloaded_, starred_}, file_info.file_url),
-      OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_EQ(UpdateFile({downloaded_, starred_}, file_info.file_url),
+            OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
+  EXPECT_THAT(Search(Query({starred_})),
               ContainsFiles(FileInfoList{file_info}));
 
   // Remove the original "downloaded" label.
-  EXPECT_EQ(index_service_->UpdateFile({starred_}, file_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              ContainsFiles(FileInfoList{}));
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
+  EXPECT_EQ(UpdateFile({starred_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({downloaded_})), ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({starred_})),
               ContainsFiles(FileInfoList{file_info}));
 
   // Remove the "starred" label and add back "downloaded".
-  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_EQ(UpdateFile({downloaded_}, file_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{file_info}));
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList({})));
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList({})));
 }
 
 TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
   FileInfo foo_file_info(foo_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(foo_file_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, foo_file_info.file_url),
+  EXPECT_EQ(PutFileInfo(foo_file_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({downloaded_}, foo_file_info.file_url),
             OpResults::kSuccess);
 
   GURL bar_drive_url = MakeDriveURL("bar.txt");
   FileInfo bar_file_info(bar_drive_url, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(bar_file_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, bar_file_info.file_url),
+  EXPECT_EQ(PutFileInfo(bar_file_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({downloaded_}, bar_file_info.file_url),
             OpResults::kSuccess);
 
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{foo_file_info, bar_file_info}));
 }
 
 TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
   FileInfo file_info(foo_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
 
-  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info.file_url),
-            OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
 
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              ContainsFiles(FileInfoList{}));
+  EXPECT_THAT(Search(Query({downloaded_})), ContainsFiles(FileInfoList{}));
 }
 
 TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
   FileInfo file_info(foo_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(file_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(file_info), OpResults::kSuccess);
 
   // Insert into the index with pinned label.
-  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info.file_url),
-            OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({pinned_}, file_info.file_url), OpResults::kSuccess);
   // Verify that passing empty terms is disallowed.
-  EXPECT_EQ(index_service_->UpdateFile({}, file_info.file_url),
-            OpResults::kArgumentError);
+  EXPECT_EQ(UpdateFile({}, file_info.file_url), OpResults::kArgumentError);
 
-  EXPECT_THAT(index_service_->Search(Query({pinned_})),
-              ContainsFiles(FileInfoList{file_info}));
+  EXPECT_THAT(Search(Query({pinned_})), ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, FieldSeparator) {
   Term colon_in_field("foo:", u"one");
   FileInfo foo_info(foo_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(foo_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
 
-  EXPECT_EQ(index_service_->UpdateFile({colon_in_field}, foo_info.file_url),
+  EXPECT_EQ(UpdateFile({colon_in_field}, foo_info.file_url),
             OpResults::kSuccess);
 
   Term colon_in_text("foo", u":one");
   FileInfo bar_info(bar_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->PutFileInfo(bar_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({colon_in_text}, bar_info.file_url),
+  EXPECT_EQ(PutFileInfo(bar_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({colon_in_text}, bar_info.file_url),
             OpResults::kSuccess);
 
-  EXPECT_THAT(index_service_->Search(Query({colon_in_field})),
+  EXPECT_THAT(Search(Query({colon_in_field})),
               ContainsFiles(FileInfoList{foo_info}));
-  EXPECT_THAT(index_service_->Search(Query({colon_in_text})),
+  EXPECT_THAT(Search(Query({colon_in_text})),
               ContainsFiles(FileInfoList{bar_info}));
 }
 
@@ -252,21 +324,21 @@ TEST_F(FileIndexServiceTest, GlobalSearch) {
   FileInfo labeled_info(foo_url_, 1024, base::Time());
   FileInfo content_info(bar_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(labeled_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->PutFileInfo(content_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(labeled_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(content_info), OpResults::kSuccess);
 
-  EXPECT_EQ(index_service_->UpdateFile({label_term}, labeled_info.file_url),
+  EXPECT_EQ(UpdateFile({label_term}, labeled_info.file_url),
             OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({content_term}, content_info.file_url),
+  EXPECT_EQ(UpdateFile({content_term}, content_info.file_url),
             OpResults::kSuccess);
 
   // Searching with empty field name means global space search.
-  EXPECT_THAT(index_service_->Search(Query({Term("", text)})),
+  EXPECT_THAT(Search(Query({Term("", text)})),
               ContainsFiles(FileInfoList{labeled_info, content_info}));
   // Searching with field name, gives us unique results.
-  EXPECT_THAT(index_service_->Search(Query({label_term})),
+  EXPECT_THAT(Search(Query({label_term})),
               ContainsFiles(FileInfoList{labeled_info}));
-  EXPECT_THAT(index_service_->Search(Query({content_term})),
+  EXPECT_THAT(Search(Query({content_term})),
               ContainsFiles(FileInfoList{content_info}));
 }
 
@@ -279,81 +351,69 @@ TEST_F(FileIndexServiceTest, MixedSearch) {
   FileInfo tax_label_info(foo_url_, 1024, base::Time());
   FileInfo tax_content_info(bar_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->PutFileInfo(tax_label_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->PutFileInfo(tax_content_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(tax_label_info), OpResults::kSuccess);
+  EXPECT_EQ(PutFileInfo(tax_content_info), OpResults::kSuccess);
 
-  EXPECT_EQ(index_service_->UpdateFile({starred_, tax_content_term},
-                                       tax_content_info.file_url),
+  EXPECT_EQ(UpdateFile({starred_, tax_content_term}, tax_content_info.file_url),
             OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({starred_, tax_label_term},
-                                       tax_label_info.file_url),
+  EXPECT_EQ(UpdateFile({starred_, tax_label_term}, tax_label_info.file_url),
             OpResults::kSuccess);
 
   // Searching with "starred tax" should return both files.
-  EXPECT_THAT(
-      index_service_->Search(Query({Term("", tax_text), Term("", u"starred")})),
-      ContainsFiles(FileInfoList{tax_content_info, tax_label_info}));
+  EXPECT_THAT(Search(Query({Term("", tax_text), Term("", u"starred")})),
+              ContainsFiles(FileInfoList{tax_content_info, tax_label_info}));
   // Searching with with "label:starred content:tax" gives us just the file that
   // has "tax" in content.
-  EXPECT_THAT(index_service_->Search(Query({starred_, tax_content_term})),
+  EXPECT_THAT(Search(Query({starred_, tax_content_term})),
               ContainsFiles(FileInfoList{tax_content_info}));
   // Searching with with "label:starred label:tax" gives us just the file that
   // has "tax" as a label.
-  EXPECT_THAT(index_service_->Search(Query({starred_, tax_label_term})),
+  EXPECT_THAT(Search(Query({starred_, tax_label_term})),
               ContainsFiles(FileInfoList{tax_label_info}));
 }
 
 TEST_F(FileIndexServiceTest, RemoveFile) {
   // Empty remove.
   FileInfo foo_info(foo_url_, 1024, base::Time());
-  EXPECT_EQ(index_service_->RemoveFile(foo_info.file_url), OpResults::kSuccess);
+  EXPECT_EQ(RemoveFile(foo_info.file_url), OpResults::kSuccess);
   // Add foo_info to the index.
-  EXPECT_EQ(index_service_->PutFileInfo(foo_info), OpResults::kSuccess);
-  EXPECT_EQ(index_service_->UpdateFile({starred_}, foo_info.file_url),
-            OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{foo_info}));
-  EXPECT_EQ(index_service_->RemoveFile(foo_info.file_url), OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{}));
+  EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({starred_}, foo_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{foo_info}));
+  EXPECT_EQ(RemoveFile(foo_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{}));
 }
 
 TEST_F(FileIndexServiceTest, RemoveTerms) {
   FileInfo foo_info(foo_url_, 1024, base::Time());
 
-  EXPECT_EQ(index_service_->RemoveTerms({}, foo_url_), OpResults::kSuccess);
+  EXPECT_EQ(RemoveTerms({}, foo_url_), OpResults::kSuccess);
 
   // Add terms for foo_info.
-  EXPECT_EQ(index_service_->PutFileInfo(foo_info), OpResults::kSuccess);
-  EXPECT_EQ(
-      index_service_->UpdateFile({starred_, downloaded_}, foo_info.file_url),
-      OpResults::kSuccess);
-  EXPECT_THAT(index_service_->Search(Query({starred_})),
-              ContainsFiles(FileInfoList{foo_info}));
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              ContainsFiles(FileInfoList{foo_info}));
-
-  EXPECT_EQ(index_service_->RemoveTerms({starred_}, foo_info.file_url),
+  EXPECT_EQ(PutFileInfo(foo_info), OpResults::kSuccess);
+  EXPECT_EQ(UpdateFile({starred_, downloaded_}, foo_info.file_url),
             OpResults::kSuccess);
+  EXPECT_THAT(Search(Query({starred_})), ContainsFiles(FileInfoList{foo_info}));
+  EXPECT_THAT(Search(Query({downloaded_})),
+              ContainsFiles(FileInfoList{foo_info}));
 
-  EXPECT_TRUE(index_service_->Search(Query({starred_})).matches.empty());
-  EXPECT_THAT(index_service_->Search(Query({downloaded_})),
+  EXPECT_EQ(RemoveTerms({starred_}, foo_info.file_url), OpResults::kSuccess);
+
+  EXPECT_TRUE(Search(Query({starred_})).matches.empty());
+  EXPECT_THAT(Search(Query({downloaded_})),
               ContainsFiles(FileInfoList{foo_info}));
 
   // Remove more terms, including one that is no longer there.
-  EXPECT_EQ(
-      index_service_->RemoveTerms({starred_, downloaded_}, foo_info.file_url),
-      OpResults::kSuccess);
+  EXPECT_EQ(RemoveTerms({starred_, downloaded_}, foo_info.file_url),
+            OpResults::kSuccess);
 
-  EXPECT_TRUE(index_service_->Search(Query({starred_})).matches.empty());
-  EXPECT_TRUE(index_service_->Search(Query({downloaded_})).matches.empty());
+  EXPECT_TRUE(Search(Query({starred_})).matches.empty());
+  EXPECT_TRUE(Search(Query({downloaded_})).matches.empty());
 }
 
 TEST_F(FileIndexServiceTest, AddOrUpdateBeforePut) {
-  EXPECT_EQ(index_service_->UpdateFile({starred_}, foo_url_),
-            OpResults::kFileMissing);
-  EXPECT_EQ(index_service_->AugmentFile({starred_}, foo_url_),
-            OpResults::kFileMissing);
+  EXPECT_EQ(UpdateFile({starred_}, foo_url_), OpResults::kFileMissing);
+  EXPECT_EQ(AugmentFile({starred_}, foo_url_), OpResults::kFileMissing);
 }
 
 }  // namespace

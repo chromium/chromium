@@ -27,7 +27,7 @@ class FileIndexImpl : public FileIndex {
   FileIndexImpl& operator=(const FileIndexImpl&) = delete;
 
   // Initializes this index.
-  bool Init() override;
+  OpResults Init() override;
 
   // Overrides base implementation to store file info in the index. This
   // operation must be called before you can update terms associated with

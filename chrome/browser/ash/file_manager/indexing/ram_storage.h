@@ -38,7 +38,7 @@ class RamStorage : public IndexStorage {
       int64_t url_id) const override;
 
   // Posting list support.
-  int32_t AddToPostingList(int64_t agumented_term_id, int64_t url_id) override;
+  int32_t AddToPostingList(int64_t augmented_term_id, int64_t url_id) override;
   int32_t DeleteFromPostingList(int64_t augmented_term_id,
                                 int64_t url_id) override;
 
