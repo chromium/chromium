@@ -163,13 +163,6 @@ LayerTreeImpl::LayerTreeImpl(
       device_scale_factor_(1.f),
       painted_device_scale_factor_(1.f),
       elastic_overscroll_(elastic_overscroll),
-      needs_update_draw_properties_(true),
-      scrollbar_geometries_need_update_(false),
-      needs_full_tree_sync_(true),
-      needs_surface_ranges_sync_(false),
-      next_activation_forces_redraw_(false),
-      handle_visibility_changed_(false),
-      have_scroll_event_handlers_(false),
       event_listener_properties_(),
       top_controls_shown_ratio_(std::move(top_controls_shown_ratio)),
       bottom_controls_shown_ratio_(std::move(bottom_controls_shown_ratio)) {

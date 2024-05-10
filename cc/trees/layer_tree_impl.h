@@ -858,10 +858,35 @@ class CC_EXPORT LayerTreeImpl {
   gfx::DisplayColorSpaces display_color_spaces_;
 
   viz::LocalSurfaceId local_surface_id_from_parent_;
-  bool new_local_surface_id_request_ = false;
+
+  bool new_local_surface_id_request_ : 1 = false;
+
+  bool needs_update_draw_properties_ : 1 = true;
+
+  // True if a scrollbar geometry value has changed. For example, if the scroll
+  // offset changes, scrollbar thumb positions need to be updated.
+  bool scrollbar_geometries_need_update_ : 1 = false;
+
+  // In impl-side painting mode, this is true when the tree may contain
+  // structural differences relative to the active tree.
+  bool needs_full_tree_sync_ : 1 = true;
+
+  bool needs_surface_ranges_sync_ : 1 = false;
+
+  bool next_activation_forces_redraw_ : 1 = false;
+
+  bool handle_visibility_changed_ : 1 = false;
+
+  bool have_scroll_event_handlers_ : 1 = false;
+
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
-  bool device_viewport_rect_changed_ = false;
+  bool device_viewport_rect_changed_ : 1 = false;
+
+  // Whether we have a request to force-send RenderFrameMetadata with the next
+  // frame.
+  bool force_send_metadata_request_ : 1 = false;
+
   gfx::Rect device_viewport_rect_;
 
   scoped_refptr<SyncedElasticOverscroll> elastic_overscroll_;
@@ -913,28 +938,11 @@ class CC_EXPORT LayerTreeImpl {
   // would not be fully covered by opaque content.
   Region unoccluded_screen_space_region_;
 
-  bool needs_update_draw_properties_;
-
-  // True if a scrollbar geometry value has changed. For example, if the scroll
-  // offset changes, scrollbar thumb positions need to be updated.
-  bool scrollbar_geometries_need_update_;
-
-  // In impl-side painting mode, this is true when the tree may contain
-  // structural differences relative to the active tree.
-  bool needs_full_tree_sync_;
-
-  bool needs_surface_ranges_sync_;
-
-  bool next_activation_forces_redraw_;
-
-  bool handle_visibility_changed_;
-
   std::vector<std::unique_ptr<SwapPromise>> swap_promise_list_;
   std::vector<std::unique_ptr<SwapPromise>> pinned_swap_promise_list_;
 
   UIResourceRequestQueue ui_resource_request_queue_;
 
-  bool have_scroll_event_handlers_;
   EventListenerProperties event_listener_properties_
       [static_cast<size_t>(EventListenerClass::kLast) + 1];
 
@@ -948,10 +956,6 @@ class CC_EXPORT LayerTreeImpl {
   scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio_;
 
   std::unique_ptr<PendingPageScaleAnimation> pending_page_scale_animation_;
-
-  // Whether we have a request to force-send RenderFrameMetadata with the next
-  // frame.
-  bool force_send_metadata_request_ = false;
 
   // Tracks the lifecycle which is used for enforcing dependencies between
   // lifecycle states. See: |LayerTreeLifecycle|.
