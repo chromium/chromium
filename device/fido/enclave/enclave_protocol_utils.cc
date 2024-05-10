@@ -172,9 +172,9 @@ AuthenticatorGetAssertionResponseFromValue(const cbor::Value::MapValue& map) {
   const std::vector<uint8_t>* user_handle =
       cborFindBytestring(map, "userHandle");
 
-  AuthenticatorGetAssertionResponse response(std::move(*authenticator_data),
-                                             std::move(*signature),
-                                             /*transport_used=*/std::nullopt);
+  AuthenticatorGetAssertionResponse response(
+      std::move(*authenticator_data), std::move(*signature),
+      /*transport_used=*/FidoTransportProtocol::kInternal);
   if (user_handle) {
     response.user_entity =
         PublicKeyCredentialUserEntity(std::move(*user_handle));
