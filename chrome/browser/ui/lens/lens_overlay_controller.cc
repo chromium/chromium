@@ -36,6 +36,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -853,7 +854,10 @@ void LensOverlayController::OnThumbnailRemoved() {
   thumbnail_uri_.clear();
 }
 
-void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
+void LensOverlayController::OnSuggestionAccepted(
+    const GURL& destination_url,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion) {
   std::string query_text = "";
   std::map<std::string, std::string> additional_query_parameters;
 
@@ -870,7 +874,8 @@ void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
     query_iterator.Advance();
   }
 
-  IssueSearchBoxRequest(query_text, additional_query_parameters);
+  IssueSearchBoxRequest(query_text, match_type, is_zero_prefix_suggestion,
+                        additional_query_parameters);
 }
 
 void LensOverlayController::OnPageBound() {
@@ -1058,15 +1063,29 @@ void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
 
 void LensOverlayController::IssueSearchBoxRequest(
     const std::string& search_box_text,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion,
     std::map<std::string, std::string> additional_query_params) {
   initialization_data_->additional_search_query_params_ =
       additional_query_params;
+
   if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
         search_box_text, initialization_data_->additional_search_query_params_);
   } else {
+    lens::LensOverlaySelectionType multimodal_selection_type;
+    if (is_zero_prefix_suggestion) {
+      multimodal_selection_type = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
+    } else if (match_type ==
+               AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED) {
+      multimodal_selection_type = lens::MULTIMODAL_SEARCH;
+    } else {
+      multimodal_selection_type = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
+    }
+
     lens_overlay_query_controller_->SendMultimodalRequest(
         initialization_data_->selected_region_.Clone(), search_box_text,
+        multimodal_selection_type,
         initialization_data_->additional_search_query_params_);
   }
   results_side_panel_coordinator_->RegisterEntryAndShow();

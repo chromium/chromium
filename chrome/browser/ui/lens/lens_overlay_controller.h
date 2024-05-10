@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -472,7 +473,9 @@ class LensOverlayController : public LensSearchboxClient,
   const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const override;
   void OnThumbnailRemoved() override;
-  void OnSuggestionAccepted(const GURL& destination_url) override;
+  void OnSuggestionAccepted(const GURL& destination_url,
+                            AutocompleteMatchType::Type match_type,
+                            bool is_zero_prefix_suggestion) override;
   void OnPageBound() override;
 
   // Called when the associated tab enters the foreground.
@@ -508,6 +511,8 @@ class LensOverlayController : public LensSearchboxClient,
   // the request to the query controller.
   void IssueSearchBoxRequest(
       const std::string& search_box_text,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
       std::map<std::string, std::string> additional_query_params);
 
   // Calls CloseUI() asynchronously.

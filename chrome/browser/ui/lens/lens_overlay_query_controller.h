@@ -16,6 +16,7 @@
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_interaction_request_metadata.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -87,6 +88,7 @@ class LensOverlayQueryController {
   void SendMultimodalRequest(
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
+      lens::LensOverlaySelectionType multimodal_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
 
  protected:
@@ -125,12 +127,19 @@ class LensOverlayQueryController {
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
 
+  // Adds the visual search interaction log data param to the search query
+  // params.
+  std::map<std::string, std::string> AddVisualSearchInteractionLogData(
+      std::map<std::string, std::string> additional_search_query_params,
+      lens::LensOverlaySelectionType selection_type);
+
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
+      lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params);
 
   // Fetches the endpoint using the initial image data.
@@ -162,6 +171,7 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
+      lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<lens::ImageCrop> image_crop);
 
@@ -172,6 +182,7 @@ class LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::optional<std::string> query_text,
       std::optional<std::string> object_id,
+      lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayClusterInfo cluster_info);
@@ -252,6 +263,10 @@ class LensOverlayQueryController {
 
   // The request counter, used to make sure requests are not sent out of order.
   int request_counter_ = 0;
+
+  // Whether or not the parent interaction query has been sent. This should
+  // always be the first interaction in a query flow.
+  bool parent_query_sent_ = false;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

@@ -58,6 +58,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -276,7 +277,9 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
   if (lens_searchbox_client_) {
-    lens_searchbox_client_->OnSuggestionAccepted(destination_url);
+    lens_searchbox_client_->OnSuggestionAccepted(
+        destination_url, match.type,
+        match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
     return;
   }
   web_contents_->OpenURL(

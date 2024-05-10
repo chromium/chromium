@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_
 
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -34,7 +35,9 @@ class LensSearchboxClient {
   virtual void OnThumbnailRemoved() = 0;
 
   // Called when a suggestion is accepted. Should open the given URL.
-  virtual void OnSuggestionAccepted(const GURL& destination_url) = 0;
+  virtual void OnSuggestionAccepted(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion) = 0;
 
   // Called when the handler binds to the remote page, aka when SetPage is set.
   virtual void OnPageBound() = 0;

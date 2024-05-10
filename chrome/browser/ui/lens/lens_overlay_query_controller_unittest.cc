@@ -4,6 +4,7 @@
 
 #include "lens_overlay_query_controller.h"
 
+#include "base/base64url.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -21,6 +22,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
@@ -52,6 +54,9 @@ constexpr char kSearchContextParamKey[] = "mactx";
 
 // The timestamp param.
 constexpr char kStartTimeQueryParam[] = "qsubts";
+
+// The visual search interaction log data param.
+constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
 
 // The encoded search context for the test page and title.
 constexpr char kTestEncodedSearchContext[] =
@@ -146,6 +151,21 @@ class LensOverlayQueryControllerTest : public testing::Test {
     bitmap.allocN32Pixels(width, height);
     bitmap.eraseColor(SK_ColorGREEN);
     return bitmap;
+  }
+
+  lens::LensOverlaySelectionType GetSelectionTypeFromUrl(
+      std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string vsint_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(
+        url, kVisualSearchInteractionDataQueryParameterKey, &vsint_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        vsint_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::LensOverlayVisualSearchInteractionData proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto.log_data().user_selection_data().selection_type();
   }
 
  protected:
@@ -253,6 +273,8 @@ TEST_F(LensOverlayQueryControllerTest,
                 .language(),
             kLanguage);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::REGION_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(query_controller.sent_objects_request_.request_context()
@@ -331,6 +353,7 @@ TEST_F(LensOverlayQueryControllerTest,
   region->coordinate_type =
       lens::mojom::CenterRotatedBox_CoordinateType::kImage;
   query_controller.SendMultimodalRequest(std::move(region), kTestQueryText,
+                                         lens::MULTIMODAL_SEARCH,
                                          additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -350,6 +373,8 @@ TEST_F(LensOverlayQueryControllerTest,
                 .height(),
             100);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::MULTIMODAL_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(query_controller.sent_objects_request_.request_context()
@@ -446,6 +471,8 @@ TEST_F(LensOverlayQueryControllerTest,
                 .height(),
             100);
   ASSERT_TRUE(url_response_future.Get().has_url());
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::REGION_SEARCH);
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
   ASSERT_EQ(query_controller.sent_objects_request_.request_context()
