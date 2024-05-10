@@ -436,7 +436,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         focusNodeId = this.getHighlightedAncestorId_(focusNode);
         adjustedFocusOffset += this.getOffsetInAncestor(focusNode);
       }
-      assert(anchorNodeId && focusNodeId, 'anchor or focus node is undefined');
+      if (!anchorNodeId || !focusNodeId) {
+        return;
+      }
+
       chrome.readingMode.onSelectionChange(
           anchorNodeId, adjustedAnchorOffset, focusNodeId, adjustedFocusOffset);
       // If there's been a selection, clear the current

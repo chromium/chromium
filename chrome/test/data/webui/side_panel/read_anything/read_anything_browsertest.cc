@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       DISABLED_UpdateContentSelectionWithHighlights) {
+                       UpdateContentSelectionWithHighlights) {
   RunSidePanelTest(
       "side_panel/read_anything/update_content_selection_with_highlights.js",
       "mocha.run()");
