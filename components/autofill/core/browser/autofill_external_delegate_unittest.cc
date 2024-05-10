@@ -1943,7 +1943,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
-struct GetLastServerTypesToFillForSectionTestParams {
+struct GetLastFieldTypesToFillForSectionTestParams {
   const std::optional<FieldTypeSet>
       expected_last_field_types_to_fill_for_section;
   const SuggestionType type;
@@ -1955,16 +1955,16 @@ struct GetLastServerTypesToFillForSectionTestParams {
 class GetLastFieldTypesToFillUnitTest
     : public AutofillExternalDelegateUnitTest,
       public ::testing::WithParamInterface<
-          GetLastServerTypesToFillForSectionTestParams> {};
+          GetLastFieldTypesToFillForSectionTestParams> {};
 
-const GetLastServerTypesToFillForSectionTestParams
-    kGetLastServerTypesToFillForSectionTesCases[] = {
+const GetLastFieldTypesToFillForSectionTestParams
+    kGetLastFieldTypesToFillForSectionTesCases[] = {
         // Tests that when `SuggestionType::kAddressEntry` is accepted and
         // therefore the user wanted to fill the whole form. Autofill
         // stores the last targeted fields as `kAllFieldTypes`.
         {.expected_last_field_types_to_fill_for_section = kAllFieldTypes,
          .type = SuggestionType::kAddressEntry,
-         .test_name = "_AllServerFields"},
+         .test_name = "_AllFields"},
         // Tests that when `SuggestionType::kAddressFieldByFieldFilling`
         // is accepted and therefore the user wanted to fill a single field.
         // The last targeted fields is stored as the triggering field type
@@ -1995,7 +1995,7 @@ const GetLastServerTypesToFillForSectionTestParams
 // Tests that the expected set of last field types to fill is stored.
 TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   IssueOnQuery();
-  const GetLastServerTypesToFillForSectionTestParams& params = GetParam();
+  const GetLastFieldTypesToFillForSectionTestParams& params = GetParam();
   base::test::ScopedFeatureList features(
       features::kAutofillGranularFillingAvailable);
 
@@ -2025,7 +2025,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
 INSTANTIATE_TEST_SUITE_P(
     AutofillExternalDelegateUnitTest,
     GetLastFieldTypesToFillUnitTest,
-    ::testing::ValuesIn(kGetLastServerTypesToFillForSectionTesCases),
+    ::testing::ValuesIn(kGetLastFieldTypesToFillForSectionTesCases),
     [](const ::testing::TestParamInfo<
         GetLastFieldTypesToFillUnitTest::ParamType>& info) {
       return info.param.test_name;

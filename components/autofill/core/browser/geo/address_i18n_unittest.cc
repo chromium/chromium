@@ -102,7 +102,7 @@ INSTANTIATE_TEST_SUITE_P(AddressI18nTest,
                              FieldTypeUnidirectionalConversionsTestCase{
                                  ADDRESS_HOME_LINE2, STREET_ADDRESS}));
 
-TEST(AddressI18nTest, UnconvertableServerFields) {
+TEST(AddressI18nTest, UnconvertableFields) {
   EXPECT_FALSE(FieldForType(PHONE_HOME_NUMBER, nullptr));
   EXPECT_FALSE(FieldForType(EMAIL_ADDRESS, nullptr));
 }

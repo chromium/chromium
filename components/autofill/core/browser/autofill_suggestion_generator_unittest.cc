@@ -1633,9 +1633,8 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 }
 
 // Note that only full form filling has an icon.
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllFields_FullForm) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(), kAllFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
 

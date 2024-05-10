@@ -11,7 +11,7 @@ namespace autofill {
 
 namespace {
 
-FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
+FieldTypeSet GetFieldTypesForFieldGroup(FieldTypeGroup group) {
   switch (group) {
     case FieldTypeGroup::kName:
       return GetFieldTypesOfGroup(FieldTypeGroup::kName);
@@ -116,7 +116,7 @@ FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     case FillingMethod::kGroupFillingAddress:
     case FillingMethod::kGroupFillingEmail:
     case FillingMethod::kGroupFillingPhoneNumber:
-      return GetServerFieldsForFieldGroup(
+      return GetFieldTypesForFieldGroup(
           GroupTypeOfFieldType(triggering_field_type));
     case FillingMethod::kFullForm:
       return kAllFieldTypes;

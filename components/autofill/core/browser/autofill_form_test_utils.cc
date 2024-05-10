@@ -140,8 +140,9 @@ FormData GetFormData(const FormDescription& d) {
   f.name = d.name;
   f.host_frame = d.host_frame.value_or(MakeLocalFrameToken());
   f.renderer_id = d.renderer_id.value_or(MakeFormRendererId());
-  if (d.main_frame_origin)
+  if (d.main_frame_origin) {
     f.main_frame_origin = *d.main_frame_origin;
+  }
   f.fields.reserve(d.fields.size());
   for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = GetFormFieldData(dd);
