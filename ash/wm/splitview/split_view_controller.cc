@@ -2289,6 +2289,8 @@ void SplitViewController::OnWindowSnapped(
       !RootWindowController::ForWindow(window)->split_view_overview_session() &&
       snap_action_source !=
           WindowSnapActionSource::kSnapByClamshellTabletTransition) {
+    base::RecordAction(
+        base::UserMetricsAction("SnapGroups_SkipPartialOverviewAndSnapGroup"));
     EndSplitView(EndReason::kNormal);
     return;
   }

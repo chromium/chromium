@@ -212,11 +212,15 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   aura::Window* to_be_moved_window = window == window1_ ? window2_ : window1_;
   bool did_parent_change = false;
   if (window->GetRootWindow() != to_be_moved_window->GetRootWindow()) {
+    base::RecordAction(
+        base::UserMetricsAction("SnapGroups_MoveSnapGroupToDisplay"));
     window_util::MoveWindowToDisplay(
         to_be_moved_window,
         display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
     did_parent_change = true;
   } else if (parent != to_be_moved_window->parent()) {
+    base::RecordAction(
+        base::UserMetricsAction("SnapGroups_MoveSnapGroupToDesk"));
     parent->AddChild(to_be_moved_window);
     did_parent_change = true;
   }
@@ -256,8 +260,7 @@ aura::Window* SnapGroup::GetRootWindow() {
 
 void SnapGroup::StartResizeWithDivider(const gfx::Point& location_in_screen) {
   // `SplitViewDivider` will do the work to start resizing.
-  // TODO(sophiewen): Maybe start performant resizing and add presentation time
-  // metrics.
+  base::RecordAction(base::UserMetricsAction("SnapGroups_ResizeSnapGroup"));
 }
 
 void SnapGroup::UpdateResizeWithDivider(const gfx::Point& location_in_screen) {

@@ -37439,6 +37439,24 @@ should be able to be added at any place in this file.
   <description>Recorded when a snap group is added.</description>
 </action>
 
+<action name="SnapGroups_MoveSnapGroupToDesk">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a snap group is moved to another desk, which may be via the
+    keyboard shortcut, dragging a group item in overview, or the context menu.
+  </description>
+</action>
+
+<action name="SnapGroups_MoveSnapGroupToDisplay">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a snap group is moved to another display, which may be via the
+    keyboard shortcut or by dragging a group item in overview.
+  </description>
+</action>
+
 <action name="SnapGroups_RecallSnapGroup">
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
@@ -37454,6 +37472,23 @@ should be able to be added at any place in this file.
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <description>Recorded when a snap group is removed.</description>
+</action>
+
+<action name="SnapGroups_ResizeSnapGroup">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>Recorded when a snap group is being resized.</description>
+</action>
+
+<action name="SnapGroups_SkipPartialOverviewAndSnapGroup">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when a window is snapped without starting partial overview or
+    getting added to a snap group. This will typically occur if the user snapped
+    two windows side-by-side after skipping partial overview, after which we
+    won't create a snap group.
+  </description>
 </action>
 
 <action name="SnapGroups_SnapDirect">

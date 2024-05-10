@@ -7228,4 +7228,40 @@ TEST_F(SnapGroupHistogramTest, RecallSnapGroupUserAction) {
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
 }
 
+TEST_F(SnapGroupHistogramTest, SkipPartialOverviewAndSnapGroup) {
+  UpdateDisplay("800x600");
+  base::UserActionTester user_action_tester;
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+
+  // Snap using the keyboard shortcut won't record.
+  PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_ALT_DOWN);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "SnapGroups_SkipPartialOverviewAndSnapGroup"),
+            0);
+
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Drag out `w1` from the group, which will break the group, then re-snap it.
+  // This will skip both partial overview and snap group creation since `w2` is
+  // an opposite snapped window.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(GetDragPoint(w1.get()));
+  event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+  ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "SnapGroups_SkipPartialOverviewAndSnapGroup"),
+            1);
+}
+
 }  // namespace ash
