@@ -94,9 +94,9 @@ PdfViewerStreamManager::StreamInfo::StreamInfo(
 
 PdfViewerStreamManager::StreamInfo::~StreamInfo() = default;
 
-void PdfViewerStreamManager::StreamInfo::SetExtensionNavigated() {
-  CHECK(!did_extension_navigate_);
-  did_extension_navigate_ = true;
+bool PdfViewerStreamManager::StreamInfo::DidPdfExtensionStartNavigation()
+    const {
+  return !!extension_host_frame_tree_node_id_;
 }
 
 bool PdfViewerStreamManager::StreamInfo::DidPdfContentNavigate() const {
@@ -428,7 +428,7 @@ void PdfViewerStreamManager::DidFinishNavigation(
   // host has already navigated, to avoid multiple about:blanks navigating to
   // the extension URL.
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!stream_info || stream_info->did_extension_navigate()) {
+  if (!stream_info || stream_info->DidPdfExtensionStartNavigation()) {
     return;
   }
 
@@ -486,8 +486,6 @@ void PdfViewerStreamManager::NavigateToPdfExtensionUrl(
   params.frame_tree_node_id = extension_host_frame_tree_node_id;
   params.source_site_instance = source_site_instance;
   web_contents()->GetController().LoadURLWithParams(params);
-
-  stream_info->SetExtensionNavigated();
 }
 
 PdfViewerStreamManager::StreamInfo*

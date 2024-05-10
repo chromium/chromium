@@ -211,8 +211,6 @@ class PdfViewerStreamManager
 
     extensions::StreamContainer* stream() { return stream_.get(); }
 
-    bool did_extension_navigate() const { return did_extension_navigate_; }
-
     const mojo::AssociatedRemote<
         extensions::mojom::MimeHandlerViewContainerManager>&
     mime_handler_view_container_manager() const {
@@ -228,7 +226,7 @@ class PdfViewerStreamManager
 
     int32_t instance_id() const { return instance_id_; }
 
-    void SetExtensionNavigated();
+    bool DidPdfExtensionStartNavigation() const;
 
     bool DidPdfContentNavigate() const;
 
@@ -262,11 +260,6 @@ class PdfViewerStreamManager
     // A container for the PDF stream. Holds data needed to load the PDF in the
     // PDF viewer.
     const std::unique_ptr<extensions::StreamContainer> stream_;
-
-    // True if the extension host has navigated to the PDF extension URL. Used
-    // to avoid navigating multiple about:blank child hosts to the PDF extension
-    // URL.
-    bool did_extension_navigate_ = false;
 
     // The container manager used to provide postMessage support.
     mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
