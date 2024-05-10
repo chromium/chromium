@@ -40,4 +40,7 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
                                    const std::string& case_id,
                                    base::Time timestamp);
 
+// Returns the string representation of support tool errors.
+std::string SupportToolErrorsToString(const std::set<SupportToolError>& errors);
+
 #endif  // CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_

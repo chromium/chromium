@@ -151,15 +151,6 @@ std::set<redaction::PIIType> GetPiiTypes(
   return pii_types;
 }
 
-std::string ErrorsToString(const std::set<SupportToolError>& errors) {
-  std::vector<std::string_view> error_messages;
-  error_messages.reserve(errors.size());
-  for (const auto& error : errors) {
-    error_messages.push_back(error.error_message);
-  }
-  return base::JoinString(error_messages, ", ");
-}
-
 // Returns the upload_parameters string for LogUploadEvent. This will be used as
 // request metadata for the log upload request to the File Storage Server.
 // Contains File-Type, Command-ID and Filename fields.
@@ -382,7 +373,7 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
   if (!errors.empty()) {
     SYSLOG(ERROR) << "Got errors when collecting data for FETCH_SUPPORT_PACKET "
                      "device command: "
-                  << ErrorsToString(errors);
+                  << SupportToolErrorsToString(errors);
   }
 
   base::FilePath target_file = GetFilepathToExport(

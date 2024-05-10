@@ -346,3 +346,13 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
       filename + base::UnlocalizedTimeFormatWithPattern(
                      timestamp, "'UTC'yyyyMMdd_HHmm", icu::TimeZone::getGMT()));
 }
+
+std::string SupportToolErrorsToString(
+    const std::set<SupportToolError>& errors) {
+  std::vector<std::string_view> error_messages;
+  error_messages.reserve(errors.size());
+  for (const auto& error : errors) {
+    error_messages.push_back(error.error_message);
+  }
+  return base::JoinString(error_messages, ", ");
+}
