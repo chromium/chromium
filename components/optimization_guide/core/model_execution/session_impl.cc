@@ -464,6 +464,8 @@ void SessionImpl::OnRequestSafetyResult(
   bool is_unsafe = on_device_state_->opts.safety_cfg.IsRequestUnsafe(
       request_check_idx, safety_info);
   bool is_unsupported_language =
+      !on_device_state_->opts.safety_cfg
+           .ShouldIgnoreLanguageResultForRequestCheck(request_check_idx) &&
       on_device_state_->opts.safety_cfg
           .IsTextInUnsupportedOrUndeterminedLanguage(safety_info);
 
@@ -985,6 +987,11 @@ std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
 
 bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
   return proto_->request_check(check_idx).check_language_only();
+}
+
+bool SafetyConfig::ShouldIgnoreLanguageResultForRequestCheck(
+    int check_idx) const {
+  return proto_->request_check(check_idx).ignore_language_result();
 }
 
 bool SafetyConfig::IsRequestUnsafe(

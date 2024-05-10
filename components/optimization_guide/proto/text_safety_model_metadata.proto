@@ -43,6 +43,9 @@ message RequestSafetyCheck {
 
   // Whether to only perform the allowed language check.
   optional bool check_language_only = 3;
+
+  // Whether to ignore the language result of the safety check.
+  optional bool ignore_language_result = 4;
 }
 
 message RawOutputCheck {

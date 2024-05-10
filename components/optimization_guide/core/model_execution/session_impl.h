@@ -67,6 +67,9 @@ class SafetyConfig final {
   // Whether this check is only for allowed languages.
   bool IsRequestCheckLanguageOnly(int check_idx) const;
 
+  // Whether the language result for this check should be ignored.
+  bool ShouldIgnoreLanguageResultForRequestCheck(int check_idx) const;
+
   // Evaluates scores for a request safety check.
   // check_idx must be < NumRequestChecks().
   bool IsRequestUnsafe(
