@@ -275,7 +275,9 @@ public class MemoryPressureMonitor {
         } else if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
             // Don't notify on TRIM_MEMORY_UI_HIDDEN, since this class only
             // dispatches actionable memory pressure signals to native.
-            return MemoryPressureLevel.MODERATE;
+            return MemoryPressureListener.isTrimMemoryBackgroundCritical()
+                    ? MemoryPressureLevel.CRITICAL
+                    : MemoryPressureLevel.MODERATE;
         }
         return null;
     }

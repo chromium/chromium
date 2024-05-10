@@ -106,6 +106,10 @@ BASE_FEATURE(kOnPreFreezeMemoryTrim,
              "OnPreFreezeMemoryTrim",
              FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIsTrimMemoryBackgroundCritical,
+             "IsTrimMemoryBackgroundCritical",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
     : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
                             SDK_VERSION_U) {}
@@ -312,6 +316,12 @@ bool PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim() {
 bool PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim() {
   return SupportsModernTrim() &&
          base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim);
+}
+
+// static
+bool PreFreezeBackgroundMemoryTrimmer::IsTrimMemoryBackgroundCritical() {
+  return SupportsModernTrim() &&
+         base::FeatureList::IsEnabled(kIsTrimMemoryBackgroundCritical);
 }
 
 // static

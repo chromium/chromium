@@ -109,6 +109,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static bool SupportsModernTrim();
   static bool ShouldUseModernTrim();
+  static bool IsTrimMemoryBackgroundCritical();
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;

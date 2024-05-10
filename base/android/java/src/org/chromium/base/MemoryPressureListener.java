@@ -108,6 +108,11 @@ public class MemoryPressureListener {
         MemoryPressureListenerJni.get().onPreFreeze();
     }
 
+    public static boolean isTrimMemoryBackgroundCritical() {
+        if (!LibraryLoader.getInstance().isInitialized()) return false;
+        return MemoryPressureListenerJni.get().isTrimMemoryBackgroundCritical();
+    }
+
     /**
      * Used by applications to simulate a memory pressure signal. By throwing certain intent
      * actions.
@@ -151,5 +156,7 @@ public class MemoryPressureListener {
         void onMemoryPressure(@MemoryPressureLevel int pressure);
 
         void onPreFreeze();
+
+        boolean isTrimMemoryBackgroundCritical();
     }
 }
