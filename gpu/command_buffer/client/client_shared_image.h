@@ -218,6 +218,16 @@ class GPU_EXPORT ClientSharedImage
 
   const SyncToken& creation_sync_token() const { return creation_sync_token_; }
 
+  // Note that this adds an ownership edge to mailbox using mailbox as id.
+  // ScopedMapping::OnMemoryDump() uses underlying GpuMemoryBuffer's Id as
+  // ownership edge which is broken since GMB inside mappableSI doesn't have
+  // unique ids anymore. ScopedMapping::OnMemoryDump() should be removed and
+  // replaced with this method.
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      int importance);
+
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
