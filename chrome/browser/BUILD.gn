@@ -398,6 +398,8 @@ static_library("browser") {
     "dips/dips_cleanup_service_factory.h",
     "dips/dips_database.cc",
     "dips/dips_database.h",
+    "dips/dips_database_migrator.cc",
+    "dips/dips_database_migrator.h",
     "dips/dips_redirect_info.cc",
     "dips/dips_redirect_info.h",
     "dips/dips_service.cc",

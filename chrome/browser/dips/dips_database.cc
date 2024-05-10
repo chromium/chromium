@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_database_migrator.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/common/content_features.h"
 #include "sql/database.h"
@@ -39,7 +40,6 @@ BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
              "DisableExclusiveLockingOnDipsDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr char kPrepopulatedKey[] = "prepopulated";
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";
 
 std::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
@@ -91,14 +91,6 @@ void BindTimesOrNull(sql::Statement& statement,
   }
 }
 
-// Version number of the database.
-// NOTE: When changing the version, add a new golden file for the new version
-// and a test to verify that Init() works with it.
-const int kCurrentVersionNumber = 6;
-
-// This number represents the min database version number with which this chrome
-// code will be compatible with.
-const int kCompatibleVersionNumber = 6;
 }  // namespace
 
 // See comments at declaration of these variables in dips_database.h
@@ -227,258 +219,6 @@ bool DIPSDatabase::InitTables() {
   return db_->Execute(kBouncesSql) && db_->Execute(kPopupsSql);
 }
 
-bool DIPSDatabase::MigrateToVersion2() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_->HasActiveTransactions());
-  // First make a new table that allows for null values in the timestamps
-  // columns.
-  static constexpr char kNewTableSql[] =  // clang-format off
-      "CREATE TABLE new_bounces("
-          "site TEXT PRIMARY KEY NOT NULL,"
-          "first_site_storage_time INTEGER,"
-          "last_site_storage_time INTEGER,"
-          "first_user_interaction_time INTEGER,"
-          "last_user_interaction_time INTEGER,"
-          "first_stateful_bounce_time INTEGER,"
-          "last_stateful_bounce_time INTEGER,"
-          "first_stateless_bounce_time INTEGER,"
-          "last_stateless_bounce_time INTEGER)";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kNewTableSql));
-  if (!db_->Execute(kNewTableSql)) {
-    return false;
-  }
-
-  static constexpr char kCopyEverythingSql[] =
-      "INSERT INTO new_bounces "
-      "SELECT * FROM bounces";
-  DCHECK(db_->IsSQLValid(kCopyEverythingSql));
-  if (!db_->Execute(kCopyEverythingSql)) {
-    return false;
-  }
-
-  const std::array<std::string, 8> timestamp_columns{
-      "first_site_storage_time",     "last_site_storage_time",
-      "first_user_interaction_time", "last_user_interaction_time",
-      "first_stateless_bounce_time", "last_stateless_bounce_time",
-      "first_stateful_bounce_time",  "last_stateful_bounce_time"};
-
-  for (const std::string& column : timestamp_columns) {
-    std::string command = base::StringPrintf(
-        "UPDATE new_bounces "
-        "SET %s=NULL "
-        "WHERE %s=0 ",
-        column.c_str(), column.c_str());
-    sql::Statement s_nullify(db_->GetUniqueStatement(command.c_str()));
-
-    if (!s_nullify.Run()) {
-      return false;
-    }
-  }
-
-  // Replace the first_stateless_bounce with the first bounce overall.
-  // We have to first case on whether either of the bounce fields are NULL,
-  // since MIN will return NULL if either are NULL.
-  static constexpr char kReplaceFirstStatelessBounceSql[] =  // clang-format off
-    "UPDATE new_bounces "
-      "SET first_stateless_bounce_time = "
-        "CASE "
-          "WHEN first_stateful_bounce_time IS NULL "
-            "THEN first_stateless_bounce_time "
-          "WHEN first_stateless_bounce_time IS NULL "
-            "THEN first_stateful_bounce_time "
-          "ELSE MIN(first_stateful_bounce_time,first_stateless_bounce_time) "
-        "END";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kReplaceFirstStatelessBounceSql));
-  if (!db_->Execute(kReplaceFirstStatelessBounceSql)) {
-    return false;
-  }
-
-  // Replace the last_stateless_bounce with the last bounce overall.
-  // We have to first case on whether either of the bounce fields are NULL,
-  // since MAX will return NULL if either are NULL.
-  static constexpr char kReplaceLastStatelessBounceSql[] =  // clang-format off
-      "UPDATE new_bounces "
-        "SET last_stateless_bounce_time = "
-          "CASE "
-            "WHEN last_stateful_bounce_time IS NULL "
-              "THEN last_stateless_bounce_time "
-            "WHEN last_stateless_bounce_time IS NULL "
-              "THEN last_stateful_bounce_time "
-            "ELSE MAX(last_stateful_bounce_time,last_stateless_bounce_time) "
-          "END";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kReplaceLastStatelessBounceSql));
-  if (!db_->Execute(kReplaceLastStatelessBounceSql)) {
-    return false;
-  }
-  // Rename this column to be reflect its new purpose.
-  static constexpr char kRenameFirstStatelessBounceTimeSql[] =
-      "ALTER TABLE new_bounces RENAME COLUMN first_stateless_bounce_time TO "
-      "first_bounce_time";
-  DCHECK(db_->IsSQLValid(kRenameFirstStatelessBounceTimeSql));
-  if (!db_->Execute(kRenameFirstStatelessBounceTimeSql)) {
-    return false;
-  }
-
-  // Rename this column to be reflect its new purpose.
-  static constexpr char kRenameLastStatelessBounceTimeSql[] =
-      "ALTER TABLE new_bounces RENAME COLUMN last_stateless_bounce_time TO "
-      "last_bounce_time";
-  if (!db_->Execute(kRenameLastStatelessBounceTimeSql)) {
-    return false;
-  }
-
-  // Replace the old `bounces` table with the new one.
-  static constexpr char kDropOldTableSql[] = "DROP TABLE bounces";
-  if (!db_->Execute(kDropOldTableSql)) {
-    return false;
-  }
-
-  static constexpr char kReplaceOldTable[] =
-      "ALTER TABLE new_bounces RENAME TO bounces";
-  if (!db_->Execute(kReplaceOldTable)) {
-    return false;
-  }
-
-  return meta_table_.SetVersionNumber(2);
-}
-
-bool DIPSDatabase::MigrateToVersion3() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_->HasActiveTransactions());
-
-  return db_->Execute(
-             "ALTER TABLE bounces ADD COLUMN first_web_authn_assertion_time "
-             "INTEGER DEFAULT NULL") &&
-         db_->Execute(
-             "ALTER TABLE bounces ADD COLUMN last_web_authn_assertion_time "
-             "INTEGER DEFAULT NULL") &&
-         meta_table_.SetVersionNumber(3);
-}
-
-bool DIPSDatabase::MigrateToVersion4() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_->HasActiveTransactions());
-
-  static constexpr char kCreatePopupsTableSql[] =  // clang-format off
-    "CREATE TABLE popups("
-      "opener_site TEXT NOT NULL,"
-      "popup_site TEXT NOT NULL,"
-      "access_id INT64,"
-      "last_popup_time INTEGER,"
-      "PRIMARY KEY (`opener_site`,`popup_site`)"
-    ")";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kCreatePopupsTableSql));
-
-  return db_->Execute(kCreatePopupsTableSql) && meta_table_.SetVersionNumber(4);
-}
-
-bool DIPSDatabase::MigrateToVersion5() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_->HasActiveTransactions());
-
-  return db_->Execute(
-             "ALTER TABLE popups ADD COLUMN is_current_interaction "
-             "BOOLEAN DEFAULT NULL") &&
-         meta_table_.SetVersionNumber(5);
-}
-
-bool DIPSDatabase::MigrateToVersion6() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_->HasActiveTransactions());
-
-  static constexpr char kCreateConfigTableSql[] =  // clang-format off
-    "CREATE TABLE config("
-      "key TEXT NOT NULL,"
-      "int_value INTEGER,"
-      "PRIMARY KEY (`key`)"
-    ")";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kCreateConfigTableSql));
-
-  if (!db_->Execute(kCreateConfigTableSql)) {
-    return false;
-  }
-
-  if (int result; meta_table_.GetValue(kPrepopulatedKey, &result)) {
-    static constexpr char kInsertValueSql[] =
-        "INSERT OR REPLACE INTO config(key,int_value) VALUES(?,?)";
-    DCHECK(db_->IsSQLValid(kInsertValueSql));
-    sql::Statement statement(db_->GetUniqueStatement(kInsertValueSql));
-    statement.BindString(0, kPrepopulatedKey);
-    statement.BindInt64(1, result);
-
-    if (!statement.Run()) {
-      return false;
-    }
-
-    if (!meta_table_.DeleteKey(kPrepopulatedKey)) {
-      return false;
-    }
-  }
-
-  return meta_table_.SetVersionNumber(6);
-}
-
-bool DIPSDatabase::MigrateAsNeeded() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (int next_version = meta_table_.GetVersionNumber() + 1;
-       next_version <= kCurrentVersionNumber; next_version++) {
-    switch (next_version) {
-      case 2:
-        if (!MigrateToVersion2()) {
-          return false;
-        }
-        if (!meta_table_.SetCompatibleVersionNumber(
-                std::min(next_version, kCompatibleVersionNumber))) {
-          return false;
-        }
-        break;
-      case 3:
-        if (!MigrateToVersion3()) {
-          return false;
-        }
-        if (!meta_table_.SetCompatibleVersionNumber(
-                std::min(next_version, kCompatibleVersionNumber))) {
-          return false;
-        }
-        break;
-      case 4:
-        if (!MigrateToVersion4()) {
-          return false;
-        }
-        if (!meta_table_.SetCompatibleVersionNumber(
-                std::min(next_version, kCompatibleVersionNumber))) {
-          return false;
-        }
-        break;
-      case 5:
-        if (!MigrateToVersion5()) {
-          return false;
-        }
-        if (!meta_table_.SetCompatibleVersionNumber(
-                std::min(next_version, kCompatibleVersionNumber))) {
-          return false;
-        }
-        break;
-      case 6:
-        if (!MigrateToVersion6()) {
-          return false;
-        }
-        if (!meta_table_.SetCompatibleVersionNumber(
-                std::min(next_version, kCompatibleVersionNumber))) {
-          return false;
-        }
-        break;
-    }
-  }
-  return true;
-}
-
 sql::InitStatus DIPSDatabase::InitImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -492,7 +232,7 @@ sql::InitStatus DIPSDatabase::InitImpl() {
 
   if (!sql::MetaTable::RazeIfIncompatible(
           db_.get(), sql::MetaTable::kNoLowestSupportedVersion,
-          kCurrentVersionNumber)) {
+          kLatestSchemaVersion)) {
     return sql::INIT_FAILURE;
   }
 
@@ -505,13 +245,15 @@ sql::InitStatus DIPSDatabase::InitImpl() {
   // Check if the table already exists to update schema if needed.
   bool table_already_exists = sql::MetaTable::DoesTableExist(db_.get());
   // Create the tables.
-  if (!meta_table_.Init(db_.get(), kCurrentVersionNumber,
-                        kCompatibleVersionNumber)) {
+  if (!meta_table_.Init(db_.get(), kLatestSchemaVersion,
+                        kMinCompatibleSchemaVersion)) {
     db_->Close();
     return sql::INIT_FAILURE;
   }
 
-  if (table_already_exists ? !MigrateAsNeeded() : !InitTables()) {
+  if (table_already_exists
+          ? !MigrateDIPSSchemaToLatestVersion(*(db_.get()), meta_table_)
+          : !InitTables()) {
     return sql::INIT_FAILURE;
   }
 
