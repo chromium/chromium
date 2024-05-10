@@ -921,9 +921,6 @@ void DownloadBubbleRowView::UpdateProgressBar() {
   if (info_->has_progress_bar()) {
     if (!progress_bar_->GetVisible()) {
       progress_bar_->SetVisible(true);
-      // Need for a few cases, for example if the view is the only one in a
-      // partial view.
-      navigation_handler_->ResizeDialog();
     }
     progress_bar_->SetValue(
         info_->is_progress_bar_looping()
@@ -933,7 +930,6 @@ void DownloadBubbleRowView::UpdateProgressBar() {
   } else if (progress_bar_->GetVisible()) {
     // Hide the progress bar.
     progress_bar_->SetVisible(false);
-    navigation_handler_->ResizeDialog();
   }
 }
 
@@ -1225,7 +1221,6 @@ void DownloadBubbleRowView::OnInfoChanged() {
   // Resize is needed because the height of the row can change when the text
   // (primary_label_ or secondary_label_) is updated.
   PreferredSizeChanged();
-  navigation_handler_->ResizeDialog();
 }
 
 void DownloadBubbleRowView::SimulateMainButtonClickForTesting(

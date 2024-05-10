@@ -689,8 +689,6 @@ void DownloadBubbleSecurityView::ClearWideFields() {
   secondary_styled_label_->PreferredSizeChanged();
 
   title_->SetText(std::u16string());
-
-  PreferredSizeChanged();
 }
 
 void DownloadBubbleSecurityView::RecordWarningActionTime(
@@ -727,8 +725,6 @@ void DownloadBubbleSecurityView::UpdateViews() {
   UpdateSecondaryIconAndText();
   UpdateProgressBar();
   UpdatePasswordPrompt();
-
-  bubble_delegate_->SizeToContents();
 }
 
 void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
@@ -801,7 +797,6 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
   if (delegate_->IsEncryptedArchive(content_id()) && password->empty()) {
     password_prompt_->SetState(
         DownloadBubblePasswordPromptView::State::kInvalidEmpty);
-    bubble_delegate_->SizeToContents();
     return false;
   }
 
@@ -811,7 +806,6 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
                 TRIGGER_ENCRYPTED_CONSUMER_PROMPT
           : DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT;
   delegate_->ProcessDeepScanPress(content_id(), trigger, password);
-  bubble_delegate_->SizeToContents();
   return false;
 }
 
@@ -824,12 +818,10 @@ bool DownloadBubbleSecurityView::ProcessLocalPasswordDecryptionClick() {
   if (password.empty()) {
     password_prompt_->SetState(
         DownloadBubblePasswordPromptView::State::kInvalidEmpty);
-    bubble_delegate_->SizeToContents();
     return false;
   }
 
   delegate_->ProcessLocalDecryptionPress(content_id(), password);
-  bubble_delegate_->SizeToContents();
   return false;
 }
 

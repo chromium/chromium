@@ -52,7 +52,6 @@ class MockDownloadBubbleNavigationHandler
               OnSecurityDialogButtonPress,
               (const DownloadUIModel& model, DownloadCommands::Command command),
               (override));
-  void ResizeDialog() override {}
   void OnDialogInteracted() override {}
   std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
   PreventDialogCloseOnDeactivate() override {

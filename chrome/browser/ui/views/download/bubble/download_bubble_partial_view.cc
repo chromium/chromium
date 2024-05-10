@@ -157,7 +157,6 @@ class SuppressBubbleSettingRow : public views::View,
       download::SetDownloadBubblePartialViewEnabled(browser_->profile(),
                                                     !checkbox_->GetChecked());
       settings_text_->SetVisible(true);
-      navigation_handler_->ResizeDialog();
     }
   }
 

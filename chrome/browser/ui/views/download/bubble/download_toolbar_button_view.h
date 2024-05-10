@@ -56,8 +56,6 @@ class DownloadBubbleNavigationHandler {
 
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
 
-  virtual void ResizeDialog() = 0;
-
   // Callback invoked when the dialog has been interacted with by hovering over
   // or by focusing (on the partial view).
   virtual void OnDialogInteracted() = 0;
@@ -128,7 +126,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void OnSecurityDialogButtonPress(const DownloadUIModel& model,
                                    DownloadCommands::Command command) override;
-  void ResizeDialog() override;
   void OnDialogInteracted() override;
   std::unique_ptr<views::BubbleDialogDelegate::CloseOnDeactivatePin>
   PreventDialogCloseOnDeactivate() override;

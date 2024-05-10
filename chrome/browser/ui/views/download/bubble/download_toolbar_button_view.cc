@@ -578,7 +578,6 @@ DownloadBubbleRowView* DownloadToolbarButtonView::ShowPrimaryDialogRow(
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->set_margins(GetPrimaryViewMargin());
-  ResizeDialog();
   return row;
 }
 
@@ -590,21 +589,12 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
   }
   bubble_contents_->ShowSecurityPage(content_id);
   bubble_delegate_->set_margins(GetSecurityViewMargin());
-  ResizeDialog();
 }
 
 void DownloadToolbarButtonView::CloseDialog(
     views::Widget::ClosedReason reason) {
   if (bubble_delegate_) {
     bubble_delegate_->GetWidget()->CloseWithReason(reason);
-  }
-}
-
-void DownloadToolbarButtonView::ResizeDialog() {
-  // Resize may be called when there is no delegate, e.g. during bubble
-  // construction.
-  if (bubble_delegate_) {
-    bubble_delegate_->SizeToContents();
   }
 }
 
@@ -661,7 +651,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   }
 
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      this, views::BubbleBorder::TOP_RIGHT);
+      this, views::BubbleBorder::TOP_RIGHT, views::BubbleBorder::DIALOG_SHADOW,
+      /*autosize=*/true);
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);
@@ -937,8 +928,6 @@ void DownloadToolbarButtonView::UpdateIconDormant() {
 void DownloadToolbarButtonView::OnAnyRowRemoved() {
   if (bubble_contents_->info().row_list_view_info().rows().empty()) {
     CloseDialog(views::Widget::ClosedReason::kUnspecified);
-  } else {
-    ResizeDialog();
   }
 }
 
