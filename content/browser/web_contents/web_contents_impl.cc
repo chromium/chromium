@@ -4159,7 +4159,8 @@ ui::WindowShowState WebContentsImpl::GetWindowShowState() {
                        : ui::SHOW_STATE_DEFAULT;
 }
 
-DevicePostureProviderImpl* WebContentsImpl::GetDevicePostureProvider() {
+blink::mojom::DevicePostureProvider*
+WebContentsImpl::GetDevicePostureProvider() {
   return DevicePostureProviderImpl::GetOrCreate(this);
 }
 
