@@ -153,7 +153,7 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
     CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
-        nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC,
+        nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE_GROUP,
         /*actions=*/{});
     service->StartScan(
         filter, /*scan_delegate=*/this,
