@@ -1004,6 +1004,12 @@ void GPMEnclaveController::OnReauthComplete(std::string rapt) {
 }
 
 void GPMEnclaveController::StartTransaction() {
+  // Starting a transaction means the user has chosen to use GPM. Reset the
+  // decline count so GPM can again be the priority on creation.
+  Profile::FromBrowserContext(model_->GetRenderFrameHost()->GetBrowserContext())
+      ->GetPrefs()
+      ->SetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
   access_token_fetcher_ = enclave_manager_->GetAccessToken(base::BindOnce(
       &GPMEnclaveController::MaybeHashPinAndStartEnclaveTransaction,
       weak_ptr_factory_.GetWeakPtr()));
