@@ -96,7 +96,9 @@ END_METADATA
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
-                               views::BubbleBorder::Arrow::TOP_RIGHT) {
+                               views::BubbleBorder::Arrow::TOP_RIGHT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true) {
   SetProperty(views::kElementIdentifierKey, kToolbarChromeLabsBubbleElementId);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
@@ -214,8 +216,6 @@ void ChromeLabsBubbleView::ShowRelaunchPrompt() {
         l10n_util::GetStringUTF16(IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE));
   }
 #endif
-
-  SizeToContents();
 }
 
 void ChromeLabsBubbleView::NotifyRestartCallback() {
