@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 #include <algorithm>
 #include <iterator>
@@ -16,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
@@ -25,6 +23,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace reporting {
 
@@ -173,12 +173,11 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::ResumeLoadingSaveFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(save_file_loaded_callback_);
 
-  base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
-      [](bool* save_file_loaded, SaveFileLoadedCallback callback) {
-        *save_file_loaded = true;
-        std::move(callback).Run();
-      },
-      &save_file_loaded_, std::move(save_file_loaded_callback_)));
+  absl::Cleanup run_callback_on_return = [this] {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    save_file_loaded_ = true;
+    std::move(save_file_loaded_callback_).Run();
+  };
 
   // Parse the CSV file line by line. If one line is erroneous, stop parsing the
   // rest.

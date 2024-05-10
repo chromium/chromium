@@ -20,10 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -63,6 +60,7 @@
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 using ::base::test::EqualsProto;
@@ -367,9 +365,9 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
       ash::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kArchiveMountPath));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
+  absl::Cleanup external_mount_points_revoker = [mount_points] {
+    mount_points->RevokeAllFileSystems();
+  };
 
   auto dst_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey(), "archive",
@@ -2519,9 +2517,9 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
   ASSERT_TRUE(mount_points->RegisterFileSystem(
       "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       my_files_dir_));
-  base::ScopedClosureRunner external_mount_points_revoker(
-      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
-                     base::Unretained(mount_points)));
+  absl::Cleanup external_mount_points_revoker = [mount_points] {
+    mount_points->RevokeAllFileSystems();
+  };
 
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
