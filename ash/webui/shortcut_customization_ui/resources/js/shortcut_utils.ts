@@ -234,7 +234,7 @@ export const canBypassErrorWithRetry =
  * Sort the modifiers in the order of ctrl, alt, shift, meta.
  */
 export const getSortedModifiers = (modifierStrings: string[]): string[] => {
-  const sortOrder = ['meta', 'ctrl', 'alt', 'shift', 'function'];
+  const sortOrder = ['meta', 'ctrl', 'alt', 'shift', 'fn'];
   if (modifierStrings.length <= 1) {
     return modifierStrings;
   }
@@ -302,7 +302,7 @@ export function getModifierString(modifier: Modifier): string {
     case Modifier.ALT:
       return 'alt';
     case Modifier.FN_KEY:
-      return 'function';
+      return 'fn';
     case Modifier.COMMAND:
       return 'meta';
     default:

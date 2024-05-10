@@ -173,7 +173,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         page.shadowRoot!.querySelector<KeyboardRemapModifierKeyRowElement>(
             '#functionKey');
     assert(functionKeyRow);
-    assertEquals('function', functionKeyRow.get('keyLabel'));
+    assertEquals('fn', functionKeyRow.get('keyLabel'));
     const functionKeyDropdown =
         functionKeyRow.shadowRoot!.querySelector('#keyDropdown');
     assert(functionKeyDropdown);
