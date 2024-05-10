@@ -469,7 +469,8 @@ public class PasswordSettingsExportTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.password_settings_export_action_title),
-                                isCompletelyDisplayed()))
+                                isCompletelyDisplayed()),
+                        /* checkRootDialog= */ true)
                 .perform(click());
         exportEventHistogram.assertExpected();
 
@@ -608,7 +609,8 @@ public class PasswordSettingsExportTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.password_settings_export_action_title),
-                                isCompletelyDisplayed()))
+                                isCompletelyDisplayed()),
+                        /* checkRootDialog= */ true)
                 .perform(click());
         histogram.assertExpected();
 
@@ -824,6 +826,7 @@ public class PasswordSettingsExportTest {
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
         onView(withText(R.string.settings_passwords_preparing_export))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
 
         File tempFile = createFakeExportedPasswordsFile();
@@ -833,6 +836,7 @@ public class PasswordSettingsExportTest {
         // Check that the progress bar is still shown, though, because the timer has not gone off
         // yet.
         onView(withText(R.string.settings_passwords_preparing_export))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
 
         // Now mark the timer as gone off and check that the progress bar is hidden.
@@ -892,7 +896,9 @@ public class PasswordSettingsExportTest {
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
-        onViewWaiting(withText(R.string.settings_passwords_preparing_export))
+        onViewWaiting(
+                        withText(R.string.settings_passwords_preparing_export),
+                        /* checkRootDialog= */ true)
                 .check(matches(isCompletelyDisplayed()));
 
         File tempFile = createFakeExportedPasswordsFile();
@@ -951,10 +957,11 @@ public class PasswordSettingsExportTest {
 
         // Check that the progress bar is shown.
         onView(withText(R.string.settings_passwords_preparing_export))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
 
         // Hit the Cancel button.
-        onView(withText(R.string.cancel)).perform(click());
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
         // Check that the cancellation succeeded by checking that the export menu is available and
         // enabled.
@@ -997,7 +1004,7 @@ public class PasswordSettingsExportTest {
                 .check(matches(isCompletelyDisplayed()));
 
         // Hit the negative button on the error prompt.
-        onView(withText(R.string.close)).perform(click());
+        onView(withText(R.string.close)).inRoot(isDialog()).perform(click());
 
         // Check that the cancellation succeeded by checking that the export menu is available and
         // enabled.
@@ -1042,6 +1049,7 @@ public class PasswordSettingsExportTest {
 
         // Check that there is again the export warning.
         onView(withText(R.string.password_settings_export_action_title))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
     }
 
