@@ -989,9 +989,8 @@ void IndexedDBBucketContext::DeleteDatabase(
   }
 }
 
-void IndexedDBBucketContext::FillInMetadata(
-    storage::mojom::IdbBucketMetadataPtr info,
-    base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
+storage::mojom::IdbBucketMetadataPtr IndexedDBBucketContext::FillInMetadata(
+    storage::mojom::IdbBucketMetadataPtr info) {
   // TODO(jsbell): Sort by name?
   std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
 
@@ -1073,7 +1072,7 @@ void IndexedDBBucketContext::FillInMetadata(
     database_list.push_back(std::move(db_info));
   }
   info->databases = std::move(database_list);
-  std::move(result).Run(std::move(info));
+  return info;
 }
 
 IndexedDBBucketContext* IndexedDBBucketContext::GetReferenceForTesting() {

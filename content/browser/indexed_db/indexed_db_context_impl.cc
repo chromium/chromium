@@ -1082,8 +1082,15 @@ void IndexedDBContextImpl::FillInBucketMetadata(
     return;
   }
 
-  CALL_BUCKET_METHOD(info->bucket_locator.id, FillInMetadata, std::move(info),
-                     std::move(result));
+  if (ShardingEnabled()) {
+    bucket_contexts_sharded_.find(info->bucket_locator.id)
+        ->second.AsyncCall(&IndexedDBBucketContext::FillInMetadata)
+        .WithArgs(std::move(info))
+        .Then(std::move(result));
+  } else {
+    std::move(result).Run(bucket_contexts_.find(info->bucket_locator.id)
+                              ->second->FillInMetadata(std::move(info)));
+  }
 }
 
 void IndexedDBContextImpl::DestroyBucketContext(storage::BucketId bucket_id) {

@@ -302,10 +302,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
                       bool force_close) override;
 
   // Finishes filling in `info` with data relevant to idb-internals and passes
-  // the result back via `result`.
-  void FillInMetadata(
-      storage::mojom::IdbBucketMetadataPtr info,
-      base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
+  // the result back via the return value.
+  storage::mojom::IdbBucketMetadataPtr FillInMetadata(
+      storage::mojom::IdbBucketMetadataPtr info);
 
   // This exists to facilitate unit tests. Since `this` is owned via a
   // `SequenceBound`, it's not possible to directly grab pointer to `this`.
