@@ -3768,6 +3768,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRtcTextLogging.StartCalled" enum="Boolean"
+    expires_after="2024-11-07">
+  <owner>toprice@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Calls to WebRtcTextLogHandler::StartLogging, as a denominator for
+    WebRtcTextLogging.StartError and WebRtcTextLogging.Started. Logged
+    immediately on the JS api call.
+  </summary>
+</histogram>
+
+<histogram name="WebRtcTextLogging.Started" enum="WebRtcLoggingWebAppIdHash"
+    expires_after="2024-11-07">
+  <owner>toprice@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Rate of webrtc text log start attemps which successfully reach the STARTED
+    state, on returning a successful response to the JS call.
+  </summary>
+</histogram>
+
+<histogram name="WebRtcTextLogging.StartError"
+    enum="WebRtcTextLoggingStartError" expires_after="2024-11-07">
+  <owner>toprice@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    Breakdown of errors encountered starting webrtc text logging which prevent
+    us from successfully reaching the STARTED state, recorded when failing the
+    JS start call.
+  </summary>
+</histogram>
+
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
     enum="NetErrorCodes" expires_after="2024-10-23">
   <owner>toprice@chromium.org</owner>

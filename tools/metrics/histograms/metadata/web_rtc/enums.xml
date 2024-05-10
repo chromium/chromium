@@ -469,6 +469,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Bad"/>
 </enum>
 
+<enum name="WebRtcTextLoggingStartError">
+  <int value="0" label="RendererClosing"/>
+  <int value="1" label="LogAlreadyOpen"/>
+  <int value="2" label="ApplyForStartFailed"/>
+  <int value="3" label="Cancelled"/>
+  <int value="4" label="RendererClosingInStartDone"/>
+</enum>
+
 <enum name="WebRtcVideoCodecs">
   <int value="0" label="Unknown"/>
   <int value="1" label="VP8"/>
