@@ -23,6 +23,8 @@ enum class URLVisitAggregatesTransformType {
   kHistoryVisibilityScoreFilter = 2,
   // Filter based on categories field.
   kHistoryCategoriesFilter = 3,
+  // Filter based on whether the URL can be opened by default apps.
+  kDefaultAppUrlFilter = 4,
 };
 
 // Derived classes implement logic responsible for modifying a collection of

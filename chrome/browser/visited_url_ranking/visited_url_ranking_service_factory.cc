@@ -7,6 +7,8 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/flat_set.h"
+#include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -22,6 +24,7 @@
 #include "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
+#include "components/visited_url_ranking/internal/transformer/default_app_url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_categories_transformer.h"
 #include "components/visited_url_ranking/internal/transformer/history_url_visit_aggregates_visibility_score_transformer.h"
 #include "components/visited_url_ranking/internal/url_visit_util.h"
@@ -104,6 +107,16 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<HistoryURLVisitAggregatesCategoriesTransformer>(
           base::flat_set<std::string>(kBlocklistedCategories.begin(),
                                       kBlocklistedCategories.end())));
+
+#if BUILDFLAG(IS_ANDROID)
+  base::flat_set<std::string_view> default_app_blocklist(
+      kDefaultAppBlocklist.begin(), kDefaultAppBlocklist.end());
+  auto default_app_transformer =
+      std::make_unique<DefaultAppURLVisitAggregatesTransformer>(
+          std::move(default_app_blocklist));
+  transformers.emplace(URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
+                       std::move(default_app_transformer));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return std::make_unique<VisitedURLRankingServiceImpl>(
       std::move(data_fetchers), std::move(transformers));
