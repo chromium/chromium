@@ -88,7 +88,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         exclude_iframe ? std::nullopt
                        : std::make_optional<std::u16string>(kIframeETLDPlusOne),
         account, idp_data, show_back_button);
-    dialog_->SizeToContents();
   }
 
   void CreateAndShowMultiAccountPicker(
@@ -109,7 +108,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list,
         /*request_permission=*/true, /*has_login_status_mismatch=*/false);
     dialog_->ShowMultiAccountPicker(idp_data, /*show_back_button=*/false);
-    dialog_->SizeToContents();
   }
 
   void CreateAndShowMultiIdpAccountPicker(
@@ -117,7 +115,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     CreateAccountSelectionBubble(/*exclude_title=*/true,
                                  /*exclude_iframe=*/true);
     dialog_->ShowMultiAccountPicker(idp_data_list, /*show_back_button=*/false);
-    dialog_->SizeToContents();
   }
 
   void PerformHeaderChecks(
@@ -993,7 +990,6 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   CreateAccountSelectionBubble(/*exclude_title=*/true, /*exclude_iframe=*/true);
   dialog_->ShowSingleReturningAccountDialog(idp_data);
-  dialog_->SizeToContents();
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();

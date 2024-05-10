@@ -231,7 +231,9 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           // Note that BOTTOM_RIGHT means the bubble's bottom and right are
           // anchored to the `anchor_view`, which effectively means the bubble
           // will be on top of the `anchor_view`, aligned on its right side.
-          views::BubbleBorder::Arrow::BOTTOM_RIGHT),
+          views::BubbleBorder::Arrow::BOTTOM_RIGHT,
+          views::BubbleBorder::DIALOG_SHADOW,
+          /*autosize=*/true),
       AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
@@ -316,7 +318,6 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 }
 
@@ -350,7 +351,6 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 
   webid::SendAccessibilityEvent(GetWidget(), title);
@@ -378,7 +378,6 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 }
 
@@ -430,7 +429,6 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 }
 
@@ -512,7 +510,6 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 }
 
@@ -548,7 +545,6 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
     return;
   }
 
-  SizeToContents();
   PreferredSizeChanged();
 }
 
