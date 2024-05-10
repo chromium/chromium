@@ -71,16 +71,16 @@ class MemorySaverModeDelegateImpl
             state));
   }
 
-  void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) override {
+  void SetMode(prefs::MemorySaverModeAggressiveness mode) override {
     performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindOnce(
-                       [](base::TimeDelta time_before_discard) {
+                       [](prefs::MemorySaverModeAggressiveness mode) {
                          auto* policy =
                              policies::MemorySaverModePolicy::GetInstance();
                          CHECK(policy);
-                         policy->SetTimeBeforeDiscard(time_before_discard);
+                         policy->SetMode(mode);
                        },
-                       time_before_discard));
+                       mode));
   }
 
   ~MemorySaverModeDelegateImpl() override = default;
@@ -202,24 +202,20 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
 
 void UserPerformanceTuningManager::Start() {
   pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::
-          kMemorySaverModeTimeBeforeDiscardInMinutes,
-      base::BindRepeating(&UserPerformanceTuningManager::
-                              OnMemorySaverModeTimeBeforeDiscardChanged,
-                          base::Unretained(this)));
-  // Make sure the initial state of the discard timer pref is passed on to the
-  // policy before it can be enabled, because the policy initially has a dummy
-  // value for time_before_discard_. This prevents tabs' discard timers from
-  // starting with a value different from the pref.
-  OnMemorySaverModeTimeBeforeDiscardChanged();
-
-  pref_change_registrar_.Add(
       kMemorySaverModeState,
       base::BindRepeating(
           &UserPerformanceTuningManager::OnMemorySaverModePrefChanged,
           base::Unretained(this)));
   // Make sure the initial state of the pref is passed on to the policy.
   UpdateMemorySaverModeState();
+
+  pref_change_registrar_.Add(
+      prefs::kMemorySaverModeAggressiveness,
+      base::BindRepeating(
+          &UserPerformanceTuningManager::OnMemorySaverAggressivenessPrefChanged,
+          base::Unretained(this)));
+  // Make sure the initial state of the pref is passed on to the policy.
+  OnMemorySaverAggressivenessPrefChanged();
 }
 
 void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
@@ -243,11 +239,10 @@ void UserPerformanceTuningManager::OnMemorySaverModePrefChanged() {
   }
 }
 
-void UserPerformanceTuningManager::OnMemorySaverModeTimeBeforeDiscardChanged() {
-  base::TimeDelta time_before_discard = performance_manager::user_tuning::
-      prefs::GetCurrentMemorySaverModeTimeBeforeDiscard(
-          pref_change_registrar_.prefs());
-  memory_saver_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
+void UserPerformanceTuningManager::OnMemorySaverAggressivenessPrefChanged() {
+  prefs::MemorySaverModeAggressiveness mode =
+      prefs::GetCurrentMemorySaverMode(pref_change_registrar_.prefs());
+  memory_saver_mode_delegate_->SetMode(mode);
 }
 
 void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {

@@ -16,17 +16,10 @@ namespace performance_manager::policies {
 
 namespace {
 MemorySaverModePolicy* g_memory_saver_mode_policy = nullptr;
-
 using user_tuning::prefs::MemorySaverModeAggressiveness;
-
-MemorySaverModeAggressiveness GetCurrentMode() {
-  // TODO(crbug.com/332357755): Replace this with a pref.
-  return MemorySaverModeAggressiveness::kMedium;
-}
 }  // namespace
 
-MemorySaverModePolicy::MemorySaverModePolicy()
-    : time_before_discard_(base::TimeDelta::Max()) {
+MemorySaverModePolicy::MemorySaverModePolicy() {
   DCHECK(!g_memory_saver_mode_policy);
   g_memory_saver_mode_policy = this;
 }
@@ -116,9 +109,8 @@ base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForTesting() const {
   return GetTimeBeforeDiscardForCurrentMode();
 }
 
-void MemorySaverModePolicy::SetTimeBeforeDiscard(
-    base::TimeDelta time_before_discard) {
-  time_before_discard_ = time_before_discard;
+void MemorySaverModePolicy::SetMode(MemorySaverModeAggressiveness mode) {
+  mode_ = mode;
   if (high_efficiency_mode_enabled_) {
     active_discard_timers_.clear();
     StartAllDiscardTimers();
@@ -210,27 +202,25 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
 
 base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode()
     const {
-  MemorySaverModeAggressiveness mode = GetCurrentMode();
-
-  if (mode == MemorySaverModeAggressiveness::kConservative) {
-    return base::Hours(6);
-  } else if (mode == MemorySaverModeAggressiveness::kMedium) {
-    return base::Hours(4);
-  } else if (mode == MemorySaverModeAggressiveness::kAggressive) {
-    return base::Hours(2);
+  switch (mode_) {
+    case MemorySaverModeAggressiveness::kConservative:
+      return base::Hours(6);
+    case MemorySaverModeAggressiveness::kMedium:
+      return base::Hours(4);
+    case MemorySaverModeAggressiveness::kAggressive:
+      return base::Hours(2);
   }
   NOTREACHED_NORETURN();
 }
 
 int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
-  MemorySaverModeAggressiveness mode = GetCurrentMode();
-
-  if (mode == MemorySaverModeAggressiveness::kConservative) {
-    return 15;
-  } else if (mode == MemorySaverModeAggressiveness::kMedium) {
-    return 15;
-  } else if (mode == MemorySaverModeAggressiveness::kAggressive) {
-    return 5;
+  switch (mode_) {
+    case MemorySaverModeAggressiveness::kConservative:
+      return 15;
+    case MemorySaverModeAggressiveness::kMedium:
+      return 15;
+    case MemorySaverModeAggressiveness::kAggressive:
+      return 5;
   }
   NOTREACHED_NORETURN();
 }

@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 
 namespace performance_manager::policies {
 
@@ -40,7 +41,7 @@ class MemorySaverModePolicy : public GraphOwned,
 
   void OnMemorySaverModeChanged(bool enabled);
   base::TimeDelta GetTimeBeforeDiscardForTesting() const;
-  void SetTimeBeforeDiscard(base::TimeDelta time_before_discard);
+  void SetMode(user_tuning::prefs::MemorySaverModeAggressiveness mode);
 
   // Returns true if Memory Saver mode is enabled, false otherwise. Useful to
   // get the state of the mode from the Performance Manager sequence.
@@ -62,7 +63,8 @@ class MemorySaverModePolicy : public GraphOwned,
 
   std::map<const TabPageDecorator::TabHandle*, base::OneShotTimer>
       active_discard_timers_;
-  base::TimeDelta time_before_discard_;
+  user_tuning::prefs::MemorySaverModeAggressiveness mode_ =
+      user_tuning::prefs::MemorySaverModeAggressiveness::kMedium;
 
   raw_ptr<Graph> graph_ = nullptr;
 };

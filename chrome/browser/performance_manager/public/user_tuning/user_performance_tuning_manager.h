@@ -39,7 +39,7 @@ class UserPerformanceTuningManager {
   class MemorySaverModeDelegate {
    public:
     virtual void ToggleMemorySaverMode(prefs::MemorySaverModeState state) = 0;
-    virtual void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) = 0;
+    virtual void SetMode(prefs::MemorySaverModeAggressiveness mode) = 0;
     virtual ~MemorySaverModeDelegate() = default;
   };
 
@@ -151,7 +151,7 @@ class UserPerformanceTuningManager {
 
   void UpdateMemorySaverModeState();
   void OnMemorySaverModePrefChanged();
-  void OnMemorySaverModeTimeBeforeDiscardChanged();
+  void OnMemorySaverAggressivenessPrefChanged();
 
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();

@@ -11,9 +11,9 @@ void FakeMemorySaverModeDelegate::ToggleMemorySaverMode(
   last_state_ = state;
 }
 
-void FakeMemorySaverModeDelegate::SetTimeBeforeDiscard(
-    base::TimeDelta time_before_discard) {
-  last_time_before_discard_ = time_before_discard;
+void FakeMemorySaverModeDelegate::SetMode(
+    prefs::MemorySaverModeAggressiveness mode) {
+  mode_ = mode;
 }
 
 void FakeMemorySaverModeDelegate::ClearLastState() {
@@ -23,11 +23,6 @@ void FakeMemorySaverModeDelegate::ClearLastState() {
 std::optional<prefs::MemorySaverModeState>
 FakeMemorySaverModeDelegate::GetLastState() const {
   return last_state_;
-}
-
-std::optional<base::TimeDelta>
-FakeMemorySaverModeDelegate::GetLastTimeBeforeDiscard() const {
-  return last_time_before_discard_;
 }
 
 }  // namespace performance_manager::user_tuning

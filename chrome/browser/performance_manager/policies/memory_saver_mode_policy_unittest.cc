@@ -17,6 +17,14 @@
 
 namespace performance_manager::policies {
 
+namespace {
+// These discard timeouts are based on the values in
+// `MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode`.
+constexpr base::TimeDelta AGGRESSIVE_TIMEOUT = base::Hours(2);
+constexpr base::TimeDelta MEDIUM_TIMEOUT = base::Hours(4);
+constexpr base::TimeDelta CONSERVATIVE_TIMEOUT = base::Hours(6);
+}  // namespace
+
 class TestTabRevisitTracker : public TabRevisitTracker {
  public:
   void SetStateBundle(const TabPageDecorator::TabHandle* tab_handle,
@@ -126,9 +134,41 @@ TEST_F(MemorySaverModeTest, DiscardAfterBackgrounded) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
+TEST_F(MemorySaverModeTest, DiscardAfterAggressiveTimeout) {
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  policy()->SetMode(
+      user_tuning::prefs::MemorySaverModeAggressiveness::kAggressive);
+  policy()->OnMemorySaverModeChanged(true);
+
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), AGGRESSIVE_TIMEOUT);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  page_node()->SetIsVisible(false);
+
+  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(MemorySaverModeTest, DiscardAfterConservativeTimeout) {
+  page_node()->SetType(PageType::kTab);
+  page_node()->SetIsVisible(true);
+  policy()->SetMode(
+      user_tuning::prefs::MemorySaverModeAggressiveness::kConservative);
+  policy()->OnMemorySaverModeChanged(true);
+
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), CONSERVATIVE_TIMEOUT);
+
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  page_node()->SetIsVisible(false);
+
+  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
 TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
-  // On MEDIUM aggressiveness, discards happen after 4 hours. This is defined in
-  // `MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode`.
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
   policy()->OnMemorySaverModeChanged(true);
@@ -152,7 +192,7 @@ TEST_F(MemorySaverModeTest, DontDiscardAfterBackgroundedIfSuspended) {
 
   // Finally advance un-suspended until the time is elapsed, the tab should be
   // discarded.
-  task_env().FastForwardBy(base::Hours(3));
+  task_env().FastForwardBy(MEDIUM_TIMEOUT - base::Hours(1));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
@@ -269,7 +309,7 @@ TEST_F(MemorySaverModeTest,
   policy()->OnMemorySaverModeChanged(true);
 
   page_node()->SetIsVisible(false);
-  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(4));
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), MEDIUM_TIMEOUT);
 
   // Advancing by less than 4 hours shouldn't discard.
   task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting() -
@@ -294,7 +334,7 @@ TEST_F(MemorySaverModeTest, DontDiscardIfAboveMaxNumRevisits) {
       TabPageDecorator::FromPageNode(page_node()), state);
 
   page_node()->SetIsVisible(false);
-  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), base::Hours(4));
+  EXPECT_EQ(policy()->GetTimeBeforeDiscardForTesting(), MEDIUM_TIMEOUT);
 
   // Advancing by 4 hours shouldn't discard because the tab has been revisited
   // too many times.

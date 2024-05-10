@@ -91,6 +91,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service);
 
+MemorySaverModeAggressiveness GetCurrentMemorySaverMode(
+    PrefService* pref_service);
+
 base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service);
 

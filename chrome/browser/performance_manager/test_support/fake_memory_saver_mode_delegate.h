@@ -18,18 +18,16 @@ class FakeMemorySaverModeDelegate
  public:
   // overrides of methods in MemorySaverModeDelegate
   void ToggleMemorySaverMode(prefs::MemorySaverModeState state) override;
-  void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) override;
+  void SetMode(prefs::MemorySaverModeAggressiveness mode) override;
   ~FakeMemorySaverModeDelegate() override = default;
 
   void ClearLastState();
 
   std::optional<prefs::MemorySaverModeState> GetLastState() const;
 
-  std::optional<base::TimeDelta> GetLastTimeBeforeDiscard() const;
-
  private:
-  std::optional<base::TimeDelta> last_time_before_discard_;
   std::optional<prefs::MemorySaverModeState> last_state_;
+  std::optional<prefs::MemorySaverModeAggressiveness> mode_;
 };
 
 }  // namespace performance_manager::user_tuning

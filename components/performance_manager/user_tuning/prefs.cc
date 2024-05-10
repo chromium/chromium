@@ -60,6 +60,19 @@ MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {
   return static_cast<MemorySaverModeState>(state);
 }
 
+MemorySaverModeAggressiveness GetCurrentMemorySaverMode(
+    PrefService* pref_service) {
+  int mode = pref_service->GetInteger(kMemorySaverModeAggressiveness);
+  if (mode < static_cast<int>(MemorySaverModeAggressiveness::kConservative) ||
+      mode > static_cast<int>(MemorySaverModeAggressiveness::kAggressive)) {
+    int medium_mode = static_cast<int>(MemorySaverModeAggressiveness::kMedium);
+    pref_service->SetInteger(kMemorySaverModeAggressiveness, medium_mode);
+    mode = medium_mode;
+  }
+
+  return static_cast<MemorySaverModeAggressiveness>(mode);
+}
+
 base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service) {
   int time_before_discard_in_minutes =
