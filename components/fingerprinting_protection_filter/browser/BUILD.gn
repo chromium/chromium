@@ -12,7 +12,6 @@ if (use_blink) {
       "fingerprinting_protection_child_navigation_throttle.h",
       "fingerprinting_protection_filter_constants.cc",
       "fingerprinting_protection_filter_constants.h",
-      "fingerprinting_protection_observer.h",
       "fingerprinting_protection_page_activation_throttle.cc",
       "fingerprinting_protection_page_activation_throttle.h",
       "fingerprinting_protection_profile_interaction_manager.cc",
@@ -29,7 +28,6 @@ if (use_blink) {
       "//content/public/browser",
     ]
     deps = [
-      "//components/content_settings/browser",
       "//components/subresource_filter/core/browser",
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/mojom",

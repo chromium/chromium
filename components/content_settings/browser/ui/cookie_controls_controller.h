@@ -17,8 +17,6 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,9 +47,6 @@ class CookieControlsController final
 
   // Called when the web_contents has changed.
   void Update(content::WebContents* web_contents);
-
-  // Called when the fingerprinting protection filter has blocked a subresource.
-  void OnSubresourceBlocked();
 
   // Called when the UI is closing.
   void OnUiClosing();
@@ -94,9 +89,7 @@ class CookieControlsController final
   // convert SiteDataObserver to a pure virtual interface.
   class TabObserver
       : public content_settings::PageSpecificContentSettings::SiteDataObserver,
-        public content::WebContentsObserver,
-        public fingerprinting_protection_filter::
-            FingerprintingProtectionObserver {
+        public content::WebContentsObserver {
    public:
     TabObserver(CookieControlsController* cookie_controls,
                 content::WebContents* web_contents);
@@ -112,9 +105,6 @@ class CookieControlsController final
     // content::WebContentsObserver:
     void PrimaryPageChanged(content::Page& page) override;
     void DidStopLoading() override;
-
-    // fingerprinting_protection_filter::FingerprintingProtectionObserver:
-    void OnSubresourceBlocked() override;
 
    private:
     raw_ptr<CookieControlsController> cookie_controls_;
@@ -132,12 +122,6 @@ class CookieControlsController final
     std::set<AccessDetails> cookie_accessed_set_;
 
     void ResetReloadCounter();
-
-    base::ScopedObservation<
-        fingerprinting_protection_filter::
-            FingerprintingProtectionWebContentsHelper,
-        fingerprinting_protection_filter::FingerprintingProtectionObserver>
-        fpf_observation_{this};
   };
 
   void OnThirdPartyCookieBlockingChanged(
@@ -157,9 +141,6 @@ class CookieControlsController final
 
   // Returns the number of stateful bounces leading to this page.
   int GetStatefulBounceCount() const;
-
-  // Returns whether at least one subresource has been blocked on this page.
-  bool GetIsSubresourceBlocked() const;
 
   // Returns the number of allowed third-party sites with cookies.
   int GetAllowedThirdPartyCookiesSitesCount() const;

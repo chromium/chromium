@@ -1,7 +1,6 @@
 include_rules = [
   "+components/browsing_data/content",
   "+components/browsing_data/core",
-  "+components/fingerprinting_protection_filter/browser",
   "+components/page_load_metrics/browser",
   "+components/security_state/core",
   "+components/services/storage/public/cpp",
