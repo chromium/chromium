@@ -5914,15 +5914,16 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
           {{features::kPrerender2NewLimitAndScheduler,
             {{"max_num_of_running_speculation_rules_eager_prerenders",
               base::NumberToString(MaxNumOfRunningPrerenders())}}},
-           {blink::features::kPrerender2,
+           {features::kPrerender2EmbedderBlockedHosts,
             {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
           {});
     } else {
       feature_list_.InitWithFeaturesAndParameters(
           {{blink::features::kPrerender2,
             {{"max_num_of_running_speculation_rules",
-              base::NumberToString(MaxNumOfRunningPrerenders())},
-             {"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           {features::kPrerender2EmbedderBlockedHosts,
+            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
           {});
     }
   }
@@ -5936,35 +5937,6 @@ class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-class PrerenderEmbedderHostBlocklistedBrowserTest
-    : public PrerenderSequentialPrerenderingBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  PrerenderEmbedderHostBlocklistedBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{features::kPrerender2EmbedderBlockedHosts,
-            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kPrerender2,
-            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
-          {});
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderEmbedderHostBlocklistedBrowserTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "New" : "Deprecated";
-                         });
 
 namespace {
 
@@ -6349,7 +6321,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 }
 
 // Test that hosts in the embedder blocklist are not prerendered.
-IN_PROC_BROWSER_TEST_P(PrerenderEmbedderHostBlocklistedBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        EmbedderHostBlocklisted) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");

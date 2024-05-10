@@ -63,30 +63,20 @@ void AnalyzeCrossOriginRedirection(
   }
 }
 
-// This is deprecated in favor of kPrerender2EmbedderBlockedHosts. See
-// https://crbug.com/1509271.
-//
-// Prerender2 Embedders trigger based on rules decided by the browser. Prevent
-// the browser from triggering on the hosts listed.
-// Blocked hosts are expected to be passed as a comma separated string.
-// e.g. example1.test,example2.test
-const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsDeprecated{
-    &blink::features::kPrerender2, "embedder_blocked_hosts", ""};
-
+// Returns true if a host of the given url is on the predefined blocked list as
+// they cannot support prerendering.
 bool ShouldSkipHostInBlockList(const GURL& url) {
-  // Keep this as static because the blocked origins are served via feature
-  // parameters and are never changed until browser restart.
+  // Keep the blocked list as static because the blocked hosts are served via
+  // feature parameters and are never changed until browser restarts.
+  //
+  // Blocked hosts are expected to be passed as a comma separated string.
+  // e.g. example1.test,example2.test
   const static base::NoDestructor<std::vector<std::string>>
       embedder_blocked_hosts(base::SplitString(
           features::kPrerender2EmbedderBlockedHostsParam.Get(), ",",
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  const static base::NoDestructor<std::vector<std::string>>
-      embedder_blocked_hosts_deprecated(base::SplitString(
-          kPrerender2EmbedderBlockedHostsDeprecated.Get(), ",",
-          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
-  return base::Contains(*embedder_blocked_hosts, url.host()) ||
-         base::Contains(*embedder_blocked_hosts_deprecated, url.host());
+  return base::Contains(*embedder_blocked_hosts, url.host());
 }
 
 }  // namespace
