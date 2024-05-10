@@ -21122,6 +21122,8 @@ from previous Chrome versions.
   <int value="-29847483" label="MemoryAblation:enabled"/>
   <int value="-29507521" label="ContextualNudges:disabled"/>
   <int value="-28295905" label="AutofillEnableAccountWalletStorage:enabled"/>
+  <int value="-28034521"
+      label="EnablePasswordsAccountStorageForNonSyncingUsers:enabled"/>
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
   <int value="-25726674" label="CompressionDictionaryTransport:enabled"/>
@@ -23119,6 +23121,8 @@ from previous Chrome versions.
   <int value="848324390" label="enable-lock-screen-apps"/>
   <int value="849235409" label="Prerender2InNewTab:enabled"/>
   <int value="849262171" label="BindingManagerConnectionLimit:disabled"/>
+  <int value="849315389"
+      label="EnablePasswordsAccountStorageForNonSyncingUsers:disabled"/>
   <int value="849980462" label="RemoveNtpFakebox:disabled"/>
   <int value="850779988" label="allow-popups-during-page-unload"/>
   <int value="851085848" label="enable-settings-window"/>

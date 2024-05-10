@@ -3865,6 +3865,11 @@ const char kAccountBookmarksAndReadingListBehindOptInDescription[] =
     "Make account bookmarks and reading lists available to users that sign in "
     "via promo in the bookmark manager.";
 
+const char kAccountPasswordsOnSigninName[] = "Account passwords on sign-in";
+const char kAccountPasswordsOnSigninDescription[] =
+    "Allows saving/filling account passwords when the user is signed-in but "
+    "not syncing";
+
 const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
 const char kAddToHomescreenIPHDescription[] =
     " Shows in-product-help messages educating users about add to homescreen "
