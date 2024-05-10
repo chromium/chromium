@@ -1204,6 +1204,19 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     record_entry_open_or_creation_time_ = true;
   }
 
+  if (base::FeatureList::IsEnabled(features::kAvoidEntryCreationForNoStore)) {
+    // TODO(http://crbug.com/331123686): There is no reason to make partial
+    // requests exempt but for now some tests fail if we don't. Once the bug
+    // is fixed and understood it will be possible to remove this line.
+    if (!partial_) {
+      if (cache_->DidKeyLeadToNoStoreResponse(cache_key_)) {
+        // The request is probably not suitable for caching and is there is
+        // nothing to open.
+        return net::ERR_CACHE_ENTRY_NOT_SUITABLE;
+      }
+    }
+  }
+
   // mode_ can be anything but NONE or WRITE at this point (READ, UPDATE, or
   // READ_WRITE).
   // READ, UPDATE, certain READ_WRITEs, and some methods shouldn't create, so
@@ -1275,16 +1288,8 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
     return OK;
   }
 
-  // No need to explicitly handle ERR_CACHE_ENTRY_NOT_SUITABLE as the
-  // ShouldOpenOnlyMethods() check will handle it.
-
-  if (mode_ & WRITE) {
-    // We were unable to open or create an entry.
-    DLOG(WARNING) << "Unable to open or create cache entry";
-  }
-
-  if (ShouldOpenOnlyMethods()) {
-    // These methods, on failure, should bypass the cache.
+  if (ShouldOpenOnlyMethods() || result == net::ERR_CACHE_ENTRY_NOT_SUITABLE) {
+    // Bypassing the cache.
     mode_ = NONE;
     TransitionToState(STATE_SEND_REQUEST);
     return OK;
@@ -2072,7 +2077,7 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   // Update the data with the new/updated request headers.
   response_.vary_data.Init(*request_, *response_.headers);
 
-  if (ShouldDisableCaching(*response_.headers)) {
+  if (UpdateAndReportCacheability(*response_.headers)) {
     if (!entry_->IsDoomed()) {
       int ret = cache_->DoomEntry(cache_key_, nullptr);
       DCHECK_EQ(OK, ret);
@@ -3426,7 +3431,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
   // errors) and no SSL blocking page is shown.  An alternative would be to
   // reverse-map the cert status to a net error and replay the net error.
   if (IsCertStatusError(response.ssl_info.cert_status) ||
-      ShouldDisableCaching(*response.headers)) {
+      UpdateAndReportCacheability(*response.headers)) {
     if (partial_) {
       partial_->FixResponseHeaders(response_.headers.get(), true);
     }
@@ -3987,10 +3992,13 @@ void HttpCache::Transaction::TransitionToState(State state) {
   next_state_ = state;
 }
 
-bool HttpCache::Transaction::ShouldDisableCaching(
-    const HttpResponseHeaders& headers) const {
+bool HttpCache::Transaction::UpdateAndReportCacheability(
+    const HttpResponseHeaders& headers) {
   // Do not cache no-store content.
   if (headers.HasHeaderValue("cache-control", "no-store")) {
+    if (base::FeatureList::IsEnabled(features::kAvoidEntryCreationForNoStore)) {
+      cache_->MarkKeyNoStore(cache_key_);
+    }
     return true;
   }
 

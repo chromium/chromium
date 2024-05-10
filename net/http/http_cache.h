@@ -23,9 +23,11 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/hash/sha1.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -668,6 +670,17 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   bool RemovePendingTransactionFromPendingOp(PendingOp* pending_op,
                                              Transaction* transaction);
 
+  // Notes that `key` led to receiving a no-store response.
+  // Stored keys rotate out in an LRU fashion so there is no guarantee that keys
+  // are accounted for throughout the lifetime of this class.
+  void MarkKeyNoStore(const std::string& key);
+
+  // Returns true if the `key` is has probably led to a no-store response.
+  // Collisions are possible so this function should not be used to make
+  // decisions that affect correctness. A correct use is to use the information
+  // to avoid attempting creating cache entries uselessly.
+  bool DidKeyLeadToNoStoreResponse(const std::string& key);
+
   // Events (called via PostTask) ---------------------------------------------
 
   void OnProcessQueuedTransactions(scoped_refptr<ActiveEntry> entry);
@@ -739,6 +752,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // A clock that can be swapped out for testing.
   raw_ptr<base::Clock> clock_;
+
+  // Used to track which keys led to a no-store response.
+  base::LRUCacheSet<base::SHA1Digest> keys_marked_no_store_;
 
   THREAD_CHECKER(thread_checker_);
 

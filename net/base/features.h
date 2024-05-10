@@ -324,6 +324,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTcpPortRandomization);
 #endif
 
+// Avoid creating cache entries for transactions that are most likely no-store.
+NET_EXPORT BASE_DECLARE_FEATURE(kAvoidEntryCreationForNoStore);
+NET_EXPORT extern const base::FeatureParam<int>
+    kAvoidEntryCreationForNoStoreCacheSize;
+
 // Prefetch to follow normal semantics instead of 5-minute rule
 // https://crbug.com/1345207
 NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);

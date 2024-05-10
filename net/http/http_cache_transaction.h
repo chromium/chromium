@@ -575,8 +575,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void SaveNetworkTransactionInfo(const HttpTransaction& transaction);
 
   // Determines whether caching should be disabled for a response, given its
-  // headers.
-  bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
+  // headers. Updates the appropriate data structures.
+  bool UpdateAndReportCacheability(const HttpResponseHeaders& headers);
 
   // 304 revalidations of resources that set security headers and that get
   // forwarded might need to set these headers again to avoid being blocked.

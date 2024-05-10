@@ -307,6 +307,13 @@ BASE_FEATURE(kEnableTcpPortRandomization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kAvoidEntryCreationForNoStore,
+             "AvoidEntryCreationForNoStore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAvoidEntryCreationForNoStoreCacheSize{
+    &kAvoidEntryCreationForNoStore, "AvoidEntryCreationForNoStoreCacheSize",
+    1000};
+
 // Prefetch to follow normal semantics instead of 5-minute rule
 // https://crbug.com/1345207
 BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
