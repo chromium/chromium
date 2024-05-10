@@ -25,13 +25,24 @@ struct AnnotationBreakTokenData {
   wtf_size_t end_item_index;
 };
 
+// Break information for a ruby column.
+// This should be a GarbageCollected because InlineBreakToken::RareData can't
+// have non-trivial destructor.
+struct RubyBreakTokenData : GarbageCollected<RubyBreakTokenData> {
+  const wtf_size_t open_column_item_index;
+  const wtf_size_t ruby_base_end_item_index;
+  const Vector<AnnotationBreakTokenData, 1> annotation_data;
+
+  void Trace(Visitor*) const {}
+};
+
 // Represents a break token for an inline node.
 class CORE_EXPORT InlineBreakToken final : public BreakToken {
  public:
   enum InlineBreakTokenFlags {
     kDefault = 0,
     kIsForcedBreak = 1 << 0,
-    kHasSubBreakToken = 1 << 1,
+    kHasRareData = 1 << 1,
     kUseFirstLineStyle = 1 << 2,
     kHasClonedBoxDecorations = 1 << 3,
     kIsInParallelBlockFlow = 1 << 4,
@@ -46,7 +57,8 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
       const ComputedStyle* style,
       const InlineItemTextIndex& start,
       unsigned flags /* InlineBreakTokenFlags */,
-      const BlockBreakToken* sub_break_token = nullptr);
+      const BlockBreakToken* sub_break_token = nullptr,
+      const RubyBreakTokenData* ruby_data = nullptr);
 
   // Wrap a block break token inside an inline break token. The block break
   // token may for instance be for a float inside an inline formatting context.
@@ -78,6 +90,9 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
   // The BreakToken when a block-in-inline or float is block-fragmented.
   const BlockBreakToken* GetBlockBreakToken() const;
 
+  // Returns a RubyBreakTokenData if a line break happened inside a ruby column.
+  const RubyBreakTokenData* RubyData() const;
+
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.
   bool HasClonedBoxDecorations() const {
@@ -94,7 +109,8 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
                    const ComputedStyle*,
                    const InlineItemTextIndex& start,
                    unsigned flags /* InlineBreakTokenFlags */,
-                   const BlockBreakToken* sub_break_token);
+                   const BlockBreakToken* sub_break_token,
+                   const RubyBreakTokenData* ruby_data);
 
   explicit InlineBreakToken(PassKey, LayoutInputNode node);
 
@@ -105,13 +121,20 @@ class CORE_EXPORT InlineBreakToken final : public BreakToken {
   void TraceAfterDispatch(Visitor*) const;
 
  private:
-  const Member<const BreakToken>* SubBreakTokenAddress() const;
+  struct RareData {
+    DISALLOW_NEW();
+
+    Member<const BlockBreakToken> sub_break_token;
+    Member<const RubyBreakTokenData> ruby_data;
+
+    void Trace(Visitor* visitor) const;
+  };
 
   Member<const ComputedStyle> style_;
   InlineItemTextIndex start_;
 
-  // This is an array of one item if |kHasSubBreakToken|, or zero.
-  Member<const BlockBreakToken> sub_break_token_[];
+  // This is an array of one item if |kHasRareData|, or zero.
+  RareData rare_data_[];
 };
 
 template <>

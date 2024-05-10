@@ -22,9 +22,17 @@ ASSERT_SIZE(InlineBreakToken, SameSizeAsInlineBreakToken);
 }  // namespace
 
 const BlockBreakToken* InlineBreakToken::GetBlockBreakToken() const {
-  if (!(flags_ & kHasSubBreakToken))
+  if (!(flags_ & kHasRareData)) {
     return nullptr;
-  return sub_break_token_[0].Get();
+  }
+  return rare_data_[0].sub_break_token.Get();
+}
+
+const RubyBreakTokenData* InlineBreakToken::RubyData() const {
+  if (!(flags_ & kHasRareData)) {
+    return nullptr;
+  }
+  return rare_data_[0].ruby_data.Get();
 }
 
 // static
@@ -33,19 +41,20 @@ InlineBreakToken* InlineBreakToken::Create(
     const ComputedStyle* style,
     const InlineItemTextIndex& start,
     unsigned flags /* InlineBreakTokenFlags */,
-    const BlockBreakToken* sub_break_token) {
+    const BlockBreakToken* sub_break_token,
+    const RubyBreakTokenData* ruby_data) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
   wtf_size_t size = sizeof(InlineBreakToken);
-  if (UNLIKELY(sub_break_token)) {
-    size += sizeof(Member<const BlockBreakToken>);
-    flags |= kHasSubBreakToken;
+  if (UNLIKELY(sub_break_token || ruby_data)) {
+    size += sizeof(RareData);
+    flags |= kHasRareData;
   }
 
-  return MakeGarbageCollected<InlineBreakToken>(AdditionalBytes(size),
-                                                PassKey(), node, style, start,
-                                                flags, sub_break_token);
+  return MakeGarbageCollected<InlineBreakToken>(
+      AdditionalBytes(size), PassKey(), node, style, start, flags,
+      sub_break_token, ruby_data);
 }
 
 // static
@@ -62,10 +71,12 @@ InlineBreakToken::InlineBreakToken(PassKey key,
                                    const ComputedStyle* style,
                                    const InlineItemTextIndex& start,
                                    unsigned flags /* InlineBreakTokenFlags */,
-                                   const BlockBreakToken* sub_break_token)
+                                   const BlockBreakToken* sub_break_token,
+                                   const RubyBreakTokenData* ruby_data)
     : BreakToken(kInlineBreakToken, node, flags), style_(style), start_(start) {
-  if (UNLIKELY(sub_break_token)) {
-    sub_break_token_[0] = sub_break_token;
+  if (UNLIKELY(sub_break_token || ruby_data)) {
+    rare_data_[0].sub_break_token = sub_break_token;
+    rare_data_[0].ruby_data = ruby_data;
   }
 }
 
@@ -94,10 +105,16 @@ String InlineBreakToken::ToString() const {
 void InlineBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   // It is safe to check flags_ here because it is a const value and initialized
   // in ctor.
-  if (flags_ & kHasSubBreakToken)
-    visitor->Trace(*sub_break_token_);
+  if (flags_ & kHasRareData) {
+    visitor->Trace(rare_data_[0]);
+  }
   visitor->Trace(style_);
   BreakToken::TraceAfterDispatch(visitor);
+}
+
+void InlineBreakToken::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(sub_break_token);
+  visitor->Trace(ruby_data);
 }
 
 }  // namespace blink
