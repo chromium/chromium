@@ -8,6 +8,11 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_server_socket.h"
@@ -44,27 +49,75 @@ std::string TxPowerLevelToName(api::ble_v2::TxPowerLevel tx_power_level) {
   }
 }
 
-}  // namespace
+void CancelPendingTasks(
+    base::flat_set<raw_ptr<base::WaitableEvent>>& events_to_cancel) {
+  if (!events_to_cancel.empty()) {
+    DVLOG(1) << __func__ << ": Canceling " << events_to_cancel.size()
+             << " pending calls.";
+  }
 
-BleV2Medium::BleV2Medium() {
-  CD_LOG(WARNING, Feature::NEARBY_INFRA)
-      << __func__ << " BleV2Medium default constructor not implemented yet.";
+  for (base::WaitableEvent* event : std::move(events_to_cancel)) {
+    event->Signal();
+  }
 }
+
+}  // namespace
 
 BleV2Medium::BleV2Medium(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
-    : adapter_(adapter) {
-  DCHECK(adapter_.is_bound());
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      adapter_(adapter) {
+  CHECK(adapter_.is_bound());
 }
 
 BleV2Medium::~BleV2Medium() {
-  CD_LOG(WARNING, Feature::NEARBY_INFRA)
-      << __func__ << " BleV2Medium destructor not implemented yet.";
+  // For thread safety, shut down on the |task_runner_|. The destructor is
+  // blocking. It is expected that BleV2Medium calls are not made from the
+  // main thread.
+  base::WaitableEvent shutdown_waitable_event;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&BleV2Medium::Shutdown, base::Unretained(this),
+                                &shutdown_waitable_event));
+  shutdown_waitable_event.Wait();
 }
 
 bool BleV2Medium::StartAdvertising(
     const api::ble_v2::BleAdvertisementData& advertising_data,
     api::ble_v2::AdvertiseParameters advertise_set_parameters) {
+  // Before starting the advertising, register the GATT Services if supported
+  // to make GATT advertisements available. To accommodate the asynchronous
+  // nature of registering the GATT services via `RegisterGattServices()`,
+  // block until registration succeeds or fails.
+  if (gatt_server_) {
+    DVLOG(1)
+        << __func__
+        << ": attempting to register GATT Services before starting advertising";
+
+    base::WaitableEvent register_gatt_services_waitable_event;
+    bool registration_success;
+
+    // The `WeakPtr` to the `BleV2GattServer` cannot be dereferenced on a
+    // different sequence than `StartAdvertising()` due to thread safety
+    // enforcement in `WeakPtr`. Therefore, pass a raw pointer to the member
+    // object to trigger registration.
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&BleV2Medium::DoRegisterGattServices,
+                                  base::Unretained(this), gatt_server_.get(),
+                                  &registration_success,
+                                  &register_gatt_services_waitable_event));
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
+    register_gatt_services_waitable_event.Wait();
+
+    if (!registration_success) {
+      DLOG(WARNING)
+          << __func__
+          << ": failed register GATT Services before starting advertising; "
+             "stopping advertising";
+      return false;
+    }
+  }
+
   std::string service_data_info;
   for (auto it = advertising_data.service_data.begin();
        it != advertising_data.service_data.end(); it++) {
@@ -75,25 +128,23 @@ bool BleV2Medium::StartAdvertising(
             it->second.data(), it->second.data() + it->second.size())) +
         (std::next(it) == advertising_data.service_data.end() ? "}" : "}, ");
   }
-  CD_LOG(INFO, Feature::NEARBY_INFRA)
-      << __func__
-      << "BLE_v2 StartAdvertising: "
-         "advertising_data.is_extended_advertisement="
-      << advertising_data.is_extended_advertisement
-      << ", advertising_data.service_data=" << service_data_info
-      << ", tx_power_level="
-      << TxPowerLevelToName(advertise_set_parameters.tx_power_level)
-      << ", is_connectable=" << advertise_set_parameters.is_connectable;
+  DVLOG(1) << __func__
+           << "BLE_v2 StartAdvertising: "
+              "advertising_data.is_extended_advertisement="
+           << advertising_data.is_extended_advertisement
+           << ", advertising_data.service_data=" << service_data_info
+           << ", tx_power_level="
+           << TxPowerLevelToName(advertise_set_parameters.tx_power_level)
+           << ", is_connectable=" << advertise_set_parameters.is_connectable;
 
   if (advertising_data.is_extended_advertisement &&
       !IsExtendedAdvertisementsAvailable()) {
     // Nearby Connections is expected to pass us extended advertisements without
     // first checking if we have support. In that case we are expected to return
     // false.
-    CD_LOG(WARNING, Feature::NEARBY_INFRA)
-        << __func__
-        << " Extended advertising is not supported, "
-           "not registering extended adv.";
+    DLOG(WARNING) << __func__
+                  << " Extended advertising is not supported, "
+                     "not registering extended adv.";
     return false;
   }
 
@@ -133,8 +184,7 @@ bool BleV2Medium::StartAdvertising(
       // Return early when failing to register an advertisement, even if
       // there are multiple sets of advertising data, as Nearby Connections
       // expects all advertisements to be registered on success.
-      CD_LOG(WARNING, Feature::NEARBY_INFRA)
-          << __func__ << " Failed to register advertisement.";
+      DLOG(WARNING) << __func__ << " Failed to register advertisement.";
       // TODO(b/316395848): Log failure reasons.
       return false;
     }
@@ -149,10 +199,10 @@ bool BleV2Medium::StartAdvertising(
   // multiple registered advertisements per UUID.
   for (auto& entry : registered_advertisements) {
     registered_advertisements_map_[entry.first].emplace_back(
-        std::move(entry.second));
+        std::move(entry.second), task_runner_);
   }
 
-  CD_LOG(INFO, Feature::NEARBY_INFRA) << __func__ << " Started advertising.";
+  DVLOG(1) << __func__ << " Started advertising.";
   return true;
 }
 
@@ -505,6 +555,64 @@ uint64_t BleV2Medium::GenerateUniqueSessionId() {
     }
   }
   return kFailedGenerateSessionId;
+}
+
+void BleV2Medium::DoRegisterGattServices(
+    BleV2GattServer* gatt_server,
+    bool* registration_success,
+    base::WaitableEvent* register_gatt_services_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  pending_register_gatt_services_waitable_events_.insert(
+      register_gatt_services_waitable_event);
+
+  CHECK(gatt_server);
+  gatt_server->RegisterGattServices(base::BindOnce(
+      &BleV2Medium::OnRegisterGattServices, base::Unretained(this),
+      registration_success, register_gatt_services_waitable_event));
+}
+
+void BleV2Medium::OnRegisterGattServices(
+    bool* out_registration_success,
+    base::WaitableEvent* register_gatt_services_waitable_event,
+    bool in_registration_success) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!pending_register_gatt_services_waitable_events_.contains(
+          register_gatt_services_waitable_event)) {
+    // The event has already been signaled.
+    return;
+  }
+
+  *out_registration_success = in_registration_success;
+
+  DVLOG(1) << "BleV2Medium::" << __func__
+           << ": GATT Services registration result = "
+           << (*out_registration_success ? "success" : "failure");
+
+  if (!register_gatt_services_waitable_event->IsSignaled()) {
+    register_gatt_services_waitable_event->Signal();
+    pending_register_gatt_services_waitable_events_.erase(
+        register_gatt_services_waitable_event);
+  }
+}
+
+void BleV2Medium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // Note that resetting the Remote will cancel any pending callbacks, including
+  // those already in the task queue.
+  gatt_server_.reset();
+  adapter_.reset();
+  discovery_session_.reset();
+  discovered_ble_peripherals_map_.clear();
+  session_id_to_scanning_callback_map_.clear();
+  service_uuid_to_session_ids_map_.clear();
+  registered_advertisements_map_.clear();
+
+  // Cancel all pending connect/listen calls. This is sequence safe because all
+  // changes to the pending-event sets are sequenced.
+  CancelPendingTasks(pending_register_gatt_services_waitable_events_);
+
+  shutdown_waitable_event->Signal();
 }
 
 }  // namespace nearby::chrome
