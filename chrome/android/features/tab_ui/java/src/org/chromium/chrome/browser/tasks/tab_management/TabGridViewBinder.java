@@ -149,6 +149,7 @@ class TabGridViewBinder {
                                 });
             }
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
+            // Stub out the long click listener to avoid selection for closable tabs.
             view.setOnLongClickListener(v -> true);
             if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
                 view.setOnClickListener(null);
