@@ -1912,7 +1912,6 @@ TEST_P(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
   // shown in the login screen.
   ClearWallpaper();
   ClearLogin();
-  controller_->ClearPrefChangeObserverForTesting();
   controller_->ShowUserWallpaper(kAccountId1);
   RunAllTasksUntilIdle();
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kPolicy);

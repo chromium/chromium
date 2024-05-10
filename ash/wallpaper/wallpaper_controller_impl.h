@@ -386,9 +386,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Proxy to private ReloadWallpaper().
   void ReloadWallpaperForTesting(bool clear_cache);
 
-  // Needed when logoff is simulated in testing.
-  void ClearPrefChangeObserverForTesting();
-
   // Overrides `drivefs_delegate_` for testing.
   void OverrideDriveFsDelegateForTesting(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate);

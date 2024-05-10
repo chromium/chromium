@@ -1760,10 +1760,6 @@ void WallpaperControllerImpl::ReloadWallpaperForTesting(bool clear_cache) {
   ReloadWallpaper(clear_cache);
 }
 
-void WallpaperControllerImpl::ClearPrefChangeObserverForTesting() {
-  pref_change_registrar_.reset();
-}
-
 void WallpaperControllerImpl::OverrideDriveFsDelegateForTesting(
     std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) {
   CHECK_IS_TEST();
