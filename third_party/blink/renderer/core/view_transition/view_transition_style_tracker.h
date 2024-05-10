@@ -281,7 +281,7 @@ class ViewTransitionStyleTracker
   void AddTransitionElement(Element*, const AtomicString&);
   bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
-  void AddTransitionElementsFromCSSRecursive(PaintLayer*);
+  void AddTransitionElementsFromCSSRecursive(PaintLayer*, const TreeScope*);
 
   void InvalidateHitTestingCache();
 

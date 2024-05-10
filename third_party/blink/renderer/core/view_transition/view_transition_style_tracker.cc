@@ -600,11 +600,12 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
             DocumentLifecycle::kCompositingInputsClean);
 
   AddTransitionElementsFromCSSRecursive(
-      document_->GetLayoutView()->PaintingLayer());
+      document_->GetLayoutView()->PaintingLayer(), document_.Get());
 }
 
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
-    PaintLayer* root) {
+    PaintLayer* root,
+    const TreeScope* tree_scope) {
   // We want to call AddTransitionElements in the order in which
   // PaintLayerPaintOrderIterator would cause us to paint the elements.
   // Specifically, parents are added before their children, and lower z-index
@@ -620,18 +621,23 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
   if (root_style.ViewTransitionName() && !root_object.IsFragmented()) {
-    DCHECK(root_object.GetNode());
-    DCHECK(root_object.GetNode()->IsElementNode());
-    AddTransitionElement(DynamicTo<Element>(root_object.GetNode()),
-                         root_style.ViewTransitionName());
+    auto* node = root_object.GetNode();
+    DCHECK(node);
+    DCHECK(node->IsElementNode());
+    if (node->GetTreeScope() == tree_scope) {
+      AddTransitionElement(DynamicTo<Element>(node),
+                           root_style.ViewTransitionName());
+    }
   }
 
   if (root_object.ChildPaintBlockedByDisplayLock())
     return;
 
+  // Even if tree scopes don't match, we process children since light slotted
+  // children can have outer tree scope.
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
-    AddTransitionElementsFromCSSRecursive(child);
+    AddTransitionElementsFromCSSRecursive(child, tree_scope);
   }
 }
 
