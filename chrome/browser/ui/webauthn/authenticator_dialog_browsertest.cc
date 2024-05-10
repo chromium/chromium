@@ -759,6 +759,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_connecting") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMConnecting);
+    } else if (name == "gpm_confirm_incognito_create") {
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
     } else {
       NOTREACHED();
     }
@@ -878,6 +881,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_gpm_error) {
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_connecting) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_confirm_incognito_create) {
   ShowAndVerifyUi();
 }
 

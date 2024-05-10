@@ -2048,6 +2048,58 @@ void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
   dialog_model()->OnGPMCreatePasskey();
 }
 
+// AuthenticatorGpmIncognitoCreateSheetModel ---------------------------------
+AuthenticatorGpmIncognitoCreateSheetModel::
+    AuthenticatorGpmIncognitoCreateSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  // TODO(enclave): Add the new incognito illustration to use instead.
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_GPM_PASSKEY_DARK);
+}
+
+AuthenticatorGpmIncognitoCreateSheetModel::
+    ~AuthenticatorGpmIncognitoCreateSheetModel() = default;
+
+std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_INCOGNITO_CREATE_TITLE);
+}
+
+std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetStepDescription()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_INCOGNITO_CREATE_DESC);
+}
+
+bool AuthenticatorGpmIncognitoCreateSheetModel::IsCancelButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetCancelButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_CANCEL);
+}
+
+void AuthenticatorGpmIncognitoCreateSheetModel::OnCancel() {
+  dialog_model()->CancelAuthenticatorRequest();
+}
+
+bool AuthenticatorGpmIncognitoCreateSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorGpmIncognitoCreateSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorGpmIncognitoCreateSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+void AuthenticatorGpmIncognitoCreateSheetModel::OnAccept() {
+  dialog_model()->OnGPMConfirmOffTheRecordCreate();
+}
+
 // AuthenticatorGpmOnboardingSheetModel -------------------------------------
 
 AuthenticatorGpmOnboardingSheetModel::AuthenticatorGpmOnboardingSheetModel(

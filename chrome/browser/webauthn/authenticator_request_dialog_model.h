@@ -121,6 +121,9 @@ class AuthenticatorRequestDialogController;
   /* TODO(enclave): Add transition to authentication or bootstrapping  */     \
   /* device. */                                                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                           \
+  /* Called when the user accepts the warning dialog for creating a GPM */    \
+  /* passkey in incognito mode.*/                                             \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user accepts a bubble confirming that they want to */    \
   /* start using passkeys. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                      \
@@ -304,6 +307,7 @@ struct AuthenticatorRequestDialogModel {
     // GPM passkey creation.
     kGPMOnboarding,
     kGPMCreatePasskey,
+    kGPMConfirmOffTheRecordCreate,
     kGPMPasskeySaved,
     kCreatePasskey,
     kGPMError,

@@ -542,9 +542,9 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     return;
   }
 
-  auto* profile = Profile::FromBrowserContext(browser_context);
+  auto* profile =
+      Profile::FromBrowserContext(browser_context)->GetOriginalProfile();
   auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  // TODO(enclave): what do we do in an Incognito session?
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     FIDO_LOG(EVENT)
@@ -872,25 +872,25 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
             PasskeyModelFactory::GetInstance()->GetForProfile(profile), rp_id,
             request_type, user_verification_requirement);
 #else
-    auto* const identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    const auto consent = signin::ConsentLevel::kSignin;
-    if (identity_manager->HasPrimaryAccount(consent)) {
-      std::string account_name =
-          identity_manager->GetPrimaryAccountInfo(consent).email;
-      // The enclave should not allow a credential to be created within it for
-      // the same Google account.
-      if (rp_id != kGoogleRpId ||
-          request_type != device::FidoRequestType::kMakeCredential ||
-          user_name.value_or("") != account_name) {
-        dialog_model_->account_name = std::move(account_name);
-        enclave_controller_ = std::make_unique<GPMEnclaveController>(
-            GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
-            user_verification_requirement,
-            clock_ ? clock_ : base::DefaultClock::GetInstance(),
-            std::move(pending_trusted_vault_connection_));
+      auto* const identity_manager =
+          IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+      const auto consent = signin::ConsentLevel::kSignin;
+      if (identity_manager->HasPrimaryAccount(consent)) {
+        std::string account_name =
+            identity_manager->GetPrimaryAccountInfo(consent).email;
+        // The enclave should not allow a credential to be created within it for
+        // the same Google account.
+        if (rp_id != kGoogleRpId ||
+            request_type != device::FidoRequestType::kMakeCredential ||
+            user_name.value_or("") != account_name) {
+          dialog_model_->account_name = std::move(account_name);
+          enclave_controller_ = std::make_unique<GPMEnclaveController>(
+              GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
+              user_verification_requirement,
+              clock_ ? clock_ : base::DefaultClock::GetInstance(),
+              std::move(pending_trusted_vault_connection_));
+        }
       }
-    }
 #endif
     }
   }

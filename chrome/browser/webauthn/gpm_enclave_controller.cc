@@ -415,8 +415,9 @@ GPMEnclaveController::creds() const {
 
 Profile* GPMEnclaveController::GetProfile() const {
   return Profile::FromBrowserContext(
-      content::RenderFrameHost::FromID(render_frame_host_id_)
-          ->GetBrowserContext());
+             content::RenderFrameHost::FromID(render_frame_host_id_)
+                 ->GetBrowserContext())
+      ->GetOriginalProfile();
 }
 
 GPMEnclaveController::AccountState
@@ -893,6 +894,12 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
 void GPMEnclaveController::OnTrustThisComputer() {
   CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
         model_->step() == Step::kTrustThisComputerCreation);
+  if (model_->step() == Step::kTrustThisComputerCreation &&
+      model_->is_off_the_record) {
+    last_step_ = Step::kTrustThisComputerCreation;
+    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
+    return;
+  }
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 
@@ -909,10 +916,30 @@ void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
 }
 
 void GPMEnclaveController::OnGPMCreatePasskey() {
-  DCHECK_EQ(model_->step(), Step::kGPMCreatePasskey);
-  DCHECK(account_state_ == AccountState::kReady ||
-         account_state_ == AccountState::kReadyWithPIN ||
-         account_state_ == AccountState::kReadyWithBiometrics);
+  CHECK_EQ(model_->step(), Step::kGPMCreatePasskey);
+
+  if (model_->is_off_the_record) {
+    last_step_ = Step::kGPMCreatePasskey;
+    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
+    return;
+  }
+  ContinueGPMCreatePasskey();
+}
+
+void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
+  CHECK_EQ(model_->step(), Step::kGPMConfirmOffTheRecordCreate);
+  if (last_step_ == Step::kGPMCreatePasskey) {
+    ContinueGPMCreatePasskey();
+  } else {
+    CHECK_EQ(last_step_, Step::kTrustThisComputerCreation);
+    model_->SetStep(Step::kRecoverSecurityDomain);
+  }
+}
+
+void GPMEnclaveController::ContinueGPMCreatePasskey() {
+  CHECK(account_state_ == AccountState::kReady ||
+        account_state_ == AccountState::kReadyWithPIN ||
+        account_state_ == AccountState::kReadyWithBiometrics);
   if (account_state_ == AccountState::kReady) {
     StartTransaction();
   } else if (account_state_ == AccountState::kReadyWithPIN) {
