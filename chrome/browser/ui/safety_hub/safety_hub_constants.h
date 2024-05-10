@@ -29,7 +29,13 @@ extern const char kSafetyHubMenuNotificationResultKey[];
 // Key used for the dict of the Extensions result.
 extern const char kSafetyHubTriggeringExtensionIdsKey[];
 
-// Key used for the dict storing revoked permission.
+// Key of the expiration time in the |UnusedSitePermissions| object. Indicates
+// the time after which the associated origin and permissions are no longer
+// shown in the UI.
+extern const char kExpirationKey[];
+// Key of the lifetime in the |UnusedSitePermissions| object.
+extern const char kLifetimeKey[];
+// Key of the revoked chooser permissions in the |UnusedSitePermissions| object.
 extern const char kSafetyHubChooserPermissionsData[];
 
 // State that a top card in the Safety Hub page can be in.

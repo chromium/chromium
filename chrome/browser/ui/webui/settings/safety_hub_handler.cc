@@ -40,6 +40,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
@@ -60,12 +61,6 @@ using extensions::ExtensionRegistry;
 using safety_hub::SafetyHubCardState;
 
 namespace {
-// Key of the expiration time in the |UnusedSitePermissions| object. Indicates
-// the time after which the associated origin and permissions are no longer
-// shown in the UI.
-constexpr char kExpirationKey[] = "expiration";
-// Key of the lifetime in the |UnusedSitePermissions| object.
-constexpr char kLifetimeKey[] = "lifetime";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
@@ -98,11 +93,12 @@ PermissionsData GetUnusedSitePermissionsFromDict(
                                : base::Value::Dict();
 
   const base::Value* js_expiration =
-      unused_site_permissions.Find(kExpirationKey);
+      unused_site_permissions.Find(safety_hub::kExpirationKey);
   CHECK(js_expiration);
   base::Time expiration = base::ValueToTime(js_expiration).value();
 
-  const base::Value* js_lifetime = unused_site_permissions.Find(kLifetimeKey);
+  const base::Value* js_lifetime =
+      unused_site_permissions.Find(safety_hub::kLifetimeKey);
   // Users may edit the stored fields directly, so we cannot assume their
   // presence and validity.
   base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
@@ -283,27 +279,20 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     return result;
   }
 
-  HostContentSettingsMap* hcsm =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-
-  for (const auto& revoked_permissions : hcsm->GetSettingsForOneType(
-           ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
+  UnusedSitePermissionsService* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
+      service_result = service->GetRevokedPermissions();
+  for (const auto& permissions_data : service_result->GetRevokedPermissions()) {
     base::Value::Dict revoked_permission_value;
-    revoked_permission_value.Set(
-        site_settings::kOrigin, revoked_permissions.primary_pattern.ToString());
-    const base::Value& stored_value = revoked_permissions.setting_value;
-    DCHECK(stored_value.is_dict());
+    revoked_permission_value.Set(site_settings::kOrigin,
+                                 permissions_data.origin.ToString());
 
-    // The revoked permissions list should be reachable by given key.
-    DCHECK(stored_value.GetDict().FindList(permissions::kRevokedKey));
-
-    auto type_list =
-        stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
-    for (base::Value& type : type_list) {
+    for (ContentSettingsType type : permissions_data.permission_types) {
       std::string_view permission_str =
-          site_settings::ContentSettingsTypeToGroupName(
-              static_cast<ContentSettingsType>(type.GetInt()));
+          site_settings::ContentSettingsTypeToGroupName(type);
       if (!permission_str.empty()) {
         permissions_value_list.Append(permission_str);
       }
@@ -323,23 +312,20 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
         base::Value(std::move(permissions_value_list)));
 
     revoked_permission_value.Set(
-        kExpirationKey,
-        base::TimeToValue(revoked_permissions.metadata.expiration()));
+        safety_hub::kExpirationKey,
+        base::TimeToValue(permissions_data.constraints.expiration()));
 
     revoked_permission_value.Set(
-        kLifetimeKey,
-        base::TimeDeltaToValue(revoked_permissions.metadata.lifetime()));
+        safety_hub::kLifetimeKey,
+        base::TimeDeltaToValue(permissions_data.constraints.lifetime()));
 
-    auto* chooser_permissions_data_dict = stored_value.GetDict().FindDict(
-        permissions::kRevokedChooserPermissionsKey);
-    if (chooser_permissions_data_dict) {
-      revoked_permission_value.Set(
-          safety_hub::kSafetyHubChooserPermissionsData,
-          base::Value(chooser_permissions_data_dict->Clone()));
-    }
+    revoked_permission_value.Set(
+        safety_hub::kSafetyHubChooserPermissionsData,
+        base::Value(permissions_data.chooser_permissions_data.Clone()));
 
     result.Append(std::move(revoked_permission_value));
   }
+
   return result;
 }
 

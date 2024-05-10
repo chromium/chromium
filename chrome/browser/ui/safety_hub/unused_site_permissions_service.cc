@@ -547,7 +547,7 @@ UnusedSitePermissionsService::UpdateOnUIThread(
   return GetRevokedPermissions();
 }
 
-std::unique_ptr<UnusedSitePermissionsService::Result>
+std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
 UnusedSitePermissionsService::GetRevokedPermissions() {
   ContentSettingsForOneType settings = hcsm()->GetSettingsForOneType(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
@@ -573,6 +573,13 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
         revoked_permissions.metadata.lifetime());
     permissions_data.constraints.set_lifetime(
         revoked_permissions.metadata.lifetime());
+
+    auto* chooser_permissions_data_dict = stored_value.GetDict().FindDict(
+        permissions::kRevokedChooserPermissionsKey);
+    if (chooser_permissions_data_dict) {
+      permissions_data.chooser_permissions_data =
+          chooser_permissions_data_dict->Clone();
+    }
 
     result->AddRevokedPermission(permissions_data);
   }

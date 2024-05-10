@@ -181,7 +181,7 @@ class UnusedSitePermissionsService final : public SafetyHubService,
       const PermissionsData& permission_data);
 
   // Returns the list of all permissions that have been revoked.
-  std::unique_ptr<Result> GetRevokedPermissions();
+  std::unique_ptr<UnusedSitePermissionsResult> GetRevokedPermissions();
 
   // Stops or restarts permissions autorevocation upon the pref change.
   void OnPermissionsAutorevocationControlChanged();

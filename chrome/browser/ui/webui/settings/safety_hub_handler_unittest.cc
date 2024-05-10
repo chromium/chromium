@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -75,6 +76,7 @@ constexpr ContentSettingsType kUnusedRegularPermission =
     ContentSettingsType::GEOLOCATION;
 constexpr ContentSettingsType kUnusedChooserPermission =
     ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
+const base::TimeDelta kLifetime = base::Days(30);
 
 class SafetyHubHandlerTest : public testing::Test {
  public:
@@ -156,10 +158,13 @@ class SafetyHubHandlerTest : public testing::Test {
                          static_cast<int32_t>(kUnusedChooserPermission)),
                      base::Value::Dict().Set("foo", "bar")));
 
+    content_settings::ContentSettingConstraints constraint(clock()->Now());
+    constraint.set_lifetime(kLifetime);
+
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-        base::Value(dict.Clone()));
+        base::Value(dict.Clone()), constraint);
   }
 
   void CreateLeakedCredential() {
@@ -463,9 +468,23 @@ TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
   const auto& revoked_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions.size(), 1UL);
+  const auto& revoked_permission_dict = revoked_permissions[0].GetDict();
+
   EXPECT_EQ(GURL(kUnusedTestSite),
-            GURL(*revoked_permissions[0].GetDict().FindString(
-                site_settings::kOrigin)));
+            GURL(*revoked_permission_dict.FindString(site_settings::kOrigin)));
+
+  const auto expiration = base::ValueToTime(
+      *revoked_permission_dict.Find(safety_hub::kExpirationKey));
+  EXPECT_EQ(expiration, clock()->Now() + kLifetime);
+
+  const auto lifetime = base::ValueToTimeDelta(
+      *revoked_permission_dict.Find(safety_hub::kLifetimeKey));
+  EXPECT_EQ(lifetime, kLifetime);
+
+  const auto* chooser_permissions_data = revoked_permission_dict.FindDict(
+      safety_hub::kSafetyHubChooserPermissionsData);
+  EXPECT_TRUE(chooser_permissions_data->contains(
+      base::NumberToString(static_cast<int32_t>(kUnusedChooserPermission))));
 }
 
 TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
