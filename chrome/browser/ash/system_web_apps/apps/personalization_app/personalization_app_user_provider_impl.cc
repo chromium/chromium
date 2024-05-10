@@ -18,7 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
@@ -133,7 +133,7 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
   // Call observers manually the first time to initialize state.
   OnUserImageChanged(*user);
 
-  ash::UserImageManager* user_image_manager =
+  ash::UserImageManagerImpl* user_image_manager =
       ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
   const gfx::ImageSkia& profile_image =
       user_image_manager->DownloadedProfileImage();
@@ -177,8 +177,8 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
   }
 
   if (GetUser(profile_)->image_index() != index) {
-    ash::UserImageManager::RecordUserImageChanged(
-        ash::UserImageManager::ImageIndexToHistogramIndex(index));
+    ash::UserImageManagerImpl::RecordUserImageChanged(
+        ash::UserImageManagerImpl::ImageIndexToHistogramIndex(index));
   }
 
   auto* user_image_manager =
@@ -195,11 +195,11 @@ void PersonalizationAppUserProviderImpl::SelectProfileImage() {
 
   if (GetUser(profile_)->image_index() !=
       user_manager::User::USER_IMAGE_PROFILE) {
-    ash::UserImageManager::RecordUserImageChanged(
+    ash::UserImageManagerImpl::RecordUserImageChanged(
         ash::default_user_image::kHistogramImageFromProfile);
   }
 
-  ash::UserImageManager* user_image_manager =
+  ash::UserImageManagerImpl* user_image_manager =
       ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImageFromProfileImage();
@@ -238,11 +238,11 @@ void PersonalizationAppUserProviderImpl::SelectLastExternalUserImage() {
 
   if (GetUser(profile_)->image_index() !=
       user_manager::User::USER_IMAGE_EXTERNAL) {
-    ash::UserImageManager::RecordUserImageChanged(
+    ash::UserImageManagerImpl::RecordUserImageChanged(
         ash::default_user_image::kHistogramImageExternal);
   }
 
-  ash::UserImageManager* user_image_manager =
+  ash::UserImageManagerImpl* user_image_manager =
       ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImage(std::move(last_external_user_image_));
@@ -252,10 +252,10 @@ void PersonalizationAppUserProviderImpl::OnFileSelected(
     const base::FilePath& path) {
   // No way to tell if this is a different external image than last time, so
   // always record it.
-  ash::UserImageManager::RecordUserImageChanged(
+  ash::UserImageManagerImpl::RecordUserImageChanged(
       ash::default_user_image::kHistogramImageExternal);
 
-  ash::UserImageManager* user_image_manager =
+  ash::UserImageManagerImpl* user_image_manager =
       ash::UserImageManagerRegistry::Get()->GetManager(GetAccountId(profile_));
 
   user_image_manager->SaveUserImageFromFile(path);
@@ -370,7 +370,7 @@ void PersonalizationAppUserProviderImpl::OnCameraImageDecoded(
 
   // Every time we decode a camera image it is new, so always record a metric
   // here.
-  ash::UserImageManager::RecordUserImageChanged(
+  ash::UserImageManagerImpl::RecordUserImageChanged(
       ash::default_user_image::kHistogramImageFromCamera);
 
   auto user_image = std::make_unique<user_manager::UserImage>(

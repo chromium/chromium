@@ -5,22 +5,19 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_IMPL_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "components/user_manager/user.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AccountId;
+class PrefRegistrySimple;
 class ProfileDownloader;
 
 namespace base {
@@ -37,9 +34,23 @@ namespace ash {
 
 class UserImageSyncObserver;
 
-class UserImageManagerImpl : public UserImageManager,
-                             public ProfileDownloaderDelegate {
+// Provides a mechanism for updating user images. There is an instance of this
+// class for each user in the system.
+class UserImageManagerImpl : public ProfileDownloaderDelegate {
  public:
+  // The name of the histogram that records when a user changes a device image.
+  inline static constexpr char kUserImageChangedHistogramName[] =
+      "UserImage.Changed2";
+
+  // Converts `image_index` to UMA histogram value.
+  static int ImageIndexToHistogramIndex(int image_index);
+
+  // See histogram values in default_user_images.cc
+  static void RecordUserImageChanged(int histogram_value);
+
+  // Registers user image manager preferences.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   UserImageManagerImpl(const AccountId& account_id,
                        user_manager::UserManager* user_manager);
 
@@ -48,25 +59,66 @@ class UserImageManagerImpl : public UserImageManager,
 
   ~UserImageManagerImpl() override;
 
-  // UserImageManager:
-  void LoadUserImage() override;
-  void UserLoggedIn(bool user_is_new, bool user_is_local) override;
-  void UserProfileCreated() override;
-  void SaveUserDefaultImageIndex(int default_image_index) override;
-  void SaveUserImage(
-      std::unique_ptr<user_manager::UserImage> user_image) override;
-  void SaveUserImageFromFile(const base::FilePath& path) override;
-  void SaveUserImageFromProfileImage() override;
-  void DeleteUserImage() override;
-  const gfx::ImageSkia& DownloadedProfileImage() const override;
-  UserImageSyncObserver* GetSyncObserver() const override;
-  void Shutdown() override;
+  // Loads user image data from Local State.
+  void LoadUserImage();
 
-  bool IsUserImageManaged() const override;
-  void OnExternalDataSet(const std::string& policy) override;
-  void OnExternalDataCleared(const std::string& policy) override;
+  // Indicates that a user has just logged in.
+  void UserLoggedIn(bool user_is_new, bool user_is_local);
+
+  // Indicates that a user profile was created.
+  void UserProfileCreated();
+
+  // Sets user image to the default image with index `image_index`, sends
+  // LOGIN_USER_IMAGE_CHANGED notification and updates Local State.
+  void SaveUserDefaultImageIndex(int default_image_index);
+
+  // Saves image to file, sends LOGIN_USER_IMAGE_CHANGED notification and
+  // updates Local State.
+  void SaveUserImage(std::unique_ptr<user_manager::UserImage> user_image);
+
+  // Tries to load user image from disk; if successful, sets it for the user,
+  // sends LOGIN_USER_IMAGE_CHANGED notification and updates Local State.
+  void SaveUserImageFromFile(const base::FilePath& path);
+
+  // Sets profile image as user image for the user, sends
+  // LOGIN_USER_IMAGE_CHANGED notification and updates Local State. If
+  // the user is not logged-in or the last `DownloadProfileImage` call
+  // has failed, a default grey avatar will be used until the user logs
+  // in and profile image is downloaded successfully.
+  void SaveUserImageFromProfileImage();
+
+  // Deletes user image and the corresponding image file.
+  void DeleteUserImage();
+
+  // Returns the result of the last successful profile image download, if any.
+  // Otherwise, returns an empty bitmap.
+  const gfx::ImageSkia& DownloadedProfileImage() const;
+
+  // Returns sync observer attached to the user. Returns NULL if current
+  // user can't sync images or user is not logged in.
+  UserImageSyncObserver* GetSyncObserver() const;
+
+  // Unregisters preference observers before browser process shutdown.
+  // Also cancels any profile image download in progress.
+  void Shutdown();
+
+  // Returns true if the user image for the user is managed by
+  // policy and the user is not allowed to change it.
+  bool IsUserImageManaged() const;
+
+  // Invoked when an external data reference is set for the user.
+  void OnExternalDataSet(const std::string& policy);
+
+  // Invoked when the external data reference is cleared for the user.
+  void OnExternalDataCleared(const std::string& policy);
+
+  // Invoked when the external data referenced for the user has been
+  // fetched.  Failed fetches are retried and the method is called only
+  // when a fetch eventually succeeds. If a fetch fails permanently
+  // (e.g. because the external data reference specifies an invalid URL),
+  // the method is not called at all.
   void OnExternalDataFetched(const std::string& policy,
-                             std::unique_ptr<std::string> data) override;
+                             std::unique_ptr<std::string> data);
 
   // Sets the `downloaded_profile_image_` without downloading for testing.
   void SetDownloadedProfileImageForTesting(const gfx::ImageSkia& image);
@@ -77,15 +129,20 @@ class UserImageManagerImpl : public UserImageManager,
 
   // Key for a dictionary that maps user IDs to user image data with images
   // stored in JPEG format.
-  static const char kUserImageProperties[];
+  static constexpr char kUserImageProperties[] = "user_image_info";
+
   // Names of user image properties.
-  static const char kImagePathNodeName[];
-  static const char kImageIndexNodeName[];
-  static const char kImageURLNodeName[];
-  static const char kImageCacheUpdated[];
+  static constexpr char kImagePathNodeName[] = "path";
+  static constexpr char kImageIndexNodeName[] = "index";
+  static constexpr char kImageURLNodeName[] = "url";
+  static constexpr char kImageCacheUpdated[] = "cache_updated";
 
  private:
   friend class UserImageManagerTestBase;
+
+  // ID of user which images are managed by current instance of
+  // UserImageManager.
+  const AccountId account_id_;
 
   // Every image load or update is encapsulated by a Job. Whenever an image load
   // or update is requested for a user, the Job currently running for that user

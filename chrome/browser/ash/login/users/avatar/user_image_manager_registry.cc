@@ -33,7 +33,7 @@ UserImageManagerRegistry::~UserImageManagerRegistry() {
   g_instance = nullptr;
 }
 
-UserImageManager* UserImageManagerRegistry::GetManager(
+UserImageManagerImpl* UserImageManagerRegistry::GetManager(
     const AccountId& account_id) {
   auto it = map_.find(account_id);
   if (it == map_.end()) {

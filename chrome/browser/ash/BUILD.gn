@@ -2234,8 +2234,6 @@ source_set("ash") {
     "login/users/avatar/user_image_file_selector.h",
     "login/users/avatar/user_image_loader.cc",
     "login/users/avatar/user_image_loader.h",
-    "login/users/avatar/user_image_manager.cc",
-    "login/users/avatar/user_image_manager.h",
     "login/users/avatar/user_image_manager_impl.cc",
     "login/users/avatar/user_image_manager_impl.h",
     "login/users/avatar/user_image_manager_registry.cc",

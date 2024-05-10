@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
@@ -118,14 +117,8 @@ const char* ChooseExtensionFromImageFormat(
 
 }  // namespace
 
-const char UserImageManagerImpl::kUserImageProperties[] = "user_image_info";
-const char UserImageManagerImpl::kImagePathNodeName[] = "path";
-const char UserImageManagerImpl::kImageIndexNodeName[] = "index";
-const char UserImageManagerImpl::kImageURLNodeName[] = "url";
-const char UserImageManagerImpl::kImageCacheUpdated[] = "cache_updated";
-
 // static
-int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
+int UserImageManagerImpl::ImageIndexToHistogramIndex(int image_index) {
   switch (image_index) {
     case user_manager::User::USER_IMAGE_EXTERNAL:
       return default_user_image::kHistogramImageExternal;
@@ -137,8 +130,8 @@ int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
 }
 
 // static
-void UserImageManager::RecordUserImageChanged(int histogram_value) {
-  // Although |UserImageManager::kUserImageChangedHistogramName| is an
+void UserImageManagerImpl::RecordUserImageChanged(int histogram_value) {
+  // Although |UserImageManagerImpl::kUserImageChangedHistogramName| is an
   // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
   // emit the metric rather than UmaHistogramEnumeration(). This is because the
   // enums.xml values correspond to (a) special constants and (b) indexes of an
@@ -148,7 +141,7 @@ void UserImageManager::RecordUserImageChanged(int histogram_value) {
 }
 
 // static
-void UserImageManager::RegisterPrefs(PrefRegistrySimple* registry) {
+void UserImageManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(UserImageManagerImpl::kUserImageProperties);
 }
 
@@ -546,7 +539,7 @@ void UserImageManagerImpl::Job::NotifyJobDone() {
 UserImageManagerImpl::UserImageManagerImpl(
     const AccountId& account_id,
     user_manager::UserManager* user_manager)
-    : UserImageManager(account_id),
+    : account_id_(account_id),
       user_manager_(user_manager),
       downloading_profile_image_(false),
       has_managed_image_(false) {

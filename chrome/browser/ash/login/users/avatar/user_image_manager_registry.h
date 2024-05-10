@@ -20,7 +20,7 @@ class UserManager;
 
 namespace ash {
 
-class UserImageManager;
+class UserImageManagerImpl;
 
 // UserImageManger is per user. This manages the mapping from each user
 // identified by AccountId to UserImageManager.
@@ -39,7 +39,7 @@ class UserImageManagerRegistry : public user_manager::UserManager::Observer {
   // Returns the manager for the given avator.
   // If it is not instantiated, the call lazily creates the instance,
   // and returns the pointer.
-  UserImageManager* GetManager(const AccountId& account_id);
+  UserImageManagerImpl* GetManager(const AccountId& account_id);
 
   // Shuts down all UserImageManager this instance holds.
   void Shutdown();
@@ -52,7 +52,7 @@ class UserImageManagerRegistry : public user_manager::UserManager::Observer {
 
  private:
   const raw_ptr<user_manager::UserManager> user_manager_;
-  std::map<AccountId, std::unique_ptr<UserImageManager>> map_;
+  std::map<AccountId, std::unique_ptr<UserImageManagerImpl>> map_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

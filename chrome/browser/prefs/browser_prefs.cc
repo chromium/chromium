@@ -396,7 +396,7 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
@@ -1739,7 +1739,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
   ash::TimeZoneResolver::RegisterPrefs(registry);
-  ash::UserImageManager::RegisterPrefs(registry);
+  ash::UserImageManagerImpl::RegisterPrefs(registry);
   ash::UserSessionManager::RegisterPrefs(registry);
   ash::WebKioskAppManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);

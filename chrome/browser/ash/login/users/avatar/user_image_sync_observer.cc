@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -158,7 +158,7 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
   if ((synced_index == local_index) || !IsIndexSupported(synced_index)) {
     return;
   }
-  UserImageManager* image_manager =
+  UserImageManagerImpl* image_manager =
       UserImageManagerRegistry::Get()->GetManager(user_->GetAccountId());
   if (synced_index == user_manager::User::USER_IMAGE_PROFILE) {
     image_manager->SaveUserImageFromProfileImage();
