@@ -430,8 +430,7 @@ void AutofillAgent::FocusedElementChangedDeprecated(const WebElement& element) {
 
   // Calls HandleFocusChangeComplete() after notifying the focus is no longer on
   // the previous form, then early return. No need to notify the newly focused
-  // element because that will be done by HandleFocusChangeComplete() which
-  // triggers FormControlElementClicked().
+  // element because that will be done by HandleFocusChangeComplete().
   // Refer to http://crbug.com/1105254
   if ((config_.uses_keyboard_accessory_for_suggestions ||
        !config_.focus_requires_scroll) &&
@@ -1495,26 +1494,6 @@ bool AutofillAgent::IsPrerendering() const {
          unsafe_render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
 }
 
-void AutofillAgent::FormControlElementClicked(
-    const WebFormControlElement& element) {
-  was_last_action_fill_ = false;
-
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element.IsNull() && !form_util::IsTextAreaElement(element)) {
-    return;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
-    password_autofill_agent_->TryToShowKeyboardReplacingSurface(element);
-  }
-#endif
-
-  ShowSuggestions(element,
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked);
-}
-
 void AutofillAgent::HandleFocusChangeComplete(
     bool focused_node_was_last_clicked) {
   if (!unsafe_render_frame()) {
@@ -1535,7 +1514,17 @@ void AutofillAgent::HandleFocusChangeComplete(
   if (auto focused_control = focused_element.DynamicTo<WebFormControlElement>();
       form_util::IsTextAreaElementOrTextInput(focused_control)) {
     if (focused_node_was_last_clicked) {
-      FormControlElementClicked(focused_control);
+      was_last_action_fill_ = false;
+#if BUILDFLAG(IS_ANDROID)
+      if (!base::FeatureList::IsEnabled(
+              password_manager::features::kPasswordSuggestionBottomSheetV2)) {
+        password_autofill_agent_->TryToShowKeyboardReplacingSurface(
+            focused_control);
+      }
+#endif
+      ShowSuggestions(
+          focused_control,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
     } else if (form_util::IsTextAreaElement(focused_control)) {
       // Compose reacts to tab area focus even when not triggered by a click -
       // therefore call `ShowSuggestions` with a separate trigger source.

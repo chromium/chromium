@@ -192,8 +192,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
 
-  void FormControlElementClicked(const blink::WebFormControlElement& element);
-
   base::WeakPtr<AutofillAgent> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

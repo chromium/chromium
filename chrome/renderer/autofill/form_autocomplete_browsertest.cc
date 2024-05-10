@@ -236,88 +236,6 @@ std::vector<FormFieldData::FillData> GetFieldsForFilling(
   return fields;
 }
 
-void SimulateFillForm(const FormData& form_data,
-                      autofill::AutofillAgent* autofill_agent,
-                      blink::WebLocalFrame* main_frame) {
-  WebDocument document = main_frame->GetDocument();
-  WebFormControlElement fname_element =
-      document.GetElementById(WebString::FromUTF8("fname"))
-          .To<WebFormControlElement>();
-
-  ASSERT_FALSE(fname_element.IsNull());
-  // This call is necessary to setup the autofill agent appropriate for the
-  // user selection; simulates the menu actually popping up.
-  autofill_agent->FormControlElementClicked(
-      fname_element.To<WebInputElement>());
-
-  autofill_agent->ApplyFieldsAction(mojom::FormActionType::kFill,
-                                    mojom::ActionPersistence::kFill,
-                                    GetFieldsForFilling({form_data}));
-}
-
-// Simulates receiving a message from the browser to fill a form.
-void SimulateFillForm(autofill::AutofillAgent* autofill_agent,
-                      blink::WebLocalFrame* main_frame) {
-  FormData data = CreateAutofillFormData(main_frame);
-  SimulateFillForm(data, autofill_agent, main_frame);
-}
-
-// Simulates receiving a message from the browser to fill a form with an
-// additional non-autofillable field.
-void SimulateFillFormWithNonFillableFields(
-    autofill::AutofillAgent* autofill_agent,
-    blink::WebLocalFrame* main_frame) {
-  WebDocument document = main_frame->GetDocument();
-  WebFormControlElement fname_element =
-      document.GetElementById(WebString::FromUTF8("fname"))
-          .To<WebFormControlElement>();
-  ASSERT_FALSE(fname_element.IsNull());
-  WebFormControlElement mname_element =
-      document.GetElementById(WebString::FromUTF8("mname"))
-          .To<WebFormControlElement>();
-  ASSERT_FALSE(mname_element.IsNull());
-  WebFormControlElement lname_element =
-      document.GetElementById(WebString::FromUTF8("lname"))
-          .To<WebFormControlElement>();
-  ASSERT_FALSE(lname_element.IsNull());
-
-  // TODO(crbug.com/41495779): Update.
-  FormData form;
-  form.name = u"name";
-  form.url = GURL("http://example.com/");
-  form.action = GURL("http://example.com/blade.php");
-  form.renderer_id = test::MakeFormRendererId();  // Default value.
-
-  FormFieldData field;
-  field.set_name(u"fname");
-  field.set_value(u"John");
-  field.set_is_autofilled(true);
-  field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-  form.fields.push_back(field);
-
-  field.set_name(u"lname");
-  field.set_value(u"Smith");
-  field.set_is_autofilled(true);
-  field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-  form.fields.push_back(field);
-
-  // Additional non-autofillable field.
-  field.set_name(u"mname");
-  field.set_value(u"James");
-  field.set_is_autofilled(false);
-  field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
-  form.fields.push_back(field);
-
-  // This call is necessary to setup the autofill agent appropriate for the
-  // user selection; simulates the menu actually popping up.
-  autofill_agent->FormControlElementClicked(
-      fname_element.To<WebInputElement>());
-
-  autofill_agent->ApplyFieldsAction(mojom::FormActionType::kFill,
-                                    mojom::ActionPersistence::kFill,
-                                    GetFieldsForFilling({form}));
-}
-
 class FormAutocompleteTest : public ChromeRenderViewTest {
  public:
   FormAutocompleteTest() = default;
@@ -349,12 +267,91 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
             std::move(handle)));
   }
 
+  void SimulateElementClick(const WebElement element) {
+    SimulatePointClick(element.BoundsInWidget().CenterPoint());
+  }
+
   void SimulateUserInput(const blink::WebString& id, const std::string& value) {
     WebDocument document = GetMainFrame()->GetDocument();
     WebElement element = document.GetElementById(id);
     ASSERT_FALSE(element.IsNull());
     WebInputElement fname_element = element.To<WebInputElement>();
     SimulateUserInputChangeForElement(&fname_element, value);
+  }
+
+  // Simulates receiving a message from the browser to fill a form.
+  void SimulateFillForm() {
+    FormData data = CreateAutofillFormData(GetMainFrame());
+    SimulateFillForm(data);
+  }
+
+  void SimulateFillForm(const FormData& form_data) {
+    WebDocument document = GetMainFrame()->GetDocument();
+    WebFormControlElement fname_element =
+        document.GetElementById(WebString::FromUTF8("fname"))
+            .To<WebFormControlElement>();
+
+    ASSERT_FALSE(fname_element.IsNull());
+    // This call is necessary to setup the autofill agent appropriate for the
+    // user selection; simulates the menu actually popping up.
+    SimulateElementClick(fname_element);
+
+    autofill_agent_->ApplyFieldsAction(mojom::FormActionType::kFill,
+                                       mojom::ActionPersistence::kFill,
+                                       GetFieldsForFilling({form_data}));
+  }
+
+  // Simulates receiving a message from the browser to fill a form with an
+  // additional non-autofillable field.
+  void SimulateFillFormWithNonFillableFields() {
+    WebDocument document = GetMainFrame()->GetDocument();
+    WebFormControlElement fname_element =
+        document.GetElementById(WebString::FromUTF8("fname"))
+            .To<WebFormControlElement>();
+    ASSERT_FALSE(fname_element.IsNull());
+    WebFormControlElement mname_element =
+        document.GetElementById(WebString::FromUTF8("mname"))
+            .To<WebFormControlElement>();
+    ASSERT_FALSE(mname_element.IsNull());
+    WebFormControlElement lname_element =
+        document.GetElementById(WebString::FromUTF8("lname"))
+            .To<WebFormControlElement>();
+    ASSERT_FALSE(lname_element.IsNull());
+
+    // TODO(crbug.com/41495779): Update.
+    FormData form;
+    form.name = u"name";
+    form.url = GURL("http://example.com/");
+    form.action = GURL("http://example.com/blade.php");
+    form.renderer_id = test::MakeFormRendererId();  // Default value.
+
+    FormFieldData field;
+    field.set_name(u"fname");
+    field.set_value(u"John");
+    field.set_is_autofilled(true);
+    field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
+    form.fields.push_back(field);
+
+    field.set_name(u"lname");
+    field.set_value(u"Smith");
+    field.set_is_autofilled(true);
+    field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
+    form.fields.push_back(field);
+
+    // Additional non-autofillable field.
+    field.set_name(u"mname");
+    field.set_value(u"James");
+    field.set_is_autofilled(false);
+    field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
+    form.fields.push_back(field);
+
+    // This call is necessary to setup the autofill agent appropriate for the
+    // user selection; simulates the menu actually popping up.
+    SimulateElementClick(fname_element);
+
+    autofill_agent_->ApplyFieldsAction(mojom::FormActionType::kFill,
+                                       mojom::ActionPersistence::kFill,
+                                       GetFieldsForFilling({form}));
   }
 
   // This triggers a layout update to apply JS changes like display = 'none'.
@@ -388,7 +385,7 @@ TEST_F(FormAutocompleteTest, VerifyFocusAndBlurEventsAfterAutofill) {
   focus_test_utils_->FocusElement("fname");
 
   // Simulate filling the form using Autofill.
-  SimulateFillFormWithNonFillableFields(autofill_agent_, GetMainFrame());
+  SimulateFillFormWithNonFillableFields();
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:
@@ -416,7 +413,7 @@ TEST_F(FormAutocompleteTest,
   focus_test_utils_->FocusElement("fname");
 
   // Simulate filling the form using Autofill.
-  SimulateFillForm(autofill_agent_, GetMainFrame());
+  SimulateFillForm();
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:
@@ -444,7 +441,7 @@ TEST_F(FormAutocompleteTest,
   focus_test_utils_->FocusElement("fname");
 
   // Simulate filling the form using Autofill.
-  SimulateFillForm(autofill_agent_, GetMainFrame());
+  SimulateFillForm();
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:
@@ -474,7 +471,7 @@ TEST_F(FormAutocompleteTest, VerifyFocusAndBlurEventAfterElementAdded) {
   ExecuteJavaScriptForTests(
       "document.getElementById('fname').insertAdjacentHTML('beforebegin', "
       "'<label>Zip code:</label><input id=\"zip_code\"/>');");
-  SimulateFillForm(data, autofill_agent_, GetMainFrame());
+  SimulateFillForm(data);
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:
@@ -503,7 +500,7 @@ TEST_F(FormAutocompleteTest, VerifyFocusAndBlurEventAfterElementRemoved) {
   // Simulate filling the form using Autofill.
   FormData data = CreateAutofillFormData(GetMainFrame());
   ExecuteJavaScriptForTests("document.getElementById('lname').remove()");
-  SimulateFillForm(data, autofill_agent_, GetMainFrame());
+  SimulateFillForm(data);
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:
@@ -553,8 +550,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
     WebElement element = document.GetElementById(WebString::FromUTF8(c.id));
     ASSERT_FALSE(element.IsNull());
     WebInputElement input_element = element.To<WebInputElement>();
-    // Select this element in `autofill_agent_`.
-    autofill_agent_->FormControlElementClicked(input_element);
+    SimulateElementClick(input_element);
 
     autofill_agent_->AcceptDataListSuggestion(
         form_util::GetFieldRendererId(input_element), kSuggestion);
@@ -965,7 +961,7 @@ TEST_P(FormAutocompleteSubmissionTest, AjaxSucceeded_FilledFormIsInvisible) {
       "<html><form id='myForm' action='http://example.com/blade.php'>"
       "<input name='fname' id='fname'/>"
       "<input name='lname'/></form></html>");
-  SimulateFillForm(autofill_agent_, GetMainFrame());
+  SimulateFillForm();
 
   // Simulate user input since ajax request doesn't fire submission message
   // if there is no user input.
@@ -994,7 +990,7 @@ TEST_P(FormAutocompleteSubmissionTest, AjaxSucceeded_FilledFormStillVisible) {
       "<html><form id='myForm' action='http://example.com/blade.php'>"
       "<input name='fname' id='fname' value='Rick'/>"
       "<input name='lname' value='Deckard'/></form></html>");
-  SimulateFillForm(autofill_agent_, GetMainFrame());
+  SimulateFillForm();
 
   // Form still visible.
 
