@@ -3420,6 +3420,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3566721612727112615">Nessun sito aggiunto</translation>
 <translation id="3567284462585300767">Per ricevere e accettare i file con le persone intorno a te, renditi visibile</translation>
 <translation id="356738834800832239">La password è stata salvata</translation>
+<translation id="3568431410312984116">Consenti l'apertura automatica di "Aiutami a scrivere"</translation>
 <translation id="3569382839528428029">Vuoi consentire a <ph name="APP_NAME" /> di condividere il tuo schermo?</translation>
 <translation id="3569614820047645079">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook per potervi accedere senza connessione a internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> può visualizzare i file e le cartelle indicati di seguito</translation>
@@ -5895,6 +5896,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
 <translation id="5477089831058413614">Configura l'hotspot di <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
+<translation id="5481682542063333508">Offri aiuto con la scrittura</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5482417738572414119">Accedi per consentire a Chrome di suggerire gruppi di schede e mantenere organizzate le tue schede</translation>
 <translation id="5484181871714116891">Se attivate, le passkey vengono create nel portachiavi iCloud e sono disponibili su tutti i tuoi dispositivi Apple. Se l'opzione è disattivata, le passkey vengono create nel tuo profilo Chrome su questo dispositivo.</translation>
@@ -10099,6 +10101,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="869167754614449887"><ph name="FILE_NAME" /> eliminato dalla cronologia dei download</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
 <translation id="8693639060656817812">Scopri di più sulla disponibilità della Protezione antitracciamento</translation>
+<translation id="8693862390730570097">Non consentire l'apertura automatica di "Aiutami a scrivere"</translation>
 <translation id="8694596275649352090">Blocca quando sospeso o alla chiusura del coperchio</translation>
 <translation id="8695139659682234808">Aggiungi la funzionalità Controllo genitori dopo la configurazione</translation>
 <translation id="8695825812785969222">Apri &amp;percorso...</translation>
@@ -10686,6 +10689,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9112987648460918699">Trova...</translation>
 <translation id="9113240369465613386">Solo pagine dispari</translation>
 <translation id="9113469270512809735">Visualizza/nascondi elementi chiusi di recente</translation>
+<translation id="9113529408970052045">"Aiutami a scrivere" può aprirsi automaticamente quando una casella di testo su un sito può essere riempita con contenuti brevi</translation>
 <translation id="9114663181201435112">Accedi facilmente</translation>
 <translation id="9115675100829699941">&amp;Preferiti</translation>
 <translation id="9115932142612197835">Questa impostazione non modifica la disponibilità di Google Traduttore o Lens</translation>

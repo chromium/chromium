@@ -49,7 +49,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1682634494516646069">Google Chrome kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="1698376642261615901">Google Chrome är en webbläsare som kör webbsidor och program med ljusets hastighet. Den är snabb, stabil och lätt att använda. Surfa säkrare med Google Chrome, som har inbyggt skydd mot skadlig programvara och nätfiske.</translation>
+<translation id="1698376642261615901">Google Chrome är en webbläsare som kör webbsidor och program med ljusets hastighet. Den är snabb, stabil och lätt att använda. Surfa säkrare med Google Chrome, som har inbyggt skydd mot skadlig kod och nätfiske.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Om en timme startas Chrome om}other{Om # timmar startas Chrome om}}</translation>
 <translation id="1734234790201236882">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
@@ -86,7 +86,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2290095356545025170">Är du säker på att du vill avinstallera Google Chrome?</translation>
 <translation id="2298849085402457754"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill rensa webbinformation från enheten utan att ta bort den från Google-kontot.</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
-<translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig programvara:</translation>
+<translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig kod:</translation>
 <translation id="2348335408836342058">Du behöver ge Chrome behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="234869673307233423">Chrome kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="235650106824528204">All data i Chrome som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
@@ -95,7 +95,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Minst ett Chrome-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chrome-tillägg har åtkomst till 1 styrdon}other{Minst ett Chrome-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2424440923901031101">Det här tillägget strider mot policyn för Chrome Web Store och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2467438592969358367">Lösenorden exporteras från Google Chrome. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
-<translation id="2472092250898121027">Tillägget innehåller skadlig programvara och är osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
+<translation id="2472092250898121027">Tillägget innehåller skadlig kod och är osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2472163211318554013">Logga in så att du får ut mesta möjliga av Chrome</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2513154137948333830">Omstart krävs: <ph name="INSTALL_SUCCESS" /></translation>
@@ -151,7 +151,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3100998948628680988">Ge Chrome-profilen ett namn</translation>
 <translation id="3112458742631356345">Den här nedladdningen blockerades av Chrome eftersom filen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />Logga in i Chrome<ph name="END_LINK" /> om du vill kontrollera att dina andra lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
-<translation id="3119573284443908657">Den här nedladdningen blockerades av Chrome eftersom arkivfilen innehåller andra filer som kan dölja skadlig programvara</translation>
+<translation id="3119573284443908657">Den här nedladdningen blockerades av Chrome eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="3140883423282498090">Ändringarna börjar gälla nästa gång du startar Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-appar</translation>
 <translation id="3169523567916669830">Under provperioden kan du se och ta bort ämnen som du är intresserad av och som används på webbplatser för att visa annonser. Uppskattningen av vad du är intresserad av görs utifrån den senaste webbhistoriken i Chrome.</translation>
@@ -179,7 +179,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3622797965165704966">Nu är det enklare att använda Chrome med ditt Google-konto och på delade datorer.</translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="3667616615096815454">Det gick inte att installera appen. Appen är okänd för servern.</translation>
-<translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig programvara</translation>
+<translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="3697952514309507634">Andra Chrome-profiler</translation>
 <translation id="3703994572283698466">ChromeOS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" /> program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-version</translation>
@@ -228,7 +228,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="436060642166082913">Den här nedladdningen blockerades av Chrome eftersom filen kan skada dina personliga konton och sociala nätverkskonton</translation>
 <translation id="4384570495110188418">Chrome kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
 <translation id="4389991535395284064">När du surfar i inkognitoläge visas en varning i Chrome innan en webbplats läses in med en osäker anslutning</translation>
-<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
+<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4459234553906210702">Genom annonsmätning kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>

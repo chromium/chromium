@@ -3438,6 +3438,7 @@
 <translation id="3566721612727112615">추가된 사이트 없음</translation>
 <translation id="3567284462585300767">주변의 사람과 파일을 주고받으려면 표시되도록 전환하세요.</translation>
 <translation id="356738834800832239">비밀번호가 저장됨</translation>
+<translation id="3568431410312984116">'작성 지원 기능'이 자동으로 열리도록 허용</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" />에서 내 화면을 공유하도록 허용하시겠습니까?</translation>
 <translation id="3569614820047645079">내 드라이브에 있는 파일이 Chromebook에 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" />에서 다음 파일과 폴더를 볼 수 있습니다.</translation>
@@ -5912,6 +5913,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다. 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> 핫스팟 구성</translation>
 <translation id="5481273127572794904">여러 파일 자동 다운로드가 허용되지 않음</translation>
+<translation id="5481682542063333508">작성 도움 제공</translation>
 <translation id="5481941284378890518">주변 프린터 추가</translation>
 <translation id="5482417738572414119">로그인하면 Chrome에서 탭 그룹을 추천하고 탭을 깔끔하게 정리할 수 있습니다.</translation>
 <translation id="5484181871714116891">사용 설정하면 iCloud 키체인에서 패스키가 생성되고 Apple 기기에서 사용할 수 있습니다. 사용 중지하면 이 기기의 Chrome 프로필에서 패스키가 생성됩니다.</translation>
@@ -10119,6 +10121,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="869167754614449887">다운로드 기록에서 <ph name="FILE_NAME" /> 파일이 삭제되었습니다.</translation>
 <translation id="8692107307702113268">비밀번호가 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="8693639060656817812">추적 보호 사용 가능 여부에 관해 자세히 알아보기</translation>
+<translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695139659682234808">설정 완료 후 자녀 보호 기능 추가</translation>
 <translation id="8695825812785969222">위치 열기(&amp;L)...</translation>
@@ -10706,6 +10709,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9112987648460918699">찾기...</translation>
 <translation id="9113240369465613386">홀수 페이지만</translation>
 <translation id="9113469270512809735">최근에 닫은 항목 전환</translation>
+<translation id="9113529408970052045">사이트의 텍스트 상자에 짧은 형식의 콘텐츠를 입력할 수 있을 때 '작성 지원 기능'이 자동으로 열릴 수 있습니다.</translation>
 <translation id="9114663181201435112">간편한 로그인</translation>
 <translation id="9115675100829699941">북마크(&amp;B)</translation>
 <translation id="9115932142612197835">이 설정을 사용해도 Google 번역 또는 렌즈 사용 가능 여부는 변경되지 않습니다.</translation>

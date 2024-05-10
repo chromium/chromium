@@ -3424,6 +3424,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3566721612727112615">Aucun site ajouté</translation>
 <translation id="3567284462585300767">Devenez visible afin de recevoir et d'accepter des fichiers provenant de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
+<translation id="3568431410312984116">Autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran?</translation>
 <translation id="3569614820047645079">Vos fichiers dans Mon Disque sont automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut consulter les fichiers et les dossiers suivants</translation>
@@ -5899,6 +5900,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5474859849784484111"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).</translation>
 <translation id="5477089831058413614">Configurer le point d'accès sans fil de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Non autorisés à télécharger automatiquement plusieurs fichiers</translation>
+<translation id="5481682542063333508">Offrir l'aide à la rédaction</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5482417738572414119">Connectez-vous pour permettre à Chrome de suggérer des groupes d'onglets et de maintenir l'organisation de vos onglets</translation>
 <translation id="5484181871714116891">Lorsque cette option est activée, les clés d'accès sont créées dans le trousseau iCloud et sont accessibles sur vos appareils Apple. Lorsqu'elle est désactivée, les clés d'accès sont créées dans votre profil Chrome sur cet appareil.</translation>
@@ -6275,7 +6277,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5773628847865626753">lanceur+ctrl+majuscule+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="5775777649329475570">Retirer les applications Google Play et Android?</translation>
-<translation id="5775863968701268310">Gérer les préférences de Google Play</translation>
+<translation id="5775863968701268310">Gérer les préférences Google Play</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (paramètre système par défaut)</translation>
 <translation id="5776450228446082914">La liste des sites Web qui peuvent s'ouvrir dans l'un ou l'autre des navigateurs.</translation>
 <translation id="5776571780337000608">Vous pouvez ouvrir et modifier les fichiers pris en charge avec cette application à partir de votre explorateur de fichiers ou d'autres applications. Pour contrôler quels fichiers ouvrent cette application par défaut, <ph name="BEGIN_LINK" />découvrez comment définir des applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
@@ -10106,6 +10108,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="869167754614449887"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements</translation>
 <translation id="8692107307702113268">Le mot de passe comprend plus de 1 000 caractères</translation>
 <translation id="8693639060656817812">En savoir plus sur l'accessibilité de la protection contre le suivi</translation>
+<translation id="8693862390730570097">Ne pas autoriser l'ouverture automatique de l'« Aide à la rédaction »</translation>
 <translation id="8694596275649352090">Verrouiller lorsque l'appareil est en veille ou que le couvercle est fermé</translation>
 <translation id="8695139659682234808">Ajouter des contrôles parentaux après la configuration</translation>
 <translation id="8695825812785969222">Atteindre un emp&amp;lacement…</translation>
@@ -10693,6 +10696,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9113240369465613386">Pages impaires uniquement</translation>
 <translation id="9113469270512809735">Basculez entre les éléments récemment fermés</translation>
+<translation id="9113529408970052045">L'« Aide à la rédaction » peut s'ouvrir automatiquement lorsqu'une zone de texte sur un site peut être remplie par du contenu abrégé</translation>
 <translation id="9114663181201435112">Connectez-vous facilement</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>
 <translation id="9115932142612197835">Ce paramètre ne modifie pas l'accessibilité de Google Traduction ni de Google Lentille.</translation>

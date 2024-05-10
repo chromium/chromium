@@ -3437,6 +3437,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3566721612727112615">Walang naidagdag na site</translation>
 <translation id="3567284462585300767">Para tumanggap ng mga file mula sa mga tao sa paligid mo, maging visible</translation>
 <translation id="356738834800832239">Na-save ang Password Mo</translation>
+<translation id="3568431410312984116">Payagang awtomatikong bumukas ang "Tulungan akong magsulat"</translation>
 <translation id="3569382839528428029">Gusto mo bang ibahagi ng <ph name="APP_NAME" /> ang iyong screen?</translation>
 <translation id="3569614820047645079">Awtomatikong nagsi-sync sa iyong Chromebook ang mga file mo sa Aking Drive kaya maa-access mo ang mga ito nang walang koneksyon sa internet.</translation>
 <translation id="3569682580018832495">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga sumusunod na file at folder</translation>
@@ -5913,6 +5914,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5474859849784484111">Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta ka sa Wi-Fi ngayon at mag-download ng update. O mag-download mula sa isang nakametrong koneksyon (posibleng may nalalapat na mga singil).</translation>
 <translation id="5477089831058413614">I-configure ang hotspot ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Hindi pinapayagang awtomatikong mag-download ng maraming file</translation>
+<translation id="5481682542063333508">Mag-alok ng tulong sa pagsusulat</translation>
 <translation id="5481941284378890518">Magdagdag ng Mga Printer na Nasa Malapit</translation>
 <translation id="5482417738572414119">Mag-sign in para payagan ang Chrome na magmungkahi ng mga grupo ng tab at panatilihing nakaayos ang iyong mga tab</translation>
 <translation id="5484181871714116891">Kapag naka-on, sa iCloud Keychain gagawin ang mga passkey at magiging available ang mga ito sa iyong mga Apple device. Kapag naka-off, gagawin ang mga passkey sa iyong profile sa Chrome sa device na ito.</translation>
@@ -10123,6 +10125,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="869167754614449887">Na-delete ang <ph name="FILE_NAME" /> sa history ng pag-download</translation>
 <translation id="8692107307702113268">Mahigit sa 1000 character ang password</translation>
 <translation id="8693639060656817812">Matuto pa tungkol sa availability ng Proteksyon sa Pag-track</translation>
+<translation id="8693862390730570097">Huwag payagang awtomatikong bumukas ang "Tulungan akong magsulat"</translation>
 <translation id="8694596275649352090">I-lock kapag naka-sleep o nakasara ang takip</translation>
 <translation id="8695139659682234808">Magdagdag ng parental controls pagkatapos mag-set up</translation>
 <translation id="8695825812785969222">Buksan ang &amp;Lokasyon...</translation>
@@ -10712,6 +10715,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9113240369465613386">Mga odd na pahina lang</translation>
 <translation id="9113469270512809735">I-toggle ang Mga Kamakailang Isinarang Item</translation>
+<translation id="9113529408970052045">Awtomatikong mabubuksan ang "Tulungan akong magsulat" kapag mapupunan ng short-form na content ang text box sa site</translation>
 <translation id="9114663181201435112">Mag-sign in nang walang kahirap-hirap</translation>
 <translation id="9115675100829699941">&amp;Mga Bookmark</translation>
 <translation id="9115932142612197835">Hindi binabago ng setting na ito ang availability ng Google Translate o Lens</translation>

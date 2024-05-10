@@ -3424,6 +3424,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3566721612727112615">Nema dodanih web-lokacija</translation>
 <translation id="3567284462585300767">Da biste primali i prihvaćali datoteke osoba u blizini, postanite vidljivi</translation>
 <translation id="356738834800832239">Zaporka je spremljena</translation>
+<translation id="3568431410312984116">Dopusti automatsko otvaranje pomoći pri pisanju</translation>
 <translation id="3569382839528428029">Želite li da <ph name="APP_NAME" /> dijeli vaš zaslon?</translation>
 <translation id="3569614820047645079">Vaše datoteke na stranici Moj disk automatski se sinkroniziraju s vašim Chromebookom kako biste im mogli pristupati bez internetske veze.</translation>
 <translation id="3569682580018832495">Web-lokacija <ph name="ORIGIN" /> može pregledavati sljedeće datoteke i mape</translation>
@@ -5899,6 +5900,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5474859849784484111"><ph name="MANAGER" /> zahtijeva da se odmah povežete s Wi-Fijem i preuzmete ažuriranje. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).</translation>
 <translation id="5477089831058413614">Konfiguriraj žarišnu točku uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nije dopušteno automatsko preuzimanje više datoteka</translation>
+<translation id="5481682542063333508">Ponuda pomoći pri pisanju</translation>
 <translation id="5481941284378890518">Dodaj pisače u blizini</translation>
 <translation id="5482417738572414119">prijaviti se da bi Chrome mogao predlagati grupe kartica i organizirati vaše kartice</translation>
 <translation id="5484181871714116891">Kada je ta opcija uključena, pristupni ključevi izrađuju se u iCloud Keychainu i dostupni su na Apple uređajima. Kada je ta opcija isključena, pristupni ključevi izrađuju se na vašem Chrome profilu na ovom uređaju.</translation>
@@ -10107,6 +10109,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="869167754614449887">Datoteka <ph name="FILE_NAME" /> izbrisana je iz povijesti preuzimanja</translation>
 <translation id="8692107307702113268">Broj znakova zaporke ne smije biti veći od 1000</translation>
 <translation id="8693639060656817812">Saznajte više o dostupnosti zaštite od praćenja</translation>
+<translation id="8693862390730570097">Nemoj dopustiti automatsko otvaranje pomoći pri pisanju</translation>
 <translation id="8694596275649352090">Zaključaj tijekom mirovanja ili kad je poklopac zatvoren</translation>
 <translation id="8695139659682234808">Dodavanje roditeljskog nadzora nakon postavljanja</translation>
 <translation id="8695825812785969222">Open &amp;Location... (Otvori Lokaciju...)</translation>
@@ -10696,6 +10699,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9112987648460918699">Traži...</translation>
 <translation id="9113240369465613386">Samo neparne stranice</translation>
 <translation id="9113469270512809735">Uključi/isključi nedavno zatvorene stavke</translation>
+<translation id="9113529408970052045">Pomoć pri pisanju može se automatski otvoriti kad se tekstni okvir na web-lokaciji može ispuniti sadržajem kratkog formata</translation>
 <translation id="9114663181201435112">Jednostavna prijava</translation>
 <translation id="9115675100829699941">&amp;Bookmarks (Oznake)</translation>
 <translation id="9115932142612197835">Ova postavka ne mijenja dostupnost Google prevoditelja i Objektiva</translation>

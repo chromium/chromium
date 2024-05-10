@@ -96,7 +96,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2718390899429598676">Din data krypteras i Chromium för att öka säkerheten.</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2770231113462710648">Ändra standardwebbläsare till:</translation>
-<translation id="2785438272836277133">Tillägget innehåller skadlig programvara och är osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
+<translation id="2785438272836277133">Tillägget innehåller skadlig kod och är osäkert. Ta bort det från Chromium så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2837693172913560447">En ny Chromium-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2846251086934905009">Installationsfel: Installationsprogrammet slutfördes inte. Installationen har avbrutits.</translation>
@@ -194,7 +194,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
-<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
+<translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
 <translation id="452711251841752011">Välkommen till Chromium, ett nytt webbläsarfönster har öppnats</translation>
@@ -258,7 +258,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
-<translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
+<translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig kod:</translation>
 <translation id="5889361821821684993">Chromium kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nätverksinloggning</translation>
@@ -344,7 +344,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="684888714667046800">Det går inte att ansluta till internet. Om du använder en brandvägg kontrollerar du att <ph name="PRODUCT_EXE_NAME" /> finns med i godkännandelistan.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
-<translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig programvara</translation>
+<translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="691026815377248078">Chromium behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -467,7 +467,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8988036198400390003">Hantera Chromium-profiler</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
-<translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig programvara</translation>
+<translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="907832235989677238">Logga in i Chromium. Om du bara vill logga in en gång med ett konto kan du <ph name="GUEST_LINK_BEGIN" />använda enheten som gäst<ph name="GUEST_LINK_END" />.</translation>
 <translation id="9078733879136747090">Chromium avslutades automatiskt</translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>

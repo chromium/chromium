@@ -3436,6 +3436,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3566721612727112615">Tiada tapak ditambahkan</translation>
 <translation id="3567284462585300767">Untuk menerima fail daripada orang di sekitar anda, hidupkan keterlihatan</translation>
 <translation id="356738834800832239">Kata Laluan Anda Telah Disimpan</translation>
+<translation id="3568431410312984116">Benarkan "Bantu saya tulis" untuk dibuka secara automatik</translation>
 <translation id="3569382839528428029">Adakah anda ingin <ph name="APP_NAME" /> berkongsi skrin anda?</translation>
 <translation id="3569614820047645079">Fail anda dalam My Drive disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> boleh melihat fail dan folder berikut</translation>
@@ -5912,6 +5913,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5474859849784484111"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).</translation>
 <translation id="5477089831058413614">Konfigurasikan tempat liputan <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Tidak dibenarkan untuk memuat turun berbilang fail secara automatik</translation>
+<translation id="5481682542063333508">Tawaran bantuan menulis</translation>
 <translation id="5481941284378890518">Tambahkan Pencetak Berdekatan</translation>
 <translation id="5482417738572414119">Log masuk untuk membolehkan Chrome mencadangkan kumpulan tab dan memastikan tab anda tersusun</translation>
 <translation id="5484181871714116891">Apabila dihidupkan, kunci laluan dibuat dalam iCloud Keychain dan tersedia merentas semua peranti Apple anda. Apabila dimatikan, kunci laluan dibuat dalam profil Chrome anda pada peranti ini.</translation>
@@ -10120,6 +10122,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> dipadamkan daripada sejarah panggilan</translation>
 <translation id="8692107307702113268">Kata laluan melebihi 1000 aksara</translation>
 <translation id="8693639060656817812">Ketahui lebih lanjut tentang ketersediaan Perlindungan Penjejakan</translation>
+<translation id="8693862390730570097">Jangan benarkan "Bantu saya tulis" untuk dibuka secara automatik</translation>
 <translation id="8694596275649352090">Kunci apabila tidur atau penutup ditutup</translation>
 <translation id="8695139659682234808">Tambah kawalan ibu bapa selepas persediaan</translation>
 <translation id="8695825812785969222">Buka &amp;Lokasi...</translation>
@@ -10707,6 +10710,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9113240369465613386">Halaman nombor ganjil sahaja</translation>
 <translation id="9113469270512809735">Togol Item yang Ditutup Baru-baru Ini</translation>
+<translation id="9113529408970052045">"Bantu saya tulis" boleh dibuka secara automatik apabila kotak teks pada laman boleh diisi dengan kandungan bentuk pendek</translation>
 <translation id="9114663181201435112">Log masuk dengan mudah</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
 <translation id="9115932142612197835">Tetapan ini tidak mengubah ketersediaan Google Translate atau Lens</translation>

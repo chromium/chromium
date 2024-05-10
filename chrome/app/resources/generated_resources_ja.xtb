@@ -3229,7 +3229,7 @@
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> を解放しました</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
-<translation id="3433507769937235446">退席時ロック</translation>
+<translation id="3433507769937235446">離席時ロック</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434025015623587566">Google パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -3414,6 +3414,7 @@
 <translation id="3566721612727112615">サイトが追加されていません</translation>
 <translation id="3567284462585300767">近くのユーザーとファイルを送受信するには、デバイスを公開してください</translation>
 <translation id="356738834800832239">パスワードを保存しました</translation>
+<translation id="3568431410312984116">「文書作成サポート」を自動的に開くことを許可する</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> と画面を共有しますか？</translation>
 <translation id="3569614820047645079">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> は次のファイルとフォルダを表示できます</translation>
@@ -5884,6 +5885,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> が、アップデートを今すぐダウンロードするよう求めています。Wi-Fi に接続するか、現在の従量制接続でのダウンロードを許可してください（通信料が発生することがあります）。</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> のアクセス ポイント設定</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
+<translation id="5481682542063333508">文書作成をサポートする</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5482417738572414119">タブグループの提案機能を使ってタブを整理するには、ログインしてください</translation>
 <translation id="5484181871714116891">オンにした場合、パスキーが iCloud キーチェーンで作成され、Apple デバイスで使用できるようになります。オフにした場合、パスキーはこのデバイスの Chrome プロフィールで作成されます。</translation>
@@ -10086,6 +10088,7 @@
 <translation id="869167754614449887">ダウンロード履歴から <ph name="FILE_NAME" /> を削除しました</translation>
 <translation id="8692107307702113268">パスワードが 1,000 文字を超えています</translation>
 <translation id="8693639060656817812">トラッキング防止機能の提供状況の詳細</translation>
+<translation id="8693862390730570097">「文書作成サポート」を自動的に開くことを許可しない</translation>
 <translation id="8694596275649352090">スリープ状態またはディスプレイを閉じたときにロックする</translation>
 <translation id="8695139659682234808">セットアップ後に保護者による使用制限を設定できます</translation>
 <translation id="8695825812785969222">場所を開く（&amp;L）...</translation>
@@ -10673,6 +10676,7 @@
 <translation id="9112987648460918699">検索...</translation>
 <translation id="9113240369465613386">奇数のページのみ</translation>
 <translation id="9113469270512809735">最近閉じたアイテムを切り替える</translation>
+<translation id="9113529408970052045">サイトのテキスト ボックスに短いコンテンツを入力できる場合に、「文書作成サポート」を自動的に開くことができます</translation>
 <translation id="9114663181201435112">簡単にログイン</translation>
 <translation id="9115675100829699941">ブックマーク(&amp;B)</translation>
 <translation id="9115932142612197835">この設定を行っても、Google 翻訳やレンズはこれまでどおり使用できます</translation>

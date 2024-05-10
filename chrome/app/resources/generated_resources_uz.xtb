@@ -3423,6 +3423,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3566721612727112615">Birorta ham sayt qo‘shilmagan</translation>
 <translation id="3567284462585300767">Atrofdagi odamlardan fayl qabul qilish uchun ularga koʻrinish lozim</translation>
 <translation id="356738834800832239">Parolingiz saqlandi</translation>
+<translation id="3568431410312984116">"Matn yordamchisi" avtomatik ochilsin</translation>
 <translation id="3569382839528428029">“<ph name="APP_NAME" />” ilovasiga ekraningizdan foydalanishga ruxsat berilsinmi?</translation>
 <translation id="3569614820047645079">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> quyidagi fayl va jildlarni koʻra oladi</translation>
@@ -5899,6 +5900,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5474859849784484111"><ph name="MANAGER" /> domeni hoziroq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> hotspotini sozlash</translation>
 <translation id="5481273127572794904">Bir nechta faylni avtomatik yuklab olish taqiqlangan</translation>
+<translation id="5481682542063333508">Matn yozishda yordam taklifi chiqsin</translation>
 <translation id="5481941284378890518">Yaqin-atrofdagi printerlarni qo‘shish</translation>
 <translation id="5482417738572414119">Chrome varaqlar guruhini taklif qilishi va varaqlarni tartiblab turishi uchun hisobga kiring</translation>
 <translation id="5484181871714116891">Yoniq boʻlsa, iCloud Keychain orqali yaratilgan kalitlardan barcha Apple qurilmalarida foydalanish mumkin. Oʻchiq boʻlsa, bu qurilmada kalitlar Chrome profili orqali yaratiladi.</translation>
@@ -10103,6 +10105,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="869167754614449887"><ph name="FILE_NAME" /> yuklanmalar tarixidan oʻchirildi</translation>
 <translation id="8692107307702113268">Parolda 1000 tadan ortiq belgi kiritildi</translation>
 <translation id="8693639060656817812">Kuzatuvdan himoya qachon ishlashi haqida batafsil</translation>
+<translation id="8693862390730570097">"Matn yordamchisi" avtomatik ochilmasin</translation>
 <translation id="8694596275649352090">Uxlayotganda yoki qopqoq yopilganda qulflansin</translation>
 <translation id="8695139659682234808">Sozlash tugaganidan keyin ota-ona nazoratini kiritish</translation>
 <translation id="8695825812785969222">&amp;Joylashuvni ochish...</translation>
@@ -10690,6 +10693,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9112987648460918699">Qidirish...</translation>
 <translation id="9113240369465613386">Faqat toq sonli sahifalar</translation>
 <translation id="9113469270512809735">Oxirgi yopilganlar tugmasi</translation>
+<translation id="9113529408970052045">Saytdagi matn maydonida qisqa kontent kiritishda "Matn yordamchisi" avtomatik ochilsin</translation>
 <translation id="9114663181201435112">Osongina kirish</translation>
 <translation id="9115675100829699941">&amp;Xatcho‘plar</translation>
 <translation id="9115932142612197835">Bu sozlama Google Translate yoki Lens imkoniyatlarini oʻzgartirmaydi</translation>

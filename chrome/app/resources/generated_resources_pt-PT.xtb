@@ -3422,6 +3422,7 @@ Quer pará-lo?</translation>
 <translation id="3566721612727112615">Nenhum site adicionado</translation>
 <translation id="3567284462585300767">Para receber e aceitar ficheiros de pessoas à sua volta, torne-se visível</translation>
 <translation id="356738834800832239">A sua palavra-passe foi guardada</translation>
+<translation id="3568431410312984116">Permitir que a opção "Ajuda-me a escrever" seja aberta automaticamente</translation>
 <translation id="3569382839528428029">Deseja que <ph name="APP_NAME" /> partilhe o seu ecrã?</translation>
 <translation id="3569614820047645079">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e pastas</translation>
@@ -5897,6 +5898,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5474859849784484111">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).</translation>
 <translation id="5477089831058413614">Configure a zona Wi-Fi do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
+<translation id="5481682542063333508">Oferecer ajuda na escrita</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5482417738572414119">Inicie sessão para permitir que o Chrome sugira grupos de separadores e mantenha os seus separadores organizados</translation>
 <translation id="5484181871714116891">Quando a opção está ativada, as chaves de acesso são criadas no Porta-chaves iCloud e estão disponíveis nos seus dispositivos Apple. Quando a opção está desativada, as chaves de acesso são criadas no seu perfil do Chrome neste dispositivo.</translation>
@@ -10105,6 +10107,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="869167754614449887">Eliminou o ficheiro <ph name="FILE_NAME" /> do histórico de transferências</translation>
 <translation id="8692107307702113268">A palavra-passe tem mais de 1000 carateres</translation>
 <translation id="8693639060656817812">Saber mais acerca da disponibilidade da Proteção Antirrastreio</translation>
+<translation id="8693862390730570097">Não permitir que a funcionalidade "Ajuda-me a escrever" seja aberta automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao suspender ou quando a tampa for fechada</translation>
 <translation id="8695139659682234808">Adicione o controlo parental após a configuração</translation>
 <translation id="8695825812785969222">Abrir &amp;Localização...</translation>
@@ -10692,6 +10695,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9112987648460918699">Localizar...</translation>
 <translation id="9113240369465613386">Apenas páginas ímpares</translation>
 <translation id="9113469270512809735">Ativar/desativar itens fechados recentemente</translation>
+<translation id="9113529408970052045">A funcionalidade "Ajuda-me a escrever" pode ser aberta automaticamente quando uma caixa de texto num site pode ser preenchida com conteúdo de formato curto</translation>
 <translation id="9114663181201435112">Iniciar sessão facilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
 <translation id="9115932142612197835">Esta definição não altera a disponibilidade do Google Tradutor nem do Lens</translation>
