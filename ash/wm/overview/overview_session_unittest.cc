@@ -1967,10 +1967,13 @@ TEST_P(OverviewSessionTest, OverviewGridBounds) {
 
   Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
   const gfx::Rect shelf_bounds = shelf->GetIdealBounds();
-  const gfx::Rect hotseat_bounds =
-      shelf->hotseat_widget()->GetWindowBoundsInScreen();
   EXPECT_FALSE(GetGridBounds().Intersects(shelf_bounds));
-  EXPECT_FALSE(GetGridBounds().Intersects(hotseat_bounds));
+
+  if (!IsForestFeatureEnabled()) {
+    const gfx::Rect hotseat_bounds =
+        shelf->hotseat_widget()->GetWindowBoundsInScreen();
+    EXPECT_FALSE(GetGridBounds().Intersects(hotseat_bounds));
+  }
 }
 
 TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
@@ -1998,15 +2001,33 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
                                     shelf_config->system_shelf_size() +
                                     shelf_config->hotseat_bottom_padding();
   const int expected_y = (300 - workarea_bottom_inset) / 2;
-  EXPECT_EQ(gfx::Point(expected_x, expected_y),
-            no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
+
+  // The x location should be in the center. The y location is roughly in the
+  // center. A lot of calculations go towards the padding and birch and desks
+  // bar for the y location.
+  gfx::Point no_windows_centerpoint =
+      no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
+  if (IsForestFeatureEnabled()) {
+    EXPECT_EQ(expected_x, no_windows_centerpoint.x());
+    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+    EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
+  } else {
+    EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
+  }
 
   // Tests that when snapping a window to the right in splitview, the no windows
   // indicator shows up in the middle of the left side of the screen.
   GetSplitViewController()->SnapWindow(window.get(), SnapPosition::kSecondary);
+  no_windows_centerpoint =
+      no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
   expected_x = /*bounds_right=*/(200 - 4) / 2;
-  EXPECT_EQ(gfx::Point(expected_x, expected_y),
-            no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
+  if (IsForestFeatureEnabled()) {
+    EXPECT_EQ(expected_x, no_windows_centerpoint.x());
+    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+    EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
+  } else {
+    EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
+  }
 }
 
 // Tests that the no windows indicator shows properly after adding an item.
