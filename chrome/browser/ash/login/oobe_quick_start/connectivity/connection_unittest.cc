@@ -474,6 +474,19 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
       /*error_code=*/std::nullopt);
 }
 
+TEST_F(ConnectionTest, RequestWifiCredentialsEmptyResponse) {
+  MarkConnectionAuthenticated();
+  base::test::TestFuture<std::optional<mojom::WifiCredentials>> future;
+  authenticated_connection_->RequestWifiCredentials(future.GetCallback());
+  fake_nearby_connection_->InvokeEmptyReadCallback();
+  EXPECT_FALSE(future.Get().has_value());
+
+  // RunUntilIdle() is used to exercise the fix for the crash reported in
+  // b/339757376. There is no callback to hook into in this scenario.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_quick_start_decoder_->has_decode_been_called());
+}
+
 TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
   MarkConnectionAuthenticated();
   fake_quick_start_decoder_->SetDecoderError(

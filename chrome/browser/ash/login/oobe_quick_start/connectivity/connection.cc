@@ -462,6 +462,7 @@ void Connection::DecodeQuickStartMessage(
   if (!data || data->empty()) {
     QS_LOG(INFO) << "Empty response";
     std::move(on_decoding_complete).Run(nullptr);
+    return;
   }
 
   // Setup a callback to handle the decoder's response. If an error was

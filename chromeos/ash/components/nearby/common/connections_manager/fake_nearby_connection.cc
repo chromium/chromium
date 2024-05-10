@@ -67,3 +67,8 @@ void FakeNearbyConnection::MaybeRunCallback() {
   has_read_callback_been_run_ = true;
   std::move(callback_).Run(std::move(item));
 }
+
+void FakeNearbyConnection::InvokeEmptyReadCallback() {
+  has_read_callback_been_run_ = true;
+  std::move(callback_).Run({});
+}

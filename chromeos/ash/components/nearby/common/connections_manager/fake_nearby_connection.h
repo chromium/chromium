@@ -23,6 +23,7 @@ class FakeNearbyConnection : public NearbyConnection {
 
   void AppendReadableData(std::vector<uint8_t> bytes);
   std::vector<uint8_t> GetWrittenData();
+  void InvokeEmptyReadCallback();
 
   bool IsClosed();
   bool has_read_callback_been_run() { return has_read_callback_been_run_; }

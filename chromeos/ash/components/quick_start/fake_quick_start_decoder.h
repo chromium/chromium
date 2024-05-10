@@ -52,11 +52,14 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   void SetQuickStartMessage(mojom::QuickStartMessagePtr quick_start_message);
 
+  bool has_decode_been_called() { return has_decode_been_called_; }
+
  private:
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   base::queue<std::pair<mojom::QuickStartMessagePtr,
                         std::optional<mojom::QuickStartDecoderError>>>
       results_;
+  bool has_decode_been_called_ = false;
 };
 
 }  // namespace ash::quick_start
