@@ -26,26 +26,26 @@ class CORE_EXPORT TextBoxEdge {
     // kIdeographicInk, not implemented.
   };
 
-  explicit TextBoxEdge(const TextBoxEdgeType& x)
-      : over_(x), under_(ComputedMissingUnderEdge()) {}
+  explicit TextBoxEdge(TextBoxEdgeType over)
+      : TextBoxEdge(over, ComputedMissingUnderEdge(over)) {}
 
-  TextBoxEdge(const TextBoxEdgeType& x, const TextBoxEdgeType& y)
-      : over_(x), under_(y) {}
+  TextBoxEdge(TextBoxEdgeType over, TextBoxEdgeType under)
+      : over_(over), under_(under) {}
 
-  bool operator==(const TextBoxEdge& o) const {
-    return over_ == o.Over() && under_ == o.Under();
+  bool operator==(const TextBoxEdge& other) const {
+    return over_ == other.Over() && under_ == other.Under();
   }
-  bool operator!=(const TextBoxEdge& o) const { return !(*this == o); }
+  bool operator!=(const TextBoxEdge& other) const { return !(*this == other); }
 
   const TextBoxEdgeType& Over() const { return over_; }
   const TextBoxEdgeType& Under() const { return under_; }
 
  private:
-  TextBoxEdgeType ComputedMissingUnderEdge() const {
-    switch (over_) {
+  static TextBoxEdgeType ComputedMissingUnderEdge(TextBoxEdgeType over) {
+    switch (over) {
       case TextBoxEdgeType::kText:
       case TextBoxEdgeType::kLeading:
-        return over_;
+        return over;
       case TextBoxEdgeType::kCap:
       case TextBoxEdgeType::kEx:
         return TextBoxEdgeType::kText;
