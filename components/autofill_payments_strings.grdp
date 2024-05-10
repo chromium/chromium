@@ -690,7 +690,7 @@
     Save IBAN to Google Account?
   </message>
   <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
-    To pay faster next time, save your IBAN to your Google Account
+    To autofill this IBAN next time, save it in your Google account
   </message>
 
   <!-- Mandatory Reauth related strings - start -->
