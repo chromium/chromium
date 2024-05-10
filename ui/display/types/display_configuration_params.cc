@@ -11,7 +11,7 @@ DisplayConfigurationParams::DisplayConfigurationParams(
     const DisplayConfigurationParams& other)
     : id(other.id), origin(other.origin), enable_vrr(other.enable_vrr) {
   if (other.mode)
-    mode = other.mode->get()->Clone();
+    mode = other.mode->Clone();
 }
 
 DisplayConfigurationParams::DisplayConfigurationParams(

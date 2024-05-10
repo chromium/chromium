@@ -23,8 +23,8 @@ std::string GetCrtcAction(
       "crtc(display_id=[%" PRId64 "],x=%d,y=%d,mode=[%s],enable_vrr=%d)",
       display_config_params.id, display_config_params.origin.x(),
       display_config_params.origin.y(),
-      display_config_params.mode.has_value()
-          ? display_config_params.mode.value()->ToString().c_str()
+      display_config_params.mode
+          ? display_config_params.mode->ToString().c_str()
           : "NULL",
       display_config_params.enable_vrr);
 }

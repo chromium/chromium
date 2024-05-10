@@ -5,8 +5,6 @@
 #ifndef UI_DISPLAY_MOJOM_DISPLAY_CONFIGURATION_PARAMS_MOJOM_TRAITS_H_
 #define UI_DISPLAY_MOJOM_DISPLAY_CONFIGURATION_PARAMS_MOJOM_TRAITS_H_
 
-#include <optional>
-
 #include "ui/display/mojom/display_configuration_params.mojom.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -27,7 +25,7 @@ struct StructTraits<display::mojom::DisplayConfigurationParamsDataView,
     return display_configuration_params.origin;
   }
 
-  static const std::optional<std::unique_ptr<display::DisplayMode>>& mode(
+  static const std::unique_ptr<display::DisplayMode>& mode(
       const display::DisplayConfigurationParams& display_configuration_params) {
     return display_configuration_params.mode;
   }

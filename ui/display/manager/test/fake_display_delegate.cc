@@ -136,7 +136,7 @@ void FakeDisplayDelegate::Configure(
   for (const auto& config : config_requests) {
     bool request_success = false;
 
-    if (config.mode.has_value()) {
+    if (config.mode) {
       // Find display snapshot of display ID.
       auto snapshot =
           find_if(displays_.begin(), displays_.end(),
@@ -146,7 +146,7 @@ void FakeDisplayDelegate::Configure(
       if (snapshot != displays_.end()) {
         // Check that config mode is appropriate for the display snapshot.
         for (const auto& existing_mode : snapshot->get()->modes()) {
-          if (AreModesEqual(*existing_mode.get(), *config.mode.value().get())) {
+          if (AreModesEqual(*existing_mode.get(), *config.mode)) {
             request_success = true;
             break;
           }

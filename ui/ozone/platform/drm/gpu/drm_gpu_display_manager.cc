@@ -157,10 +157,10 @@ std::string ConfigRequestToString(
                    << ": potentially invalid display ID: " << config.id;
     }
 
-    signature +=
-        base::NumberToString(config.id) + ":" + config.origin.ToString() + ":" +
-        (config.mode.has_value() ? (*config.mode)->ToString() : "Disabled") +
-        ":" + (config.enable_vrr ? "vrr" : "no_vrr") + ";";
+    signature += base::NumberToString(config.id) + ":" +
+                 config.origin.ToString() + ":" +
+                 (config.mode ? config.mode->ToString() : "Disabled") + ":" +
+                 (config.enable_vrr ? "vrr" : "no_vrr") + ";";
   }
   if (signature.empty()) {
     LOG(WARNING) << __func__ << ": empty return value with request of size: "
@@ -434,8 +434,8 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
       std::unique_ptr<drmModeModeInfo> mode_ptr =
           config.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
       if (config.mode) {
-        if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
-                                display->modes(), displays_)) {
+        if (!FindModeForDisplay(mode_ptr.get(), *config.mode, display->modes(),
+                                displays_)) {
           return false;
         }
       }

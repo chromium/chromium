@@ -101,8 +101,8 @@ bool TestNativeDisplayDelegate::Configure(
   else if (max_configurable_pixels_ < 0)
     return false;
 
-  if (display_config_params.mode.has_value()) {
-    return display_config_params.mode.value()->size().GetArea() <=
+  if (display_config_params.mode) {
+    return display_config_params.mode->size().GetArea() <=
            max_configurable_pixels_;
   }
 
@@ -120,7 +120,7 @@ bool TestNativeDisplayDelegate::IsConfigurationWithinSystemBandwidth(
       display_id_to_used_system_bw_;
   for (const DisplayConfigurationParams& config : config_requests) {
     requested_ids_with_bandwidth[config.id] =
-        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+        config.mode ? config.mode->size().GetArea() : 0;
   }
 
   int requested_bandwidth = 0;
@@ -137,7 +137,7 @@ void TestNativeDisplayDelegate::SaveCurrentConfigSystemBandwidth(
   // current system usage.
   for (const DisplayConfigurationParams& config : config_requests) {
     display_id_to_used_system_bw_[config.id] =
-        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+        config.mode ? config.mode->size().GetArea() : 0;
   }
 }
 

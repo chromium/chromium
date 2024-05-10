@@ -142,6 +142,7 @@ mojom("mojom") {
           mojom = "display.mojom.DisplayMode"
           cpp = "::std::unique_ptr<::display::DisplayMode>"
           move_only = true
+          nullable_is_same_type = true
         },
       ]
       traits_sources = [ "display_mode_mojom_traits.cc" ]

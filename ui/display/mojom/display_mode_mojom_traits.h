@@ -41,6 +41,15 @@ struct StructTraits<display::mojom::DisplayModeDataView,
     return display_mode->clock_;
   }
 
+  static bool IsNull(
+      const std::unique_ptr<display::DisplayMode>& display_mode) {
+    return !display_mode;
+  }
+
+  static void SetToNull(std::unique_ptr<display::DisplayMode>* output) {
+    return output->reset();
+  }
+
   static bool Read(display::mojom::DisplayModeDataView data,
                    std::unique_ptr<display::DisplayMode>* out);
 };
