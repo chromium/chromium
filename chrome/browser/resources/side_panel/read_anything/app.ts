@@ -448,6 +448,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (element && anchorNodeId && focusNodeId) {
         element.classList.remove(currentReadHighlightClass);
       }
+
+      // Clear the previously read highlight if there's been a selection.
+      // If speech is resumed, this won't be restored.
+      // TODO(b/40927698): Restore the previous highlight after speech
+      // is resumed after a selection.
+      this.previousHighlight_.forEach((element) => {
+        if (element) {
+          element.className = '';
+        }
+      });
+      this.previousHighlight_ = [];
+
     };
 
     document.onscroll = () => {
