@@ -6048,18 +6048,6 @@ template("performance_test_suite_template_base") {
       }
     } else {
       args = [ "../../tools/perf/run_benchmark" ]
-      data = [
-        "//third_party/crossbench/cb.py",
-        "//third_party/crossbench/crossbench/",
-      ]
-      if (is_android) {
-        data_deps += [
-          "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
-        ]
-      }
-      if (is_linux || is_mac || is_win) {
-        data_deps += [ "//chrome/test/chromedriver:chromedriver_server" ]
-      }
     }
 
     if (!is_chromeos_lacros) {

@@ -5,18 +5,30 @@
 if (!is_android) {
   group("perf") {
     testonly = true
+    data = [
+      "//third_party/crossbench/cb.py",
+      "//third_party/crossbench/crossbench/",
+    ]
     data_deps = [
       ":perf_without_chrome",
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
+    if (is_linux || is_mac || is_win) {
+      data_deps += [ "//chrome/test/chromedriver:chromedriver_server" ]
+    }
   }
 } else {
   template("perf_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
       testonly = true
+      data = [
+        "//third_party/crossbench/cb.py",
+        "//third_party/crossbench/crossbench/",
+      ]
       data_deps = [
         ":perf_without_chrome",
+        "//chrome/test/chromedriver:chromedriver_server($host_toolchain)",
         "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
       ]
     }
