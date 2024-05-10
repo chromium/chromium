@@ -367,8 +367,7 @@ ParseMakeCredentialResponse(cbor::Value response_value,
   entity.set_rp_id(request.rp.id);
   entity.set_user_id(
       std::string(request.user.id.begin(), request.user.id.end()));
-  entity.set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  entity.set_creation_time(base::Time::Now().ToTimeT() * 1000);
   entity.set_user_name(request.user.name ? *request.user.name : std::string());
   entity.set_user_display_name(
       request.user.display_name ? *request.user.display_name : std::string());
