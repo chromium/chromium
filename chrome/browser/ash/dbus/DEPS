@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/arc/fileapi",
   "+chrome/browser/ash/arc/session",
+  "+chrome/browser/ash/arc/tracing",
   "+chrome/browser/ash/arc/video",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/crostini",

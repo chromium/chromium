@@ -1,0 +1,133 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
+
+#include "base/containers/span.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
+
+namespace ash {
+namespace {
+constexpr int kMaxStatusMessagesCount = 20;
+}  // namespace
+
+ArcTracingServiceProvider::ArcTracingServiceProvider() = default;
+
+ArcTracingServiceProvider::~ArcTracingServiceProvider() = default;
+
+void ArcTracingServiceProvider::Start(
+    scoped_refptr<dbus::ExportedObject> exported_object) {
+  exported_object->ExportMethod(
+      arc::tracing::kArcTracingInterfaceName,
+      arc::tracing::kArcTracingStartMethod,
+      base::BindRepeating(&ArcTracingServiceProvider::StartTrace,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ArcTracingServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      arc::tracing::kArcTracingInterfaceName,
+      arc::tracing::kArcTracingGetStatusMethod,
+      base::BindRepeating(&ArcTracingServiceProvider::GetStatus,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ArcTracingServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcTracingServiceProvider::AddStatusMessage(std::string_view status) {
+  msgs_.emplace_back(status);
+  if (msgs_.size() > kMaxStatusMessagesCount) {
+    msgs_.pop_front();
+  }
+}
+
+void ArcTracingServiceProvider::OnExported(const std::string& interface_name,
+                                           const std::string& method_name,
+                                           bool success) {
+  LOG_IF(ERROR, !success) << "Failed to export " << interface_name << "."
+                          << method_name;
+}
+
+void ArcTracingServiceProvider::OnTraceEnd(
+    std::unique_ptr<arc::OverviewTracingResult> result) {
+  if (result->path.empty()) {
+    AddStatusMessage(result->status);
+  } else {
+    AddStatusMessage(
+        base::StrCat({result->status, ": ", result->path.value()}));
+  }
+  // Do this in a separate task because the handler may still have code to run
+  // after we return.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<arc::OverviewTracingHandler> handler) {},
+                     std::move(handler_)));
+}
+
+void ArcTracingServiceProvider::StartTrace(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  auto response = dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+
+  std::string result = StartTraceImpl(method_call);
+  writer.AppendString(result);
+  AddStatusMessage(result);
+  std::move(response_sender).Run(std::move(response));
+}
+
+std::string ArcTracingServiceProvider::StartTraceImpl(
+    dbus::MethodCall* method_call) {
+  if (handler_) {
+    return "Trace already in progress";
+  }
+
+  dbus::MessageReader reader(method_call);
+
+  double max_trace_seconds;
+  if (!reader.PopDouble(&max_trace_seconds)) {
+    return "Expect max trace time as type double in seconds";
+  }
+  auto handler = std::make_unique<arc::OverviewTracingHandler>(
+      arc::OverviewTracingHandler::ArcWindowFocusChangeCb());
+
+  auto max_trace_time = base::Seconds(max_trace_seconds);
+  if (max_trace_time < base::Seconds(1)) {
+    return "Max trace seconds out of range; must be >= 1";
+  }
+
+  if (!handler->arc_window_is_active()) {
+    return "ARC window isn't active";
+  }
+
+  handler_ = std::move(handler);
+  handler_->set_graphics_model_ready_cb(base::BindRepeating(
+      &ArcTracingServiceProvider::OnTraceEnd, weak_ptr_factory_.GetWeakPtr()));
+  handler_->set_start_build_model_cb(
+      base::BindRepeating(&ArcTracingServiceProvider::AddStatusMessage,
+                          weak_ptr_factory_.GetWeakPtr(), "Building model..."));
+  handler_->StartTracing(base::FilePath("/tmp"), max_trace_time);
+
+  return "Trace started";
+}
+
+void ArcTracingServiceProvider::GetStatus(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  auto response = dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  for (const auto& msg : msgs_) {
+    writer.AppendString(msg);
+  }
+  std::move(response_sender).Run(std::move(response));
+}
+
+}  // namespace ash
