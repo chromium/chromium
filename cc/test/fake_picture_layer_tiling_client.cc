@@ -92,4 +92,6 @@ bool FakePictureLayerTilingClient::CurrentScrollCheckerboardsDueToNoRecording()
   return false;
 }
 
+void FakePictureLayerTilingClient::OnTilesAdded() {}
+
 }  // namespace cc

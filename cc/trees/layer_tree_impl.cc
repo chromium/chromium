@@ -162,6 +162,8 @@ LayerTreeImpl::LayerTreeImpl(
       external_page_scale_factor_(1.f),
       device_scale_factor_(1.f),
       painted_device_scale_factor_(1.f),
+      always_push_properties_on_picture_layers_(!base::FeatureList::IsEnabled(
+          features::kDontAlwaysPushPictureLayerImpls)),
       elastic_overscroll_(elastic_overscroll),
       event_listener_properties_(),
       top_controls_shown_ratio_(std::move(top_controls_shown_ratio)),
@@ -1792,9 +1794,10 @@ void LayerTreeImpl::ClearSurfaceRanges() {
 
 void LayerTreeImpl::AddLayerShouldPushProperties(LayerImpl* layer) {
   DCHECK(!IsActiveTree()) << "The active tree does not push layer properties";
-  // TODO(crbug.com/40335690): PictureLayerImpls always push properties so
-  // should not go into this set or we'd push them twice.
-  DCHECK(!base::Contains(picture_layers_, layer));
+  // PictureLayerImpls should only go into this when
+  // always_push_properties_on_picture_layers() is disabled.
+  DCHECK(!always_push_properties_on_picture_layers() ||
+         !base::Contains(picture_layers_, layer));
   layers_that_should_push_properties_.insert(layer);
 }
 

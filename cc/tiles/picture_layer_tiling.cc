@@ -87,6 +87,8 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
   }
 
   all_tiles_done_ = false;
+  client_->OnTilesAdded();
+
   std::unique_ptr<Tile> tile = client_->CreateTile(info);
   Tile* tile_ptr = tile.get();
   tiles_[key] = std::move(tile);

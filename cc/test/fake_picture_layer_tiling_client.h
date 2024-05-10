@@ -45,6 +45,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   bool ScrollInteractionInProgress() const override;
   bool CurrentScrollCheckerboardsDueToNoRecording() const override;
+  void OnTilesAdded() override;
 
   void set_twin_tiling_set(PictureLayerTilingSet* set) {
     twin_set_ = set;

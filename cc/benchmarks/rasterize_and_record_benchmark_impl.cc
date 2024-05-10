@@ -133,6 +133,8 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->CurrentScrollCheckerboardsDueToNoRecording();
   }
 
+  void OnTilesAdded() override { return base_client_->OnTilesAdded(); }
+
  private:
   raw_ptr<PictureLayerTilingClient> base_client_;
   Region invalidation_;

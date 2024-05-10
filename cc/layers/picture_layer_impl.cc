@@ -99,7 +99,9 @@ gfx::Rect SafeIntersectRects(const gfx::Rect& one, const gfx::Rect& two) {
 }  // namespace
 
 PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
-    : LayerImpl(tree_impl, id, /*will_always_push_properties=*/true) {
+    : LayerImpl(tree_impl,
+                id,
+                tree_impl->always_push_properties_on_picture_layers()) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 
@@ -1008,6 +1010,10 @@ bool PictureLayerImpl::ScrollInteractionInProgress() const {
 
 bool PictureLayerImpl::CurrentScrollCheckerboardsDueToNoRecording() const {
   return layer_tree_impl()->CurrentScrollCheckerboardsDueToNoRecording();
+}
+
+void PictureLayerImpl::OnTilesAdded() {
+  SetNeedsPushProperties();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {

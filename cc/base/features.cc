@@ -207,4 +207,8 @@ BASE_FEATURE(kNonBatchedCopySharedImage,
              "NonBatchedCopySharedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDontAlwaysPushPictureLayerImpls,
+             "DontAlwaysPushPictureLayerImpls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -83,6 +83,7 @@ class CC_EXPORT PictureLayerImpl
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   bool ScrollInteractionInProgress() const override;
   bool CurrentScrollCheckerboardsDueToNoRecording() const override;
+  void OnTilesAdded() override;
 
   // ImageAnimationController::AnimationDriver overrides.
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;

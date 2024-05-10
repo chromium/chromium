@@ -196,6 +196,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWaitForLateScrollEvents);
 CC_BASE_EXPORT extern const base::FeatureParam<double>
     kWaitForLateScrollEventsDeadlineRatio;
 
+// When enabled we stop always pushing PictureLayerImpl properties on
+// tree Activation. See crbug.com/40335690.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -149,6 +149,7 @@ void TestLayerTreeHostBase::SetupPendingTree(
     pending_layer_->SetBounds(raster_source->size());
     pending_layer_->SetRasterSource(raster_source, invalidation);
   }
+  pending_layer_->SetNeedsPushProperties();
 
   host_impl()->pending_tree()->set_needs_update_draw_properties();
   UpdateDrawProperties(host_impl()->pending_tree());

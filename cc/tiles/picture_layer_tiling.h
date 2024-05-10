@@ -55,6 +55,7 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
   virtual bool ScrollInteractionInProgress() const = 0;
   virtual bool CurrentScrollCheckerboardsDueToNoRecording() const = 0;
+  virtual void OnTilesAdded() = 0;
 
  protected:
   virtual ~PictureLayerTilingClient() {}
