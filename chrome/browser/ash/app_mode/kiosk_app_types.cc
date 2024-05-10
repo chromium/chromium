@@ -11,17 +11,10 @@
 
 #include "base/check.h"
 #include "components/account_id/account_id.h"
-#include "components/crx_file/id_util.h"
 
 namespace ash {
 
 namespace {
-
-void CheckChromeAppIdIsValid(std::string_view id) {
-  // TODO(b/304937903) upgrade to CHECK.
-  DUMP_WILL_BE_CHECK(crx_file::id_util::IdIsValid(id))
-      << "Invalid Chrome App ID: " << id;
-}
 
 std::string ToString(KioskAppType type) {
   switch (type) {
@@ -64,7 +57,8 @@ KioskAppId::KioskAppId(std::string_view chrome_app_id,
     : type(KioskAppType::kChromeApp),
       app_id(chrome_app_id),
       account_id(account_id) {
-  CheckChromeAppIdIsValid(chrome_app_id);
+  // TODO(b/304937903): Update the caller code to never call us with invalid ChromeApp IDs.
+  // See b/339172292 for a scenario when that currently happens.
 }
 KioskAppId::KioskAppId(KioskAppType type, const AccountId& account_id)
     : type(type), account_id(account_id) {}
