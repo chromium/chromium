@@ -95,6 +95,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "overview_focus_cycler_old.h"
+#include "overview_session.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
@@ -987,9 +989,11 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   // will be cleaned up and its associated view may be nullptr. `overview_item`
   // still needs to be in `item_list_` to compute the corresponding index.
   if (overview_session_) {
-    for (auto* focusable_view : overview_item->GetFocusableViews()) {
-      overview_session_->focus_cycler_old()->OnViewDestroyingOrDisabling(
-          focusable_view);
+    if (OverviewFocusCyclerOld* focus_cycler_old =
+            overview_session_->focus_cycler_old()) {
+      for (auto* focusable_view : overview_item->GetFocusableViews()) {
+        focus_cycler_old->OnViewDestroyingOrDisabling(focusable_view);
+      }
     }
   }
 

@@ -2253,8 +2253,8 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOverviewUpdates,
-             "OverviewUpdates",
+BASE_FEATURE(kOverviewNewFocus,
+             "OverviewNewFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Jelly colors and components to appear in the Parent Access Widget
@@ -4173,9 +4173,8 @@ bool IsOverviewDeskNavigationEnabled() {
   return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
 }
 
-bool IsOverviewUpdatesEnabled() {
-  return chromeos::features::IsRoundedWindowsEnabled() &&
-         base::FeatureList::IsEnabled(kOverviewUpdates);
+bool IsOverviewNewFocusEnabled() {
+  return base::FeatureList::IsEnabled(kOverviewNewFocus);
 }
 
 bool IsPasspointSettingsEnabled() {

@@ -583,8 +583,9 @@ void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   const auto enter_exit_type = overview_session_->enter_exit_overview_type();
   if (is_moving_to_another_desk_ ||
       enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-    overview_session_->focus_cycler_old()->OnViewDestroyingOrDisabling(
-        overview_item_view_);
+    if (auto* focus_cycler_old = overview_session_->focus_cycler_old()) {
+      focus_cycler_old->OnViewDestroyingOrDisabling(overview_item_view_);
+    }
     ImmediatelyCloseWidgetOnExit(std::move(item_widget_));
     overview_item_view_ = nullptr;
     return;

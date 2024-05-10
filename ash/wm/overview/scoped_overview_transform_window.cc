@@ -327,12 +327,7 @@ void ScopedOverviewTransformWindow::BeginScopedAnimation(
   for (auto* window : window_util::GetVisibleTransientTreeIterator(window_)) {
     auto settings = std::make_unique<ScopedOverviewAnimationSettings>(
         animation_type, window);
-    // With rounded windows, we cannot defer painting since we want control over
-    // rounded corners in overview, so we want to remove the rounded windows
-    // rounding immediately.
-    if (!features::IsOverviewUpdatesEnabled()) {
-      settings->DeferPaint();
-    }
+    settings->DeferPaint();
 
     // Create an EnterAnimationObserver if this is an enter overview layout
     // animation.

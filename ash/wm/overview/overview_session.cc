@@ -30,6 +30,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/overview_focus_cycler.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -151,11 +152,15 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
       overview_start_time_(base::Time::Now()),
-      focus_cycler_old_(std::make_unique<OverviewFocusCyclerOld>(this)),
       chromevox_enabled_(Shell::Get()
                              ->accessibility_controller()
                              ->spoken_feedback()
                              .enabled()) {
+  if (features::IsOverviewNewFocusEnabled()) {
+    focus_cycler_ = std::make_unique<OverviewFocusCycler>(this);
+  } else {
+    focus_cycler_old_ = std::make_unique<OverviewFocusCyclerOld>(this);
+  }
   DCHECK(delegate_);
   Shell::Get()->AddPreTargetHandler(this);
 }
@@ -425,7 +430,9 @@ void OverviewSession::IncrementSelection(bool forward) {
 
 bool OverviewSession::AcceptSelection() {
   // Activate selected window or desk.
-  return focus_cycler_old_->MaybeActivateFocusedViewOnOverviewExit();
+  return focus_cycler_old_
+             ? focus_cycler_old_->MaybeActivateFocusedViewOnOverviewExit()
+             : false;
 }
 
 void OverviewSession::SelectWindow(OverviewItemBase* item) {
@@ -648,7 +655,9 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
     return;
   }
 
-  focus_cycler_old_->SetFocusVisibility(false);
+  if (focus_cycler_old_) {
+    focus_cycler_old_->SetFocusVisibility(false);
+  }
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
       this, item, is_touch_dragging, event_source_item);
   window_drag_controller_->InitiateDrag(location_in_screen);
@@ -680,7 +689,9 @@ void OverviewSession::CompleteDrag(OverviewItemBase* item,
 
   // Note: The focus ring should be updated first as completing a drag may cause
   // a selection which would destroy `item`.
-  focus_cycler_old_->SetFocusVisibility(true);
+  if (focus_cycler_old_) {
+    focus_cycler_old_->SetFocusVisibility(true);
+  }
   const bool snap = window_drag_controller_->CompleteDrag(location_in_screen) ==
                     OverviewWindowDragController::DragResult::kSnap;
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
@@ -984,7 +995,8 @@ aura::Window* OverviewSession::GetOverviewFocusWindow() const {
 }
 
 aura::Window* OverviewSession::GetFocusedWindow() const {
-  OverviewItemBase* item = focus_cycler_old_->GetFocusedItem();
+  OverviewItemBase* item =
+      focus_cycler_old_ ? focus_cycler_old_->GetFocusedItem() : nullptr;
   return item ? item->GetWindow() : nullptr;
 }
 
@@ -1166,7 +1178,9 @@ void OverviewSession::ShowSavedDeskLibrary(
   // of the desks bar view. Also, add testing for this. Note that this isn't
   // needed when hiding, because we either move the focus to the new desk, or
   // delete all the grid templates items which would reset their focus.
-  focus_cycler_old_->ResetFocusedView();
+  if (focus_cycler_old_) {
+    focus_cycler_old_->ResetFocusedView();
+  }
 
   // If not given anything to focus, focus the first saved desk.
   if (item_to_focus.is_valid())
@@ -1193,8 +1207,10 @@ void OverviewSession::ShowSavedDeskLibrary(
     return;
   }
 
-  focus_cycler_old_->MoveFocusToView(grid_items.front(),
-                                     /*suppress_accessibility_event=*/false);
+  if (focus_cycler_old_) {
+    focus_cycler_old_->MoveFocusToView(grid_items.front(),
+                                       /*suppress_accessibility_event=*/false);
+  }
 }
 
 void OverviewSession::HideSavedDeskLibrary() {
@@ -1453,6 +1469,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     case ui::VKEY_RIGHT:
       ++num_key_presses_;
+      if (!focus_cycler_old_) {
+        return;
+      }
+
       if (!is_control_down ||
           !focus_cycler_old_->MaybeSwapFocusedView(/*right=*/true)) {
         Move(/*reverse=*/false);
@@ -1466,14 +1486,19 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     }
     case ui::VKEY_LEFT:
       ++num_key_presses_;
+      if (!focus_cycler_old_) {
+        return;
+      }
+
       if (!is_control_down ||
           !focus_cycler_old_->MaybeSwapFocusedView(/*right=*/false)) {
         Move(/*reverse=*/true);
       }
       break;
     case ui::VKEY_W: {
-      if (!is_control_down)
+      if (!is_control_down || !focus_cycler_old_) {
         return;
+      }
 
       const bool primary_action = !event->IsShiftDown();
       if (!focus_cycler_old_->MaybeCloseFocusedView(primary_action)) {
@@ -1493,12 +1518,16 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     }
     case ui::VKEY_RETURN: {
-      if (!focus_cycler_old_->MaybeActivateFocusedView()) {
+      if (focus_cycler_old_ && !focus_cycler_old_->MaybeActivateFocusedView()) {
         return;
       }
       break;
     }
     case ui::VKEY_SPACE:
+      if (!focus_cycler_old_) {
+        return;
+      }
+
       // Allow activating the view via Search (Command) + Space.
       if (is_command_down && !focus_cycler_old_->MaybeActivateFocusedView()) {
         return;
@@ -1627,7 +1656,12 @@ void OverviewSession::Move(bool reverse) {
   if (window_util::IsAnyWindowDragged() || desks_util::IsDraggingAnyDesk())
     return;
 
-  focus_cycler_old_->MoveFocus(reverse);
+  if (focus_cycler_old_) {
+    focus_cycler_old_->MoveFocus(reverse);
+  } else {
+    CHECK(focus_cycler_);
+    focus_cycler_->MoveFocus(reverse);
+  }
 }
 
 bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {

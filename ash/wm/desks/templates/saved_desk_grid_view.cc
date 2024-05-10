@@ -162,7 +162,6 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                              ->overview_controller()
                                              ->overview_session()
                                              ->focus_cycler_old();
-  CHECK(focus_cycler);
 
   for (const base::Uuid& uuid : uuids) {
     auto iter = base::ranges::find(grid_items_, uuid, &SavedDeskItemView::uuid);
@@ -171,8 +170,10 @@ void SavedDeskGridView::DeleteEntries(const std::vector<base::Uuid>& uuids,
       continue;
 
     SavedDeskItemView* grid_item = *iter;
-    focus_cycler->OnViewDestroyingOrDisabling(grid_item);
-    focus_cycler->OnViewDestroyingOrDisabling(grid_item->name_view());
+    if (focus_cycler) {
+      focus_cycler->OnViewDestroyingOrDisabling(grid_item);
+      focus_cycler->OnViewDestroyingOrDisabling(grid_item->name_view());
+    }
 
     // Performs an animation of changing the deleted grid item opacity
     // from 1 to 0 and scales down to `kAddOrDeleteItemScale`. `old_layer_tree`
