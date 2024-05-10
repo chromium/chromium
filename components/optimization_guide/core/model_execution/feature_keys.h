@@ -23,6 +23,7 @@ enum class ModelBasedCapabilityKey {
   kTest = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST,
   kTextSafety =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY,
+  kPromptApi = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -69,6 +70,8 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST;
     case ModelBasedCapabilityKey::kTextSafety:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY;
+    case ModelBasedCapabilityKey::kPromptApi:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API;
   }
 }
 

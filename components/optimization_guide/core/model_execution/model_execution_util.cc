@@ -33,9 +33,10 @@ void SetExecutionRequest(
       SetExecutionRequestTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                          request_metadata);
       return;
+    case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
-      // Do not log request for test and text safety.
+      // Do not log requests for these features.
       return;
   }
 }
@@ -58,9 +59,10 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
       SetExecutionResponseTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                           response_metadata);
       return;
+    case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
-      // Do not log response for test and text safety.
+      // Do not log responses for these features.
       return;
   }
 }

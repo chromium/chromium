@@ -53,6 +53,10 @@ BASE_FEATURE(kOnDeviceModelTestFeature,
              "OnDeviceModelTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelPromptApiFeature,
+             "OnDeviceModelPromptApiFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
   bool is_graduated = false;
   switch (feature) {
@@ -110,6 +114,8 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
       return false;
+    case ModelBasedCapabilityKey::kPromptApi:
+      return true;
   }
 }
 
@@ -120,6 +126,9 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kTest:
       return base::GetFieldTrialParamByFeatureAsBool(
           kOnDeviceModelTestFeature, "enable_adaptation", false);
+    case ModelBasedCapabilityKey::kPromptApi:
+      return base::GetFieldTrialParamByFeatureAsBool(
+          kOnDeviceModelPromptApiFeature, "enable_adaptation", false);
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:

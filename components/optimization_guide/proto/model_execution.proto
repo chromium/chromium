@@ -62,4 +62,5 @@ enum ModelExecutionFeature {
   // launched, but instead is an internal detail to support other model
   // execution features.
   MODEL_EXECUTION_FEATURE_TEXT_SAFETY = 5;
+  MODEL_EXECUTION_FEATURE_PROMPT_API = 6;
 }
