@@ -503,6 +503,268 @@ TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
   histogram_tester_.ExpectTotalCount(expected_histogram, 0);
 }
 
+class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
+    : public EditorMetricsRecorderTest,
+      public testing::WithParamInterface<LanguageSegmentationCase> {};
+
+// Note that auxiliary metrics are not segmented by each language enabled, but
+// by two high level buckets; kEnglish and kOther. This is to prevent an
+// explosion of new metrics recorded, whilst still providing auxiliary info for
+// the English segment of users.
+INSTANTIATE_TEST_SUITE_P(
+    EditorMetricsRecorderTest,
+    EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+    testing::ValuesIn<LanguageSegmentationCase>({
+        // English
+        {"xkb:ca:eng:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:gb::eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:gb:extd:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:gb:dvorak:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:in::eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:pk::eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:altgr-intl:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:colemak:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:dvorak:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:dvp:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:intl_pc:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:intl:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:workman-intl:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us:workman:eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:us::eng", "InputMethod.Manta.Orca.English."},
+        {"xkb:za:gb:eng", "InputMethod.Manta.Orca.English."},
+        // French
+        {"xkb:be::fra", "InputMethod.Manta.Orca.Other."},
+        {"xkb:ca::fra", "InputMethod.Manta.Orca.Other."},
+        {"xkb:ca:multix:fra", "InputMethod.Manta.Orca.Other."},
+        {"xkb:fr::fra", "InputMethod.Manta.Orca.Other."},
+        {"xkb:fr:bepo:fra", "InputMethod.Manta.Orca.Other."},
+        {"xkb:ch:fr:fra", "InputMethod.Manta.Orca.Other."},
+        // German
+        {"xkb:be::ger", "InputMethod.Manta.Orca.Other."},
+        {"xkb:de::ger", "InputMethod.Manta.Orca.Other."},
+        {"xkb:de:neo:ger", "InputMethod.Manta.Orca.Other."},
+        {"xkb:ch::ger", "InputMethod.Manta.Orca.Other."},
+        // Japanese
+        {"xkb:jp::jpn", "InputMethod.Manta.Orca.Other."},
+        {"nacl_mozc_us", "InputMethod.Manta.Orca.Other."},
+        {"nacl_mozc_jp", "InputMethod.Manta.Orca.Other."},
+    }));
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfCharactersInsertedForWrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "CharactersInserted.Write"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersInserted(100);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 100, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfCharactersInsertedForRewrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersInserted(100);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 100, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfCharactersInsertedWithFlagDisabled) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
+  ScopedFeatureList feature_list;
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersInserted(100);
+
+  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       CharactersSelectedForInsertWithWrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix,
+                    "CharactersSelectedForInsert.Write"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersSelectedForInsert(100);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 100, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       CharactersSelectedForInsertWithRewrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix,
+                    "CharactersSelectedForInsert.Rewrite"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersSelectedForInsert(100);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 100, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       CharactersSelectedForInsertWithFlagDisabled) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix,
+                    "CharactersSelectedForInsert.Rewrite"});
+  ScopedFeatureList feature_list;
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfCharactersSelectedForInsert(100);
+
+  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfResponsesFromServerWithWrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram =
+      base::StrCat({test_case.expected_histogram_prefix, "NumResponses.Write"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfResponsesFromServer(3);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 3, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfResponsesFromServerWithRewrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfResponsesFromServer(3);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 3, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       NumberOfResponsesFromServerWithFlagDisabled) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
+  ScopedFeatureList feature_list;
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogNumberOfResponsesFromServer(3);
+
+  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       LengthOfLongestResponseWithWrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Write"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kWrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogLengthOfLongestResponseFromServer(2000);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 2000, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       LengthOfLongestResponseWithRewrite) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
+  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogLengthOfLongestResponseFromServer(2000);
+
+  histogram_tester_.ExpectBucketCount(expected_histogram, 2000, 1);
+  histogram_tester_.ExpectTotalCount(expected_histogram, 1);
+}
+
+TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
+       LengthOfLongestResponseWithFlagDisabled) {
+  const LanguageSegmentationCase& test_case = GetParam();
+  const std::string expected_histogram = base::StrCat(
+      {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
+  ScopedFeatureList feature_list;
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorContext context(&observer, &system, kAllowedCountryCode);
+  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
+
+  context.OnActivateIme(test_case.engine_id);
+  recorder.LogLengthOfLongestResponseFromServer(2000);
+
+  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
+}
+
 struct CriticalStateCase {
   EditorStates editor_state;
   EditorCriticalStates expected_critical_state;

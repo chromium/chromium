@@ -105,6 +105,15 @@ std::optional<EditorCriticalStates> AsCriticalState(const EditorStates& state) {
   }
 }
 
+std::string_view AsEnglishOrOther(const LanguageCategory& category) {
+  switch (category) {
+    case LanguageCategory::kEnglish:
+      return "English";
+    default:
+      return "Other";
+  }
+}
+
 }  // namespace
 
 EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
@@ -261,19 +270,24 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
 
 void EditorMetricsRecorder::LogNumberOfCharactersInserted(
     int number_of_characters) {
-  std::string histogram_name;
-  switch (mode_) {
-    case EditorOpportunityMode::kWrite:
-      histogram_name = "InputMethod.Manta.Orca.CharactersInserted.Write";
-      break;
-    case EditorOpportunityMode::kRewrite:
-      histogram_name = "InputMethod.Manta.Orca.CharactersInserted.Rewrite";
-      break;
-    case EditorOpportunityMode::kNone:
-      return;
+  if (mode_ == EditorOpportunityMode::kNone) {
+    return;
   }
 
-  base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+  base::UmaHistogramCounts100000(
+      base::StrCat(
+          {"InputMethod.Manta.Orca.CharactersInserted.", AsString(mode_)}),
+      number_of_characters);
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"InputMethod.Manta.Orca.",
+                      AsEnglishOrOther(InputMethodToLanguageCategory(
+                          context_->active_engine_id())),
+                      ".CharactersInserted.", AsString(mode_)}),
+        number_of_characters);
+  }
+
   if (mode_ != EditorOpportunityMode::kRewrite) {
     return;
   }
@@ -285,21 +299,24 @@ void EditorMetricsRecorder::LogNumberOfCharactersInserted(
 
 void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
     int number_of_characters) {
-  std::string histogram_name;
-  switch (mode_) {
-    case EditorOpportunityMode::kWrite:
-      histogram_name =
-          "InputMethod.Manta.Orca.CharactersSelectedForInsert.Write";
-      break;
-    case EditorOpportunityMode::kRewrite:
-      histogram_name =
-          "InputMethod.Manta.Orca.CharactersSelectedForInsert.Rewrite";
-      break;
-    case EditorOpportunityMode::kNone:
-      return;
+  if (mode_ == EditorOpportunityMode::kNone) {
+    return;
   }
 
-  base::UmaHistogramCounts100000(histogram_name, number_of_characters);
+  base::UmaHistogramCounts100000(
+      base::StrCat({"InputMethod.Manta.Orca.CharactersSelectedForInsert.",
+                    AsString(mode_)}),
+      number_of_characters);
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"InputMethod.Manta.Orca.",
+                      AsEnglishOrOther(InputMethodToLanguageCategory(
+                          context_->active_engine_id())),
+                      ".CharactersSelectedForInsert.", AsString(mode_)}),
+        number_of_characters);
+  }
+
   if (mode_ != EditorOpportunityMode::kRewrite) {
     return;
   }
@@ -312,46 +329,61 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
 
 void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
     int number_of_responses) {
-  switch (mode_) {
-    case EditorOpportunityMode::kWrite:
-      base::UmaHistogramExactLinear("InputMethod.Manta.Orca.NumResponses.Write",
-                                    number_of_responses,
-                                    kMaxNumResponsesFromServer);
-      return;
-    case EditorOpportunityMode::kRewrite:
-      base::UmaHistogramExactLinear(
-          "InputMethod.Manta.Orca.NumResponses.Rewrite", number_of_responses,
-          kMaxNumResponsesFromServer);
-      base::UmaHistogramExactLinear(
-          base::StrCat({"InputMethod.Manta.Orca.NumResponses.",
-                        GetToneStringFromEnum(tone_)}),
-          number_of_responses, kMaxNumResponsesFromServer);
-      return;
-    case EditorOpportunityMode::kNone:
-      return;
+  if (mode_ == EditorOpportunityMode::kNone) {
+    return;
   }
+
+  base::UmaHistogramExactLinear(
+      base::StrCat({"InputMethod.Manta.Orca.NumResponses.", AsString(mode_)}),
+      number_of_responses, kMaxNumResponsesFromServer);
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    base::UmaHistogramExactLinear(
+        base::StrCat({"InputMethod.Manta.Orca.",
+                      AsEnglishOrOther(InputMethodToLanguageCategory(
+                          context_->active_engine_id())),
+                      ".NumResponses.", AsString(mode_)}),
+        number_of_responses, kMaxNumResponsesFromServer);
+  }
+
+  if (mode_ != EditorOpportunityMode::kRewrite) {
+    return;
+  }
+
+  base::UmaHistogramExactLinear(
+      base::StrCat({"InputMethod.Manta.Orca.NumResponses.",
+                    GetToneStringFromEnum(tone_)}),
+      number_of_responses, kMaxNumResponsesFromServer);
 }
 
 void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
     int number_of_characters) {
-  switch (mode_) {
-    case EditorOpportunityMode::kWrite:
-      base::UmaHistogramCounts100000(
-          "InputMethod.Manta.Orca.LengthOfLongestResponse.Write",
-          number_of_characters);
-      return;
-    case EditorOpportunityMode::kRewrite:
-      base::UmaHistogramCounts100000(
-          "InputMethod.Manta.Orca.LengthOfLongestResponse.Rewrite",
-          number_of_characters);
-      base::UmaHistogramCounts100000(
-          base::StrCat({"InputMethod.Manta.Orca.LengthOfLongestResponse.",
-                        GetToneStringFromEnum(tone_)}),
-          number_of_characters);
-      return;
-    case EditorOpportunityMode::kNone:
-      return;
+  if (mode_ == EditorOpportunityMode::kNone) {
+    return;
   }
+
+  base::UmaHistogramCounts100000(
+      base::StrCat(
+          {"InputMethod.Manta.Orca.LengthOfLongestResponse.", AsString(mode_)}),
+      number_of_characters);
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"InputMethod.Manta.Orca.",
+                      AsEnglishOrOther(InputMethodToLanguageCategory(
+                          context_->active_engine_id())),
+                      ".LengthOfLongestResponse.", AsString(mode_)}),
+        number_of_characters);
+  }
+
+  if (mode_ != EditorOpportunityMode::kRewrite) {
+    return;
+  }
+
+  base::UmaHistogramCounts100000(
+      base::StrCat({"InputMethod.Manta.Orca.LengthOfLongestResponse.",
+                    GetToneStringFromEnum(tone_)}),
+      number_of_characters);
 }
 
 void EditorMetricsRecorder::LogEditorCriticalState(
