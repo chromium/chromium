@@ -47,8 +47,8 @@ BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
              "AVFoundationCaptureForwardSampleTimestamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAVFoundationCaptureSonomaStallCheck,
-             "AVFoundationCaptureSonomaStallCheck",
+BASE_FEATURE(kAVFoundationCaptureSonomaRestartStalledCamera,
+             "AVFoundationCaptureSonomaRestartStalledCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
@@ -85,12 +85,13 @@ std::optional<base::TimeTicks> GetCMSampleBufferTimestamp(
   return std::nullopt;
 }
 
-bool ShouldRunStallCheck() {
+bool ShouldRestartStalledCamera() {
   // The stall check should not be needed on macOS 14 due to a redesign of the
   // camera capture in macOS 14. It also interferes with the Presenter's Overlay
   // feature that was introduced in macOS 14. See https://crbug.com/335210401.
   if (@available(macOS 14.0, *)) {
-    return base::FeatureList::IsEnabled(kAVFoundationCaptureSonomaStallCheck);
+    return base::FeatureList::IsEnabled(
+        kAVFoundationCaptureSonomaRestartStalledCamera);
   }
   return true;
 }
@@ -580,9 +581,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     _capturedFirstFrame = false;
     _capturedFrameSinceLastStallCheck = NO;
   }
-  if (ShouldRunStallCheck()) {
-    [self doStallCheck:0];
-  }
+  [self doStallCheck:0];
   return YES;
 }
 
@@ -1031,9 +1030,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             nextFailedCheckCount),
         kStallCheckInterval);
   } else {
-    [self logMessage:"Capture appears to have stalled, restarting."];
-    [self stopCapture];
-    [self startCapture];
+    if (ShouldRestartStalledCamera()) {
+      [self logMessage:"Capture appears to have stalled, restarting."];
+      [self stopCapture];
+      [self startCapture];
+    } else {
+      [self logMessage:
+                "Capture appears to have stalled, restarting may have helped "
+                "but is disabled. See https://issues.chromium.org/335210401."];
+    }
   }
 }
 
