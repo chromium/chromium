@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
 namespace ash {
@@ -146,8 +147,16 @@ class OobeMetricsHelper {
   void RecordUpdatedStepCompletionTime(OobeScreenId screen,
                                        base::TimeDelta step_time);
 
+  // A callback triggered by StatsReportingController upon changes to the
+  // enabled status of the metrics. This is to record whether
+  // `StatsReportingController` ever reports the enabled status of metrics to be
+  // `true` then `false` during OOBE.
+  void OnStatsReportingSettingUpdated();
+
   // Maps screen names to last time of their shows.
   std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
+
+  base::CallbackListSubscription stats_reporting_subscription_;
 
   base::ObserverList<Observer> observers_;
 };

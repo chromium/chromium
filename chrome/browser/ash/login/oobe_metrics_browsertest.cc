@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
@@ -21,8 +23,10 @@
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "components/prefs/pref_test_utils.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -31,7 +35,10 @@ namespace ash {
 namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
+using ::testing::ElementsAre;
+
 constexpr const char kConsolidatedConsnetAcceptedRegular[] = "AcceptedRegular";
+
 }  // namespace
 
 // TODO(b/305929689): Add tests for Pre-login OOBE resume metrics.
@@ -75,6 +82,7 @@ class OobeMetricsTest : public OobeBaseTest {
         << " was not found or found with unexpected metrics values.";
   }
 
+  base::HistogramTester histogram_tester_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       structured_metrics_recorder_;
@@ -313,5 +321,67 @@ IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest,
       .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(oobe_completed);
 }
+
+// Metrics client ID is only created on Google Chrome branded builds.
+// So, the following tests should only run on branded builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdNotReset) {
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+
+  WizardController::default_controller()->AdvanceToScreen(
+      MarketingOptInScreenView::kScreenId);
+  test::TapOnPathAndWaitForOobeToBeDestroyed(
+      {"marketing-opt-in", "marketing-opt-in-next-button"});
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "OOBE.StatsReportingControllerReportedReset"),
+              ElementsAre(base::Bucket(0, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
+              ElementsAre(base::Bucket(0, 1)));
+
+  // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kOobeMetricsClientIdAtOobeStart));
+}
+
+IN_PROC_BROWSER_TEST_F(FirstUserOobeMetricsTest, ClientIdReset) {
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+
+  // Simulate the unexpected switching (during OOBE) of the enabled status of
+  // the stats reporting setting from enabled to disabled to trigger the
+  // unexpected switch causing the reset. Later enable the stats reporting
+  // controller again to get the histograms to be recorded.
+  StatsReportingController::Get()->SetEnabled(
+      ProfileManager::GetActiveUserProfile(), true);
+  WaitForPrefValue(g_browser_process->local_state(),
+                   prefs::kOobeMetricsReportedAsEnabled, base::Value(true));
+
+  StatsReportingController::Get()->SetEnabled(
+      ProfileManager::GetActiveUserProfile(), false);
+  WaitForPrefValue(g_browser_process->local_state(),
+                   prefs::kOobeStatsReportingControllerReportedReset,
+                   base::Value(true));
+
+  StatsReportingController::Get()->SetEnabled(
+      ProfileManager::GetActiveUserProfile(), true);
+
+  WizardController::default_controller()->AdvanceToScreen(
+      MarketingOptInScreenView::kScreenId);
+  test::TapOnPathAndWaitForOobeToBeDestroyed(
+      {"marketing-opt-in", "marketing-opt-in-next-button"});
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "OOBE.StatsReportingControllerReportedReset"),
+              ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples("OOBE.MetricsClientIdReset"),
+              ElementsAre(base::Bucket(1, 1)));
+
+  // Verify that `kOobeMetricsClientIdAtOobeStart` preference was cleared.
+  EXPECT_FALSE(g_browser_process->local_state()->HasPrefPath(
+      prefs::kOobeMetricsClientIdAtOobeStart));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace ash

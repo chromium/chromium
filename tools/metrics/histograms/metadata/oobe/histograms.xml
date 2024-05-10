@@ -812,6 +812,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.MetricsClientIdReset" enum="Boolean"
+    expires_after="2024-11-08">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether the metrics client ID was reset during OOBE. Recorded at the end of
+    OOBE flow before the first session starts.
+
+    If the device is unmanaged, this metric should only be reported as false. If
+    the device is managed, this should report true in very rare occasions (e.g.
+    the admin switched the metrics policy from false to true at the time the
+    user was going through OOBE).
+  </summary>
+</histogram>
+
 <histogram name="OOBE.NetworkErrorShown.{OOBEScreenShownBeforeNetworkError}"
     enum="NetworkErrorType" expires_after="2024-11-03">
   <owner>achuith@google.com</owner>
@@ -956,6 +971,22 @@ chromium-metrics-reviews@google.com.
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>Whether the reocmmend apps screen is shown.</summary>
+</histogram>
+
+<histogram name="OOBE.StatsReportingControllerReportedReset" enum="Boolean"
+    expires_after="2024-11-08">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether `StatsReportingController::IsEnabled()` returned true then later
+    returned false during OOBE. Recorded at the end of OOBE flow before the
+    first session starts.
+
+    If the device is unmanaged, this metric should only be reported as false. If
+    the device is managed, this should report true in very rare occasions (e.g.
+    the admin switched the metrics policy from false to true at the time the
+    user was going through OOBE).
+  </summary>
 </histogram>
 
 <histogram name="OOBE.StepCompletionTime.{OOBELegacyScreenName}" units="ms"

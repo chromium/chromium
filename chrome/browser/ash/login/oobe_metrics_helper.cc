@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
@@ -58,6 +61,10 @@ constexpr char kUmaOobeStartToOnboardingStart[] =
 
 constexpr char kUmaFirstOnboardingSuffix[] = "FirstOnboarding";
 constexpr char kUmaSubsequentOnboardingSuffix[] = "SubsequentOnboarding";
+
+constexpr char kUmaOobeMetricsClientIdReset[] = "OOBE.MetricsClientIdReset";
+constexpr char kUmaOobeStatsReportingControllerReportedReset[] =
+    "OOBE.StatsReportingControllerReportedReset";
 
 struct LegacyScreenNameEntry {
   StaticOobeScreenId screen;
@@ -124,9 +131,33 @@ std::string GetOnboardingTypeSuffix() {
                              : kUmaFirstOnboardingSuffix;
 }
 
+std::string GetMetricsClientID() {
+  std::string client_id;
+  if (g_browser_process->metrics_service()) {
+    client_id = g_browser_process->metrics_service()->GetClientId();
+  }
+
+  // Early in OOBE `metrics_service()->GetClientId()` will return an empty
+  // string. If that's the case look for the client ID in the preference
+  // `kMetricsProvisionalClientID`.
+  if (client_id.empty()) {
+    client_id = g_browser_process->local_state()->GetString(
+        metrics::prefs::kMetricsProvisionalClientID);
+  }
+
+  return client_id;
+}
+
 }  // namespace
 
-OobeMetricsHelper::OobeMetricsHelper() = default;
+OobeMetricsHelper::OobeMetricsHelper() {
+  if (StatsReportingController::IsInitialized()) {
+    stats_reporting_subscription_ =
+        StatsReportingController::Get()->AddObserver(base::BindRepeating(
+            &OobeMetricsHelper::OnStatsReportingSettingUpdated,
+            base::Unretained(this)));
+  }
+}
 
 OobeMetricsHelper::~OobeMetricsHelper() = default;
 
@@ -208,6 +239,11 @@ void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
 
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
+
+  // Store the metrics client ID to be later compared to the metrics
+  // client ID at the end of OOBE.
+  g_browser_process->local_state()->SetString(
+      prefs::kOobeMetricsClientIdAtOobeStart, GetMetricsClientID());
 }
 
 void OobeMetricsHelper::RecordPreLoginOobeComplete(
@@ -270,6 +306,25 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     base::UmaHistogramBoolean(kUmaOobeFlowStatus, true);
     base::UmaHistogramLongTimes(kUmaOobeFlowDuration,
                                 base::Time::Now() - oobe_start_time);
+
+    // Record whether the metrics client ID was reset during OOBE.
+    std::string initial_id = g_browser_process->local_state()->GetString(
+        prefs::kOobeMetricsClientIdAtOobeStart);
+
+    if (!initial_id.empty()) {
+      std::string current_id = GetMetricsClientID();
+      if (!current_id.empty()) {
+        base::UmaHistogramBoolean(kUmaOobeMetricsClientIdReset,
+                                  initial_id != current_id);
+
+        // Record whether `StatsReportingController` reported a reset during
+        // OOBE.
+        base::UmaHistogramBoolean(
+            kUmaOobeStatsReportingControllerReportedReset,
+            g_browser_process->local_state()->GetBoolean(
+                prefs::kOobeStatsReportingControllerReportedReset));
+      }
+    }
   }
 
   if (!onboarding_start_time.is_null()) {
@@ -337,6 +392,31 @@ void OobeMetricsHelper::RecordDeviceRegistered() {
 void OobeMetricsHelper::RecordChromeVersion() {
   base::UmaHistogramSparse("OOBE.ChromeVersionBeforeUpdate",
                            version_info::GetMajorVersionNumberAsInt());
+}
+
+void OobeMetricsHelper::OnStatsReportingSettingUpdated() {
+  // Return if the method was called outside of OOBE or the first onboarding
+  // experience.
+  if (g_browser_process->local_state()
+          ->GetTime(prefs::kOobeStartTime)
+          .is_null()) {
+    return;
+  }
+
+  bool enabled = StatsReportingController::Get()->IsEnabled();
+  if (enabled) {
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOobeMetricsReportedAsEnabled, true);
+  } else if (g_browser_process->local_state()->GetBoolean(
+                 prefs::kOobeMetricsReportedAsEnabled)) {
+    base::debug::DumpWithoutCrashing();
+
+    // It's possible that the `dump` will never be uploaded due to the client
+    // ID reset, therefore, store that metrics was reset in OOBE to report it
+    // at at later time.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOobeStatsReportingControllerReportedReset, true);
+  }
 }
 
 void OobeMetricsHelper::AddObserver(Observer* observer) {

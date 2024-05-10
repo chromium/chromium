@@ -122,6 +122,12 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterStringPref(prefs::kUrlParameterToAutofillSAMLUsername,
                                std::string());
+  registry->RegisterStringPref(prefs::kOobeMetricsClientIdAtOobeStart,
+                               std::string());
+  registry->RegisterBooleanPref(prefs::kOobeMetricsReportedAsEnabled, false);
+  registry->RegisterBooleanPref(
+      prefs::kOobeStatsReportingControllerReportedReset, false);
+
   registry->RegisterBooleanPref(
       ash::quick_start::prefs::kShouldResumeQuickStartAfterReboot, false);
   registry->RegisterDictionaryPref(

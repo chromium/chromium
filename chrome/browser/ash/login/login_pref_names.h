@@ -152,6 +152,27 @@ inline constexpr char kOobeScreenAfterConsumerUpdate[] =
 inline constexpr char kUrlParameterToAutofillSAMLUsername[] =
     "saml.UrlParameterToAutofillSAMLUsername";
 
+// A string pref containing the initial metrics client ID at the start of OOBE
+// to be later compared with the ID at the end of OOBE. This will determine
+// whether the ID was reset during OOBE or the first onboarding experience.
+// This pref is cleared before the first session starts.
+inline constexpr char kOobeMetricsClientIdAtOobeStart[] =
+    "OobeMetricsClientIdAtOobeStart";
+
+// A boolean pref that indicates if `StatsReportingController` ever reported the
+// status of metrics to be enabled during OOBE. This pref is only updated during
+// pre-login OOBE or the first onboarding experience and cleared before the
+// first session starts.
+inline constexpr char kOobeMetricsReportedAsEnabled[] =
+    "OobeMetricsReportedEnabled";
+
+// A boolean pref that indicates if `StatsReportingController` ever reported a
+// switch from enabled to disabled during OOBE. This pref is only updated during
+// pre-login OOBE or the first onboarding experience and cleared before the
+// first session start.
+inline constexpr char kOobeStatsReportingControllerReportedReset[] =
+    "OobeStatsReportingControllerReportedReset";
+
 }  // namespace ash::prefs
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_
