@@ -1,1 +1,29 @@
-TODO here
+<style>
+  #container {
+    display: flex;
+    flex-direction: row;
+    min-height: 400px;
+  }
+
+  #sidenav {
+    background-color: var(--cros-sys-app_base_shaded);
+    box-sizing: border-box;
+    padding: 10px;
+    width: 200px;
+  }
+</style>
+
+<div id="container">
+  <cros-sidenav id="sidenav"
+      on-cros-sidenav-item-enabled-changed="onSidenavSelect_">
+    <cros-sidenav-item id="0" label="settings-toggle-v2"></cros-sidenav-item>
+    <cros-sidenav-item id="1" label="settings-slider-v2"></cros-sidenav-item>
+    <cros-sidenav-item id="2" label="settings-dropdown-v2"></cros-sidenav-item>
+  </cros-sidenav>
+
+  <iron-pages selected="[[selectedIndex_]]">
+    <div>settings-toggle-v2</div>
+    <div>settings-slider-v2</div>
+    <div>settings-dropdown-v2</div>
+  </iron-pages>
+</div>

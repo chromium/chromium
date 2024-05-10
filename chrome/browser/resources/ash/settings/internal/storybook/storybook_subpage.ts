@@ -3,10 +3,18 @@
 // found in the LICENSE file.
 
 import '../../settings_shared.css.js';
+import 'chrome://resources/cros_components/sidenav/sidenav.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../../assert_extras.js';
+
 import {getTemplate} from './storybook_subpage.html.js';
+
+interface SidenavItem {
+  id: string;
+  label: string;
+}
 
 export class SettingsStorybookSubpage extends PolymerElement {
   static get is() {
@@ -15,6 +23,35 @@ export class SettingsStorybookSubpage extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The index of the selected page.
+       */
+      selectedIndex_: {
+        type: Number,
+        value: 0,
+      },
+    };
+  }
+
+  private selectedIndex_: number;
+
+  override ready(): void {
+    super.ready();
+
+    // Hide left menu.
+    const uiElement = castExists(document.body.querySelector('os-settings-ui'));
+    uiElement.shadowRoot!.querySelector<HTMLElement>('#left')!.hidden = true;
+  }
+
+  private onSidenavSelect_(
+      event: CustomEvent<{enabled: boolean, item: SidenavItem}>): void {
+    if (event.detail.enabled) {
+      this.selectedIndex_ = parseInt(event.detail.item.id, 10);
+    }
   }
 }
 
