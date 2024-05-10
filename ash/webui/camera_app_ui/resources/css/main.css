@@ -1296,20 +1296,18 @@ body:not(.video) #settings-video-resolution {
 }
 
 #view-super-res-intro-dialog .dialog-container {
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius);
+  overflow: hidden;
   /* Align the dialog with the center of the camera preview */
   transform: translateY(calc(0.5*var(--preview-viewport-height) - 50%));
 }
 
 #super-res-dialog-illustration {
   background: var(--cros-sys-app_base);
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
 }
 
 #super-res-dialog-content {
-  background: var(--cros-sys-base_elevated);
-  border-bottom-left-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
