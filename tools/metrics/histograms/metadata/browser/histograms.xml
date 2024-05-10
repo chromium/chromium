@@ -289,6 +289,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.ERP.MissiveClientDbusError"
+    enum="EnterpriseReportingMissiveClientDbusError" expires_after="2025-04-01">
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded when the Missive client receives a response from sending a record
+    to the Missive daemon over dBus. There are four types of responses. OK
+    indicates no error. SERVICE_UNAVAILABLE indicates Missive client is not
+    connected to dBus and did not attempt to send the record. NO_RESPONSE
+    indicates Missive client thinks it's connected to dBus and attempted to send
+    the record over dBus but received no response from the Missive daemon.
+    UNKNOWN indicates an unknown error occurred.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
     expires_after="2024-09-29">
   <owner>xuhong@chromium.org</owner>

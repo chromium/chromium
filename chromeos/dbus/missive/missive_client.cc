@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +44,10 @@ using ::reporting::Status;
 
 namespace chromeos {
 namespace {
+
+constexpr char kUmaMissiveClientDbusError[] =
+    "Browser.ERP.MissiveClientDbusError";
+constexpr char kErrorNoDbusResponse[] = "Returned no response";
 
 MissiveClient* g_instance = nullptr;
 
@@ -182,6 +187,16 @@ class MissiveClientImpl : public MissiveClient {
   // base class.
   class DBusDelegate : public reporting::DisconnectableClient::Delegate {
    public:
+    // If this enum is changed, be sure to update
+    // `EnterpriseReportingMissiveClientDbusError` in
+    // tools/metrics/histograms/metadata/browser/enums.xml
+    enum DbusErrorType : int32_t {
+      OK = 0,
+      SERVICE_UNAVAILABLE = 1,
+      NO_RESPONSE = 2,
+      UNKNOWN = 3,
+      MAX_VALUE = UNKNOWN,
+    };
     DBusDelegate(const DBusDelegate& other) = delete;
     DBusDelegate& operator=(const DBusDelegate& other) = delete;
     ~DBusDelegate() override = default;
@@ -233,7 +248,7 @@ class MissiveClientImpl : public MissiveClient {
                 DCHECK_CALLED_ON_VALID_SEQUENCE(self->owner_->origin_checker_);
                 if (!response) {
                   self->Respond(Status(reporting::error::UNAVAILABLE,
-                                       "Returned no response"));
+                                       kErrorNoDbusResponse));
                   return;
                 }
                 self->response_ = response;
@@ -250,6 +265,22 @@ class MissiveClientImpl : public MissiveClient {
       if (status.ok()) {
         dbus::MessageReader reader(response_);
         status = ParseResponse(&reader);
+        base::UmaHistogramEnumeration(kUmaMissiveClientDbusError,
+                                      DbusErrorType::OK,
+                                      DbusErrorType::MAX_VALUE);
+      } else if (status.error_message() ==
+                 reporting::disconnectable_client::kErrorServiceUnavailable) {
+        base::UmaHistogramEnumeration(kUmaMissiveClientDbusError,
+                                      DbusErrorType::SERVICE_UNAVAILABLE,
+                                      DbusErrorType::MAX_VALUE);
+      } else if (status.error_message() == kErrorNoDbusResponse) {
+        base::UmaHistogramEnumeration(kUmaMissiveClientDbusError,
+                                      DbusErrorType::NO_RESPONSE,
+                                      DbusErrorType::MAX_VALUE);
+      } else {
+        base::UmaHistogramEnumeration(kUmaMissiveClientDbusError,
+                                      DbusErrorType::UNKNOWN,
+                                      DbusErrorType::MAX_VALUE);
       }
       std::move(completion_callback_).Run(status);
     }

@@ -129,6 +129,14 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="KIOSK_HEARTBEAT"/>
 </enum>
 
+<enum name="EnterpriseReportingMissiveClientDbusError">
+  <summary>Defined as code in chromeos/dbus/missive/missive_client.cc</summary>
+  <int value="0" label="OK"/>
+  <int value="1" label="SERVICE_UNAVAILABLE"/>
+  <int value="2" label="NO_RESPONSE"/>
+  <int value="3" label="UNKNOWN"/>
+</enum>
+
 <enum name="EnterpriseReportingPsrResult">
   <summary>
     Defined as code in
