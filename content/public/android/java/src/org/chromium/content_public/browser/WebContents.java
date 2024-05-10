@@ -411,12 +411,19 @@ public interface WebContents extends Parcelable {
     MessagePort[] createMessageChannel();
 
     /**
-     * Returns whether the initial empty page has been accessed by a script from another
-     * page. Always false after the first commit.
+     * Returns whether the initial empty page has been accessed by a script from another page.
+     * Always false after the first commit.
      *
      * @return Whether the initial empty page has been accessed by a script.
      */
     boolean hasAccessedInitialDocument();
+
+    /**
+     * Returns whether the current page has opted into same-origin view transitions.
+     *
+     * @return Whether the current page has the same-origin view transition opt-in.
+     */
+    boolean hasViewTransitionOptIn();
 
     /**
      * This returns the theme color as set by the theme-color meta tag.

@@ -788,6 +788,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         return WebContentsImplJni.get().hasAccessedInitialDocument(mNativeWebContentsAndroid);
     }
 
+    @Override
+    public boolean hasViewTransitionOptIn() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().hasViewTransitionOptIn(mNativeWebContentsAndroid);
+    }
+
     @CalledByNative
     private static void onEvaluateJavaScriptResult(String jsonResult, JavaScriptCallback callback) {
         callback.handleJavaScriptResult(jsonResult);
@@ -1349,6 +1355,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 MessagePort[] ports);
 
         boolean hasAccessedInitialDocument(long nativeWebContentsAndroid);
+
+        boolean hasViewTransitionOptIn(long nativeWebContentsAndroid);
 
         int getThemeColor(long nativeWebContentsAndroid);
 

@@ -301,6 +301,49 @@ public class CompositorViewHolderUnitTest {
         reset(mCompositorView);
     }
 
+    // Test that a page opted in to view transitions gets an early resize event
+    // on the controls starting to show.
+    @Test
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_EARLY_RESIZE)
+    public void testResizeViewOnWillShowControlsWithViewTransition() {
+        final int topHeight = 100;
+        final int topMinHeight = 0;
+
+        TabModelSelectorTabObserver tabControlsObserver =
+                mBrowserControlsManager.getTabControlsObserverForTesting();
+
+        mBrowserControlsManager.setTopControlsHeight(topHeight, topMinHeight);
+
+        // Send initial offsets.
+        tabControlsObserver.onBrowserControlsOffsetChanged(
+                mTab,
+                /* topControlsOffsetY= */ -topHeight,
+                /* bottomControlsOffsetY= */ 0,
+                /* contentOffsetY= */ 0,
+                /* topControlsMinHeightOffsetY= */ 0,
+                /* bottomControlsMinHeightOffsetY= */ 0);
+        // Initially, the controls should be hidden.
+        assertTrue(
+                "Browser controls aren't fully hidden.",
+                BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
+
+        // Simulate the browser issuing a "show browser controls" signal to the renderer.
+        mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
+
+        // This should must not cause the controls to start resizing the view yet.
+        verify(mCompositorView, never()).onControlsResizeViewChanged(any(), anyBoolean());
+        reset(mCompositorView);
+
+        // Do the same but this time with the page having the view transition opt in.
+        mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ true);
+
+        // This should cause the controls to start resizing the view.
+        verify(mCompositorView).onControlsResizeViewChanged(any(), eq(true));
+        reset(mCompositorView);
+    }
+
+    // Test for the browser controls early resize flagged behavior.
+    // https://crbug.com/332331777
     @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_EARLY_RESIZE)
     public void testResizeViewOnWillShowControls() {
@@ -326,7 +369,7 @@ public class CompositorViewHolderUnitTest {
                 BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
 
         // Simulate the browser issuing a "show browser controls" signal to the renderer.
-        mCompositorViewHolder.onWillShowBrowserControls();
+        mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
 
         // This should cause the controls to start resizing the view.
         verify(mCompositorView).onControlsResizeViewChanged(any(), eq(true));
@@ -369,8 +412,8 @@ public class CompositorViewHolderUnitTest {
         reset(mCompositorView);
     }
 
-    // TODO(bokan): Ensure disabling the flag-guard reverts to old behavior. This test can be
-    // removed with the flag after M125 ships. https://crbug.com/5366846.
+    // TODO(bokan): Ensure disabling the flag-guard reverts to old behavior.
+    // https://crbug.com/332331777
     @Test
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_EARLY_RESIZE)
     public void testResizeViewOnWillShowControlsFlagGuarded() {
@@ -396,7 +439,7 @@ public class CompositorViewHolderUnitTest {
                 BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
 
         // Simulate the browser issuing a "show browser controls" signal to the renderer.
-        mCompositorViewHolder.onWillShowBrowserControls();
+        mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
 
         // This should must not cause the controls to start resizing the view yet.
         verify(mCompositorView, never()).onControlsResizeViewChanged(any(), anyBoolean());

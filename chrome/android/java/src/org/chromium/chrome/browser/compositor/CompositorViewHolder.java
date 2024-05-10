@@ -308,8 +308,8 @@ public class CompositorViewHolder extends FrameLayout
                 }
 
                 @Override
-                public void onWillShowBrowserControls(Tab tab) {
-                    CompositorViewHolder.this.onWillShowBrowserControls();
+                public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {
+                    CompositorViewHolder.this.onWillShowBrowserControls(viewTransitionOptIn);
                 }
 
                 @Override
@@ -1524,10 +1524,12 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     @VisibleForTesting
-    void onWillShowBrowserControls() {
-        // TODO(bokan): Flag guarding new behavior, remove once M125 ships.
-        // https://crbug.com/41490049.
-        if (!ChromeFeatureList.sBrowserControlsEarlyResize.isEnabled()) return;
+    void onWillShowBrowserControls(boolean viewTransitionOptIn) {
+        // TODO(bokan): Flag guarding potential new behavior
+        // https://crbug.com/332331777.
+        if (!viewTransitionOptIn && !ChromeFeatureList.sBrowserControlsEarlyResize.isEnabled()) {
+            return;
+        }
 
         // Let observers know the controls will be shown, resize the web content
         // immediately rather than waiting for the controls animation to finish. This

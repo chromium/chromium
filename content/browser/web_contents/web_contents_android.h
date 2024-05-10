@@ -136,6 +136,8 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   jboolean HasAccessedInitialDocument(JNIEnv* env);
 
+  jboolean HasViewTransitionOptIn(JNIEnv* env);
+
   // No theme color is represented by SK_ColorTRANSPARENT.
   jint GetThemeColor(JNIEnv* env);
 

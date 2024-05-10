@@ -154,7 +154,7 @@ public class EmptyTabObserver implements TabObserver {
             int bottomControlsMinHeightOffsetY) {}
 
     @Override
-    public void onWillShowBrowserControls(Tab tab) {}
+    public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {}
 
     @Override
     public void onContentViewScrollingStateChanged(boolean scrolling) {}

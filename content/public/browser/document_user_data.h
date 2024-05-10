@@ -107,6 +107,11 @@ class DocumentUserData : public base::SupportsUserData::Data {
     return static_cast<T*>(GetDocumentUserData(rfh, UserDataKey()));
   }
 
+  static const T* GetForCurrentDocument(const RenderFrameHost* rfh) {
+    DCHECK(rfh);
+    return static_cast<const T*>(GetDocumentUserData(rfh, UserDataKey()));
+  }
+
   static T* GetOrCreateForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
     if (auto* data = GetForCurrentDocument(rfh)) {

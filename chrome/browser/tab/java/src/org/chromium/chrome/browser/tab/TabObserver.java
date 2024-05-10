@@ -346,11 +346,13 @@ public interface TabObserver {
      * Called when the tab is about to notify its renderer to show the browser controls.
      *
      * @param tab The notifying {@link Tab}.
+     * @param tab Whether the current page has opted in to same-origin view transitions.
      */
-    void onWillShowBrowserControls(Tab tab);
+    void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn);
 
     /**
      * Called when scrolling state of Tab's content view changes.
+     *
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
     void onContentViewScrollingStateChanged(boolean scrolling);

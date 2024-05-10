@@ -265,6 +265,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean hasViewTransitionOptIn() {
+        return false;
+    }
+
+    @Override
     public int getThemeColor() {
         return 0;
     }

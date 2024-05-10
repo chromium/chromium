@@ -2175,8 +2175,10 @@ class TabImpl implements Tab {
      * to show (potentially animate) so that web content can be adapted to the controls sooner.
      */
     public void willShowBrowserControls() {
+        assert mWebContents != null;
+        boolean hasViewTransitionOptIn = mWebContents.hasViewTransitionOptIn();
         for (TabObserver observer : mObservers) {
-            observer.onWillShowBrowserControls(this);
+            observer.onWillShowBrowserControls(this, hasViewTransitionOptIn);
         }
     }
 
