@@ -109,7 +109,9 @@ const gfx::VectorIcon& GetIconType(
 SharingDialogView::SharingDialogView(views::View* anchor_view,
                                      content::WebContents* web_contents,
                                      SharingDialogData data)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
       data_(std::move(data)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
@@ -238,9 +240,6 @@ void SharingDialogView::Init() {
   set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
-
-  if (GetWidget())
-    SizeToContents();
 }
 
 void SharingDialogView::InitListView() {
