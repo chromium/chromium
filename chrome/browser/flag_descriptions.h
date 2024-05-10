@@ -2333,6 +2333,9 @@ extern const char kBackToHomeAnimationDescription[];
 extern const char kBoardingPassDetectorName[];
 extern const char kBoardingPassDetectorDescription[];
 
+extern const char kCCTBeforeUnloadName[];
+extern const char kCCTBeforeUnloadDescription[];
+
 extern const char kCCTEmbedderSpecialBehaviorTriggerName[];
 extern const char kCCTEmbedderSpecialBehaviorTriggerDescription[];
 

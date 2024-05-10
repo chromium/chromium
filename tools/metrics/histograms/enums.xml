@@ -16436,6 +16436,7 @@ from previous Chrome versions.
   <int value="-2080657940" label="DirectActions:disabled"/>
   <int value="-2080504230" label="TabHoverCards:disabled"/>
   <int value="-2080227937" label="ImeTrayHideVoiceButton:enabled"/>
+  <int value="-2079347889" label="CCTBeforeUnload:disabled"/>
   <int value="-2077268643" label="disable-device-enumeration"/>
   <int value="-2076313806" label="TrustTokens:disabled"/>
   <int value="-2075870708" label="MediaRemotingEncrypted:disabled"/>
@@ -18241,6 +18242,7 @@ from previous Chrome versions.
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
+  <int value="-1303986525" label="CCTBeforeUnload:enabled"/>
   <int value="-1303417000" label="UseStorkSmdsServerAddress:enabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>

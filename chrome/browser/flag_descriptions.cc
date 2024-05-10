@@ -3967,6 +3967,10 @@ const char kBackToHomeAnimationDescription[] =
 const char kBoardingPassDetectorName[] = "Boarding Pass Detector";
 const char kBoardingPassDetectorDescription[] = "Enable Boarding Pass Detector";
 
+const char kCCTBeforeUnloadName[] = "CCT before unload";
+const char kCCTBeforeUnloadDescription[] =
+    "Kill switch for new CCT before unload behavior during back press";
+
 const char kCCTEmbedderSpecialBehaviorTriggerName[] =
     "CCT embedder special behavior trigger";
 const char kCCTEmbedderSpecialBehaviorTriggerDescription[] =

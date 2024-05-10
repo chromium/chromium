@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -270,24 +271,33 @@ public class CustomTabActivityNavigationController
                 return false;
             }
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_BEFORE_UNLOAD)
+                && mTabController.onlyOneTabRemaining()) {
+            finishActivity();
+            return true;
+        }
+
         if (mTabController.dispatchBeforeUnloadIfNeeded()) {
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             return true;
         }
-
         if (mTabController.onlyOneTabRemaining()) {
-            // If we're closing the last tab and it it doesn't have beforeunload, just finish
-            // the Activity manually. If we had called mTabController.closeTab() and waited for
-            // the Activity to close as a result we would have a visual glitch:
-            // https://crbug.com/1087108.
-            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
-            finish(USER_NAVIGATION);
+            finishActivity();
         } else {
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             mTabController.closeTab();
         }
 
         return true;
+    }
+
+    private void finishActivity() {
+        // If we're closing the last tab and it doesn't have beforeunload, just finish the Activity
+        // manually. If we had called mTabController.closeTab() and waited for the Activity to close
+        // as a result we would have a visual glitch: https://crbug.com/1087108.
+        MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
+        finish(USER_NAVIGATION);
     }
 
     @Override

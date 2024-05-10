@@ -50,6 +50,7 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.CCT_BEFORE_UNLOAD)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
@@ -113,6 +114,27 @@ public class CustomTabActivityNavigationControllerTest {
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
+        env.tabProvider.removeTab();
+        Assert.assertNull(env.tabProvider.getTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void finishes_IfBackNavigationClosesTheOnlyTabWithUnloadHandler_CctBeforeUnload() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .build();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
