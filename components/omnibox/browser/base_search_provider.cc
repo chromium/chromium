@@ -496,6 +496,13 @@ void BaseSearchProvider::AddMatchToMap(
   if (result.should_prefetch())
     match.RecordAdditionalInfo(kSuggestMetadataKey, metadata);
 
+  // Initialize the ML scoring signals for this suggestion if needed.
+  if (!match.scoring_signals) {
+    match.scoring_signals = std::make_optional<ScoringSignals>();
+  }
+
+  match.scoring_signals->set_search_suggest_relevance(result.relevance());
+
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.
   MatchKey match_key(

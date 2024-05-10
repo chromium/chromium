@@ -21,12 +21,15 @@ struct DictionaryEntry {
 // - autocomplete_scoring_model_handler.cc
 //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
 // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+// - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
 // - omnibox.mojom `struct Signals`
 // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
 //   mojom::SignalsPtr>`
 // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
 //   AutocompleteMatch::ScoringSignals>`
 // - omnibox_util.ts `signalNames`
+// - omnibox/histograms.xml
+//   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 struct Signals {
   int32? typed_count;
   int32? visit_count;
@@ -52,6 +55,7 @@ struct Signals {
   int32? length_of_url;
   float? site_engagement;
   bool? allowed_to_be_default_match;
+  int32? search_suggest_relevance;
 };
 
 struct AutocompleteMatch {

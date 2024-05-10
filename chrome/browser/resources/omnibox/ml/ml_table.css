@@ -30,7 +30,7 @@ select:active {
   grid-template-columns:
       repeat(2, minmax(1%, 120px))
       repeat(2, minmax(120px, 1fr))
-      repeat(27, minmax(1%, 50px));
+      repeat(28, minmax(1%, 50px));
   grid-template-rows: 8em;
   grid-auto-rows: 3em;
   line-height: 1em;

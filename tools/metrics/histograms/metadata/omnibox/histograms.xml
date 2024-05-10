@@ -2223,6 +2223,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!--
+  Keep consistent:
+  - omnibox_event.proto `ScoringSignals`
+  - autocomplete_scoring_model_handler.cc
+    `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  - omnibox.mojom `struct Signals`
+  - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+    mojom::SignalsPtr>`
+  - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+    AutocompleteMatch::ScoringSignals>`
+  - omnibox_util.ts `signalNames`
+  - omnibox/histograms.xml
+    `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
+-->
+
 <histogram
     name="Omnibox.URLScoringModelExecuted.ScoringSignalCoverage.{ProviderType}.{ScoringSignalType}"
     enum="BooleanNonNull" expires_after="2025-02-23">
@@ -2264,6 +2281,9 @@ chromium-metrics-reviews@google.com.
         summary="Number of input terms matched by title."/>
     <variant name="num_input_terms_matched_by_url"
         summary="Number of input terms matched by url."/>
+    <variant name="search_suggest_relevance"
+        summary="Server-generated relevance score provided by the remote
+                 Suggest service for this suggestion."/>
     <variant name="shortcut_visit_count"
         summary="Number of times the suggestion was visited with the current
                  input or prefix of it for this profile on this device."/>

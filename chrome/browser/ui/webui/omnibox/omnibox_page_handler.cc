@@ -138,12 +138,15 @@ struct TypeConverter<mojom::SignalsPtr, AutocompleteMatch::ScoringSignals> {
     // - autocomplete_scoring_model_handler.cc
     //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
     // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+    // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
     // - omnibox.mojom `struct Signals`
     // - omnibox_page_handler.cc
     //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
     // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
     //   AutocompleteMatch::ScoringSignals>`
     // - omnibox_util.ts `signalNames`
+    // - omnibox/histograms.xml
+    //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 
     mojom::SignalsPtr mojom_signals(mojom::Signals::New());
 
@@ -171,6 +174,7 @@ struct TypeConverter<mojom::SignalsPtr, AutocompleteMatch::ScoringSignals> {
     PROTO_TO_MOJOM_SIGNAL(length_of_url);
     PROTO_TO_MOJOM_SIGNAL(site_engagement);
     PROTO_TO_MOJOM_SIGNAL(allowed_to_be_default_match);
+    PROTO_TO_MOJOM_SIGNAL(search_suggest_relevance);
 
     return mojom_signals;
   }
@@ -185,12 +189,15 @@ struct TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr> {
     // - autocomplete_scoring_model_handler.cc
     // `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
     // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+    // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
     // - omnibox.mojom `struct Signals`
     // - omnibox_page_handler.cc
     // `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
     // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
     // AutocompleteMatch::ScoringSignals>`
     // - omnibox_util.ts `signalNames`
+    // - omnibox/histograms.xml
+    //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 
     AutocompleteMatch::ScoringSignals signals;
 
@@ -218,6 +225,7 @@ struct TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr> {
     MOJOM_TO_PROTO_SIGNAL(length_of_url);
     MOJOM_TO_PROTO_SIGNAL(site_engagement);
     MOJOM_TO_PROTO_SIGNAL(allowed_to_be_default_match);
+    PROTO_TO_MOJOM_SIGNAL(search_suggest_relevance);
 
     return signals;
   }

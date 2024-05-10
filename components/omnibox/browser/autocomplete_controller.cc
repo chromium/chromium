@@ -132,6 +132,21 @@ void RecordMlScoreCoverage(size_t matches_with_non_null_scores,
 void RecordScoringSignalCoverageForProvider(
     const ScoringSignals& scoring_signals,
     const AutocompleteProvider* provider) {
+  // Keep consistent:
+  // - omnibox_event.proto `ScoringSignals`
+  // - autocomplete_scoring_model_handler.cc
+  //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  // - omnibox.mojom `struct Signals`
+  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  //   AutocompleteMatch::ScoringSignals>`
+  // - omnibox_util.ts `signalNames`
+  // - omnibox/histograms.xml
+  //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
+
   if (!provider) {
     return;
   }
@@ -178,6 +193,8 @@ void RecordScoringSignalCoverageForProvider(
       {"site_engagement", scoring_signals.has_site_engagement()},
       {"allowed_to_be_default_match",
        scoring_signals.has_allowed_to_be_default_match()},
+      {"search_suggest_relevance",
+       scoring_signals.has_search_suggest_relevance()},
   };
 
   const std::string provider_type = provider->GetName();
@@ -1925,9 +1942,11 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   // would be scored independently with their partial signals.
   internal_result_.DeduplicateMatches(input_, template_url_service_);
 
-  size_t eligible_matches_count = base::ranges::count_if(
-      internal_result_.matches_,
-      [](const auto& match) { return match.IsUrlScoringEligible(); });
+  size_t eligible_matches_count =
+      base::ranges::count_if(internal_result_.matches_, [](const auto& match) {
+        return match.IsUrlScoringEligible() &&
+               !AutocompleteMatch::IsSearchType(match.type);
+      });
 
   if (eligible_matches_count == 0)
     return;
@@ -1943,6 +1962,13 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
       continue;
     }
 
+    RecordScoringSignalCoverageForProvider(match_itr->scoring_signals.value(),
+                                           match_itr->provider.get());
+
+    if (AutocompleteMatch::IsSearchType(match_itr->type)) {
+      continue;
+    }
+
     // Verify the eligible match or one of its duplicates has an expected type.
     DCHECK(match_itr->MatchOrDuplicateMeets([](const auto& match) {
       return AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match);
@@ -1952,9 +1978,6 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
 
     batch_scoring_signals.push_back(&match_itr->scoring_signals.value());
     eligible_match_itrs.push_back(match_itr);
-
-    RecordScoringSignalCoverageForProvider(match_itr->scoring_signals.value(),
-                                           match_itr->provider.get());
   }
 
   auto elapsed_timer = base::ElapsedTimer();
@@ -2044,6 +2067,8 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     obs.OnMlScored(this, internal_result_);
 }
 
+// TODO(crbug.com/40062540): Remove this variant which has fallen out of sync
+//   with the other versions of ML scoring.
 void AutocompleteController::RunBatchUrlScoringModelWithStableSearches(
     OldResult& old_result) {
   TRACE_EVENT0(
@@ -2182,11 +2207,16 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
          match.relevance == 0)) {
       continue;
     }
-    batch_scoring_signals.push_back(&match.scoring_signals.value());
-    scored_positions.push_back(i);
 
     RecordScoringSignalCoverageForProvider(match.scoring_signals.value(),
                                            match.provider.get());
+
+    if (AutocompleteMatch::IsSearchType(match.type)) {
+      continue;
+    }
+
+    batch_scoring_signals.push_back(&match.scoring_signals.value());
+    scored_positions.push_back(i);
   }
 
   if (batch_scoring_signals.empty())
@@ -2244,7 +2274,10 @@ void AutocompleteController::RunBatchUrlScoringModelMappedSearchBlending(
   std::vector<int> scores_pool;
   for (size_t i = 0; i < internal_result_.size(); ++i) {
     const auto& match = internal_result_.matches_[i];
-    if (!match.IsUrlScoringEligible()) {
+    if (!match.IsUrlScoringEligible() ||
+        (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION &&
+         match.relevance == 0) ||
+        AutocompleteMatch::IsSearchType(match.type)) {
       continue;
     }
     scores_pool.push_back(match.relevance);

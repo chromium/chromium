@@ -1701,12 +1701,15 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
   // - autocomplete_scoring_model_handler.cc
   //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
   // - omnibox.mojom `struct Signals`
   // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
   //   mojom::SignalsPtr>`
   // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`
+  // - omnibox/histograms.xml
+  //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 
   if (!other.scoring_signals.has_value()) {
     return;
@@ -1912,6 +1915,13 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
     scoring_signals->set_allowed_to_be_default_match(
         scoring_signals->allowed_to_be_default_match() ||
         other.scoring_signals->allowed_to_be_default_match());
+  }
+
+  // Take the maximum.
+  if (other.scoring_signals->has_search_suggest_relevance()) {
+    scoring_signals->set_search_suggest_relevance(
+        std::max(scoring_signals->search_suggest_relevance(),
+                 other.scoring_signals->search_suggest_relevance()));
   }
 }
 

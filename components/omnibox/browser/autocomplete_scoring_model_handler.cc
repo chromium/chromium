@@ -117,12 +117,15 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
   // - autocomplete_scoring_model_handler.cc
   //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
   // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
   // - omnibox.mojom `struct Signals`
   // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
   //   mojom::SignalsPtr>`
   // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`
+  // - omnibox/histograms.xml
+  //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 
   std::vector<float> model_input;
   for (const auto& scoring_signal_spec : metadata.scoring_signal_specs()) {
