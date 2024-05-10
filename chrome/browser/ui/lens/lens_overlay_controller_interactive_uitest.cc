@@ -5,30 +5,42 @@
 // This class runs CUJ tests for lens overlay. These tests simulate input events
 // and cannot be run in parallel.
 
+#include <utility>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 
-class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
+class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
  public:
+  template <typename... Args>
+  explicit LensOverlayControllerCUJTest(Args&&... args)
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos({std::forward<Args>(args)...})) {}
+  ~LensOverlayControllerCUJTest() override = default;
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void WaitForTemplateURLServiceToLoad() {
@@ -38,7 +50,7 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
 
     // Permits sharing the page screenshot by default.
@@ -48,7 +60,7 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
 
     // Disallow sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -187,6 +199,84 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
               LensOverlayController::kOverlaySidePanelWebViewId),
           FlushEvents(),
           EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))));
+}
+
+class LensOverlayControllerPromoTest : public LensOverlayControllerCUJTest {
+ public:
+  LensOverlayControllerPromoTest()
+      : LensOverlayControllerCUJTest(
+            feature_engagement::kIPHSidePanelLensOverlayPinnableFeature,
+            feature_engagement::
+                kIPHSidePanelLensOverlayPinnableFollowupFeature) {}
+  ~LensOverlayControllerPromoTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, ShowsPromo) {
+  // Use the same setup and initial sequence as `SelectManualRegion` above in
+  // order to trigger the side panel.
+
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  const DeepQuery kPathToResultsFrame{
+      "lens-side-panel-app",
+      "#results",
+  };
+
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      OpenLensOverlay(),
+
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      // Wait for the webview to finish loading to prevent re-entrancy. Then do
+      // a drag offset from the center. Flush tasks after drag to prevent
+      // flakiness.
+      InSameContext(Steps(FlushEvents(),
+                          WaitForShow(LensOverlayController::kOverlayId),
+                          EnsurePresent(kOverlayId, kPathToRegionSelection),
+                          MoveMouseTo(LensOverlayController::kOverlayId),
+                          DragMouseTo(off_center_point))),
+
+      // The drag should have opened the side panel with the results frame.
+      WaitForShow(LensOverlayController::kOverlaySidePanelWebViewId),
+
+      // Wait for the initial "do you want to pin this?" help bubble.
+      WaitForPromo(feature_engagement::kIPHSidePanelLensOverlayPinnableFeature),
+
+      // Pin the side panel. This should dismiss the IPH, but also launch
+      // another, so wait for the first hide to avoid the next check picking up
+      // the wrong help bubble.
+      PressButton(kSidePanelPinButtonElementId),
+
+      // Specifying transition-only-on-event here means even if there is a
+      // different help bubble already in-frame, this step will succeed when any
+      // help bubble goes away.
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)
+          .SetTransitionOnlyOnEvent(true),
+
+      // A second IPH should appear showing where the item was pinned.
+      WaitForPromo(
+          feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature));
 }
 
 }  // namespace
