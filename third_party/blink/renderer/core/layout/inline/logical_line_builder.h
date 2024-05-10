@@ -29,7 +29,9 @@ class LogicalLineBuilder {
                      InlineLayoutStateStack* state_stack,
                      InlineChildLayoutContext* context);
 
-  void RebuildBoxStates(const LineInfo& line_info, wtf_size_t end_item_index);
+  void RebuildBoxStates(const LineInfo& line_info,
+                        wtf_size_t start_item_index,
+                        wtf_size_t end_item_index);
 
   // `main_line_helper` can be nullptr if the line is for ruby annotations.
   void CreateLine(LineInfo* line_info,

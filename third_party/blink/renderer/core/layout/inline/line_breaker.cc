@@ -645,7 +645,7 @@ void LineBreaker::RecalcClonedBoxDecorations() {
 
   // Compute which tags are not closed at |current_.item_index|.
   InlineItemsData::OpenTagItems open_items;
-  items_data_.GetOpenTagItems(current_.item_index, &open_items);
+  items_data_.GetOpenTagItems(0u, current_.item_index, &open_items);
 
   for (const InlineItem* item : open_items) {
     if (item->Style()->BoxDecorationBreak() == EBoxDecorationBreak::kClone) {

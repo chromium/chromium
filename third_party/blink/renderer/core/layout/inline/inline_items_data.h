@@ -58,9 +58,12 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
     items[index].AssertEndOffset(offset);
   }
 
-  // Get a list of |kOpenTag| that are open at |size|.
+  // Get a list of `kOpenTag` items between `start_index` to
+  // `start_index + size`.
   using OpenTagItems = Vector<const InlineItem*, 16>;
-  void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
+  void GetOpenTagItems(wtf_size_t start_index,
+                       wtf_size_t size,
+                       OpenTagItems* open_items) const;
 
 #if DCHECK_IS_ON()
   void CheckConsistency() const;

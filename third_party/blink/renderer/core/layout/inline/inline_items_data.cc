@@ -6,10 +6,12 @@
 
 namespace blink {
 
-void InlineItemsData::GetOpenTagItems(wtf_size_t size,
+void InlineItemsData::GetOpenTagItems(wtf_size_t start_index,
+                                      wtf_size_t size,
                                       OpenTagItems* open_items) const {
   DCHECK_LE(size, items.size());
-  for (const InlineItem& item : base::make_span(items.data(), size)) {
+  for (const InlineItem& item :
+       base::make_span(items).subspan(start_index, size)) {
     if (item.Type() == InlineItem::kOpenTag) {
       open_items->push_back(&item);
     } else if (item.Type() == InlineItem::kCloseTag) {

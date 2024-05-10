@@ -604,10 +604,12 @@ void LogicalLineBuilder::BidiReorder(
 }
 
 void LogicalLineBuilder::RebuildBoxStates(const LineInfo& line_info,
+                                          wtf_size_t start_item_index,
                                           wtf_size_t end_item_index) {
   // Compute which tags are not closed at the beginning of this line.
   InlineItemsData::OpenTagItems open_items;
-  line_info.ItemsData().GetOpenTagItems(end_item_index, &open_items);
+  line_info.ItemsData().GetOpenTagItems(
+      start_item_index, end_item_index - start_item_index, &open_items);
 
   // Create box states for tags that are not closed yet.
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();

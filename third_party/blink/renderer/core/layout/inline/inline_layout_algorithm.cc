@@ -297,7 +297,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
   // If not, rebuild the box states for the break token.
   box_states_ = context_->ResetBoxStates();
   LogicalLineBuilder(Node(), GetConstraintSpace(), box_states_, context_)
-      .RebuildBoxStates(line_info, break_token->StartItemIndex());
+      .RebuildBoxStates(line_info, 0u, break_token->StartItemIndex());
 }
 
 static LayoutUnit AdjustLineOffsetForHanging(LineInfo* line_info,
@@ -329,7 +329,7 @@ void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
   }
   InlineLayoutStateStack rebuilt;
   LogicalLineBuilder(Node(), GetConstraintSpace(), &rebuilt, context_)
-      .RebuildBoxStates(line_info, GetBreakToken()->StartItemIndex());
+      .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
                             quirks_mode_, &line_box);
