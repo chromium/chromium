@@ -2070,6 +2070,8 @@ source_set("ash") {
     "login/screens/packaged_license_screen.h",
     "login/screens/parental_handoff_screen.cc",
     "login/screens/parental_handoff_screen.h",
+    "login/screens/personalized_recommend_apps_screen.cc",
+    "login/screens/personalized_recommend_apps_screen.h",
     "login/screens/pin_setup_screen.cc",
     "login/screens/pin_setup_screen.h",
     "policy/multi_screen_capture/multi_screen_capture_policy_service.cc",

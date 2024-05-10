@@ -112,6 +112,7 @@ build_webui("build") {
     "screens/common/os_trial.ts",
     "screens/common/parental_handoff.ts",
     "screens/common/quick_start.ts",
+    "screens/common/personalized_recommend_apps.ts",
     "screens/common/remote_activity_notification.ts",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.

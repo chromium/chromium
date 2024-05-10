@@ -36,6 +36,7 @@ import './screens/common/online_authentication_screen.js';
 import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
 import './screens/common/os_trial.js';
+import './screens/common/personalized_recommend_apps.js';
 import './screens/common/parental_handoff.js';
 import './screens/common/quick_start.js';
 import './screens/common/recommend_apps.js';
@@ -168,6 +169,11 @@ export const commonScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'oobe-reset-element', id: 'reset'},
   {tag: 'osauth-error-element', id: 'osauth-error'},
+  {
+    tag: 'personalized-apps-element',
+    id: 'personalized-apps',
+    condition: 'isPersonalizedOnboarding',
+  },
   {tag: 'factor-setup-success-element', id: 'factor-setup-success'},
   {
     tag: 'os-install-element',
