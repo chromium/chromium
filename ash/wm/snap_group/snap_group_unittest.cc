@@ -6194,6 +6194,55 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkArea) {
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
+// Tests that when scaling up work area in Overview to make snapped windows no
+// longer fit within the work area, the Snap Group will be broken upon Overview
+// exit. See http://b/339719019 for more details.
+TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
+  UpdateDisplay("800x600");
+
+  // Set the min width so that the windows don't fit after zooming in using
+  // keyboard shortcut.
+  const gfx::Size min_size(395, 0);
+  std::unique_ptr<aura::Window> w1(CreateAppWindowWithMinSize(min_size));
+  std::unique_ptr<aura::Window> w2(CreateAppWindowWithMinSize(min_size));
+
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewGroupItem* group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
+  const auto& items = group_item->overview_items_for_testing();
+  CHECK_EQ(2U, items.size());
+  const auto& overview_item1 = items[0];
+  const auto& overview_item2 = items[1];
+  ASSERT_FALSE(overview_item1->target_bounds().Intersects(
+      overview_item2->target_bounds()));
+  ASSERT_FALSE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
+      GetUnionScreenBoundsForWindow(w2.get())));
+
+  // Zoom in to make the windows no longer fit, the Snap Group should be broken.
+  PressAndReleaseKey(ui::VKEY_OEM_PLUS,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  const int64_t primary_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  ASSERT_EQ(1.05f, display_manager()->GetDisplayInfo(primary_id).zoom_factor());
+  ASSERT_TRUE(overview_item1->target_bounds().Intersects(
+      overview_item2->target_bounds()));
+  ASSERT_TRUE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
+      GetUnionScreenBoundsForWindow(w2.get())));
+
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_FALSE(snap_group_divider());
+}
+
 // Tests that there is no crash when work area changed after snapping two
 // windows. Docked mananifier is used as an example to trigger the work area
 // change.

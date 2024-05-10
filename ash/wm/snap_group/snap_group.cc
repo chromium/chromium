@@ -318,7 +318,13 @@ void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  // Divider widiget can be invisible in Overview mode.
+  // The divider widget is invisible in Overview mode, skip the
+  // `RefreshSnapGroup()` since it would need to consider the divider bounds.
+  // Additionally, we want to avoid intensive visual updates and grid re-layout
+  // in Overview when the snapped windows no longer fit in the work area due to
+  // changes in device scale (in which case, the `OverviewGroupItem` is split
+  // into two separate `OverviewItem`s). `RefreshSnapGroup()` will be called in
+  // `SnapGroupController::OnOverviewModeEndingAnimationComplete()` instead.
   auto* divider_widget = snap_group_divider_.divider_widget();
   if (!divider_widget || !divider_widget->IsVisible()) {
     return;
@@ -459,6 +465,15 @@ void SnapGroup::OnOverviewModeStarting() {
 
 void SnapGroup::OnOverviewModeEnding() {
   hide_windows_in_partial_overview_.reset();
+
+  // On Overview mode ending, call `RefreshSnapGroup()` to refresh the bounds
+  // of the snapped windows and divider. This ensures they either maintain a
+  // proper fit within the work area or are gracefully broken from the group
+  // if they no longer fit due to potential device scale factor in Overview.
+  // By doing this refresh after exiting Overview, we prevent heavy visual
+  // updates and re-layout (break `OverviewGroupItem` back to two individual
+  // `Overviewitem`s) while in Overview mode.
+  RefreshSnapGroup();
 }
 
 }  // namespace ash

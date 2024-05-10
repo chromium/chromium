@@ -64,7 +64,7 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 // Returns the original bounds for the given `window` outside of overview. The
 // bounds are a union of all regular (normal and transient) windows in the
 // window's transient hierarchy.
-gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
+ASH_EXPORT gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
 
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);
