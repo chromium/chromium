@@ -14,7 +14,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.content.R;
-import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActionMenuDelegate;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -49,64 +48,23 @@ public class PasteActionModeCallback extends ActionMode.Callback2 {
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-        createPasteMenu(mode, menu);
-        return true;
-    }
-
-    private void createPasteMenu(ActionMode mode, Menu menu) {
         mode.setTitle(
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         ? mContext.getString(R.string.actionbar_textselection_title)
                         : null);
         mode.setSubtitle(null);
-        SelectActionMenuDelegate actionMenuDelegate =
-                new SelectActionMenuDelegate() {
-                    @Override
-                    public boolean canCut() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean canCopy() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean canPaste() {
-                        return mDelegate.canPaste();
-                    }
-
-                    @Override
-                    public boolean canShare() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean canSelectAll() {
-                        return mDelegate.canSelectAll();
-                    }
-
-                    @Override
-                    public boolean canWebSearch() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean canPasteAsPlainText() {
-                        return mDelegate.canPasteAsPlainText();
-                    }
-                };
-        SortedSet<SelectionMenuGroup> nonSelectionMenuItems =
-                SelectActionMenuHelper.getNonSelectionMenuItems(
-                        mContext, actionMenuDelegate, mSelectionActionMenuDelegate);
-        mCustomMenuItemClickListeners.clear();
-        SelectionPopupControllerImpl.initializeActionMenu(
-                mContext, nonSelectionMenuItems, menu, mCustomMenuItemClickListeners, null);
+        return true;
     }
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        return false;
+        SortedSet<SelectionMenuGroup> nonSelectionMenuItems =
+                SelectionPopupControllerImpl.getNonSelectionMenuItems(
+                        mContext, mDelegate, mSelectionActionMenuDelegate);
+        mCustomMenuItemClickListeners.clear();
+        SelectionPopupControllerImpl.initializeActionMenu(
+                mContext, nonSelectionMenuItems, menu, mCustomMenuItemClickListeners, null);
+        return true;
     }
 
     @Override

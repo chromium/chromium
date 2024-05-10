@@ -1063,7 +1063,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return mSelectionMenuCachedResult.getResult();
     }
 
-    private static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
+    static SortedSet<SelectionMenuGroup> getNonSelectionMenuItems(
             @Nullable Context context,
             SelectActionMenuDelegate delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
