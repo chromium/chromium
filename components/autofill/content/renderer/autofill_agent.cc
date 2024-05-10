@@ -878,7 +878,9 @@ void AutofillAgent::TriggerSuggestions(
     return;
   }
   if (trigger_source ==
-      AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
+          AutofillSuggestionTriggerSource::kComposeDialogLostFocus ||
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge) {
     if (WebElement content_editable =
             form_util::GetContentEditableByRendererId(field_id);
         !content_editable.IsNull()) {

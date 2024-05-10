@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_CONFIG_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_CONFIG_H_
 
+#include "base/time/time.h"
+
 namespace compose {
 
 // How Compose should position its dialog if there isn't enough space above or
@@ -64,6 +66,9 @@ struct Config {
   // Ignores OptGuide decision to disable the nudge. Does not bypass other
   // hint decisions.
   bool proactive_nudge_bypass_optimization_guide = false;
+
+  // How long to wait to show the proactive nudge.
+  base::TimeDelta proactive_nudge_delay = base::Seconds(3);
 
   // The duration that the saved state notification is shown before
   // auto-dismissal.

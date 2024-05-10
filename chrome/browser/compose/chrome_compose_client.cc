@@ -75,9 +75,7 @@ std::u16string RemoveLastCharIfInvalid(std::u16string str) {
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ChromeComposeClient>(*web_contents),
-      translate_language_provider_(new TranslateLanguageProvider()),
-      manager_(this),
-      client_page_receiver_(this) {
+      translate_language_provider_(new TranslateLanguageProvider()) {
   auto ukm_source_id =
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
   page_ukm_tracker_ = std::make_unique<compose::PageUkmTracker>(ukm_source_id);
@@ -105,6 +103,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   autofill_managers_observation_.Observe(
       web_contents, autofill::ScopedAutofillManagersObservation::
                         InitializationPolicy::kObservePreexistingManagers);
+  nudge_tracker_.StartObserving(web_contents);
 }
 
 ChromeComposeClient::~ChromeComposeClient() = default;
@@ -511,7 +510,9 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       top_level_frame->GetLastCommittedOrigin(), form_field_data.origin(), url,
       trigger_source);
 
-  // Record ukm only if the proactive nudge shows or is disabled by the flag.
+  // Record ukm only if the proactive nudge would show or is disabled by the
+  // flag. TODO(b/337125331): update metrics to reflect that the nudge may not
+  // be shown immediately.
   if (!ongoing_session &&
       (should_show_nudge.has_value() ||
        should_show_nudge.error() ==
@@ -519,12 +520,21 @@ bool ChromeComposeClient::ShouldTriggerPopup(
     page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
   }
 
-  if (!ongoing_session && should_show_nudge.has_value()) {
+  if (!should_show_nudge.has_value()) {
+    return false;
+  }
+
+  if (ongoing_session) {
+    return true;
+  }
+
+  bool nudge_can_show =
+      nudge_tracker_.ProactiveNudgeRequestedForFormField(form_field_data);
+  if (nudge_can_show) {
     compose::LogComposeProactiveNudgeCtr(
         compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
   }
-
-  return should_show_nudge.has_value();
+  return nudge_can_show;
 }
 
 void ChromeComposeClient::DisableProactiveNudge() {
@@ -671,6 +681,23 @@ void ChromeComposeClient::DidGetUserInteraction(
       event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     // TODO(b/318571287): Log when the dialog is closed due to scrolling.
     compose_dialog_controller_->Close();
+  }
+}
+void ChromeComposeClient::OnFocusChangedInPage(
+    content::FocusedNodeDetails* details) {
+  // TODO(crbug/337690061): Use Autofill events to track focus change.
+  return nudge_tracker_.FocusChangedInPage();
+}
+
+void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
+                                             autofill::FieldGlobalId field) {
+  if (autofill::AutofillDriver* driver =
+          autofill::ContentAutofillDriverFactory::FromWebContents(
+              &GetWebContents())
+              ->DriverForFrame(GetWebContents().GetPrimaryMainFrame())) {
+    driver->RendererShouldTriggerSuggestions(
+        field, autofill::AutofillSuggestionTriggerSource::
+                   kComposeDelayedProactiveNudge);
   }
 }
 

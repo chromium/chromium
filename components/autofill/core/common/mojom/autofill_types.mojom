@@ -619,4 +619,7 @@ enum AutofillSuggestionTriggerSource {
   // The compose saved state notification is triggered when the compose dialog
   // loses focus and is closed.
   kComposeDialogLostFocus,
+  // The compose proactive nudge is triggered after a delay by the compose
+  // manager.
+  kComposeDelayedProactiveNudge,
 };
