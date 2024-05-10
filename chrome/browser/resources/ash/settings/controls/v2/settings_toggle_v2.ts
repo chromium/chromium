@@ -66,6 +66,9 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
 
   checked: boolean;
   noSetPref: boolean;
+  override validPrefTypes: chrome.settingsPrivate.PrefType[] = [
+    chrome.settingsPrivate.PrefType.BOOLEAN,
+  ];
 
   override ready(): void {
     super.ready();

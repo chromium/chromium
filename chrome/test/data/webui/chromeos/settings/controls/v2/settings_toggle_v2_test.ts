@@ -105,6 +105,58 @@ suite('SettingsToggleV2', () => {
       await initWithPref();
     });
 
+    suite('Pref type validation', () => {
+      [{
+        prefType: chrome.settingsPrivate.PrefType.STRING,
+        testValue: 'foo',
+        isValid: false,
+      },
+       {
+         prefType: chrome.settingsPrivate.PrefType.NUMBER,
+         testValue: 1,
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.DICTIONARY,
+         testValue: {},
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.BOOLEAN,
+         testValue: true,
+         isValid: true,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.LIST,
+         testValue: [],
+         isValid: false,
+       },
+       {
+         prefType: chrome.settingsPrivate.PrefType.URL,
+         testValue: 'bar',
+         isValid: false,
+       },
+      ].forEach(({prefType, testValue, isValid}) => {
+        test(
+            `${prefType} pref type is ${isValid ? 'valid' : 'invalid'}`, () => {
+              function validatePref() {
+                toggleElement.pref = {
+                  key: 'settings.sample',
+                  type: prefType,
+                  value: testValue,
+                };
+                toggleElement.validatePref();
+              }
+
+              if (isValid) {
+                validatePref();
+              } else {
+                assertThrows(validatePref);
+              }
+            });
+      });
+    });
+
     test('checked value reflects the pref value', async () => {
       await initWithPref(true);
 
