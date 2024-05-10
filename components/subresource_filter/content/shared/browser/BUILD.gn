@@ -11,6 +11,8 @@ static_library("browser") {
     "child_frame_navigation_filtering_throttle.cc",
     "child_frame_navigation_filtering_throttle.h",
     "page_activation_throttle_delegate.h",
+    "page_load_statistics.cc",
+    "page_load_statistics.h",
     "ruleset_publisher_impl.cc",
     "ruleset_publisher_impl.h",
     "ruleset_service.cc",

@@ -20,8 +20,6 @@ static_library("browser") {
     "devtools_interaction_tracker.h",
     "navigation_console_logger.cc",
     "navigation_console_logger.h",
-    "page_load_statistics.cc",
-    "page_load_statistics.h",
     "profile_interaction_manager.cc",
     "profile_interaction_manager.h",
     "safe_browsing_child_navigation_throttle.cc",
