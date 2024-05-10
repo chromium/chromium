@@ -296,6 +296,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkAllowIconUpdate,
+    &features::kCookieDeprecationFacilitatedTesting,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,

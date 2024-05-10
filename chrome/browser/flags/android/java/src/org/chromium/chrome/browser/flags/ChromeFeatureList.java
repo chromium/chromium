@@ -268,6 +268,8 @@ public abstract class ChromeFeatureList {
             "ContextMenuSysUiMatchesActivity";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
+    public static final String COOKIE_DEPRECATION_FACILITATED_TESTING =
+            "CookieDeprecationFacilitatedTesting";
     public static final String CORMORANT = "Cormorant";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
