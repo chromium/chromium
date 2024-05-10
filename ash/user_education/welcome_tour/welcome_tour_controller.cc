@@ -6,6 +6,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -34,7 +35,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -43,6 +43,7 @@
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -520,11 +521,11 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   // We should attempt to launch the Explore app even if the Welcome Tour is
   // prevented provided that (a) the user is new, and (b) the device is not in
   // tablet mode. This is in keeping with existing first run behavior.
-  base::ScopedClosureRunner maybe_launch_explore_app_async(
-      display::Screen::GetScreen()->InTabletMode()
-          ? base::DoNothing()
-          : base::BindOnce(&LaunchExploreAppAsync,
-                           UserEducationPrivateApiKey()));
+  absl::Cleanup maybe_launch_explore_app_async = [] {
+    if (!display::Screen::GetScreen()->InTabletMode()) {
+      LaunchExploreAppAsync(UserEducationPrivateApiKey());
+    }
+  };
 
   // Welcome Tour is only conditionally supported with ChromeVox enabled.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled() &&
@@ -550,7 +551,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
 
   // The Welcome Tour is not being prevented, so hold off on opening the Explore
   // app until the Welcome Tour is either completed or aborted.
-  std::ignore = maybe_launch_explore_app_async.Release();
+  std::move(maybe_launch_explore_app_async).Cancel();
 
   auto* const tutorial_controller = UserEducationTutorialController::Get();
   if (!tutorial_controller->IsTutorialRegistered(TutorialId::kWelcomeTour)) {
