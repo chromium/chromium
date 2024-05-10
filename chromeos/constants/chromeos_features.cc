@@ -224,6 +224,11 @@ BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Orca internationalization.
+BASE_FEATURE(kOrcaInternationalize,
+             "OrcaInternationalize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling orca l10n strings.
 BASE_FEATURE(kOrcaUseL10nStrings,
              "OrcaUseL10nStrings",
@@ -499,6 +504,15 @@ bool IsOrcaUseL10nStringsEnabled() {
   return chromeos::BrowserParamsProxy::Get()->IsOrcaUseL10nStringsEnabled();
 #else
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaUseL10nStrings);
+#endif
+}
+
+bool IsOrcaInternationalizeEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsOrcaInternationalizeEnabled();
+#else
+  return base::FeatureList::IsEnabled(
+      chromeos::features::kOrcaInternationalize);
 #endif
 }
 

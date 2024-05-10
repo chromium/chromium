@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -244,7 +245,7 @@ void EditorMetricsRecorder::LogEditorState(EditorStates state) {
   base::UmaHistogramEnumeration(
       base::StrCat({"InputMethod.Manta.Orca.States.", AsString(mode_)}), state);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
     base::UmaHistogramEnumeration(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsString(InputMethodToLanguageCategory(
@@ -279,7 +280,7 @@ void EditorMetricsRecorder::LogNumberOfCharactersInserted(
           {"InputMethod.Manta.Orca.CharactersInserted.", AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -308,7 +309,7 @@ void EditorMetricsRecorder::LogNumberOfCharactersSelectedForInsert(
                     AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -337,7 +338,7 @@ void EditorMetricsRecorder::LogNumberOfResponsesFromServer(
       base::StrCat({"InputMethod.Manta.Orca.NumResponses.", AsString(mode_)}),
       number_of_responses, kMaxNumResponsesFromServer);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
     base::UmaHistogramExactLinear(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(
@@ -367,7 +368,7 @@ void EditorMetricsRecorder::LogLengthOfLongestResponseFromServer(
           {"InputMethod.Manta.Orca.LengthOfLongestResponse.", AsString(mode_)}),
       number_of_characters);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)) {
     base::UmaHistogramCounts100000(
         base::StrCat({"InputMethod.Manta.Orca.",
                       AsEnglishOrOther(InputMethodToLanguageCategory(

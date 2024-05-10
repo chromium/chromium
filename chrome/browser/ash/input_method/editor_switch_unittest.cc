@@ -704,7 +704,7 @@ TEST_P(EditorSwitchInternationalizeTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca,
                             chromeos::features::kFeatureManagementOrca,
-                            ash::features::kOrcaInternationalize},
+                            chromeos::features::kOrcaInternationalize},
       /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities});
   ScopedBrowserLocale browser_locale("en");
 

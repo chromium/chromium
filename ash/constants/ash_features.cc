@@ -2194,11 +2194,6 @@ BASE_FEATURE(kOrcaUseAccountCapabilities,
              "OrcaUseAccountCapabilities",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Orca internationalization.
-BASE_FEATURE(kOrcaInternationalize,
-             "OrcaInternationalize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables Orca on Workspace.
 BASE_FEATURE(kOrcaForceFetchContextOnGetEditorPanelContext,
              "OrcaForceFetchContextOnGetEditorPanelContext",

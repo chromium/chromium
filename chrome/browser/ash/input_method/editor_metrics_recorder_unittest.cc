@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "editor_metrics_enums.h"
@@ -440,7 +440,7 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Write"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -465,7 +465,7 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -555,7 +555,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Write"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -573,7 +573,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -609,7 +609,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Write"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -628,7 +628,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Rewrite"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -664,7 +664,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "NumResponses.Write"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -682,7 +682,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -717,7 +717,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Write"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);
@@ -735,7 +735,7 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
-  ScopedFeatureList feature_list(ash::features::kOrcaInternationalize);
+  ScopedFeatureList feature_list(chromeos::features::kOrcaInternationalize);
   FakeSystem system;
   FakeContextObserver observer;
   EditorContext context(&observer, &system, kAllowedCountryCode);

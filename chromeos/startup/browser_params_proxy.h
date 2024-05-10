@@ -184,6 +184,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsMahiSupportedWithCorrectFeatureKey() const;
 
+  bool IsOrcaInternationalizeEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

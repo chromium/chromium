@@ -401,4 +401,8 @@ bool BrowserParamsProxy::IsMahiSupportedWithCorrectFeatureKey() const {
   return BrowserInitParams::Get()->is_mahi_supported_with_correct_feature_key;
 }
 
+bool BrowserParamsProxy::IsOrcaInternationalizeEnabled() const {
+  return BrowserInitParams::Get()->is_orca_internationalize_enabled;
+}
+
 }  // namespace chromeos

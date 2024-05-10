@@ -103,7 +103,7 @@ std::vector<std::string> Combine(
 
 const std::vector<std::string>& AllowedInputMethods() {
   static const base::NoDestructor<std::vector<std::string>> input_methods(
-      base::FeatureList::IsEnabled(features::kOrcaInternationalize)
+      base::FeatureList::IsEnabled(chromeos::features::kOrcaInternationalize)
           ? Combine({EnglishInputMethods(), FrenchInputMethods(),
                      GermanInputMethods(), JapaneseInputMethods()})
           : EnglishInputMethods());
