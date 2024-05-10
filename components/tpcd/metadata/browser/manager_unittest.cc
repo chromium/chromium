@@ -293,7 +293,8 @@ INSTANTIATE_TEST_SUITE_P(
             static_cast<int32_t>(
                 content_settings::mojom::TpcdMetadataRuleSource::kMinValue),
             static_cast<int32_t>(
-                content_settings::mojom::TpcdMetadataRuleSource::kMaxValue),
+                content_settings::mojom::TpcdMetadataRuleSource::kMaxValue) +
+                1,
             /*step=*/1)));
 
 TEST_P(ManagerCohortsTest, DTRP_Eligibility) {
