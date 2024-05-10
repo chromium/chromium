@@ -200,8 +200,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void UpdateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     const SyncToken& sync_token);
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
-  void DestroyClientSharedImageOnGpuThread(
-      scoped_refptr<ClientSharedImage> client_shared_image);
   void WaitSyncTokenOnGpuThread(const SyncToken& sync_token);
   void WrapTaskWithGpuUrl(base::OnceClosure task);
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,

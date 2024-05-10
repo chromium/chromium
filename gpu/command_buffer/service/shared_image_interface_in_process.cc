@@ -753,11 +753,6 @@ void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(
   }
 }
 
-void SharedImageInterfaceInProcess::DestroyClientSharedImageOnGpuThread(
-    scoped_refptr<ClientSharedImage> client_shared_image) {
-  DestroySharedImageOnGpuThread(client_shared_image->mailbox());
-}
-
 void SharedImageInterfaceInProcess::WaitSyncTokenOnGpuThread(
     const SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
