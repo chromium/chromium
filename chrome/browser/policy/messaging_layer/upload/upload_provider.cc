@@ -278,10 +278,14 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
     UploadEnqueuedCallback enqueued_cb) const {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&UploadHelper::EnqueueUploadInternal,
-                     weak_ptr_factory_.GetMutableWeakPtr(), need_encryption_key,
-                     std::move(records), std::move(scoped_reservation),
-                     std::move(enqueued_cb)));
+      base::BindOnce(
+          &UploadHelper::EnqueueUploadInternal,
+          weak_ptr_factory_.GetMutableWeakPtr(), need_encryption_key,
+          std::move(records), std::move(scoped_reservation),
+          Scoped<StatusOr<std::list<int64_t>>>(
+              std::move(enqueued_cb),
+              base::unexpected(Status(error::UNAVAILABLE,
+                                      "Uploader has been destructed")))));
 }
 
 // static

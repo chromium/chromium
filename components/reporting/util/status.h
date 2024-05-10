@@ -8,8 +8,12 @@
 #include <cstdint>
 #include <iosfwd>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/status.pb.h"
 
@@ -96,6 +100,65 @@ class [[nodiscard]] Status {
 
 // Prints a human-readable representation of 'x' to 'os'.
 std::ostream& operator<<(std::ostream& os, const Status& x);
+
+// Auto runner wrapping a provided callback.
+// When it goes out of scope and the callback has not been run, it is invoked
+// with the `failed` value. Intended to be used in code like:
+//
+//   class Handler {
+//    public:
+//     using ResultCb = base::OnceCallback<void(Status)>;
+//     Handler(...) {...}
+//     void Method(..., Scoped<ResultCb> done) {
+//       ...
+//       std::move(done).Run(Status::StatusOK());
+//     }
+//   };
+//   auto handler = std::make_unique<Handler>(...);
+//   task_runner->PostTask(
+//       FROM_HERE,
+//       base::BindOnce(&Handler::Method, handler->GetWeakPtr(), ...,
+//                      Scoped<ResultCb>(
+//                          base::BindOnce(&Done, ...),
+//                          Status(error::UNAVAILABLE,
+//                                 "Handler has been destructed"))));
+//
+// If at run time `handler` is destructed before `Handler::Method` is executed,
+// `Done` will still be called with:
+//     Status(error::UNAVAILABLE, "Handler has been destructed")
+//  as a result.
+//
+// If `Done` expects something else than `Status`, `Scoped` needs to be
+// tagged with respective type - e.g.
+//                      Scoped<ResultCb, StatusOr<Result>>(
+//                          base::BindOnce(&Done, ...),
+//                          base::unexpected(Status(error::UNAVAILABLE,
+//                                           "Handler has been destructed")))
+//
+
+template <typename Failed = Status>
+class Scoped : public base::OnceCallback<void(Failed)> {
+ public:
+  using Callback = base::OnceCallback<void(Failed)>;
+
+  Scoped(Callback cb, Failed failed)
+      : Callback(std::forward<Callback>(cb)), failed_(std::move(failed)) {}
+
+  Scoped(Scoped&& other)
+      : Callback(std::exchange<Callback>(other, base::NullCallback())),
+        failed_(std::move(other.failed_)) {}
+
+  Scoped& operator=(Scoped&& other) { return Scoped(other); }
+
+  ~Scoped() {
+    if (!Callback::is_null()) {
+      std::move(*this).Run(std::move(failed_));
+    }
+  }
+
+ private:
+  Failed failed_;
+};
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_UTIL_STATUS_H_
+#endif  // MISSIVE_UTIL_STATUS_H_

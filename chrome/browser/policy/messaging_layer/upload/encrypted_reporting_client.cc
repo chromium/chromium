@@ -590,7 +590,10 @@ void EncryptedReportingClient::MaybePerformUpload(bool need_encryption_key,
       weak_ptr_factory_.GetWeakPtr(), priority, generation_id,
       base::BindOnce(&EncryptedReportingClient::AccountForUploadResponse,
                      priority, generation_id),
-      std::move(callback)));
+      Scoped<StatusOr<UploadResponseParser>>(
+          std::move(callback),
+          base::unexpected(
+              Status(error::UNAVAILABLE, "Client has been destructed")))));
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(&BuildPayload, GenerationGuidIsRequired(),
@@ -600,9 +603,7 @@ void EncryptedReportingClient::MaybePerformUpload(bool need_encryption_key,
                      std::move(create_job_cb)));
 }
 
-// static
 void EncryptedReportingClient::CreateUploadJob(
-    base::WeakPtr<EncryptedReportingClient> self,
     Priority priority,
     int64_t generation_id,
     policy::EncryptedReportingJobConfiguration::UploadResponseCallback
@@ -612,23 +613,17 @@ void EncryptedReportingClient::CreateUploadJob(
     ScopedReservation scoped_reservation,
     int64_t last_sequence_id,
     uint64_t events_to_send) {
-  if (!self) {
-    std::move(callback).Run(base::unexpected(
-        Status(error::UNAVAILABLE, "Client has been destructed")));
-    return;
-  }
-
   if (!payload_result.has_value()) {
     std::move(callback).Run(base::unexpected(
         Status(error::FAILED_PRECONDITION, "Failure to build request")));
     return;
   }
 
-  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Accept upload.
-  self->AccountForAllowedJob(priority, generation_id, last_sequence_id);
+  AccountForAllowedJob(priority, generation_id, last_sequence_id);
 
-  if (!self->delegate_->device_management_service()) {
+  if (!delegate_->device_management_service()) {
     std::move(callback).Run(base::unexpected(
         Status(error::NOT_FOUND,
                "Device management service required, but not found")));
@@ -640,7 +635,7 @@ void EncryptedReportingClient::CreateUploadJob(
     request_payload_size = GetPayloadSize(payload_result.value());
   }
 
-  if (self->context_.empty()) {
+  if (context_.empty()) {
     std::move(callback).Run(base::unexpected(
         Status(error::FAILED_PRECONDITION, "Upload context not preset")));
     return;
@@ -648,23 +643,27 @@ void EncryptedReportingClient::CreateUploadJob(
 
   auto config = std::make_unique<policy::EncryptedReportingJobConfiguration>(
       g_browser_process->shared_url_loader_factory(),
-      self->delegate_->device_management_service()
+      delegate_->device_management_service()
           ->configuration()
           ->GetEncryptedReportingServerUrl(),
-      std::move(payload_result.value()), self->dm_token_, self->client_id_,
+      std::move(payload_result.value()), dm_token_, client_id_,
       std::move(response_cb),
-      base::BindOnce(&EncryptedReportingClient::OnReportUploadCompleted, self,
-                     priority, generation_id, std::move(scoped_reservation),
-                     request_payload_size,
-                     self->payload_size_per_hour_uma_reporter_.GetWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(
+          &EncryptedReportingClient::OnReportUploadCompleted,
+          weak_ptr_factory_.GetWeakPtr(), priority, generation_id,
+          std::move(scoped_reservation), request_payload_size,
+          payload_size_per_hour_uma_reporter_.GetWeakPtr(),
+          Scoped<StatusOr<UploadResponseParser>>(
+              std::move(callback),
+              base::unexpected(
+                  Status(error::UNAVAILABLE, "Client has been destructed")))));
 
-  config->UpdateContext(self->context_.Clone());
+  config->UpdateContext(context_.Clone());
 
   // Create and track the new upload job.
   auto* const state = GetState(priority, generation_id);
-  state->job = self->delegate_->device_management_service()->CreateJob(
-      std::move(config));
+  state->job =
+      delegate_->device_management_service()->CreateJob(std::move(config));
   state->job_timer = std::make_unique<base::OneShotTimer>();
   state->job_timer->Start(FROM_HERE, kReportingUploadDeadline,
                           base::BindOnce(
@@ -690,9 +689,7 @@ void EncryptedReportingClient::CreateUploadJob(
   }
 }
 
-// static
 void EncryptedReportingClient::OnReportUploadCompleted(
-    base::WeakPtr<EncryptedReportingClient> self,
     Priority priority,
     int64_t generation_id,
     ScopedReservation scoped_reservation,
@@ -704,13 +701,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     policy::DeviceManagementStatus status,
     int response_code,
     std::optional<base::Value::Dict> response) {
-  if (!self) {
-    std::move(callback).Run(base::unexpected(
-        Status(error::UNAVAILABLE, "Client has been destructed")));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto* const state = GetState(priority, generation_id);
   // Make sure the job is destruct by the end of this method.

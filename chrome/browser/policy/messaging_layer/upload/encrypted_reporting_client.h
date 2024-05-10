@@ -155,8 +155,7 @@ class EncryptedReportingClient {
   // `payload_result` (`nullopt` if there was an error). Calls `callback` once
   // the job has been responded or if an error has been detected, and releases
   // `scoped_reservation`.
-  static void CreateUploadJob(
-      base::WeakPtr<EncryptedReportingClient> self,
+  void CreateUploadJob(
       Priority priority,
       int64_t generation_id,
       policy::EncryptedReportingJobConfiguration::UploadResponseCallback
@@ -168,19 +167,17 @@ class EncryptedReportingClient {
       uint64_t events_to_send);
 
   // Callback for encrypted report upload requests.
-  static void OnReportUploadCompleted(
-      base::WeakPtr<EncryptedReportingClient> self,
-      Priority priority,
-      int64_t generation_id,
-      ScopedReservation scoped_reservation,
-      std::optional<int> request_payload_size,
-      base::WeakPtr<PayloadSizePerHourUmaReporter>
-          payload_size_per_hour_uma_reporter,
-      ResponseCallback callback,
-      policy::DeviceManagementService::Job* job,
-      policy::DeviceManagementStatus status,
-      int response_code,
-      std::optional<base::Value::Dict> response);
+  void OnReportUploadCompleted(Priority priority,
+                               int64_t generation_id,
+                               ScopedReservation scoped_reservation,
+                               std::optional<int> request_payload_size,
+                               base::WeakPtr<PayloadSizePerHourUmaReporter>
+                                   payload_size_per_hour_uma_reporter,
+                               ResponseCallback callback,
+                               policy::DeviceManagementService::Job* job,
+                               policy::DeviceManagementStatus status,
+                               int response_code,
+                               std::optional<base::Value::Dict> response);
 
   // Checks the new job against the history, determines how soon the upload will
   // be allowed. Returns positive value if not allowed, and 0 or negative
