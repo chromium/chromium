@@ -87,6 +87,7 @@ chromium/try/linux-asan-rel
 chromium/try/linux-asan-v8-arm-dbg
 chromium/try/linux-asan-v8-arm-rel
 chromium/try/linux-bfcache-rel
+chromium/try/linux-blink-web-tests-force-accessibility-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
 chromium/try/linux-chromeos-compile-dbg

@@ -96,6 +96,7 @@ ci/lacros-arm-generic-rel-skylab
 ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel
+ci/linux-blink-web-tests-force-accessibility-rel
 ci/linux-cfm-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-dbg
