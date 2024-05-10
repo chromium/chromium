@@ -11,13 +11,13 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -146,11 +146,10 @@ TEST(EventTest, RepeatedKeyEvent) {
 
 TEST(EventTest, NoRepeatedKeyEvent) {
   // Temporarily set the global synthesize_key_repeat_enabled to false.
-  base::ScopedClosureRunner runner(base::BindOnce(
-      [](bool old_value) {
+  absl::Cleanup scoped_restore_settings =
+      [old_value = KeyEvent::IsSynthesizeKeyRepeatEnabled()] {
         KeyEvent::SetSynthesizeKeyRepeatEnabled(old_value);
-      },
-      KeyEvent::IsSynthesizeKeyRepeatEnabled()));
+      };
   KeyEvent::SetSynthesizeKeyRepeatEnabled(false);
 
   base::TimeTicks start = base::TimeTicks::Now();
