@@ -114,6 +114,10 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Print.container_p",
   "inputs.PhysicalKeyboardKoreanTyping",
 
+  # b/307328625
+  "login.ChangePassword.consumer_update",
+  "login.ChangePassword.no_consumer_update",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
