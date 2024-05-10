@@ -1523,37 +1523,27 @@ void AutofillAgent::HandleFocusChangeComplete(
 
   // When using Talkback on Android, and possibly others, traversing to and
   // focusing a field will not register as a click. Thus, when screen readers
-  // are used, treat the focused node as if it was the last clicked. Also check
-  // to ensure focus is on a field where text can be entered.
-  // When the focus is on a non-input field on Android, keyboard accessory may
-  // be shown if autofill data is available. Make sure to hide the accessory if
-  // focus changes to another element.
+  // are used, treat the focused node as if it was the last clicked.
   focused_node_was_last_clicked |= is_screen_reader_enabled_;
 
   WebElement focused_element =
       unsafe_render_frame()->GetWebFrame()->GetDocument().FocusedElement();
-  [&] {
-    if (focused_element.IsNull() || !focused_element.IsFormControlElement()) {
-      return;
-    }
-    WebFormControlElement focused_form_control_element =
-        focused_element.To<WebFormControlElement>();
-    if (!form_util::IsTextAreaElementOrTextInput(
-            focused_form_control_element)) {
-      return;
-    }
+  if (focused_element.IsNull()) {
+    return;
+  }
+
+  if (auto focused_control = focused_element.DynamicTo<WebFormControlElement>();
+      form_util::IsTextAreaElementOrTextInput(focused_control)) {
     if (focused_node_was_last_clicked) {
-      FormControlElementClicked(focused_form_control_element);
-      return;
-    }
-    if (form_util::IsTextAreaElement(focused_form_control_element)) {
+      FormControlElementClicked(focused_control);
+    } else if (form_util::IsTextAreaElement(focused_control)) {
       // Compose reacts to tab area focus even when not triggered by a click -
       // therefore call `ShowSuggestions` with a separate trigger source.
       ShowSuggestions(
-          focused_form_control_element,
+          focused_control,
           AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
     }
-  }();
+  }
 
   // TODO(crbug.com/1490372, b/308811729): This is not conditioned on
   // `focused_node_was_last_clicked`. This has two advantages:
@@ -1565,11 +1555,9 @@ void AutofillAgent::HandleFocusChangeComplete(
   //   false. The call comes from DidCompleteFocusChangeInFrame() which passes
   //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
   //   call `node.Focused()` was false.
-  if (!focused_element.IsNull()) {
-    ShowSuggestionsForContentEditable(
-        focused_element,
-        AutofillSuggestionTriggerSource::kContentEditableClicked);
-  }
+  ShowSuggestionsForContentEditable(
+      focused_element,
+      AutofillSuggestionTriggerSource::kContentEditableClicked);
 }
 
 void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
