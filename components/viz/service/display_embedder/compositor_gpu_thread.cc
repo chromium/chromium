@@ -22,6 +22,7 @@
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -142,13 +143,7 @@ CompositorGpuThread::GetSharedContextState() {
   attribs.angle_context_virtualization_group_number =
       gl::AngleContextVirtualizationGroup::kDrDc;
 
-  bool enable_angle_validation = features::IsANGLEValidationEnabled();
-#if DCHECK_IS_ON()
-  // Force validation on for all debug builds and testing
-  enable_angle_validation = true;
-#endif
-
-  attribs.can_skip_validation = !enable_angle_validation;
+  attribs.can_skip_validation = !features::IsANGLEValidationEnabled();
 
   // Compositor thread context doesn't need access textures and semaphores
   // created with other contexts.

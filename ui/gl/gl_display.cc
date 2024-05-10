@@ -724,6 +724,11 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
     SetEglDebugMessageControl();
   }
 
+  if (g_driver_egl.client_ext.b_EGL_ANGLE_no_error &&
+      !features::IsANGLEValidationEnabled()) {
+    eglSetValidationEnabledANGLE(EGL_FALSE);
+  }
+
   std::vector<std::string> enabled_angle_features;
   std::vector<std::string> disabled_angle_features;
   features::GetANGLEFeaturesFromCommandLineAndFinch(

@@ -188,6 +188,22 @@ bool UsePassthroughCommandDecoder() {
 #endif  // defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 }
 
+#if DCHECK_IS_ON()
+bool IsANGLEValidationEnabled() {
+  return true;
+}
+#else
+// Enables the use of ANGLE validation for EGL and GL (non-WebGL) contexts.
+BASE_FEATURE(kDefaultEnableANGLEValidation,
+             "DefaultEnableANGLEValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsANGLEValidationEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation) &&
+         UsePassthroughCommandDecoder();
+}
+#endif
+
 void GetANGLEFeaturesFromCommandLineAndFinch(
     const base::CommandLine* command_line,
     std::vector<std::string>& enabled_angle_features,
