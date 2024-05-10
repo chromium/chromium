@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -104,6 +105,8 @@ IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest,
                   user_education::FeaturePromoStatus::kNotRunning));
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest, PromoOnNewSession) {
   RunTestSequence(
       // Trigger a new session artificially.
@@ -152,3 +155,5 @@ IN_PROC_BROWSER_TEST_F(LowUsageHelpControllerBrowsertest, PromoAtStartup) {
       // A new session should be triggered at startup.
       WaitForStartupSession(), VerifyPromoShown());
 }
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

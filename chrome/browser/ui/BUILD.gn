@@ -6491,6 +6491,8 @@ static_library("ui") {
         "views/promos/ios_promo_constants.h",
         "views/promos/ios_promo_password_bubble.cc",
         "views/promos/ios_promo_password_bubble.h",
+        "views/user_education/low_usage_promo.cc",
+        "views/user_education/low_usage_promo.h",
       ]
 
       deps += [ "//components/prefs:prefs" ]

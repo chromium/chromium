@@ -67,6 +67,10 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/views/user_education/low_usage_promo.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -157,7 +161,8 @@ void RegisterChromeHelpBubbleFactories(
 }
 
 void MaybeRegisterChromeFeaturePromos(
-    user_education::FeaturePromoRegistry& registry) {
+    user_education::FeaturePromoRegistry& registry,
+    Profile* profile) {
   using user_education::FeaturePromoSpecification;
   using user_education::HelpBubbleArrow;
   using user_education::Metadata;
@@ -344,22 +349,10 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when there is atleast one "
                        "new module on the NTP page.")));
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // kIPHDesktopReEngagementFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForRotatingPromo(
-      feature_engagement::kIPHDesktopReEngagementFeature,
-      // TODO(dfried): These are placeholders; replace with the actual copy
-      // when it is ready.
-      std::move(FeaturePromoSpecification::CreateForToastPromo(
-                    feature_engagement::kIPHDesktopReEngagementFeature,
-                    kTopContainerElementId, IDS_TAB_GROUP_COLOR_BLUE,
-                    IDS_TAB_GROUPS_NEW_GROUP_PROMO,
-                    FeaturePromoSpecification::AcceleratorInfo())
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)),
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHDesktopReEngagementFeature,
-          kToolbarAppMenuButtonElementId, IDS_TAB_GROUP_COLOR_RED,
-          IDS_TAB_GROUPS_NEW_GROUP_PROMO,
-          FeaturePromoSpecification::AcceleratorInfo())));
+  registry.RegisterFeature(CreateLowUsagePromoSpecification(profile));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // kIPHExperimentalAIPromoFeature:
   registry.RegisterFeature(std::move(
@@ -977,6 +970,11 @@ void MaybeRegisterChromeFeaturePromos(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }
 
+void MaybeRegisterChromeFeaturePromos(
+    user_education::FeaturePromoRegistry& registry) {
+  MaybeRegisterChromeFeaturePromos(registry, nullptr);
+}
+
 void MaybeRegisterChromeTutorials(
     user_education::TutorialRegistry& tutorial_registry) {
   using user_education::HelpBubbleArrow;
@@ -1297,7 +1295,7 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
   RegisterChromeHelpBubbleFactories(
       user_education_service->help_bubble_factory_registry());
   MaybeRegisterChromeFeaturePromos(
-      user_education_service->feature_promo_registry());
+      user_education_service->feature_promo_registry(), profile);
   MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
   CHECK(user_education_service->new_badge_registry());
 

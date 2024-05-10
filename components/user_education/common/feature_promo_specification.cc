@@ -110,6 +110,32 @@ bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
   return false;
 }
 
+bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
+  // Some toasts are purely informational and their normal text also works for
+  // low-vision users. This is a very small percentage of toasts, and so only
+  // specific such promos are allowlisted.
+  //
+  // TODO(dfried): Merge legacy promos into this category, eliminating the entry
+  // point and promo type entirely.
+  static const char* const kAllowedPromoNames[] = {
+      "IPH_DesktopReEngagement",
+  };
+
+  const std::string name = promo_feature.name;
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (name == promo_name) {
+      return true;
+    }
+  }
+
+  // Features used for tests have this prefix and are excluded.
+  if (name.starts_with("TEST_")) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 FeaturePromoSpecification::AdditionalConditions::AdditionalConditions() =
@@ -234,15 +260,25 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForToastPromo(
     int body_text_string_id,
     int accessible_text_string_id,
     AcceleratorInfo accessible_accelerator) {
+  // In the vast majority of cases, separate screenreader text should be
+  // included for toasts; this is strictly enforced.
+  if (body_text_string_id == accessible_text_string_id ||
+      accessible_text_string_id <= 0) {
+    CHECK(IsAllowedToastWithoutScreenreaderText(feature))
+        << "Because toasts are hard to notice and time out quickly, screen "
+           "reader text associated with toasts should differ from the bubble "
+           "text and either provide the accelerator to access the highlighted "
+           "entry point for your feature, or at the very least provide a "
+           "separate description of the screen element appropriate for "
+           "keyboard "
+           "and low-vision users.";
+    if (accessible_text_string_id <= 0) {
+      accessible_text_string_id = body_text_string_id;
+    }
+  }
+
   FeaturePromoSpecification spec(&feature, PromoType::kToast, anchor_element_id,
                                  body_text_string_id);
-  CHECK_NE(body_text_string_id, accessible_text_string_id)
-      << "Because toasts are hard to notice and time out quickly, screen "
-         "reader text associated with toasts should differ from the bubble "
-         "text and either provide the accelerator to access the highlighted "
-         "entry point for your feature, or at the very least provide a "
-         "separate description of the screen element appropriate for keyboard "
-         "and low-vision users.";
   spec.screen_reader_string_id_ = accessible_text_string_id;
   spec.screen_reader_accelerator_ = std::move(accessible_accelerator);
   return spec;
