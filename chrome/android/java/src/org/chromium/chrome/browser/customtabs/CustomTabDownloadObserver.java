@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -13,10 +14,12 @@ import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinator;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialCoordinatorFactory;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 
 import javax.inject.Inject;
@@ -53,6 +56,12 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             return;
         }
         if (navigation.isDownload()) {
+            // If this is an inline pdf page, don't show interstitial.
+            if (PdfUtils.shouldOpenPdfInline()
+                    && TextUtils.equals(navigation.getMimeType(), MimeTypeUtils.PDF_MIME_TYPE)) {
+                unregister();
+                return;
+            }
             Runnable urlRegistration =
                     () -> {
                         if (mActivity.isFinishing()

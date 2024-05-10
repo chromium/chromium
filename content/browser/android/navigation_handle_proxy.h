@@ -33,6 +33,8 @@ class NavigationHandleProxy final {
   void DidFinish();
 
  private:
+  std::string GetMimeType() const;
+
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle_;
   raw_ptr<NavigationHandle> cpp_navigation_handle_ = nullptr;
 };

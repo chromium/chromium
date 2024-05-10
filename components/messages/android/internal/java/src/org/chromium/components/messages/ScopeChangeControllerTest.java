@@ -332,7 +332,7 @@ public class ScopeChangeControllerTest {
                         /* pageTransition= */ 0,
                         /* hasUserGesture= */ false,
                         isReload);
-        handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false, false);
+        handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false, false, "");
         return handle;
     }
 }
