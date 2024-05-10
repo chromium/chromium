@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
@@ -62,6 +65,67 @@ constexpr char kNotAllowedOriginErrorMessage[] =
 
 }  // namespace
 
+namespace {
+
+using Result = blink::mojom::DeviceAttributeResult;
+
+constexpr char kAnnotatedAssetId[] = "annotated_asset_id";
+constexpr char kAnnotatedLocation[] = "annotated_location";
+constexpr char kDirectoryApiId[] = "directory_api_id";
+constexpr char kHostname[] = "hostname";
+constexpr char kSerialNumber[] = "serial_number";
+
+class FakeDeviceAttributeApi : public DeviceAttributeApi {
+ public:
+  FakeDeviceAttributeApi() = default;
+  ~FakeDeviceAttributeApi() override = default;
+
+  // This method forwards calls to RealDeviceAttributesApi to the test the
+  // actual error reported by the service.
+  void ReportNotAllowedError(
+      base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)> callback)
+      override {
+    NOTIMPLEMENTED();
+  }
+
+  // This method forwards calls to RealDeviceAttributesApi to the test the
+  // actual error reported by the service.
+  void ReportNotAffiliatedError(
+      base::OnceCallback<void(blink::mojom::DeviceAttributeResultPtr)> callback)
+      override {
+    NOTIMPLEMENTED();
+  }
+
+  void GetDirectoryId(blink::mojom::DeviceAPIService::GetDirectoryIdCallback
+                          callback) override {
+    std::move(callback).Run(Result::NewAttribute(kDirectoryApiId));
+  }
+
+  void GetHostname(
+      blink::mojom::DeviceAPIService::GetHostnameCallback callback) override {
+    std::move(callback).Run(Result::NewAttribute(kHostname));
+  }
+
+  void GetSerialNumber(blink::mojom::DeviceAPIService::GetSerialNumberCallback
+                           callback) override {
+    std::move(callback).Run(Result::NewAttribute(kSerialNumber));
+  }
+
+  void GetAnnotatedAssetId(
+      blink::mojom::DeviceAPIService::GetAnnotatedAssetIdCallback callback)
+      override {
+    std::move(callback).Run(Result::NewAttribute(kAnnotatedAssetId));
+  }
+
+  void GetAnnotatedLocation(
+      blink::mojom::DeviceAPIService::GetAnnotatedLocationCallback callback)
+      override {
+    std::move(callback).Run(Result::NewAttribute(kAnnotatedLocation));
+  }
+};
+
+}  // namespace
+
 class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   DeviceAPIServiceTest() : account_id_(AccountId::FromUserEmail(kUserEmail)) {}
@@ -98,30 +162,53 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
                                    base::Value::List());
   }
 
-  void TryCreatingService(const GURL& url) {
+  void TryCreatingService(
+      const GURL& url,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
-    DeviceServiceImpl::Create(main_rfh(), remote_.BindNewPipeAndPassReceiver());
+    DeviceServiceImpl::CreateForTest(main_rfh(),
+                                     remote_.BindNewPipeAndPassReceiver(),
+                                     std::move(device_attribute_api));
   }
 
   void VerifyErrorMessageResultForAllDeviceAttributesAPIs(
       const std::string& expected_error_message) {
     base::test::TestFuture<blink::mojom::DeviceAttributeResultPtr> future;
 
-    remote()->get()->GetDirectoryId(future.GetRepeatingCallback());
+    remote()->get()->GetDirectoryId(future.GetCallback());
     EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
 
-    remote()->get()->GetHostname(future.GetRepeatingCallback());
+    remote()->get()->GetHostname(future.GetCallback());
     EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
 
-    remote()->get()->GetSerialNumber(future.GetRepeatingCallback());
+    remote()->get()->GetSerialNumber(future.GetCallback());
     EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
 
-    remote()->get()->GetAnnotatedAssetId(future.GetRepeatingCallback());
+    remote()->get()->GetAnnotatedAssetId(future.GetCallback());
     EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
 
-    remote()->get()->GetAnnotatedLocation(future.GetRepeatingCallback());
+    remote()->get()->GetAnnotatedLocation(future.GetCallback());
     EXPECT_EQ(future.Take()->get_error_message(), expected_error_message);
+  }
+
+  void VerifyCanAccessForAllDeviceAttributesAPIs() {
+    base::test::TestFuture<blink::mojom::DeviceAttributeResultPtr> future;
+
+    remote()->get()->GetDirectoryId(future.GetCallback());
+    EXPECT_EQ(future.Take()->get_attribute(), kDirectoryApiId);
+
+    remote()->get()->GetHostname(future.GetCallback());
+    EXPECT_EQ(future.Take()->get_attribute(), kHostname);
+
+    remote()->get()->GetSerialNumber(future.GetCallback());
+    EXPECT_EQ(future.Take()->get_attribute(), kSerialNumber);
+
+    remote()->get()->GetAnnotatedAssetId(future.GetCallback());
+    EXPECT_EQ(future.Take()->get_attribute(), kAnnotatedAssetId);
+
+    remote()->get()->GetAnnotatedLocation(future.GetCallback());
+    EXPECT_EQ(future.Take()->get_attribute(), kAnnotatedLocation);
   }
 
   const AccountId& account_id() const { return account_id_; }
@@ -134,7 +221,8 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(DeviceAPIServiceTest, ConnectsForTrustedApps) {
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_TRUE(remote()->is_connected());
 }
@@ -143,20 +231,23 @@ TEST_F(DeviceAPIServiceTest, ConnectsForTrustedApps) {
 TEST_F(DeviceAPIServiceTest, DoesNotConnectForIncognitoProfile) {
   profile_metrics::SetBrowserProfileType(
       profile(), profile_metrics::BrowserProfileType::kIncognito);
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
 
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
 
 TEST_F(DeviceAPIServiceTest, DoesNotConnectForUntrustedApps) {
-  TryCreatingService(GURL(kUntrustedUrl));
+  TryCreatingService(GURL(kUntrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
 
 TEST_F(DeviceAPIServiceTest, DisconnectWhenTrustRevoked) {
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   RemoveTrustedApps();
   remote()->FlushForTesting();
@@ -164,7 +255,8 @@ TEST_F(DeviceAPIServiceTest, DisconnectWhenTrustRevoked) {
 }
 
 TEST_F(DeviceAPIServiceTest, ReportErrorForDefaultUser) {
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   VerifyErrorMessageResultForAllDeviceAttributesAPIs(
       kNotAffiliatedErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
@@ -193,19 +285,22 @@ class DeviceAPIServiceIwaTest : public DeviceAPIServiceTest {
 };
 
 TEST_F(DeviceAPIServiceIwaTest, ConnectsForTrustedApps) {
-  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  TryCreatingService(GURL(kTrustedIwaAppOrigin),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_TRUE(remote()->is_connected());
 }
 
 TEST_F(DeviceAPIServiceIwaTest, DoesNotConnectForUntrustedApps) {
-  TryCreatingService(GURL(kUntrustedIwaAppOrigin));
+  TryCreatingService(GURL(kUntrustedIwaAppOrigin),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
 
 TEST_F(DeviceAPIServiceIwaTest, DisconnectWhenTrustRevoked) {
-  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  TryCreatingService(GURL(kTrustedIwaAppOrigin),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   RemoveTrustedApps();
   remote()->FlushForTesting();
@@ -213,7 +308,8 @@ TEST_F(DeviceAPIServiceIwaTest, DisconnectWhenTrustRevoked) {
 }
 
 TEST_F(DeviceAPIServiceIwaTest, ReportErrorForDefaultUser) {
-  TryCreatingService(GURL(kTrustedIwaAppOrigin));
+  TryCreatingService(GURL(kTrustedIwaAppOrigin),
+                     std::make_unique<DeviceAttributeApiImpl>());
   VerifyErrorMessageResultForAllDeviceAttributesAPIs(
       kNotAffiliatedErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
@@ -247,7 +343,8 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceTest {
 
 TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForUnaffiliatedUser) {
   LoginRegularUser(false);
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   VerifyErrorMessageResultForAllDeviceAttributesAPIs(
       kNotAffiliatedErrorMessage);
   ASSERT_TRUE(remote()->is_connected());
@@ -255,7 +352,8 @@ TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForUnaffiliatedUser) {
 
 TEST_F(DeviceAPIServiceRegularUserTest, ReportErrorForDisallowedOrigin) {
   LoginRegularUser(true);
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   RemoveAllowedOrigin();
 
   VerifyErrorMessageResultForAllDeviceAttributesAPIs(
@@ -309,16 +407,32 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceTest {
 // Kiosk app.
 TEST_F(DeviceAPIServiceWithKioskUserTest, ConnectsForKioskOrigin) {
   LoginKioskUser();
-  TryCreatingService(GURL(kKioskAppUrl));
+  TryCreatingService(GURL(kKioskAppUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_TRUE(remote()->is_connected());
+}
+
+// The service should be enabled if the current origin is same as the origin of
+// Kiosk app.
+TEST_F(DeviceAPIServiceWithKioskUserTest,
+       KioskOriginCanAccessDeviceAttributes) {
+  LoginKioskUser();
+  TryCreatingService(GURL(kKioskAppUrl),
+                     std::make_unique<FakeDeviceAttributeApi>());
+
+  remote()->FlushForTesting();
+
+  ASSERT_TRUE(remote()->is_connected());
+  VerifyCanAccessForAllDeviceAttributesAPIs();
 }
 
 // The service should be disabled if the current origin is different from the
 // origin of Kiosk app.
 TEST_F(DeviceAPIServiceWithKioskUserTest, DoesNotConnectForInvalidOrigin) {
   LoginKioskUser();
-  TryCreatingService(GURL(kInvalidKioskAppUrl));
+  TryCreatingService(GURL(kInvalidKioskAppUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
@@ -328,7 +442,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTest, DoesNotConnectForInvalidOrigin) {
 TEST_F(DeviceAPIServiceWithKioskUserTest,
        DoesNotConnectForNonKioskTrustedOrigin) {
   LoginKioskUser();
-  TryCreatingService(GURL(kTrustedUrl));
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }
@@ -338,7 +453,8 @@ TEST_F(DeviceAPIServiceWithKioskUserTest,
        DoesNotConnectForChromeAppKioskSession) {
   LoginChromeAppKioskUser();
 
-  TryCreatingService(GURL(kKioskAppUrl));
+  TryCreatingService(GURL(kKioskAppUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
   remote()->FlushForTesting();
   ASSERT_FALSE(remote()->is_connected());
 }

@@ -4,7 +4,9 @@
 #include "chrome/browser/device_api/device_service_impl.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
@@ -149,8 +151,10 @@ bool IsTrustedContext(content::RenderFrameHost& host,
 
 DeviceServiceImpl::DeviceServiceImpl(
     content::RenderFrameHost& host,
-    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver)
-    : DocumentService(host, std::move(receiver)) {
+    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+    std::unique_ptr<DeviceAttributeApi> device_attribute_api)
+    : DocumentService(host, std::move(receiver)),
+      device_attribute_api_(std::move(device_attribute_api)) {
   pref_change_registrar_.Init(
       Profile::FromBrowserContext(host.GetBrowserContext())->GetPrefs());
   pref_change_registrar_.Add(
@@ -174,7 +178,8 @@ DeviceServiceImpl::~DeviceServiceImpl() = default;
 // static
 void DeviceServiceImpl::Create(
     content::RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
+    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+    std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
   CHECK(host);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -186,7 +191,24 @@ void DeviceServiceImpl::Create(
   }
   // The object is bound to the lifetime of |host| and the mojo
   // connection. See DocumentService for details.
-  new DeviceServiceImpl(*host, std::move(receiver));
+  new DeviceServiceImpl(*host, std::move(receiver),
+                        std::move(device_attribute_api));
+}
+
+// static
+void DeviceServiceImpl::Create(
+    content::RenderFrameHost* host,
+    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) {
+  Create(host, std::move(receiver), std::make_unique<DeviceAttributeApiImpl>());
+}
+
+// static
+void DeviceServiceImpl::CreateForTest(
+    content::RenderFrameHost* host,
+    mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+    std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
+  CHECK_IS_TEST();
+  Create(host, std::move(receiver), std::move(device_attribute_api));
 }
 
 // static
@@ -203,44 +225,41 @@ void DeviceServiceImpl::OnDisposingIfNeeded() {
 }
 
 void DeviceServiceImpl::GetDirectoryId(GetDirectoryIdCallback callback) {
-  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetDirectoryId),
-                     std::move(callback));
+  GetDeviceAttribute(&DeviceAttributeApi::GetDirectoryId, std::move(callback));
 }
 
 void DeviceServiceImpl::GetHostname(GetHostnameCallback callback) {
-  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetHostname),
-                     std::move(callback));
+  GetDeviceAttribute(&DeviceAttributeApi::GetHostname, std::move(callback));
 }
 
 void DeviceServiceImpl::GetSerialNumber(GetSerialNumberCallback callback) {
-  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetSerialNumber),
-                     std::move(callback));
+  GetDeviceAttribute(&DeviceAttributeApi::GetSerialNumber, std::move(callback));
 }
 
 void DeviceServiceImpl::GetAnnotatedAssetId(
     GetAnnotatedAssetIdCallback callback) {
-  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetAnnotatedAssetId),
+  GetDeviceAttribute(&DeviceAttributeApi::GetAnnotatedAssetId,
                      std::move(callback));
 }
 
 void DeviceServiceImpl::GetAnnotatedLocation(
     GetAnnotatedLocationCallback callback) {
-  GetDeviceAttribute(base::BindOnce(device_attribute_api::GetAnnotatedLocation),
+  GetDeviceAttribute(&DeviceAttributeApi::GetAnnotatedLocation,
                      std::move(callback));
 }
 
 void DeviceServiceImpl::GetDeviceAttribute(
-    base::OnceCallback<void(DeviceAttributeCallback)> handler,
+    void (DeviceAttributeApi::*method)(DeviceAttributeCallback callback),
     DeviceAttributeCallback callback) {
   if (!IsAffiliatedUser()) {
-    device_attribute_api::ReportNotAffiliatedError(std::move(callback));
+    device_attribute_api_->ReportNotAffiliatedError(std::move(callback));
     return;
   }
 
   if (!CanAccessDeviceAttributes(GetPrefs(render_frame_host()), origin())) {
-    device_attribute_api::ReportNotAllowedError(std::move(callback));
+    device_attribute_api_->ReportNotAllowedError(std::move(callback));
     return;
   }
 
-  std::move(handler).Run(std::move(callback));
+  (device_attribute_api_.get()->*method)(std::move(callback));
 }

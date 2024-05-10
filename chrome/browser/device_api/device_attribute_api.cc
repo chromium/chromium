@@ -25,8 +25,6 @@
 using blink::mojom::DeviceAPIService;
 using blink::mojom::DeviceAttributeResultPtr;
 
-namespace device_attribute_api {
-
 namespace {
 
 using Result = blink::mojom::DeviceAttributeResult;
@@ -61,18 +59,22 @@ void AdaptLacrosResult(
 
 }  // namespace
 
-void ReportNotAffiliatedError(
+DeviceAttributeApiImpl::DeviceAttributeApiImpl() = default;
+DeviceAttributeApiImpl::~DeviceAttributeApiImpl() = default;
+
+void DeviceAttributeApiImpl::ReportNotAffiliatedError(
     base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
   std::move(callback).Run(Result::NewErrorMessage(kNotAffiliatedErrorMessage));
 }
 
-void ReportNotAllowedError(
+void DeviceAttributeApiImpl::ReportNotAllowedError(
     base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
   std::move(callback).Run(
       Result::NewErrorMessage(kNotAllowedOriginErrorMessage));
 }
 
-void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
+void DeviceAttributeApiImpl::GetDirectoryId(
+    DeviceAPIService::GetDirectoryIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
                                     ->browser_policy_connector_ash()
@@ -94,7 +96,8 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
 #endif
 }
 
-void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
+void DeviceAttributeApiImpl::GetHostname(
+    DeviceAPIService::GetHostnameCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::optional<std::string> attribute =
       g_browser_process->platform_part()
@@ -114,7 +117,8 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
 #endif
 }
 
-void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
+void DeviceAttributeApiImpl::GetSerialNumber(
+    DeviceAPIService::GetSerialNumberCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::optional<std::string_view> attribute =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
@@ -134,7 +138,7 @@ void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
 #endif
 }
 
-void GetAnnotatedAssetId(
+void DeviceAttributeApiImpl::GetAnnotatedAssetId(
     DeviceAPIService::GetAnnotatedAssetIdCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
@@ -157,7 +161,7 @@ void GetAnnotatedAssetId(
 #endif
 }
 
-void GetAnnotatedLocation(
+void DeviceAttributeApiImpl::GetAnnotatedLocation(
     DeviceAPIService::GetAnnotatedLocationCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string attribute = g_browser_process->platform_part()
@@ -179,5 +183,3 @@ void GetAnnotatedLocation(
       Result::NewErrorMessage(kNotSupportedPlatformErrorMessage));
 #endif
 }
-
-}  // namespace device_attribute_api

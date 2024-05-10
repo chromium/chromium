@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/device_api/device_attribute_api.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/document_service.h"
@@ -30,6 +33,11 @@ class DeviceServiceImpl final
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
 
+  static void CreateForTest(
+      content::RenderFrameHost* host,
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api);
+
   // Register the user prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -45,17 +53,24 @@ class DeviceServiceImpl final
   void GetAnnotatedLocation(GetAnnotatedLocationCallback callback) override;
 
  private:
+  static void Create(
+      content::RenderFrameHost* host,
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api);
+
   DeviceServiceImpl(
       content::RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver);
+      mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
+      std::unique_ptr<DeviceAttributeApi> device_attribute_api);
 
   void GetDeviceAttribute(
-      base::OnceCallback<void(DeviceAttributeCallback)> handler,
+      void (DeviceAttributeApi::*method)(DeviceAttributeCallback callback),
       DeviceAttributeCallback callback);
 
   void OnDisposingIfNeeded();
 
   PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<DeviceAttributeApi> device_attribute_api_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
