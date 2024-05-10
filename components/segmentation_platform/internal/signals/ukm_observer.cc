@@ -80,9 +80,13 @@ void UkmObserver::PauseOrResumeObservation(bool pause) {
 }
 
 void UkmObserver::OnUkmAllowedStateChanged(ukm::UkmConsentState state) {
+  InitalizeUkmAllowedState(state.Has(ukm::MSBB));
+}
+
+void UkmObserver::InitalizeUkmAllowedState(bool is_msbb_enabled) {
   base::Time most_recent_allowed = LocalStateHelper::GetInstance().GetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey);
-  if (!state.Has(ukm::MSBB)) {
+  if (!is_msbb_enabled) {
     if (most_recent_allowed != base::Time::Max()) {
       LocalStateHelper::GetInstance().SetPrefTime(
           kSegmentationUkmMostRecentAllowedTimeKey, base::Time::Max());
