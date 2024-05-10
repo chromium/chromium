@@ -169659,6 +169659,19 @@
        {}
       ]
      ],
+     "pseudo-first-line.html": [
+      "180420d98a4d94d5efd84cee8c83309fa060ffdb",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/pseudo-first-line-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "rb-display-001.html": [
       "5149eb34a4686a38cdf347fbe6162df83a9403a6",
       [
@@ -329601,6 +329614,10 @@
        []
       ]
      },
+     "pseudo-first-line-ref.html": [
+      "55c96fb2d3c45e680549c8b500ecaf28d297c311",
+      []
+     ],
      "reference": {
       "improperly-contained-annotation-001-ref.html": [
        "72a55541bcba241cdced59588e46118a40c8528c",
@@ -348094,6 +348111,12 @@
       []
      ]
     },
+    "scoped-registry": {
+     "ShadowRoot-innerHTML-upgrade.tentative-expected.txt": [
+      "19e9f1ae0c3128b7c4d417fa3e123bf4d28e2050",
+      []
+     ]
+    },
     "state": {
      "META.yml": [
       "df335b339e1324d8c36939df30c8506efa6aae0a",
@@ -355934,7 +355957,7 @@
    "fledge": {
     "tentative": {
      "TODO": [
-      "0d29efcc9a9df28cc79ca867247c01f2367bb380",
+      "8760e59d21f6f4e5a26de27395fe1b8a5151dac2",
       []
      ],
      "auction-config-passed-to-worklets.https.window_1-5-expected.txt": [
@@ -356066,11 +356089,7 @@
        "0bac1b99a968eb93daf5719b22dd6e27a26b13a9",
        []
       ]
-     },
-     "service-worker-helper.js": [
-      "dfcd1379d737f55619b4bb6719f72e4d7040de01",
-      []
-     ]
+     }
     }
    },
    "focus": {
@@ -390377,7 +390396,7 @@
     "focus-navigation": {
      "resources": {
       "focus-utils.js": [
-       "c8b4c36de84fff31b2eb74d983196b21de69b8a5",
+       "4aadfe24cbc1aafff7f36293e755694d5a6c7a48",
        []
       ],
       "shadow-dom.js": [
@@ -474927,7 +474946,7 @@
       ]
      ],
      "duplicate-tag-rejects-start.html": [
-      "6c99d6426c04f553dea129f0c0f978aba1c33c24",
+      "5c605fefbb3cc13538e4161bcb0f989a89a30e26",
       [
        null,
        {}
@@ -482020,7 +482039,7 @@
       ]
      ],
      "ShadowRoot-innerHTML-upgrade.tentative.html": [
-      "e21c9dd03326d68976bffc99483d04edd1bb8145",
+      "11cecb1533b53839570387ff5d0c5e9e9df69f56",
       [
        null,
        {}
@@ -530043,41 +530062,6 @@
          [
           "variant",
           "?6-last"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "service-worker-request-visibility.https.window.js": [
-      "c533c9cf61de802c64cd3f568228e3a9c28d7b42",
-      [
-       "fledge/tentative/service-worker-request-visibility.https.window.html?1-last",
-       {
-        "script_metadata": [
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "resources/fledge-util.sub.js"
-         ],
-         [
-          "script",
-          "/common/subset-tests.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ],
-         [
-          "variant",
-          "?1-last"
          ]
         ],
         "timeout": "long"
@@ -637885,6 +637869,15 @@
      ],
      "reading-order": {
       "tentative": {
+       "grid-order-across-scopes.html": [
+        "d505383e33899e86b4820b03943fecdba07b68b1",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "grid-order-on-shadow-host.html": [
         "a48eda1b57cd26b642edeed2d890bbf01a6043fe",
         [
@@ -637904,38 +637897,42 @@
         ]
        ],
        "grid-order-with-nested-grids.html": [
-        "d3da6682a3488e65bf2979aea344f5e43a956a49",
+        "15bdcf996fd4a2855ddd36995855d64f8593667e",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
        "grid-order-with-popover.html": [
-        "2e98c041570d935f89dd753e04460ab098d7dd89",
+        "c96a0c4fcf7712ae8365fd77f97b1ee9c7335a6e",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
        "grid-order-with-slots.html": [
-        "3045001e1d82525cbbf2e4524d86c28e4f208036",
+        "ed658b3510ae0ad983dbc53391f1ff90efb5d61a",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
        "grid-order.html": [
-        "1b86ab0b25a1d0e92aeae09b6f55b17bb97f1ee7",
+        "3ee91358fd612dc83afb10038e52163dbecd6d8b",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ]
@@ -673054,7 +673051,7 @@
      ]
     ],
     "videoFrame-copyTo-rgb.any.js": [
-     "442efc4b0f487816631430b50cdd893c72767be3",
+     "146b6756cb467335087dd234e63b4e9afcd03adb",
      [
       "webcodecs/videoFrame-copyTo-rgb.any.html",
       {

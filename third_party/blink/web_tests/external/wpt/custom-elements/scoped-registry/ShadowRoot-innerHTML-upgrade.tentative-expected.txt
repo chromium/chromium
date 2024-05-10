@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Upgrade into autonomous custom element should not inherit from global registry for missing values
+  assert_false: is not GloballyScoped expected false got true
+Harness: the test ran to completion.
+
