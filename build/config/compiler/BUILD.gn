@@ -233,8 +233,8 @@ declare_args() {
        (clang_use_default_sample_profile || clang_sample_profile_path != ""))
 }
 
-assert(!(llvm_force_head_revision && use_remoteexec),
-       "can't use rbe with trunk clang")
+assert(!(llvm_force_head_revision && use_remoteexec && host_os != "linux"),
+       "rbe with locally built clang only works on linux")
 
 # default_include_dirs ---------------------------------------------------------
 #
