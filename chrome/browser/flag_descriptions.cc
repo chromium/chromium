@@ -3847,6 +3847,12 @@ const char kAccessibilityUnifiedSnapshotsDescription[] =
     "When enabled, use the experimental unified code path for AXTree "
     "snapshots.";
 
+const char kAccessibilityManageBroadcastReceiverOnBackgroundName[] =
+    "Manage accessibility Broadcast Receiver on a background thread";
+const char kAccessibilityManageBroadcastReceiverOnBackgroundDescription[] =
+    "When enabled, registering and un-registering the broadcast "
+    "receiver will be on the background thread.";
+
 const char kAccountBookmarksAndReadingListBehindOptInName[] =
     "Account bookmarks and reading list behind opt-in";
 const char kAccountBookmarksAndReadingListBehindOptInDescription[] =

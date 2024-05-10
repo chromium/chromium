@@ -53,6 +53,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_URL;
+import static org.chromium.content_public.browser.ContentFeatureList.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -91,6 +92,9 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -121,13 +125,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Implementation of {@link WebContentsAccessibility} interface.
- * Native accessibility for a {@link WebContents}. Actual native instance is
- * created lazily upon the first request from Android framework on
- * {@link AccessibilityNodeProvider}, and shares the lifetime with {@link WebContents}.
- * Internally this class uses the {@link AccessibilityNodeProviderCompat} interface, and uses
- * the {@link AccessibilityNodeInfoCompat} object for the virtual tree, but will unwrap and surface
- * the non-Compat versions of these for any clients.
+ * Implementation of {@link WebContentsAccessibility} interface. Native accessibility for a {@link
+ * WebContents}. Actual native instance is created lazily upon the first request from Android
+ * framework on {@link AccessibilityNodeProvider}, and shares the lifetime with {@link WebContents}.
+ * Internally this class uses the {@link AccessibilityNodeProviderCompat} interface, and uses the
+ * {@link AccessibilityNodeInfoCompat} object for the virtual tree, but will unwrap and surface the
+ * non-Compat versions of these for any clients.
  */
 @JNINamespace("content")
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompat
@@ -219,8 +222,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // This handles the dispatching of accessibility events. It acts as an intermediary where we can
     // apply throttling rules, delay event construction, etc.
     private final AccessibilityEventDispatcher mEventDispatcher;
-    private String mSystemLanguageTag;
+    private volatile String mSystemLanguageTag;
     private BroadcastReceiver mBroadcastReceiver;
+    // Only un-register the broadcast receiver if this is true, otherwise it would result in a
+    // crash.
+    private volatile boolean mIsBroadcastReceiverRegistered;
 
     // Set of all nodes that have received a request to populate image data. The request only needs
     // to be run once per node, and it completes asynchronously. We track which nodes have already
@@ -233,6 +239,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean mIsCurrentlyAutoDisabled;
     private int mAutoDisableUsageCounter;
     private boolean mIsAutoDisableAccessibilityCandidate;
+
+    // To avoid any potential synchronization issues we post all broadcast receiver registration
+    // actions to the same sequence to be run serially.
+    private static final TaskRunner sSequencedTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
     /** Create a WebContentsAccessibilityImpl object. */
     private static class Factory implements UserDataFactory<WebContentsAccessibilityImpl> {
@@ -470,7 +481,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 };
 
         // Register a broadcast receiver for locale change.
-        if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
+        if (mView.isAttachedToWindow()) {
+            if (ContentFeatureMap.isEnabled(
+                    ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
+                // To prevent having empty languageTag until this background task runs.
+                mSystemLanguageTag = Locale.getDefault().toLanguageTag();
+                sSequencedTaskRunner.postTask(this::registerLocaleChangeReceiver);
+            } else {
+                registerLocaleChangeReceiver();
+            }
+        }
 
         // Define a set of relevant AccessibilityEvents.
         Runnable serviceMaskRunnable =
@@ -647,7 +667,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // When the native code was initialized, also record performance metrics unregister
             // our broadcast receiver.
             if (isNativeInitialized()) {
-                ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+                if (mIsBroadcastReceiverRegistered) {
+                    if (ContentFeatureMap.isEnabled(
+                            ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
+                        sSequencedTaskRunner.postTask(
+                                () ->
+                                        ContextUtils.getApplicationContext()
+                                                .unregisterReceiver(mBroadcastReceiver));
+                    } else {
+                        ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+                    }
+                    mIsBroadcastReceiverRegistered = false;
+                }
                 mHistogramRecorder.recordAccessibilityPerformanceHistograms();
                 // When we are in an initialized state, accessibility may be disabled. In that
                 // case, we should keep an on-going sum of the time spent disabled (without
@@ -678,16 +709,25 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mCaptioningController.startListening();
         }
 
-        registerLocaleChangeReceiver();
+        if (isNativeInitialized()) {
+            if (ContentFeatureMap.isEnabled(
+                    ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
+                // To prevent having empty languageTag until this background task runs.
+                mSystemLanguageTag = Locale.getDefault().toLanguageTag();
+                sSequencedTaskRunner.postTask(this::registerLocaleChangeReceiver);
+            } else {
+                registerLocaleChangeReceiver();
+            }
+        }
         TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
     }
 
     private void registerLocaleChangeReceiver() {
-        if (!isNativeInitialized()) return;
         try {
             IntentFilter filter = new IntentFilter(Intent.ACTION_LOCALE_CHANGED);
             ContextUtils.registerProtectedBroadcastReceiver(
                     ContextUtils.getApplicationContext(), mBroadcastReceiver, filter);
+            mIsBroadcastReceiverRegistered = true;
         } catch (ReceiverCallNotAllowedException e) {
             // WebView may be running inside a BroadcastReceiver, in which case registerReceiver is
             // not allowed.

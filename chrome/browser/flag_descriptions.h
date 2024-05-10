@@ -2251,6 +2251,9 @@ extern const char kAccessibilitySnapshotStressTestsName[];
 extern const char kAccessibilitySnapshotStressTestsDescription[];
 extern const char kAccessibilityUnifiedSnapshotsName[];
 extern const char kAccessibilityUnifiedSnapshotsDescription[];
+extern const char kAccessibilityManageBroadcastReceiverOnBackgroundName[];
+extern const char
+    kAccessibilityManageBroadcastReceiverOnBackgroundDescription[];
 
 extern const char kAccountBookmarksAndReadingListBehindOptInName[];
 extern const char kAccountBookmarksAndReadingListBehindOptInDescription[];

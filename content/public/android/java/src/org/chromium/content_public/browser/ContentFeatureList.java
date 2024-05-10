@@ -23,6 +23,8 @@ public class ContentFeatureList {
             "AccessibilityPageZoomEnhancements";
 
     public static final String ACCESSIBILITY_UNIFIED_SNAPSHOTS = "AccessibilityUnifiedSnapshots";
+    public static final String ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND =
+            "AccessibilityManageBroadcastReceiverOnBackground";
 
     public static final String ANDROID_OPEN_PDF_INLINE = "AndroidOpenPdfInline";
 

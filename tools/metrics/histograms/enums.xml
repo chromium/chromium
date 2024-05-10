@@ -16989,6 +16989,8 @@ from previous Chrome versions.
   <int value="-1854783122" label="AccessibilityAccelerator:enabled"/>
   <int value="-1854432127" label="ChromeHomePullToRefreshIphAtTop:disabled"/>
   <int value="-1854372227" label="VrBrowsingExperimentalFeatures:enabled"/>
+  <int value="-1854138112"
+      label="AccessibilityManageBroadcastReceiverOnBackground:enabled"/>
   <int value="-1853877370" label="CastStreamingVp9:disabled"/>
   <int value="-1853570433" label="AdvancedPpdAttributes:enabled"/>
   <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
@@ -24600,6 +24602,8 @@ from previous Chrome versions.
   <int value="1509482104"
       label="SupervisedPrefsControlledBySupervisedStore:disabled"/>
   <int value="1509586356" label="CrossOriginOpenerPolicy:disabled"/>
+  <int value="1509880263"
+      label="AccessibilityManageBroadcastReceiverOnBackground:disabled"/>
   <int value="1509901380" label="disable-drive-search-in-app-launcher"/>
   <int value="1510279169" label="PrivacyGuide2:disabled"/>
   <int value="1510476448" label="disable-prefixed-encrypted-media"/>
