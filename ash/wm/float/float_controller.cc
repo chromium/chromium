@@ -177,6 +177,10 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
   }
 
   void OnWillRemoveWindowFromLayout(aura::Window* child) override {
+    // Same as what we are doing inside
+    // `WorkspaceLayoutManager::OnWillRemoveWindowFromLayout` for this. But we
+    // need to do it separately here as `WorkspaceLayoutManager` is not tracking
+    // the float container.
     WindowState::Get(child)->set_pre_added_to_workspace_window_bounds(
         child->bounds());
   }
@@ -1146,13 +1150,6 @@ void FloatController::UnfloatImpl(aura::Window* window) {
   if (!floated_window_info)
     return;
 
-  // When a window is moved in/out from active desk container to float
-  // container, it gets reparented and will use
-  // `pre_added_to_workspace_window_bounds_` to update it's bounds, here we
-  // update `pre_added_to_workspace_window_bounds_` as window is re-added to
-  // active desk container from float container.
-  WindowState::Get(window)->set_pre_added_to_workspace_window_bounds(
-      window->bounds());
   // Floated window have been hidden on purpose on the inactive desk.
   ShowFloatedWindow(window);
   // Re-parent window to the "parent" desk's desk container.
