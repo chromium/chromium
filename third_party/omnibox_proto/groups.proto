@@ -92,6 +92,10 @@ enum GroupId {
   GROUP_OTHER_NAVS = 50002;  // E.g., bookmarks, history, etc.
   GROUP_DOCUMENT = 50003;    // E.g., Drive docs, slides, sheets, etc.
   GROUP_HISTORY_CLUSTER = 50004;
+
+  // IPH suggestions that appear in zero-prefix.  These suggestions are
+  // informational only and do not trigger a search or navigation.
+  GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP = 60000;
 }
 
 // Suggestion group sections determine the order in which suggestion groups
@@ -143,6 +147,10 @@ enum GroupSection {
   SECTION_MOBILE_QUERY_TILES = 15;
   // Visually rich answer suggestion presented as a standalone card.
   SECTION_MOBILE_RICH_ANSWER = 16;
+
+  // IPH suggestions that appear in zero-prefix.  These suggestions are
+  // informational only and do not trigger a search or navigation.
+  SECTION_ZERO_SUGGEST_IN_PRODUCT_HELP = 17;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.

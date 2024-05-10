@@ -94,5 +94,6 @@ message CategoryInfo {
     PRODUCT_LINES = 24;
     LOCAL_POI = 25;
     LOCALITY = 26;
+    FICTIONAL_CHARACTERS = 27;
   }
 }
