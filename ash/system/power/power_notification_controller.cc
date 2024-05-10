@@ -105,6 +105,9 @@ std::string CriticalNotificationOutcomeToString(
     case PowerNotificationController::CriticalNotificationOutcome::
         LowBatteryShutdown:
       return "LowBatteryShutdown";
+    case PowerNotificationController::CriticalNotificationOutcome::
+        NotificationShown:
+      return "NotificationShown";
     case PowerNotificationController::CriticalNotificationOutcome::PluggedIn:
       return "PluggedIn";
     case PowerNotificationController::CriticalNotificationOutcome::Suspended:
@@ -226,6 +229,13 @@ void PowerNotificationController::OnPowerStatusChanged() {
         !PowerStatus::Get()->IsLinePowerConnected()) {
       critical_notification_shown_time_ = base::TimeTicks::Now();
       StartPeriodicUpdate();
+      // Record NotificationShown outcome each time to avoid cross-metric
+      // comparison; its count should be greater than or equal to the sum of
+      // other outcomes.
+      base::UmaHistogramEnumeration(
+          "Ash.PowerNotification.CriticalNotificationOutcome",
+          PowerNotificationController::CriticalNotificationOutcome::
+              NotificationShown);
     }
   } else if (notification_state_ == NOTIFICATION_NONE) {
     battery_notification_.reset();

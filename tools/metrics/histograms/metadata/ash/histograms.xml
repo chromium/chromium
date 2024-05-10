@@ -215,6 +215,8 @@ chromium-metrics-reviews@google.com.
                shutdown."/>
   <variant name="LowBatteryShutdown"
       summary="The device automatically shuts down due to a low battery."/>
+  <variant name="NotificationShown"
+      summary="The critical notification is shown."/>
   <variant name="PluggedIn" summary="The device connects to a power source."/>
   <variant name="Suspended" summary="The device enters a suspended state."/>
   <variant name="UserShutdown"

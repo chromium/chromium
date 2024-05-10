@@ -509,11 +509,12 @@ ash/ambient/util/time_of_day_utils.h -->
 </enum>
 
 <enum name="CriticalNotificationOutcome">
-  <int value="0" label="Crashed"/>
-  <int value="1" label="LowBatteryShutdown"/>
-  <int value="2" label="PluggedIn"/>
-  <int value="3" label="Suspended"/>
-  <int value="4" label="UserShutdown"/>
+  <int value="0" label="NotificationShown"/>
+  <int value="1" label="Crashed"/>
+  <int value="2" label="LowBatteryShutdown"/>
+  <int value="3" label="PluggedIn"/>
+  <int value="4" label="Suspended"/>
+  <int value="5" label="UserShutdown"/>
 </enum>
 
 <enum name="DataFetchEventSource">

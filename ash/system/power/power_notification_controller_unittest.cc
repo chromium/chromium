@@ -104,6 +104,7 @@ class PowerNotificationControllerTest : public AshTestBase {
   void TearDown() override {
     controller_.reset();
     message_center_.reset();
+    histogram_tester_.reset();
     AshTestBase::TearDown();
   }
 
@@ -1025,11 +1026,14 @@ TEST_F(PowerNotificationControllerTest,
       PowerNotificationController::kCriticalMinutes * 60);
   UpdateNotificationState(
       proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+  // Record the NotificationShown outcome.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 1);
 
   // Simulate restart.
   SimulateRestart();
   histogram_tester_->ExpectTotalCount(
-      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+      "Ash.PowerNotification.CriticalNotificationOutcome", 1);
 }
 
 TEST_F(PowerNotificationControllerTest,
@@ -1069,6 +1073,27 @@ TEST_F(PowerNotificationControllerTest,
   histogram_tester_->ExpectTotalCount(
       "Ash.PowerNotification.CriticalNotificationToOutcomeDuration."
       "LowBatteryShutdown",
+      1);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_CriticalOutcome_Notificationshown) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome", 0);
+
+  // Set the default power state and set to critical state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+  proto.set_battery_time_to_empty_sec(5);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, false);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.PowerNotification.CriticalNotificationOutcome",
+      PowerNotificationController::CriticalNotificationOutcome::
+          NotificationShown,
       1);
 }
 

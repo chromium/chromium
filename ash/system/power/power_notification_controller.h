@@ -51,15 +51,18 @@ class ASH_EXPORT PowerNotificationController
   enum CriticalNotificationOutcome {
     // The device crashes, it includes the case when the battery is empty and
     // powerd does not have time to perform a graceful shutdown.
-    Crashed = 0,
+    Crashed = 1,
     // The device automatically shut down due to a low battery.
-    LowBatteryShutdown = 1,
+    LowBatteryShutdown = 2,
+    // The critical notification is shown, its count should be greater than or
+    // equal to the sum of all other outcomes.
+    NotificationShown = 0,
     // The device is connected to a power source.
-    PluggedIn = 2,
+    PluggedIn = 3,
     // The device enters a suspended state.
-    Suspended = 3,
+    Suspended = 4,
     // The device is shut down gracefully by user.
-    UserShutdown = 4,
+    UserShutdown = 5,
     kMaxValue = UserShutdown,
   };
 
