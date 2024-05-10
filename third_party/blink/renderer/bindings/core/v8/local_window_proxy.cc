@@ -243,8 +243,20 @@ void LocalWindowProxy::Initialize() {
   if (recordreplay::IsRecordingOrReplaying("commands") &&
       origin && !origin->Host().empty()) {
     bool initGlobally = !gRecordReplayStateInitialized;
+
+    // Whether this is the relative root frame of this process.
+    bool isMainFrame = GetFrame()->IsMainFrame() && world_->IsMainWorld();
     if (initGlobally) {
       gRecordReplayStateInitialized = true;
+
+      if (!isMainFrame) {
+        recordreplay::Warning(
+            "LocalWindowProxy::Initialize Called on non-root frame first: %d %d origin=%s url=%s",
+            GetFrame()->IsMainFrame(),
+            world_->IsMainWorld(),
+            origin->ToRawString().Utf8().c_str(),
+            GetFrame()->GetDocument()->Url().GetString().Utf8().c_str());
+      }
 
       // After creating the first context that is associated with a non-empty
       // origin, we are ready to set up the state used to process driver
@@ -258,29 +270,26 @@ void LocalWindowProxy::Initialize() {
       );
     }
 
-    if (world_->IsMainWorld()) {
-      bool initFrame = GetFrame()->IsLocalRoot();
-      if (initFrame) {
-        // Root-level navigation event, initially happens before
-        // first checkpoint.
-        OnRootFrameInit(GetIsolate(), GetFrame(), context);
-      }
-
-      if (initGlobally) {
-        // Create the first checkpoint at which execution can pause.
-        recordreplay::NewCheckpoint();
-        // Initialize some more.
-        InitializeRecordReplayAfterCheckpoint();
-      }
-      
-      if (initFrame) {
-        // Root-level navigation event, after first checkpoint.
-        OnRootFrameInitAfterCheckpoint(GetIsolate(), GetFrame(), context);
-      }
-
-      // Event for all new windows.
-      OnNewWindowAfterCheckpoint(GetIsolate(), GetFrame(), context);
+    if (isMainFrame) {
+      // Root-level navigation event, initially happens before
+      // first checkpoint.
+      OnRootFrameInit(GetIsolate(), GetFrame(), context);
     }
+
+    if (initGlobally) {
+      // Create the first checkpoint at which execution can pause.
+      recordreplay::NewCheckpoint();
+      // Initialize some more.
+      InitializeRecordReplayAfterCheckpoint();
+    }
+    
+    if (isMainFrame) {
+      // Root-level navigation event, after first checkpoint.
+      OnRootFrameInitAfterCheckpoint(GetIsolate(), GetFrame(), context);
+    }
+
+    // Event for all new windows.
+    OnNewWindowAfterCheckpoint(GetIsolate(), GetFrame(), context);
   }
 
   {

@@ -214,7 +214,7 @@ static char* PaintCallback(const char* mime_type, int jpeg_quality) {
 static std::atomic<size_t> gCurrentPaintBookmark;
 
 // Bookmark for the last point where a paint was committed on the main thread.
-static size_t gLastCommitBookmark;
+static std::atomic<size_t> gLastCommitBookmark;
 
 void InitPaintCallback() {
   static bool hasPaints = false;
@@ -235,7 +235,7 @@ void OnCommitPaint() {
 }
 
 void OnReadyToCommit() {
-  gLastCommitBookmark = gCurrentPaintBookmark;
+  gLastCommitBookmark.store(gCurrentPaintBookmark, std::memory_order_relaxed);
 }
 
 // How to encode repainted graphics.
@@ -264,7 +264,7 @@ void OnPaintFinished(const SkPixmap& pixmap) {
     if (gRepaintEvent)
       gRepaintResult = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
   } else {
-    size_t bookmark = gLastCommitBookmark;
+    size_t bookmark = gLastCommitBookmark.load();
     if (bookmark) {
       V8RecordReplayPaintFinished(bookmark);
     }
