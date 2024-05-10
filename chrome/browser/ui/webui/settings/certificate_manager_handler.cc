@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/network_service_instance.h"
@@ -85,6 +86,30 @@ void ViewCertificateAsync(std::string hash,
         web_contents->GetTopLevelNativeWindow());
     return;
   }
+}
+
+void ExportCertificatesAsync(
+    base::WeakPtr<content::WebContents> web_contents,
+    cert_verifier::mojom::ChromeRootStoreInfoPtr info) {
+  // Containing web contents went away (e.g. user navigated away). Don't
+  // try to open the dialog.
+  if (!web_contents) {
+    return;
+  }
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
+  for (auto const& cert_info : info->root_cert_info) {
+    export_certs.push_back(net::x509_util::CreateCryptoBuffer(cert_info->cert));
+  }
+
+  // TODO(crbug.com/40928765): currently requires user to select a different
+  // export option because the default is to only save the first certificate.
+  // Should modify chrome/browser/ui/certificate_dialogs.h for a new option to
+  // make this more user-friendly.
+  ShowCertExportDialog(web_contents.get(),
+                       web_contents->GetTopLevelNativeWindow(),
+                       std::move(export_certs), "chrome_root_store_certs.pem");
+  return;
 }
 
 class ClientCertSource {
@@ -243,6 +268,16 @@ void CertificateManagerPageHandler::GetPlatformClientCerts(
   ClientCertSource* source_ptr = source.get();
   source_ptr->GetCerts(base::BindOnce(&PopulateClientCertsAsync,
                                       std::move(source), std::move(callback)));
+}
+
+void CertificateManagerPageHandler::ExportChromeRootStore() {
+  cert_verifier::mojom::CertVerifierServiceFactory* factory =
+      content::GetCertVerifierServiceFactory();
+  DCHECK(factory);
+  // This should really use a cached set of info with other calls to
+  // GetChromeRootStoreInfo.
+  factory->GetChromeRootStoreInfo(
+      base::BindOnce(&ExportCertificatesAsync, web_contents_->GetWeakPtr()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

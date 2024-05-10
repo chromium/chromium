@@ -29,6 +29,7 @@ import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 export interface CertificateManagerV2Element {
   $: {
     crsCerts: CrCollapseElement,
+    exportCRS: HTMLElement,
     toast: CrToastElement,
   };
 }
@@ -97,6 +98,10 @@ export class CertificateManagerV2Element extends PolymerElement {
     // TODO(crbug.com/40928765): Support localization.
     this.toastMessage_ = 'Hash copied to clipboard';
     this.$.toast.show();
+  }
+
+  private onExportCrs_() {
+    CertificatesV2BrowserProxy.getInstance().handler.exportChromeRootStore();
   }
 }
 

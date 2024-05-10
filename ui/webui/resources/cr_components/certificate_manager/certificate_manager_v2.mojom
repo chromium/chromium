@@ -42,6 +42,9 @@ interface CertificateManagerPageHandler {
   // have to consider if this should also be used for other certs or if other
   // calls should be added for certs from other sources.
   ViewCertificate(string sha256_hash_hex);
+
+  // Export all the certificates trusted through the Chrome Root Store.
+  ExportChromeRootStore();
 };
 
 // Calls from C++ -> TS (Browser -> Renderer).

@@ -52,9 +52,10 @@
         expanded="{{crsTrustedCertsOpened_}}">
       <div class="cert-row">
         Trusted Certificates
-        <!-- TODO(crbug.com/40928765): wire up export button to export all
-          certs -->
-        <cr-button class="action-button certs-export-button">Export</cr-button>
+        <cr-button class="action-button certs-export-button"
+            id="exportCRS" on-click="onExportCrs_">
+          Export
+        </cr-button>
       </div>
     </cr-expand-button>
     <cr-collapse id="crsCerts" opened="[[crsTrustedCertsOpened_]]">

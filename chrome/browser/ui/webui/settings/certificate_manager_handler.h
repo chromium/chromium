@@ -36,6 +36,7 @@ class CertificateManagerPageHandler
       GetChromeRootStoreCertsCallback callback) override;
   void ViewCertificate(const std::string& sha256_hex_hash) override;
   void GetPlatformClientCerts(GetPlatformClientCertsCallback callback) override;
+  void ExportChromeRootStore() override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void GetProvisionedClientCerts(
       GetProvisionedClientCertsCallback callback) override;

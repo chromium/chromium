@@ -27,6 +27,7 @@ class FakePageHandler extends TestBrowserProxy implements
       'getChromeRootStoreCerts',
       'getPlatformClientCerts',
       'getProvisionedClientCerts',
+      'exportChromeRootStore',
       'viewCertificate',
     ]);
   }
@@ -48,6 +49,10 @@ class FakePageHandler extends TestBrowserProxy implements
 
   viewCertificate(sha256hashHex: string) {
     this.methodCalled('viewCertificate', sha256hashHex);
+  }
+
+  exportChromeRootStore() {
+    this.methodCalled('exportChromeRootStore');
   }
 
   setChromeRootStoreCerts(crsCerts: SummaryCertInfo[]) {
@@ -98,7 +103,6 @@ suite('CertificateEntryV2Test', () => {
   test('element check', async () => {
     initializeElement();
 
-    await microtasksFinished();
     assertEquals(
         'deadbeef', certEntry.$.certhash.value, 'wrong hash in input box');
     certEntry.$.view.click();
@@ -143,7 +147,6 @@ suite('CertificateManagerV2Test', () => {
     assertTrue(certManager.$.toast.open);
   });
 
-
   test('CRS list populated', async () => {
     const certs: SummaryCertInfo[] = [
       {
@@ -161,6 +164,26 @@ suite('CertificateManagerV2Test', () => {
     assertEquals(1, matchEls.length, 'no certs displayed');
     assertEquals('cert1', matchEls[0]!.displayName);
     assertEquals('deadbeef', matchEls[0]!.sha256hashHex);
+  });
+
+  test('Export CRS certs', async () => {
+    const certs: SummaryCertInfo[] = [
+      {
+        'sha256hashHex': 'deadbeef',
+        'displayName': 'cert1',
+      },
+    ];
+    testProxy.handler.setChromeRootStoreCerts(certs);
+    initializeElement();
+
+    await microtasksFinished();
+    assertFalse(certManager.$.toast.open);
+
+    const certEntries =
+        certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
+    assertEquals(1, certEntries.length, 'no certs found');
+    certManager.$.exportCRS.click();
+    await testProxy.handler.whenCalled('exportChromeRootStore');
   });
 
   test('platform client certs populated', async () => {
