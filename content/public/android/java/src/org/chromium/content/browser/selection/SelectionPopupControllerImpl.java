@@ -175,6 +175,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // Can be null temporarily when switching between WindowAndroid.
     @Nullable private View mView;
     private ActionMode mActionMode;
+    private ActionMode mPasteActionMode;
 
     // Supplier of whether action bar is showing now.
     private final ObservableSupplierImpl<Boolean> mIsActionBarShowingSupplier =
@@ -211,7 +212,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     // Lazily created paste popup menu, triggered either via long press in an
     // editable region or from tapping the insertion handle.
-    private FloatingPastePopupMenu mPastePopupMenu;
     private boolean mWasPastePopupShowingOnInsertionDragStart;
 
     // Dropdown menu delegate that handles showing a dropdown style text selection menu.
@@ -686,17 +686,35 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         destroyPastePopup();
 
-        Context windowContext = mWindowAndroid.getContext().get();
-        if (windowContext == null) return;
-        mPastePopupMenu =
-                new FloatingPastePopupMenu(
-                        windowContext, mView, this, mSelectionActionMenuDelegate);
         showPastePopup();
     }
 
     private void showPastePopup() {
+        Context windowContext = mWindowAndroid.getContext().get();
+        if (windowContext == null) return;
+
         try {
-            mPastePopupMenu.show(getSelectionRectRelativeToContainingView());
+            if (mPasteActionMode != null) {
+                mPasteActionMode.invalidateContentRect();
+                return;
+            }
+
+            ActionMode actionMode =
+                    mView.startActionMode(
+                            new PasteActionModeCallback(
+                                    mView,
+                                    windowContext,
+                                    this,
+                                    mSelectionActionMenuDelegate,
+                                    getSelectionRectRelativeToContainingView()),
+                            ActionMode.TYPE_FLOATING);
+            if (actionMode != null) {
+                // crbug.com/651706
+                LGEmailActionModeWorkaroundImpl.runIfNecessary(windowContext, actionMode);
+
+                assert actionMode.getType() == ActionMode.TYPE_FLOATING;
+                mPasteActionMode = actionMode;
+            }
         } catch (WindowManager.BadTokenException e) {
         }
     }
@@ -821,8 +839,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     public void destroyPastePopup() {
         if (isPastePopupShowing()) {
-            mPastePopupMenu.hide();
-            mPastePopupMenu = null;
+            mPasteActionMode.finish();
+            mPasteActionMode = null;
         }
     }
 
@@ -834,7 +852,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @VisibleForTesting
     public boolean isPastePopupShowing() {
-        return mPastePopupMenu != null;
+        return mPasteActionMode != null;
     }
 
     // Composition methods for android.view.ActionMode
