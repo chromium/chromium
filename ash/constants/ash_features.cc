@@ -2992,6 +2992,11 @@ BASE_FEATURE(kWallpaperGooglePhotosSharedAlbums,
              "WallpaperGooglePhotosSharedAlbums",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables wallpaper info improvement.
+BASE_FEATURE(kWallpaperInfoImprovement,
+             "WallpaperInfoImprovement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable different wallpapers per desk.
 BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
@@ -4585,6 +4590,10 @@ bool IsWallpaperFastRefreshEnabled() {
 
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperGooglePhotosSharedAlbums);
+}
+
+bool IsWallpaperInfoImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kWallpaperInfoImprovement);
 }
 
 bool IsWallpaperPerDeskEnabled() {
