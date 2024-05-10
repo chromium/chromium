@@ -98,6 +98,38 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
 }
 
+// Test that if using xdg output and viewporter surface scaling is enabled
+// the scale factor calculation based on xdg-output's logical size is no-op when
+// physical and logical sizes are equal.
+//
+// Regression test for https://crbug.com/339681887.
+TEST_F(WaylandOutputTest, ScaleFactorCalculationNoop) {
+  auto* const output_manager = connection_->wayland_output_manager();
+  ASSERT_TRUE(output_manager);
+
+  auto* wl_output = output_manager->GetPrimaryOutput();
+  ASSERT_TRUE(wl_output);
+  EXPECT_FALSE(wl_output->xdg_output_);
+
+  ASSERT_FALSE(connection_->surface_submission_in_pixel_coordinates());
+  connection_->set_supports_viewporter_surface_scaling(true);
+  ASSERT_TRUE(connection_->supports_viewporter_surface_scaling());
+
+  constexpr float kWlOutputScale = 3.f;
+  wl_output->xdg_output_ = std::make_unique<XDGOutput>(nullptr);
+  wl_output->xdg_output_->logical_size_ = gfx::Size(100, 100);
+  wl_output->physical_size_ = gfx::Size(100, 100);
+  wl_output->scale_factor_ = kWlOutputScale;
+
+  // When wl_output is ready but xdg_output is not yet ready, scale_factor
+  // should fall back to the value sent in wl_output::scale.
+  wl_output->is_ready_ = true;
+  wl_output->xdg_output_->is_ready_ = false;
+
+  wl_output->UpdateMetrics();
+  EXPECT_EQ(kWlOutputScale, wl_output->scale_factor());
+}
+
 TEST_F(WaylandOutputTest, WaylandOutputIsReady) {
   auto* output_manager = connection_->wayland_output_manager();
   const auto* primary_output = output_manager->GetPrimaryOutput();
