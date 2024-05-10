@@ -237,6 +237,32 @@ public final class CronetUploadDataStream extends UploadDataSink {
                 throw new IllegalArgumentException("Non-chunked upload can't have last chunk");
             }
             int bytesRead = mByteBuffer.position();
+            if (bytesRead == 0 && !lastChunk) {
+                // Sending an empty buffer does not make any sense, if the user wishes
+                // to signal end of data then that is done automatically done by the
+                // networking stack as we know the size through |getLength()|. So once
+                // the data has all completely transmitted, the networking stack will
+                // automatically signal to the receiver. However, for the case for
+                // chunked-upload, the optimal scenario is that the last chunk must
+                // be sent with |lastChunk = true| with a non-empty buffer, but sending
+                // an empty buffer with |lastChunk = true| is also allowed.
+                //
+                // Currently, H/1 and H/3 requests will hang indefinitely which will
+                // means that the user must handle the request timeout manually, while
+                // H/2 requests will immediately crash. In order to provide a consistent
+                // behavior, we will fail the request immediately and put the request
+                // in terminal state of |onError|
+                //
+                // We explicitly choose not to crash / throw for the sake of maintaining
+                // app compatibility unlike the other branches in this method which throws
+                // immediately.
+                //
+                // See b/332860415 for more details.
+                onError(
+                        new IllegalStateException(
+                                "Bytes read can't be zero except for last chunk!"));
+                return;
+            }
             mRemainingLength -= bytesRead;
             if (mRemainingLength < 0 && mLength >= 0) {
                 throw new IllegalArgumentException(

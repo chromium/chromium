@@ -1295,6 +1295,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
     "test/javatests/src/org/chromium/net/CronetUploadTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+    "test/javatests/src/org/chromium/net/CronetUrlRequestH2Test.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestHTTPSTest.java",
     "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
     "test/javatests/src/org/chromium/net/DiskStorageTest.java",

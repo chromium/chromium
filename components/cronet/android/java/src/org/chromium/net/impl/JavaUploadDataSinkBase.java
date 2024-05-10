@@ -94,6 +94,20 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
                         return;
                     }
 
+                    if (mBuffer.remaining() == 0 && !finalChunk) {
+                        // Sending an empty buffer through the fallback implementation
+                        // leads to successful requests but in order to consolidate the fallback
+                        // implementation with the native implementation, it was decided
+                        // to make uploading an empty buffer an illegal operation that leads
+                        // to a failed request with upload error.
+                        //
+                        // See b/332860415 for more details.
+                        processUploadError(
+                                new IllegalStateException(
+                                        "Bytes read can't be zero except for last chunk!"));
+                        return;
+                    }
+
                     mWrittenBytes += processSuccessfulRead(mBuffer);
 
                     if (mWrittenBytes < mTotalBytes || (mTotalBytes == -1 && !finalChunk)) {

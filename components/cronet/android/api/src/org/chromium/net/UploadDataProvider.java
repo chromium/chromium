@@ -36,13 +36,16 @@ public abstract class UploadDataProvider implements Closeable {
      * one or the other must still be called before resources can be safely freed. Throwing an
      * exception will also result in resources being freed and the request being errored out.
      *
-     * @param uploadDataSink The object to notify when the read has completed, successfully or
-     * otherwise.
+     * <p>Note: For non-chunked uploads, {@link UploadDataSink#onReadSucceeded} should be called
+     * only when the read has succeeded and at least one byte has been read into {@code byteBuffer}.
+     * For chunked uploads (The size of the data is unknown), then it is allowed to call {@link
+     * UploadDataSink#onReadSucceeded} for the last chunk with an empty byte buffer.
+     *
+     * @param uploadDataSink The object to notify when the read has completed.
      * @param byteBuffer The buffer to copy the read bytes into. Do not change byteBuffer's limit.
      * @throws IOException if any IOException occurred during the process. {@link
-     * UrlRequest.Callback#onFailed} will be called with the thrown exception set as the cause of
-     * the
-     * {@link CallbackException}.
+     *     UrlRequest.Callback#onFailed} will be called with the thrown exception set as the cause
+     *     of the {@link CallbackException}.
      */
     public abstract void read(UploadDataSink uploadDataSink, ByteBuffer byteBuffer)
             throws IOException;
