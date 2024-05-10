@@ -26,32 +26,32 @@
 namespace {
 
 // Font size of button titles.
-const CGFloat kIpadFontSize = 15.0f;
-const CGFloat kIphoneFontSize = 14.0f;
+constexpr CGFloat kIpadFontSize = 15;
+constexpr CGFloat kIphoneFontSize = 14;
 
 // The horizontal space between the edge of the background and the text.
-const CGFloat kBorderWidth = 14.0f;
+constexpr CGFloat kBorderWidth = 14;
 // The horizontal space between the edge of the background and the text for the
 // large keyboard accessory.
-const CGFloat kSmallBorderWidth = 12.0f;
+constexpr CGFloat kSmallBorderWidth = 12;
 // The space between items in the label.
-const CGFloat kSpacing = 4.0f;
+constexpr CGFloat kSpacing = 4;
 // The corner radius of the label.
-const CGFloat kCornerRadius = 8.0f;
+constexpr CGFloat kCornerRadius = 8;
 
 // Shadow parameters.
-const CGFloat kShadowRadius = 0.5;
-const CGFloat kShadowVerticalOffset = 1.0;
-const CGFloat kShadowOpacity = 1.0;
+constexpr CGFloat kShadowRadius = 0.5;
+constexpr CGFloat kShadowVerticalOffset = 1.0;
+constexpr CGFloat kShadowOpacity = 1.0;
 
 // The preferred minimum width of the icon shown on the label.
-const CGFloat kSuggestionIconWidth = 40;
+constexpr CGFloat kSuggestionIconWidth = 40;
 
 // Offset required to see half of the icon of the 2nd credit card suggestion
 // when the first credit card suggestion is at maximum width. This number
 // represents the width of the stack view minus the width of the first
 // suggestion.
-const CGFloat kHalfCreditCardIconOffset =
+constexpr CGFloat kHalfCreditCardIconOffset =
     2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
@@ -122,7 +122,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       verticalStackView.alignment = UIStackViewAlignmentLeading;
       verticalStackView.layoutMarginsRelativeArrangement = YES;
       verticalStackView.layoutMargins =
-          UIEdgeInsetsMake(0, suggestion.icon ? [self borderWidth] : 0, 0, 0);
+          UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
       [stackView addArrangedSubview:verticalStackView];
 
       // Insert the next subviews vertically instead of horizonatally.
@@ -141,11 +141,15 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
     UILabel* valueLabel =
         TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor], YES);
+    valueLabel.font = [UIFont systemFontOfSize:valueLabel.font.pointSize
+                                        weight:UIFontWeightMedium];
     [stackView addArrangedSubview:valueLabel];
 
     if ([suggestion.minorValue length] > 0) {
       UILabel* minorValueLabel = TextLabel(
           suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor], YES);
+      minorValueLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
       [stackView addArrangedSubview:minorValueLabel];
     }
 
@@ -153,6 +157,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       UILabel* description =
           TextLabel(suggestion.displayDescription,
                     [UIColor colorNamed:kTextSecondaryColor], NO);
+      description.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
       [stackView addArrangedSubview:description];
     }
 
