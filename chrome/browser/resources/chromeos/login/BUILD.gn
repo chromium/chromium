@@ -172,6 +172,7 @@ build_webui("build") {
     "components/oobe_a11y_option.ts",
     "components/oobe_apps_list.ts",
     "components/oobe_carousel.ts",
+    "components/oobe_personalized_apps_list.ts",
     "components/oobe_categories_list.ts",
     "components/oobe_cr_lottie.ts",
     "components/oobe_display_size_selector.ts",

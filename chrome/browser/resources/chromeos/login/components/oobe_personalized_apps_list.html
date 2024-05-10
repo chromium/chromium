@@ -1,0 +1,129 @@
+<!-- Copyright 2024 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+
+<!--
+  OOBE polymer element which is used to show a list of apps
+  that would be displayed in the new Recommended Apps Screen.
+  It has all styling for the app_item element and can display
+  for each apps : Icon and a title and subtitle.
+-->
+
+<style include="oobe-dialog-host-styles cros-color-overrides">
+  #appsList {
+    column-gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+
+  .category-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-title-1-font);
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .app-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-2-font);
+  }
+
+  .app-subtitle {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-annotation-1-font);
+  }
+
+  .app-item {
+    background-color: var(--cros-sys-on_primary)  !important;
+    border-radius: 16px;
+    border-width: 0;
+    box-shadow: none;
+    gap: 16px;
+    display: flex;
+    height: 88px;
+    margin-bottom: 8px;
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+    margin-top: 8px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .text-container {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .app-item:focus {
+    border: 2px solid var(--cros-sys-focus_ring);
+  }
+
+  .logo-container {
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Styles of icons in screen cards */
+  .app-icon  {
+    padding-inline-start: 8px;
+    align-items: center;
+    align-self: center;
+    display: flex;
+    height: 48px;
+    width: 48px;
+  }
+
+  .content {
+    align-items: center;
+    align-self: center;
+    column-gap: 12px;
+  }
+
+  #personalizedApps {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  </style>
+<div id="personalizedApps">
+    <template is="dom-repeat"
+        items="{{getCategories(catgoriesMapApps)}}" as="category">
+      <div class="category-title"
+          hidden="[[shouldShowCategoriesTitle()]]" >{{category}}</div>
+      <div id="appsList">
+          <template is="dom-repeat" rendered-item-count="{{itemRendered}}"
+                items="{{getApps(category)}}">
+            <div id="[[getAppId(item.appId)]]"
+                class="app-item"
+                role="checkbox"
+                aria-checked="[[item.selected]]">
+              <div class="content flex horizontal layout">
+                <div class="logo-container">
+                  <webview
+                      id="[[getWebViewId(item.appId)]]"
+                      role="img"
+                      class="app-icon"
+                      src="[[getIconUrl(item.icon)]]"
+                      aria-hidden="true"
+                      tabindex="-1"
+                      on-contentload="[[onIconLoaded()]]"
+                    >
+                  </webview>
+                </div>
+                <div class="text-container" aria-hidden="true">
+                  <div class="app-title"> [[item.name]]</div>
+                  <div class="app-subtitle">[[item.subname]]</div>
+                </div>
+                  <cr-checkbox checked="{{item.selected}}"
+                      on-change="updateCount"></cr-checkbox>
+              </div>
+          </div>
+          </template>
+        </div>
+    </template>
+</div>
