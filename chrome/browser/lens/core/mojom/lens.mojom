@@ -25,9 +25,11 @@ interface LensPageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page. (TypeScript -> C++)
 interface LensPageHandler {
-  // When this method is called, the C++ coordinator will begin the tear-down
-  // flow.
-  CloseRequestedByOverlay();
+  // When either of these methods are called, the C++ coordinator will begin
+  // the tear-down flow. The difference between the two is used to record
+  // metrics about the method used.
+  CloseRequestedByOverlayCloseButton();
+  CloseRequestedByOverlayBackgroundClick();
 
   // When this method is called, the C++ coordinator will add a blur to the
   // tab contents.

@@ -30,6 +30,7 @@ suite('OverlayCloseButton', () => {
 
   test('verify clicking background scrim calls browser proxy', () => {
     lensOverlayElement.$.backgroundScrim.click();
-    return testBrowserProxy.handler.whenCalled('closeRequestedByOverlay');
+    return testBrowserProxy.handler.whenCalled(
+        'closeRequestedByOverlayBackgroundClick');
   });
 });

@@ -59,39 +59,6 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
                               public lens::mojom::LensSidePanelPageHandler {
  public:
-  // Designates the source of any lens overlay invocation (in other words, any
-  // call to `ShowUI()`).
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(InvocationSource)
-  enum InvocationSource {
-    // The Chrome app ("3-dot") menu entry.
-    kAppMenu = 0,
-
-    // The content area context menu entry that is available when the user
-    // right-clicks on any area of the page that doesn't contain text, links or
-    // media.
-    kContentAreaContextMenuPage = 1,
-
-    // The content area context menu entry that is available when the user
-    // right-clicks on an image.
-    kContentAreaContextMenuImage = 2,
-
-    // The pinned toolbar action button.
-    kToolbar = 3,
-
-    // The find in page (Ctrl/Cmd-f) dialog button.
-    kFindInPage = 4,
-
-    // The button in the omnibox (address bar).
-    kOmnibox = 5,
-
-    kMaxValue = kOmnibox
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
-
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
                         signin::IdentityManager* identity_manager,
@@ -124,16 +91,91 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns whether the lens overlay feature is enabled.
   static bool IsEnabled(Profile* profile);
 
+  // Designates the source of any lens overlay invocation (in other words, any
+  // call to `ShowUI()`).
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InvocationSource)
+  enum class InvocationSource {
+    // The Chrome app ("3-dot") menu entry.
+    kAppMenu = 0,
+
+    // The content area context menu entry that is available when the user
+    // right-clicks on any area of the page that doesn't contain text, links or
+    // media.
+    kContentAreaContextMenuPage = 1,
+
+    // The content area context menu entry that is available when the user
+    // right-clicks on an image.
+    kContentAreaContextMenuImage = 2,
+
+    // The pinned toolbar action button.
+    kToolbar = 3,
+
+    // The find in page (Ctrl/Cmd-f) dialog button.
+    kFindInPage = 4,
+
+    // The button in the omnibox (address bar).
+    kOmnibox = 5,
+
+    kMaxValue = kOmnibox
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
+
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
   void ShowUI(InvocationSource invocation_source);
 
+  // Designates the source of any lens overlay dismissal (in other words, any
+  // call to `CloseUI()`).
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DismissalSource)
+  enum class DismissalSource {
+    // The overlay close button (shown when in the kOverlay state).
+    kOverlayCloseButton = 0,
+
+    // A click on the background scrim (shown when in the kOverlayAndResults
+    // state).
+    kOverlayBackgroundClick = 1,
+
+    // The close button in the side panel.
+    kSidePanelCloseButton = 2,
+
+    // The pinned toolbar action button.
+    kToolbar = 3,
+
+    // The page in the primary web contents changed (link clicked, back button,
+    // etc.).
+    kPageChanged = 4,
+
+    // The contents of the associated tab were in the background and discarded
+    // to save memory.
+    kTabContentsDiscarded = 5,
+
+    // The current tab was backgrounded before the screenshot was created.
+    kTabBackgroundedWhileScreenshotting = 6,
+
+    // Creating a screenshot from the view of the web contents failed.
+    kErrorScreenshotCreationFailed = 7,
+
+    // Encoding the screenshot failed.
+    kErrorScreenshotEncodingFailed = 8,
+
+    kMaxValue = kErrorScreenshotEncodingFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
+
   // Closes the overlay UI and sets state to kOff. This method should be
   // idempotent. This synchronously destroys any associated WebUIs, so should
   // not be invoked in callbacks from those WebUIs.
-  void CloseUI();
+  void CloseUI(DismissalSource dismissal_source);
 
   // Given an instance of `web_ui` created by the LensOverlayController, returns
   // the LensOverlayController. This method is necessary because WebUIController
@@ -443,7 +485,8 @@ class LensOverlayController : public LensSearchboxClient,
 
   // lens::mojom::LensPageHandler overrides.
   void AddBackgroundBlur() override;
-  void CloseRequestedByOverlay() override;
+  void CloseRequestedByOverlayCloseButton() override;
+  void CloseRequestedByOverlayBackgroundClick() override;
   void FeedbackRequestedByOverlay() override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
@@ -462,7 +505,7 @@ class LensOverlayController : public LensSearchboxClient,
       std::map<std::string, std::string> additional_query_params);
 
   // Calls CloseUI() asynchronously.
-  void CloseUIAsync();
+  void CloseUIAsync(DismissalSource dismissal_source);
 
   // Handles the response to the Lens start query request.
   void HandleStartQueryResponse(

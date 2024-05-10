@@ -56,6 +56,8 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 
 using State = LensOverlayController::State;
+using InvocationSource = LensOverlayController::InvocationSource;
+using DismissalSource = LensOverlayController::DismissalSource;
 
 constexpr char kNewTabLinkClickScript[] =
     "(function() {const anchor = document.createElement('a');anchor.href = "
@@ -426,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -453,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -475,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -511,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -551,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
@@ -571,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(observer.request_shown());
 
   // Close overlay
-  controller->CloseUI();
+  controller->CloseUI(DismissalSource::kOverlayCloseButton);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
 
@@ -601,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   // We need to flush the mojo receiver calls to make sure the screenshot was
@@ -670,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -719,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should eventually result in overlay state. When the overlay is
   // bound, it should start the query flow which returns a response for the
   // full image callback.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -759,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should eventually result in overlay state. When the overlay is
   // bound, it should start the query flow which returns a response for the
   // interaction data callback.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -792,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       browser()->tab_strip_model()->active_index();
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -842,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -896,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -977,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1040,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1104,7 +1106,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1169,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should eventually result in overlay state. When the overlay is
   // bound, it should start the query flow which returns a response for the
   // interaction data callback.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1210,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1296,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Showing UI should eventually result in overlay state.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(InvocationSource::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
@@ -1386,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordInvocationHistogram) {
+                       RecordInvocationAndDismissalHistograms) {
   base::HistogramTester histogram_tester;
   WaitForPaint();
 
@@ -1398,81 +1400,120 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Showing UI should eventually result in overlay state. When the overlay is
-  // bound, it should start the query flow which returns a response for the
-  // interaction data callback.
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  // Showing the UI and then closing it should record an entry in the
+  // appropriate buckets and the total count of invocations and dismissals
+  // should be 1.
+  controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Showing the UI should have recorded an entry in the appropriate bucket and
-  // the total count of invocations should be 1.
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kAppMenu,
+                                     InvocationSource::kAppMenu,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/1);
-
-  // Attenmpting to invoke the overlay again without closing it first should not
-  // record any new entries.
-  controller->ShowUI(LensOverlayController::kAppMenu);
-  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kAppMenu,
+  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kOverlayCloseButton,
                                      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/1);
 
-  // Closing the UI and then reopening it via any entry point should record a
-  // new entry in the appropriate bucket.
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  // Attenmpting to invoke the overlay twice without closing it in between
+  // should record only a single new entry.
+  controller->ShowUI(InvocationSource::kAppMenu);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kAppMenu,
+                                     InvocationSource::kAppMenu,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/2);
+  controller->ShowUI(InvocationSource::kAppMenu);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
+                                     InvocationSource::kAppMenu,
                                      /*expected_count=*/2);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/2);
 
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
+  // Attempting to close the overlay twice without opening it in between should
+  // only record a single entry.
+  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kOverlayCloseButton,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/2);
+  controller->CloseUI(DismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kOverlayCloseButton,
+                                     /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/2);
+
+  // Each type of invocation and dismissal should record entries in the
+  // appropriate buckets.
+  controller->ShowUI(InvocationSource::kContentAreaContextMenuPage);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.Invoked",
-      LensOverlayController::kContentAreaContextMenuPage,
+      "Lens.Overlay.Invoked", InvocationSource::kContentAreaContextMenuPage,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/3);
+  controller->CloseUI(DismissalSource::kOverlayBackgroundClick);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kOverlayBackgroundClick,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/3);
 
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kContentAreaContextMenuImage);
+  controller->ShowUI(InvocationSource::kContentAreaContextMenuImage);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.Invoked",
-      LensOverlayController::kContentAreaContextMenuImage,
+      "Lens.Overlay.Invoked", InvocationSource::kContentAreaContextMenuImage,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/4);
+  controller->CloseUI(DismissalSource::kSidePanelCloseButton);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kSidePanelCloseButton,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/4);
 
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kToolbar);
+  controller->ShowUI(InvocationSource::kToolbar);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kToolbar,
+                                     InvocationSource::kToolbar,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/5);
+  controller->CloseUI(DismissalSource::kToolbar);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kToolbar,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/5);
 
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kFindInPage);
+  controller->ShowUI(InvocationSource::kFindInPage);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kFindInPage,
+                                     InvocationSource::kFindInPage,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
                                     /*expected_count=*/6);
+  controller->CloseUI(DismissalSource::kPageChanged);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kPageChanged,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
+                                    /*expected_count=*/6);
 
-  controller->CloseUI();
-  controller->ShowUI(LensOverlayController::kOmnibox);
+  controller->ShowUI(InvocationSource::kOmnibox);
   histogram_tester.ExpectBucketCount("Lens.Overlay.Invoked",
-                                     LensOverlayController::kOmnibox,
+                                     InvocationSource::kOmnibox,
                                      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked",
+                                    /*expected_count=*/7);
+  controller->CloseUI(DismissalSource::kTabContentsDiscarded);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.Dismissed",
+                                     DismissalSource::kTabContentsDiscarded,
+                                     /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Dismissed",
                                     /*expected_count=*/7);
 }
 

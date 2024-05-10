@@ -59,7 +59,7 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     ASSERT_EQ(controller->state(), State::kOff);
 
     // Showing UI should eventually result in overlay state.
-    controller->ShowUI(LensOverlayController::kAppMenu);
+    controller->ShowUI(LensOverlayController::InvocationSource::kAppMenu);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOverlay; }));
 

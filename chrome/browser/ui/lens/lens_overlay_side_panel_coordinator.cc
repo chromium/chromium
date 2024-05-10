@@ -91,9 +91,9 @@ LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
         // Toggle the Lens overlay. There's no need to show or hide the side
         // panel as the overlay controller will handle that.
         if (controller->IsOverlayShowing()) {
-          controller->CloseUI();
+          controller->CloseUI(LensOverlayController::DismissalSource::kToolbar);
         } else {
-          controller->ShowUI(LensOverlayController::kToolbar);
+          controller->ShowUI(LensOverlayController::InvocationSource::kToolbar);
         }
       },
       browser);

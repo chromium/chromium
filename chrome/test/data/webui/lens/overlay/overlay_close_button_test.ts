@@ -30,6 +30,7 @@ suite('OverlayCloseButton', () => {
 
   test('verify clicking close button calls browser proxy', () => {
     lensOverlayElement.$.closeButton.click();
-    return testBrowserProxy.handler.whenCalled('closeRequestedByOverlay');
+    return testBrowserProxy.handler.whenCalled(
+        'closeRequestedByOverlayCloseButton');
   });
 });

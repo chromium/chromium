@@ -16,7 +16,8 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     LensPageHandlerInterface {
   constructor() {
     super([
-      'closeRequestedByOverlay',
+      'closeRequestedByOverlayCloseButton',
+      'closeRequestedByOverlayBackgroundClick',
       'addBackgroundBlur',
       'closeSearchBubble',
       'feedbackRequestedByOverlay',
@@ -25,8 +26,12 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     ]);
   }
 
-  closeRequestedByOverlay() {
-    this.methodCalled('closeRequestedByOverlay');
+  closeRequestedByOverlayCloseButton() {
+    this.methodCalled('closeRequestedByOverlayCloseButton');
+  }
+
+  closeRequestedByOverlayBackgroundClick() {
+    this.methodCalled('closeRequestedByOverlayBackgroundClick');
   }
 
   addBackgroundBlur() {

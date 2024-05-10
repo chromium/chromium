@@ -2233,7 +2233,7 @@ void ExecLensOverlay(Browser* browser) {
   LensOverlayController* const controller =
       LensOverlayController::GetController(web_contents);
   CHECK(controller);
-  controller->ShowUI(LensOverlayController::kAppMenu);
+  controller->ShowUI(LensOverlayController::InvocationSource::kAppMenu);
   browser->window()->NotifyPromoFeatureUsed(lens::features::kLensOverlay);
 }
 

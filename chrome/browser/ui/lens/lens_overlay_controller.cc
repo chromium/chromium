@@ -290,7 +290,7 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
-void LensOverlayController::CloseUI() {
+void LensOverlayController::CloseUI(DismissalSource dismissal_source) {
   if (state_ == State::kOff) {
     return;
   }
@@ -351,6 +351,8 @@ void LensOverlayController::CloseUI() {
   RemoveBackgroundBlur();
 
   state_ = State::kOff;
+
+  base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
 }
 
 // static
@@ -562,7 +564,7 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
 }
 
 void LensOverlayController::OnSidePanelEntryDeregistered() {
-  CloseUIAsync();
+  CloseUIAsync(DismissalSource::kSidePanelCloseButton);
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
@@ -641,7 +643,7 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {
-    lens_overlay_controller_->CloseUIAsync();
+    lens_overlay_controller_->CloseUIAsync(DismissalSource::kPageChanged);
   }
 
  private:
@@ -666,7 +668,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // this is a multi-process, multi-threaded environment so there may be a
   // TOCTTOU race condition.
   if (bitmap.drawsNothing()) {
-    CloseUI();
+    CloseUI(DismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
 
@@ -676,7 +678,7 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
           bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
           &data)) {
     // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
-    CloseUI();
+    CloseUI(DismissalSource::kErrorScreenshotEncodingFailed);
     return;
   }
 
@@ -897,14 +899,15 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // This is still possible when the controller is in state kScreenshot and the
   // tab was backgrounded. We should close the UI as the overlay has not been
   // created yet.
-  CloseUI();
+  CloseUI(DismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
 void LensOverlayController::WillDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  CloseUI();
+  // Background tab contents discarded.
+  CloseUI(DismissalSource::kTabContentsDiscarded);
   old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
   LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
 }
@@ -943,8 +946,12 @@ void LensOverlayController::AddBackgroundBlur() {
   ui_layer->SetLayerBlur(kBlurRadiusPixels / 3);
 }
 
-void LensOverlayController::CloseRequestedByOverlay() {
-  CloseUIAsync();
+void LensOverlayController::CloseRequestedByOverlayCloseButton() {
+  CloseUIAsync(DismissalSource::kOverlayCloseButton);
+}
+
+void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
+  CloseUIAsync(DismissalSource::kOverlayBackgroundClick);
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {
@@ -1018,7 +1025,7 @@ void LensOverlayController::CloseSearchBubble() {
   }
 }
 
-void LensOverlayController::CloseUIAsync() {
+void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
   if (state_ == State::kOff) {
     return;
   }
@@ -1028,7 +1035,7 @@ void LensOverlayController::CloseUIAsync() {
   // Dispatch to avoid re-entrancy.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LensOverlayController::CloseUI,
-                                weak_factory_.GetWeakPtr()));
+                                weak_factory_.GetWeakPtr(), dismissal_source));
 }
 
 void LensOverlayController::IssueSearchBoxRequest(

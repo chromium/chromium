@@ -7061,6 +7061,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
+    expires_after="2025-05-06">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mercerd@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, enumerated by the
+    UI entry point used or the event that triggered the dimissal. In general, it
+    should not be possible to attempt to dismiss the feature if the overlay is
+    not currently showing but if this happens, nothing will be recorded.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.Invoked" enum="LensOverlayInvocationSource"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>

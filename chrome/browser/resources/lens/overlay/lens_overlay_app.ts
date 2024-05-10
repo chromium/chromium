@@ -76,11 +76,11 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   private onBackgroundScrimClicked() {
-    BrowserProxyImpl.getInstance().handler.closeRequestedByOverlay();
+    this.browserProxy.handler.closeRequestedByOverlayBackgroundClick();
   }
 
   private onCloseButtonClick() {
-    this.browserProxy.handler.closeRequestedByOverlay();
+    this.browserProxy.handler.closeRequestedByOverlayCloseButton();
   }
 
   private onFeedbackButtonClick() {

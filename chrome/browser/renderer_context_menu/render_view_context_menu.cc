@@ -4257,7 +4257,8 @@ void RenderViewContextMenu::ExecRegionSearch(
     LensOverlayController* const controller =
         LensOverlayController::GetController(source_web_contents_);
     CHECK(controller);
-    controller->ShowUI(LensOverlayController::kContentAreaContextMenuPage);
+    controller->ShowUI(
+        LensOverlayController::InvocationSource::kContentAreaContextMenuPage);
     UserEducationService::MaybeNotifyPromoFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
     return;
