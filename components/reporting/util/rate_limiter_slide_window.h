@@ -37,6 +37,11 @@ class RateLimiterSlideWindow : public RateLimiterInterface {
   bool Acquire(size_t event_size) override;
 
  private:
+  // Trims `bucket_events_size_` to make sure it fits
+  // (now - `bucket_count_` * `time_bucket_`, now] sliding window.
+  // Can be called whenever necessary (including `BucketsShift` and `Acquire`).
+  void TrimBuckets(base::Time now);
+
   // Called every `time_bucket_` as long as `bucket_events_size_` is not empty.
   // Shifts buckets by one (drops the oldest bucket, adds a new empty one).
   void BucketsShift();
