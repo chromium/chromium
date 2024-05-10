@@ -973,6 +973,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.GrCompileShaderUs" units="microseconds"
+    expires_after="2024-10-06">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Time to compile and resolve a Skia OpenGL shader in microseconds.
+
+    Only reported on systems which have high resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.GrLinkProgramUs" units="microseconds"
+    expires_after="2024-10-06">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Time to link and resolve a Skia OpenGL program in microseconds.
+
+    Only reported on systems which have high resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.GrShaderCacheLoadHitInCache" enum="Boolean"
+    expires_after="2024-10-06">
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    For each load from the GrShaderCache, records whether the shader was found
+    in the cache.
+  </summary>
+</histogram>
+
 <histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
     expires_after="2024-06-30">
   <owner>zmo@chromium.org</owner>

@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
@@ -163,6 +164,50 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_impl(
   }
 }
 
+template <typename R, typename... Args>
+GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)>
+bind_timed_compile_function(R(GL_BINDING_CALL* func)(GLuint shader, Args...),
+                            glGetShaderivProc get_shader_iv,
+                            gl::ProgressReporter* progress_reporter) {
+  // Don't wrap missing functions.
+  if (!func) {
+    return nullptr;
+  }
+
+  return [func, get_shader_iv, progress_reporter](GLuint shader,
+                                                  Args... args) -> R {
+    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrCompileShaderUs");
+
+    func(shader, args...);
+
+    GLint compile_result = 0;
+    get_shader_iv(shader, GL_COMPILE_STATUS, &compile_result);
+  };
+}
+
+template <typename R, typename... Args>
+GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)> bind_timed_link_function(
+    R(GL_BINDING_CALL* func)(GLuint program, Args...),
+    glGetProgramivProc get_program_iv,
+    gl::ProgressReporter* progress_reporter) {
+  // Don't wrap missing functions.
+  if (!func) {
+    return nullptr;
+  }
+
+  return [func, get_program_iv, progress_reporter](GLuint program,
+                                                   Args... args) -> R {
+    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrLinkProgramUs");
+
+    func(program, args...);
+
+    GLint compile_result = 0;
+    get_program_iv(program, GL_LINK_STATUS, &compile_result);
+  };
+}
+
 // Call can be dropped for tests that setup null draw gl bindings.
 struct Droppable {};
 // Call needs to be wrapped with ProgressReporter.
@@ -282,6 +327,12 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   auto get_stringi = bind_with_api(&gl::GLApi::glGetStringiFn, api);
   auto get_integerv = bind_with_api(&gl::GLApi::glGetIntegervFn, api);
 
+  auto timed_compile_shader = bind_timed_compile_function(
+      gl->glCompileShaderFn, gl->glGetShaderivFn, progress_reporter);
+
+  auto timed_link_program = bind_timed_link_function(
+      gl->glLinkProgramFn, gl->glGetProgramivFn, progress_reporter);
+
   GrGLExtensions extensions;
   if (!extensions.init(standard, get_string, get_stringi, get_integerv)) {
     LOG(ERROR) << "Failed to initialize extensions";
@@ -318,7 +369,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(ClearTexImage);
   BIND(ClearTexSubImage);
   BIND(ColorMask);
-  BIND(CompileShader, Slow);
+  functions->fCompileShader = timed_compile_shader;
   BIND(CompressedTexImage2D, Slow, NeedFlushOnMac);
   BIND(CompressedTexSubImage2D, Slow);
   BIND(CopyBufferSubData);
@@ -394,7 +445,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetUniformLocation);
   BIND(IsTexture);
   BIND(LineWidth);
-  BIND(LinkProgram, Slow);
+  functions->fLinkProgram = timed_link_program;
   BIND(MapBuffer);
 
   // GL 4.3 or GL_ARB_multi_draw_indirect or ES+GL_EXT_multi_draw_indirect
