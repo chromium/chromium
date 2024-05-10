@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -82,6 +84,8 @@ import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
@@ -116,14 +120,33 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ static final String HISTOGRAM_INTENT_ORIGIN =
             "Android.Omnibox.SearchActivity.IntentOrigin";
 
-    private static final String HISTOGRAM_SEARCH_TYPE = //
-            "Android.Omnibox.SearchActivity.SearchType";
+    private static final String HISTOGRAM_REQUESTED_SEARCH_TYPE = //
+            "Android.Omnibox.SearchActivity.RequestedSearchType";
     private static final String HISTOGRAM_INTENT_ACTIVITY_PRESENT =
             "Android.Omnibox.SearchActivity.ActivityPresent";
 
     @VisibleForTesting
     /* package */ static final String HISTOGRAM_INTENT_REFERRER_VALID =
             "Android.Omnibox.SearchActivity.ReferrerValid";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_NAVIGATION_TARGET_TYPE =
+            "Android.Omnibox.SearchActivity.NavigationTargetType";
+
+    @VisibleForTesting
+    @IntDef({
+        NavigationTargetType.URL,
+        NavigationTargetType.SEARCH,
+        NavigationTargetType.NATIVE_PAGE,
+        NavigationTargetType.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface NavigationTargetType {
+        int URL = 0;
+        int SEARCH = 1;
+        int NATIVE_PAGE = 2;
+        int COUNT = 3;
+    }
 
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
@@ -350,7 +373,7 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_INTENT_ORIGIN, mIntentOrigin, IntentOrigin.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_SEARCH_TYPE, mSearchType, SearchType.COUNT);
+                HISTOGRAM_REQUESTED_SEARCH_TYPE, mSearchType, SearchType.COUNT);
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_ACTIVITY_PRESENT, activityPresent);
 
         recordUsage(mIntentOrigin, mSearchType);
@@ -603,6 +626,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
+        recordNavigationTargetType(mProfileSupplier.get(), new GURL(params.url), mIntentOrigin);
+
         var exitAnimationRes = 0;
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
@@ -694,6 +719,34 @@ public class SearchActivity extends AsyncInitializationActivity
         var oldValue = sDelegate;
         sDelegate = delegate;
         ResettersForTesting.register(() -> sDelegate = oldValue);
+    }
+
+    @VisibleForTesting
+    static void recordNavigationTargetType(
+            @NonNull Profile profile, @NonNull GURL url, @IntentOrigin int origin) {
+        var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
+        boolean isSearch =
+                templateSvc != null
+                        && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
+        boolean isNative =
+                NativePage.isNativePageUrl(url, /* incognito= */ false, /* isPdf= */ false);
+
+        int targetType =
+                isNative
+                        ? NavigationTargetType.NATIVE_PAGE
+                        : isSearch ? NavigationTargetType.SEARCH : NavigationTargetType.URL;
+
+        String suffix =
+                switch (origin) {
+                    case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
+                    case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
+                    default -> ".SearchWidget";
+                };
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_NAVIGATION_TARGET_TYPE, targetType, NavigationTargetType.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_NAVIGATION_TARGET_TYPE + suffix, targetType, NavigationTargetType.COUNT);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {

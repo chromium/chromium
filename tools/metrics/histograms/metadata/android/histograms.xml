@@ -188,6 +188,13 @@ chromium-metrics-reviews@google.com.
                a versa."/>
 </variants>
 
+<variants name="SearchActivityIntentOriginVariants">
+  <variant name="" summary="overall"/>
+  <variant name=".CustomTab" summary="Chrome Custom Tab specific"/>
+  <variant name=".SearchWidget" summary="(old) Search widget specific"/>
+  <variant name=".ShortcutsWidget" summary="(new) Shortcuts widget specific"/>
+</variants>
+
 <variants name="TaskType">
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
   <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
@@ -2720,6 +2727,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Omnibox.SearchActivity.NavigationTargetType{IntentOrigin}"
+    enum="UrlTargetType" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Records the intended navigation search target type for every navigation
+    initiated from the SearchActivity.
+
+    Captures the {IntentOrigin} SearchActivity metrics. Recorded exactly once
+    per user initiated navigation. Not recorded if the user abandons
+    SearchActivity.
+  </summary>
+  <token key="IntentOrigin" variants="SearchActivityIntentOriginVariants"/>
+</histogram>
+
 <histogram name="Android.Omnibox.SearchActivity.ReferrerValid"
     enum="BooleanValid" expires_after="2024-09-01">
   <owner>ender@chromium.org</owner>
@@ -2730,7 +2752,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Omnibox.SearchActivity.SearchType"
+<histogram name="Android.Omnibox.SearchActivity.RequestedSearchType"
     enum="SearchActivitySearchType" expires_after="2024-09-01">
   <owner>ender@chromium.org</owner>
   <summary>

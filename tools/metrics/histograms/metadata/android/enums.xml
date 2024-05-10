@@ -1508,6 +1508,12 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="TABLET_BUTTON_ANIMATION_IN_PROGRESS"/>
 </enum>
 
+<enum name="UrlTargetType">
+  <int value="0" label="URL"/>
+  <int value="1" label="Search"/>
+  <int value="2" label="Native page"/>
+</enum>
+
 <enum name="UserAgentMetadataAvailableType">
   <int value="0" label="System default user-agent client hints"/>
   <int value="1" label="System default low entropy user-agent client hints"/>

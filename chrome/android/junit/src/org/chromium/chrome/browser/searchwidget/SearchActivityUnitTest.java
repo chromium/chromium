@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
@@ -838,5 +839,60 @@ public class SearchActivityUnitTest {
         mActivity.onUrlFocusChange(true);
         verify(coordinator).setUrlFocusChangeInProgress(false);
         assertFalse(mActivity.isFinishing());
+    }
+
+    @Test
+    public void recordNavigationTargetType() {
+        GURL native_url = new GURL(UrlConstants.NTP_URL);
+        GURL search_url = new GURL("https://google.com");
+        GURL web_url = new GURL("https://abc.xyz");
+
+        var variants =
+                Map.of(
+                        native_url, SearchActivity.NavigationTargetType.NATIVE_PAGE,
+                        search_url, SearchActivity.NavigationTargetType.SEARCH,
+                        web_url, SearchActivity.NavigationTargetType.URL);
+
+        doReturn(true)
+                .when(mTemplateUrlSvc)
+                .isSearchResultsPageFromDefaultSearchProvider(search_url);
+
+        for (var entry : variants.entrySet()) {
+            var type = entry.getValue();
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
+                                            + ".SearchWidget",
+                                    type)
+                            .build()) {
+                SearchActivity.recordNavigationTargetType(
+                        mProfile, entry.getKey(), IntentOrigin.SEARCH_WIDGET);
+            }
+
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
+                                            + ".ShortcutsWidget",
+                                    type)
+                            .build()) {
+                SearchActivity.recordNavigationTargetType(
+                        mProfile, entry.getKey(), IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
+            }
+
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE + ".CustomTab",
+                                    type)
+                            .build()) {
+                SearchActivity.recordNavigationTargetType(
+                        mProfile, entry.getKey(), IntentOrigin.CUSTOM_TAB);
+            }
+        }
     }
 }
