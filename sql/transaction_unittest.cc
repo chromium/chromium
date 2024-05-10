@@ -4,7 +4,8 @@
 
 #include "sql/transaction.h"
 
-#include "base/files/file_util.h"
+#include <memory>
+
 #include "base/files/scoped_temp_dir.h"
 #include "sql/database.h"
 #include "sql/statement.h"

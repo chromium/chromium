@@ -5,16 +5,17 @@
 #include "sql/vfs_wrapper.h"
 
 #include <algorithm>
+#include <cstring>
+#include <functional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/leak_annotations.h"
-#include "base/files/file_path.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)

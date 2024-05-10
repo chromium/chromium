@@ -6,18 +6,23 @@
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
-#include "build/build_config.h"
+#include "base/time/time.h"
 #include "sql/initialization.h"
 #include "sql/sandboxed_vfs_file.h"
 #include "sql/vfs_wrapper.h"

@@ -4,6 +4,7 @@
 
 #include "sql/sqlite_result_code.h"
 
+#include "base/dcheck_is_on.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/sqlite_result_code_values.h"

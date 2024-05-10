@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "sql/statement.h"
+
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
-#include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"

@@ -5,6 +5,7 @@
 #include "sql/transaction.h"
 
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/sequence_checker.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"

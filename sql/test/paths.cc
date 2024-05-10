@@ -4,6 +4,7 @@
 
 #include "sql/test/paths.h"
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"

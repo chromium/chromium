@@ -13,13 +13,13 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "sql/database.h"
 #include "sql/statement.h"

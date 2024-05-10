@@ -5,17 +5,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstring>
 #include <string>
 #include <tuple>
+#include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"

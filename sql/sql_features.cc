@@ -4,6 +4,8 @@
 
 #include "sql/sql_features.h"
 
+#include "base/feature_list.h"
+
 namespace sql::features {
 
 // Enable WAL mode for all SQLite databases.

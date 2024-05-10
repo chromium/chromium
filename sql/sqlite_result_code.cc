@@ -4,6 +4,7 @@
 
 #include "sql/sqlite_result_code.h"
 
+#include <cstddef>
 #include <ostream>  // Needed to compile NOTREACHED() with operator <<.
 #include <set>
 #include <string>
@@ -11,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"

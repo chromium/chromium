@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/types/pass_key.h"
+#include "sql/database.h"
+#include "sql/sqlite_result_code_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {

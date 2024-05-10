@@ -4,7 +4,13 @@
 
 #include "sql/sql_memory_dump_provider.h"
 
+#include <cstdint>
+
+#include "base/check_op.h"
+#include "base/memory/singleton.h"
+#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
