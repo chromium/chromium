@@ -201,7 +201,7 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthrough release ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
 # Flaky failure to restore context
-crbug.com/338071088 [ mac amd-0x67ef angle-opengl graphite-disabled passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+crbug.com/338071088 [ amd-0x67ef angle-opengl graphite-disabled no-asan passthrough release sonoma ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
 # Flaky 3rd GPU crash
 crbug.com/338570701 [ win angle-d3d11 graphite-enabled passthrough qualcomm-0x41333430 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
