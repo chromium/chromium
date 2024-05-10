@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -234,9 +235,10 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 }
 
 ManagementUI::ManagementUI(content::WebUI* web_ui) : WebUIController(web_ui) {
-  content::WebUIDataSource* source =
-      CreateAndAddManagementUIHtmlSource(Profile::FromWebUI(web_ui));
-  ManagementUIHandler::Initialize(web_ui, source);
+  Profile* profile = Profile::FromWebUI(web_ui);
+  CreateAndAddManagementUIHtmlSource(Profile::FromWebUI(web_ui));
+
+  web_ui->AddMessageHandler(ManagementUIHandler::Create(profile));
 }
 
 ManagementUI::~ManagementUI() {}

@@ -17,7 +17,7 @@
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -101,7 +101,7 @@ void DeviceSettingsAsh::GetDeviceReportSources(
       user_manager::UserManager::Get()->GetPrimaryUser();
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   base::Value::List report_sources =
-      ManagementUIHandler::GetDeviceReportingInfo(
+      ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
           connector->GetDeviceCloudPolicyManager(), profile);
   bool plugin_vm_data_collection_enabled = profile->GetPrefs()->GetBoolean(
       plugin_vm::prefs::kPluginVmDataCollectionAllowed);

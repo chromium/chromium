@@ -26,7 +26,7 @@
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -121,6 +121,12 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
+#else
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#endif
 
 using testing::_;
 using testing::AnyNumber;
@@ -221,12 +227,18 @@ class TestDeviceCloudPolicyManagerAsh
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class TestManagementUIHandler : public ManagementUIHandler {
+#if BUILDFLAG(IS_CHROMEOS)
+using ManagementUIHandlerBase = ManagementUIHandlerChromeOS;
+#else
+using ManagementUIHandlerBase = ManagementUIHandler;
+#endif
+class TestManagementUIHandler : public ManagementUIHandlerBase {
  public:
-  TestManagementUIHandler() = default;
+  TestManagementUIHandler() : ManagementUIHandlerBase(/*profile=*/nullptr) {}
   TestManagementUIHandler(policy::PolicyService* policy_service,
                           content::WebUI* web_ui)
-      : policy_service_(policy_service) {
+      : ManagementUIHandlerBase(/*profile=*/nullptr),
+        policy_service_(policy_service) {
     set_web_ui(web_ui);
   }
 
@@ -254,11 +266,11 @@ class TestManagementUIHandler : public ManagementUIHandler {
   }
 
   base::Value::List GetManagedWebsitesInfo(Profile* profile) {
-    return ManagementUIHandler::GetManagedWebsitesInfo(profile);
+    return ManagementUIHandlerBase::GetManagedWebsitesInfo(profile);
   }
 
   base::Value::Dict GetThreatProtectionInfo(Profile* profile) {
-    return ManagementUIHandler::GetThreatProtectionInfo(profile);
+    return ManagementUIHandlerBase::GetThreatProtectionInfo(profile);
   }
 
   policy::PolicyService* GetPolicyService() override { return policy_service_; }
@@ -550,10 +562,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
         .WillByDefault(Return(manager_.get()));
     base::Value::List result;
-    ManagementUIHandler::AddDeviceReportingInfoForTesting(
+    ManagementUIHandlerBase::AddDeviceReportingInfoForTesting(
         &result, &status_collector, &system_log_uploader, GetProfile());
     if (GetTestConfig().report_dlp_events) {
-      ManagementUIHandler::AddDlpDeviceReportingElementForTesting(
+      ManagementUIHandlerBase::AddDlpDeviceReportingElementForTesting(
           &result, kManagementReportDlpEvents);
     }
     return result;
@@ -576,7 +588,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         content::WebContents::CreateParams(profile_.get()));
     web_ui_.set_web_contents(web_contents_.get());
     handler_.SetAccountManagedForTesting(GetTestConfig().managed_account);
+#if BUILDFLAG(IS_CHROMEOS)
     handler_.SetDeviceManagedForTesting(GetTestConfig().managed_device);
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     handler_.SetDeviceDomain(GetTestConfig().device_domain);
 #endif
@@ -1104,8 +1118,8 @@ TEST_F(ManagementUIHandlerTests, NoDeviceReportingInfo) {
   GetTestConfig().managed_account = false;
   SetUpProfileAndHandler();
 
-  base::Value::List info =
-      ManagementUIHandler::GetDeviceReportingInfo(nullptr, GetProfile());
+  base::Value::List info = ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
+      nullptr, GetProfile());
 
   EXPECT_EQ(info.size(), 0u);
 }
