@@ -104,11 +104,15 @@ int PopupBaseView::ArrowHorizontalMargin() {
 // The widget that the PopupBaseView will be attached to.
 class PopupBaseView::Widget : public views::Widget {
  public:
+  // Takes ownership of `autofill_popup_base_view` and uses it as the delegate
+  // of a new Widget. `parent_native_view` is the intended parent view of the
+  // new Widget.
   explicit Widget(PopupBaseView* autofill_popup_base_view,
+                  gfx::NativeView parent_native_view,
                   views::Widget::InitParams::Activatable activatable) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view;
-    params.parent = autofill_popup_base_view->GetParentNativeView();
+    params.parent = parent_native_view;
     // Ensure the popup border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
@@ -256,7 +260,10 @@ bool PopupBaseView::DoShow() {
 
     // The widget is destroyed by the corresponding NativeWidget, so we don't
     // have to worry about deletion.
-    new PopupBaseView::Widget(this, new_widget_activatable_);
+    new PopupBaseView::Widget(this, /*parent_native_view=*/
+                              parent_widget_ ? parent_widget_->GetNativeView()
+                                             : delegate_->container_view(),
+                              new_widget_activatable_);
   }
 
   GetWidget()->GetRootView()->SetBorder(CreateBorder());
@@ -569,11 +576,6 @@ content::WebContents* PopupBaseView::GetWebContents() const {
   }
 
   return delegate_->GetWebContents();
-}
-
-gfx::NativeView PopupBaseView::GetParentNativeView() const {
-  return parent_widget_ ? parent_widget_->GetNativeView()
-                        : delegate_->container_view();
 }
 
 gfx::NativeView PopupBaseView::container_view() {

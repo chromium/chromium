@@ -129,9 +129,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // Return the web contents related to this.
   content::WebContents* GetWebContents() const;
 
-  // The native view that |this|'s related widget should sit in.
-  gfx::NativeView GetParentNativeView() const;
-
   // Must return the container view for this popup.
   gfx::NativeView container_view();
 
