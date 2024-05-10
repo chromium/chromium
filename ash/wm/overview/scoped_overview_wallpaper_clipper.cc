@@ -63,6 +63,12 @@ ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
   auto* wallpaper_widget_controller =
       RootWindowController::ForWindow(root_window)
           ->wallpaper_widget_controller();
+  // Switching to tablet mode will force mirroring displays which would destroy
+  // non primary root windows. THe wallpaper widget controller would already be
+  // destroyed at this point.
+  if (!wallpaper_widget_controller) {
+    return;
+  }
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 

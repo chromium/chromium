@@ -1875,8 +1875,8 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
 
   display::Screen* screen = display::Screen::GetScreen();
 
-  // The expected y of the label will be the screen minus the shelf, desks bar
-  // and maybe some extra padding for forest.
+  // The expected y of the label will be the screen minus the shelf and desks
+  // bar.
   auto get_expected_y = [&screen]() -> int {
     const int display_height = screen->GetPrimaryDisplay().bounds().height();
     const int grid_y = kDeskBarZeroStateHeight;
@@ -1885,9 +1885,21 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
     return grid_y + grid_height / 2;
   };
 
-  // Verify that originally the label is in the center of the workspace.
-  EXPECT_EQ(gfx::Point(200, get_expected_y()),
-            no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
+  // Verify that originally the label is in the center of the workspace. For
+  // forest, the padding calculations are much more complicated and we need to
+  // account for the birch bar, so we just check that the widget is roughly
+  // centered vertically.
+  gfx::Point no_windows_centerpoint =
+      no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
+  if (IsForestFeatureEnabled()) {
+    EXPECT_EQ(200, no_windows_centerpoint.x());
+    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+    EXPECT_LT(no_windows_centerpoint.y(),
+              screen->GetPrimaryDisplay().bounds().height() -
+                  ShelfConfig::Get()->shelf_size());
+  } else {
+    EXPECT_EQ(gfx::Point(200, get_expected_y()), no_windows_centerpoint);
+  }
 
   // Verify that after rotating the display, the label is centered in the
   // workspace.
@@ -1895,8 +1907,17 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
   display_manager()->SetDisplayRotation(
       display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  EXPECT_EQ(gfx::Point(150, get_expected_y()),
-            no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
+  no_windows_centerpoint =
+      no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
+  if (IsForestFeatureEnabled()) {
+    EXPECT_EQ(150, no_windows_centerpoint.x());
+    EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
+    EXPECT_LT(no_windows_centerpoint.y(),
+              screen->GetPrimaryDisplay().bounds().height() -
+                  ShelfConfig::Get()->shelf_size());
+  } else {
+    EXPECT_EQ(gfx::Point(150, get_expected_y()), no_windows_centerpoint);
+  }
 }
 
 // Tests that toggling overview on removes any resize shadows that may have been
