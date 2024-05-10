@@ -31,6 +31,7 @@ class OobeScreensHandlerFactory
   ~OobeScreensHandlerFactory() override;
 
   void BindScreensHandlerFactory();
+  void UnbindScreensHandlerFactory();
 
  private:
   // screens_factory::mojom::ScreensFactory:

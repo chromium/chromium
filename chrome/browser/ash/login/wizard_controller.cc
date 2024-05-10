@@ -431,6 +431,12 @@ WizardController::~WizardController() {
     obs.OnShutdown();
   }
 
+  if (GetOobeUI() && GetOobeUI()->GetOobeScreensHandlerFactory()) {
+      GetOobeUI()
+        ->GetOobeScreensHandlerFactory()
+        ->UnbindScreensHandlerFactory();
+  }
+
   previous_screens_.clear();
   screen_manager_.reset();
 }

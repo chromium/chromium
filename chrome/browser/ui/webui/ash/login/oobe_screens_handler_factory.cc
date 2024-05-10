@@ -43,6 +43,10 @@ void OobeScreensHandlerFactory::BindScreensHandlerFactory() {
   }
 }
 
+void OobeScreensHandlerFactory::UnbindScreensHandlerFactory() {
+  page_factory_receiver_.reset();
+}
+
 void OobeScreensHandlerFactory::CreateGaiaInfoScreenHandler(
     mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
     mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
