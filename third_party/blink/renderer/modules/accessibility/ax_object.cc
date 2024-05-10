@@ -7667,17 +7667,18 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         result = false;
         if (!IsEditable() && !GetAOMPropertyOrARIAAttribute(
                                  AOMRelationProperty::kActiveDescendant)) {
+          if (!GetElement() || !GetDocument()) {
+            return false;
+          }
           // TODO(accessibility) Scrollables are currently allowed here in order
           // to keep the current behavior. In the future, this can be removed
           // because this code will be handled in IsFocusable(), once
           // KeyboardFocusableScrollersEnabled is permanently enabled.
           // Note: this uses the same scrollable check that element.cc uses.
-          if (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
+          if (GetDocument()->KeyboardFocusableScrollersEnabled() &&
               IsUserScrollable()) {
             return true;
           }
-          if (!GetElement() || !GetDocument())
-            return false;
           int tab_index = GetElement()->tabIndex();
           bool is_focused = GetElement() == GetDocument()->FocusedElement();
           bool is_in_tab_order_or_focused = tab_index >= 0 || is_focused;

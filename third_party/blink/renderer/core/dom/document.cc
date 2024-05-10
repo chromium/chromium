@@ -1795,6 +1795,12 @@ Element* Document::ScrollingElementNoLayout() {
   return body();
 }
 
+bool Document::KeyboardFocusableScrollersEnabled() {
+  return RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
+         !RuntimeEnabledFeatures::KeyboardFocusableScrollersOptOutEnabled(
+             GetExecutionContext());
+}
+
 /*
  * Performs three operations:
  *  1. Convert control characters to spaces

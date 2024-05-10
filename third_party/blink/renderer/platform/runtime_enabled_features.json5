@@ -2184,10 +2184,25 @@
       base_feature: "none",
     },
     {
-      // TODO(crbug.com/40113891): This feature allow scrollers to be
+      // TODO(crbug.com/40113891): This feature allows scrollers to be
       // keyboard focusable by default.
       name: "KeyboardFocusableScrollers",
       status: "experimental",
+    },
+    {
+      // TODO(crbug.com/40113891): Disables KeyboardFocusableScrollers.
+      // This feature only takes effect if KeyboardFocusableScrollers is
+      // enabled. It will overwrite the behavior and not allow scrollers to be
+      // keyboard focusable by default.
+      name: "KeyboardFocusableScrollersOptOut",
+      origin_trial_feature_name: "KeyboardFocusableScrollersOptOut",
+      // This is not a deprecation feature, but we need this type to set the
+      // origin trial. This feature will allow sites to have time to adjust to
+      // the breaking change by opting out.
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
+      origin_trial_allows_third_party: true,
+      public: true,
     },
     {
       // This feature makes HTMLLabelElement::DefaultEventHandler always call

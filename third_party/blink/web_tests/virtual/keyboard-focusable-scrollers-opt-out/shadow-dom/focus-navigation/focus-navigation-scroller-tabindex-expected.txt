@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Should focus on scroller depending on tabindex value.
+  assert_equals: Focus should move forward from B to scroller-none-2 expected Element node <div id="scroller-none-2" class="scroll">\n  <p>Scroller h... but got Element node <button id="C">BUTTON C</button>
+Harness: the test ran to completion.
+

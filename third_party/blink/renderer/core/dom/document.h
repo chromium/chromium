@@ -502,6 +502,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // [1] https://drafts.csswg.org/scroll-animations-1/#avoiding-cycles
   Element* ScrollingElementNoLayout();
 
+  bool KeyboardFocusableScrollersEnabled();
+
   String readyState() const;
 
   AtomicString characterSet() const { return Document::EncodingName(); }

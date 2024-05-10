@@ -1828,6 +1828,12 @@ const char kMutationEventsDescription[] =
     "these events can cause breakage on some sites that are still reliant on "
     "these deprecated features.";
 
+const char kKeyboardFocusableScrollersName[] =
+    "Enables keyboard focusable scrollers";
+const char kKeyboardFocusableScrollersDescription[] =
+    "Scrollers are click-focusable and programmatically-focusable by default. "
+    "Scrollers without focusable children are keyboard-focusable by default.";
+
 const char kFillOnAccountSelectName[] = "Fill passwords on account selection";
 const char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "

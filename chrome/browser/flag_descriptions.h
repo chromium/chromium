@@ -1045,6 +1045,9 @@ extern const char kFluentScrollbarsDescription[];
 extern const char kMutationEventsName[];
 extern const char kMutationEventsDescription[];
 
+extern const char kKeyboardFocusableScrollersName[];
+extern const char kKeyboardFocusableScrollersDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 

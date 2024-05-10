@@ -2911,5 +2911,21 @@
     ],
     "expires": "Jan 1, 2025",
     "owners": ["moonira@google.com"]
+  },
+  {
+    "prefix": "keyboard-focusable-scrollers-opt-out",
+    "owners": ["dizhangg@google.com"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "shadow-dom/focus-navigation/focus-navigation-scroller-delegatesFocus.html",
+      "shadow-dom/focus-navigation/focus-navigation-scroller-interactive-child.html",
+      "shadow-dom/focus-navigation/focus-navigation-scroller-tabindex.html",
+      "shadow-dom/focus-navigation/focus-scroller-layout-update.html"
+    ],
+    "args": [
+      "--enable-blink-features=KeyboardFocusableScrollers",
+      "--enable-blink-features=KeyboardFocusableScrollersOptOut"
+    ],
+    "expires": "May 1, 2025"
   }
 ]
