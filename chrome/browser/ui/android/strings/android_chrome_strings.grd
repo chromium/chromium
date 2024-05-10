@@ -1272,6 +1272,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_TABS_TITLE" desc="Title for Clear Tabs in Clear Browsing Data preference">
         Tabs
       </message>
+      <message name="IDS_CLEAR_TABS_DISABLED_SUMMARY" desc="A descriptive line that appears as a secondary text for Clear Tabs in Clear Browsing Data preference. The text explains why 'Tabs' checkbox is disabled.">
+        Can’t be closed across multiple windows
+      </message>
       <message name="IDS_CLEAR_BROWSING_DATA_PROGRESS_TITLE" desc='Title for the progress dialog used when waiting for "delete browsing data" to complete.'>
         Deleting browsing data
       </message>

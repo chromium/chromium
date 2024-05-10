@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -110,12 +111,16 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             mParent = parent;
             mOption = option;
             mCheckbox = checkbox;
-            mCounter =
-                    new BrowsingDataCounterBridge(
-                            parent.getProfile(),
-                            this,
-                            ClearBrowsingDataFragment.getDataType(mOption),
-                            mParent.getClearBrowsingDataTabType());
+            if (option == DialogOption.CLEAR_TABS && !enabled) {
+                mCheckbox.setSummary(R.string.clear_tabs_disabled_summary);
+            } else {
+                mCounter =
+                        new BrowsingDataCounterBridge(
+                                parent.getProfile(),
+                                this,
+                                ClearBrowsingDataFragment.getDataType(mOption),
+                                mParent.getClearBrowsingDataTabType());
+            }
 
             mCheckbox.setOnPreferenceClickListener(this);
             mCheckbox.setEnabled(enabled);
@@ -123,14 +128,19 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
             int dp = mParent.getResources().getConfiguration().smallestScreenWidthDp;
             if (dp >= MIN_DP_FOR_ICON) {
+                @ColorRes
+                int colorId =
+                        enabled
+                                ? R.color.default_icon_color_tint_list
+                                : R.color.default_icon_color_disabled;
                 mCheckbox.setIcon(
                         SettingsUtils.getTintedIcon(
-                                context, ClearBrowsingDataFragment.getIcon(option)));
+                                context, ClearBrowsingDataFragment.getIcon(option), colorId));
             }
         }
 
         public void destroy() {
-            mCounter.destroy();
+            if (mCounter != null) mCounter.destroy();
         }
 
         public @DialogOption int getOption() {
@@ -619,6 +629,15 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                         false);
             }
 
+            // Disable tabs closure if the user is in multi-window mode.
+            // TODO(b/333036591): Remove this check once tab closure works properly across
+            // multi-instances.
+            if (option == DialogOption.CLEAR_TABS && isInMultiWindowMode()) {
+                enabled = false;
+                browsingDataBridge.setBrowsingDataDeletionPreference(
+                        getDataType(DialogOption.CLEAR_TABS), ClearBrowsingDataTab.ADVANCED, false);
+            }
+
             mItems[i] =
                     new Item(
                             getActivity(),
@@ -942,5 +961,9 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             // Deprecated in API 26.
             v.vibrate(duration);
         }
+    }
+
+    private boolean isInMultiWindowMode() {
+        return MultiWindowUtils.getInstanceCount() > 1;
     }
 }

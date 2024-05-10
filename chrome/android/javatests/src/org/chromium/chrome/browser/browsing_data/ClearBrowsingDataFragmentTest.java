@@ -11,8 +11,11 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,6 +77,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.Dialo
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -276,6 +280,10 @@ public class ClearBrowsingDataFragmentTest {
      */
     @Test
     @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
+        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
+    })
     public void testClearingEverything() throws Exception {
         setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
 
@@ -325,13 +333,10 @@ public class ClearBrowsingDataFragmentTest {
 
     private static int[] getAllDataTypes() {
         Set<Integer> dialogTypes = ClearBrowsingDataFragment.getAllOptions();
-        // Ignore "Tabs" datatype as the tab closure is not yet implemented.
-        dialogTypes.remove(DialogOption.CLEAR_TABS);
 
         int[] datatypes = new int[dialogTypes.size()];
-        int i = 0;
-        for (int dialogType : dialogTypes) {
-            datatypes[i++] = ClearBrowsingDataFragment.getDataType(dialogType);
+        for (int i = 0; i < datatypes.length; i++) {
+            datatypes[i] = ClearBrowsingDataFragment.getDataType(i);
         }
 
         Arrays.sort(datatypes);
@@ -793,6 +798,48 @@ public class ClearBrowsingDataFragmentTest {
         ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
         ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
     })
+    public void testTabsCheckbox_SingleInstance_withQuickDeleteV2Enabled() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
+
+        assertNotNull(checkboxPreference);
+        assertTrue(checkboxPreference.isEnabled());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
+        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
+    })
+    public void testTabsCheckbox_MultiInstance_withQuickDeleteV2Enabled() {
+        MultiWindowUtils.setInstanceCountForTesting(3);
+
+        ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        CheckBoxPreference checkboxPreference =
+                preferences.findPreference(
+                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
+
+        assertNotNull(checkboxPreference);
+        assertFalse(checkboxPreference.isEnabled());
+        assertEquals(
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.clear_tabs_disabled_summary),
+                checkboxPreference.getSummary());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
+        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
+    })
     public void testSnackbarShown_defaultTimePeriod_withQuickDeleteV2Enabled() throws Exception {
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
 
@@ -811,21 +858,6 @@ public class ClearBrowsingDataFragmentTest {
         final String expectedSnackbarMessage =
                 activity.getResources().getString(R.string.quick_delete_snackbar_all_time_message);
         waitForSnackbar(expectedSnackbarMessage);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
-    public void testTabsCheckbox_withQuickDeleteV2Enabled() {
-        ClearBrowsingDataFragment preferences =
-                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
-        CheckBoxPreference checkboxPreference =
-                preferences.findPreference(
-                        ClearBrowsingDataFragment.getPreferenceKey(DialogOption.CLEAR_TABS));
-        assertNotNull(checkboxPreference);
     }
 
     @Test
