@@ -693,7 +693,7 @@ public class PasswordSettingsExportTest {
                 });
 
         // Cancel the export warning.
-        onView(withText(R.string.cancel)).perform(click());
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
         // Check that export warning is not visible again.
         onView(withText(R.string.cancel)).check(doesNotExist());
