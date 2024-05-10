@@ -88,6 +88,18 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     }
 
     @Test
+    public void testHide() {
+        requestShowContent();
+        mBridge.hide();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
     public void testDestroy() {
         requestShowContent();
         mBridge.destroy();
@@ -95,7 +107,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .hideContent(
                         any(AutofillSaveCardBottomSheetContent.class),
-                        eq(true),
+                        /* animate= */ eq(true),
                         eq(StateChangeReason.NONE));
     }
 

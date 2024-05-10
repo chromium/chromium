@@ -76,6 +76,12 @@ void AutofillSaveCardBottomSheetBridge::RequestShowContent(
       ConvertUiInfoToJavaObject(env, ui_info));
 }
 
+void AutofillSaveCardBottomSheetBridge::Hide() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillSaveCardBottomSheetBridge_hide(
+      env, java_autofill_save_card_bottom_sheet_bridge_);
+}
+
 AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
     base::android::ScopedJavaGlobalRef<jobject>
         java_autofill_save_card_bottom_sheet_bridge)

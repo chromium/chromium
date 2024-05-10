@@ -21,8 +21,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link AutofillSaveCardBottomSheetMediator}. */
 @SmallTest
@@ -32,6 +36,7 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     @Mock private AutofillSaveCardBottomSheetContent mBottomSheetContent;
     @Mock private AutofillSaveCardBottomSheetLifecycle mLifeCycle;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private PropertyModel mModel;
     @Mock private AutofillSaveCardBottomSheetBridge mDelegate;
     private AutofillSaveCardBottomSheetMediator mMediator;
 
@@ -39,7 +44,12 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     public void setUp() {
         mMediator =
                 new AutofillSaveCardBottomSheetMediator(
-                        mBottomSheetContent, mLifeCycle, mBottomSheetController, mDelegate);
+                        mBottomSheetContent,
+                        mLifeCycle,
+                        mBottomSheetController,
+                        mModel,
+                        mDelegate,
+                        /* isServerCard= */ true);
     }
 
     @Test
@@ -68,7 +78,42 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     }
 
     @Test
-    public void testOnAccepted() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testOnAccepted_withLoadingConfirmation() {
+        mMediator.onAccepted();
+
+        verifyNoInteractions(mLifeCycle);
+        verifyNoInteractions(mBottomSheetController);
+        verify(mModel).set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true);
+        verify(mDelegate).onUiAccepted();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testOnAccepted_forLocalCard_withLoadingConfirmation() {
+        // Create a mediator for local card. `isServerCard` is false for local cards.
+        AutofillSaveCardBottomSheetMediator mediator =
+                new AutofillSaveCardBottomSheetMediator(
+                        mBottomSheetContent,
+                        mLifeCycle,
+                        mBottomSheetController,
+                        mModel,
+                        mDelegate,
+                        /* isServerCard= */ false);
+        mediator.onAccepted();
+
+        verify(mLifeCycle).end();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mDelegate).onUiAccepted();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testOnAccepted_withoutLoadingConfirmation() {
         mMediator.onAccepted();
 
         verify(mLifeCycle).end();

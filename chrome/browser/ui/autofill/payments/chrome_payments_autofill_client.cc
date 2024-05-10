@@ -134,7 +134,11 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+    bridge->Hide();
+  }
+#else  // !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
     controller->ShowConfirmationBubbleView(card_saved);

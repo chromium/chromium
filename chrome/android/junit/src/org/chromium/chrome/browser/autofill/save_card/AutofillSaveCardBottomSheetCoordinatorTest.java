@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.autofill.save_card;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -29,7 +32,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
@@ -161,7 +167,47 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testClickAccept() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_withLoadingConfirmation() {
+        mCoordinator.requestShowContent();
+        mCoordinator.getAutofillSaveCardBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted();
+        verify(mBottomSheetController, times(0)).hideContent(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_forLocalCard_withLoadingConfirmation() {
+        // Create a coordinator for local card. `withIsForUpload` is false for local cards.
+        AutofillSaveCardBottomSheetCoordinator coordinator =
+                new AutofillSaveCardBottomSheetCoordinator(
+                        mActivity,
+                        new AutofillSaveCardUiInfo.Builder()
+                                .withIsForUpload(false)
+                                .withCardDetail(
+                                        new CardDetail(
+                                                TEST_DRAWABLE_RES, "Card label", "Card sub label"))
+                                .build(),
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel,
+                        mDelegate);
+
+        coordinator.requestShowContent();
+        coordinator.getAutofillSaveCardBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        verify(mDelegate).onUiAccepted();
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_withoutLoadingConfirmation() {
         mCoordinator.requestShowContent();
         mCoordinator.getAutofillSaveCardBottomSheetViewForTesting().mAcceptButton.performClick();
 

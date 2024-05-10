@@ -111,7 +111,9 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         new AutofillSaveCardBottomSheetLifecycle(
                                 bottomSheetController, layoutStateProvider, tabModel),
                         bottomSheetController,
-                        delegate);
+                        mModel,
+                        delegate,
+                        uiInfo.isForUpload());
 
         mView.mAcceptButton.setOnClickListener(
                 (View button) -> {

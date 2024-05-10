@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Mediator class for the autofill save card UI.
@@ -24,7 +26,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
     private final AutofillSaveCardBottomSheetContent mContent;
     private final AutofillSaveCardBottomSheetLifecycle mLifecycle;
     private final BottomSheetController mBottomSheetController;
+    private final PropertyModel mModel;
     private final AutofillSaveCardBottomSheetCoordinator.NativeDelegate mDelegate;
+    private final boolean mIsServerCard;
 
     /**
      * Creates the mediator.
@@ -33,16 +37,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
      * @param lifecycle A custom lifecycle that ignores page navigation.
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param delegate The delegate to signal UI flow events (OnUiShown, OnUiAccepted, etc.) to.
+     * @param isServerCard Whether or not the bottom sheet is for a server card save.
      */
     AutofillSaveCardBottomSheetMediator(
             AutofillSaveCardBottomSheetContent content,
             AutofillSaveCardBottomSheetLifecycle lifecycle,
             BottomSheetController bottomSheetController,
-            AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate) {
+            PropertyModel model,
+            AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate,
+            boolean isServerCard) {
         mContent = content;
         mLifecycle = lifecycle;
         mBottomSheetController = bottomSheetController;
+        mModel = model;
         mDelegate = delegate;
+        mIsServerCard = isServerCard;
     }
 
     /** Requests to show the bottom sheet content. */
@@ -56,7 +65,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
     }
 
     public void onAccepted() {
-        hide(StateChangeReason.INTERACTION_COMPLETE);
+        if (mIsServerCard
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_LOADING_AND_CONFIRMATION)) {
+            mModel.set(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, true);
+        } else {
+            hide(StateChangeReason.INTERACTION_COMPLETE);
+        }
         mDelegate.onUiAccepted();
     }
 

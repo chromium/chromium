@@ -66,6 +66,16 @@ public class AutofillSaveCardBottomSheetBridge
         mCoordinator.requestShowContent();
     }
 
+    /**
+     * Requests to hide the bottom sheet if showing. The hide reason
+     * BottomSheetController.StateChangeReason.INTERACTION_COMPLETE will be used.
+     */
+    @CalledByNative
+    public void hide() {
+        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        mCoordinator.hide(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+    }
+
     /** Called when the bottom sheet has been shown. */
     @Override
     public void onUiShown() {
