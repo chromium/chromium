@@ -4710,6 +4710,7 @@ static_library("browser") {
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/smart_card",
       "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",

@@ -467,6 +467,7 @@ static_library("ui") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/share",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/side_panel:side_panel_enums",
     "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
     "//chrome/browser/ui/webui/location_internals:mojo_bindings",

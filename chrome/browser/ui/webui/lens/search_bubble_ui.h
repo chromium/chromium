@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_UI_H_
 
 #include "chrome/browser/lens/core/mojom/search_bubble.mojom.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 
@@ -37,7 +36,6 @@ class SearchBubbleUI : public TopChromeWebUIController,
 
   std::unique_ptr<SearchBubblePageHandler> page_handler_;
   raw_ptr<content::WebUI> web_ui_;
-  raw_ptr<ThemeService> theme_service_;
 
   mojo::Receiver<lens::mojom::SearchBubblePageHandlerFactory>
       page_factory_receiver_{this};

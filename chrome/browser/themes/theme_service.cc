@@ -41,6 +41,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -590,9 +591,7 @@ void ThemeService::SetUserColor(std::optional<SkColor> user_color) {
 }
 
 std::optional<SkColor> ThemeService::GetUserColor() const {
-  auto user_color = profile_->GetPrefs()->GetInteger(prefs::kUserColor);
-  return user_color == SK_ColorTRANSPARENT ? std::nullopt
-                                           : std::optional<SkColor>(user_color);
+  return CurrentThemeUserColor(profile_->GetPrefs());
 }
 
 void ThemeService::SetBrowserColorVariant(
@@ -635,7 +634,7 @@ void ThemeService::SetIsGrayscale(bool is_grayscale) {
 }
 
 bool ThemeService::GetIsGrayscale() const {
-  return profile_->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabled);
+  return CurrentThemeIsGrayscale(profile_->GetPrefs());
 }
 
 bool ThemeService::GetIsBaseline() const {
