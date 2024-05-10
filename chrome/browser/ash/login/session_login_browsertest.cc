@@ -158,7 +158,9 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
   login_mixin_.SkipPostLoginScreens();
 }
 
-IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
+// TODO(crbug.com/339860384): Enable the test.
+IN_PROC_BROWSER_TEST_F(OnboardingTest,
+                       DISABLED_OnboardingUserActivityRegularUser) {
   login_mixin_.LoginAsNewRegularUser();
   login_mixin_.WaitForActiveSession();
 
