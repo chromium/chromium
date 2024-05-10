@@ -285,42 +285,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       AddChildView(std::make_unique<views::Separator>());
 
   views::View* save_group_line_container = nullptr;
-
-  bool is_saved = false;
-  if (browser_->profile()->IsRegularProfile()) {
-    save_group_line_container = AddChildView(std::make_unique<views::View>());
-
-    // The `save_group_icon_` is put in differently than the rest because it
-    // utilizes a different view (view::Label) that does not have an option to
-    // take in an image like the other line items do.
-    save_group_icon_ = save_group_line_container->AddChildView(
-        std::make_unique<views::ImageView>(
-            ui::ImageModel::FromVectorIcon(kSaveGroupRefreshIcon)));
-
-    save_group_label_ =
-        save_group_line_container->AddChildView(std::make_unique<views::Label>(
-            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP)));
-    save_group_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (features::IsChromeRefresh2023()) {
-      save_group_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
-    }
-
-    save_group_toggle_ = save_group_line_container->AddChildView(
-        std::make_unique<views::ToggleButton>(
-            base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
-                                base::Unretained(this))));
-    save_group_toggle_->SetID(TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
-
-    const tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser_->profile());
-    CHECK(saved_tab_group_service);
-    is_saved = saved_tab_group_service->model()->Contains(group_);
-
-    save_group_toggle_->SetIsOn(is_saved);
-    save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
-    save_group_toggle_->SetProperty(views::kElementIdentifierKey,
-                                    kTabGroupEditorBubbleSaveToggleId);
+  if (browser_->profile()->IsRegularProfile() &&
+      !tab_groups::IsTabGroupsSaveV2Enabled()) {
+    save_group_line_container = CreateSavedTabGroupItem();
   }
 
   views::LabelButton* const new_tab_menu_item = AddChildView(CreateMenuItem(
@@ -360,8 +327,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     move_menu_item_ptr = AddChildView(std::move(move_menu_item));
   }
 
-  // Add a separator.
-  if (is_saved) {
+  // Add a separator. Add if v2 enabled.
+  bool is_saved = save_group_line_container && save_group_toggle_->GetIsOn();
+  if (is_saved || tab_groups::IsTabGroupsSaveV2Enabled()) {
     // The amount of vertical padding in dips the separator should have to
     // prevent menu items from being visually too close to each other.
     constexpr int kSeparatorPadding = 8;
@@ -369,7 +337,6 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     separator->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(kSeparatorPadding, 0));
 
-    // Add delete group menu item.
     menu_items_.push_back(AddChildView(CreateMenuItem(
         IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
@@ -644,6 +611,45 @@ void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
   browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
   GetWidget()->Close();
+}
+
+views::View* TabGroupEditorBubbleView::CreateSavedTabGroupItem() {
+  views::View* save_group_line_container =
+      AddChildView(std::make_unique<views::View>());
+
+  // The `save_group_icon_` is put in differently than the rest because it
+  // utilizes a different view (view::Label) that does not have an option to
+  // take in an image like the other line items do.
+  save_group_icon_ = save_group_line_container->AddChildView(
+      std::make_unique<views::ImageView>(
+          ui::ImageModel::FromVectorIcon(kSaveGroupRefreshIcon)));
+
+  save_group_label_ =
+      save_group_line_container->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP)));
+  save_group_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  if (features::IsChromeRefresh2023()) {
+    save_group_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  }
+
+  save_group_toggle_ = save_group_line_container->AddChildView(
+      std::make_unique<views::ToggleButton>(
+          base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
+                              base::Unretained(this))));
+  save_group_toggle_->SetID(TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
+
+  const tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+  CHECK(saved_tab_group_service);
+
+  save_group_toggle_->SetIsOn(
+      saved_tab_group_service->model()->Contains(group_));
+  save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
+  save_group_toggle_->SetProperty(views::kElementIdentifierKey,
+                                  kTabGroupEditorBubbleSaveToggleId);
+
+  return save_group_line_container;
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {

@@ -97,6 +97,10 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void OnBubbleClose();
 
+  // Returns the view responsible for being able to save a tab group. It
+  // most notably contains a toggle button to save and unsave the group.
+  views::View* CreateSavedTabGroupItem();
+
   // the implementation of the ungroup command. This method is static so that
   // it can be called from dialogs as a callback.
   static void Ungroup(const Browser* browser, tab_groups::TabGroupId group);
