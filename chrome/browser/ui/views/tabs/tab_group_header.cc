@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -578,6 +579,10 @@ int TabGroupHeader::GetCollapsedHeaderWidth() const {
 }
 
 bool TabGroupHeader::ShouldShowSyncIcon() const {
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return false;
+  }
+
   return saved_tab_group_service_ && saved_tab_group_service_->model() &&
          saved_tab_group_service_->model()->Contains(group().value());
 }
