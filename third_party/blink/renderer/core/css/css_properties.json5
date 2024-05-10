@@ -5202,16 +5202,6 @@
       runtime_flag: "CSSTextAutoSpace",
     },
     {
-      name: "text-box-trim",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "box",
-      field_template: "keyword",
-      default_value: "none",
-      keywords: ["none", "start", "end", "both"],
-      typedom_types: ["Keyword"],
-      runtime_flag: "CSSTextBoxTrim",
-    },
-    {
       name: "text-box-edge",
       property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
       field_group: "box",
@@ -5220,6 +5210,16 @@
       default_value: "TextBoxEdge(TextBoxEdge::TextBoxEdgeType::kLeading)",
       type_name: "TextBoxEdge",
       converter: "ConvertTextBoxEdge",
+      runtime_flag: "CSSTextBoxTrim",
+    },
+    {
+      name: "text-box-trim",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "box",
+      field_template: "keyword",
+      default_value: "none",
+      keywords: ["none", "start", "end", "both"],
+      typedom_types: ["Keyword"],
       runtime_flag: "CSSTextBoxTrim",
     },
     {
