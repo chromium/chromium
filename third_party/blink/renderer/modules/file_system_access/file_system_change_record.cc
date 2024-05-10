@@ -40,8 +40,8 @@ constexpr V8FileSystemChangeType::Enum ToChangeTypeEnum(
         FileSystemAccessChangeType_Tag::kMoved:
       return V8FileSystemChangeType::Enum::kMoved;
     case mojom::blink::FileSystemAccessChangeType::Data_::
-        FileSystemAccessChangeType_Tag::kUnsupported:
-      return V8FileSystemChangeType::Enum::kUnsupported;
+        FileSystemAccessChangeType_Tag::kUnknown:
+      return V8FileSystemChangeType::Enum::kUnknown;
   }
 }
 

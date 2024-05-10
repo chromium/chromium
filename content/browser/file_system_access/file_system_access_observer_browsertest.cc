@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
       SupportsChangeInfo()
           ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "modified"
                                                                     : "moved")
-          : "unsupported";
+          : "unknown";
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }

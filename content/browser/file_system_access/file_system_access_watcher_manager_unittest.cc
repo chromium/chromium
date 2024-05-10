@@ -103,9 +103,9 @@ blink::mojom::FileSystemAccessChangeTypePtr ToMojoChangeTypePtr(
       return FileSystemAccessChangeType::NewMoved(
           blink::mojom::FileSystemAccessChangeTypeMoved::New(
               std::move(relative_path_moved_from)));
-    case FileSystemAccessChangeType::Tag::kUnsupported:
-      return FileSystemAccessChangeType::NewUnsupported(
-          blink::mojom::FileSystemAccessChangeTypeUnsupported::New());
+    case FileSystemAccessChangeType::Tag::kUnknown:
+      return FileSystemAccessChangeType::NewUnknown(
+          blink::mojom::FileSystemAccessChangeTypeUnknown::New());
   }
 }
 
@@ -395,8 +395,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
   source.Signal();
 
   std::list<Change> expected_changes = {
-      {file_url,
-       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+      {file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
        FilePathType::kUnknown}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
@@ -461,7 +460,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
 
     std::list<Change> expected_changes = {
         {file_url,
-         ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+         ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
          FilePathType::kUnknown}};
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return testing::Matches(testing::ContainerEq(expected_changes))(
@@ -572,8 +571,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   // could consolidate these changes....
 
   Change expected_change{
-      file_url,
-      ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+      file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
       FilePathType::kUnknown};
 
   std::list<Change> expected_changes = {expected_change, expected_change};
@@ -626,15 +624,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingObservationScopes) {
   source.Signal(/*relative_path=*/file_path.BaseName());
 
   std::list<Change> expected_dir_changes = {
-      {dir_url,
-       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+      {dir_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
        FilePathType::kUnknown},
-      {file_url,
-       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+      {file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
        FilePathType::kUnknown}};
   std::list<Change> expected_file_changes = {
-      {file_url,
-       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+      {file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
        FilePathType::kUnknown}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_dir_changes))(
@@ -709,7 +704,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
       {manager_->CreateFileSystemURLFromPath(
            FileSystemAccessEntryFactory::PathType::kLocal,
            dir_path.Append(relative_path)),
-       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported),
+       ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown),
        FilePathType::kUnknown}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
@@ -830,7 +825,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   auto mojo_change_ptr =
       ReportsChangeInfoForLocalObservations()
           ? ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kDeleted)
-          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported);
+          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown);
   auto file_path_type = ReportsChangeInfoForLocalObservations()
                             ? FilePathType::kFile
                             : FilePathType::kUnknown;
@@ -938,7 +933,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   auto mojo_change_ptr =
       ReportsChangeInfoForLocalObservations()
           ? ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kDeleted)
-          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported);
+          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown);
   auto file_path_type = ReportsChangeInfoForLocalObservations()
                             ? FilePathType::kFile
                             : FilePathType::kUnknown;
@@ -983,7 +978,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   auto mojo_change_ptr =
       ReportsChangeInfoForLocalObservations()
           ? ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kDeleted)
-          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported);
+          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown);
   auto file_path_type = ReportsChangeInfoForLocalObservations()
                             ? FilePathType::kFile
                             : FilePathType::kUnknown;
@@ -1047,7 +1042,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   auto mojo_change_ptr =
       ReportsChangeInfoForLocalObservations()
           ? ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kDeleted)
-          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnsupported);
+          : ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kUnknown);
   auto file_path_type = ReportsChangeInfoForLocalObservations()
                             ? FilePathType::kFile
                             : FilePathType::kUnknown;

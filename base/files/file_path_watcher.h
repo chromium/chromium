@@ -39,7 +39,7 @@ class BASE_EXPORT FilePathWatcher {
   // Type of change which occurred on the affected. Note that this may differ
   // from the watched path, e.g. in the case of recursive watches.
   enum class ChangeType {
-    kUnsupported,  // The implementation does not support change types.
+    kUnknown,  // One or more changes occurred at the path or its descendants.
     kCreated,
     kDeleted,
     kModified,  // Includes modifications to either file contents or attributes.
@@ -65,7 +65,7 @@ class BASE_EXPORT FilePathWatcher {
   // known given the limitations on some platforms.
   struct ChangeInfo {
     FilePathType file_path_type = FilePathType::kUnknown;
-    ChangeType change_type = ChangeType::kUnsupported;
+    ChangeType change_type = ChangeType::kUnknown;
     // Can be used to associate related events. For example, renaming a file may
     // trigger separate "moved from" and "moved to" events with the same
     // `cookie` value.

@@ -94,8 +94,8 @@ Event ToEvent(const FilePathWatcher::ChangeInfo& change_info,
 std::ostream& operator<<(std::ostream& os,
                          const FilePathWatcher::ChangeType& change_type) {
   switch (change_type) {
-    case FilePathWatcher::ChangeType::kUnsupported:
-      return os << "unsupported";
+    case FilePathWatcher::ChangeType::kUnknown:
+      return os << "unknown";
     case FilePathWatcher::ChangeType::kCreated:
       return os << "created";
     case FilePathWatcher::ChangeType::kDeleted:
@@ -2925,7 +2925,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   const auto matcher = testing::ElementsAre(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsUnknownPathType(),
-      IsType(FilePathWatcher::ChangeType::kUnsupported),
+      IsType(FilePathWatcher::ChangeType::kUnknown),
       testing::Not(HasCookie())));
 
   FilePathWatcher watcher;

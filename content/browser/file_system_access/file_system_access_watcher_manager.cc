@@ -48,9 +48,9 @@ blink::mojom::FileSystemAccessChangeTypePtr ToMojoChangeType(
   }
 
   switch (change_type) {
-    case FileSystemAccessChangeSource::ChangeType::kUnsupported:
-      return blink::mojom::FileSystemAccessChangeType::NewUnsupported(
-          blink::mojom::FileSystemAccessChangeTypeUnsupported::New());
+    case FileSystemAccessChangeSource::ChangeType::kUnknown:
+      return blink::mojom::FileSystemAccessChangeType::NewUnknown(
+          blink::mojom::FileSystemAccessChangeTypeUnknown::New());
     case FileSystemAccessChangeSource::ChangeType::kCreated:
       return blink::mojom::FileSystemAccessChangeType::NewCreated(
           blink::mojom::FileSystemAccessChangeTypeCreated::New());

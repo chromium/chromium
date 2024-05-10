@@ -18,7 +18,7 @@ struct FileSystemAccessChangeTypeMoved {
   // if the former path is known; otherwise null.
   array<string>? former_relative_path;
 };
-struct FileSystemAccessChangeTypeUnsupported {};
+struct FileSystemAccessChangeTypeUnknown {};
 
 // Union of the above file system changes. This list of types must be kept in
 // sync with the `FileSystemChangeType` enum in
@@ -29,7 +29,7 @@ union FileSystemAccessChangeType {
   FileSystemAccessChangeTypeErrored errored;
   FileSystemAccessChangeTypeModified modified;
   FileSystemAccessChangeTypeMoved moved;
-  FileSystemAccessChangeTypeUnsupported unsupported;
+  FileSystemAccessChangeTypeUnknown unknown;
 };
 
 // Common details of all file system changes.

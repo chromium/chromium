@@ -10,7 +10,7 @@ enum FileSystemChangeType {
   "errored",
   "modified",
   "moved",
-  "unsupported",
+  "unknown",
 };
 
 [
