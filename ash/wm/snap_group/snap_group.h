@@ -47,12 +47,25 @@ class SnapGroup : public aura::WindowObserver,
   SnapGroup& operator=(const SnapGroup&) = delete;
   ~SnapGroup() override;
 
-  // Cleans up prior to deletion. Must be called before the object is destroyed.
-  void Shutdown();
-
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
   SplitViewDivider* snap_group_divider() { return &snap_group_divider_; }
+
+  // Cleans up prior to deletion. Must be called before the object is destroyed.
+  void Shutdown();
+
+  // These functions return the snapped window in the specified snap position
+  // (left/top or right/bottom) based on the display's orientation.
+  //
+  // In primary screen orientation:
+  //  - `GetPhysicallyLeftOrTopWindow()` returns the `window1_`;
+  //  - `GetPhysicallyRightOrBottomWindow()` returns the `window2_`.
+  //
+  // In non-primary screen orientation:
+  //  - `GetPhysicallyLeftOrTopWindow()` returns the `window2_`;
+  //  - `GetPhysicallyRightOrBottomWindow()` returns the `window1_`.
+  aura::Window* GetPhysicallyLeftOrTopWindow();
+  aura::Window* GetPhysicallyRightOrBottomWindow();
 
   // Gets the window snapped at `snap_type`.
   const aura::Window* GetWindowOfSnapViewType(SnapViewType snap_type) const;
@@ -157,10 +170,15 @@ class SnapGroup : public aura::WindowObserver,
 
   std::unique_ptr<ScopedOverviewHideWindows> hide_windows_in_partial_overview_;
 
-  // The primary snapped window in the group.
+  // Window that has state type of `chromeos::WindowStateType::kPrimarySnapped`.
+  // Physically it is left/top for primary screen orientation, however it will
+  // be right/bottom for secondary screen orientation.
   raw_ptr<aura::Window> window1_;
 
-  // The secondary snapped window in the group.
+  // Window that has state type of
+  // `chromeos::WindowStateType::kSecondarySnapped`. Physically it is
+  // right/bottom for primary screen orientation, however it will be left/top
+  // for secondary screen orientation.
   raw_ptr<aura::Window> window2_;
 
   // Tracks the timestamp of the original Snap Group's creation time, preserved

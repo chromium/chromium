@@ -724,7 +724,7 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
   split_view_controller->SnapWindow(bottom_window.get(),
                                     SnapPosition::kSecondary);
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -763,7 +763,7 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
                                     SnapPosition::kPrimary);
   split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but

@@ -44,7 +44,7 @@ gfx::Range GetDividerPositionAllowedRange(const aura::Window::Windows windows) {
   aura::Window* primary_window = nullptr;
   aura::Window* secondary_window = nullptr;
   for (auto window : windows) {
-    if (IsPhysicalLeftOrTop(window)) {
+    if (IsPhysicallyLeftOrTop(window)) {
       primary_window = window;
     } else {
       secondary_window = window;
@@ -750,7 +750,7 @@ gfx::Point SplitViewDivider::GetEndDragLocationInScreen(
       /*account_for_divider_width=*/true);
 
   const bool is_physical_left_or_top =
-      IsPhysicalLeftOrTop(snap_position, window);
+      IsPhysicallyLeftOrTop(snap_position, window);
   if (IsLayoutHorizontal(window)) {
     end_location.set_x(is_physical_left_or_top ? bounds.right() : bounds.x());
   } else {

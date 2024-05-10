@@ -99,6 +99,14 @@ void SnapGroup::Shutdown() {
   StopObservingWindows();
 }
 
+aura::Window* SnapGroup::GetPhysicallyLeftOrTopWindow() {
+  return IsPhysicallyLeftOrTop(window1_) ? window1_ : window2_;
+}
+
+aura::Window* SnapGroup::GetPhysicallyRightOrBottomWindow() {
+  return IsPhysicallyLeftOrTop(window1_) ? window2_ : window1_;
+}
+
 const aura::Window* SnapGroup::GetWindowOfSnapViewType(
     SnapViewType snap_type) const {
   return snap_type == SnapViewType::kPrimary ? window1_ : window2_;
@@ -107,7 +115,7 @@ const aura::Window* SnapGroup::GetWindowOfSnapViewType(
 void SnapGroup::ShowDivider() {
   // TODO(b/338130287): Determine whether `window1_` should always be
   // `primary_window`.
-  const bool is_left_or_top = IsPhysicalLeftOrTop(window1_);
+  const bool is_left_or_top = IsPhysicallyLeftOrTop(window1_);
   aura::Window* primary_window = is_left_or_top ? window1_ : window2_;
   aura::Window* secondary_window = is_left_or_top ? window2_ : window1_;
 

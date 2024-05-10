@@ -4154,7 +4154,7 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindow) {
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect keyboard_bounds =
       keyboard_controller()->GetKeyboardWindow()->GetBoundsInScreen();
@@ -4251,7 +4251,7 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindowLimitHeight) {
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect keyboard_bounds =
       keyboard_controller()->GetKeyboardWindow()->GetBoundsInScreen();
@@ -4344,7 +4344,7 @@ TEST_F(SplitViewKeyboardTest, RestoreByActivatingTopWindow) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
-  EXPECT_TRUE(IsPhysicalLeftOrTop(SnapPosition::kPrimary, top_window.get()));
+  EXPECT_TRUE(IsPhysicallyLeftOrTop(SnapPosition::kPrimary, top_window.get()));
 
   const gfx::Rect keyboard_bounds =
       keyboard_controller()->GetKeyboardWindow()->GetBoundsInScreen();
@@ -4412,7 +4412,7 @@ TEST_F(SplitViewKeyboardTest, NoInputField) {
   EXPECT_EQ(chromeos::OrientationType::kPortraitPrimary,
             test_api.GetCurrentOrientation());
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
 
   const gfx::Rect orig_bottom_bounds = bottom_window->GetBoundsInScreen();
   const gfx::Rect orig_divider_bounds = split_view_controller()

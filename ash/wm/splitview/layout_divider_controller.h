@@ -58,9 +58,10 @@ class LayoutDividerController {
       float snap_ratio,
       bool account_for_divider_width) const = 0;
 
-  // `window` should be `primary_window_` or `secondary_window_` of this
-  // delegate, and this function returns `SnapPosition::kPrimary` or
-  // `SnapPosition::kSecondary` accordingly.
+  // Returns the snap position of the given snapped `window`.
+  // `SnapPosition::kPrimary` is returned if the window is the primary snapped
+  // window. `SnapPosition::kSecondary` is returned if the window is the
+  // secondary snapped window.
   virtual SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const = 0;
 

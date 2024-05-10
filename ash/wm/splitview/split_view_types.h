@@ -8,11 +8,21 @@
 namespace ash {
 
 // Specifies the snap position for split view.
-// - For landscape screen orientation, `kPrimary` corresponds to the
-// left-snapped position and `kSecondary` corresponds to the right-snapped
-// position.
-// - For portrait screen orientation, `kPrimary` corresponds to the top-snapped
-// position and `kSecondary` corresponds to the bottom-snapped position.
+//
+// For primary screen orientation:
+//  - For landscape screen orientation, `kPrimary` corresponds to the
+//  left-snapped position and `kSecondary` corresponds to the right-snapped
+//  position.
+//  - For portrait screen orientation, `kPrimary` corresponds to the top-snapped
+//  position and `kSecondary` corresponds to the bottom-snapped position.
+//
+// For non-primary screen orientation:
+//  - For landscape screen orientation, `kPrimary` corresponds to the
+//  right-snapped position and `kSecondary` corresponds to the left-snapped
+//  position.
+//  - For portrait screen orientation, `kPrimary` corresponds to the
+//  bottom-snapped position and `kSecondary` corresponds to the top-snapped
+//  position.
 enum class SnapPosition { kNone, kPrimary, kSecondary };
 
 }  // namespace ash

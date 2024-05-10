@@ -385,7 +385,7 @@ int GetWindowLength(aura::Window* window, bool horizontal) {
   return horizontal ? bounds.width() : bounds.height();
 }
 
-bool IsPhysicalLeftOrTop(aura::Window* window) {
+bool IsPhysicallyLeftOrTop(aura::Window* window) {
   chromeos::WindowStateType state_type =
       WindowState::Get(window)->GetStateType();
   CHECK(chromeos::IsSnappedWindowStateType(state_type));
@@ -397,7 +397,7 @@ bool IsPhysicalLeftOrTop(aura::Window* window) {
 
 void SetWindowTransformDuringResizing(aura::Window* window,
                                       int divider_position) {
-  const bool is_primary_window = IsPhysicalLeftOrTop(window);
+  const bool is_primary_window = IsPhysicallyLeftOrTop(window);
   aura::Window* root_window = window->GetRootWindow();
   const int window_size = is_primary_window
                               ? divider_position
@@ -580,7 +580,8 @@ SnapPosition GetSnapPositionForLocation(
     // Check how far the window has been dragged.
     const auto distance = location_in_screen - *initial_location_in_screen;
     const int primary_axis_distance = horizontal ? distance.x() : distance.y();
-    const bool is_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
+    const bool is_left_or_top =
+        IsPhysicallyLeftOrTop(snap_position, root_window);
     if ((is_left_or_top && primary_axis_distance > -minimum_drag_distance) ||
         (!is_left_or_top && primary_axis_distance < minimum_drag_distance)) {
       snap_position = SnapPosition::kNone;
@@ -642,14 +643,14 @@ bool IsLayoutPrimary(const display::Display& display) {
   return chromeos::IsPrimaryOrientation(GetSnapDisplayOrientation(display));
 }
 
-bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window) {
+bool IsPhysicallyLeftOrTop(SnapPosition position, aura::Window* window) {
   DCHECK_NE(SnapPosition::kNone, position);
   return position == (IsLayoutPrimary(window) ? SnapPosition::kPrimary
                                               : SnapPosition::kSecondary);
 }
 
-bool IsPhysicalLeftOrTop(SnapPosition position,
-                         const display::Display& display) {
+bool IsPhysicallyLeftOrTop(SnapPosition position,
+                           const display::Display& display) {
   DCHECK_NE(SnapPosition::kNone, position);
   return position == (IsLayoutPrimary(display) ? SnapPosition::kPrimary
                                                : SnapPosition::kSecondary);
@@ -700,7 +701,7 @@ int GetEquivalentDividerPosition(aura::Window* window,
   const int window_length = GetWindowLength(window, horizontal);
   const int divider_delta =
       account_for_divider_width ? kSplitviewDividerShortSideLength / 2.f : 0;
-  return IsPhysicalLeftOrTop(window)
+  return IsPhysicallyLeftOrTop(window)
              ? window_length - divider_delta
              : GetDividerPositionUpperLimit(root_window) - window_length -
                    divider_delta;
@@ -713,7 +714,8 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
     bool account_for_divider_width,
     int divider_position,
     bool is_resizing_with_divider) {
-  const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
+  const bool snap_left_or_top =
+      IsPhysicallyLeftOrTop(snap_position, root_window);
   const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   const int work_area_size = GetDividerPositionUpperLimit(root_window);
 

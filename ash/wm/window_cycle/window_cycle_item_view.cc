@@ -215,10 +215,10 @@ END_METADATA
 
 GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
     : is_layout_horizontal_(snap_group->IsSnapGroupLayoutHorizontal()) {
-  mini_views_.push_back(AddChildView(
-      std::make_unique<WindowCycleItemView>(snap_group->window1())));
-  mini_views_.push_back(AddChildView(
-      std::make_unique<WindowCycleItemView>(snap_group->window2())));
+  mini_views_.push_back(AddChildView(std::make_unique<WindowCycleItemView>(
+      snap_group->GetPhysicallyLeftOrTopWindow())));
+  mini_views_.push_back(AddChildView(std::make_unique<WindowCycleItemView>(
+      snap_group->GetPhysicallyRightOrBottomWindow())));
   SetShowPreview(/*show=*/true);
   RefreshItemVisuals();
 

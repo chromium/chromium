@@ -117,11 +117,11 @@ WindowMiniViewBase* BuildAndConfigureCycleView(
       if (!same_app_only ||
           (same_app_only && base::Contains(windows, snap_group->window1()) &&
            base::Contains(windows, snap_group->window2()))) {
-        // Create `GroupContainerCycleView` if `window` is primary snapped,
-        // which adds two child views subsequently. Skip adding
+        // Create `GroupContainerCycleView` if `window` is physically left / top
+        // snapped, which adds two child views subsequently. Skip adding
         // `GroupContainerCycleView` if `window` is secondary snapped since the
         // corresponding container view has been built.
-        return window == snap_group->window1()
+        return window == snap_group->GetPhysicallyLeftOrTopWindow()
                    ? mirror_container->AddChildView(
                          std::make_unique<GroupContainerCycleView>(snap_group))
                    : nullptr;

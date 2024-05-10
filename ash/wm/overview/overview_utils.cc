@@ -304,7 +304,7 @@ gfx::Rect GetGridBoundsInScreen(
   // in clamshell and tablet mode. See the regression behavior in
   // http://b/324478757.
   if (opposite_position &&
-      IsPhysicalLeftOrTop(*opposite_position, target_root)) {
+      IsPhysicallyLeftOrTop(*opposite_position, target_root)) {
     // If we are shifting to the left or top we need to update the origin as
     // well.
     const int offset = min_length - current_length;

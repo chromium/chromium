@@ -432,8 +432,10 @@ WindowCycleController::BuildWindowListForWindowCycling(
       // Insert the windows if they belong to a group following the order of the
       // actual window layout, i.e. primary snapped window comes first followed
       // by the secondary snapped window.
-      adjusted_window_list.push_back(snap_group->window1());
-      adjusted_window_list.push_back(snap_group->window2());
+      adjusted_window_list.push_back(
+          snap_group->GetPhysicallyLeftOrTopWindow());
+      adjusted_window_list.push_back(
+          snap_group->GetPhysicallyRightOrBottomWindow());
     } else {
       adjusted_window_list.push_back(window);
     }

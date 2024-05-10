@@ -190,7 +190,7 @@ gfx::RoundedCornersF GetMiniWindowRoundedCorners(const aura::Window* window,
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
       const bool is_in_horizontal_snap_group =
           snap_group->IsSnapGroupLayoutHorizontal();
-      if (window == snap_group->window1()) {
+      if (window == snap_group->GetPhysicallyLeftOrTopWindow()) {
         return is_in_horizontal_snap_group
                    ? gfx::RoundedCornersF(
                          /*upper_left=*/include_header_rounding

@@ -50,7 +50,8 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
       return std::make_unique<OverviewGroupItem>(
           std::vector<raw_ptr<aura::Window, VectorExperimental>>{
-              snap_group->window1(), snap_group->window2()},
+              snap_group->GetPhysicallyLeftOrTopWindow(),
+              snap_group->GetPhysicallyRightOrBottomWindow()},
           overview_session, overview_grid);
     }
   }

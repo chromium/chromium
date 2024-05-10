@@ -89,6 +89,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4319,6 +4320,77 @@ TEST_F(SnapGroupOverviewTest, GroupItemSnapBehaviorInOverview) {
             WindowStateType::kPrimarySnapped);
 }
 
+// Tests that in non-primary display orientations, the visuals of the Snap Group
+// item in Overview accurately represent the actual layout of the windows in the
+// group, and that stepping through the windows in the Overview also follows the
+// correct layout order. See http://b/339023083 for more details about the
+// issue.
+TEST_F(SnapGroupOverviewTest, OverviewGroupItemForNonPrimaryScreenOrientation) {
+  // Update display to be in non-primary portrait mode.
+  UpdateDisplay("1200x900/r");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(1U, displays.size());
+  ASSERT_EQ(chromeos::OrientationType::kPortraitSecondary,
+            chromeos::GetDisplayCurrentOrientation(displays[0]));
+
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(200, 200));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(100, 100));
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow(gfx::Rect(10, 10));
+
+  // Drag `window0` to the **top** of the screen to snap it into the
+  // **secondary** position, as the display is currently oriented in secondary
+  // portrait mode.
+  SnapOneTestWindow(window0.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_TRUE(IsInOverviewSession());
+
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
+  ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window0.get(),
+                                                                window1.get()));
+
+  // With non-primary layout, this is the layout of `window0` and `window1`.
+  //              +-----------+
+  //              |           |
+  //              |    w0     |
+  //              |           |
+  //              |-----------|
+  //              |           |
+  //              |    w1     |
+  //              |           |
+  //              +-----------+
+
+  // Verify the windows bounds i.e. `window0` is on top (secondary snapped) and
+  // `window1` in on bottom (primary snapped).
+  gfx::Rect work_area = GetWorkAreaBoundsForWindow(window0.get());
+  const gfx::Rect divider_bounds =
+      snap_group_divider()->divider_widget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(gfx::Rect(work_area.x(), work_area.y(), work_area.width(),
+                      divider_bounds.y()),
+            window0->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(work_area.x(), divider_bounds.bottom(), work_area.width(),
+                      work_area.height() - divider_bounds.bottom()),
+            window1->GetBoundsInScreen());
+
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  std::unique_ptr<aura::Window> window3 =
+      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
+
+  ToggleOverview();
+
+  // Overview item list:
+  // window3, [window0, window1], window2
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  event_generator->PressKey(ui::VKEY_TAB, /*flags=*/0);
+  event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+}
+
 TEST_F(SnapGroupOverviewTest, SkipPairingInOverviewWhenClickingEmptyArea) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -5116,9 +5188,9 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
 using SnapGroupWindowCycleTest = SnapGroupTest;
 
 // Tests that the window list is reordered when there is snap group. The two
-// windows will be adjacent with each other with primary snapped window put
-// before secondary snapped window.
-TEST_F(SnapGroupWindowCycleTest, WindowReorderInAltTab) {
+// windows will be adjacent with each other with physically left/top snapped
+// window put before physically right/bottom snapped window.
+TEST_F(SnapGroupWindowCycleTest, WindowReorderInAltTabInPrimaryOrientation) {
   std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
@@ -5320,6 +5392,96 @@ TEST_F(SnapGroupWindowCycleTest, WindowCycleItemRoundedCornersInPortait) {
     EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
+}
+
+// Tests that in non-primary display orientations, the visuals of the Snap Group
+// item within the `Alt + Tab` cycle view accurately represent the actual layout
+// of the windows in the group, and that stepping through the windows in the
+// Alt + Tab also follows the correct layout order. See http://b/339023083 for
+// more details about the issue.
+TEST_F(SnapGroupWindowCycleTest,
+       WindowCycleItemForNonPrimaryScreenOrientation) {
+  // Update display to be in non-primary portrait mode.
+  UpdateDisplay("1200x900/r");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(1U, displays.size());
+  ASSERT_EQ(chromeos::OrientationType::kPortraitSecondary,
+            chromeos::GetDisplayCurrentOrientation(displays[0]));
+
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(200, 200), AppType::CHROME_APP);
+  std::unique_ptr<aura::Window> window1 =
+      CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window0 =
+      CreateAppWindow(gfx::Rect(10, 10), AppType::BROWSER);
+
+  // Drag `window0` to the **top** of the screen to snap it into the
+  // **secondary** position, as the display is currently oriented in secondary
+  // portrait mode.
+  SnapOneTestWindow(window0.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  ASSERT_TRUE(IsInOverviewSession());
+
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  GetEventGenerator()->PressKey(ui::VKEY_RETURN, /*flags=*/0);
+  ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window0.get(),
+                                                                window1.get()));
+
+  // With non-primary layout, this is the layout of `window0` and `window1`.
+  //              +-----------+
+  //              |           |
+  //              |    w0     |
+  //              |           |
+  //              |-----------|
+  //              |           |
+  //              |    w1     |
+  //              |           |
+  //              +-----------+
+
+  // Verify the windows bounds i.e. `window0` is on top (secondary snapped) and
+  // `window1` in on bottom (primary snapped).
+  gfx::Rect work_area = GetWorkAreaBoundsForWindow(window0.get());
+  const gfx::Rect divider_bounds =
+      snap_group_divider()->divider_widget()->GetWindowBoundsInScreen();
+  EXPECT_EQ(gfx::Rect(work_area.x(), work_area.y(), work_area.width(),
+                      divider_bounds.y()),
+            window0->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(work_area.x(), divider_bounds.bottom(), work_area.width(),
+                      work_area.height() - divider_bounds.bottom()),
+            window1->GetBoundsInScreen());
+
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  // Create `window3` and start testing the stepping.
+  std::unique_ptr<aura::Window> window3 =
+      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
+
+  // Window cycle list:
+  // window3, [window0, window1], window2
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  // Window cycle list:
+  // [window0, window1], window3, window2
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
+
+  // Window cycle list:
+  // [window0, window1], window3, window2
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  // Window cycle list:
+  // window2, [window0, window1], window3
+  CycleWindow(WindowCyclingDirection::kBackward, /*steps=*/1);
+  CompleteWindowCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
 }
 
 // Tests that two windows in a snap group is allowed to be shown as group item

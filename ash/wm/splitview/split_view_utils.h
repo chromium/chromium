@@ -127,10 +127,10 @@ void DoSplitviewClipRectAnimation(
     const gfx::Rect& target_clip_rect,
     std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
 
-// Returns whether `window`'s state type is actually in the left or top position
-// based on whether the display is in primary screen orientation.
-// TODO(sophiewen): Consolidate with `IsPhysicalLeftOrTop(SnapPostiion)`.
-bool IsPhysicalLeftOrTop(aura::Window* window);
+// Returns whether `window`'s snap position is actually in the left or top
+// position based on whether the display is in primary screen orientation.
+// TODO(sophiewen): Consolidate with `IsPhysicallyLeftOrTop(SnapPostiion)`.
+bool IsPhysicallyLeftOrTop(aura::Window* window);
 
 // Returns the length of the window according to the screen orientation.
 ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
@@ -207,10 +207,10 @@ ASH_EXPORT bool IsLayoutPrimary(const display::Display& display);
 // according to the return values of |IsLayoutHorizontal| and
 // |IsLayoutPrimary|. Physical position refers to the position of the window
 // on the display that is held upward.
-ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
-                                    aura::Window* window);
-ASH_EXPORT bool IsPhysicalLeftOrTop(SnapPosition position,
-                                    const display::Display& display);
+ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
+                                      aura::Window* window);
+ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
+                                      const display::Display& display);
 
 // Returns the maximum value of the `divider_position_`, which is the width of
 // the current display's work area bounds in landscape orientation, or height
