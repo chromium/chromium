@@ -22,9 +22,11 @@ UsbChooserContextFactory::UsbChooserContextFactory()
 
 UsbChooserContextFactory::~UsbChooserContextFactory() = default;
 
-KeyedService* UsbChooserContextFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UsbChooserContextFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new UsbChooserContext(Profile::FromBrowserContext(context));
+  return std::make_unique<UsbChooserContext>(
+      Profile::FromBrowserContext(context));
 }
 
 // static
