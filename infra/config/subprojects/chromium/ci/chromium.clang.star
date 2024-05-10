@@ -1559,8 +1559,11 @@ clang_mac_builder(
             "use_clang_coverage",
             "minimal_symbols",
             "release",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "mac",
