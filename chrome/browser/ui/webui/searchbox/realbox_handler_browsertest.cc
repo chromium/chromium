@@ -32,6 +32,9 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,17 +82,35 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
        type != AutocompleteMatchType::NUM_TYPES; type++) {
     AutocompleteMatch match;
     match.type = static_cast<AutocompleteMatchType::Type>(type);
-    const bool is_bookmark = BrowserTestWithParam::GetParam().first;
-    const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
-    const std::string& svg_name =
-        RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
-    if (vector_icon.is_empty()) {
-      // An empty resource name is effectively a blank icon.
-      EXPECT_TRUE(svg_name.empty());
-    } else if (is_bookmark) {
-      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+    if (match.type == AutocompleteMatchType::STARTER_PACK) {
+      // All STARTER_PACK suggestions should have non-empty vector icons.
+      for (int starter_pack_id = TemplateURLStarterPackData::kBookmarks;
+           starter_pack_id != TemplateURLStarterPackData::kMaxStarterPackID;
+           starter_pack_id++) {
+        TemplateURLData turl_data;
+        turl_data.starter_pack_id = starter_pack_id;
+        TemplateURL turl(turl_data);
+        const gfx::VectorIcon& vector_icon =
+            match.GetVectorIcon(/*is_bookmark=*/false, &turl);
+        const std::string& svg_name =
+            RealboxHandler::AutocompleteMatchVectorIconToResourceName(
+                vector_icon);
+        EXPECT_FALSE(svg_name.empty());
+      }
     } else {
-      EXPECT_FALSE(svg_name.empty());
+      const bool is_bookmark = BrowserTestWithParam::GetParam().first;
+      const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
+      const std::string& svg_name =
+          RealboxHandler::AutocompleteMatchVectorIconToResourceName(
+              vector_icon);
+      if (vector_icon.is_empty()) {
+        // An empty resource name is effectively a blank icon.
+        EXPECT_TRUE(svg_name.empty());
+      } else if (is_bookmark) {
+        EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+      } else {
+        EXPECT_FALSE(svg_name.empty());
+      }
     }
   }
 }
