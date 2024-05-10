@@ -77,15 +77,15 @@ class CustomTabToolbarAnimationDelegate {
     /** Constructs an instance of {@link CustomTabToolbarAnimationDelegate}. */
     CustomTabToolbarAnimationDelegate(
             ImageButton securityButton,
-            final View titleUrlContainer,
+            final View securityButtonOffsetTarget,
             Runnable animationEndRunnable,
             @DimenRes int securityStatusIconSize) {
         int securityButtonWidth =
                 securityButton.getResources().getDimensionPixelSize(securityStatusIconSize);
-        titleUrlContainer.setTranslationX(-securityButtonWidth);
+        securityButtonOffsetTarget.setTranslationX(-securityButtonWidth);
         mSecurityButtonAnimationDelegate =
                 new SecurityButtonAnimationDelegate(
-                        securityButton, titleUrlContainer, securityStatusIconSize);
+                        securityButton, securityButtonOffsetTarget, securityStatusIconSize);
         mBrandingAnimationDelegate = new BrandingSecurityButtonAnimationDelegate(securityButton);
         mAnimationEndRunnable = animationEndRunnable;
     }

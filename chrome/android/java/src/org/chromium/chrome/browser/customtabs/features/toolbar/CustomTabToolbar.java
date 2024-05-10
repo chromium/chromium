@@ -108,6 +108,7 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -1056,6 +1057,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 minimizeHighlighted);
     }
 
+    private static boolean shouldNestSecurityIcon() {
+        return ChromeFeatureList.sCctNestedSecurityIcon.isEnabled();
+    }
+
     /** Custom tab-specific implementation of the LocationBar interface. */
     @VisibleForTesting
     public class CustomTabLocationBar
@@ -1254,11 +1259,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mLocationBarFrameLayout = container.findViewById(R.id.location_bar_frame_layout);
             mTitleUrlContainer = container.findViewById(R.id.title_url_container);
             mTitleUrlContainer.setOnLongClickListener(this);
-            mSecurityButton = container.findViewById(R.id.security_button);
+
+            int securityButtonId =
+                    shouldNestSecurityIcon() ? R.id.security_icon : R.id.security_button;
+            mSecurityButton = container.findViewById(securityButtonId);
+            mSecurityButton.setVisibility(INVISIBLE);
+
+            // If the security icon is nested, only the url bar should be offset by it.
+            View securityButtonOffsetTarget =
+                    shouldNestSecurityIcon()
+                            ? mTitleUrlContainer.findViewById(R.id.url_bar)
+                            : mTitleUrlContainer;
+
             mAnimDelegate =
                     new CustomTabToolbarAnimationDelegate(
                             mSecurityButton,
-                            mTitleUrlContainer,
+                            securityButtonOffsetTarget,
                             this::adjustTitleUrlBarPadding,
                             R.dimen.location_bar_icon_width);
             addButtonsVisibilityUpdater();
@@ -1460,6 +1476,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void updateLeftMarginOfTitleUrlContainer() {
+            // If the security icon is nested, we shouldn't move the whole title-url container since
+            // the icon is part of the container now.
+            if (shouldNestSecurityIcon()) return;
+
             int leftMargin = mSecurityButton.getMeasuredWidth();
             LayoutParams lp = (LayoutParams) mTitleUrlContainer.getLayoutParams();
 
@@ -1519,9 +1539,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void updateSecurityIcon() {
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
-            int securityIconResource =
-                    mLocationBarDataProvider.getSecurityIconResource(
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
+            int securityIconResource = 0;
+            if (!shouldNestSecurityIcon() || !isSecureLevel()) {
+                securityIconResource =
+                        mLocationBarDataProvider.getSecurityIconResource(
+                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
+            }
             if (securityIconResource != 0) {
                 ColorStateList colorStateList =
                         AppCompatResources.getColorStateList(
@@ -1536,6 +1559,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     mLocationBarDataProvider.getSecurityIconContentDescriptionResourceId();
             String contentDescription = getContext().getString(contentDescriptionId);
             mSecurityButton.setContentDescription(contentDescription);
+        }
+
+        /** Returns whether the current security level is considered secure. */
+        private boolean isSecureLevel() {
+            @ConnectionSecurityLevel
+            int securityLevel = mLocationBarDataProvider.getSecurityLevel();
+            return securityLevel == ConnectionSecurityLevel.SECURE
+                    || securityLevel == ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT;
         }
 
         @VisibleForTesting(otherwise = VisibleForTesting.NONE)
@@ -1742,7 +1773,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void setUrlBarVisuals(int gravity, int minHeight, int sizeId) {
-            var params = (FrameLayout.LayoutParams) mUrlBar.getLayoutParams();
+            var params = (LinearLayout.LayoutParams) mUrlBar.getLayoutParams();
             params.gravity = gravity;
             mUrlBar.setLayoutParams(params);
             mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(sizeId));

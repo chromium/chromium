@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -136,6 +137,8 @@ public class CustomTabToolbarUnitTest {
     private CustomTabLocationBar mLocationBar;
     private TextView mTitleBar;
     private TextView mUrlBar;
+    private ImageButton mSecurityButton;
+    private ImageButton mSecurityIcon;
 
     @Before
     public void setup() {
@@ -186,6 +189,8 @@ public class CustomTabToolbarUnitTest {
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
         mLocationBar.setIPHControllerForTesting(mPageInfoIPHController);
+        mSecurityButton = mToolbar.findViewById(R.id.security_button);
+        mSecurityIcon = mToolbar.findViewById(R.id.security_icon);
     }
 
     @After
@@ -571,6 +576,56 @@ public class CustomTabToolbarUnitTest {
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconVisibility() {
+        assertEquals(View.INVISIBLE, mSecurityButton.getVisibility());
+        assertEquals(View.GONE, mSecurityIcon.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconVisibility_nestedIcon() {
+        assertEquals(View.GONE, mSecurityButton.getVisibility());
+        assertEquals(View.INVISIBLE, mSecurityIcon.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconHidden() {
+        when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
+                .thenReturn(R.drawable.omnibox_https_valid_refresh);
+        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.SECURE);
+
+        mLocationBar.onSecurityStateChanged();
+
+        verify(mAnimationDelegate).updateSecurityButton(0);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconShown() {
+        when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
+                .thenReturn(R.drawable.omnibox_info);
+        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.NONE);
+
+        mLocationBar.onSecurityStateChanged();
+
+        verify(mAnimationDelegate).updateSecurityButton(R.drawable.omnibox_info);
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

@@ -63,8 +63,6 @@ class TitleAndUrlLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        assert getChildCount() == 2;
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int titleHeight = mTitleBar.getMeasuredHeight();

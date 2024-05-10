@@ -56,10 +56,9 @@ found in the LICENSE file.
             android:layout_height="@dimen/location_bar_lock_icon_height"
             android:layout_gravity="center_vertical"
             android:scaleType="center"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:tint="@color/default_icon_color_tint_list" />
-        <view
-            class="org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout"
+        <org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout
             android:id="@+id/title_url_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,17 +79,33 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextLarge.Primary"
                 android:visibility="gone" />
 
-            <org.chromium.chrome.browser.omnibox.UrlBarApi26
-                android:id="@+id/url_bar"
-                android:layout_width="wrap_content"
+            <LinearLayout
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:inputType="none"
-                android:singleLine="true"
-                android:paddingEnd="@dimen/toolbar_edge_padding"
-                android:layout_gravity="bottom"
-                style="@style/TextAppearance.TextSmall.Primary" />
-        </view>
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom">
+                <org.chromium.ui.widget.ChromeImageButton
+                    android:id="@+id/security_icon"
+                    android:layout_width="@dimen/location_bar_icon_width"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    app:tint="@color/default_icon_color_tint_list"
+                    tools:ignore="ContentDescription"
+                    style="@style/LocationBarButton"/>
+                <org.chromium.chrome.browser.omnibox.UrlBarApi26
+                    android:id="@+id/url_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:paddingEnd="@dimen/toolbar_edge_padding"
+                    android:layout_gravity="bottom"
+                    style="@style/TextAppearance.TextSmall.Primary" />
+            </LinearLayout>
+        </org.chromium.chrome.browser.customtabs.features.toolbar.TitleAndUrlLayout>
         <ViewStub
             android:id="@+id/branding_stub"
             android:layout_width="match_parent"
