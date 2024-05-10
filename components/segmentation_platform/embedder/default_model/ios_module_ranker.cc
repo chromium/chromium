@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
@@ -41,6 +42,19 @@ constexpr std::array<const char*, 5> kIosModuleLabels = {
 constexpr std::array<const char*, 5> kIosModuleInputContextKeys = {
     kMostVisitedTilesFreshness, kShortcutsFreshness, kSafetyCheckFreshness,
     kTabResumptionFreshness, kParcelTrackingFreshness};
+
+// Output features:
+
+constexpr char kClickHistogram[] = "IOS.MagicStack.Module.Click";
+
+constexpr std::array<float, 1> kOutputFeatureDefaultValue{100};
+constexpr std::array<MetadataWriter::UMAFeature, 1> kOutputFeatures = {
+    MetadataWriter::UMAFeature::FromValueHistogram(
+        kClickHistogram,
+        1,
+        proto::Aggregation::LATEST_OR_DEFAULT,
+        kOutputFeatureDefaultValue.size(),
+        kOutputFeatureDefaultValue.data())};
 
 // InputFeatures.
 
@@ -280,6 +294,24 @@ IosModuleRanker::GetModelConfig() {
   writer.AddFromInputContext("safety_check_input", kSafetyCheckFreshness);
   writer.AddFromInputContext("tab_resumption_input", kTabResumptionFreshness);
   writer.AddFromInputContext("parcel_tracking_input", kParcelTrackingFreshness);
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformIosModuleRanker, "add-trigger-config",
+          false)) {
+    writer.AddUmaFeatures(kOutputFeatures.data(), kOutputFeatures.size(),
+                          /*is_output=*/true);
+
+    auto* outputs = metadata.mutable_training_outputs();
+    auto* uma_trigger =
+        outputs->mutable_trigger_config()->add_observation_trigger();
+    auto* uma_feature =
+        uma_trigger->mutable_uma_trigger()->mutable_uma_feature();
+    uma_feature->set_name(kClickHistogram);
+    uma_feature->set_name_hash(base::HashMetricName(kClickHistogram));
+    uma_feature->set_type(proto::SignalType::HISTOGRAM_ENUM);
+    outputs->mutable_trigger_config()->set_decision_type(
+        proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  }
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
