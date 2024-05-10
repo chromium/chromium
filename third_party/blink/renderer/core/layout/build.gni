@@ -748,6 +748,7 @@ blink_core_tests_layout = [
   "inline/line_break_candidate_test.cc",
   "inline/line_breaker_test.cc",
   "inline/line_info_list_test.cc",
+  "inline/line_info_test.cc",
   "inline/line_widths_test.cc",
   "inline/offset_mapping_test.cc",
   "inline/paragraph_line_breaker_test.cc",

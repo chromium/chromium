@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -183,6 +184,13 @@ unsigned LineInfo::InflowEndOffset() const {
         item.Type() == InlineItem::kControl ||
         item.Type() == InlineItem::kAtomicInline) {
       return item_result.EndOffset();
+    } else if (item.Type() == InlineItem::kOpenRubyColumn &&
+               item_result.ruby_column) {
+      const LineInfo& base_line = item_result.ruby_column->base_line;
+      unsigned end_offset = base_line.InflowEndOffset();
+      if (end_offset != base_line.StartOffset()) {
+        return end_offset;
+      }
     }
   }
   return StartOffset();
