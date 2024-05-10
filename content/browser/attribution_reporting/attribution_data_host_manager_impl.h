@@ -233,15 +233,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void HandleNextWebDecode(const Registrations&);
   void OnWebHeaderParsed(
       RegistrationsId,
-      attribution_reporting::mojom::RegistrationType,
-      std::optional<std::vector<network::TriggerVerification>>,
       data_decoder::DataDecoder::ValueOrError result);
   void HandleParsedWebSource(const Registrations&,
-                             const HeaderPendingDecode&,
+                             HeaderPendingDecode&,
                              data_decoder::DataDecoder::ValueOrError result);
   void HandleParsedWebTrigger(const Registrations&,
-                              const HeaderPendingDecode&,
-                              std::vector<network::TriggerVerification>,
+                              HeaderPendingDecode&,
                               data_decoder::DataDecoder::ValueOrError result);
 
   void HandleNextOsDecode(const Registrations&);
@@ -254,7 +251,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   using OsParseResult =
       base::expected<net::structured_headers::List, std::string>;
   void OnOsHeaderParsed(RegistrationsId,
-                        attribution_reporting::mojom::RegistrationType,
                         OsParseResult);
 
   void MaybeOnRegistrationsFinished(
