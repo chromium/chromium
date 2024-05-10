@@ -1011,19 +1011,29 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
 
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
 
-  scoped_refptr<FakeRasterSource> pending_raster_source =
+  scoped_refptr<FakeRasterSource> pending_raster_source_1 =
       FakeRasterSource::CreateFilledWithText(layer_bounds);
-  SetupPendingTree(pending_raster_source);
+  scoped_refptr<FakeRasterSource> pending_raster_source_2 =
+      FakeRasterSource::CreateFilledWithText(layer_bounds);
 
-  auto* pending_child_layer = AddLayer<FakePictureLayerImpl>(
-      host_impl()->pending_tree(), pending_raster_source);
+  SetupPendingTree(pending_raster_source_1);
+
+  auto* pending_child_layer =
+      AddLayer<FakePictureLayerImpl>(host_impl()->pending_tree());
   LayerDebugInfo debug_info;
   debug_info.name = "debug-name";
+
+  // The debug_info.name is copied to the raster source in SetRasterSource
+  // so it must be set before.
   pending_child_layer->UpdateDebugInfo(&debug_info);
+  pending_child_layer->SetBounds(pending_raster_source_2->size());
+  pending_child_layer->SetRasterSource(pending_raster_source_2, Region());
   pending_child_layer->SetDrawsContent(true);
   CopyProperties(pending_layer(), pending_child_layer);
 
   ActivateTree();
+
+  UpdateDrawProperties(host_impl()->active_tree());
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
 
   base::trace_event::MemoryDumpArgs dump_args = {
