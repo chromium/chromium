@@ -113,7 +113,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 
   // Only called on the gpu thread.
   bool MakeContextCurrent(bool needs_gl = false);
-  void ReleaseFenceSync(const SyncToken& sync_token);
+  void ReleaseFenceSync(uint64_t release);
   void GetGpuMemoryBufferHandleInfoOnGpuThread(
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle* handle,
@@ -125,31 +125,30 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     SharedImageInfo si_info,
                                     gpu::SurfaceHandle surface_handle,
-                                    const SyncToken& sync_token);
+                                    uint64_t release);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
                                             SharedImageInfo si_info,
-                                            const SyncToken& sync_token,
-                                            std::vector<uint8_t> pixel_data);
+                                            std::vector<uint8_t> pixel_data,
+                                            uint64_t release);
   void CreateSharedImageWithBufferUsageOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
-      const SyncToken& sync_token);
+      uint64_t release);
   void CreateSharedImageWithBufferOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
       gfx::GpuMemoryBufferHandle buffer_handle,
-      const SyncToken& sync_token);
+      uint64_t release);
   void CreateGMBSharedImageOnGpuThread(const Mailbox& mailbox,
                                        gfx::GpuMemoryBufferHandle handle,
                                        gfx::BufferFormat format,
                                        gfx::BufferPlane plane,
                                        const gfx::Size& size,
                                        SharedImageInfo si_info,
-                                       const SyncToken& sync_token);
-  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    const SyncToken& sync_token);
+                                       uint64_t release);
+  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox, uint64_t release);
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void DestroyClientSharedImageOnGpuThread(
       scoped_refptr<ClientSharedImage> client_shared_image);

@@ -56,10 +56,9 @@ bool GpuChannelSharedImageInterface::MakeContextCurrent(bool needs_gl) {
   return shared_image_stub_->MakeContextCurrent(needs_gl);
 }
 
-void GpuChannelSharedImageInterface::ReleaseFenceSync(
-    const SyncToken& sync_token) {
+void GpuChannelSharedImageInterface::ReleaseFenceSync(uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
+  sync_point_client_state_->ReleaseFenceSync(release);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -73,8 +72,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(
             &GpuChannelSharedImageInterface::CreateSharedImageOnGpuThread, this,
-            mailbox, si_info, surface_handle,
-            MakeSyncToken(next_fence_sync_release_++)),
+            mailbox, si_info, surface_handle, next_fence_sync_release_++),
         {});
   }
   return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
@@ -86,7 +84,7 @@ void GpuChannelSharedImageInterface::CreateSharedImageOnGpuThread(
     const Mailbox& mailbox,
     SharedImageInfo si_info,
     gpu::SurfaceHandle surface_handle,
-    const SyncToken& sync_token) {
+    uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -101,7 +99,7 @@ void GpuChannelSharedImageInterface::CreateSharedImageOnGpuThread(
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -113,12 +111,12 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
   {
     base::AutoLock lock(lock_);
-    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
-                                       CreateSharedImageWithDataOnGpuThread,
-                                   this, mailbox, si_info,
-                                   MakeSyncToken(next_fence_sync_release_++),
-                                   std::move(pixel_data_copy)),
-                    {});
+    ScheduleGpuTask(
+        base::BindOnce(&GpuChannelSharedImageInterface::
+                           CreateSharedImageWithDataOnGpuThread,
+                       this, mailbox, si_info, std::move(pixel_data_copy),
+                       next_fence_sync_release_++),
+        {});
   }
   return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
                                                  GenUnverifiedSyncToken(),
@@ -128,8 +126,8 @@ GpuChannelSharedImageInterface::CreateSharedImage(
 void GpuChannelSharedImageInterface::CreateSharedImageWithDataOnGpuThread(
     const Mailbox& mailbox,
     SharedImageInfo si_info,
-    const SyncToken& sync_token,
-    std::vector<uint8_t> pixel_data) {
+    std::vector<uint8_t> pixel_data,
+    uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -144,7 +142,7 @@ void GpuChannelSharedImageInterface::CreateSharedImageWithDataOnGpuThread(
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -160,7 +158,7 @@ GpuChannelSharedImageInterface::CreateSharedImage(
         base::BindOnce(&GpuChannelSharedImageInterface::
                            CreateSharedImageWithBufferUsageOnGpuThread,
                        this, mailbox, si_info, surface_handle, buffer_usage,
-                       MakeSyncToken(next_fence_sync_release_++)),
+                       next_fence_sync_release_++),
         {});
   }
 
@@ -174,7 +172,7 @@ void GpuChannelSharedImageInterface::
                                                 SharedImageInfo si_info,
                                                 SurfaceHandle surface_handle,
                                                 gfx::BufferUsage buffer_usage,
-                                                const SyncToken& sync_token) {
+                                                uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -189,7 +187,7 @@ void GpuChannelSharedImageInterface::
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 GpuMemoryBufferHandleInfo
@@ -251,12 +249,12 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
-    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   this, mailbox, si_info,
-                                   std::move(buffer_handle), sync_token),
-                    {});
+    ScheduleGpuTask(
+        base::BindOnce(&GpuChannelSharedImageInterface::
+                           CreateSharedImageWithBufferOnGpuThread,
+                       this, mailbox, si_info, std::move(buffer_handle),
+                       next_fence_sync_release_++),
+        {});
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -281,12 +279,12 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   auto gmb_type = buffer_handle.type;
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
-    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
-                                       CreateSharedImageWithBufferOnGpuThread,
-                                   this, mailbox, si_info,
-                                   std::move(buffer_handle), sync_token),
-                    {});
+    ScheduleGpuTask(
+        base::BindOnce(&GpuChannelSharedImageInterface::
+                           CreateSharedImageWithBufferOnGpuThread,
+                       this, mailbox, si_info, std::move(buffer_handle),
+                       next_fence_sync_release_++),
+        {});
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
@@ -332,12 +330,11 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
-    ScheduleGpuTask(
-        base::BindOnce(&GpuChannelSharedImageInterface::
-                           CreateSharedImageWithBufferOnGpuThread,
-                       this, mailbox, si_info, std::move(handle), sync_token),
-        {});
+    ScheduleGpuTask(base::BindOnce(&GpuChannelSharedImageInterface::
+                                       CreateSharedImageWithBufferOnGpuThread,
+                                   this, mailbox, si_info, std::move(handle),
+                                   next_fence_sync_release_++),
+                    {});
   }
   shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_,
@@ -350,7 +347,7 @@ void GpuChannelSharedImageInterface::CreateSharedImageWithBufferOnGpuThread(
     const Mailbox& mailbox,
     SharedImageInfo si_info,
     gfx::GpuMemoryBufferHandle buffer_handle,
-    const SyncToken& sync_token) {
+    uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -365,7 +362,7 @@ void GpuChannelSharedImageInterface::CreateSharedImageWithBufferOnGpuThread(
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 scoped_refptr<ClientSharedImage>
@@ -384,12 +381,12 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
   {
     base::AutoLock lock(lock_);
-    SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
     ScheduleGpuTask(
         base::BindOnce(
             &GpuChannelSharedImageInterface::CreateGMBSharedImageOnGpuThread,
             this, mailbox, std::move(handle), gpu_memory_buffer->GetFormat(),
-            plane, gpu_memory_buffer->GetSize(), si_info, sync_token),
+            plane, gpu_memory_buffer->GetSize(), si_info,
+            next_fence_sync_release_++),
         {});
   }
 
@@ -411,7 +408,7 @@ void GpuChannelSharedImageInterface::CreateGMBSharedImageOnGpuThread(
     gfx::BufferPlane plane,
     const gfx::Size& size,
     SharedImageInfo si_info,
-    const SyncToken& sync_token) {
+    uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -426,7 +423,7 @@ void GpuChannelSharedImageInterface::CreateGMBSharedImageOnGpuThread(
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 SharedImageInterface::SwapChainSharedImages
@@ -474,13 +471,13 @@ void GpuChannelSharedImageInterface::UpdateSharedImage(
   ScheduleGpuTask(
       base::BindOnce(
           &GpuChannelSharedImageInterface::UpdateSharedImageOnGpuThread, this,
-          mailbox, MakeSyncToken(next_fence_sync_release_++)),
+          mailbox, next_fence_sync_release_++),
       {sync_token});
 }
 
 void GpuChannelSharedImageInterface::UpdateSharedImageOnGpuThread(
     const Mailbox& mailbox,
-    const SyncToken& sync_token) {
+    uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!MakeContextCurrent()) {
     return;
@@ -491,7 +488,7 @@ void GpuChannelSharedImageInterface::UpdateSharedImageOnGpuThread(
     shared_image_stub_->shared_context_state()->MarkContextLost();
     return;
   }
-  ReleaseFenceSync(sync_token);
+  ReleaseFenceSync(release);
 }
 
 void GpuChannelSharedImageInterface::DestroySharedImage(
@@ -549,7 +546,7 @@ void GpuChannelSharedImageInterface::WaitSyncToken(
 
   ScheduleGpuTask(
       base::BindOnce(&GpuChannelSharedImageInterface::ReleaseFenceSync, this,
-                     MakeSyncToken(next_fence_sync_release_++)),
+                     next_fence_sync_release_++),
       {sync_token});
 }
 
