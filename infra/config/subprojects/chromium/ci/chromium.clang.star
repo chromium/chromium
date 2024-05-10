@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -1424,8 +1424,11 @@ clang_mac_builder(
             "minimal_symbols",
             "shared",
             "release",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
