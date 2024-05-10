@@ -91,16 +91,6 @@ int NumCallsToHidePopupOnFocusLoss() {
   return 1;  // Any dropdown should disappear on focus loss.
 }
 
-AutofillSuggestionTriggerSource TriggerSourceOnTextareaFocus() {
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    return base::FeatureList::IsEnabled(
-               (features::kAutofillAndroidDisableSuggestionsOnJSFocus))
-               ? AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick
-               : AutofillSuggestionTriggerSource::kFormControlElementClicked;
-  }
-  return AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick;
-}
-
 }  // namespace
 
 class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
@@ -231,28 +221,30 @@ TEST_F(AutofillAgentFormInteractionTest, TextAreaLeftClick) {
   EXPECT_TRUE(SimulateElementClickAndWait("button"));
 }
 
-// Tests that focusing the text field without a click calls AskForValuesToFill
-// on all platforms, but potentially with different trigger source:
-// - On Desktop, the trigger source is `kTextareaFocusedWithoutClick`.
-// - On Android, the trigger source is `kTextareaFocusedWithoutClick` iff
-//   `kAutofillAndroidDisableSuggestionsOnJSFocus`. Otherwise it is treated as a
-//    normal left click and the trigger source is `kFormControlElementClicked`.
-//
-// A subsequent left click then triggers the normal call with
-// `kFormControlElementClicked` as a trigger source.
+// Tests that focusing a textarea without a click calls AskForValuesToFill with
+// trigger source `kTextareaFocusedWithoutClick` on Desktop.
 TEST_F(AutofillAgentFormInteractionTest, TextareaFocusAndLeftClick) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAndroidDisableSuggestionsOnJSFocus};
   MockFunction<void(int)> check;
   {
     InSequence s;
+    using enum AutofillSuggestionTriggerSource;
+    if constexpr (!BUILDFLAG(IS_ANDROID)) {
+      EXPECT_CALL(autofill_driver(),
+                  AskForValuesToFill(_, HasFieldIdAttribute(u"textarea"),
+                                     kTextareaFocusedWithoutClick));
+    } else {
+      EXPECT_CALL(autofill_driver(),
+                  AskForValuesToFill(_, HasFieldIdAttribute(u"textarea"),
+                                     kFormControlElementClicked))
+          .Times(
+              NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick());
+    }
+    EXPECT_CALL(check, Call(1));
     EXPECT_CALL(autofill_driver(),
                 AskForValuesToFill(_, HasFieldIdAttribute(u"textarea"),
-                                   TriggerSourceOnTextareaFocus()));
-    EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(
-        autofill_driver(),
-        AskForValuesToFill(
-            _, HasFieldIdAttribute(u"textarea"),
-            AutofillSuggestionTriggerSource::kFormControlElementClicked));
+                                   kFormControlElementClicked));
     EXPECT_CALL(check, Call(2));
   }
 

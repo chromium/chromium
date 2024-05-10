@@ -1526,11 +1526,13 @@ void AutofillAgent::HandleFocusChangeComplete(
           focused_control,
           AutofillSuggestionTriggerSource::kFormControlElementClicked);
     } else if (form_util::IsTextAreaElement(focused_control)) {
+#if !BUILDFLAG(IS_ANDROID)
       // Compose reacts to tab area focus even when not triggered by a click -
       // therefore call `ShowSuggestions` with a separate trigger source.
       ShowSuggestions(
           focused_control,
           AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
+#endif
     }
   }
 
