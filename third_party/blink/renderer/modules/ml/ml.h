@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -54,6 +55,10 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
                                          MLContextOptions* option,
                                          ExceptionState& exception_state);
 
+  void RecordPendingResolver(ScriptPromiseResolver<MLContext>* resolver);
+
+  void RemovePendingResolver(ScriptPromiseResolver<MLContext>* resolver);
+
  private:
   // Binds the ModelLoader Mojo connection to browser process if needed.
   // Caller is responsible to ensure `script_state` has a valid
@@ -61,6 +66,10 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   void EnsureModelLoaderServiceConnection(ScriptState* script_state);
   HeapMojoRemote<ml::model_loader::mojom::blink::MLService>
       model_loader_service_;
+
+  // Reset the remote of `WebNNContextProvider` if the remote is cut off from
+  // its receiver.
+  void OnWebNNServiceConnectionError();
 
   // There is only one WebNN service running out of renderer process to access
   // the hardware accelerated OS machine learning API. Every `navigator.ml`
@@ -74,6 +83,10 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   // of graph execution processes.
   HeapMojoRemote<webnn::mojom::blink::WebNNContextProvider>
       webnn_context_provider_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<MLContext>>> pending_resolvers_;
 };
 
 }  // namespace blink

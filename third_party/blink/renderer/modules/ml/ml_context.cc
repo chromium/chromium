@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/ml/webnn/features.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -77,6 +78,7 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
         ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
         options->numThreads());
 
+    ml->RecordPendingResolver(resolver);
     ml->CreateWebNNContext(
         std::move(options_mojo),
         WTF::BindOnce(&MLContext::OnCreateWebNNContext, WrapPersistent(context),
@@ -191,6 +193,11 @@ void MLContext::OnCreateWebNNContext(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<MLContext>* resolver,
     webnn::mojom::blink::CreateContextResultPtr result) {
+  base::ScopedClosureRunner runner(WTF::BindOnce(
+      [](MLContext* context, ScriptPromiseResolver<MLContext>* resolver) {
+        context->ml_->RemovePendingResolver(resolver);
+      },
+      WrapPersistent(this), WrapPersistent(resolver)));
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state) {
     return;
