@@ -17999,6 +17999,21 @@
             ]
         }
     ],
+    "SeaPenTextInput": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPenTextInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEnginePromoDialogRewrite": [
         {
             "platforms": [
