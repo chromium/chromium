@@ -27,6 +27,20 @@ class FakeNearbyPresenceService : public NearbyPresenceService {
   void UpdateCredentials() override;
   std::unique_ptr<NearbyPresenceConnectionsManager>
   CreateNearbyPresenceConnectionsManager() override;
+
+  void FinishInitialization();
+  void FinishStartScan(StatusCode status_code);
+
+  ScanDelegate* scan_delegate() { return scan_delegate_; }
+
+  const std::optional<ScanFilter> scan_filter() const { return scan_filter_; }
+
+ private:
+  raw_ptr<ScanDelegate> scan_delegate_;
+  std::optional<ScanFilter> scan_filter_ = std::nullopt;
+  base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
+      pending_on_start_scan_callback_;
+  base::OnceClosure pending_on_initialized_callback_;
 };
 
 }  // namespace ash::nearby::presence

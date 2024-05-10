@@ -16,12 +16,15 @@ void FakeNearbyPresenceService::StartScan(
     base::OnceCallback<void(std::unique_ptr<ScanSession>,
                             NearbyPresenceService::StatusCode)>
         on_start_scan_callback) {
-  NOTIMPLEMENTED();
+  scan_filter_ = scan_filter;
+  scan_delegate_ = scan_delegate;
+  pending_on_start_scan_callback_ = std::move(on_start_scan_callback);
 }
 
 void FakeNearbyPresenceService::Initialize(
     base::OnceClosure on_initialized_callback) {
-  NOTIMPLEMENTED();
+  CHECK(!pending_on_initialized_callback_);
+  pending_on_initialized_callback_ = std::move(on_initialized_callback);
 }
 void FakeNearbyPresenceService::UpdateCredentials() {
   NOTIMPLEMENTED();
@@ -31,6 +34,19 @@ std::unique_ptr<NearbyPresenceConnectionsManager>
 FakeNearbyPresenceService::CreateNearbyPresenceConnectionsManager() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+void FakeNearbyPresenceService::FinishInitialization() {
+  CHECK(pending_on_initialized_callback_);
+  std::move(pending_on_initialized_callback_).Run();
+}
+
+void FakeNearbyPresenceService::FinishStartScan(StatusCode status_code) {
+  CHECK(pending_on_start_scan_callback_);
+  mojo::PendingRemote<ash::nearby::presence::mojom::ScanSession> remote;
+  std::move(pending_on_start_scan_callback_)
+      .Run(std::make_unique<ScanSession>(std::move(remote), base::DoNothing()),
+           status_code);
 }
 
 }  // namespace ash::nearby::presence
