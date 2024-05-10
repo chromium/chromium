@@ -1331,38 +1331,6 @@
     "expires": "never"
   },
   {
-    "prefix": "no-alloc-direct-call",
-    "platforms": ["Linux"],
-    "bases": [
-      "fast/canvas",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-restore.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.endLayer.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.save-beginLayer-restore.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.invalid-calls.save-endLayer.html",
-      "external/wpt/html/canvas/element/layers/2d.layer.several-complex.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-reset-endLayer.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-restore.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.beginLayer-save-endLayer.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.endLayer.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-beginLayer-restore.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.invalid-calls.save-endLayer.worker.js",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.several-complex.html",
-      "external/wpt/html/canvas/offscreen/layers/2d.layer.several-complex.w.html"
-    ],
-    "args": ["--enable-fake-no-alloc-direct-call-for-testing",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "owners": ["fserb@chromium.org"],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "view-transition",
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["view-transitions-api@chromium.org"],

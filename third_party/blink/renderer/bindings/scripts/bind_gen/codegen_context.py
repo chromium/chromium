@@ -137,9 +137,6 @@ class CodeGenContext(object):
 
             # True when generating a callback of [NoAllocDirectCall].
             "no_alloc_direct_call": False,
-            # True when generating a (fake) callback of [NoAllocDirectCall] for
-            # testing.
-            "no_alloc_direct_call_for_testing": False,
 
             # Type of V8 callback function which implements IDL attribute,
             # IDL operation, etc.

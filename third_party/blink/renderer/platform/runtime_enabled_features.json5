@@ -1486,10 +1486,6 @@
       status: "experimental",
     },
     {
-      name: "FakeNoAllocDirectCallForTesting",
-      status: "test",
-    },
-    {
       // crbug.com/333630754
       name: "FasterMinContent",
       status: "stable",

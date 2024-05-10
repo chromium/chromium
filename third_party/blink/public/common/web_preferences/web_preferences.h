@@ -180,7 +180,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool initialize_at_minimum_page_scale = true;
   bool smart_insert_delete_enabled = BUILDFLAG(IS_MAC);
   bool spatial_navigation_enabled = false;
-  bool fake_no_alloc_direct_call_for_testing_enabled = false;
   blink::mojom::V8CacheOptions v8_cache_options =
       blink::mojom::V8CacheOptions::kDefault;
   bool record_whole_document = false;
