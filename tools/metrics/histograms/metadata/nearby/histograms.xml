@@ -43,6 +43,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Nearby.Connections.BleV2.StartAdvertising.FailureReason{AdvertisementType}"
+    enum="NearbyConnectionsStartAdvertisingFailureReason"
+    expires_after="2025-04-30">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason of the StartAdvertising operation, which is
+    called several times by Nearby Connections when the device becomes available
+    for advertising. Advertisements come in different varieties, and we record 2
+    different variants; those that make use of &quot;extended
+    advertisements&quot; which are up to 255 bytes long, and shorter
+    &quot;regular advertisements&quot;.
+  </summary>
+  <token key="AdvertisementType">
+    <variant name="" summary="both regular and extended advertisements"/>
+    <variant name=".ExtendedAdvertisement" summary="extended advertisement"/>
+    <variant name=".RegularAdvertisement" summary="regular advertisement"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.BleV2.StartAdvertising.Result{AdvertisementType}"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>dclasson@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of the StartAdvertising operation, which is
+    called several times by Nearby Connections when the device becomes available
+    for advertising. Advertisements come in different varieties, and we record 2
+    different variants; those that make use of &quot;extended
+    advertisements&quot; which are up to 255 bytes long, and shorter
+    &quot;regular advertisements&quot;.
+  </summary>
+  <token key="AdvertisementType">
+    <variant name="" summary="both regular and extended advertisements"/>
+    <variant name=".ExtendedAdvertisement" summary="extended advertisement"/>
+    <variant name=".RegularAdvertisement" summary="regular advertisement"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetName.Result"
     enum="BooleanSuccess" expires_after="2024-09-15">
   <owner>hansenmichael@google.com</owner>

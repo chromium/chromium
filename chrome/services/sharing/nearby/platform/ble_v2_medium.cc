@@ -145,6 +145,15 @@ bool BleV2Medium::StartAdvertising(
     DLOG(WARNING) << __func__
                   << " Extended advertising is not supported, "
                      "not registering extended adv.";
+    metrics::RecordStartAdvertisingResult(
+        /*success=*/false,
+        /*is_extended_advertisement=*/advertising_data
+            .is_extended_advertisement);
+    metrics::RecordStartAdvertisingFailureReason(
+        /*reason=*/metrics::StartAdvertisingFailureReason::
+            kNoExtendedAdvertisementSupport,
+        /*is_extended_advertisement=*/advertising_data
+            .is_extended_advertisement);
     return false;
   }
 
@@ -185,7 +194,15 @@ bool BleV2Medium::StartAdvertising(
       // there are multiple sets of advertising data, as Nearby Connections
       // expects all advertisements to be registered on success.
       DLOG(WARNING) << __func__ << " Failed to register advertisement.";
-      // TODO(b/316395848): Log failure reasons.
+      metrics::RecordStartAdvertisingResult(
+          /*success=*/false,
+          /*is_extended_advertisement=*/advertising_data
+              .is_extended_advertisement);
+      metrics::RecordStartAdvertisingFailureReason(
+          /*reason=*/metrics::StartAdvertisingFailureReason::
+              kAdapterRegisterAdvertisementFailed,
+          /*is_extended_advertisement=*/advertising_data
+              .is_extended_advertisement);
       return false;
     }
 
@@ -203,6 +220,9 @@ bool BleV2Medium::StartAdvertising(
   }
 
   DVLOG(1) << __func__ << " Started advertising.";
+  metrics::RecordStartAdvertisingResult(
+      /*success=*/true,
+      /*is_extended_advertisement=*/advertising_data.is_extended_advertisement);
   return true;
 }
 

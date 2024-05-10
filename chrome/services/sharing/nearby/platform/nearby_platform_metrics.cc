@@ -14,4 +14,31 @@ void RecordGattServerScatternetDualRoleSupported(bool is_dual_role_supported) {
       is_dual_role_supported);
 }
 
+void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
+                                         bool is_extended_advertisement) {
+  // Record the overall StartAdvertising failure reason.
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason", reason);
+
+  // Record the failure reason for the corresponding advertisement type.
+  std::string suffix = is_extended_advertisement ? ".ExtendedAdvertisement"
+                                                 : ".RegularAdvertisement";
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason" + suffix,
+      reason);
+}
+
+void RecordStartAdvertisingResult(bool success,
+                                  bool is_extended_advertisement) {
+  // Record the overall StartAdvertising success rate.
+  base::UmaHistogramBoolean("Nearby.Connections.BleV2.StartAdvertising.Result",
+                            success);
+
+  // Record the success rate for the corresponding advertisement type.
+  std::string suffix = is_extended_advertisement ? ".ExtendedAdvertisement"
+                                                 : ".RegularAdvertisement";
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.StartAdvertising.Result" + suffix, success);
+}
+
 }  // namespace nearby::chrome::metrics

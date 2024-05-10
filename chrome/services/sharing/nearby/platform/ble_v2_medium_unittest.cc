@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
+#include "chrome/services/sharing/nearby/platform/nearby_platform_metrics.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "components/cross_device/nearby/nearby_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -304,6 +305,23 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFails) {
   EXPECT_FALSE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason",
+      metrics::StartAdvertisingFailureReason::
+          kAdapterRegisterAdvertisementFailed,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason."
+      "RegularAdvertisement",
+      metrics::StartAdvertisingFailureReason::
+          kAdapterRegisterAdvertisementFailed,
+      1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_AdapterFailsInAsyncStartAdvertising) {
@@ -318,7 +336,27 @@ TEST_F(BleV2MediumTest, TestAdvertising_AdapterFailsInAsyncStartAdvertising) {
        .is_connectable = true},
       api::ble_v2::BleMedium::AdvertisingCallback{
           .start_advertising_result =
-              [](absl::Status status) { EXPECT_FALSE(status.ok()); },
+              [this](absl::Status status) {
+                EXPECT_FALSE(status.ok());
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.Result",
+                    /*bucket: Failure=*/0, 1);
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.Result."
+                    "RegularAdvertisement",
+                    /*bucket: Failure=*/0, 1);
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.FailureReason",
+                    metrics::StartAdvertisingFailureReason::
+                        kAdapterRegisterAdvertisementFailed,
+                    1);
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.FailureReason."
+                    "RegularAdvertisement",
+                    metrics::StartAdvertisingFailureReason::
+                        kAdapterRegisterAdvertisementFailed,
+                    1);
+              },
       });
   EXPECT_EQ(advertising_session, nullptr);
 }
@@ -332,6 +370,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_FastAdvertisementSuccess) {
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kLow,
                          .is_connectable = true}));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Success=*/1, 1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementNotSupported) {
@@ -350,6 +394,21 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementNotSupported) {
   EXPECT_FALSE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                          .is_connectable = true}));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.ExtendedAdvertisement",
+      /*bucket: Failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason",
+      metrics::StartAdvertisingFailureReason::kNoExtendedAdvertisementSupport,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.FailureReason."
+      "ExtendedAdvertisement",
+      metrics::StartAdvertisingFailureReason::kNoExtendedAdvertisementSupport,
+      1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementSupported) {
@@ -367,6 +426,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_ExtendedAdvertisementSupported) {
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(
       advertising_data, {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                          .is_connectable = true}));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.ExtendedAdvertisement",
+      /*bucket: Success=*/1, 1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_EmptyAdvertisingData) {
@@ -375,6 +440,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_EmptyAdvertisingData) {
   // Passing in empty advertisement data is unexpected, but is still
   // expected to pass.
   EXPECT_TRUE(ble_v2_medium_->StartAdvertising(advertising_data, {}));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Success=*/1, 1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
@@ -401,6 +472,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
   EXPECT_EQ(1u, ble_v2_medium_->registered_advertisements_map_
                     .at(kService1BluetoothUuid)
                     .size());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Success=*/1, 1);
 
   // We are expected to be able to concurrently advertise multiple
   // advertisements registered to the same service UUID.
@@ -418,6 +495,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleStartAdvertisingSuccess) {
   EXPECT_EQ(2u, ble_v2_medium_->registered_advertisements_map_
                     .at(kService1BluetoothUuid)
                     .size());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 2);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.ExtendedAdvertisement",
+      /*bucket: Success=*/1, 1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_MultipleAdvertisementDataSuccess) {
@@ -443,6 +526,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_MultipleAdvertisementDataSuccess) {
       kService1BluetoothUuid));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
       kService2BluetoothUuid));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Success=*/1, 1);
 }
 
 TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
@@ -459,6 +548,12 @@ TEST_F(BleV2MediumTest, TestAdvertising_StopAdvertisingClearsRegistrationMap) {
                          .is_connectable = true}));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
       kService1BluetoothUuid));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result",
+      /*bucket: Success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.StartAdvertising.Result.RegularAdvertisement",
+      /*bucket: Success=*/1, 1);
 
   {
     base::RunLoop run_loop;
@@ -485,7 +580,16 @@ TEST_F(BleV2MediumTest, TestAdvertising_StartAndStopAsyncAdvertising) {
        .is_connectable = true},
       api::ble_v2::BleMedium::AdvertisingCallback{
           .start_advertising_result =
-              [](absl::Status status) { EXPECT_TRUE(status.ok()); },
+              [this](absl::Status status) {
+                EXPECT_TRUE(status.ok());
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.Result",
+                    /*bucket: Success=*/1, 1);
+                histogram_tester_.ExpectBucketCount(
+                    "Nearby.Connections.BleV2.StartAdvertising.Result."
+                    "RegularAdvertisement",
+                    /*bucket: Success=*/1, 1);
+              },
       });
   EXPECT_NE(advertising_session, nullptr);
 

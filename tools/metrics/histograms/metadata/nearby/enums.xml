@@ -44,6 +44,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="WebRTC"/>
 </enum>
 
+<enum name="NearbyConnectionsStartAdvertisingFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No extended advertising support"/>
+  <int value="2" label="Adapter RegisterAdvertisement failed"/>
+</enum>
+
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
   <int value="0" label="Nearby Connections"/>
   <int value="1" label="Bluetooth Adapter"/>

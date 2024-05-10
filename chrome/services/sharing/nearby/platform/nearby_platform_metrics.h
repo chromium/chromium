@@ -7,7 +7,22 @@
 
 namespace nearby::chrome::metrics {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated. This enum should be kept in sync with the
+// NearbyConnectionsStartAdvertisingFailureReason enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
+enum class StartAdvertisingFailureReason {
+  kUnknown = 0,
+  kNoExtendedAdvertisementSupport = 1,
+  kAdapterRegisterAdvertisementFailed = 2,
+  kMaxValue = kAdapterRegisterAdvertisementFailed,
+};
+
 void RecordGattServerScatternetDualRoleSupported(bool is_dual_role_supported);
+void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
+                                         bool is_extended_advertisement);
+void RecordStartAdvertisingResult(bool success, bool is_extended_advertisement);
 
 }  // namespace nearby::chrome::metrics
 
