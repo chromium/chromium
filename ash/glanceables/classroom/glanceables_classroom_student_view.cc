@@ -100,6 +100,9 @@ constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 constexpr auto kViewInteriorMargins = gfx::Insets::TLBR(12, 12, 12, 12);
 constexpr auto kFooterMargins = gfx::Insets::TLBR(12, 2, 0, 0);
 
+// This should be the same value as the one in ash/style/combobox.cc
+constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
+
 std::u16string GetAssignmentListName(size_t index) {
   CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
 
@@ -212,6 +215,19 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       /*initial_update=*/false));
   combobox_view_observation_.Observe(combo_box_view_);
 
+  auto text_on_combobox = combo_box_view_->GetTextForRow(
+      combo_box_view_->GetSelectedIndex().value());
+  combobox_replacement_label_ = header_view_->AddChildView(
+      std::make_unique<views::Label>(text_on_combobox));
+  combobox_replacement_label_->SetProperty(views::kMarginsKey,
+                                           kComboboxBorderInsets);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                        *combobox_replacement_label_);
+  combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
+  combobox_replacement_label_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
+  combobox_replacement_label_->SetVisible(false);
+
   expand_button_ = tasks_header_container->AddChildView(
       std::make_unique<ClassroomExpandButton>());
   expand_button_->SetID(
@@ -219,11 +235,19 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   // This is only set visible when both Tasks and Classroom exist, where the
   // elevated background is created in that case.
   expand_button_->SetVisible(false);
+  expand_button_->SetCallback(
+      base::BindRepeating(&GlanceablesClassroomStudentView::ToggleExpandState,
+                          base::Unretained(this)));
 
-  progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
+  body_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  body_container_->SetOrientation(views::LayoutOrientation::kVertical);
+
+  progress_bar_ = body_container_->AddChildView(
+      std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  list_container_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  list_container_view_ =
+      body_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   list_container_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
   list_container_view_->SetOrientation(
@@ -232,23 +256,24 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   list_container_view_->SetAccessibleRole(ax::mojom::Role::kList);
 
   const auto* const typography_provider = TypographyProvider::Get();
-  empty_list_label_ =
-      AddChildView(views::Builder<views::Label>()
-                       .SetProperty(views::kMarginsKey, kEmptyListLabelMargins)
-                       .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-                       .SetFontList(typography_provider->ResolveTypographyToken(
-                           TypographyToken::kCrosButton2))
-                       .SetLineHeight(typography_provider->ResolveLineHeight(
-                           TypographyToken::kCrosButton2))
-                       .SetID(base::to_underlying(
-                           GlanceablesViewId::kClassroomBubbleEmptyListLabel))
-                       .Build());
+  empty_list_label_ = body_container_->AddChildView(
+      views::Builder<views::Label>()
+          .SetProperty(views::kMarginsKey, kEmptyListLabelMargins)
+          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+          .SetFontList(typography_provider->ResolveTypographyToken(
+              TypographyToken::kCrosButton2))
+          .SetLineHeight(typography_provider->ResolveLineHeight(
+              TypographyToken::kCrosButton2))
+          .SetID(base::to_underlying(
+              GlanceablesViewId::kClassroomBubbleEmptyListLabel))
+          .Build());
 
-  list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-      base::BindRepeating(&GlanceablesClassroomStudentView::OnSeeAllPressed,
-                          base::Unretained(this))));
+  list_footer_view_ =
+      body_container_->AddChildView(std::make_unique<GlanceablesListFooterView>(
+          l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
+          base::BindRepeating(&GlanceablesClassroomStudentView::OnSeeAllPressed,
+                              base::Unretained(this))));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter));
   list_footer_view_->SetVisible(false);
@@ -299,6 +324,18 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   force_hide_footer_view_ = true;
   expand_button_->SetVisible(true);
+}
+
+void GlanceablesClassroomStudentView::ToggleExpandState() {
+  is_expanded_ = !is_expanded_;
+  expand_button_->SetExpanded(is_expanded_);
+  body_container_->SetVisible(is_expanded_);
+  combo_box_view_->SetVisible(is_expanded_);
+  combobox_replacement_label_->SetVisible(!is_expanded_);
+
+  PreferredSizeChanged();
+  // TODO(b/338917100): Update the expand button state, including the Tasks
+  // view.
 }
 
 void GlanceablesClassroomStudentView::OnSeeAllPressed() {
@@ -353,6 +390,9 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
   CHECK(selected_index >= 0 ||
         selected_index < kStudentAssignmentsListTypeOrdered.size());
   selected_list_type_ = kStudentAssignmentsListTypeOrdered[selected_index];
+
+  combobox_replacement_label_->SetText(
+      combo_box_view_->GetTextForRow(selected_index));
 
   if (!initial_update) {
     base::RecordAction(

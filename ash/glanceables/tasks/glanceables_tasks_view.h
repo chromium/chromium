@@ -76,6 +76,9 @@ class ASH_EXPORT GlanceablesTasksView
     kUserSelectedList
   };
 
+  // Toggles `is_expanded_` and updates the layout.
+  void ToggleExpandState();
+
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
 
@@ -163,12 +166,21 @@ class ASH_EXPORT GlanceablesTasksView
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> tasks_header_view_ = nullptr;
+  // This is a simple label that copies the label style on
+  // `task_list_combo_box_view_` so that it can visually replace it when
+  // `task_list_combo_box_view_` is hidden.
+  raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
   raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
+  raw_ptr<views::ScrollView> content_scroll_view_ = nullptr;
   raw_ptr<views::View> task_items_container_view_ = nullptr;
   raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
+
+  // Whether the view is expanded and showing the contents in
+  // `content_scroll_view_`.
+  bool is_expanded_ = true;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

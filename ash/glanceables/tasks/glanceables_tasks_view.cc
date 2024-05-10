@@ -71,6 +71,9 @@ constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
+// This should be the same value as the one in ash/style/combobox.cc
+constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
+
 constexpr char kTasksManagementPage[] = "https://tasks.google.com/";
 
 api::TasksClient* GetTasksClient() {
@@ -236,17 +239,18 @@ GlanceablesTasksView::GlanceablesTasksView(
   // This is only set visible when both Tasks and Classroom exist, where the
   // elevated background is created in that case.
   expand_button_->SetVisible(false);
+  expand_button_->SetCallback(base::BindRepeating(
+      &GlanceablesTasksView::ToggleExpandState, base::Unretained(this)));
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->SetPreferredSize(kProgressBarPreferredSize);
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
-  auto* const scroll_view =
-      AddChildView(std::make_unique<TaskListScrollView>());
+  content_scroll_view_ = AddChildView(std::make_unique<TaskListScrollView>());
 
   auto* const list_view =
-      scroll_view->SetContents(std::make_unique<views::View>());
-  scroll_view->SetProperty(
+      content_scroll_view_->SetContents(std::make_unique<views::View>());
+  content_scroll_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
@@ -291,6 +295,19 @@ GlanceablesTasksView::GlanceablesTasksView(
   tasks_combobox_model_ =
       std::make_unique<GlanceablesTasksComboboxModel>(task_lists);
   CreateComboBoxView();
+
+  auto text_on_combobox = task_list_combo_box_view_->GetTextForRow(
+      task_list_combo_box_view_->GetSelectedIndex().value());
+  combobox_replacement_label_ = tasks_header_view_->AddChildView(
+      std::make_unique<views::Label>(text_on_combobox));
+  combobox_replacement_label_->SetProperty(views::kMarginsKey,
+                                           kComboboxBorderInsets);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                        *combobox_replacement_label_);
+  combobox_replacement_label_->SetAutoColorReadabilityEnabled(false);
+  combobox_replacement_label_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
+  combobox_replacement_label_->SetVisible(false);
 
   list_footer_view_ =
       list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
@@ -363,6 +380,28 @@ void GlanceablesTasksView::CreateElevatedBackground() {
   expand_button_->SetVisible(true);
 }
 
+void GlanceablesTasksView::ToggleExpandState() {
+  is_expanded_ = !is_expanded_;
+  expand_button_->SetExpanded(is_expanded_);
+  progress_bar_->SetVisible(is_expanded_);
+  content_scroll_view_->SetVisible(is_expanded_);
+  task_list_combo_box_view_->SetVisible(is_expanded_);
+  combobox_replacement_label_->SetVisible(!is_expanded_);
+
+  auto target_interior_margin =
+      is_expanded_ ? gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                       kInteriorGlanceableBubbleMargin, 0,
+                                       kInteriorGlanceableBubbleMargin)
+                   : gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
+                                       kInteriorGlanceableBubbleMargin,
+                                       kInteriorGlanceableBubbleMargin, 12);
+  SetInteriorMargin(target_interior_margin);
+
+  PreferredSizeChanged();
+  // TODO(b/338917100): Update the expand button state, including the Classroom
+  // view.
+}
+
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
   task_items_container_view_->SetVisible(true);
@@ -405,6 +444,9 @@ void GlanceablesTasksView::SelectedTasksListChanged() {
     task_list_combo_box_view_->SetSelectedIndex(cached_selected_list_index_);
     return;
   }
+
+  combobox_replacement_label_->SetText(task_list_combo_box_view_->GetTextForRow(
+      task_list_combo_box_view_->GetSelectedIndex().value()));
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();

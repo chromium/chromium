@@ -85,6 +85,9 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   void CreateElevatedBackground();
 
  private:
+  // Toggles `is_expanded_` and updates the layout.
+  void ToggleExpandState();
+
   // Handles press on the "See all" button in `GlanceablesListFooterView`. Opens
   // classroom web UI based on the selected menu option.
   void OnSeeAllPressed();
@@ -115,11 +118,18 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView> header_view_ = nullptr;
   raw_ptr<Combobox> combo_box_view_ = nullptr;
+  // This is a simple label that copies the label style on `combo_box_view_` so
+  // that it can visually replace it when `combo_box_view_` is hidden.
+  raw_ptr<views::Label> combobox_replacement_label_ = nullptr;
+  raw_ptr<views::FlexLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> list_container_view_ = nullptr;
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<views::Label> empty_list_label_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
+
+  // Whether the view is expanded and showing the contents in `body_container_`.
+  bool is_expanded_ = true;
 
   // Total number of assignments in the selected assignment list.
   size_t total_assignments_ = 0u;
