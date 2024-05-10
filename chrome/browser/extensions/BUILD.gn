@@ -878,6 +878,7 @@ static_library("extensions") {
     "//components/embedder_support",
     "//components/embedder_support:browser_util",
     "//components/enterprise",
+    "//components/enterprise/buildflags",
     "//components/favicon/content",
     "//components/feedback",
     "//components/gcm_driver",
