@@ -409,7 +409,7 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     autofill::FieldRendererId generation_element_id,
     const std::u16string& password) {
   PasswordFormManager* manager =
-      GetMatchedManager(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id);
   if (manager) {
     manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
                                          password);
@@ -425,7 +425,7 @@ void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
 
   PasswordFormManager* form_manager =
-      GetMatchedManager(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id);
   if (form_manager)
     form_manager->PasswordNoLongerGenerated();
 }
@@ -435,7 +435,7 @@ void PasswordManager::SetGenerationElementAndTypeForForm(
     FormRendererId form_id,
     FieldRendererId generation_element,
     autofill::password_generation::PasswordGenerationType type) {
-  PasswordFormManager* form_manager = GetMatchedManager(driver, form_id);
+  PasswordFormManager* form_manager = GetMatchedManagerForForm(driver, form_id);
   if (form_manager) {
     DCHECK(client_->IsSavingAndFillingEnabled(form_manager->GetURL()));
     form_manager->SetGenerationElement(generation_element);
@@ -449,7 +449,7 @@ void PasswordManager::OnPresaveGeneratedPassword(
     const std::u16string& generated_password) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
   PasswordFormManager* form_manager =
-      GetMatchedManager(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
                         !form_manager);
   if (form_manager) {
@@ -562,7 +562,7 @@ void PasswordManager::DropFormManagers() {
 base::span<const PasswordForm> PasswordManager::GetBestMatches(
     PasswordManagerDriver* driver,
     autofill::FormRendererId form_id) {
-  PasswordFormManager* manager = GetMatchedManager(driver, form_id);
+  PasswordFormManager* manager = GetMatchedManagerForForm(driver, form_id);
   return manager ? manager->GetBestMatches() : base::span<const PasswordForm>();
 }
 
@@ -629,7 +629,7 @@ void PasswordManager::OnPasswordFormCleared(
     logger.LogMessage(Logger::STRING_ON_PASSWORD_FORM_CLEARED);
   }
   PasswordFormManager* manager =
-      GetMatchedManager(driver, form_data.renderer_id);
+      GetMatchedManagerForForm(driver, form_data.renderer_id);
   if (!manager || !IsAutomaticSavePromptAvailable(manager) ||
       !manager->HasLikelyChangeOrResetFormSubmitted()) {
     return;
@@ -783,7 +783,7 @@ void PasswordManager::CreateFormManagers(
       continue;
 
     PasswordFormManager* manager =
-        GetMatchedManager(driver, form_data.renderer_id);
+        GetMatchedManagerForForm(driver, form_data.renderer_id);
     if (!manager) {
       new_forms_data.push_back(&form_data);
       continue;
@@ -840,7 +840,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   }
 
   PasswordFormManager* matched_manager =
-      GetMatchedManager(driver, submitted_form.renderer_id);
+      GetMatchedManagerForForm(driver, submitted_form.renderer_id);
 
   auto availability =
       matched_manager
@@ -904,7 +904,7 @@ void PasswordManager::LogFirstFillingResult(
     autofill::FormRendererId form_renderer_id,
     int32_t result) {
   if (PasswordFormManager* matching_manager =
-          GetMatchedManager(driver, form_renderer_id);
+          GetMatchedManagerForForm(driver, form_renderer_id);
       matching_manager) {
     matching_manager->GetMetricsRecorder()->RecordFirstFillingResult(result);
   }
@@ -920,16 +920,19 @@ void PasswordManager::NotifyStorePasswordCalled() {
 // LINT.IfChange(update_password_state_for_text_change)
 void PasswordManager::UpdateStateOnUserInput(
     PasswordManagerDriver* driver,
-    FormRendererId form_id,
+    std::optional<FormRendererId> form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  PasswordFormManager* manager = GetMatchedManager(driver, form_id);
+  PasswordFormManager* manager =
+      form_id ? GetMatchedManagerForForm(driver, *form_id)
+              : GetMatchedManagerForField(driver, field_id);
   if (!manager)
     return;
 
   const autofill::FormData* observed_form = manager->observed_form();
 
-  manager->UpdateStateOnUserInput(form_id, field_id, field_value);
+  manager->UpdateStateOnUserInput(observed_form->renderer_id, field_id,
+                                  field_value);
 
   OnInformAboutUserInput(driver, *observed_form);
 
@@ -1025,7 +1028,7 @@ void PasswordManager::OnPasswordFormsRemoved(
   // If the submitted manager observes one of the removed forms, just
   // ignore it as it was already inspected above.
   base::ranges::any_of(removed_forms_copy, [&](const auto& removed_form_id) {
-    auto* manager = GetMatchedManager(driver, removed_form_id);
+    auto* manager = GetMatchedManagerForForm(driver, removed_form_id);
     return manager != submitted_manager && detect_submission(manager);
   });
 }
@@ -1366,7 +1369,7 @@ void PasswordManager::ProcessAutofillPredictions(
 
   // Create or update the `PasswordFormManager` corresponding to `form`.
   PasswordFormManager* manager =
-      GetMatchedManager(driver, form.global_id().renderer_id);
+      GetMatchedManagerForForm(driver, form.global_id().renderer_id);
   if (!manager) {
     // If the renderer recognizes `form` as a credential form, then we will
     // be informed about this form via `OnFormsParsed()` and `OnFormsSeen()`.
@@ -1461,10 +1464,16 @@ void PasswordManager::RecordProvisionalSaveFailure(
 
 // TODO(crbug.com/40570965): Implement creating missing
 // PasswordFormManager when PasswordFormManager is gone.
-PasswordFormManager* PasswordManager::GetMatchedManager(
+PasswordFormManager* PasswordManager::GetMatchedManagerForForm(
     PasswordManagerDriver* driver,
     FormRendererId form_id) {
   return password_form_cache_.GetMatchedManager(driver, form_id);
+}
+
+PasswordFormManager* PasswordManager::GetMatchedManagerForField(
+    PasswordManagerDriver* driver,
+    FieldRendererId field_id) {
+  return password_form_cache_.GetMatchedManager(driver, field_id);
 }
 
 std::optional<FormPredictions> PasswordManager::FindPredictionsForField(
@@ -1537,7 +1546,7 @@ void PasswordManager::ShowManualFallbackForSaving(
 bool PasswordManager::NewFormsParsed(PasswordManagerDriver* driver,
                                      const std::vector<FormData>& form_data) {
   return base::ranges::any_of(form_data, [driver, this](const FormData& form) {
-    return !GetMatchedManager(driver, form.renderer_id);
+    return !GetMatchedManagerForForm(driver, form.renderer_id);
   });
 }
 

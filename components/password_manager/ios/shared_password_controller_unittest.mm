@@ -1433,7 +1433,9 @@ TEST_F(SharedPasswordControllerTest, DidFillField) {
       &web_state_, frame.get());
 
   EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(driver, form_id, field_id, value));
+              UpdateStateOnUserInput(
+                  driver, std::make_optional<FormRendererId>(form_id), field_id,
+                  value));
 
   auto* agent = autofill::PasswordAutofillAgent::FromWebState(&web_state_);
   agent->DidFillField(frame.get(), form_id, field_id, value);

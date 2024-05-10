@@ -33,7 +33,7 @@ class PasswordAutofillAgentDelegate {
 
   // Indicates that the user did fill the field with `field_value`.
   virtual void DidFillField(web::WebFrame* frame,
-                            autofill::FormRendererId form_id,
+                            std::optional<autofill::FormRendererId> form_id,
                             autofill::FieldRendererId field_id,
                             const std::u16string& field_value) = 0;
 };
@@ -54,7 +54,7 @@ class PasswordAutofillAgent
   // Indicates to the agent that the user did an action on the form, e.g. fill
   // the form.
   void DidFillField(web::WebFrame* frame,
-                    autofill::FormRendererId form_id,
+                    std::optional<autofill::FormRendererId> form_id,
                     autofill::FieldRendererId field_id,
                     const std::u16string& field_value);
 

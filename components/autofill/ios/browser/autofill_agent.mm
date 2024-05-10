@@ -276,7 +276,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
   // Once the active form and field are extracted, send a query to the
   // BrowserAutofillManager for suggestions.
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   __block base::WeakPtr<web::WebFrame> weakFrame = frame->AsWeakPtr();
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     if (success && forms.size() == 1) {
@@ -320,18 +320,12 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   _suggestionHandledCompletion = [completion copy];
 
   if (suggestion.acceptanceA11yAnnouncement != nil) {
-    __weak AutofillAgent* weakSelf = self;
     // The announcement is done asyncronously with certain delay to make sure
     // it is not interrupted by (almost) immediate standard announcements.
     dispatch_after(
         dispatch_time(DISPATCH_TIME_NOW,
                       kA11yAnnouncementQueueDelay.InNanoseconds()),
         dispatch_get_main_queue(), ^{
-          AutofillAgent* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-
           // Queueing flag allows to preserve standard announcements,
           // they are conveyed first and then announce this message.
           // This is a tradeoff as there is no control over the
@@ -485,21 +479,18 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   data.Set("renderer_id", static_cast<int>(field.value()));
   data.Set("value", value);
 
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
 
   AutofillJavaScriptFeature::GetInstance()->FillSpecificFormField(
       frame, std::move(data), base::BindOnce(^(BOOL success) {
-        AutofillAgent* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
         if (success) {
-          [strongSelf updateFieldManagerForSpecificField:field
-                                                 inFrame:frame
-                                               withValue:value];
+          [weakSelf onDidFillField:field
+                              form:std::nullopt
+                             frame:frame
+                             value:value];
         }
         // Especially in test code, it is possible that the fill was not
         // initiated by selecting a suggestion. In this case the callback is
@@ -540,7 +531,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)scanFormsInWebState:(web::WebState*)webState
                     inFrame:(web::WebFrame*)webFrame {
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     if (!success || forms.empty()) {
       return;
@@ -792,7 +783,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // The completion block is executed asynchronously, thus it cannot refer
   // directly to `params.field_identifier` (as params is passed by reference
   // and may have been destroyed by the point the block is executed).
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   __block const std::string webFrameId = frame->GetFrameId();
   __block FieldRendererId fieldIdentifier = params.field_renderer_id;
   auto completionHandler = ^(BOOL success, const FormDataVector& forms) {
@@ -913,20 +904,17 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   data.Set("value", value);
 
   DCHECK(_suggestionHandledCompletion);
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
   AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
       frame, std::move(data), base::BindOnce(^(BOOL success) {
-        AutofillAgent* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
         if (success) {
-          [strongSelf onDidFillField:fieldRendererID
-                                form:formRendererID
-                               frame:frame
-                               value:value];
+          [weakSelf onDidFillField:fieldRendererID
+                              form:formRendererID
+                             frame:frame
+                             value:value];
         }
         suggestionHandledCompletionCopy();
       }));
@@ -934,7 +922,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 // Called when did fill a specific field.
 - (void)onDidFillField:(FieldRendererId)fieldID
-                  form:(FormRendererId)formID
+                  form:(std::optional<FormRendererId>)formID
                  frame:(web::WebFrame*)frame
                  value:(const std::u16string&)value {
   [self updateFieldManagerForSpecificField:fieldID
@@ -1007,7 +995,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 // Notifies the PasswordAutofillAgent that the value of a field has changed.
 - (void)notifyAboutValueChangeOnField:(FieldRendererId)fieldID
-                               inForm:(FormRendererId)formID
+                               inForm:(std::optional<FormRendererId>)formID
                                 frame:(web::WebFrame*)frame
                             withValue:(const std::u16string&)value {
   CHECK(frame);
@@ -1054,7 +1042,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 // Sends the the |data| to |frame| to actually fill the data.
 - (void)sendData:(AutofillData)data toFrame:(web::WebFrame*)frame {
   DCHECK(_webState->IsVisible());
-  __weak AutofillAgent* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;

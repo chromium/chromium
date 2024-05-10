@@ -106,7 +106,7 @@ class PasswordAutofillAgentDelegateImpl
       const PasswordAutofillAgentDelegateImpl&) = delete;
 
   void DidFillField(web::WebFrame* frame,
-                    autofill::FormRendererId form_id,
+                    std::optional<autofill::FormRendererId> form_id,
                     autofill::FieldRendererId field_id,
                     const std::u16string& field_value) override {
     auto* driver = IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(

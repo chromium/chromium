@@ -27,11 +27,13 @@ class MockPasswordAutofillAgentDelegate : public PasswordAutofillAgentDelegate {
   MockPasswordAutofillAgentDelegate& operator=(
       const MockPasswordAutofillAgentDelegate&) = delete;
 
-  MOCK_METHOD(
-      void,
-      DidFillField,
-      (web::WebFrame*, FormRendererId, FieldRendererId, const std::u16string&),
-      (override));
+  MOCK_METHOD(void,
+              DidFillField,
+              (web::WebFrame*,
+               std::optional<FormRendererId>,
+               FieldRendererId,
+               const std::u16string&),
+              (override));
 };
 
 }  // namespace autofill

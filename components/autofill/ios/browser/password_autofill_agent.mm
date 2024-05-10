@@ -10,10 +10,11 @@ PasswordAutofillAgent::PasswordAutofillAgent() = default;
 
 PasswordAutofillAgent::~PasswordAutofillAgent() = default;
 
-void PasswordAutofillAgent::DidFillField(web::WebFrame* frame,
-                                         autofill::FormRendererId form_id,
-                                         autofill::FieldRendererId field_id,
-                                         const std::u16string& field_value) {
+void PasswordAutofillAgent::DidFillField(
+    web::WebFrame* frame,
+    std::optional<autofill::FormRendererId> form_id,
+    autofill::FieldRendererId field_id,
+    const std::u16string& field_value) {
   if (delegate_) {
     delegate_->DidFillField(frame, form_id, field_id, field_value);
   }

@@ -1038,6 +1038,38 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
               Field(&PossibleUsernameData::last_change, base::Time::Now())))));
 }
 
+// Tests that the user input in a single username form is correctly added to
+// the possible usernames, even when the form ID isn't provided where the
+// corresponding PasswordFormManager can be retrieved based on the unique field
+// ID.
+TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kIosDetectUsernameInUff);
+
+  ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
+
+  FormData form_data = MakeSingleUsernameFormData();
+  FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
+
+  ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
+
+  // Register found form in PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  // Take the user input in the single username form.
+  std::u16string typed_username = u"test_user";
+  manager()->UpdateStateOnUserInput(&driver_, std::nullopt,
+                                    username_renderer_id, typed_username);
+
+  // Do a spot check that the user input state was correctly updated.
+  EXPECT_THAT(
+      manager()->possible_usernames(),
+      ElementsAre(Pair(PossibleUsernameFieldIdentifier(driver_.GetId(),
+                                                       username_renderer_id),
+                       Field(&PossibleUsernameData::value, typed_username))));
+}
+
 // Tests that the `autocomplete_attribute_has_username` bit of the added
 // possible username is correctly set to true when there is a username value in
 // the autocomplete attribute.

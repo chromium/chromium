@@ -326,11 +326,13 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData_Success) {
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state(),
                                                                frame);
   EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(driver, form_id, username_field_id,
-                                     username_value));
+              UpdateStateOnUserInput(
+                  driver, std::make_optional<FormRendererId>(form_id),
+                  username_field_id, username_value));
   EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(driver, form_id, password_field_id,
-                                     password_value));
+              UpdateStateOnUserInput(
+                  driver, std::make_optional<FormRendererId>(form_id),
+                  password_field_id, password_value));
 
   __block bool called = false;
   __block BOOL succeeded = false;
@@ -539,13 +541,15 @@ TEST_F(PasswordFormHelperTest,
   // Don't expect to update the state for the username field because it was
   // skipped.
   EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(driver, form_id, username_field_id,
-                                     username_value))
+              UpdateStateOnUserInput(
+                  driver, std::make_optional<FormRendererId>(form_id),
+                  username_field_id, username_value))
       .Times(0);
   // Expect a state update on the password field.
   EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(driver, form_id, password_field_id,
-                                     password_value));
+              UpdateStateOnUserInput(
+                  driver, std::make_optional<FormRendererId>(form_id),
+                  password_field_id, password_value));
 
   __block bool called = NO;
   __block bool succeeded = NO;

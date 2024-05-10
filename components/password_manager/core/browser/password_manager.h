@@ -112,7 +112,7 @@ class PasswordManager : public PasswordManagerInterface {
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
   void UpdateStateOnUserInput(PasswordManagerDriver* driver,
-                              autofill::FormRendererId form_id,
+                              std::optional<autofill::FormRendererId> form_id,
                               autofill::FieldRendererId field_id,
                               const std::u16string& field_value) override;
   void OnPasswordNoLongerGenerated() override;
@@ -329,8 +329,16 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Returns the manager which manages |form_id|. |driver| is needed to
   // determine the match. Returns nullptr when no matched manager is found.
-  PasswordFormManager* GetMatchedManager(PasswordManagerDriver* driver,
-                                         autofill::FormRendererId form_id);
+  PasswordFormManager* GetMatchedManagerForForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id);
+
+  // Returns the manager which manages the form that has the field with
+  // `field_id`. |driver| is needed to determine the match. Returns nullptr when
+  // no matched manager is found.
+  PasswordFormManager* GetMatchedManagerForField(
+      PasswordManagerDriver* driver,
+      autofill::FieldRendererId field_id);
 
   // Finds FormPredictions for a form containing field identified by |field_id|
   // and |driver_id|.

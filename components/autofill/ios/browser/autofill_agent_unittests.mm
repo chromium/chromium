@@ -260,6 +260,82 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
+// Test that the updates are applied when filling specific form field is done
+// successfully.
+TEST_F(AutofillAgentTests,
+       FillSpecificFormField_UpdateWithResults_WhenSuccess) {
+  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
+                                                        &client_, nil, "en");
+
+  std::vector<autofill::FormFieldData::FillData> fields =
+      MinimalFormFieldDataForFilling();
+  const std::u16string& field_value = fields[0].value;
+  const FieldRendererId field_id = fields[0].renderer_id;
+
+  // Set the result returned from filling.
+  base::Value result(true);
+  fake_main_frame_->AddJsResultForFunctionCall(
+      &result, "autofill.fillSpecificFormField");
+
+  EXPECT_CALL(delegate_mock_, DidFillField(fake_main_frame_.get(),
+                                           std::optional<FormRendererId>(),
+                                           field_id, field_value));
+
+  // Declare the page as shown to allow filling.
+  fake_web_state_.WasShown();
+
+  // Fill form data.
+  [autofill_agent_ fillSpecificFormField:field_id
+                               withValue:field_value
+                                 inFrame:fake_main_frame_];
+
+  // Run queues to yield the filling results.
+  web::test::WaitForBackgroundTasks();
+
+  // Check that the field value update was propagated to the FieldDataManager of
+  // the web frame.
+  FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(fake_main_frame_);
+  EXPECT_TRUE(fieldDataManager->WasAutofilledOnUserTrigger(field_id));
+}
+
+// Test that the updates aren't applied when filling specific form field has
+// failed.
+TEST_F(AutofillAgentTests,
+       FillSpecificFormField_UpdateWithResults_WhenFailure) {
+  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
+                                                        &client_, nil, "en");
+
+  std::vector<autofill::FormFieldData::FillData> fields =
+      MinimalFormFieldDataForFilling();
+  const std::u16string& field_value = fields[0].value;
+  const FieldRendererId field_id = fields[0].renderer_id;
+
+  // Set the result returned from filling.
+  base::Value result(false);
+  fake_main_frame_->AddJsResultForFunctionCall(
+      &result, "autofill.fillSpecificFormField");
+
+  EXPECT_CALL(delegate_mock_, DidFillField).Times(0);
+
+  // Declare the page as shown to allow filling.
+  fake_web_state_.WasShown();
+
+  // Fill form data.
+  [autofill_agent_ fillSpecificFormField:field_id
+                               withValue:field_value
+                                 inFrame:fake_main_frame_];
+
+  // Run queues to yield the filling results.
+  web::test::WaitForBackgroundTasks();
+
+  // Check that the field value update was not propagated to the
+  // FieldDataManager.
+  FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(fake_main_frame_);
+  EXPECT_FALSE(fieldDataManager->WasAutofilledOnUserTrigger(field_id));
+}
+
 // Tests that `ApplyFieldAction` in `AutofillDriverIOS` dispatches the
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
@@ -940,8 +1016,10 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   base::Value result(serializedResult);
   fake_main_frame_->AddJsResultForFunctionCall(&result, "autofill.fillForm");
 
-  EXPECT_CALL(delegate_mock_, DidFillField(fake_main_frame_.get(), form_id,
-                                           field_id, field_value));
+  EXPECT_CALL(delegate_mock_,
+              DidFillField(fake_main_frame_.get(),
+                           std::make_optional<FormRendererId>(form_id),
+                           field_id, field_value));
 
   // Declare the page as shown to allow filling.
   fake_web_state_.WasShown();
@@ -1029,8 +1107,10 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
                        completion_handler_called = YES;
                      }];
 
-  EXPECT_CALL(delegate_mock_, DidFillField(fake_main_frame_.get(), form_id,
-                                           field1_id, field1_value));
+  EXPECT_CALL(delegate_mock_,
+              DidFillField(fake_main_frame_.get(),
+                           std::make_optional<FormRendererId>(form_id),
+                           field1_id, field1_value));
 
   // Run queues to yield the field filling results from the JS call.
   web::test::WaitForBackgroundTasks();
@@ -1083,10 +1163,14 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
                        completion_handler_called = YES;
                      }];
 
-  EXPECT_CALL(delegate_mock_, DidFillField(fake_main_frame_.get(), form_id,
-                                           field1_id, ::testing::IsEmpty()));
-  EXPECT_CALL(delegate_mock_, DidFillField(fake_main_frame_.get(), form_id,
-                                           field2_id, ::testing::IsEmpty()));
+  EXPECT_CALL(delegate_mock_,
+              DidFillField(fake_main_frame_.get(),
+                           std::make_optional<FormRendererId>(form_id),
+                           field1_id, ::testing::IsEmpty()));
+  EXPECT_CALL(delegate_mock_,
+              DidFillField(fake_main_frame_.get(),
+                           std::make_optional<FormRendererId>(form_id),
+                           field2_id, ::testing::IsEmpty()));
 
   // Run queues to yield the field filling results from the JS call.
   web::test::WaitForBackgroundTasks();

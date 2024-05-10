@@ -70,7 +70,7 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
   MOCK_METHOD(void,
               UpdateStateOnUserInput,
               (password_manager::PasswordManagerDriver*,
-               autofill::FormRendererId,
+               std::optional<autofill::FormRendererId>,
                autofill::FieldRendererId,
                const std::u16string&),
               (override));

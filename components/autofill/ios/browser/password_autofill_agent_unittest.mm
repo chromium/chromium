@@ -26,8 +26,10 @@ TEST_F(PasswordAutofillAgentTest, DidFillField) {
   const std::u16string value(u"value");
 
   MockPasswordAutofillAgentDelegate delegate_mock;
-  EXPECT_CALL(delegate_mock,
-              DidFillField(frame.get(), form_id, field_id, value));
+  EXPECT_CALL(
+      delegate_mock,
+      DidFillField(frame.get(), std::make_optional<FormRendererId>(form_id),
+                   field_id, value));
   web::FakeWebState fake_web_state;
   PasswordAutofillAgent::CreateForWebState(&fake_web_state, &delegate_mock);
   PasswordAutofillAgent::FromWebState(&fake_web_state)
