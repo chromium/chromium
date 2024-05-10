@@ -47,7 +47,6 @@ namespace {
 
 const base::Feature& kLowUsagePromo =
     feature_engagement::kIPHDesktopReEngagementFeature;
-constexpr char kLowUsagePromoFocusFieldTrialParam[] = "focus_on_show";
 
 constexpr char kIncludeAiPromosFieldTrialParam[] = "include_ai";
 
@@ -211,7 +210,7 @@ FeaturePromoSpecification CreateLowUsagePromoSpecification(Profile* profile) {
   // Note: numbers correspond to indices in the spec; they are preserved here to
   // ensure that if promos need to be changed or re-ordered we can retain the
   // correspondence.
-  auto spec = FeaturePromoSpecification::CreateForRotatingPromo(
+  return FeaturePromoSpecification::CreateForRotatingPromo(
       kLowUsagePromo,
 
       // 1.
@@ -323,10 +322,4 @@ FeaturePromoSpecification CreateLowUsagePromoSpecification(Profile* profile) {
       CreateNavigatePromo(IDS_REENGAGEMENT_PROMO_ENERGY_MEMORY_SAVER,
                           IDS_REENGAGEMENT_PROMO_SETTINGS_ACTION,
                           chrome::GetSettingsUrl(chrome::kPerformanceSubPage)));
-
-  // Allow focus based on field trial param; default is no focus.
-  spec.OverrideFocusOnShow(base::GetFieldTrialParamByFeatureAsBool(
-      kLowUsagePromo, kLowUsagePromoFocusFieldTrialParam, false));
-
-  return spec;
 }
