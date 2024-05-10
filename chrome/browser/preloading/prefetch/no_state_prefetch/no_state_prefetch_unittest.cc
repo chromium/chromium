@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -891,19 +892,24 @@ TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
   EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
 }
 
-class PrerenderFallbackToPreconnectDisabledTest : public NoStatePrefetchTest {
+class NoStatePrefetchFallbackToPreconnectTest
+    : public base::test::WithFeatureOverride,
+      public NoStatePrefetchTest {
  public:
-  PrerenderFallbackToPreconnectDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kPrerenderFallbackToPreconnect);
-  }
+  NoStatePrefetchFallbackToPreconnectTest()
+      : base::test::WithFeatureOverride(
+            features::kPrerenderFallbackToPreconnect) {}
 };
 
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is not enabled, a prefetch initiated by omnibox does not result in
-// a preconnect.
-TEST_F(PrerenderFallbackToPreconnectDisabledTest,
-       OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    NoStatePrefetchFallbackToPreconnectTest);
+
+// Test that when prefetch fails and ...
+// - the kPrerenderFallbackToPreconnect experiment is not enabled, a prefetch
+//   initiated by <link rel=prerender> does not result in a preconnect.
+// - the kPrerenderFallbackToPreconnect experiment is enabled, a prefetch
+//   initiated by <link rel=prerender> actually results in preconnect.
+TEST_P(NoStatePrefetchFallbackToPreconnectTest, LinkRelPrerender) {
   const GURL kURL(GURL("http://www.example.com"));
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -915,46 +921,17 @@ TEST_F(PrerenderFallbackToPreconnectDisabledTest,
 
   // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size(), nullptr));
+  EXPECT_FALSE(AddSimpleLinkTrigger(kURL));
 
-  EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
-}
-
-class PrerenderFallbackToPreconnectEnabledTest : public NoStatePrefetchTest {
- public:
-  PrerenderFallbackToPreconnectEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kPrerenderFallbackToPreconnect);
+  if (base::FeatureList::IsEnabled(features::kPrerenderFallbackToPreconnect)) {
+    // Verify that the prefetch request falls back to a preconnect request.
+    EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
+    auto& active_hints = loading_predictor->active_hints_for_testing();
+    auto it = active_hints.find(kURL);
+    EXPECT_NE(it, active_hints.end());
+  } else {
+    EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
   }
-};
-
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is enabled, a prefetch initiated by omnibox actually results in
-// preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prefetch should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size(), nullptr));
-
-  // Verify that the prefetch request falls back to a preconnect request.
-  EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
-
-  auto& active_hints = loading_predictor->active_hints_for_testing();
-  auto it = active_hints.find(kURL);
-  EXPECT_NE(it, active_hints.end());
 }
 
 TEST_F(NoStatePrefetchTest, LinkRelStillAllowedWhenDisabled) {
