@@ -414,6 +414,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.isReadAloudEnabled_) {
       this.synth.onvoiceschanged = () => {
         this.getVoices(/*refresh =*/ true);
+        // If the selected voice is now unavailable, such as after an install,
+        // reselect a new voice.
+        if (this.selectedVoice &&
+            !this.availableVoices.some(
+                voice => areVoicesEqual(voice, this.selectedVoice!))) {
+          this.selectedVoice = undefined;
+          this.getSpeechSynthesisVoice();
+        }
       };
     }
 
@@ -975,8 +983,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // TODO(crbug.com/40927698): Additional logic to find default voice if there
     // isn't a voice marked as default
     const baseLang = this.speechSynthesisLanguage;
+    const allPossibleVoices = this.getVoices();
     const voicesForLanguage =
-        this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
+        allPossibleVoices.filter(voice => voice.lang.startsWith(baseLang));
 
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
       // Stay with the current voice if no voices are available for this
@@ -986,13 +995,34 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.getVoices().find(({default: isDefaultVoice}) => isDefaultVoice);
     }
 
-    // The default voice doesn't always match with the actual default voice
-    // of the device, therefore use the language code to find a voice first.
-    const defaultVoiceForLanguage =
-        voicesForLanguage.find(({default: isDefaultVoice}) => isDefaultVoice);
+    // First try to choose a voice only from currently enabled locales for this
+    // language.
+    const voicesForEnabledLocale = voicesForLanguage.filter(
+        voice =>
+            this.enabledLanguagesInPref.includes(voice.lang.toLowerCase()));
+    if (!voicesForEnabledLocale || voicesForEnabledLocale.length === 0) {
+      // If there are no enabled locales for this language, choose a voice
+      // labeled default among all enabled voices, or the first enabled voice.
+      const allVoicesForEnabledLocales = allPossibleVoices.filter(
+          v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
+      if (!allVoicesForEnabledLocales) {
+        // If there are no enabled locales, we can't select a voice. So return
+        // undefined so we can disable the play button.
+        return undefined;
+      } else {
+        const defaultVoiceForEnabledLocales = allVoicesForEnabledLocales.find(
+            ({default: isDefaultVoice}) => isDefaultVoice);
+        return defaultVoiceForEnabledLocales ? defaultVoiceForEnabledLocales :
+                                               allVoicesForEnabledLocales[0];
+      }
+    }
+
+    // Get the default voice for the currently enabled locale.
+    const defaultVoiceForLanguage = voicesForEnabledLocale.find(
+        ({default: isDefaultVoice}) => isDefaultVoice);
 
     return defaultVoiceForLanguage ? defaultVoiceForLanguage :
-                                     voicesForLanguage[0];
+                                     voicesForEnabledLocale[0];
   }
 
   // Attempt to get a new voice using the current language. In theory, the
@@ -1784,6 +1814,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         [...this.enabledLanguagesInPref, toggledLanguage];
 
     chrome.readingMode.onLanguagePrefChange(toggledLanguage, !currentlyEnabled);
+
+    if (!currentlyEnabled && !this.selectedVoice) {
+      // If there were no enabled languages (and thus no selected voice), select
+      // a voice.
+      this.getSpeechSynthesisVoice();
+    }
   }
 
   private resetSpeechPostSettingChange_() {
@@ -2164,9 +2200,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // change.
   isReadAloudPlayable(
       hasContent: boolean = this.hasContent_,
+      selectedVoice: SpeechSynthesisVoice|undefined = this.selectedVoice,
       speechEngineLoaded: boolean = this.speechEngineLoaded,
-      willDrawAgainSoon: boolean = this.willDrawAgainSoon_) {
-    return hasContent && speechEngineLoaded && !willDrawAgainSoon;
+      willDrawAgainSoon: boolean = this.willDrawAgainSoon_): boolean {
+    return hasContent && speechEngineLoaded && (selectedVoice !== undefined) &&
+        !willDrawAgainSoon;
   }
 
   // Kicks off a workflow to install a voice pack.

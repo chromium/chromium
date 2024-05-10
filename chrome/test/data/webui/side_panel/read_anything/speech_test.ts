@@ -78,6 +78,10 @@ suite('Speech', () => {
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
+
+    // @ts-ignore
+    app.enabledLanguagesInPref = ['en'];
+    app.getSpeechSynthesisVoice();
   });
 
   suite('on play', () => {

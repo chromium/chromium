@@ -123,26 +123,72 @@ suite('LanguageChanged', () => {
           app.languageChanged();
           assertEquals(selectedVoice(), otherVoice);
         });
-
         test('to the device default if there\'s no current voice', () => {
           app.languageChanged();
           assertEquals(selectedVoice(), defaultVoice);
         });
       });
 
-      test('to the default voice for this language', () => {
-        chrome.readingMode.baseLanguageForSpeech = lang1;
-        app.languageChanged();
-        assertEquals(selectedVoice(), defaultVoiceWithLang1);
+      suite('and this locale is enabled', () => {
+        test('to the default voice for this language', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [lang1];
+          chrome.readingMode.baseLanguageForSpeech = lang1;
+          app.languageChanged();
+          assertEquals(selectedVoice(), defaultVoiceWithLang1);
+        });
+
+        test(
+            'to the first listed voice for this language if there\'s no default',
+            () => {
+              // @ts-ignore
+              app.enabledLanguagesInPref = [lang2];
+              chrome.readingMode.baseLanguageForSpeech = lang2;
+              app.languageChanged();
+              assertEquals(selectedVoice(), firstVoiceWithLang2);
+            });
       });
 
-      test(
-          'to the first listed voice for this language if there\'s no default',
-          () => {
-            chrome.readingMode.baseLanguageForSpeech = lang2;
-            app.languageChanged();
-            assertEquals(selectedVoice(), firstVoiceWithLang2);
-          });
+      suite('and this locale is disabled', () => {
+        test('to voice in different locale and same language', () => {
+          const voice = {lang: 'en-GB', name: 'British', default: true} as
+              SpeechSynthesisVoice;
+          // @ts-ignore
+          app.enabledLanguagesInPref = ['en-gb'];
+          // @ts-ignore
+          app.availableVoices = [voice];
+          flush();
+          chrome.readingMode.baseLanguageForSpeech = 'en-US';
+
+          app.languageChanged();
+
+          assertEquals(selectedVoice(), voice);
+        });
+
+        test('to default enabled voice if no same locale', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [lang1];
+          // @ts-ignore
+          app.availableVoices = [defaultVoiceWithLang1];
+          flush();
+          chrome.readingMode.baseLanguageForSpeech = lang2;
+
+          app.languageChanged();
+
+          assertEquals(selectedVoice(), defaultVoiceWithLang1);
+        });
+
+        test('to undefined if no enabled languages', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [];
+          flush();
+          chrome.readingMode.baseLanguageForSpeech = lang2;
+
+          app.languageChanged();
+
+          assertEquals(selectedVoice(), undefined);
+        });
+      });
     });
   });
 

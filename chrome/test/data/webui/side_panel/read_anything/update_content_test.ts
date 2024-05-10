@@ -43,6 +43,12 @@ suite('UpdateContent', () => {
         .addTag(8, /* parentId= */ 1, 'p')
         .addText(textNodeIds[3]!, /* parentId= */ 8, texts[3]!)
         .build(readingMode);
+
+    // @ts-ignore
+    app.enabledLanguagesInPref = ['en-US'];
+    // @ts-ignore
+    app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
+    app.getSpeechSynthesisVoice();
   });
 
   suite('after update content, read aloud is', () => {

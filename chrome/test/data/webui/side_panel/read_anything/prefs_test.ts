@@ -145,6 +145,8 @@ suite('PrefsTest', () => {
         });
 
         test('to the default voice for this language', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
           assertEquals(selectedVoice(), defaultVoiceWithLang1);
@@ -153,6 +155,8 @@ suite('PrefsTest', () => {
         test(
             'to the first listed voice for this language if there\'s no default',
             () => {
+              // @ts-ignore
+              app.enabledLanguagesInPref = [lang2];
               app.speechSynthesisLanguage = lang2;
               app.restoreSettingsFromPrefs();
               assertEquals(selectedVoice(), firstVoiceWithLang2);

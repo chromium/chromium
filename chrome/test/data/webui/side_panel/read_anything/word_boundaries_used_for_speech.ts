@@ -73,6 +73,11 @@ suite('WordBoundariesUsedForSpeech', () => {
     document.body.appendChild(app);
     // @ts-ignore
     app.firstUtteranceSpoken = true;
+    // @ts-ignore
+    app.enabledLanguagesInPref = ['en-US'];
+    // @ts-ignore
+    app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
+    app.getSpeechSynthesisVoice();
     flush();
     playPauseButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
@@ -131,6 +136,7 @@ suite('WordBoundariesUsedForSpeech', () => {
           playPauseButton.click();
           const state: WordBoundaryState = app.wordBoundaryState;
           assertEquals(state.mode, WordBoundaryMode.BOUNDARY_DETECTED);
+          assertTrue(app.getSpeechSynthesisVoice() !== undefined);
           assertEquals(state.previouslySpokenIndex, 0);
           assertEquals(state.speechUtteranceStartIndex, 10);
         });
