@@ -62,9 +62,6 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // more general approach.
   virtual bool IsEligibleForSeaPen(const AccountId& account_id) = 0;
 
-  // Returns true if the device is enterprise managed.
-  virtual bool IsEnterpriseManaged() const = 0;
-
   // Return the number of users that have previously logged in on the device.
   // Returns nullopt in the event where we cannot query the number of existing
   // users, for instance, when `UserManager` is uninitialized.

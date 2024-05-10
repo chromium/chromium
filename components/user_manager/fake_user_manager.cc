@@ -360,10 +360,6 @@ bool FakeUserManager::IsEphemeralAccountIdByPolicy(
   return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
-bool FakeUserManager::IsEnterpriseManaged() const {
-  return false;
-}
-
 bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return false;

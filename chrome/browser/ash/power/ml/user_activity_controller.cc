@@ -9,7 +9,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/user_manager.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
@@ -62,8 +61,7 @@ UserActivityController::UserActivityController() {
   user_activity_manager_ = std::make_unique<UserActivityManager>(
       &user_activity_ukm_logger_, detector, power_manager_client,
       session_manager,
-      video_observer_user_logger.InitWithNewPipeAndPassReceiver(),
-      user_manager::UserManager::Get());
+      video_observer_user_logger.InitWithNewPipeAndPassReceiver());
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()

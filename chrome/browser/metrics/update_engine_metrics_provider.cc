@@ -10,6 +10,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -26,10 +27,14 @@ void UpdateEngineMetricsProvider::ProvideCurrentSessionData(
 }
 
 bool UpdateEngineMetricsProvider::IsConsumerAutoUpdateToggleEligible() {
-  const auto* user_manager = user_manager::UserManager::Get();
-  if (!user_manager || user_manager->IsEnterpriseManaged() ||
-      !user_manager->IsCurrentUserOwner())
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
+  }
+
+  const auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager || !user_manager->IsCurrentUserOwner()) {
+    return false;
+  }
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =

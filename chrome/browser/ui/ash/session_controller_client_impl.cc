@@ -357,11 +357,6 @@ bool SessionControllerClientImpl::IsEligibleForSeaPen(
   return ash::personalization_app::IsEligibleForSeaPen(user_profile);
 }
 
-bool SessionControllerClientImpl::IsEnterpriseManaged() const {
-  const auto* user_manager = UserManager::Get();
-  return user_manager && user_manager->IsEnterpriseManaged();
-}
-
 std::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
   const auto* user_manager = UserManager::Get();
   return !user_manager ? std::nullopt

@@ -148,7 +148,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEligibleForSeaPen(const AccountId& account_id) override;
-  bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
@@ -156,10 +155,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   // please set this to true.
   void set_show_lock_screen_views(bool should_show) {
     should_show_lock_screen_ = should_show;
-  }
-
-  void set_is_enterprise_managed(bool is_enterprise_managed) {
-    is_enterprise_managed_ = is_enterprise_managed;
   }
 
   void set_is_eligible_for_background_replace(

@@ -414,9 +414,6 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsUserCryptohomeDataEphemeral(
       const AccountId& account_id) const = 0;
 
-  // Returns true if device is enterprise managed.
-  virtual bool IsEnterpriseManaged() const = 0;
-
   virtual void AddObserver(Observer* obs) = 0;
   virtual void RemoveObserver(Observer* obs) = 0;
 

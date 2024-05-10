@@ -49,10 +49,6 @@ class TestSessionController : public ash::SessionController {
     return set_user_session_order_count_;
   }
 
-  void set_is_enterprise_managed(bool is_enterprise_managed) {
-    is_enterprise_managed_ = is_enterprise_managed;
-  }
-
   void set_existing_users_count(int existing_users_count) {
     existing_users_count_ = existing_users_count;
   }
@@ -88,7 +84,6 @@ class TestSessionController : public ash::SessionController {
   void AddObserver(ash::SessionObserver* observer) override;
   void RemoveObserver(ash::SessionObserver* observer) override;
   bool IsScreenLocked() const override;
-  bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 
  private:
@@ -101,7 +96,6 @@ class TestSessionController : public ash::SessionController {
   int set_user_session_order_count_ = 0;
   bool is_screen_locked_ = false;
   base::ObserverList<ash::SessionObserver> observers_;
-  bool is_enterprise_managed_ = false;
   int existing_users_count_ = 0;
 };
 

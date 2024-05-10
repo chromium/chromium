@@ -67,7 +67,6 @@ class ChromeUserManagerImpl
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  bool IsEnterpriseManaged() const override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;

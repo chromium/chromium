@@ -731,8 +731,9 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
       authenticator_ = injected_authenticator_builder_->Create(consumer);
     } else {
       auto* user_manager = user_manager::UserManager::Get();
-      bool new_user_can_become_owner = !user_manager->IsEnterpriseManaged() &&
-                                       user_manager->GetUsers().empty();
+      bool new_user_can_become_owner =
+          !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
+          user_manager->GetUsers().empty();
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
           base::BindRepeating(&RecordKnownUser), new_user_can_become_owner,

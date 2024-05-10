@@ -34,10 +34,6 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
-namespace user_manager {
-class UserManager;
-}  // namespace user_manager
-
 namespace ash {
 namespace power {
 namespace ml {
@@ -95,8 +91,7 @@ class UserActivityManager : public ui::UserActivityObserver,
       ui::UserActivityDetector* detector,
       chromeos::PowerManagerClient* power_manager_client,
       session_manager::SessionManager* session_manager,
-      mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-      const user_manager::UserManager* user_manager);
+      mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver);
 
   UserActivityManager(const UserActivityManager&) = delete;
   UserActivityManager& operator=(const UserActivityManager&) = delete;
@@ -236,8 +231,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   const raw_ptr<session_manager::SessionManager> session_manager_;
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
-
-  const raw_ptr<const user_manager::UserManager> user_manager_;
 
   const raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
 

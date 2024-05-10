@@ -121,7 +121,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SetEphemeralModeConfig(
       EphemeralModeConfig ephemeral_mode_config) override;
 
-  bool IsEnterpriseManaged() const override;
   void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) override {}
   bool IsDeviceLocalAccountMarkedForRemoval(

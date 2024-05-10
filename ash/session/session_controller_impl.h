@@ -235,7 +235,6 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   void AddObserver(SessionObserver* observer) override;
   void RemoveObserver(SessionObserver* observer) override;
   bool IsScreenLocked() const override;
-  bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 
   // Test helpers.

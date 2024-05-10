@@ -127,7 +127,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
 
   // user_manager::UserManagerBase override.
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
-  bool IsEnterpriseManaged() const override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   // Just make it public for tests.
@@ -149,10 +148,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   }
   void set_current_user_child(bool child_user) {
     current_user_child_ = child_user;
-  }
-
-  void set_is_enterprise_managed(bool is_enterprise_managed) {
-    is_enterprise_managed_ = is_enterprise_managed;
   }
 
   void set_last_session_active_account_id(

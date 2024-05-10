@@ -559,10 +559,6 @@ void FakeChromeUserManager::LoadDeviceLocalAccounts(
   NOTREACHED();
 }
 
-bool FakeChromeUserManager::IsEnterpriseManaged() const {
-  return is_enterprise_managed_;
-}
-
 bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return false;

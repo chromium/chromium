@@ -424,10 +424,6 @@ void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
   // handled via the kAccountsPrefDeviceLocalAccounts device setting observer.
 }
 
-bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
-  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
-}
-
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     std::set<AccountId>* device_local_accounts_set) {
   const base::Value::List& prefs_device_local_accounts =

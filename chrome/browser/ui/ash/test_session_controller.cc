@@ -98,10 +98,6 @@ bool TestSessionController::IsScreenLocked() const {
   return is_screen_locked_;
 }
 
-bool TestSessionController::IsEnterpriseManaged() const {
-  return is_enterprise_managed_;
-}
-
 std::optional<int> TestSessionController::GetExistingUsersCount() const {
   return existing_users_count_;
 }

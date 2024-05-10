@@ -13,8 +13,6 @@ bool IsGuestModeActive();
 
 bool IsChildUser();
 
-bool IsDeviceEnterpriseManaged();
-
 // Determines whether powerwash is allowed for this user. Powerwash is disabled
 // for guest users, child users, and managed users.
 bool IsPowerwashAllowed();

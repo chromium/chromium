@@ -333,10 +333,6 @@ bool TestSessionControllerClient::IsEligibleForSeaPen(
   return is_eligible_for_background_replace_;
 }
 
-bool TestSessionControllerClient::IsEnterpriseManaged() const {
-  return is_enterprise_managed_;
-}
-
 std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
 }

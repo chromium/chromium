@@ -253,10 +253,6 @@ bool SessionControllerImpl::IsUserFirstLogin() const {
   return GetUserSession(0)->user_info.is_new_profile;
 }
 
-bool SessionControllerImpl::IsEnterpriseManaged() const {
-  return client_ && client_->IsEnterpriseManaged();
-}
-
 std::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
   return client_ ? std::optional<int>(client_->GetExistingUsersCount())
                  : std::nullopt;

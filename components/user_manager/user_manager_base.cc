@@ -32,6 +32,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crash/core/common/crash_key.h"
@@ -1021,8 +1022,10 @@ bool UserManagerBase::CanUserBeRemoved(const User* user) const {
   // in order not to remove an owner. However due to non-instant nature of
   // ownership assignment this later check may sometimes fail.
   // See http://crosbug.com/12723
-  if (users_.size() < 2 && !IsEnterpriseManaged())
+  if (users_.size() < 2 &&
+      !ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
+  }
 
   // Sanity check: do not allow any of the the logged in users to be removed.
   for (UserList::const_iterator it = logged_in_users_.begin();

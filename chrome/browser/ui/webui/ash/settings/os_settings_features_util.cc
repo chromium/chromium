@@ -14,6 +14,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/user_manager/user_manager.h"
 
@@ -29,12 +30,9 @@ bool IsChildUser() {
   return user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 }
 
-bool IsDeviceEnterpriseManaged() {
-  return user_manager::UserManager::Get()->IsEnterpriseManaged();
-}
-
 bool IsPowerwashAllowed() {
-  return !IsDeviceEnterpriseManaged() && !IsGuestModeActive() && !IsChildUser();
+  return !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
+         !IsGuestModeActive() && !IsChildUser();
 }
 
 bool IsSanitizeAllowed() {

@@ -93,7 +93,6 @@ class SessionControllerClientImpl
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   base::FilePath GetProfilePath(const AccountId& account_id) override;
   bool IsEligibleForSeaPen(const AccountId& account_id) override;
-  bool IsEnterpriseManaged() const override;
   std::optional<int> GetExistingUsersCount() const override;
 
   // Returns true if a multi-profile user can be added to the session or if
