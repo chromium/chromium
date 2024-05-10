@@ -64,6 +64,13 @@ config("compiler") {
     }
   }
 
+  # Disable TLSDESC for riscv64 until the Android NDK supports it. While
+  # Chromium's clang turns it on by default for Android RISC-V devices, NDK r27
+  # currently has it disabled. This can likely be removed in NDK r28.
+  if (current_cpu == "riscv64") {
+    cflags += [ "-mtls-dialect=trad" ]
+  }
+
   # $compile_api_level corresponds to the API level used for the sysroot path
   # calculation in //build/config/android/config.gni
   if (android_64bit_target_cpu) {
