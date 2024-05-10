@@ -216,6 +216,6 @@ const char kPrivacySandboxActivityTypeStorageWithinXDaysName[] =
 
 const base::FeatureParam<int> kPrivacySandboxActivityTypeStorageWithinXDays{
     &kPrivacySandboxActivityTypeStorage,
-    kPrivacySandboxActivityTypeStorageWithinXDaysName, 30};
+    kPrivacySandboxActivityTypeStorageWithinXDaysName, 60};
 
 }  // namespace privacy_sandbox
