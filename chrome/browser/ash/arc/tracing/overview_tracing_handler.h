@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ARC_GRAPHICS_TRACING_ARC_GRAPHICS_TRACING_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_ARC_GRAPHICS_TRACING_ARC_GRAPHICS_TRACING_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_ARC_TRACING_OVERVIEW_TRACING_HANDLER_H_
+#define CHROME_BROWSER_ASH_ARC_TRACING_OVERVIEW_TRACING_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -22,10 +22,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace exo {
 class WMHelper;
 }  // namespace exo
@@ -34,19 +30,31 @@ namespace aura {
 class Window;
 }  // namespace aura
 
-namespace ash {
+namespace arc {
 
-class ArcGraphicsTracingHandler : public wm::ActivationChangeObserver,
-                                  public aura::WindowObserver,
-                                  public exo::SurfaceObserver {
+struct OverviewTracingResult {
+  // In case model cannot be built/load empty `base::Value` is returned.
+  base::Value model;
+
+  // File in which the model JSON is saved.
+  base::FilePath path;
+
+  // Error or success message.
+  std::string status;
+};
+
+class OverviewTracingHandler : public wm::ActivationChangeObserver,
+                               public aura::WindowObserver,
+                               public exo::SurfaceObserver {
  public:
   struct ActiveTrace;
+  using Result = OverviewTracingResult;
 
   // Called when graphics model is built or load. Extra string parameter
   // contains a status. In case model cannot be built/load empty
   // |base::Value| is returned.
   using GraphicsModelReadyCb =
-      base::RepeatingCallback<void(std::pair<base::Value, std::string>)>;
+      base::RepeatingCallback<void(std::unique_ptr<OverviewTracingResult>)>;
 
   using ArcWindowFocusChangeCb = base::RepeatingCallback<void(aura::Window*)>;
 
@@ -55,14 +63,13 @@ class ArcGraphicsTracingHandler : public wm::ActivationChangeObserver,
   std::string GetModelBaseNameFromTitle(std::string_view title,
                                         base::Time timestamp);
 
-  explicit ArcGraphicsTracingHandler(
+  explicit OverviewTracingHandler(
       ArcWindowFocusChangeCb arc_window_focus_change);
 
-  ArcGraphicsTracingHandler(const ArcGraphicsTracingHandler&) = delete;
-  ArcGraphicsTracingHandler& operator=(const ArcGraphicsTracingHandler&) =
-      delete;
+  OverviewTracingHandler(const OverviewTracingHandler&) = delete;
+  OverviewTracingHandler& operator=(const OverviewTracingHandler&) = delete;
 
-  ~ArcGraphicsTracingHandler() override;
+  ~OverviewTracingHandler() override;
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -131,9 +138,9 @@ class ArcGraphicsTracingHandler : public wm::ActivationChangeObserver,
 
   raw_ptr<aura::Window> arc_active_window_ = nullptr;
 
-  base::WeakPtrFactory<ArcGraphicsTracingHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OverviewTracingHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace arc
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ARC_GRAPHICS_TRACING_ARC_GRAPHICS_TRACING_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_TRACING_OVERVIEW_TRACING_HANDLER_H_

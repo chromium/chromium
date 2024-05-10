@@ -12,11 +12,11 @@
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
+#include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,24 +60,27 @@ void CreateAndAddOverviewDataSource(Profile* profile) {
   source->AddLocalizedStrings(localized_strings);
 }
 
-std::pair<base::Value, std::string> LoadGraphicsModel(
-    const std::string& json_text) {
+using Result = arc::OverviewTracingHandler::Result;
+
+std::unique_ptr<Result> LoadGraphicsModel(const std::string& json_text) {
   arc::ArcTracingGraphicsModel graphics_model;
   graphics_model.set_skip_structure_validation();
   if (!graphics_model.LoadFromJson(json_text)) {
-    return std::make_pair(base::Value(), "Failed to load tracing model");
+    return std::make_unique<Result>(base::Value(), base::FilePath(),
+                                    "Failed to load tracing model");
   }
 
   base::Value::Dict model = graphics_model.Serialize();
-  return std::make_pair(base::Value(std::move(model)),
-                        "Tracing model is loaded");
+  return std::make_unique<Result>(base::Value(std::move(model)),
+                                  base::FilePath(), "Tracing model is loaded");
 }
 
 class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
  public:
   Handler() : weak_ptr_factory_(this) {
-    tracing_ = std::make_unique<ArcGraphicsTracingHandler>(base::BindRepeating(
-        &Handler::OnArcWindowFocusChange, weak_ptr_factory_.GetWeakPtr()));
+    tracing_ =
+        std::make_unique<arc::OverviewTracingHandler>(base::BindRepeating(
+            &Handler::OnArcWindowFocusChange, weak_ptr_factory_.GetWeakPtr()));
 
     tracing_->set_start_build_model_cb(
         base::BindRepeating(&Handler::SetStatus, weak_ptr_factory_.GetWeakPtr(),
@@ -159,15 +162,16 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
     platform_util::ActivateWindow(window);
   }
 
-  void OnGraphicsModelReady(std::pair<base::Value, std::string> result) {
-    SetStatus(result.second);
+  void OnGraphicsModelReady(
+      std::unique_ptr<arc::OverviewTracingHandler::Result> result) {
+    SetStatus(result->status);
 
-    if (!result.first.is_dict()) {
+    if (!result->model.is_dict()) {
       return;
     }
 
     CallJavascriptFunction(kJavascriptDomain + std::string("setModel"),
-                           std::move(result.first));
+                           std::move(result->model));
 
     // If we are running in response to a window activation from within an
     // observer, activating the web UI immediately will cause a DCHECK failure.
@@ -204,7 +208,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
   }
 
   raw_ptr<aura::Window> arc_active_window_{nullptr};
-  std::unique_ptr<ArcGraphicsTracingHandler> tracing_;
+  std::unique_ptr<arc::OverviewTracingHandler> tracing_;
   base::TimeDelta max_tracing_time_{base::Seconds(5)};
 
   base::WeakPtrFactory<Handler> weak_ptr_factory_;

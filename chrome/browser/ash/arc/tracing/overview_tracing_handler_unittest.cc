@@ -2,32 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
+#include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/test/test_window_builder.h"
-#include "base/files/file_path.h"
 #include "base/test/test_file_util.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
+#include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/exo/shell_surface_util.h"
-#include "components/exo/wm_helper.h"
-#include "components/prefs/testing_pref_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_ui.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
-#include "ui/gfx/presentation_feedback.h"
 
-namespace ash {
+namespace arc {
 
 using EventType = arc::ArcTracingGraphicsModel::EventType;
 
@@ -40,73 +30,19 @@ constexpr std::string_view kBasicSystrace =
     // clang-format on
     "\"}";
 
-class TestHandler : public ArcGraphicsTracingHandler {
+class OverviewTracingHandlerTest : public ChromeAshTestBase {
  public:
-  explicit TestHandler(ArcWindowFocusChangeCb arc_window_focus_change)
-      : ArcGraphicsTracingHandler(std::move(arc_window_focus_change)) {}
-
-  void StartTracingOnControllerRespond() {
-    DCHECK(after_start_);
-    std::move(after_start_).Run();
-  }
-
-  void StopTracingOnControllerRespond(std::unique_ptr<std::string> trace_data) {
-    DCHECK(after_stop_);
-    std::move(after_stop_).Run(std::move(trace_data));
-  }
-
-  void VerifyNoUnrespondedCallback() {
-    DCHECK(after_start_.is_null());
-    DCHECK(after_stop_.is_null());
-  }
-
-  void set_now(base::Time now) { now_ = now; }
-  base::Time Now() override { return now_; }
-  base::TimeTicks SystemTicksNow() override {
-    return now_ - trace_time_base_ + base::TimeTicks();
-  }
-
-  void set_trace_time_base(base::Time trace_time_base) {
-    trace_time_base_ = trace_time_base;
-  }
-
- private:
-  void StartTracingOnController(
-      const base::trace_event::TraceConfig& trace_config,
-      content::TracingController::StartTracingDoneCallback after_start)
-      override {
-    after_start_ = std::move(after_start);
-  }
-
-  void StopTracingOnController(
-      content::TracingController::CompletionCallback after_stop) override {
-    after_stop_ = std::move(after_stop);
-  }
-
-  content::TracingController::StartTracingDoneCallback after_start_;
-  content::TracingController::CompletionCallback after_stop_;
-
-  base::Time trace_time_base_;
-  base::Time now_;
-  std::unique_ptr<aura::Window> web_ui_window_ =
-      TestWindowBuilder()
-          .SetWindowTitle(u"arc-overview-tracing web UI")
-          .Build();
-};
-
-class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
- public:
-  ArcGraphicsTracingHandlerTest()
+  OverviewTracingHandlerTest()
       : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>(
                 base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
         weak_ptr_factory_(this) {}
 
-  ~ArcGraphicsTracingHandlerTest() override = default;
+  ~OverviewTracingHandlerTest() override = default;
 
-  ArcGraphicsTracingHandlerTest(const ArcGraphicsTracingHandlerTest&) = delete;
-  ArcGraphicsTracingHandlerTest& operator=(
-      const ArcGraphicsTracingHandlerTest&) = delete;
+  OverviewTracingHandlerTest(const OverviewTracingHandlerTest&) = delete;
+  OverviewTracingHandlerTest& operator=(const OverviewTracingHandlerTest&) =
+      delete;
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
@@ -118,15 +54,15 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
     // requires.
     wm_helper_ = std::make_unique<exo::WMHelper>();
     download_path_ = base::GetTempDirForTesting();
-    handler_ = std::make_unique<TestHandler>(base::BindRepeating(
-        &ArcGraphicsTracingHandlerTest::OnArcWindowFocusChange,
-        weak_ptr_factory_.GetWeakPtr()));
-    handler_->set_start_build_model_cb(
-        base::BindRepeating(&ArcGraphicsTracingHandlerTest::OnStartBuildModel,
+    handler_ = std::make_unique<OverviewTracingTestHandler>(
+        base::BindRepeating(&OverviewTracingHandlerTest::OnArcWindowFocusChange,
                             weak_ptr_factory_.GetWeakPtr()));
-    handler_->set_graphics_model_ready_cb(base::BindRepeating(
-        &ArcGraphicsTracingHandlerTest::OnGraphicsModelReady,
-        weak_ptr_factory_.GetWeakPtr()));
+    handler_->set_start_build_model_cb(
+        base::BindRepeating(&OverviewTracingHandlerTest::OnStartBuildModel,
+                            weak_ptr_factory_.GetWeakPtr()));
+    handler_->set_graphics_model_ready_cb(
+        base::BindRepeating(&OverviewTracingHandlerTest::OnGraphicsModelReady,
+                            weak_ptr_factory_.GetWeakPtr()));
 
     local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TestingBrowserProcess::GetGlobal()->SetLocalState(
@@ -175,10 +111,10 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
   }
 
   void OnStartBuildModel() { events_.push_back("start building model"); }
-  void OnGraphicsModelReady(std::pair<base::Value, std::string> results) {
+  void OnGraphicsModelReady(std::unique_ptr<OverviewTracingResult> results) {
     events_.push_back(
-        base::StrCat({"graphics model status: ", results.second}));
-    model_ = std::move(results.first);
+        base::StrCat({"graphics model status: ", results->status}));
+    model_ = std::move(results->model);
   }
 
   // The time relative to which trace tick timestamps are calculated. This is
@@ -188,17 +124,17 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
   ArcAppTest arc_app_test_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
   base::FilePath download_path_;
-  std::unique_ptr<TestHandler> handler_;
+  std::unique_ptr<OverviewTracingTestHandler> handler_;
   std::unique_ptr<icu::TimeZone> saved_tz_;
   std::vector<std::string> events_;
   base::Value model_;
 
   std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
 
-  base::WeakPtrFactory<ArcGraphicsTracingHandlerTest> weak_ptr_factory_;
+  base::WeakPtrFactory<OverviewTracingHandlerTest> weak_ptr_factory_;
 };
 
-TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
+TEST_F(OverviewTracingHandlerTest, ModelName) {
   base::FilePath download_path = base::FilePath::FromASCII("/mnt/downloads");
   base::Time timestamp = base::Time::UnixEpoch() + base::Seconds(1);
 
@@ -223,7 +159,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, ModelName) {
             handler_->GetModelBaseNameFromTitle("Secret App", timestamp));
 }
 
-TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
+TEST_F(OverviewTracingHandlerTest, FilterSystemTraceByTimestamp) {
   handler_->set_now(
       base::Time::FromMillisecondsSinceUnixEpoch(1'500'088'880'000));
   handler_->set_trace_time_base(
@@ -283,7 +219,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
   }
 }
 
-TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
+TEST_F(OverviewTracingHandlerTest, SwitchWindowDuringModelBuild) {
   handler_->set_now(
       base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
   handler_->set_trace_time_base(
@@ -335,7 +271,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
   }
 }
 
-TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
+TEST_F(OverviewTracingHandlerTest, SwitchWindowDuringTrace) {
   handler_->set_now(
       base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
   handler_->set_trace_time_base(
@@ -386,7 +322,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
   EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
 }
 
-TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowBeforeTraceStart) {
+TEST_F(OverviewTracingHandlerTest, SwitchWindowBeforeTraceStart) {
   handler_->set_now(
       base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
   handler_->set_trace_time_base(
@@ -430,7 +366,7 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowBeforeTraceStart) {
             "i will be traced");
 }
 
-TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {
+TEST_F(OverviewTracingHandlerTest, CommitAndPresentTimestampsInModel) {
   handler_->set_now(
       base::Time::FromMillisecondsSinceUnixEpoch(1'600'044'440'000));
   handler_->set_trace_time_base(
@@ -503,4 +439,4 @@ TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {
 
 }  // namespace
 
-}  // namespace ash
+}  // namespace arc

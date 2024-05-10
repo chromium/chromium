@@ -3092,8 +3092,6 @@ static_library("ui") {
       "webui/ash/app_install/app_install_page_handler.h",
       "webui/ash/app_install/app_install_ui.cc",
       "webui/ash/app_install/app_install_ui.h",
-      "webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.cc",
-      "webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h",
       "webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.cc",
       "webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h",
       "webui/ash/arc_power_control/arc_power_control_handler.cc",
