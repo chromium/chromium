@@ -403,6 +403,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
 FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
     bool focus_on_show) {
   focus_on_show_override_ = focus_on_show;
+  for (auto& rotating_promo : rotating_promos_) {
+    if (rotating_promo.has_value()) {
+      rotating_promo->focus_on_show_override_ =
+          rotating_promo->focus_on_show_override_.value_or(focus_on_show);
+    }
+  }
   return *this;
 }
 

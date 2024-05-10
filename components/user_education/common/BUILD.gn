@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "feature_promo_controller_unittest.cc",
     "feature_promo_lifecycle_unittest.cc",
     "feature_promo_session_manager_unittest.cc",
+    "feature_promo_specification_unittest.cc",
     "feature_promo_storage_service_unittest.cc",
     "help_bubble_factory_registry_unittest.cc",
     "new_badge_controller_unittest.cc",
