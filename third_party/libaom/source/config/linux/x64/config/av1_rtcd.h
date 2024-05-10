@@ -478,6 +478,54 @@ void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CO
 void av1_resize_and_extend_frame_ssse3(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 RTCD_EXTERN void (*av1_resize_and_extend_frame)(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 
+void av1_resize_horz_dir_c(const uint8_t* const input,
+                           int in_stride,
+                           uint8_t* intbuf,
+                           int height,
+                           int filteredlength,
+                           int width2);
+void av1_resize_horz_dir_avx2(const uint8_t* const input,
+                              int in_stride,
+                              uint8_t* intbuf,
+                              int height,
+                              int filteredlength,
+                              int width2);
+RTCD_EXTERN void (*av1_resize_horz_dir)(const uint8_t* const input,
+                                        int in_stride,
+                                        uint8_t* intbuf,
+                                        int height,
+                                        int filteredlength,
+                                        int width2);
+
+bool av1_resize_vert_dir_c(uint8_t* intbuf,
+                           uint8_t* output,
+                           int out_stride,
+                           int height,
+                           int height2,
+                           int width2,
+                           int start_col);
+bool av1_resize_vert_dir_sse2(uint8_t* intbuf,
+                              uint8_t* output,
+                              int out_stride,
+                              int height,
+                              int height2,
+                              int width2,
+                              int start_col);
+bool av1_resize_vert_dir_avx2(uint8_t* intbuf,
+                              uint8_t* output,
+                              int out_stride,
+                              int height,
+                              int height2,
+                              int width2,
+                              int start_col);
+RTCD_EXTERN bool (*av1_resize_vert_dir)(uint8_t* intbuf,
+                                        uint8_t* output,
+                                        int out_stride,
+                                        int height,
+                                        int height2,
+                                        int width2,
+                                        int start_col);
+
 void av1_round_shift_array_c(int32_t *arr, int size, int bit);
 void av1_round_shift_array_sse4_1(int32_t *arr, int size, int bit);
 RTCD_EXTERN void (*av1_round_shift_array)(int32_t *arr, int size, int bit);
@@ -613,35 +661,6 @@ cfl_subtract_average_fn cfl_get_subtract_average_fn_c(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_sse2(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_avx2(TX_SIZE tx_size);
 RTCD_EXTERN cfl_subtract_average_fn (*cfl_get_subtract_average_fn)(TX_SIZE tx_size);
-
-bool resize_vert_dir_c(uint8_t* intbuf,
-                       uint8_t* output,
-                       int out_stride,
-                       int height,
-                       int height2,
-                       int width2,
-                       int start_col);
-bool resize_vert_dir_sse2(uint8_t* intbuf,
-                          uint8_t* output,
-                          int out_stride,
-                          int height,
-                          int height2,
-                          int width2,
-                          int start_col);
-bool resize_vert_dir_avx2(uint8_t* intbuf,
-                          uint8_t* output,
-                          int out_stride,
-                          int height,
-                          int height2,
-                          int width2,
-                          int start_col);
-RTCD_EXTERN bool (*resize_vert_dir)(uint8_t* intbuf,
-                                    uint8_t* output,
-                                    int out_stride,
-                                    int height,
-                                    int height2,
-                                    int width2,
-                                    int start_col);
 
 void av1_rtcd(void);
 
@@ -787,6 +806,14 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_quantize_lp = av1_quantize_lp_avx2;
     av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;
     if (flags & HAS_SSSE3) av1_resize_and_extend_frame = av1_resize_and_extend_frame_ssse3;
+    av1_resize_horz_dir = av1_resize_horz_dir_c;
+    if (flags & HAS_AVX2) {
+      av1_resize_horz_dir = av1_resize_horz_dir_avx2;
+    }
+    av1_resize_vert_dir = av1_resize_vert_dir_sse2;
+    if (flags & HAS_AVX2) {
+      av1_resize_vert_dir = av1_resize_vert_dir_avx2;
+    }
     av1_round_shift_array = av1_round_shift_array_c;
     if (flags & HAS_SSE4_1) av1_round_shift_array = av1_round_shift_array_sse4_1;
     av1_selfguided_restoration = av1_selfguided_restoration_c;
@@ -858,10 +885,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_avx2;
     cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_sse2;
     if (flags & HAS_AVX2) cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_avx2;
-    resize_vert_dir = resize_vert_dir_sse2;
-    if (flags & HAS_AVX2) {
-      resize_vert_dir = resize_vert_dir_avx2;
-    }
 }
 #endif
 

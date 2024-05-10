@@ -468,6 +468,23 @@ void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CO
 void av1_resize_and_extend_frame_neon(const YV12_BUFFER_CONFIG *src, YV12_BUFFER_CONFIG *dst, const InterpFilter filter, const int phase, const int num_planes);
 #define av1_resize_and_extend_frame av1_resize_and_extend_frame_neon
 
+void av1_resize_horz_dir_c(const uint8_t* const input,
+                           int in_stride,
+                           uint8_t* intbuf,
+                           int height,
+                           int filteredlength,
+                           int width2);
+#define av1_resize_horz_dir av1_resize_horz_dir_c
+
+bool av1_resize_vert_dir_c(uint8_t* intbuf,
+                           uint8_t* output,
+                           int out_stride,
+                           int height,
+                           int height2,
+                           int width2,
+                           int start_col);
+#define av1_resize_vert_dir av1_resize_vert_dir_c
+
 void av1_round_shift_array_c(int32_t *arr, int size, int bit);
 void av1_round_shift_array_neon(int32_t *arr, int size, int bit);
 #define av1_round_shift_array av1_round_shift_array_neon
@@ -575,15 +592,6 @@ cfl_predict_lbd_fn cfl_get_predict_lbd_fn_neon(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_c(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_neon(TX_SIZE tx_size);
 #define cfl_get_subtract_average_fn cfl_get_subtract_average_fn_neon
-
-bool resize_vert_dir_c(uint8_t* intbuf,
-                       uint8_t* output,
-                       int out_stride,
-                       int height,
-                       int height2,
-                       int width2,
-                       int start_col);
-#define resize_vert_dir resize_vert_dir_c
 
 void av1_rtcd(void);
 
