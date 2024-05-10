@@ -38,23 +38,42 @@
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[numericCheckedValue_]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isMemorySaverMultistateModeEnabled_]]">
+<template is="dom-if" if="[[isMemorySaverModeAggressivenessEnabled_]]">
   <iron-collapse id="radioGroupCollapse"
       opened="[[isMemorySaverModeEnabled_(
           prefs.performance_tuning.high_efficiency_mode.state.value)]]">
     <div class="high-efficiency-radio-group">
-      <settings-radio-group id="radioGroup" on-change="onMemorySaverModeChange_"
-          pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
+      <settings-radio-group id="radioGroup"
+          on-change="onMemorySaverModeAggressivenessChange_"
+          pref="{{
+              prefs.performance_tuning.high_efficiency_mode.aggressiveness}}"
           group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
-        <controlled-radio-button id="enabledHeurusticButton"
-            label="$i18n{memorySaverModeHeuristicsLabel}"
-            name="[[memorySaverModeStateEnum_.DEPRECATED]]"
-            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
+        <controlled-radio-button id="conservativeButton"
+            label="$i18n{memorySaverModeConservativeLabel}"
+            name="[[memorySaverModeAggressivenessEnum_.CONSERVATIVE]]"
+            pref="[[
+                prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+          <div class="cr-secondary-text">
+            $i18n{memorySaverModeConservativeDescription}
+          </div>
         </controlled-radio-button>
-        <controlled-radio-button id="enabledOnTimerButton"
-            label="$i18n{memorySaverModeOnTimerLabel}"
-            name="[[memorySaverModeStateEnum_.ENABLED]]"
-            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
+        <controlled-radio-button id="mediumButton"
+            label="$i18n{memorySaverModeMediumLabel}"
+            name="[[memorySaverModeAggressivenessEnum_.MEDIUM]]"
+            pref="[[
+                prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+          <div class="cr-secondary-text">
+            $i18n{memorySaverModeMediumDescription}
+          </div>
+        </controlled-radio-button>
+        <controlled-radio-button id="aggressiveButton"
+            label="$i18n{memorySaverModeAggressiveLabel}"
+            name="[[memorySaverModeAggressivenessEnum_.AGGRESSIVE]]"
+            pref="[[
+                prefs.performance_tuning.high_efficiency_mode.aggressiveness]]">
+          <div class="cr-secondary-text">
+            $i18n{memorySaverModeAggressiveDescription}
+          </div>
         </controlled-radio-button>
       </settings-radio-group>
     </div>

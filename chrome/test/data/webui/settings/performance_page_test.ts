@@ -8,7 +8,7 @@ import 'chrome://settings/settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeAggressiveness, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -21,7 +21,7 @@ const memorySaverModeMockPrefs = {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: MemorySaverModeState.DISABLED,
     },
-    time_before_discard_in_minutes: {
+    aggressiveness: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 1,
     },
@@ -115,10 +115,12 @@ suite('PerformancePage', function() {
   });
 });
 
-suite('PerformancePageMultistate', function() {
+suite('PerformancePageImprovements', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
-  let enabledHeurusticButton: HTMLElement;
+  let conservativeButton: HTMLElement;
+  let mediumButton: HTMLElement;
+  let aggressiveButton: HTMLElement;
   let radioGroup: SettingsRadioGroupElement;
   let radioGroupCollapse: IronCollapseElement;
   let discardRingTreatmentToggleButton: SettingsToggleButtonElement;
@@ -126,7 +128,7 @@ suite('PerformancePageMultistate', function() {
   /**
    * Used to get elements form the performance page that may or may not exist,
    * such as those inside a dom-if.
-   * TODO(charlesmeng): remove once kMemorySaverMultistateMode flag is
+   * TODO(charlesmeng): remove once MemorySaverModeAggressiveness flag is
    * cleaned up, since elements can then be selected with $ interface
    */
   function getPerformancePageElement<T extends HTMLElement = HTMLElement>(
@@ -135,6 +137,24 @@ suite('PerformancePageMultistate', function() {
     assertTrue(!!el);
     assertTrue(el instanceof HTMLElement);
     return el;
+  }
+
+  async function testMemorySaverModeChangeState(
+      button: HTMLElement, expectedState: MemorySaverModeState,
+      expectedAggressiveness: MemorySaverModeAggressiveness) {
+    performanceMetricsProxy.reset();
+    button.click();
+    const state = await performanceMetricsProxy.whenCalled(
+        'recordMemorySaverModeChanged');
+    assertEquals(state, expectedState);
+    assertEquals(
+        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value, expectedState);
+    const aggressiveness = await performanceMetricsProxy.whenCalled(
+        'recordMemorySaverModeAggressivenessChanged');
+    assertEquals(aggressiveness, expectedAggressiveness);
+    assertEquals(
+        performancePage.getPref(MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF).value,
+        expectedAggressiveness);
   }
 
   setup(function() {
@@ -153,8 +173,9 @@ suite('PerformancePageMultistate', function() {
     document.body.appendChild(performancePage);
     flush();
 
-    enabledHeurusticButton =
-        getPerformancePageElement('enabledHeurusticButton');
+    conservativeButton = getPerformancePageElement('conservativeButton');
+    mediumButton = getPerformancePageElement('mediumButton');
+    aggressiveButton = getPerformancePageElement('aggressiveButton');
     radioGroup = getPerformancePageElement('radioGroup');
     radioGroupCollapse = getPerformancePageElement('radioGroupCollapse');
     discardRingTreatmentToggleButton =
@@ -170,49 +191,39 @@ suite('PerformancePageMultistate', function() {
 
   test('testMemorySaverModeEnabled', function() {
     performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DEPRECATED);
-    assertTrue(performancePage.$.toggleButton.checked);
-    assertTrue(radioGroupCollapse.opened);
-    assertEquals(String(MemorySaverModeState.DEPRECATED), radioGroup.selected);
-  });
-
-  test('testMemorySaverModeEnabledOnTimer', function() {
-    performancePage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(performancePage.$.toggleButton.checked);
     assertTrue(radioGroupCollapse.opened);
-    assertEquals(String(MemorySaverModeState.ENABLED), radioGroup.selected);
+    assertEquals(
+        String(MemorySaverModeAggressiveness.MEDIUM), radioGroup.selected);
   });
 
-  test('testMemorySaverModeChangeState', async function() {
+  test('testMemorySaverModeStateChanges', async function() {
     performancePage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
+    performancePage.setPrefValue(
+        MEMORY_SAVER_MODE_AGGRESSIVENESS_PREF,
+        MemorySaverModeAggressiveness.MEDIUM);
 
-    performancePage.$.toggleButton.click();
-    let state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.ENABLED);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.ENABLED);
+    testMemorySaverModeChangeState(
+        performancePage.$.toggleButton, MemorySaverModeState.ENABLED,
+        MemorySaverModeAggressiveness.MEDIUM);
 
-    performanceMetricsProxy.reset();
-    enabledHeurusticButton.click();
-    state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.DEPRECATED);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.DEPRECATED);
+    testMemorySaverModeChangeState(
+        aggressiveButton, MemorySaverModeState.ENABLED,
+        MemorySaverModeAggressiveness.AGGRESSIVE);
 
-    performanceMetricsProxy.reset();
-    performancePage.$.toggleButton.click();
-    state = await performanceMetricsProxy.whenCalled(
-        'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.DISABLED);
-    assertEquals(
-        performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.DISABLED);
+    testMemorySaverModeChangeState(
+        conservativeButton, MemorySaverModeState.ENABLED,
+        MemorySaverModeAggressiveness.CONSERVATIVE);
+
+    testMemorySaverModeChangeState(
+        mediumButton, MemorySaverModeState.ENABLED,
+        MemorySaverModeAggressiveness.MEDIUM);
+
+    testMemorySaverModeChangeState(
+        performancePage.$.toggleButton, MemorySaverModeState.DISABLED,
+        MemorySaverModeAggressiveness.MEDIUM);
   });
 
   test('testDiscardTingTreatmentChangeState', async function() {

@@ -50,6 +50,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Expanded chip with savings"/>
 </enum>
 
+<enum name="MemorySaverModeAggressiveness">
+  <int value="0" label="Conservative"/>
+  <int value="1" label="Medium"/>
+  <int value="2" label="Aggressive"/>
+</enum>
+
 <enum name="MemorySaverModeExceptionListAction">
   <int value="0" label="Add"/>
   <int value="1" label="Edit"/>

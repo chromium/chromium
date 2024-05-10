@@ -1240,6 +1240,24 @@
   <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the dropdown menu in the second option of the memory saver radio group. The dropdown allows the user to select the time before a tab is discarded by memory saver.">
     Choose time range
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CONSERVATIVE_LABEL" desc="Label for the conservative memory saver aggressiveness option">
+    Moderate
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_MEDIUM_LABEL" desc="Label for the medium memory saver aggressiveness option">
+    Balanced (recommended)
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_AGGRESSIVE_LABEL" desc="Label for the aggressive memory saver aggressiveness option">
+    Maximum
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CONSERVATIVE_DESCRIPTION" desc="Description for the conservative memory saver aggressiveness option">
+    Get moderate memory savings. Your tabs become inactive after a longer period of time.
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_MEDIUM_DESCRIPTION" desc="Description for the medium memory saver aggressiveness option">
+    Get balanced memory savings. Your tabs become inactive after an optimal period of time.
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_AGGRESSIVE_DESCRIPTION" desc="Description for the aggressive memory saver aggressiveness option">
+    Get maximum memory savings. Your tabs become inactive after a shorter period of time.
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_BUTTON_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focusing the tab discarding exceptions list add button. Sites added to the list will not be discarded by memory saver.">
     Add to the "always keep these sites active" list
   </message>

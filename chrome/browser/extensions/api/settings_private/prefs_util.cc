@@ -1132,6 +1132,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       [performance_manager::user_tuning::prefs::kMemorySaverModeState] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)[performance_manager::user_tuning::prefs::
+                     kMemorySaverModeAggressiveness] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kMemorySaverModeTimeBeforeDiscardInMinutes] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)

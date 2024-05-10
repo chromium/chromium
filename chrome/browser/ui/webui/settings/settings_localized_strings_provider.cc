@@ -763,6 +763,8 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 #endif
 
 void AddPerformanceStrings(content::WebUIDataSource* html_source) {
+  // TODO(crbug.com/339250758): Clean up unused strings now that multistate mode
+  // UI no longer exists.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
       {"memoryPageTitle", IDS_SETTINGS_MEMORY_PAGE_TITLE},
@@ -781,6 +783,18 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL},
       {"memorySaverChooseDiscardTimeAriaLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CHOOSE_DISCARD_TIME_ARIA_LABEL},
+      {"memorySaverModeConservativeLabel",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CONSERVATIVE_LABEL},
+      {"memorySaverModeMediumLabel",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_MEDIUM_LABEL},
+      {"memorySaverModeAggressiveLabel",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_AGGRESSIVE_LABEL},
+      {"memorySaverModeConservativeDescription",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_CONSERVATIVE_DESCRIPTION},
+      {"memorySaverModeMediumDescription",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_MEDIUM_DESCRIPTION},
+      {"memorySaverModeAggressiveDescription",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_AGGRESSIVE_DESCRIPTION},
       {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},

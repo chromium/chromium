@@ -88,6 +88,17 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.MemorySaver.SettingsChangeAggressiveness"
+    enum="MemorySaverModeAggressiveness" expires_after="2025-05-07">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the state of the memory saver mode aggressiveness pref when the user
+    makes a change to it through the settings page. This will be used to measure
+    the adoption of different memory saver aggressiveness options.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeExceptionList"
     enum="MemorySaverModeExceptionListAction" expires_after="2024-09-22">
   <owner>charlesmeng@chromium.org</owner>

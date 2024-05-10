@@ -687,11 +687,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
-class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
+class SettingsPerformancePageImprovementsTest : public SettingsBrowserTest {
  protected:
-  SettingsPerformancePageMultistateTest() {
+  SettingsPerformancePageImprovementsTest() {
     scoped_feature_list_.InitWithFeatures(
-        {performance_manager::features::kMemorySaverMultistateMode,
+        {performance_manager::features::kMemorySaverModeAggressiveness,
          performance_manager::features::kDiscardRingImprovements},
         {});
   }
@@ -700,12 +700,12 @@ class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, Controls) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageImprovementsTest, Controls) {
   RunTest("settings/performance_page_test.js",
-          "runMochaSuite('PerformancePageMultistate')");
+          "runMochaSuite('PerformancePageImprovements')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, ExceptionList) {
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePageImprovementsTest, ExceptionList) {
   RunTest("settings/performance_page_test.js",
           "runMochaSuite('TabDiscardExceptionList')");
 }

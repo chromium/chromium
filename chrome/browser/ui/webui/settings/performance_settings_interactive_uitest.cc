@@ -39,6 +39,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using performance_manager::user_tuning::prefs::BatterySaverModeState;
+using performance_manager::user_tuning::prefs::MemorySaverModeAggressiveness;
 using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace {
@@ -55,14 +56,17 @@ const WebContentsInteractionTestUtil::DeepQuery kMemorySaverToggleQuery = {
     "settings-toggle-button",
     "cr-toggle#control"};
 
-const WebContentsInteractionTestUtil::DeepQuery kDiscardOnUsageQuery = {
+const WebContentsInteractionTestUtil::DeepQuery kMediumQuery = {
     "settings-ui", "settings-main", "settings-basic-page",
-    "settings-performance-page", "controlled-radio-button"};
+    "settings-performance-page", "controlled-radio-button#mediumButton"};
 
-const WebContentsInteractionTestUtil::DeepQuery kDiscardOnTimerQuery = {
+const WebContentsInteractionTestUtil::DeepQuery kAggressiveQuery = {
     "settings-ui", "settings-main", "settings-basic-page",
-    "settings-performance-page",
-    "controlled-radio-button#enabledOnTimerButton"};
+    "settings-performance-page", "controlled-radio-button#aggressiveButton"};
+
+const WebContentsInteractionTestUtil::DeepQuery kConservativeQuery = {
+    "settings-ui", "settings-main", "settings-basic-page",
+    "settings-performance-page", "controlled-radio-button#conservativeButton"};
 
 const WebContentsInteractionTestUtil::DeepQuery kExceptionDialogEntry = {
     "settings-ui",
@@ -238,34 +242,65 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-class MemorySaverSettingsMultiStateModeInteractiveTest
+class MemorySaverAggressivenessSettingsInteractiveTest
     : public MemorySettingsInteractiveTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySaverMultistateMode);
+        performance_manager::features::kMemorySaverModeAggressiveness);
 
     InteractiveBrowserTest::SetUp();
   }
 
-  auto WaitForDisabledStateChange(const ui::ElementIdentifier& contents_id,
-                                  DeepQuery element,
-                                  bool is_disabled) {
-    StateChange toggle_selection_change;
-    toggle_selection_change.event = kButtonWasClicked;
-    toggle_selection_change.where = element;
-    toggle_selection_change.test_function =
-        is_disabled ? "(el) => el.disabled === true"
-                    : "(el) => el.disabled === false";
+  auto CheckMemorySaverModeAggressivenessPrefState(
+      MemorySaverModeAggressiveness aggressiveness) {
+    return CheckResult(
+        []() {
+          return static_cast<MemorySaverModeAggressiveness>(
+              g_browser_process->local_state()->GetInteger(
+                  performance_manager::user_tuning::prefs::
+                      kMemorySaverModeAggressiveness));
+        },
+        aggressiveness);
+  }
 
-    return WaitForStateChange(contents_id, toggle_selection_change);
+  auto TestMemorySaverModeAggressivenessPrefState(
+      const DeepQuery& element,
+      MemorySaverModeAggressiveness aggressiveness) {
+    return Steps(
+        ClickElement(kPerformanceSettingsPage, element),
+        WaitForButtonStateChange(kPerformanceSettingsPage, element, true),
+        CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled),
+        CheckMemorySaverModeAggressivenessPrefState(aggressiveness));
+  }
+
+  auto CheckMemorySaverModeAggressivenessLogged(
+      MemorySaverModeAggressiveness aggressiveness,
+      int expected_count,
+      const base::HistogramTester& histogram_tester) {
+    return Do([=, &histogram_tester]() {
+      histogram_tester.ExpectBucketCount(
+          "PerformanceControls.MemorySaver.SettingsChangeAggressiveness",
+          static_cast<int>(aggressiveness), expected_count);
+    });
+  }
+
+  auto TestMemorySaverModeAggressivenessLogged(
+      const DeepQuery& element,
+      MemorySaverModeAggressiveness aggressiveness,
+      const base::HistogramTester& histogram_tester) {
+    return Steps(
+        ClickElement(kPerformanceSettingsPage, element),
+        WaitForButtonStateChange(kPerformanceSettingsPage, element, true),
+        CheckMemorySaverModeAggressivenessLogged(aggressiveness, 1,
+                                                 histogram_tester));
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverAggressivenessSettingsInteractiveTest,
                        MemorySaverPrefChanged) {
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
@@ -275,12 +310,6 @@ IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
       WaitForElementToRender(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-
-      // Enable memory saver mode to discard tabs based on a timer
-      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
-                               true),
-      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled),
 
       // Turn off memory saver mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
@@ -292,16 +321,22 @@ IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled));
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled),
+
+      // Test aggressiveness options
+      WaitForElementToRender(kPerformanceSettingsPage, kMediumQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kMediumQuery, true),
+      TestMemorySaverModeAggressivenessPrefState(
+          kAggressiveQuery, MemorySaverModeAggressiveness::kAggressive),
+      TestMemorySaverModeAggressivenessPrefState(
+          kConservativeQuery, MemorySaverModeAggressiveness::kConservative),
+      TestMemorySaverModeAggressivenessPrefState(
+          kMediumQuery, MemorySaverModeAggressiveness::kMedium));
 }
 
-IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
+IN_PROC_BROWSER_TEST_F(MemorySaverAggressivenessSettingsInteractiveTest,
                        MemorySaverMetricsShouldLogOnToggle) {
   base::HistogramTester histogram_tester;
-
-  const DeepQuery iron_collapse = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-performance-page", "iron-collapse#radioGroupCollapse"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
@@ -326,24 +361,18 @@ IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
       CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 1,
                                  histogram_tester),
 
-      // Wait for the iron-collapse animation to finish so that the performance
-      // radio buttons will show on screen
-      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
-                                         iron_collapse),
-
-      // Change memory saver setting to discard tabs based on usage
-      ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
-                               true),
-      CheckMemorySaverModeLogged(MemorySaverModeState::kDeprecated, 1,
-                                 histogram_tester),
-
-      // Change memory saver setting to discard tabs based on timer
-      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
-                               true),
-      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 2,
-                                 histogram_tester));
+      // Test aggressiveness options
+      WaitForElementToRender(kPerformanceSettingsPage, kMediumQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kMediumQuery, true),
+      TestMemorySaverModeAggressivenessLogged(
+          kAggressiveQuery, MemorySaverModeAggressiveness::kAggressive,
+          histogram_tester),
+      TestMemorySaverModeAggressivenessLogged(
+          kConservativeQuery, MemorySaverModeAggressiveness::kConservative,
+          histogram_tester),
+      TestMemorySaverModeAggressivenessLogged(
+          kMediumQuery, MemorySaverModeAggressiveness::kMedium,
+          histogram_tester));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

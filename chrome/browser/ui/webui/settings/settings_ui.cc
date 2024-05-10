@@ -557,9 +557,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardRingImprovements));
   html_source->AddBoolean(
-      "isMemorySaverMultistateModeEnabled",
+      "isMemorySaverModeAggressivenessEnabled",
       base::FeatureList::IsEnabled(
-          performance_manager::features::kMemorySaverMultistateMode));
+          performance_manager::features::kMemorySaverModeAggressiveness));
   html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
