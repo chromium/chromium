@@ -24,14 +24,11 @@
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/in_memory_database.h"
-#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
-#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
@@ -159,9 +156,6 @@ AutocompleteActionPredictor::~AutocompleteActionPredictor() {
   } else if (incognito_predictor_) {
     incognito_predictor_->main_profile_predictor_ = nullptr;
   }
-  if (no_state_prefetch_handle_.get()) {
-    no_state_prefetch_handle_->OnCancel();
-  }
 }
 
 void AutocompleteActionPredictor::RegisterTransitionalMatches(
@@ -202,15 +196,6 @@ void AutocompleteActionPredictor::ClearTransitionalMatches() {
   transitional_matches_size_ = 0;
 }
 
-void AutocompleteActionPredictor::CancelPrerender() {
-  // If the prefetch has already been abandoned, leave it to its own timeout;
-  // this normally gets called immediately after OnOmniboxOpenedUrl.
-  if (no_state_prefetch_handle_ && !no_state_prefetch_handle_->IsAbandoned()) {
-    no_state_prefetch_handle_->OnCancel();
-    no_state_prefetch_handle_.reset();
-  }
-}
-
 void AutocompleteActionPredictor::StartPrerendering(
     const GURL& url,
     content::WebContents& web_contents,
@@ -225,73 +210,22 @@ void AutocompleteActionPredictor::StartPrerendering(
 
   SetIsNavigationInDomainCallback(preloading_data);
 
-  if (prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
-    // Create new PreloadingAttempt and pass all the values corresponding to
-    // this prerendering attempt for Prerender.
-    content::PreloadingAttempt* preloading_attempt =
-        preloading_data->AddPreloadingAttempt(
-            chrome_preloading_predictor::kOmniboxDirectURLInput,
-            content::PreloadingType::kPrerender, std::move(same_url_matcher),
-            web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
-
-    PrerenderManager::CreateForWebContents(&web_contents);
-    auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
-    direct_url_input_prerender_handle_ =
-        prerender_manager->StartPrerenderDirectUrlInput(url,
-                                                        *preloading_attempt);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kOmniboxTriggerForNoStatePrefetch)) {
-    // Create new PreloadingAttempt and pass all the values corresponding to
-    // this preloading attempt for NoStatePrefetch.
-    content::PreloadingAttempt* preloading_attempt =
-        preloading_data->AddPreloadingAttempt(
-            chrome_preloading_predictor::kOmniboxDirectURLInput,
-            content::PreloadingType::kNoStatePrefetch,
-            std::move(same_url_matcher),
-            web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
-
-    content::SessionStorageNamespace* session_storage_namespace =
-        web_contents.GetController().GetDefaultSessionStorageNamespace();
-    if (no_state_prefetch_handle_) {
-      if (no_state_prefetch_handle_->prefetch_url() == url) {
-        // In case NSP is already present for the URL, NoStatPrefetch is
-        // eligible but mark triggering outcome as a duplicate.
-        preloading_attempt->SetEligibility(
-            content::PreloadingEligibility::kEligible);
-
-        // In addition to the globally-controlled preloading config, check for
-        // the feature-specific holdback. We disable the feature if the user is
-        // in either of those holdbacks.
-        if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
-          preloading_attempt->SetHoldbackStatus(
-              content::PreloadingHoldbackStatus::kHoldback);
-        }
-        if (preloading_attempt->ShouldHoldback()) {
-          return;
-        }
-        preloading_attempt->SetTriggeringOutcome(
-            content::PreloadingTriggeringOutcome::kDuplicate);
-
-        // We've already started a prefetch for the target URL. Nothing to do.
-        return;
-      }
-      // `url` does not match with previously prefetched url. Reset the
-      // handle to trigger cancellation.
-      base::UmaHistogramEnumeration(
-          "AutocompleteActionPredictor.NoStatePrefetchStatus",
-          PredictionStatus::kCancelled);
-      no_state_prefetch_handle_->OnCancel();
-      no_state_prefetch_handle_.reset();
-    }
-    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-            profile_);
-    if (no_state_prefetch_manager) {
-      no_state_prefetch_handle_ =
-          no_state_prefetch_manager->StartPrefetchingFromOmnibox(
-              url, session_storage_namespace, size, preloading_attempt);
-    }
+  if (!prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
+    return;
   }
+
+  // Create new PreloadingAttempt and pass all the values corresponding to this
+  // prerendering attempt for Prerender.
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
+          content::PreloadingType::kPrerender, std::move(same_url_matcher),
+          web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  PrerenderManager::CreateForWebContents(&web_contents);
+  auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
+  direct_url_input_prerender_handle_ =
+      prerender_manager->StartPrerenderDirectUrlInput(url, *preloading_attempt);
 }
 
 AutocompleteActionPredictor::Action
@@ -378,37 +312,6 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
 
   const AutocompleteMatch& match = log.result->match_at(log.selection.line);
   const GURL& opened_url = match.destination_url;
-
-  // Abandon the current prefetch. If it is to be used, it will be used very
-  // soon, so use the lower timeout.
-  if (no_state_prefetch_handle_) {
-    if (no_state_prefetch_handle_->prefetch_url() == opened_url) {
-      if (no_state_prefetch_handle_->IsFinishedLoading()
-          // If the handle doesn't have its contents anymore we don't know if it
-          // complete successfully or not, but we know it's no longer active, so
-          // we log this as kHitFinished.
-          || !no_state_prefetch_handle_->contents()) {
-        base::UmaHistogramEnumeration(
-            "AutocompleteActionPredictor.NoStatePrefetchStatus",
-            PredictionStatus::kHitFinished);
-      } else {
-        base::UmaHistogramEnumeration(
-            "AutocompleteActionPredictor.NoStatePrefetchStatus",
-            PredictionStatus::kHitUnfinished);
-      }
-    } else {
-      base::UmaHistogramEnumeration(
-          "AutocompleteActionPredictor.NoStatePrefetchStatus",
-          PredictionStatus::kUnused);
-    }
-    no_state_prefetch_handle_->OnNavigateAway();
-    // Don't release |no_state_prefetch_handle_| so it is canceled if it
-    // survives to the next StartPrerendering call.
-  } else {
-    base::UmaHistogramEnumeration(
-        "AutocompleteActionPredictor.NoStatePrefetchStatus",
-        PredictionStatus::kNotStarted);
-  }
 
   // Record the value if prerender for direct url input was not started. Other
   // values (kHitFinished, kUnused, kCancelled) are recorded in

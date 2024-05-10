@@ -1981,17 +1981,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AutocompleteActionPredictor.NoStatePrefetchStatus"
-    enum="AutocompleteActionPredictorPredictionStatus"
-    expires_after="2024-04-28">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Records the status of no state prefetches started by the omnibox action
-    predictor. In particular, this records whether they were used or not.
-  </summary>
-</histogram>
-
 <histogram name="Blimp.Compositor.CommitSizeKb" units="KB" expires_after="M85">
   <owner>shaktisahu@chromium.org</owner>
   <summary>

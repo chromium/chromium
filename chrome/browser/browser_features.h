@@ -112,7 +112,6 @@ BASE_DECLARE_FEATURE(kNoPreReadMainDll);
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 #endif
 
-BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -52,7 +52,6 @@ void OmniboxPrerender::Clear(JNIEnv* env,
   AutocompleteActionPredictor* action_predictor =
       AutocompleteActionPredictorFactory::GetForProfile(profile);
   action_predictor->UpdateDatabaseFromTransitionalMatches(GURL());
-  action_predictor->CancelPrerender();
 }
 
 void OmniboxPrerender::InitializeForProfile(JNIEnv* env,

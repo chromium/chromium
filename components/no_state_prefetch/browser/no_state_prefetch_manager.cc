@@ -446,8 +446,6 @@ void NoStatePrefetchManager::NoStatePrefetchData::OnHandleNavigatedAway(
     NoStatePrefetchHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
-  if (abandon_time_.is_null())
-    abandon_time_ = base::TimeTicks::Now();
   // We intentionally don't decrement the handle count here, so that the
   // prefetch won't be canceled until it times out.
   manager_->SourceNavigatedAway(this);

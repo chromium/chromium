@@ -262,15 +262,6 @@ BASE_FEATURE(kNotificationOneTapUnsubscribe,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables omnibox trigger no state prefetch. Only one of
-// kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
-// enabled in the experiment. If both are enabled, only
-// kOmniboxTriggerForPrerender2 takes effect.
-// TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
-BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
-             "OmniboxTriggerForNoStatePrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This flag is used for enabling Omnibox triggered prerendering. See
 // crbug.com/1166085 for more details of Omnibox triggered prerendering.
 BASE_FEATURE(kOmniboxTriggerForPrerender2,

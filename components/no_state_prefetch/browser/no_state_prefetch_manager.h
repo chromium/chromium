@@ -279,8 +279,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
     int handle_count() const { return handle_count_; }
 
-    base::TimeTicks abandon_time() const { return abandon_time_; }
-
     base::TimeTicks expiry_time() const { return expiry_time_; }
     void set_expiry_time(base::TimeTicks expiry_time) {
       expiry_time_ = expiry_time;
@@ -301,9 +299,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     // prefetches, this will always be 1, since the NoStatePrefetchManager only
     // merges handles of running prefetches.
     int handle_count_ = 0;
-
-    // The time when OnHandleNavigatedAway was called.
-    base::TimeTicks abandon_time_;
 
     // After this time, this prefetch is no longer fresh, and should be removed.
     base::TimeTicks expiry_time_;
