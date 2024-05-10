@@ -51,6 +51,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -1025,8 +1026,7 @@ bool LoginDatabase::Init() {
     return false;
   }
 
-  base::ScopedClosureRunner close_db_runner(
-      base::BindOnce([](sql::Database* db) { db->Close(); }, &db_));
+  absl::Cleanup close_db_runner = [this] { db_.Close(); };
 
   if (!db_.Execute("PRAGMA foreign_keys = ON")) {
     LogDatabaseInitError(FOREIGN_KEY_ERROR);
@@ -1178,7 +1178,7 @@ bool LoginDatabase::Init() {
   LogDatabaseInitError(INIT_OK);
 
   // Keep the database open if everything went well.
-  std::ignore = close_db_runner.Release();
+  std::move(close_db_runner).Cancel();
 
   return true;
 }
@@ -1240,8 +1240,7 @@ void LoginDatabase::ReportMetrics() {
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                                                 AddCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::AddLogin");
-  base::ScopedClosureRunner is_empty_runner(
-      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
+  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (error) {
     *error = AddCredentialError::kNone;
   }
@@ -1481,8 +1480,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
 bool LoginDatabase::RemoveLogin(const PasswordForm& form,
                                 PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLogin");
-  base::ScopedClosureRunner is_empty_runner(
-      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
+  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1521,8 +1519,7 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
   CHECK(changes);
 
-  base::ScopedClosureRunner is_empty_runner(
-      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
+  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   changes->clear();
   sql::Statement s1(db_.GetCachedStatement(
       SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
@@ -1556,8 +1553,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     base::Time delete_end,
     PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginsCreatedBetween");
-  base::ScopedClosureRunner is_empty_runner(
-      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
+  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   if (changes) {
     changes->clear();
   }
@@ -1860,8 +1856,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
-  base::ScopedClosureRunner is_empty_runner(
-      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
+  absl::Cleanup is_empty_runner = [this] { TriggerIsEmptyCb(); };
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
