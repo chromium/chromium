@@ -31,4 +31,8 @@ bool FrameSinkHolderTestApi::IsFirstFrameRequested() const {
   return frame_sink_holder_->first_frame_requested_;
 }
 
+bool FrameSinkHolderTestApi::IsObservingBeginFrameSource() const {
+  return frame_sink_holder_->begin_frame_observation_.IsObserving();
+}
+
 }  // namespace ash

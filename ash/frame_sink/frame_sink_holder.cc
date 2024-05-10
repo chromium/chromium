@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "ash/frame_sink/frame_sink_host.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -19,6 +21,11 @@
 #include "ui/aura/window.h"
 
 namespace ash {
+namespace {
+
+constexpr int32_t kPauseBeginFrameThreshold = 5;
+
+}  // namespace
 
 FrameSinkHolder::FrameSinkHolder(
     std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
@@ -115,6 +122,8 @@ void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
     return;
   }
 
+  ObserveBeginFrameSource(/*start=*/true);
+
   // If we are already submitted a frame we cannot submit a new frame until we
   // get an acknowledgement from display compositor and we fall back to
   // asynchronous drawing.
@@ -143,6 +152,8 @@ void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
 
 void FrameSinkHolder::SubmitCompositorFrameInternal(
     std::unique_ptr<viz::CompositorFrame> frame) {
+  consecutive_begin_frames_produced_no_frame_count_ = 0;
+
   pending_compositor_frame_ = false;
   pending_compositor_frame_ack_ = true;
 
@@ -173,11 +184,10 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
 
   if (pending_compositor_frame_ack_ ||
       !(pending_compositor_frame_ || auto_update_)) {
-    cc::FrameSkippedReason reason = pending_compositor_frame_ack_
-                                        ? cc::FrameSkippedReason::kWaitingOnMain
-                                        : cc::FrameSkippedReason::kNoDamage;
-
-    frame_sink_->DidNotProduceFrame(current_begin_frame_ack, reason);
+    const cc::FrameSkippedReason reason =
+        pending_compositor_frame_ack_ ? cc::FrameSkippedReason::kWaitingOnMain
+                                      : cc::FrameSkippedReason::kNoDamage;
+    DidNotProduceFrame(std::move(current_begin_frame_ack), reason);
     return false;
   }
 
@@ -188,8 +198,8 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
 
   if (!frame) {
     // Failure to produce a frame is treated as if there was no damage.
-    frame_sink_->DidNotProduceFrame(current_begin_frame_ack,
-                                    cc::FrameSkippedReason::kNoDamage);
+    DidNotProduceFrame(std::move(current_begin_frame_ack),
+                       cc::FrameSkippedReason::kNoDamage);
     return false;
   }
 
@@ -199,15 +209,38 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
 }
 
 void FrameSinkHolder::SetBeginFrameSource(viz::BeginFrameSource* source) {
-  if (source == begin_frame_source_) {
+  ObserveBeginFrameSource(/*start=*/false);
+  begin_frame_source_ = source;
+  ObserveBeginFrameSource(/*start=*/true);
+}
+
+void FrameSinkHolder::ObserveBeginFrameSource(bool start) {
+  if (begin_frame_observation_.IsObserving() == start) {
     return;
   }
 
-  begin_frame_observation_.Reset();
-  begin_frame_source_ = source;
   if (begin_frame_source_) {
-    begin_frame_observation_.Observe(begin_frame_source_);
+    if (start) {
+      begin_frame_observation_.Observe(begin_frame_source_);
+    } else {
+      begin_frame_observation_.Reset();
+    }
   }
+}
+
+void FrameSinkHolder::MaybeStopObservingBeingFrameSource() {
+  if (!auto_update_ && consecutive_begin_frames_produced_no_frame_count_ >=
+                           kPauseBeginFrameThreshold) {
+    consecutive_begin_frames_produced_no_frame_count_ = 0;
+    ObserveBeginFrameSource(/*start=*/false);
+  }
+}
+
+void FrameSinkHolder::DidNotProduceFrame(viz::BeginFrameAck&& begin_frame_ack,
+                                         cc::FrameSkippedReason reason) {
+  frame_sink_->DidNotProduceFrame(begin_frame_ack, reason);
+  ++consecutive_begin_frames_produced_no_frame_count_;
+  MaybeStopObservingBeingFrameSource();
 }
 
 std::optional<viz::HitTestRegionList> FrameSinkHolder::BuildHitTestData() {

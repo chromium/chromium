@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -32,6 +33,16 @@
 
 namespace ash {
 namespace {
+
+class StubBeginFrameSource : public viz::BeginFrameSource {
+ public:
+  StubBeginFrameSource() : viz::BeginFrameSource(0u) {}
+
+  void DidFinishFrame(viz::BeginFrameObserver* obs) override {}
+  void AddObserver(viz::BeginFrameObserver* obs) override {}
+  void RemoveObserver(viz::BeginFrameObserver* obs) override {}
+  void OnGpuNoLongerBusy() override {}
+};
 
 class TestFrameFactory {
  public:
@@ -190,6 +201,39 @@ TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyBeforeFirstFrameRequested) {
   EXPECT_THAT(
       layer_tree_frame_sink_->GetLatestReceivedFrame().metadata.begin_frame_ack,
       IsBeginFrameAckEqual(viz::BeginFrameAck::CreateManualAckWithDamage()));
+}
+
+TEST_F(FrameSinkHolderTest, ObserveBeginFrameSourceOnDemand) {
+  FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
+
+  StubBeginFrameSource source;
+  frame_sink_holder_->SetBeginFrameSource(&source);
+
+  // FrameSinkHolder should be observing the source when it is set.
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  // After consecutively not producing frames for a certain number of
+  // BeginFrames, FrameSinkHolder should stop observing the source.
+  for (int i = 0; i < 4; i++) {
+    frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  }
+
+  frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  for (int i = 0; i < 5; i++) {
+    frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  }
+
+  EXPECT_FALSE(test_api.IsObservingBeginFrameSource());
+
+  // However, if there is request to submit a new frame, FrameSinkHolder should
+  // start observing the source again.
+  frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
+  EXPECT_TRUE(test_api.IsObservingBeginFrameSource());
+
+  frame_sink_holder_->SetBeginFrameSource(nullptr);
 }
 
 TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyWhilePendingFrameAck) {

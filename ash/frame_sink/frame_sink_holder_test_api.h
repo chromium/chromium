@@ -29,6 +29,8 @@ class FrameSinkHolderTestApi {
 
   bool IsFirstFrameRequested() const;
 
+  bool IsObservingBeginFrameSource() const;
+
  private:
   raw_ptr<FrameSinkHolder, AcrossTasksDanglingUntriaged> frame_sink_holder_;
 };
