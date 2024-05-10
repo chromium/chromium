@@ -25,9 +25,9 @@ import java.util.SortedSet;
 
 /** Paste popup implementation based on floating ActionModes. */
 // TODO(crbug.com/40925113): Merge this class with SelectionPopupControllerImpl and remove.
-public class FloatingPastePopupMenu implements PastePopupMenu {
+public class FloatingPastePopupMenu {
     private final View mParent;
-    private final PastePopupMenuDelegate mDelegate;
+    private final SelectionPopupControllerImpl mDelegate;
     private final Context mContext;
 
     private ActionMode mActionMode;
@@ -38,7 +38,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
     public FloatingPastePopupMenu(
             Context context,
             View parent,
-            PastePopupMenuDelegate delegate,
+            SelectionPopupControllerImpl delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         mParent = parent;
         mDelegate = delegate;
@@ -47,7 +47,6 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
         mCustomMenuItemClickListeners = new HashMap<>();
     }
 
-    @Override
     public void show(Rect selectionRect) {
         mSelectionRect = selectionRect;
         if (mActionMode != null) {
@@ -58,7 +57,6 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
         ensureActionMode();
     }
 
-    @Override
     public void hide() {
         if (mActionMode != null) {
             mActionMode.finish();
@@ -70,7 +68,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
         if (mActionMode != null) return;
 
         ActionMode actionMode =
-                mParent.startActionMode(new ActionModeCallback(), ActionMode.TYPE_FLOATING);
+                mParent.startActionMode(new PasteActionModeCallback(), ActionMode.TYPE_FLOATING);
         if (actionMode != null) {
             // crbug.com/651706
             LGEmailActionModeWorkaroundImpl.runIfNecessary(mContext, actionMode);
@@ -80,7 +78,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
         }
     }
 
-    private class ActionModeCallback extends ActionMode.Callback2 {
+    private class PasteActionModeCallback extends ActionMode.Callback2 {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             createPasteMenu(mode, menu);
@@ -154,9 +152,11 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
                 int id = item.getItemId();
                 if (id == R.id.select_action_menu_paste) {
                     mDelegate.paste();
+                    mDelegate.dismissTextHandles();
                     mode.finish();
                 } else if (id == R.id.select_action_menu_paste_as_plain_text) {
                     mDelegate.pasteAsPlainText();
+                    mDelegate.dismissTextHandles();
                     mode.finish();
                 } else if (id == R.id.select_action_menu_select_all) {
                     mDelegate.selectAll();

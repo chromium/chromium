@@ -211,7 +211,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     // Lazily created paste popup menu, triggered either via long press in an
     // editable region or from tapping the insertion handle.
-    private PastePopupMenu mPastePopupMenu;
+    private FloatingPastePopupMenu mPastePopupMenu;
     private boolean mWasPastePopupShowingOnInsertionDragStart;
 
     // Dropdown menu delegate that handles showing a dropdown style text selection menu.
@@ -659,7 +659,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (!isActionModeValid()) clearSelection();
     }
 
-    private void dismissTextHandles() {
+    void dismissTextHandles() {
         if (mWebContents.getRenderWidgetHostView() != null) {
             mWebContents.getRenderWidgetHostView().dismissTextHandles();
         }
@@ -685,45 +685,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         setTextHandlesHiddenForDropdownMenu(false);
 
         destroyPastePopup();
-        PastePopupMenu.PastePopupMenuDelegate delegate =
-                new PastePopupMenu.PastePopupMenuDelegate() {
-                    @Override
-                    public void paste() {
-                        SelectionPopupControllerImpl.this.paste();
-                        dismissTextHandles();
-                    }
 
-                    @Override
-                    public void pasteAsPlainText() {
-                        SelectionPopupControllerImpl.this.pasteAsPlainText();
-                        dismissTextHandles();
-                    }
-
-                    @Override
-                    public boolean canPaste() {
-                        return SelectionPopupControllerImpl.this.canPaste();
-                    }
-
-                    @Override
-                    public void selectAll() {
-                        SelectionPopupControllerImpl.this.selectAll();
-                    }
-
-                    @Override
-                    public boolean canSelectAll() {
-                        return SelectionPopupControllerImpl.this.canSelectAll();
-                    }
-
-                    @Override
-                    public boolean canPasteAsPlainText() {
-                        return SelectionPopupControllerImpl.this.canPasteAsPlainText();
-                    }
-                };
         Context windowContext = mWindowAndroid.getContext().get();
         if (windowContext == null) return;
         mPastePopupMenu =
                 new FloatingPastePopupMenu(
-                        windowContext, mView, delegate, mSelectionActionMenuDelegate);
+                        windowContext, mView, this, mSelectionActionMenuDelegate);
         showPastePopup();
     }
 
