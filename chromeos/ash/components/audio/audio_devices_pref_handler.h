@@ -42,6 +42,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Sets the input noise cancellation in profile prefs.
   virtual void SetNoiseCancellationState(bool noise_cancellation_state) = 0;
 
+  // Reads whether input style transfer is on from profile prefs.
+  virtual bool GetStyleTransferState() const = 0;
+  // Sets the input style transfer in profile prefs.
+  virtual void SetStyleTransferState(bool style_transfer_state) = 0;
+
   // Sets the device active state in prefs.
   // Note: |activate_by_user| indicates whether |device| is set to active
   // by user or by priority, and it only matters when |active| is true.

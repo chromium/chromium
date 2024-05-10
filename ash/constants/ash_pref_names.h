@@ -206,6 +206,10 @@ inline constexpr char kHasHotspotUsedBefore[] = "ash.hotspot.has_used_before";
 inline constexpr char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";
 
+// A boolean pref that controls whether input style transfer is enabled.
+inline constexpr char kInputStyleTransferEnabled[] =
+    "ash.input_style_transfer_enabled";
+
 // The name of an integer pref that counts the number of times we have shown
 // the multitask menu education nudge.
 inline constexpr char kMultitaskMenuNudgeClamshellShownCount[] =

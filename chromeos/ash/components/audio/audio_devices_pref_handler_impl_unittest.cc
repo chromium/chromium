@@ -501,6 +501,12 @@ TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, InputStyleTransferPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
+  audio_pref_handler_->SetStyleTransferState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
+}
+
 TEST_P(AudioDevicesPrefHandlerTest, HfpMicSrPrefRegistered) {
   EXPECT_FALSE(audio_pref_handler_->GetHfpMicSrState());
   audio_pref_handler_->SetHfpMicSrState(true);

@@ -359,6 +359,16 @@ void AudioDevicesPrefHandlerImpl::SetNoiseCancellationState(
                            noise_cancellation_state);
 }
 
+bool AudioDevicesPrefHandlerImpl::GetStyleTransferState() const {
+  return local_state_->GetBoolean(prefs::kInputStyleTransferEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetStyleTransferState(
+    bool style_transfer_state) {
+  local_state_->SetBoolean(prefs::kInputStyleTransferEnabled,
+                           style_transfer_state);
+}
+
 bool AudioDevicesPrefHandlerImpl::GetForceRespectUiGainsState() {
   return local_state_->GetBoolean(prefs::kInputForceRespectUiGainsEnabled);
 }
@@ -516,6 +526,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesMute);
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kInputStyleTransferEnabled, false);
   registry->RegisterBooleanPref(prefs::kHandsFreeProfileInputSuperResolution,
                                 false);
 

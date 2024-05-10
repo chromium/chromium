@@ -58,6 +58,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
+  bool GetStyleTransferState() const override;
+  void SetStyleTransferState(bool style_transfer_state) override;
+
   bool GetAudioOutputAllowedValue() const override;
 
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;

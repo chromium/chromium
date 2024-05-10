@@ -127,6 +127,15 @@ void AudioDevicesPrefHandlerStub::SetNoiseCancellationState(
   noise_cancellation_state_ = noise_cancellation_state;
 }
 
+bool AudioDevicesPrefHandlerStub::GetStyleTransferState() const {
+  return style_transfer_state_;
+}
+
+void AudioDevicesPrefHandlerStub::SetStyleTransferState(
+    bool style_transfer_state) {
+  style_transfer_state_ = style_transfer_state;
+}
+
 bool AudioDevicesPrefHandlerStub::GetAudioOutputAllowedValue() const {
   return is_audio_output_allowed_;
 }

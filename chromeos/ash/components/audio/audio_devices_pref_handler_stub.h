@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
+  bool GetStyleTransferState() const override;
+  void SetStyleTransferState(bool style_transfer_state) override;
+
   void SetAudioOutputAllowedValue(bool is_audio_output_allowed);
 
   bool GetForceRespectUiGainsState() override;
@@ -80,6 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   bool is_audio_output_allowed_ = true;
   bool noise_cancellation_state_ = true;
+  bool style_transfer_state_ = false;
   bool force_respect_ui_gains_ = false;
   bool hfp_mic_sr_ = false;
 };
