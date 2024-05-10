@@ -919,6 +919,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Called when WebContents received a request to lock the pointer.
   virtual void PointerLockRequested() {}
 
+  // Called when WebContents received a request to vibrate the page.
+  virtual void VibrationRequested() {}
+
   WebContents* web_contents() const;
 
  protected:

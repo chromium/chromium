@@ -3443,7 +3443,8 @@ class TestVibrationManager : public device::mojom::VibrationManager {
   }
 
   void BindVibrationManager(
-      mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
+      mojo::PendingReceiver<device::mojom::VibrationManager> receiver,
+      mojo::PendingRemote<device::mojom::VibrationManagerListener> listener) {
     receiver_.Bind(std::move(receiver));
   }
 

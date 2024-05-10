@@ -67,8 +67,9 @@ interface DeviceService {
   [EnableIf=is_android]
   BindNFCProvider(pending_receiver<NFCProvider> receiver);
 
-  // Binds a VibrationManager endpoint.
-  BindVibrationManager(pending_receiver<VibrationManager> receiver);
+  // Binds a VibrationManager endpoint and a VibrationManagerListener endpoint.
+  BindVibrationManager(pending_receiver<VibrationManager> receiver,
+                       pending_remote<VibrationManagerListener> listener);
 
   // Binds a HidManager endpoint.
   [EnableIf=enable_hid]

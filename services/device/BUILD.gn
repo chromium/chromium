@@ -47,6 +47,7 @@ source_set("lib") {
     "//services/device/screen_orientation",
     "//services/device/time_zone_monitor",
     "//services/device/usb/mojo",
+    "//services/device/vibration",
     "//services/device/wake_lock",
     "//services/service_manager/public/cpp",
     "//ui/gfx",
@@ -65,7 +66,6 @@ source_set("lib") {
     deps += [
       "//services/device/battery",
       "//services/device/hid",
-      "//services/device/vibration",
     ]
   }
 
@@ -187,6 +187,7 @@ source_set("tests") {
     "//services/device/public/cpp/power_monitor",
     "//services/device/public/mojom",
     "//services/device/public/mojom:geolocation_internals",
+    "//services/device/vibration",
     "//services/device/wake_lock",
     "//services/network:test_support",
     "//testing/gmock",
@@ -257,10 +258,7 @@ source_set("tests") {
       "geolocation/network_location_provider_unittest.cc",
       "geolocation/wifi_data_provider_common_unittest.cc",
     ]
-    deps += [
-      ":device_service_jni_headers",
-      "//services/device/vibration/android:vibration_jni_headers",
-    ]
+    deps += [ ":device_service_jni_headers" ]
   } else {
     sources += [
       "battery/battery_monitor_impl_unittest.cc",
@@ -272,7 +270,6 @@ source_set("tests") {
       "//components/variations:test_support",
       "//services/device/battery",
       "//services/device/hid",
-      "//services/device/vibration",
     ]
 
     if ((!is_linux && !is_chromeos) || use_udev) {

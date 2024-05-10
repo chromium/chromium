@@ -701,12 +701,15 @@ VibrationManagerBinder& GetVibrationManagerBinderOverride() {
 }
 
 void BindVibrationManager(
+    RenderFrameHostImpl* frame,
     mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
   const auto& binder = GetVibrationManagerBinderOverride();
-  if (binder)
-    binder.Run(std::move(receiver));
-  else
-    GetDeviceService().BindVibrationManager(std::move(receiver));
+  if (binder) {
+    binder.Run(std::move(receiver), frame->CreateVibrationManagerListener());
+  } else {
+    GetDeviceService().BindVibrationManager(
+        std::move(receiver), frame->CreateVibrationManagerListener());
+  }
 }
 
 void BindMediaPlayerObserverClientHandler(
@@ -914,7 +917,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::GetSensorProvider, base::Unretained(host)));
 
   map->Add<device::mojom::VibrationManager>(
-      base::BindRepeating(&BindVibrationManager));
+      base::BindRepeating(&BindVibrationManager, base::Unretained(host)));
 
   map->Add<payments::mojom::PaymentManager>(base::BindRepeating(
       &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));

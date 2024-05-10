@@ -8,25 +8,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Vibrator;
-
-import org.jni_zero.CalledByNative;
-import org.jni_zero.CalledByNativeForTesting;
-import org.jni_zero.JNINamespace;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.ResettersForTesting;
-import org.chromium.device.mojom.VibrationManager;
-import org.chromium.mojo.system.MojoException;
-import org.chromium.services.service_manager.InterfaceFactory;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
-/**
- * Android implementation of the VibrationManager interface defined in
- * services/device/public/mojom/vibration_manager.mojom.
- */
+/** Android implementation details for device::VibrationManagerAndroid. */
 @JNINamespace("device")
-public class VibrationManagerImpl implements VibrationManager {
-    private static final String TAG = "VibrationManagerImpl";
+public class VibrationManagerAndroid {
+    private static final String TAG = "VibrationManager";
 
     private static final long MINIMUM_VIBRATION_DURATION_MS = 1; // 1 millisecond
     private static final long MAXIMUM_VIBRATION_DURATION_MS = 10000; // 10 seconds
@@ -35,10 +25,7 @@ public class VibrationManagerImpl implements VibrationManager {
     private final Vibrator mVibrator;
     private final boolean mHasVibratePermission;
 
-    private static long sVibrateMilliSecondsForTesting = -1;
-    private static boolean sVibrateCancelledForTesting;
-
-    public VibrationManagerImpl() {
+    public VibrationManagerAndroid() {
         Context appContext = ContextUtils.getApplicationContext();
         mAudioManager = (AudioManager) appContext.getSystemService(Context.AUDIO_SERVICE);
         mVibrator = (Vibrator) appContext.getSystemService(Context.VIBRATOR_SERVICE);
@@ -51,14 +38,13 @@ public class VibrationManagerImpl implements VibrationManager {
         }
     }
 
-    @Override
-    public void close() {}
+    @CalledByNative
+    static VibrationManagerAndroid getInstance() {
+        return new VibrationManagerAndroid();
+    }
 
-    @Override
-    public void onConnectionError(MojoException e) {}
-
-    @Override
-    public void vibrate(long milliseconds, Vibrate_Response callback) {
+    @CalledByNative
+    public void vibrate(long milliseconds) {
         // Though the Blink implementation already sanitizes vibration times, don't
         // trust any values passed from the client.
         long sanitizedMilliseconds =
@@ -70,37 +56,12 @@ public class VibrationManagerImpl implements VibrationManager {
                 && mHasVibratePermission) {
             mVibrator.vibrate(sanitizedMilliseconds);
         }
-        sVibrateMilliSecondsForTesting = sanitizedMilliseconds;
-        callback.call();
-    }
-
-    @Override
-    public void cancel(Cancel_Response callback) {
-        if (mHasVibratePermission) {
-            mVibrator.cancel();
-        }
-        sVibrateCancelledForTesting = true;
-        ResettersForTesting.register(() -> sVibrateCancelledForTesting = false);
-        callback.call();
-    }
-
-    /** A factory for implementations of the VibrationManager interface. */
-    public static class Factory implements InterfaceFactory<VibrationManager> {
-        public Factory() {}
-
-        @Override
-        public VibrationManager createImpl() {
-            return new VibrationManagerImpl();
-        }
     }
 
     @CalledByNative
-    static long getVibrateMilliSecondsForTesting() {
-        return sVibrateMilliSecondsForTesting;
-    }
-
-    @CalledByNativeForTesting
-    static boolean getVibrateCancelledForTesting() {
-        return sVibrateCancelledForTesting;
+    public void cancel() {
+        if (mHasVibratePermission) {
+            mVibrator.cancel();
+        }
     }
 }

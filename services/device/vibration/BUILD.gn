@@ -5,26 +5,36 @@
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-# On android, VibrationManager mojo interface is implemented directly in Java.
-if (!is_android) {
-  source_set("vibration") {
-    visibility = [
-      "//services/device:lib",
-      "//services/device:tests",
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("vibration") {
+  visibility = [
+    "//services/device:lib",
+    "//services/device:tests",
+  ]
+  sources = [
+    "vibration_manager_impl.cc",
+    "vibration_manager_impl.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//services/device/public/mojom" ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (is_android) {
+    sources += [
+      "vibration_manager_android.cc",
+      "vibration_manager_android.h",
     ]
 
-    sources = [
-      "vibration_manager_impl.h",
-      "vibration_manager_impl_default.cc",
-    ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    public_deps = [ "//services/device/public/mojom" ]
-
-    deps = [
-      "//base",
-      "//mojo/public/cpp/bindings",
-    ]
+    deps += [ "//services/device/vibration/android:vibration_jni_headers" ]
   }
 }

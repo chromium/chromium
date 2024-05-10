@@ -27,6 +27,7 @@
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/serial/serial_port_manager_impl.h"
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
+#include "services/device/vibration/vibration_manager_impl.h"
 #include "services/device/wake_lock/wake_lock_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/native_widget_types.h"
@@ -35,11 +36,11 @@
 #include "base/android/jni_android.h"
 #include "services/device/device_service_jni_headers/InterfaceRegistrar_jni.h"
 #include "services/device/screen_orientation/screen_orientation_listener_android.h"
+#include "services/device/vibration/vibration_manager_android.h"
 #else
 #include "services/device/battery/battery_monitor_impl.h"
 #include "services/device/battery/battery_status_service.h"
 #include "services/device/hid/hid_manager_impl.h"
-#include "services/device/vibration/vibration_manager_impl.h"
 #endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
@@ -214,11 +215,12 @@ void DeviceService::BindNFCProvider(
 #endif
 
 void DeviceService::BindVibrationManager(
-    mojo::PendingReceiver<mojom::VibrationManager> receiver) {
+    mojo::PendingReceiver<mojom::VibrationManager> receiver,
+    mojo::PendingRemote<mojom::VibrationManagerListener> listener) {
 #if BUILDFLAG(IS_ANDROID)
-  GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
+  VibrationManagerAndroid::Create(std::move(receiver), std::move(listener));
 #else
-  VibrationManagerImpl::Create(std::move(receiver));
+  VibrationManagerImpl::Create(std::move(receiver), std::move(listener));
 #endif
 }
 

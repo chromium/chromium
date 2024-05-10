@@ -112,6 +112,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -317,6 +318,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public blink::mojom::NonAssociatedLocalFrameHost,
       public blink::mojom::LocalMainFrameHost,
       public ui::AXActionHandlerBase,
+      public device::mojom::VibrationManagerListener,
       public network::mojom::CookieAccessObserver,
       public network::mojom::TrustTokenAccessObserver,
       public network::mojom::SharedDictionaryAccessObserver,
@@ -2627,6 +2629,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
   CreateSharedDictionaryAccessObserver();
 
+  mojo::PendingRemote<device::mojom::VibrationManagerListener>
+  CreateVibrationManagerListener();
+
   // network::mojom::CookieAccessObserver:
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override;
@@ -2638,6 +2643,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // network::mojom::SharedDictionaryAccessObserver:
   void OnSharedDictionaryAccessed(
       network::mojom::SharedDictionaryAccessDetailsPtr details) override;
+
+  // device::mojom::VibrationManagerListener:
+  void OnVibrate() override;
 
   void GetSavableResourceLinksFromRenderer();
 
@@ -4979,6 +4987,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
   mojo::ReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observers_;
+
+  mojo::ReceiverSet<device::mojom::VibrationManagerListener>
+      vibration_manager_listeners_;
 
   // Indicates whether this frame is an outer delegate frame for some other
   // RenderFrameHost. This will be a valid ID if so, and

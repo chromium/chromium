@@ -16347,6 +16347,14 @@ RenderFrameHostImpl::CreateSharedDictionaryAccessObserver() {
   return remote;
 }
 
+mojo::PendingRemote<device::mojom::VibrationManagerListener>
+RenderFrameHostImpl::CreateVibrationManagerListener() {
+  mojo::PendingRemote<device::mojom::VibrationManagerListener> remote;
+  vibration_manager_listeners_.Add(this,
+                                   remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 #if BUILDFLAG(ENABLE_MDNS)
 void RenderFrameHostImpl::CreateMdnsResponder(
     mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
@@ -16402,6 +16410,10 @@ void RenderFrameHostImpl::OnTrustTokensAccessed(
 void RenderFrameHostImpl::OnSharedDictionaryAccessed(
     network::mojom::SharedDictionaryAccessDetailsPtr details) {
   delegate_->OnSharedDictionaryAccessed(this, *details);
+}
+
+void RenderFrameHostImpl::OnVibrate() {
+  delegate_->OnVibrate(this);
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

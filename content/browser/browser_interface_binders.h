@@ -79,7 +79,8 @@ CONTENT_EXPORT void OverrideBatteryMonitorBinderForTesting(
 
 // Allows tests to override how frame hosts bind VibrationManager receivers.
 using VibrationManagerBinder = base::RepeatingCallback<void(
-    mojo::PendingReceiver<device::mojom::VibrationManager>)>;
+    mojo::PendingReceiver<device::mojom::VibrationManager>,
+    mojo::PendingRemote<device::mojom::VibrationManagerListener>)>;
 CONTENT_EXPORT void OverrideVibrationManagerBinderForTesting(
     VibrationManagerBinder binder);
 

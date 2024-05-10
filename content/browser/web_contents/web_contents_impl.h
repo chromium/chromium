@@ -778,6 +778,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void NotifyStorageAccessed(RenderFrameHostImpl*,
                              blink::mojom::StorageTypeAccessed storage_type,
                              bool blocked) override;
+  void OnVibrate(RenderFrameHostImpl*) override;
+
   std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source) override;
 

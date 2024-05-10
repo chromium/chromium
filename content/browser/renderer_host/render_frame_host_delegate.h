@@ -80,7 +80,7 @@ namespace mojom {
 class DisplayCutoutHost;
 class FullscreenOptions;
 class WindowFeatures;
-}
+}  // namespace mojom
 class PageState;
 namespace web_pref {
 struct WebPreferences;
@@ -101,7 +101,7 @@ namespace ui {
 class ClipboardFormatType;
 struct AXUpdatesAndEvents;
 struct AXLocationChanges;
-}
+}  // namespace ui
 
 namespace content {
 class FrameTreeNode;
@@ -627,6 +627,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* render_frame_host,
       blink::mojom::StorageTypeAccessed storage_type,
       bool blocked) {}
+  virtual void OnVibrate(RenderFrameHostImpl* render_frame_host) {}
 
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(

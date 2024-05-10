@@ -3475,6 +3475,12 @@ void WebContentsImpl::NotifyStorageAccessed(
                              storage_type, blocked);
 }
 
+void WebContentsImpl::OnVibrate(RenderFrameHostImpl* rfh) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnVibrate",
+                        "render_frame_host", rfh);
+  observers_.NotifyObservers(&WebContentsObserver::VibrationRequested);
+}
+
 std::optional<blink::ParsedPermissionsPolicy>
 WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
     RenderFrameHostImpl* source) {
