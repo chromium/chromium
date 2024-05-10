@@ -32,18 +32,24 @@ RateLimiterSlideWindow::~RateLimiterSlideWindow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void RateLimiterSlideWindow::BucketsShift() {
+void RateLimiterSlideWindow::TrimBuckets(base::Time now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!bucket_events_size_.empty());
-  const auto now = base::Time::Now();
+  CHECK_LE(bucket_events_size_.size(), bucket_count_);
   const auto earliest_time = now - bucket_count_ * time_bucket_;
-  // If the earliet bucket is obsolete, drop it.
-  if (start_timestamp_ <= earliest_time) {
+  // Drop all obsolete buckets.
+  while (!bucket_events_size_.empty() && start_timestamp_ <= earliest_time) {
     CHECK_GE(current_size_, bucket_events_size_.front());
     current_size_ -= bucket_events_size_.front();
     bucket_events_size_.pop();
     start_timestamp_ += time_bucket_;
   }
+}
+
+void RateLimiterSlideWindow::BucketsShift() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!bucket_events_size_.empty());
+  // Drop all obsolete buckets.
+  TrimBuckets(/*now=*/base::Time::Now());
   // If more buckets are there, repeat once the earliest bucket becomes
   // obsolete.
   if (!bucket_events_size_.empty()) {
@@ -58,6 +64,8 @@ void RateLimiterSlideWindow::BucketsShift() {
 bool RateLimiterSlideWindow::Acquire(size_t event_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto now = base::Time::Now();
+  // Drop all obsolete buckets.
+  TrimBuckets(now);
   // Check whether the new event size fits.
   if (current_size_ + event_size > total_size_) {
     return false;  // Too large, cannot add.
@@ -75,10 +83,13 @@ bool RateLimiterSlideWindow::Acquire(size_t event_size) {
                        weak_ptr_factory_.GetWeakPtr()),
         time_bucket_);
   } else {
-    // Window is not empty, pad it with 0 buckets if necessary.
+    // Window is not empty. `TrimBuckets` guarantees its start is recent enough.
+    CHECK_GT(start_timestamp_ + bucket_count_ * time_bucket_, now);
+    // Pad window with 0 buckets if necessary.
     for (auto next_timestamp =
              start_timestamp_ + bucket_events_size_.size() * time_bucket_;
          next_timestamp <= now; next_timestamp += time_bucket_) {
+      CHECK_LT(bucket_events_size_.size(), bucket_count_);
       bucket_events_size_.push(0u);
     }
     // Add the new event to the last bucket (which could be empty).
