@@ -500,11 +500,7 @@ public class StartSurfaceTestUtils {
                     LogoUtils.getLogoTotalHeightForLogoPolish(
                             resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         } else if (isSurfacePolishEnabled) {
-            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
-                logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolishedShort(resources);
-            } else {
-                logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolished(resources);
-            }
+            logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolished(resources);
         }
         float toY =
                 -cta.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)

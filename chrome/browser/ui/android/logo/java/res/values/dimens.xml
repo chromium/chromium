@@ -5,12 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-  <dimen name="logo_height_polished">54dp</dimen>
-  <dimen name="logo_height_short">48dp</dimen>
-  <dimen name="logo_margin_top_polished">40dp</dimen>
-  <dimen name="logo_margin_bottom_polished">32dp</dimen>
-  <dimen name="logo_margin_top_polished_small">12dp</dimen>
-  <dimen name="logo_margin_bottom_polished_small">24dp</dimen>
+  <dimen name="logo_height_polished">48dp</dimen>
+  <dimen name="logo_margin_top_polished">12dp</dimen>
+  <dimen name="logo_margin_bottom_polished">24dp</dimen>
   <dimen name="logo_height_logo_polish_large">84dp</dimen>
   <dimen name="logo_height_logo_polish_medium">76dp</dimen>
   <dimen name="logo_height_logo_polish_small">68dp</dimen>

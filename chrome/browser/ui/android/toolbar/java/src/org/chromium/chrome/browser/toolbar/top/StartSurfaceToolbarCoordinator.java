@@ -48,7 +48,6 @@ public class StartSurfaceToolbarCoordinator {
     private final ViewStub mStub;
     private final PropertyModel mPropertyModel;
     private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
-    private final boolean mShouldCreateLogoInToolbar;
 
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
@@ -62,13 +61,9 @@ public class StartSurfaceToolbarCoordinator {
     private CallbackController mCallbackController = new CallbackController();
     private boolean mIsNativeInitialized;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
-    // This is used for 2 cases for the surface polish project, one is when the logo is moved down
-    // from the toolbar, and the other is when the logo is moved down from the toolbar with less
-    // brand space.
-    private int mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo;
-    // This is used for the surface polish project for the case when the logo stays in the toolbar.
-    private int mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar;
+    private int mFakeSearchBoxOffsetForSurfacePolishLogoInContent;
+    // This is used for the surface polish project for the case when there is no logo.
+    private int mFakeSearchBoxOffsetForSurfacePolishNoLogoInContent;
 
     StartSurfaceToolbarCoordinator(
             ViewStub startSurfaceToolbarStub,
@@ -80,14 +75,10 @@ public class StartSurfaceToolbarCoordinator {
             boolean isTabToGtsAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback,
-            boolean shouldCreateLogoInToolbar,
             Callback<Boolean> finishedTransitionCallback,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mStub = startSurfaceToolbarStub;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishLessBrandSpaceEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
 
         if (mIsSurfacePolishEnabled) {
             setFakeSearchBoxToScreenTopOffsetForSurfacePolish(
@@ -105,7 +96,6 @@ public class StartSurfaceToolbarCoordinator {
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, false)
                         .build();
 
-        mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         mToolbarMediator =
                 new StartSurfaceToolbarMediator(
                         mStub.getContext(),
@@ -129,7 +119,6 @@ public class StartSurfaceToolbarCoordinator {
                         isIncognitoModeEnabledSupplier,
                         logoClickedCallback,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
-                        shouldCreateLogoInToolbar,
                         finishedTransitionCallback,
                         toolbarColorObserverManager);
 
@@ -249,7 +238,7 @@ public class StartSurfaceToolbarCoordinator {
      */
     boolean shouldShowRealSearchBox() {
         boolean isBigLogoShownInContent =
-                !mShouldCreateLogoInToolbar
+                mIsSurfacePolishEnabled
                         && mIsNativeInitialized
                         && TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile())
@@ -258,8 +247,8 @@ public class StartSurfaceToolbarCoordinator {
         if (mIsSurfacePolishEnabled) {
             fakeSearchBoxMarginToScreenTop =
                     isBigLogoShownInContent
-                            ? mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo
-                            : mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar;
+                            ? mFakeSearchBoxOffsetForSurfacePolishLogoInContent
+                            : mFakeSearchBoxOffsetForSurfacePolishNoLogoInContent;
         } else {
             // This value should be equal to |fakeSearchBoxToRealSearchBoxTop +
             // realVerticalMargin| in StartSurfaceCoordinator#initializeOffsetChangedListener
@@ -345,19 +334,16 @@ public class StartSurfaceToolbarCoordinator {
         int toolbarPlaceholderHeight = getDimenPixel(R.dimen.toolbar_height_no_shadow);
 
         if (isLogoPolishEnabled) {
-            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+            mFakeSearchBoxOffsetForSurfacePolishLogoInContent =
                     toolbarPlaceholderHeight
                             + LogoUtils.getLogoTotalHeightForLogoPolish(
                                     resources,
                                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
-        } else if (mIsSurfacePolishLessBrandSpaceEnabled) {
-            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
-                    toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolishedShort(resources);
         } else {
-            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+            mFakeSearchBoxOffsetForSurfacePolishLogoInContent =
                     toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolished(resources);
         }
-        mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar =
+        mFakeSearchBoxOffsetForSurfacePolishNoLogoInContent =
                 toolbarPlaceholderHeight
                         + getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin);
     }

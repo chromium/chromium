@@ -77,7 +77,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private final boolean mShouldFetchDoodle;
     private final ButtonDataProvider mIdentityDiscController;
-    private final boolean mShouldCreateLogoInToolbar;
     private final Context mContext;
 
     private TabModelSelector mTabModelSelector;
@@ -109,7 +108,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback,
             boolean shouldFetchDoodle,
-            boolean shouldCreateLogoInToolbar,
             Callback<Boolean> finishedTransitionCallback,
             ToolbarAlphaInOverviewObserver toolbarAlphaInOverviewObserver) {
         mPropertyModel = model;
@@ -123,7 +121,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mShouldFetchDoodle = shouldFetchDoodle;
         mIdentityDiscController = identityDiscController;
         mIdentityDiscController.addObserver(this);
-        mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         mFinishedTransitionCallback = finishedTransitionCallback;
         mToolbarAlphaInOverviewObserver = toolbarAlphaInOverviewObserver;
         mContext = context;
@@ -321,10 +318,11 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     /**
      * Called when the logo view is inflated.
+     *
      * @param logoView The logo view.
      */
     void onLogoViewReady(LogoView logoView) {
-        if (!mShouldCreateLogoInToolbar) return;
+        if (mIsSurfacePolished) return;
 
         mLogoCoordinator =
                 new LogoCoordinator(

@@ -2418,14 +2418,8 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
 const FeatureEntry::FeatureParam kSurfacePolish_mvp[] = {
     {"scrollable_mvt", "true"}};
 
-const FeatureEntry::FeatureParam kSurfacePolish_less_brand_space[] = {
-    {"scrollable_mvt", "true"},
-    {"less_brand_space", "true"}};
-
 const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
     {"Arm 1: MVP", kSurfacePolish_mvp, std::size(kSurfacePolish_mvp), nullptr},
-    {"Arm 2: Less brand space", kSurfacePolish_less_brand_space,
-     std::size(kSurfacePolish_less_brand_space), nullptr},
 };
 
 const FeatureEntry::FeatureParam kLogoPolish_large[] = {

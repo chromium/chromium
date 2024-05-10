@@ -875,11 +875,6 @@ public final class ReturnToChromeUtil {
                         == ActiveTabState.NTP);
     }
 
-    /** Returns whether to move logo out of toolbar from Start surface. */
-    public static boolean moveDownLogo() {
-        return ChromeFeatureList.sSurfacePolish.isEnabled();
-    }
-
     /**
      * Records a user action that Start surface is showing due to tapping the back button.
      *

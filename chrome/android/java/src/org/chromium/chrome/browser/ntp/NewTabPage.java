@@ -186,7 +186,6 @@ public class NewTabPage
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
@@ -427,9 +426,6 @@ public class NewTabPage
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishLessBrandSpaceEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
         if (mIsSurfacePolishEnabled) {
             mBackgroundColor =
                     ChromeColors.getSurfaceColor(
@@ -560,7 +556,6 @@ public class NewTabPage
                 mTab.getProfile(),
                 windowAndroid,
                 mIsSurfacePolishEnabled,
-                mIsSurfacePolishLessBrandSpaceEnabled,
                 mIsTablet,
                 mTabStripHeightSupplier);
 

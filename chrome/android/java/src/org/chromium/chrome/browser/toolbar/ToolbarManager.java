@@ -1434,7 +1434,6 @@ public class ToolbarManager
                         constraintsSupplier,
                         mCompositorViewHolder.getInMotionSupplier(),
                         mControlsVisibilityDelegate,
-                        !ReturnToChromeUtil.moveDownLogo(),
                         mFullscreenManager,
                         mTabObscuringHandler,
                         mDesktopWindowStateProvider);

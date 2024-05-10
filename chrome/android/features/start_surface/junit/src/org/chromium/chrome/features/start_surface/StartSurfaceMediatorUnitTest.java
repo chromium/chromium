@@ -112,7 +112,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.features.start_surface.StartSurface.OnTabSelectingListener;
 import org.chromium.chrome.features.tasks.TasksSurfaceProperties;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -937,8 +936,6 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testInitializeLogoWhenSurfacePolished() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        Assert.assertTrue(ReturnToChromeUtil.moveDownLogo());
 
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* hadWarmStart= */ false, /* useMagicStack= */ false);

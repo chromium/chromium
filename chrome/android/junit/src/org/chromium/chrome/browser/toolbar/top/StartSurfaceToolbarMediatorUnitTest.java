@@ -553,7 +553,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
-        boolean shouldCreateLogoInToolbar = !ChromeFeatureList.sSurfacePolish.isEnabled();
         mMediator =
                 new StartSurfaceToolbarMediator(
                         mActivity,
@@ -570,7 +569,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         /* logoClickedCallback= */ null,
                         /* isRefactorEnabled= */
                         /* shouldFetchDoodle= */ false,
-                        shouldCreateLogoInToolbar,
                         mFinishedShowingCallback,
                         /* ToolbarColorObserverManager= */ null);
 

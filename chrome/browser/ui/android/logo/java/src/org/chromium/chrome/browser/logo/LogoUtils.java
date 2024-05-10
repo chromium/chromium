@@ -28,41 +28,20 @@ public class LogoUtils {
         int LARGE = 2;
     }
 
-    /**
-     * Returns the top margin of the LogoView if Surface Polish is enabled and with less brand
-     * space.
-     */
-    public static int getTopMarginPolishedSmall(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_top_polished_small);
-    }
-
     /** Returns the top margin of the LogoView if Surface Polish is enabled. */
     public static int getTopMarginPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_polished);
     }
 
-    /**
-     * Returns the bottom margin of the LogoView if Surface Polish is enabled and with less brand
-     * space.
-     */
-    public static int getBottomMarginPolishedSmall(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished_small);
-    }
-
-    /** Returns the bottom margin of the LogoView if Surface Polish. */
+    /** Returns the bottom margin of the LogoView if Surface Polish is enabled. */
     public static int getBottomMarginPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished);
     }
 
     @VisibleForTesting
-    /** Returns the height of the LogoView if Surface Polish. */
+    /** Returns the height of the LogoView if Surface Polish is enabled. */
     public static int getLogoHeightPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_polished);
-    }
-
-    /** Returns the height of the LogoView if Surface Polish and with less brand space. */
-    private static int getLogoHeightPolishedShort(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_short);
     }
 
     /** Returns the top margin of the LogoView if Logo Polish is enabled. */
@@ -104,16 +83,6 @@ public class LogoUtils {
     }
 
     /**
-     * Returns the sum of the height, the top margin and the bottom margin of the LogoView if
-     * Surface Polish is enabled with less brand space.
-     */
-    public static int getLogoTotalHeightPolishedShort(Resources resources) {
-        return getLogoHeightPolishedShort(resources)
-                + getTopMarginPolishedSmall(resources)
-                + getBottomMarginPolishedSmall(resources);
-    }
-
-    /**
      * Returns the sum of the height, the top margin and the bottom margin of the LogoView if Logo
      * Polish is enabled.
      *
@@ -137,7 +106,7 @@ public class LogoUtils {
                         + getTopMarginForLogoPolish(resources);
             default:
                 assert false;
-                return getLogoTotalHeightPolishedShort(resources);
+                return getLogoTotalHeightPolished(resources);
         }
     }
 
@@ -148,17 +117,11 @@ public class LogoUtils {
             LogoView logoView,
             Resources resources,
             boolean isTablet,
-            boolean useLessBrandSpace,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         setLogoViewLayoutParams(
-                layoutParams,
-                resources,
-                isTablet,
-                useLessBrandSpace,
-                isLogoPolishEnabled,
-                logoSizeForLogoPolish);
+                layoutParams, resources, isTablet, isLogoPolishEnabled, logoSizeForLogoPolish);
         if (layoutParams != null) {
             logoView.setLayoutParams(layoutParams);
         }
@@ -169,7 +132,6 @@ public class LogoUtils {
             MarginLayoutParams layoutParams,
             Resources resources,
             boolean isTablet,
-            boolean useLessBrandSpace,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         if (layoutParams == null) return;
@@ -195,15 +157,9 @@ public class LogoUtils {
                     assert false;
             }
         } else {
-            if (useLessBrandSpace && !isTablet) {
-                layoutParams.height = getLogoHeightPolishedShort(resources);
-                layoutParams.topMargin = getTopMarginPolishedSmall(resources);
-                layoutParams.bottomMargin = getBottomMarginPolishedSmall(resources);
-            } else {
-                layoutParams.height = getLogoHeightPolished(resources);
-                layoutParams.topMargin = getTopMarginPolished(resources);
-                layoutParams.bottomMargin = getBottomMarginPolished(resources);
-            }
+            layoutParams.height = getLogoHeightPolished(resources);
+            layoutParams.topMargin = getTopMarginPolished(resources);
+            layoutParams.bottomMargin = getBottomMarginPolished(resources);
         }
     }
 }

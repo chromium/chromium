@@ -120,7 +120,6 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB,
                         StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                         StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
-                        StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT,
                         StartSurfaceConfiguration.LOGO_POLISH_LARGE_SIZE,
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,

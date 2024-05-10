@@ -146,7 +146,6 @@ class StartSurfaceMediator
             new ObservableSupplierImpl<>();
     private final CallbackController mCallbackController = new CallbackController();
     private final View mLogoContainerView;
-    private final boolean mMoveDownLogo;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
     private final boolean mUseMagicStack;
@@ -242,7 +241,6 @@ class StartSurfaceMediator
         mLogoContainerView = logoContainerView;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        mMoveDownLogo = ReturnToChromeUtil.moveDownLogo();
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(this::onProfileAvailable);
 
@@ -1042,7 +1040,7 @@ class StartSurfaceMediator
     }
 
     private void setLogoVisibility(boolean isVisible) {
-        if (!mMoveDownLogo) return;
+        if (!mIsSurfacePolishEnabled) return;
 
         if (isVisible && mLogoCoordinator == null) {
             mLogoCoordinator = initializeLogo();
@@ -1192,8 +1190,7 @@ class StartSurfaceMediator
             LogoUtils.setLogoViewLayoutParams(
                     logoView,
                     mContext.getResources(),
-                    false,
-                    StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue(),
+                    /* isTablet= */ false,
                     StartSurfaceConfiguration.isLogoPolishEnabled(),
                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         }

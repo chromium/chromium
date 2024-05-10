@@ -452,7 +452,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    public void testLogoSizeShrink() {
+    public void testLogoSize() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);

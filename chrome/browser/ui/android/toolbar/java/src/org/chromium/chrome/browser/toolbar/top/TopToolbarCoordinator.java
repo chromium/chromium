@@ -183,9 +183,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
      * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
      *     captures are stale and not able to be taken.
-     * @param shouldCreateLogoInStartToolbar Whether logo should be created in Start surface
-     *     toolbar. True if the logo should be created in the Start surface toolbar; False if the
-     *     logo should be shown in Start surface content.
      * @param fullscreenManager Used to check whether in fullscreen.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
@@ -221,7 +218,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
-            boolean shouldCreateLogoInStartToolbar,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
@@ -254,7 +250,6 @@ public class TopToolbarCoordinator implements Toolbar {
                             isTabToGtsAnimationEnabled,
                             isIncognitoModeEnabledSupplier,
                             startSurfaceLogoClickedCallback,
-                            shouldCreateLogoInStartToolbar,
                             this::onStartSurfaceToolbarTransitionFinished,
                             mToolbarColorObserverManager);
         } else if (HubFieldTrial.isHubEnabled()) {
