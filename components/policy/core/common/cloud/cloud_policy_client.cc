@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,6 +34,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace em = enterprise_management;
 
@@ -1589,8 +1589,7 @@ void CloudPolicyClient::OnGcmIdUpdated(StatusCallback callback,
 void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
     ClientCertProvisioningRequestCallback callback,
     DMServerJobResult result) {
-  base::ScopedClosureRunner job_cleaner(base::BindOnce(
-      &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
+  absl::Cleanup job_cleaner = [this, &result] { RemoveJob(result.job); };
 
   last_dm_status_ = result.dm_status;
   // For DM_STATUS_SUCCESS, always expect that the response contains the correct
