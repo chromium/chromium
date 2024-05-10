@@ -6264,6 +6264,7 @@
       default_value: "over",
       type_name: "RubyPosition",
       converter: "ConvertRubyPosition",
+      valid_for_first_line: true,
       valid_for_permission_element: true,
     },
     {

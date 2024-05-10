@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_break_candidate.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
@@ -3307,9 +3308,10 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
     data->annotation_line_list[i].SetIsRubyText();
     data->annotation_line_list[i].UpdateTextAlign();
     const LayoutObject* parent = annotation_object.Parent();
-    data->position_list.push_back(parent->IsInlineRuby()
-                                      ? parent->Style()->GetRubyPosition()
-                                      : RubyPosition::kOver);
+    data->position_list.push_back(
+        parent->IsInlineRuby()
+            ? parent->Style(use_first_line_style_)->GetRubyPosition()
+            : RubyPosition::kOver);
   }
   DCHECK_EQ(data->annotation_line_list.size(), data->position_list.size());
 
