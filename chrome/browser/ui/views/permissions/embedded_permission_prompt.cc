@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/color/color_id.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -268,7 +269,9 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     content_scrim_widget_ =
         EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
             weak_factory_.GetWeakPtr(),
-            SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.5f));
+            SkColorSetA(web_contents()->GetColorProvider().GetColor(
+                            ui::kColorRefNeutral20),
+                        0.8 * SK_AlphaOPAQUE));
     prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
   }
