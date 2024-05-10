@@ -674,12 +674,13 @@ class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
-    std::vector<base::test::FeatureRef> features = {
-        blink::features::kDesktopPWAsTabStrip,
-        features::kDesktopPWAsTabStripSettings};
+    // TODO(b/339747365): Enable kDesktopPWAsTabStripCustomizations in this test
+    // so it tests the released flag configuration.
     features_.InitWithFeatures(
-        /*enabled_features=*/features,
-        /*disabled_features=*/{});
+        /*enabled_features=*/{blink::features::kDesktopPWAsTabStrip,
+                              features::kDesktopPWAsTabStripSettings},
+        /*disabled_features=*/{
+            blink::features::kDesktopPWAsTabStripCustomizations});
   }
 
   // Returns [app_id, in_scope_1, in_scope_2, scope]
