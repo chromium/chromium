@@ -542,6 +542,7 @@ allowed_hosts = [
   'chromium-ads-detection',
   'chromium-clang-format',
   'chromium-nodejs',
+  'chromium-tfhub-models',
   'chrome-linux-sysroot',
   'chromium-fonts',
   'chromium-style-perftest',
@@ -695,6 +696,19 @@ deps = {
         'size_bytes': 3539912,
         'generation': 1699478806427152,
         'output_file': 'clang-format',
+      },
+    ],
+  },
+  # Download selected models from TFHub as testdata.
+  'src/third_party/tfhub_models': {
+    'bucket': 'chromium-tfhub-models',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': '0f037afd23a02321520951afd5c2c6078d26cbf1',
+        'sha256sum': '7130f43eb9889ff4dcd36ed2c5352053b88216e6b9186dfce08ea41b7dd142f3',
+        'size_bytes': 35504613,
+        'generation': 1691086948259727,
       },
     ],
   },
@@ -5053,18 +5067,6 @@ hooks = [
                 '--num_threads=16',
                 '--bucket', 'chromium-apache-win32',
                 'src/third_party/apache-win32',
-    ],
-  },
-  # Download selected models from TFHub as testdata.
-  {
-    'name': 'download_tfhub_models',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--extract',
-                '--bucket', 'chromium-tfhub-models',
-                '-s', 'src/third_party/tfhub_models/models.tar.gz.sha1',
     ],
   },
   # Pull down Node binaries for WebUI toolchain.
