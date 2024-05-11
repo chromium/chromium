@@ -188,7 +188,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   keyboard: KeyboardInfo;
-  protected isLoggedIn: boolean;
+  isLoggedIn: boolean;
   protected diagramTopRightKey: DiagramTopRightKey|null;
   private lostFocusToastLingerMs: number;
   private layoutIsKnown: boolean;
