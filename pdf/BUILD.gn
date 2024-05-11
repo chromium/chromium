@@ -350,6 +350,7 @@ if (enable_pdf) {
     sources = [
       "document_layout_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
+      "input_utils_unittest.cc",
       "page_orientation_unittest.cc",
       "paint_manager_unittest.cc",
       "parsed_params_unittest.cc",

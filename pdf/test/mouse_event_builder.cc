@@ -25,6 +25,9 @@ blink::WebMouseEvent MouseEventBuilder::Build() const {
       case blink::WebPointerProperties::Button::kLeft:
         actual_modifiers |= blink::WebInputEvent::Modifiers::kLeftButtonDown;
         break;
+      case blink::WebPointerProperties::Button::kMiddle:
+        actual_modifiers |= blink::WebInputEvent::Modifiers::kMiddleButtonDown;
+        break;
       case blink::WebPointerProperties::Button::kRight:
         actual_modifiers |= blink::WebInputEvent::Modifiers::kRightButtonDown;
         break;
