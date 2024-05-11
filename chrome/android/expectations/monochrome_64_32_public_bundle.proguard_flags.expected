@@ -224,6 +224,11 @@
 # when reported to app developers who are using WebView.
 -keepnames class ** extends java.lang.Throwable {}
 
+# Should be removed once we use Android V SDK. b/336753747
+-keep class !cr_allowunused,androidx.privacysandbox.ads.adservices.internal.ContinuationOutcomeReceiver {
+  <methods>;
+}
+
 # File: ../../build/android/dcheck_is_off.flags
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
