@@ -3430,6 +3430,7 @@
 <translation id="3566721612727112615">ምንም ጣቢያዎች አልታከሉም</translation>
 <translation id="3567284462585300767">በዙሪያዎ ካሉ ሰዎች ፋይሎችን ማግኘት እና መቀበል እንዲችሉ የሚታዩ ይሁኑ</translation>
 <translation id="356738834800832239">የይለፍ ቃልዎ ተቀምጧል</translation>
+<translation id="3568431410312984116">«እንድጽፍ እርዳኝ» በራስ-ሰር እንዲከፈት ይፍቀዱ</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> ማያ ገጽዎን እንዲያጋራ ይፈልጋሉ?</translation>
 <translation id="3569614820047645079">My Drive ውስጥ ያሉት የእርስዎ ፋይሎች ያለ የበይነመረብ ግንኙነት ሊደርሷቸው እንዲችሉ በራስ-ሰር ወደ እርስዎ Chromebook ይሰምራሉ።</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች እና አቃፊዎች መመልከት ይችላል</translation>
@@ -5903,6 +5904,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> አሁን ከWi-Fi ጋር እንዲገናኙ እና አንድ ዝማኔ እንዲያወርዱ ይፈልግብዎታል። ወይም ደግሞ ከሚለካ ግንኙነት ያውርዱ (ክፍያዎች ሊከፈልባቸው ይችላል)።</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> መገናኛ ነጥብን ያዋቅሩ</translation>
 <translation id="5481273127572794904">ብዙ ፋይሎችን በራስ-ሰር ለማውረድ አልተፈቀደም</translation>
+<translation id="5481682542063333508">የአጻጻፍ እገዛን አቅርብ</translation>
 <translation id="5481941284378890518">አቅራቢያ ያሉ አታሚዎችን አክል</translation>
 <translation id="5482417738572414119">Chrome ትር ቡድኖችን እንዲጠቁም እና ትርዎቻችሁን በተደራጀ ሁኔታ እንዲይዙ ይግቡ።</translation>
 <translation id="5484181871714116891">በሚበራበት ጊዜ የይለፍ ቁልፎች በiCloud Keychain ውስጥ ይፈጠራሉ እና በመላው የApple መሣሪያዎችዎ ላይ ይገኛሉ። በሚጠፋበት ጊዜ የይለፍ ቁልፎች በዚህ መሣሪያ ላይ ባለው የChrome መገለጫዎ ውስጥ ይፈጠራሉ።</translation>
@@ -10117,6 +10119,7 @@ nil</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> ከአውርድ ታሪክ ተሰርዟል</translation>
 <translation id="8692107307702113268">የይለፍ ቃል ከ1000 ቁምፊዎች በላይ ነው</translation>
 <translation id="8693639060656817812">ስለ የመከታተል ጥበቃ ተገኝነት የበለጠ ለመረዳት</translation>
+<translation id="8693862390730570097">«እንድጽፍ እርዳኝ» በራስ-ሰር እንዲከፈት አይፍቀዱ</translation>
 <translation id="8694596275649352090">በእንቅልፍ ወይም ክዳኑ በተዘጋ ጊዜ ቆልፍ</translation>
 <translation id="8695139659682234808">ከውቅረት በኋላ የወላጅ መቆጣጠሪያዎችን ያክሉ</translation>
 <translation id="8695825812785969222">&amp;ቦታ ክፈት…</translation>
@@ -10705,6 +10708,7 @@ nil</translation>
 <translation id="9112987648460918699">አግኝ…</translation>
 <translation id="9113240369465613386">ኢተጋማሽ ገጾች ብቻ</translation>
 <translation id="9113469270512809735">በቅርብ ጊዜ የተዘጉ ንጥሎችን ይቀያይሩ</translation>
+<translation id="9113529408970052045">በአንድ ጣቢያ ላይ ያለው የጽሑፍ ሳጥን በአጭር ቅጽ ይዘት ሲሞላ «እንድጽፍ እርዳኝ» ወዲያውኑ ይከፈታል።</translation>
 <translation id="9114663181201435112">በቀላሉ በመለያ ይግቡ</translation>
 <translation id="9115675100829699941">&amp;እልባቶች</translation>
 <translation id="9115932142612197835">ይህ ቅንብር የGoogle ትርጉም ወይም ሌንስ ተገኝነትን አይለውጥም</translation>

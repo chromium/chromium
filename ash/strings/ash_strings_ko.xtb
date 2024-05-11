@@ -799,7 +799,7 @@
 <translation id="4150201353443180367">디스플레이</translation>
 <translation id="4156293514828496577">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />).
 배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
-<translation id="4165275524535002941">디스플레이를 지원하지 않는 케이블일 수 있습니다</translation>
+<translation id="4165275524535002941">케이블이 디스플레이를 지원하지 않을 수 있습니다</translation>
 <translation id="4177415338862979658">클릭하여 세부정보 확인</translation>
 <translation id="4177913004758410636">{0,plural, =1{1일 이내에 기기 업데이트}other{#일 이내에 기기 업데이트}}</translation>
 <translation id="4181841719683918333">언어</translation>

@@ -3420,6 +3420,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3566721612727112615">Heç bir sayt əlavə olunmadı</translation>
 <translation id="3567284462585300767">Ətrafınızdakı insanlara fayllar göndərmək və almaq üçün görünən olun</translation>
 <translation id="356738834800832239">Parol yadda saxlandı</translation>
+<translation id="3568431410312984116">"Yazmağa kömək et" funksiyasının avtomatik açılmasına icazə verin</translation>
 <translation id="3569382839528428029"><ph name="APP_NAME" /> tərəfindən ekranınızın paylaşılmasını istəyirsiniz?</translation>
 <translation id="3569614820047645079">İnternetsiz giriş üçün Mənim diskim bölməsindəki fayllar Chromebook-a avtomatik sinxronlaşdırılır.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> aşağıdakı fayl və qovluqlara baxa bilər</translation>
@@ -5893,6 +5894,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5474859849784484111"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir. Ya da limitli bağlantı vasitəsilə endirin (ödəmə tutula bilər).</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" /> hotspotunu konfiqurasiya edin</translation>
 <translation id="5481273127572794904">Çoxsaylı faylların avtomatik endirilməsinə icazə verilmədi</translation>
+<translation id="5481682542063333508">Yazı köməyi təklif edin</translation>
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
 <translation id="5482417738572414119">Chrome-un tab qrupları təklif etməsi və tabları nizamlı saxlaması üçün daxil olun</translation>
 <translation id="5484181871714116891">Aktiv olduqda giriş açarları iCloud Keychain-də yaradılır və Apple cihazlarında əlçatan olur. Deaktiv olduqda giriş açarları bu cihazdakı Chrome profilində yaradılır.</translation>
@@ -10096,6 +10098,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> endirmə tarixçəsindən silindi</translation>
 <translation id="8692107307702113268">Parol 1000 simvoldan uzundur</translation>
 <translation id="8693639060656817812">İzləmədən qoruma əlçatanlığı haqqında ətraflı məlumat</translation>
+<translation id="8693862390730570097">"Yazmağa kömək et" funksiyasının avtomatik açılmasına icazə verməyin</translation>
 <translation id="8694596275649352090">Yatarkən və ya qapaq bağlı olduqda kilidləyin</translation>
 <translation id="8695139659682234808">Ayarlamadan sonra valideyn nəzarəti əlavə edin</translation>
 <translation id="8695825812785969222">Məkan açın...</translation>
@@ -10681,6 +10684,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9112987648460918699">Axtarın...</translation>
 <translation id="9113240369465613386">Yalnız tək səhifələr</translation>
 <translation id="9113469270512809735">Son Bağlanan Elementləri Keçirin</translation>
+<translation id="9113529408970052045">Saytdakı mətn qutusu qısa kontent ilə doldurula bildikdə "Yazmağa kömək et" avtomatik açıla bilər</translation>
 <translation id="9114663181201435112">Asanlıqla daxil olun</translation>
 <translation id="9115675100829699941">Əlfəcinlər</translation>
 <translation id="9115932142612197835">Bu ayar Google Tərcümə və ya Linzanın əlçatanlığını dəyişmir</translation>

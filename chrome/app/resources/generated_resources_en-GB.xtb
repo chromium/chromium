@@ -3436,6 +3436,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3566721612727112615">No sites added</translation>
 <translation id="3567284462585300767">To receive and accept files with people around you, become visible</translation>
 <translation id="356738834800832239">Your password is saved</translation>
+<translation id="3568431410312984116">Allow 'Help me write' to automatically open</translation>
 <translation id="3569382839528428029">Do you want <ph name="APP_NAME" /> to share your screen?</translation>
 <translation id="3569614820047645079">Your files in My Drive sync to your Chromebook automatically so that you can access them without an Internet connection.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
@@ -5912,6 +5913,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5474859849784484111"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
 <translation id="5477089831058413614">Configure <ph name="DEVICE_TYPE" /> hotspot</translation>
 <translation id="5481273127572794904">Not allowed to automatically download multiple files</translation>
+<translation id="5481682542063333508">Offer writing help</translation>
 <translation id="5481941284378890518">Add Nearby Printers</translation>
 <translation id="5482417738572414119">Sign in to let Chrome suggest tab groups and keep your tabs organised</translation>
 <translation id="5484181871714116891">When on, passkeys are created in iCloud Keychain and are available across your Apple devices. When off, passkeys are created in your Chrome profile on this device.</translation>
@@ -10119,6 +10121,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="869167754614449887">Deleted <ph name="FILE_NAME" /> from download history</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
 <translation id="8693639060656817812">Learn more about Tracking Protection availability</translation>
+<translation id="8693862390730570097">Don't allow 'Help me write' to automatically open</translation>
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>
 <translation id="8695825812785969222">Open &amp;Location...</translation>
@@ -10706,6 +10709,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9113240369465613386">Odd pages only</translation>
 <translation id="9113469270512809735">Toggle recently closed items</translation>
+<translation id="9113529408970052045">'Help me write' can automatically open when a text box on a site can be filled with short-form content</translation>
 <translation id="9114663181201435112">Sign in easily</translation>
 <translation id="9115675100829699941">&amp;Bookmarks</translation>
 <translation id="9115932142612197835">This setting doesn't change the availability of Google Translate or Lens</translation>

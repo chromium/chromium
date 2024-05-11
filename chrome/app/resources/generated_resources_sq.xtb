@@ -3419,6 +3419,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3566721612727112615">Nuk u shtuan sajte</translation>
 <translation id="3567284462585300767">Për të marrë dhe pranuar skedarë nga njerëzit përreth teje, bëhu i dukshëm</translation>
 <translation id="356738834800832239">Fjalëkalimi yt u ruajt</translation>
+<translation id="3568431410312984116">Lejo hapjen automatike të "Më ndihmo të shkruaj"</translation>
 <translation id="3569382839528428029">Dëshiron që <ph name="APP_NAME" /> të ndajë ekranin tënd?</translation>
 <translation id="3569614820047645079">Skedarët e tu te "Disku im" sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> mund t'i shikojë skedarët dhe dosjet e mëposhtme</translation>
@@ -5894,6 +5895,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5474859849784484111"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim. Ndryshe, shkarko nga një lidhje me matje (mund të zbatohen tarifa).</translation>
 <translation id="5477089831058413614">Konfiguro zonën e qasjes për internet për <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nuk lejohen të shkarkojnë automatikisht shumë skedarë</translation>
+<translation id="5481682542063333508">Ofro ndihmë për të shkruarit</translation>
 <translation id="5481941284378890518">Shto printerët në afërsi</translation>
 <translation id="5482417738572414119">Identifikohu për të lejuar që Chrome të sugjerojë grupet e skedave dhe t'i mbajë të organizuara skedat e tua</translation>
 <translation id="5484181871714116891">Kur është aktive, çelësat e kalimit krijohen në iCloud Keychain dhe ofrohen nëpër pajisjet e tua Apple. Kur është joaktive, çelësat e kalimit krijohen në profilin tënd të Chrome në këtë pajisje.</translation>
@@ -10098,6 +10100,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="869167754614449887"><ph name="FILE_NAME" /> u fshi nga historiku i shkarkimeve</translation>
 <translation id="8692107307702113268">Fjalëkalimi është më shumë se 1000 karaktere</translation>
 <translation id="8693639060656817812">Mëso më shumë rreth disponueshmërisë së "Mbrojtjes nga gjurmimi"</translation>
+<translation id="8693862390730570097">Mos lejo hapjen automatike të "Më ndihmo të shkruaj"</translation>
 <translation id="8694596275649352090">Kyçe kur është në gjumë ose kur mbyllet kapaku</translation>
 <translation id="8695139659682234808">Shto kontrollet prindërore pas konfigurimit</translation>
 <translation id="8695825812785969222">Hap &amp;vendndodhjen...</translation>
@@ -10685,6 +10688,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9112987648460918699">Gjej...</translation>
 <translation id="9113240369465613386">Vetëm faqet me numra tek</translation>
 <translation id="9113469270512809735">Aktivizo/çaktivizo artikujt e mbyllur së fundi</translation>
+<translation id="9113529408970052045">"Më ndihmo të shkruaj" mund të hapet automatikisht kur një kuti teksti në një sajt mund të plotësohet me përmbajtje të shkurtër</translation>
 <translation id="9114663181201435112">Identifikohu me lehtësi</translation>
 <translation id="9115675100829699941">&amp;Faqeshënuesit</translation>
 <translation id="9115932142612197835">Ky cilësim nuk e ndryshon disponueshmërinë e "Përkthe me Google" ose të "Lentes"</translation>

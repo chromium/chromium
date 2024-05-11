@@ -170,7 +170,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1122960773616686544">Tên dấu trang</translation>
 <translation id="1124772482545689468">Người dùng</translation>
 <translation id="1125550662859510761">Có vẻ như là <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Gốc)</translation>
-<translation id="1125921926864945797">Hình nền và kiểu</translation>
+<translation id="1125921926864945797">Hình nền và phong cách</translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
 <translation id="1128090040635299943">Đang định cấu hình Linux. Quá trình này sẽ mất một vài phút.</translation>
 <translation id="1128591060186966949">Chỉnh sửa công cụ tìm kiếm</translation>
@@ -1268,7 +1268,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1925124445985510535">Tính năng kiểm tra an toàn đã chạy vào lúc <ph name="TIME" /></translation>
 <translation id="192564025059434655">Sau tháng 12 năm 2022, các phiên bản cũ của ứng dụng Chrome sẽ không mở trên các thiết bị Windows. Bạn có thể kiểm tra xem có phiên bản mới không.</translation>
-<translation id="1926339101652878330">Các cài đặt này chịu sự kiểm soát của chính sách doanh nghiệp. Vui lòng liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
+<translation id="1926339101652878330">Các chế độ cài đặt này chịu sự kiểm soát của chính sách doanh nghiệp. Vui lòng liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
 <translation id="1926887872692564784">Con trỏ</translation>
 <translation id="1927632033341042996">Ngón tay <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">Phương thức khóa màn hình: mã PIN</translation>
@@ -4220,7 +4220,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4136203100490971508">Chế độ Ánh sáng đêm sẽ tự động tắt khi trời sáng</translation>
 <translation id="41365691917097717">Nếu bạn tiếp tục, tùy chọn gỡ lỗi ADB sẽ bật để tạo và thử nghiệm các ứng dụng Android. Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="4137923333452716643">Đánh dấu văn bản bạn muốn mở ở chế độ đọc</translation>
-<translation id="4138267921960073861">Hiển thị tên người dùng và ảnh trên màn hình đăng nhập</translation>
+<translation id="4138267921960073861">Hiện tên người dùng và ảnh trên màn hình đăng nhập</translation>
 <translation id="4138598238327913711">Tính năng kiểm tra ngữ pháp hiện chỉ hỗ trợ tiếng Anh</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – Đã kết nối thiết bị giao diện tương tác với con người (HID)</translation>
 <translation id="4139326893730851150">Các bản cập nhật chương trình cơ sở</translation>
