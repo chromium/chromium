@@ -22532,10 +22532,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGroupingNoSizes) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsJointBatchedRequests) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
-
   url_loader_factory_.ClearResponses();
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -22578,10 +22574,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsJointBatchedRequests) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsSplitBatchedRequests) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
-
   url_loader_factory_.ClearResponses();
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -22626,10 +22618,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsSplitBatchedRequests) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignalsJointBatchedRequests) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
-
   url_loader_factory_.ClearResponses();
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");
@@ -22670,10 +22658,6 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignalsJointBatchedRequests) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignalsSplitBatchedRequests) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeSplitTrustedSignalsFetchingURL);
-
   url_loader_factory_.ClearResponses();
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");
