@@ -197,6 +197,8 @@ if (enable_pdf) {
         "ink_module.cc",
         "ink_module.h",
       ]
+
+      public_deps += [ "//pdf/ink" ]
     }
 
     if (enable_screen_ai_service) {

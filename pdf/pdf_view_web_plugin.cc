@@ -2071,6 +2071,12 @@ bool PdfViewWebPlugin::HandleWebInputEvent(const blink::WebInputEvent& event) {
   const blink::WebInputEvent& event_to_handle =
       transformed_event ? *transformed_event : event;
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_ && ink_module_->HandleInputEvent(event_to_handle)) {
+    return true;
+  }
+#endif
+
   if (engine_->HandleInputEvent(event_to_handle))
     return true;
 
