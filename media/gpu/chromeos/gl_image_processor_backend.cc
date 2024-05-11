@@ -358,15 +358,12 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
       // clang-format on
   };
 
-  GLuint vbo_id;
-  glGenBuffersARB(1, &vbo_id);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+  glGenBuffersARB(1, &vbo_id_);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
   glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices, GL_STATIC_DRAW);
 
-  GLuint vao_id;
-  glGenVertexArraysOES(1, &vao_id);
-  glBindVertexArrayOES(vao_id);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+  glGenVertexArraysOES(1, &vao_id_);
+  glBindVertexArrayOES(vao_id_);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
   glEnableVertexAttribArray(0);
 
@@ -549,6 +546,8 @@ GLImageProcessorBackend::~GLImageProcessorBackend() {
     glDeleteTextures(1, &src_texture_id_);
     glDeleteTextures(1, &dst_texture_id_);
     glDeleteFramebuffersEXT(1, &fb_id_);
+    glDeleteVertexArraysOES(1, &vao_id_);
+    glDeleteBuffersARB(1, &vbo_id_);
     gl_context_->ReleaseCurrent(gl_surface_.get());
     gl_surface_->HasOneRef();
     gl_context_->HasOneRef();
