@@ -8791,6 +8791,51 @@
             ]
         }
     ],
+    "GwpAsanAndroidLargerBrowserReservation": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "TripleBrowserReservation",
+                    "params": {
+                        "BrowserMaxAllocations": "210",
+                        "BrowserMaxMetadata": "765",
+                        "BrowserTotalPages": "1536"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GwpAsanLargerBrowserReservation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "TripleBrowserReservation",
+                    "params": {
+                        "BrowserMaxAllocations": "210",
+                        "BrowserMaxMetadata": "765",
+                        "BrowserTotalPages": "6144"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
     "GwpAsanLinux": [
         {
             "platforms": [
