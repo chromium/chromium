@@ -22,10 +22,11 @@ own. Note that a
 identity is incompatible with the _library validation_ signing option that
 Chrome uses.
 
-A sample invocation to use during development would be:
+A sample invocation to use the
+[internal Google development identity](https://goto.google.com/appledev/book/getting_started/provisioning/index.md#googles-development-certificate) during development would be:
 
     $ ninja -C out/release chrome chrome/installer/mac
-    $ ./out/release/Chromium\ Packaging/sign_chrome.py --input out/release --output out/release/signed --identity 'MacOS Developer' --development --disable-packaging
+    $ ./out/release/Chromium\ Packaging/sign_chrome.py --input out/release --output out/release/signed --identity 'Google Development' --development --disable-packaging
 
 The `--disable-packaging` flag skips the creation of DMG and PKG files, which
 speeds up the signing process when one is only interested in a signed .app
