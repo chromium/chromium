@@ -18,22 +18,14 @@ import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {SystemPageElement} from 'chrome://diagnostics/system_page.js';
-import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
-/**
- * @param {Array<?T>} cards
- * @template T
- * @throws {!Error}
- */
-function assertRunTestButtonsDisabled(cards) {
+function assertRunTestButtonsDisabled(cards: any[]) {
   cards.forEach((card) => {
     const routineSection = dx_utils.getRoutineSection(card);
     const runTestsButton =
@@ -42,12 +34,7 @@ function assertRunTestButtonsDisabled(cards) {
   });
 }
 
-/**
- * @param {Array<?T>} cards
- * @template T
- * @throws {!Error}
- */
-function assertRunTestButtonsEnabled(cards) {
+function assertRunTestButtonsEnabled(cards: any[]) {
   cards.forEach((card) => {
     const routineSection = dx_utils.getRoutineSection(card);
     const runTestsButton =
@@ -57,33 +44,23 @@ function assertRunTestButtonsEnabled(cards) {
 }
 
 suite('systemPageTestSuite', function() {
-  /** @type {?SystemPageElement} */
-  let page = null;
+  let page: SystemPageElement|null = null;
 
-  /** @type {?FakeSystemDataProvider} */
-  let systemDataProvider = null;
+  const systemDataProvider = new FakeSystemDataProvider();
 
-  /** @type {?FakeNetworkHealthProvider} */
-  let networkHealthProvider = null;
+  const networkHealthProvider = new FakeNetworkHealthProvider();
 
-  /** @type {!FakeSystemRoutineController} */
-  let routineController;
+  const routineController = new FakeSystemRoutineController();
 
-  /** @type {?TestDiagnosticsBrowserProxy} */
-  let DiagnosticsBrowserProxy = null;
+  const DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
 
   suiteSetup(() => {
-    systemDataProvider = new FakeSystemDataProvider();
-    networkHealthProvider = new FakeNetworkHealthProvider();
-
     setSystemDataProviderForTesting(systemDataProvider);
     setNetworkHealthProviderForTesting(networkHealthProvider);
 
-    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
     DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
 
     // Setup a fake routine controller.
-    routineController = new FakeSystemRoutineController();
     routineController.setDelayTimeInMillisecondsForTesting(-1);
 
     // Enable all routines by default.
@@ -94,29 +71,20 @@ suite('systemPageTestSuite', function() {
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    page.remove();
+    page?.remove();
     page = null;
     systemDataProvider.reset();
     networkHealthProvider.reset();
   });
 
-  /**
-   * @param {!SystemInfo} systemInfo
-   * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
-   * @param {!Array<!BatteryHealth>} batteryHealth
-   * @param {!BatteryInfo} batteryInfo
-   * @param {!Array<!CpuUsage>} cpuUsage
-   * @param {!Array<!MemoryUsage>} memoryUsage
-   */
   function initializeSystemPage(
-      systemInfo, batteryChargeStatus, batteryHealth, batteryInfo, cpuUsage,
-      memoryUsage) {
-    assertFalse(!!page);
-
+      systemInfo: SystemInfo, batteryChargeStatus: BatteryChargeStatus[],
+      batteryHealth: BatteryHealth[], batteryInfo: BatteryInfo,
+      cpuUsage: CpuUsage[], memoryUsage: MemoryUsage[]): Promise<void> {
     // Initialize the fake data.
     systemDataProvider.setFakeSystemInfo(systemInfo);
     systemDataProvider.setFakeBatteryChargeStatus(batteryChargeStatus);
@@ -132,21 +100,10 @@ suite('systemPageTestSuite', function() {
     networkHealthProvider.setFakeNetworkState(
         'cellularGuid', [fakeCellularNetwork]);
 
-    page =
-        /** @type {!SystemPageElement} */ (
-            document.createElement('system-page'));
-    assertTrue(!!page);
+    page = document.createElement(SystemPageElement.is);
+    assert(page);
     document.body.appendChild(page);
     return flushTasks();
-  }
-
-  /**
-   * Get the caution banner.
-   * @return {!HTMLElement}
-   */
-  function getCautionBanner() {
-    return /** @type {!HTMLElement} */ (
-        page.shadowRoot.querySelector('#banner'));
   }
 
   test('LandingPageLoaded', () => {
@@ -154,22 +111,23 @@ suite('systemPageTestSuite', function() {
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => {
+          assert(page);
           // Verify the overview card is in the page.
-          const overview = page.shadowRoot.querySelector('#overviewCard');
-          assertTrue(!!overview);
+          const overview = page.shadowRoot!.querySelector('#overviewCard');
+          assert(overview);
 
           // Verify the memory card is in the page.
-          const memory = page.shadowRoot.querySelector('#memoryCard');
-          assertTrue(!!memory);
+          const memory = page.shadowRoot!.querySelector('#memoryCard');
+          assert(memory);
 
           // Verify the CPU card is in the page.
-          const cpu = page.shadowRoot.querySelector('#cpuCard');
-          assertTrue(!!cpu);
+          const cpu = page.shadowRoot!.querySelector('#cpuCard');
+          assert(cpu);
 
           // Verify the battery status card is in the page.
           const batteryStatus =
-              page.shadowRoot.querySelector('#batteryStatusCard');
-          assertTrue(!!batteryStatus);
+              page.shadowRoot!.querySelector('#batteryStatusCard');
+          assert(batteryStatus);
         });
   });
 
@@ -180,34 +138,39 @@ suite('systemPageTestSuite', function() {
                fakeMemoryUsage)
         .then(() => {
           // Verify the battery status card is not in the page.
+          assert(page);
           const batteryStatus =
-              page.shadowRoot.querySelector('#batteryStatusCard');
+              page.shadowRoot!.querySelector('#batteryStatusCard');
           assertFalse(!!batteryStatus);
         });
   });
 
   test('AllRunTestsButtonsDisabledWhileRunning', () => {
-    let cards = null;
-    let memoryRoutinesSection = null;
+    let cards: Element[];
+    let memoryRoutinesSection: RoutineSectionElement|null = null;
     return initializeSystemPage(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage,
                fakeMemoryUsageHighAvailableMemory)
         .then(() => {
+          assert(page);
           const batteryStatusCard =
-              page.shadowRoot.querySelector('battery-status-card');
-          const cpuCard = page.shadowRoot.querySelector('cpu-card');
-          const memoryCard = page.shadowRoot.querySelector('memory-card');
-          cards = [batteryStatusCard, cpuCard, memoryCard];
+              page.shadowRoot!.querySelector('battery-status-card');
+          const cpuCard = page.shadowRoot!.querySelector('cpu-card');
+          const memoryCard = page.shadowRoot!.querySelector('memory-card');
+          cards = [batteryStatusCard, cpuCard, memoryCard] as Element[];
           assertRunTestButtonsEnabled(cards);
 
           memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
+          assert(memoryRoutinesSection);
           memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.RUNNING;
           return flushTasks();
         })
         .then(() => {
+          assert(page);
           assertEquals(TestSuiteStatus.RUNNING, page.testSuiteStatus);
           assertRunTestButtonsDisabled(cards);
+          assert(memoryRoutinesSection);
           memoryRoutinesSection.testSuiteStatus = TestSuiteStatus.NOT_RUNNING;
           return flushTasks();
         })
@@ -219,11 +182,13 @@ suite('systemPageTestSuite', function() {
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => {
+          assert(page);
           page.onNavigationPageChanged({isActive: false});
 
           return flushTasks();
         })
         .then(() => {
+          assert(page);
           assertEquals(
               0, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
 
@@ -237,7 +202,6 @@ suite('systemPageTestSuite', function() {
               1, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
           assertArrayEquals(
               [NavigationView.CONNECTIVITY, NavigationView.SYSTEM],
-              /** @type {!Array<!NavigationView>} */
               (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
         });
   });

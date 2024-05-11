@@ -42,8 +42,8 @@ export interface SystemPageElement {
 const SystemPageElementBase = I18nMixin(PolymerElement);
 
 export class SystemPageElement extends SystemPageElementBase {
-  static get is(): string {
-    return 'system-page';
+  static get is(): 'system-page' {
+    return 'system-page' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -166,6 +166,12 @@ export class SystemPageElement extends SystemPageElementBase {
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy.recordNavigation('system');
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SystemPageElement.is]: SystemPageElement;
   }
 }
 
