@@ -3,6 +3,8 @@ This is a wdspec test.
   AssertionError: assert 'no such element' == 'no such window'
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
+[FAIL] test_transform_capitalize[underscore]
+  AssertionError: assert 'Foo_Bar' == 'Foo_bar'
 [FAIL] test_shadow_root_slot[default visible]
   AssertionError: assert '' == 'foobar'
 [FAIL] test_shadow_root_slot[default outside]

@@ -2679,6 +2679,13 @@
        ]
       ]
      },
+     "li-without-ul-counter-crash.html": [
+      "e95c675eea4639c39f8b3a7ff0447bbcc9808187",
+      [
+       null,
+       {}
+      ]
+     ],
      "list-item-counter-crash.html": [
       "fc8a38c628026dc190d81e27150d8ebabb130ae2",
       [
@@ -181449,6 +181456,19 @@
        {}
       ]
      ],
+     "collapsed-border-partial-invalidation-003.html": [
+      "073f67e669da0b884c507c356a016e1ef229961f",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/collapsed-border-partial-invalidation-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "collapsed-border-positioned-tr-td.html": [
       "d5c6094497268941071e516073a54f38e5900d45",
       [
@@ -234519,6 +234539,19 @@
        [
         [
          "/css/css-view-transitions/named-element-with-fix-pos-child-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "names-are-tree-scoped.html": [
+      "efca07e209da39040ee6a954480801e1280d427e",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/names-are-tree-scoped-ref.html",
          "=="
         ]
        ],
@@ -332252,6 +332285,10 @@
       "d89389a6dc3bc2d86a17ea6f22857feaff6119fb",
       []
      ],
+     "collapsed-border-partial-invalidation-003-ref.html": [
+      "2b19a838143bdd1602cb252221f68bf2fc84ca70",
+      []
+     ],
      "collapsed-border-positioned-tr-td-ref.html": [
       "b3099017699bb83d78bf0492c9c451ccd1e034bf",
       []
@@ -342018,6 +342055,10 @@
       "7d513e282df217e0299d39888ab02afb64b92717",
       []
      ],
+     "names-are-tree-scoped-ref.html": [
+      "62419b07ee148486917f96b7b1eb8ffdeae7c2ca",
+      []
+     ],
      "navigation": {
       "at-rule-opt-in-auto-ref.html": [
        "be8cc501cf09a01105a8f0c89d8e47b91dd66c01",
@@ -348024,7 +348065,7 @@
    },
    "custom-elements": {
     "DIR_METADATA": [
-     "da4ec085247a73295cfd55a20b7d5589f4f09246",
+     "9dae14696dd40fd92d8ae56490725a91b7de7c29",
      []
     ],
     "Document-createElement-customized-builtins-expected.txt": [
@@ -348894,7 +348935,7 @@
    },
    "dom": {
     "DIR_METADATA": [
-     "f9a56cc928857bcba3fde2d0b7c11cc679b5d417",
+     "1cb5be6d22d758cac0c23452a9a4440bfff1685b",
      []
     ],
     "META.yml": [
@@ -351682,7 +351723,7 @@
      []
     ],
     "textdecoder-copy.any-expected.txt": [
-     "b70509bd5ef5b895780dd7154bec80656519642a",
+     "3722df9d3d4fa865299e64742c403263c130c8f2",
      []
     ],
     "textdecoder-copy.any.js.headers": [
@@ -351690,15 +351731,15 @@
      []
     ],
     "textdecoder-copy.any.serviceworker-expected.txt": [
-     "b70509bd5ef5b895780dd7154bec80656519642a",
+     "3722df9d3d4fa865299e64742c403263c130c8f2",
      []
     ],
     "textdecoder-copy.any.sharedworker-expected.txt": [
-     "b70509bd5ef5b895780dd7154bec80656519642a",
+     "3722df9d3d4fa865299e64742c403263c130c8f2",
      []
     ],
     "textdecoder-copy.any.worker-expected.txt": [
-     "b70509bd5ef5b895780dd7154bec80656519642a",
+     "3722df9d3d4fa865299e64742c403263c130c8f2",
      []
     ],
     "textdecoder-fatal-streaming.any.shadowrealm-expected.txt": [
@@ -358014,7 +358055,7 @@
    },
    "html": {
     "DIR_METADATA": [
-     "80e019d94891585c88cab66335aa3a4a7953b722",
+     "e604f613def46d54b2d802121e7b600cbc103d87",
      []
     ],
     "META.yml": [
@@ -359002,7 +359043,7 @@
      },
      "history": {
       "DIR_METADATA": [
-       "6a5a4e506745134ef1923f18d8d60dff0db9339a",
+       "72e156f7b8ba049ccd4ccc900663b9e32d821bfe",
        []
       ],
       "joint-session-history": {
@@ -359390,7 +359431,7 @@
      },
      "offline": {
       "DIR_METADATA": [
-       "64b6100d95b31245ff9a771a792a65db2a922ea3",
+       "7ce6088e716a8b151f1c835317da0f9ab358f6b1",
        []
       ],
       "changestonetworkingmodel": {
@@ -369222,7 +369263,7 @@
      },
      "the-details-element": {
       "DIR_METADATA": [
-       "72387ccff958b7a6fea9972a4f0cedad09e83c03",
+       "046f6842c1e56777436c0afd14e837d3df0a0e25",
        []
       ],
       "WEB_FEATURES.yml": [
@@ -369451,7 +369492,7 @@
     },
     "select": {
      "DIR_METADATA": [
-      "c8ba5e73831c7af891acb9ba7fd72d83926a78c9",
+      "2974c05fb238329ffa06ab947b6d317fb22b8348",
       []
      ]
     },
@@ -369505,7 +369546,7 @@
       },
       "the-base-element": {
        "DIR_METADATA": [
-        "fcaa81db5f93d5eaee17ffb04ea5ce4b13ea421e",
+        "ab80546912c8b770a782405659f3978f23d5898a",
         []
        ],
        "base-data-expected.txt": [
@@ -369527,7 +369568,7 @@
       },
       "the-link-element": {
        "DIR_METADATA": [
-        "bfdbe5913d3b90f505ae594d16d62bcf8dc91f24",
+        "4b75a8fd95739c9bbc43e57b19ec6f7df5f63a3a",
         []
        ],
        "all": [
@@ -370405,7 +370446,7 @@
       },
       "the-embed-element": {
        "DIR_METADATA": [
-        "23ebfecc93a139823e907a1e82dcc5d75d841690",
+        "7b7b6aa0d0a9b196dc044cd077e4008d95cb963b",
         []
        ],
        "embed-hidden-attribute-ref.html": [
@@ -370431,13 +370472,13 @@
       },
       "the-frame-element": {
        "DIR_METADATA": [
-        "16b6d7c9f7dd414631d9a1f3f7781d456e48b7a4",
+        "034691ab1d4f830e13a07188a9aa7e94b8ad4304",
         []
        ]
       },
       "the-iframe-element": {
        "DIR_METADATA": [
-        "ec28560a3120e8de48e517b75c1f1d4c1df8429a",
+        "68be04db86d785c0109b9851820e2775986447d4",
         []
        ],
        "change_child.html": [
@@ -371060,7 +371101,7 @@
      },
      "forms": {
       "DIR_METADATA": [
-       "a1a17b487752c8c1f6a78294533c03fbf088d2a6",
+       "bbf8ba2e6a8deed23e272753cca353b469c31f81",
        []
       ],
       "META.yml": [
@@ -371097,7 +371138,7 @@
       },
       "form-submission-0": {
        "DIR_METADATA": [
-        "8744800ee36273cc28c4804ad9554d7eb9de1c77",
+        "17344a077ead14dd2c0949b389a0fbd4b7d9d4f0",
         []
        ],
        "enctypes-helper.js": [
@@ -371149,7 +371190,7 @@
       },
       "form-submission-target": {
        "DIR_METADATA": [
-        "8744800ee36273cc28c4804ad9554d7eb9de1c77",
+        "17344a077ead14dd2c0949b389a0fbd4b7d9d4f0",
         []
        ],
        "form-target-iframe-helper.py": [
@@ -371199,7 +371240,7 @@
       },
       "the-button-element": {
        "DIR_METADATA": [
-        "4881f7e9eece3beb376c2b42cd4ad7e9c6a4413c",
+        "c4f6cf3cfebd8877cede7948f8944c220d53e20f",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371221,13 +371262,13 @@
       },
       "the-datalist-element": {
        "DIR_METADATA": [
-        "d4bdb2a6271c098b3f5cd52d4b47c90e220a5825",
+        "6a81fd2c5e28412b1316c23a17ab6d5cac48873e",
         []
        ]
       },
       "the-fieldset-element": {
        "DIR_METADATA": [
-        "66c747a5b5224140e9bcae06106116307db2157c",
+        "9267a852fb6e2dee93ae8c1bab913c668f9d556b",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371377,7 +371418,7 @@
       },
       "the-label-element": {
        "DIR_METADATA": [
-        "f16207d340f6ae6875949a274bdc4742194e1625",
+        "6b0bf8c56efd98429f4b628c0fc0a3f20e559eff",
         []
        ],
        "iframe-label-attributes.html": [
@@ -371391,13 +371432,13 @@
       },
       "the-legend-element": {
        "DIR_METADATA": [
-        "66c747a5b5224140e9bcae06106116307db2157c",
+        "9267a852fb6e2dee93ae8c1bab913c668f9d556b",
         []
        ]
       },
       "the-meter-element": {
        "DIR_METADATA": [
-        "09bf11ef4c5459e8edd2f436b36d675375bd00bc",
+        "ca0f27e1264c80a86a50081786c047cdcb03840d",
         []
        ],
        "meter-min-rendering-ref.html": [
@@ -371407,13 +371448,13 @@
       },
       "the-optgroup-element": {
        "DIR_METADATA": [
-        "c8ba5e73831c7af891acb9ba7fd72d83926a78c9",
+        "2974c05fb238329ffa06ab947b6d317fb22b8348",
         []
        ]
       },
       "the-option-element": {
        "DIR_METADATA": [
-        "c8ba5e73831c7af891acb9ba7fd72d83926a78c9",
+        "2974c05fb238329ffa06ab947b6d317fb22b8348",
         []
        ],
        "dynamic-content-change-rendering-ref.html": [
@@ -371427,7 +371468,7 @@
       },
       "the-output-element": {
        "DIR_METADATA": [
-        "5f96515e41ec80c00c0fd4075b1a4f15c274879d",
+        "aee1edc9cee4052349bb9d8d14ba2da8e4f5d297",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371437,13 +371478,13 @@
       },
       "the-progress-element": {
        "DIR_METADATA": [
-        "bffb9a7a62945645e3e2afdbdca700c5018f2e96",
+        "fc4f695cfcf8d1113152f89b4e363e756b4668a4",
         []
        ]
       },
       "the-select-element": {
        "DIR_METADATA": [
-        "c8ba5e73831c7af891acb9ba7fd72d83926a78c9",
+        "2974c05fb238329ffa06ab947b6d317fb22b8348",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371499,7 +371540,7 @@
       },
       "the-selectlist-element": {
        "DIR_METADATA": [
-        "53ce4c9e0b1b1bbeae0ccf5375622d4cc5e1f9f3",
+        "276fd5f220aeda3baea9e86b6f951ef37c5655fe",
         []
        ],
        "button-type-selectlist-appearance-ref.html": [
@@ -371607,7 +371648,7 @@
       },
       "the-textarea-element": {
        "DIR_METADATA": [
-        "67b102f814349e5a672d01449796307ee7a37316",
+        "4658b805908c8d098a61e84ce0e77e7e0bd57b79",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371765,7 +371806,7 @@
       },
       "the-details-element": {
        "DIR_METADATA": [
-        "72387ccff958b7a6fea9972a4f0cedad09e83c03",
+        "046f6842c1e56777436c0afd14e837d3df0a0e25",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371785,7 +371826,7 @@
       },
       "the-dialog-element": {
        "DIR_METADATA": [
-        "dbd93e12e34bc8a6fded50ec431c10193276b701",
+        "6cb24e41d01fc00263ea0361dfb07ae8ce41b8ac",
         []
        ],
        "WEB_FEATURES.yml": [
@@ -371953,7 +371994,7 @@
       },
       "the-summary-element": {
        "DIR_METADATA": [
-        "72387ccff958b7a6fea9972a4f0cedad09e83c03",
+        "046f6842c1e56777436c0afd14e837d3df0a0e25",
         []
        ],
        "interactive-content-expected.txt": [
@@ -372096,7 +372137,7 @@
      },
      "popovers": {
       "DIR_METADATA": [
-       "643fadf00993764164f913173d081f0fb781ebbb",
+       "9e21773712ca1bba43075c3202ff0a96d975318e",
        []
       ],
       "WEB_FEATURES.yml": [
@@ -374050,7 +374091,7 @@
      },
      "tabular-data": {
       "DIR_METADATA": [
-       "a50bbad8a217186ed1f52615cdce6d92bc77dce2",
+       "e425169bd688da4fae75beda74a83ce09327b0cf",
        []
       ],
       "META.yml": [
@@ -374065,7 +374106,7 @@
      "text-level-semantics": {
       "the-a-element": {
        "DIR_METADATA": [
-        "ce0c8aa742a2b0ff6b8d07802f95d181c04c9d02",
+        "f5096b338a23062a1236f58ccde22517203fe20b",
         []
        ],
        "a-download-404.py": [
@@ -374203,7 +374244,7 @@
     },
     "syntax": {
      "DIR_METADATA": [
-      "9defd5b2f11fab493420e8e6a90f37a4a5e5bcb6",
+      "66f532ba08e89aeafa8493ca2aa82aef1fbdd02c",
       []
      ],
      "charset": {
@@ -375507,7 +375548,7 @@
     },
     "the-xhtml-syntax": {
      "DIR_METADATA": [
-      "e4d35e1ea7db3074420192430a8fd24384ddb8e8",
+      "babc15ba03d4e32437d1daf10fc9b59902b854f7",
       []
      ],
      "parsing-xhtml-documents": {
@@ -390350,7 +390391,7 @@
    },
    "shadow-dom": {
     "DIR_METADATA": [
-     "940ee2c1ebe2bf0563aa83cc94b5582f8795b479",
+     "d2f4b9103b6fee9217196c013a3e089a886fc9e7",
      []
     ],
     "META.yml": [
@@ -448965,7 +449006,7 @@
        ]
       ],
       "content-valid.html": [
-       "5c7558610745466c0bacc100f92cd3d8cca36a60",
+       "60d03a4d4c3412f15607721dae5d04dbdbf2c682",
        [
         null,
         {}
@@ -583803,11 +583844,12 @@
        ]
       ],
       "popover-focus-2.html": [
-       "8f24ace91956610b065a3f853046c9fd7ac2fb45",
+       "552c8d8206b7b682f422bc8a5e2017f66983d198",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
@@ -637109,6 +637151,13 @@
     }
    },
    "shadow-dom": {
+    "Document-caretPositionFromPoint.tentative.html": [
+     "2b97546d2e257ce0bf2cd5275058df01e40f6eed",
+     [
+      null,
+      {}
+     ]
+    ],
     "Document-prototype-adoptNode.html": [
      "6afd603618d7af99a9a71818a735b786efb36cd7",
      [
@@ -722769,14 +722818,14 @@
        "permissions": {
         "set_permission": {
          "invalid.py": [
-          "5397dc7b62e7da62318d282dba621fe6d9274015",
+          "d7172160721cec9e5fec0e4b1fa70125e5da0ef2",
           [
            null,
            {}
           ]
          ],
          "set_permission.py": [
-          "45c50dbf88367185f72823aec9d72013f5c83d22",
+          "18f8e6fed000fe2cc6ae04adfa0cc965b89b5edc",
           [
            null,
            {}
@@ -724609,7 +724658,7 @@
       },
       "get_element_text": {
        "get.py": [
-        "924a4e8d79771d78de59e48f61bb6e88ab34a7b9",
+        "8f832077e1069c75ae9ff6362d49e7aad9fd7c4c",
         [
          null,
          {}
