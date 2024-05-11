@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -31,6 +32,8 @@ import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
 public class SearchActivityUtils implements SearchActivityClient {
+    private static final String TAG = "SAUtils";
+
     @VisibleForTesting
     /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
 
@@ -88,6 +91,11 @@ public class SearchActivityUtils implements SearchActivityClient {
         if (activity == null) return;
 
         if (referrer != null && !referrer.matches(REFERRER_VALIDATION_REGEX)) {
+            Log.e(
+                    TAG,
+                    String.format(
+                            "Referrer: '%s' failed to match Re pattern '%s' and will be ignored.",
+                            referrer, REFERRER_VALIDATION_REGEX));
             referrer = null;
         }
 
@@ -151,6 +159,11 @@ public class SearchActivityUtils implements SearchActivityClient {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             referrer = IntentUtils.safeGetStringExtra(intent, EXTRA_REFERRER);
             if (referrer != null && !referrer.matches(REFERRER_VALIDATION_REGEX)) {
+                Log.e(
+                        TAG,
+                        String.format(
+                                "Invalid referrer: '%s' found. Referrer will be removed.",
+                                referrer));
                 referrer = null;
             }
         }
