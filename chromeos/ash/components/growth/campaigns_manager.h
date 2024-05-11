@@ -96,6 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
                                const std::string& id);
 
   void SetOobeCompleteTimeForTesting(base::Time time);
+  const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
 
  private:
   // Triggred when campaigns component loaded.
@@ -111,6 +112,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Triggered when loading OOBE timestamp completed.
   void OnOobeTimestampLoaded(base::OnceClosure load_callback,
+                             const std::optional<const base::FilePath>& path,
                              base::Time oobe_time);
 
   // Notify observers that campaigns are loaded and CampaignsManager is ready
@@ -139,6 +141,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Keeps track of when downloading campaigns begins.
   base::TimeTicks campaigns_download_start_time_;
+
+  base::Time oobe_complete_time_for_test_;
 
   base::ObserverList<Observer> observers_;
 

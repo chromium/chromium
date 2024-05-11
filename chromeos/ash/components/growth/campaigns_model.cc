@@ -146,6 +146,15 @@ std::optional<BuiltInIcon> GetBuiltInIconType(
 
 }  // namespace
 
+Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
+                                     Slot slot) {
+  if (!campaigns_per_slot) {
+    return nullptr;
+  }
+  return campaigns_per_slot->FindList(
+      base::NumberToString(static_cast<int>(slot)));
+}
+
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot) {
   if (!campaigns_per_slot) {

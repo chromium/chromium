@@ -107,6 +107,9 @@ std::optional<int> GetStudyId(const Campaign* campaign);
 // }
 using CampaignsPerSlot = base::Value::Dict;
 
+Campaigns* GetMutableCampaignsBySlot(CampaignsPerSlot* campaigns_per_slot,
+                                     Slot slot);
+
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot);
 

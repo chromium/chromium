@@ -25,7 +25,9 @@ class CampaignsMatcher {
   // explicitly to set user prefs.
   void SetPrefs(PrefService* prefs);
 
-  void SetCampaigns(const CampaignsPerSlot* campaigns);
+  // Filter out campaigns that doesn't pass prematch and set the campaigns
+  // for runtime matching.
+  void FilterAndSetCampaigns(CampaignsPerSlot* campaigns);
 
   const std::string& opened_app_id() const { return opened_app_id_; }
   void SetOpenedApp(const std::string& app_id);
@@ -44,6 +46,7 @@ class CampaignsMatcher {
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
  private:
+  bool IsCampaignMatched(const Campaign* campaign, bool is_prematch) const;
   bool MatchDemoModeTier(const DemoModeTargeting& targeting) const;
   bool MatchDemoModeAppVersion(const DemoModeTargeting& targeting) const;
   bool MatchRetailers(const base::Value::List* retailers) const;
@@ -67,8 +70,12 @@ class CampaignsMatcher {
                    int campaign_id) const;
   bool MatchMinorUser(std::optional<bool> minor_user_targeting) const;
   bool MatchOwner(std::optional<bool> is_owner) const;
-  bool Matched(const Targeting* targeting, int campaign_id) const;
-  bool Matched(const Targetings* targetings, int campaign_id) const;
+  bool Matched(const Targeting* targeting,
+               int campaign_id,
+               bool is_prematch) const;
+  bool Matched(const Targetings* targetings,
+               int campaign_id,
+               bool is_prematch) const;
 
   // Owned by CampaignsManager.
   raw_ptr<const CampaignsPerSlot> campaigns_ = nullptr;

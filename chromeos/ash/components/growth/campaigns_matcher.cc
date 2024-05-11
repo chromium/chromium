@@ -151,7 +151,26 @@ CampaignsMatcher::CampaignsMatcher(CampaignsManagerClient* client,
     : client_(client), local_state_(local_state) {}
 CampaignsMatcher::~CampaignsMatcher() = default;
 
-void CampaignsMatcher::SetCampaigns(const CampaignsPerSlot* campaigns) {
+void CampaignsMatcher::FilterAndSetCampaigns(CampaignsPerSlot* campaigns) {
+  // Filter campaigns that doesn't pass pre-match.
+  for (int slot = 0; slot <= static_cast<int>(Slot::kMaxValue); slot++) {
+    auto* targeted_campaigns =
+        GetMutableCampaignsBySlot(campaigns, static_cast<Slot>(slot));
+    if (!targeted_campaigns) {
+      continue;
+    }
+
+    auto campaign_iter = targeted_campaigns->begin();
+    while (campaign_iter != targeted_campaigns->end()) {
+      if (IsCampaignMatched(campaign_iter->GetIfDict(),
+                            /*is_prematch=*/true)) {
+        ++campaign_iter;
+      } else {
+        campaign_iter = targeted_campaigns->erase(campaign_iter);
+      }
+    }
+  }
+
   campaigns_ = campaigns;
 }
 
@@ -187,25 +206,34 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
 
   for (auto& campaign_value : *targeted_campaigns) {
     const auto* campaign = campaign_value.GetIfDict();
-    if (!campaign || !IsCampaignValid(campaign)) {
-      LOG(ERROR) << "Invalid campaign.";
-      RecordCampaignsManagerError(CampaignsManagerError::kInvalidCampaign);
-      continue;
-    }
-
-    const auto* targetings = GetTargetings(campaign);
-
-    const auto campaign_id = GetCampaignId(campaign);
-    if (!campaign_id) {
-      return nullptr;
-    }
-
-    if (Matched(targetings, campaign_id.value())) {
+    if (IsCampaignMatched(campaign, /*is_prematch=*/false)) {
       return campaign;
     }
   }
 
   return nullptr;
+}
+
+bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
+                                         bool is_prematch) const {
+  if (!campaign || !IsCampaignValid(campaign)) {
+    LOG(ERROR) << "Invalid campaign.";
+    RecordCampaignsManagerError(CampaignsManagerError::kInvalidCampaign);
+    return false;
+  }
+
+  const auto* targetings = GetTargetings(campaign);
+
+  const auto campaign_id = GetCampaignId(campaign);
+  if (!campaign_id) {
+    return false;
+  }
+
+  if (Matched(targetings, campaign_id.value(), is_prematch)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool CampaignsMatcher::MatchDemoModeTier(
@@ -575,7 +603,8 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
 }
 
 bool CampaignsMatcher::Matched(const Targeting* targeting,
-                               int campaign_id) const {
+                               int campaign_id,
+                               bool is_prematch) const {
   if (!targeting) {
     // Targeting is invalid. Skip the current campaign.
     LOG(ERROR) << "Invalid targeting.";
@@ -583,20 +612,24 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
     return false;
   }
 
+  if (is_prematch) {
+    return MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
+           MatchDeviceTargeting(DeviceTargeting(targeting));
+  }
+
   return MatchSessionTargeting(SessionTargeting(targeting)) &&
-         MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
-         MatchDeviceTargeting(DeviceTargeting(targeting)) &&
          MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id);
 }
 
 bool CampaignsMatcher::Matched(const Targetings* targetings,
-                               int campaign_id) const {
+                               int campaign_id,
+                               bool is_prematch) const {
   if (!targetings || targetings->empty()) {
     return true;
   }
 
   for (const auto& targeting : *targetings) {
-    if (Matched(targeting.GetIfDict(), campaign_id)) {
+    if (Matched(targeting.GetIfDict(), campaign_id, is_prematch)) {
       return true;
     }
   }
