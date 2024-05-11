@@ -134,8 +134,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   void StopPressed(size_t index);
   void FreezePressed(size_t index);
 
-  void MaybeSizeToContents();
-
   // Returns the cast mode that is selected in the sources menu and supported by
   // |sink|. Returns nullopt if no such cast mode exists.
   std::optional<MediaCastMode> GetCastModeToUse(const UIMediaSink& sink) const;
