@@ -274,6 +274,10 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
                                              bool* success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
+  // InitializeTask() should only be called on a freshly constructed
+  // GLImageProcessorBackend, so there shouldn't be any GL errors yet.
+  CHECK(!got_unrecoverable_gl_error_);
+
   // Create a driver-level GL context just for us. This is questionable because
   // work in this context will be competing with the context(s) used for
   // rasterization and compositing. However, it's a simple starting point.
@@ -592,10 +596,20 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // all the commands above have completed. This should be okay because
   // initialization only happens once.
   glFinish();
-  const GLenum error = glGetError();
-  if (error != GL_NO_ERROR) {
-    LOG(ERROR) << "Could not initialize the GL image processor: "
-               << gl::GLEnums::GetStringError(error);
+  GLenum last_gl_error = GL_NO_ERROR;
+  bool gl_error_occurred = false;
+  while ((last_gl_error = glGetError()) != GL_NO_ERROR) {
+    if (last_gl_error == GL_OUT_OF_MEMORY ||
+        last_gl_error == GL_CONTEXT_LOST_KHR) {
+      got_unrecoverable_gl_error_ = true;
+    }
+    gl_error_occurred = true;
+    VLOGF(2) << "Got a GL error: "
+             << gl::GLEnums::GetStringError(last_gl_error);
+  }
+  if (gl_error_occurred) {
+    LOG(ERROR)
+        << "Could not initialize the GL image processor due to GL errors";
     done->Signal();
     return;
   }
@@ -624,6 +638,11 @@ GLImageProcessorBackend::~GLImageProcessorBackend() {
   }
   if (!gl_context_) {
     // If there's no context, nothing else was created.
+    return;
+  }
+  // In case of an unrecoverable GL error, let's assume the GL state machine is
+  // in an undefined state such that it's unsafe to issue further commands.
+  if (got_unrecoverable_gl_error_) {
     return;
   }
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
@@ -657,6 +676,14 @@ void GLImageProcessorBackend::ProcessFrame(
                input_frame->AsHumanReadableString(), "output_frame",
                output_frame->AsHumanReadableString());
   SCOPED_UMA_HISTOGRAM_TIMER("GLImageProcessorBackend::Process");
+
+  // In the case of unrecoverable GL errors, we assume it's unsafe to issue
+  // further commands.
+  if (got_unrecoverable_gl_error_) {
+    VLOGF(2) << "Earlying out because an unrecoverable GL error was detected";
+    error_cb_.Run();
+    return;
+  }
 
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
     LOG(ERROR) << "Could not make the GL context current";
@@ -746,6 +773,10 @@ void GLImageProcessorBackend::ProcessFrame(
   GLenum last_gl_error = GL_NO_ERROR;
   bool gl_error_occurred = false;
   while ((last_gl_error = glGetError()) != GL_NO_ERROR) {
+    if (last_gl_error == GL_OUT_OF_MEMORY ||
+        last_gl_error == GL_CONTEXT_LOST_KHR) {
+      got_unrecoverable_gl_error_ = true;
+    }
     gl_error_occurred = true;
     VLOGF(2) << "Got a GL error: "
              << gl::GLEnums::GetStringError(last_gl_error);
