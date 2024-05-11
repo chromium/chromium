@@ -555,8 +555,10 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
                      ALIGN(output_config_.visible_rect.height(), kTileHeight)));
   }
 
-  // This glGetError() blocks until all the commands above have executed. This
-  // should be okay because initialization only happens once.
+  // Ensure the GLImageProcessorBackend is fully initialized by blocking until
+  // all the commands above have completed. This should be okay because
+  // initialization only happens once.
+  glFinish();
   const GLenum error = glGetError();
   if (error != GL_NO_ERROR) {
     LOG(ERROR) << "Could not initialize the GL image processor: "
@@ -699,14 +701,31 @@ void GLImageProcessorBackend::ProcessFrame(
     glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, indices);
   }
 
-  // glFlush() is not quite sufficient, and will result in frames being output
+  // glFlush() is not quite sufficient and will result in frames being output
   // out of order, so we use a full glFinish() call.
-  // TODO(bchoobineh): add proper synchronization that does not require
-  // blocking the CPU.
+  //
+  // TODO(bchoobineh): add proper synchronization that does not require blocking
+  // the CPU.
   glFinish();
+
+  // Check if any errors occurred. Note that we call glGetError() in a loop to
+  // clear all error flags.
+  GLenum last_gl_error = GL_NO_ERROR;
+  bool gl_error_occurred = false;
+  while ((last_gl_error = glGetError()) != GL_NO_ERROR) {
+    gl_error_occurred = true;
+    VLOGF(2) << "Got a GL error: "
+             << gl::GLEnums::GetStringError(last_gl_error);
+  }
+  if (gl_error_occurred) {
+    LOG(ERROR) << "Could not process a frame due to one or more GL errors";
+    error_cb_.Run();
+    return;
+  }
 
   output_frame->set_timestamp(input_frame->timestamp());
   std::move(cb).Run(std::move(output_frame));
   return;
 }
+
 }  // namespace media
