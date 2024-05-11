@@ -411,6 +411,7 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/ceil.cc",
     "src/tensorflow/lite/kernels/comparisons.cc",
     "src/tensorflow/lite/kernels/concatenation.cc",
+    "src/tensorflow/lite/kernels/control_flow_common.cc",
     "src/tensorflow/lite/kernels/conv.cc",
     "src/tensorflow/lite/kernels/cpu_backend_context.cc",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_custom_gemv.h",
