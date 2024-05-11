@@ -70,9 +70,9 @@ class ASH_EXPORT RefreshRateController
   };
 
   void UpdateSeamlessRefreshRates(int64_t display_id);
-  void OnSeamlessRefreshRangeReceived(
+  void OnSeamlessRefreshRatesReceived(
       int64_t display_id,
-      const std::optional<std::vector<float>>& refresh_ranges);
+      const std::optional<std::vector<float>>& refresh_rates);
 
   void UpdateStates();
   void RefreshThrottleState();

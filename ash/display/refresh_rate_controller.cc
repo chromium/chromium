@@ -106,13 +106,13 @@ void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
   }
 
   auto callback =
-      base::BindOnce(&RefreshRateController::OnSeamlessRefreshRangeReceived,
+      base::BindOnce(&RefreshRateController::OnSeamlessRefreshRatesReceived,
                      weak_ptr_factory_.GetWeakPtr(), display_id);
   display_configurator_->GetSeamlessRefreshRates(display_id,
                                                  std::move(callback));
 }
 
-void RefreshRateController::OnSeamlessRefreshRangeReceived(
+void RefreshRateController::OnSeamlessRefreshRatesReceived(
     int64_t display_id,
     const std::optional<std::vector<float>>& received_refresh_rates) {
   VLOG(3) << "Received refresh rates for display " << display_id << ": "
@@ -139,7 +139,7 @@ void RefreshRateController::OnSeamlessRefreshRangeReceived(
     return;
   }
 
-  // Insert the new refresh rate range, possibly replacing the old one.
+  // Insert the new refresh rates, possibly replacing the old ones.
   display_refresh_rates_[display_id] = std::move(refresh_rates);
 
   RefreshThrottleState();

@@ -265,7 +265,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // supported.
   //
   // A result of nullopt indicates that the request failed for some reason such
-  // as an invalid display_id. An empty RefreshRange vector indicates that there
+  // as an invalid display_id. An empty vector indicates that there
   // are no modes to which the display can be configured seamlessly. This could
   // happen if the display is currently turned off.
   void GetSeamlessRefreshRates(int64_t display_id,
