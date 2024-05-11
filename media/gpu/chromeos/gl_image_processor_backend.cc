@@ -34,6 +34,16 @@ namespace {
 
 #define ALIGN(x, y) (x + (y - 1)) & (~(y - 1))
 
+ui::GLOzone& GetCurrentGLOzone() {
+  ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
+  CHECK(platform);
+  ui::SurfaceFactoryOzone* surface_factory = platform->GetSurfaceFactoryOzone();
+  CHECK(surface_factory);
+  ui::GLOzone* gl_ozone = surface_factory->GetCurrentGLOzone();
+  CHECK(gl_ozone);
+  return *gl_ozone;
+}
+
 template <typename T>
 base::CheckedNumeric<T> GetNV12PlaneDimension(int dimension, int plane) {
   base::CheckedNumeric<T> dimension_scaled(base::strict_cast<T>(dimension));
@@ -73,6 +83,9 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     int plane) {
   CHECK(plane == 0 || plane == 1);
 
+  // Note: if this is changed to accept other formats,
+  // GLImageProcessorBackend::InitializeTask() should be updated to ensure
+  // GetCurrentGLOzone().CanImportNativePixmap() returns true for those formats.
   if (frame->format() != PIXEL_FORMAT_NV12) {
     LOG(ERROR) << "The frame's format is not NV12";
     return nullptr;
@@ -102,13 +115,10 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     DCHECK(native_pixmap->AreDmaBufFdsValid());
 
     // Import the NativePixmap into GL.
-    return ui::OzonePlatform::GetInstance()
-        ->GetSurfaceFactoryOzone()
-        ->GetCurrentGLOzone()
-        ->ImportNativePixmap(std::move(native_pixmap),
-                             gfx::BufferFormat::YUV_420_BIPLANAR,
-                             gfx::BufferPlane::DEFAULT, frame->coded_size(),
-                             gfx::ColorSpace(), target, texture_id);
+    return GetCurrentGLOzone().ImportNativePixmap(
+        std::move(native_pixmap), gfx::BufferFormat::YUV_420_BIPLANAR,
+        gfx::BufferPlane::DEFAULT, frame->coded_size(), gfx::ColorSpace(),
+        target, texture_id);
   }
 
   base::CheckedNumeric<int> uv_width(0);
@@ -137,12 +147,10 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
   // Import the NativePixmap into GL.
-  return ui::OzonePlatform::GetInstance()
-      ->GetSurfaceFactoryOzone()
-      ->GetCurrentGLOzone()
-      ->ImportNativePixmap(std::move(native_pixmap), plane_format,
-                           plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y,
-                           plane_size, gfx::ColorSpace(), target, texture_id);
+  return GetCurrentGLOzone().ImportNativePixmap(
+      std::move(native_pixmap), plane_format,
+      plane ? gfx::BufferPlane::UV : gfx::BufferPlane::Y, plane_size,
+      gfx::ColorSpace(), target, texture_id);
 }
 
 }  // namespace
@@ -289,6 +297,29 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   }
   if (!gl_context_->MakeCurrent(gl_surface_.get())) {
     LOG(ERROR) << "Could not make the GL context current";
+    done->Signal();
+    return;
+  }
+
+  // CreateAndBindImage() will need to call
+  // GetCurrentGLOzone().ImportNativePixmap() for NV12 frames, so we should
+  // ensure that's supported.
+  if (!GetCurrentGLOzone().CanImportNativePixmap(
+          gfx::BufferFormat::YUV_420_BIPLANAR)) {
+    LOG(ERROR) << "Importing NV12 buffers is not supported";
+    done->Signal();
+    return;
+  }
+
+  // Ensure we can use EGLImage objects as texture images and that we can use
+  // the GL_TEXTURE_EXTERNAL_OES target.
+  if (!gl_context_->HasExtension("GL_OES_EGL_image")) {
+    LOG(ERROR) << "The context doesn't support GL_OES_EGL_image";
+    done->Signal();
+    return;
+  }
+  if (!gl_context_->HasExtension("GL_OES_EGL_image_external")) {
+    LOG(ERROR) << "The context doesn't support GL_OES_EGL_image_external";
     done->Signal();
     return;
   }
