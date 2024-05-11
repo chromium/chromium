@@ -30,6 +30,7 @@ class YouTubeMusicController;
 }  //  namespace youtube_music
 
 class AshWebView;
+class FocusModeMetricsRecorder;
 class FocusModeSoundsController;
 
 // Controls starting and ending a Focus Mode session and its behavior. Also
@@ -230,12 +231,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // created by the user.
   FocusModeTask selected_task_;
 
-  // Some data recorded during a session, which will be used on a session ended.
-  struct MetricsDataOnEnd {
-    // Counts the number of tasks selected during a session.
-    int tasks_selected_count = 0;
-  };
-  std::optional<MetricsDataOnEnd> metrics_data_on_end_ = std::nullopt;
+  std::unique_ptr<FocusModeMetricsRecorder> focus_mode_metrics_recorder_;
 
   // This is used to display focus mode playlists. Playback controls will be
   // added later.

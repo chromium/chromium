@@ -1655,6 +1655,8 @@ component("ash") {
     "system/focus_mode/focus_mode_feature_pod_controller.cc",
     "system/focus_mode/focus_mode_feature_pod_controller.h",
     "system/focus_mode/focus_mode_histogram_names.h",
+    "system/focus_mode/focus_mode_metrics_recorder.cc",
+    "system/focus_mode/focus_mode_metrics_recorder.h",
     "system/focus_mode/focus_mode_session.cc",
     "system/focus_mode/focus_mode_session.h",
     "system/focus_mode/focus_mode_task_view.cc",

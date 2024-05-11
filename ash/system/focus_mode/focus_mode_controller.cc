@@ -5,7 +5,6 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 
 #include <memory>
-// #include <optional>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -20,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_metrics_recorder.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
@@ -120,35 +120,6 @@ void ShowEndingMomentNudge() {
 void HideEndingMomentNudge() {
   if (AnchoredNudgeManager* nudge_manager = AnchoredNudgeManager::Get()) {
     nudge_manager->Cancel(focus_mode_util::kFocusModeEndingMomentNudgeId);
-  }
-}
-
-void RecordInitialDurationHistogram(base::TimeDelta session_duration) {
-  base::UmaHistogramCustomTimes(
-      /*name=*/focus_mode_histogram_names::
-          kInitialDurationOnSessionStartsHistogramName,
-      /*sample=*/session_duration,
-      /*min=*/focus_mode_util::kMinimumDuration,
-      /*max=*/focus_mode_util::kMaximumDuration, /*buckets=*/50);
-}
-
-void RecordStartSessionSourceHistogram(
-    focus_mode_histogram_names::ToggleSource source) {
-  switch (source) {
-    case focus_mode_histogram_names::ToggleSource::kFocusPanel:
-      base::UmaHistogramEnumeration(
-          /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
-          /*sample=*/focus_mode_histogram_names::StartSessionSource::
-              kFocusPanel);
-      break;
-    case focus_mode_histogram_names::ToggleSource::kFeaturePod:
-      base::UmaHistogramEnumeration(
-          /*name=*/focus_mode_histogram_names::kStartSessionSourceHistogramName,
-          /*sample=*/focus_mode_histogram_names::StartSessionSource::
-              kFeaturePod);
-      break;
-    default:
-      break;
   }
 }
 
@@ -275,6 +246,11 @@ void FocusModeController::ExtendSessionDuration() {
 }
 
 void FocusModeController::ResetFocusSession() {
+  if (focus_mode_metrics_recorder_) {
+    focus_mode_metrics_recorder_->RecordHistogramsOnEnd();
+    focus_mode_metrics_recorder_.reset();
+  }
+
   if (timer_.IsRunning()) {
     timer_.Stop();
   }
@@ -293,13 +269,6 @@ void FocusModeController::ResetFocusSession() {
 
   const bool was_in_focus_session = in_focus_session();
   current_session_.reset();
-
-  if (metrics_data_on_end_.has_value()) {
-    base::UmaHistogramCounts100(
-        focus_mode_histogram_names::kTasksSelectedHistogramName,
-        metrics_data_on_end_.value().tasks_selected_count);
-    metrics_data_on_end_ = std::nullopt;
-  }
 
   if (was_in_focus_session) {
     for (auto& observer : observers_) {
@@ -385,8 +354,9 @@ void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
 
   selected_task_ = task;
   // TODO(b/305089077): Update user prefs.
-  if (metrics_data_on_end_.has_value() && !selected_task_.empty()) {
-    metrics_data_on_end_.value().tasks_selected_count++;
+  if (focus_mode_metrics_recorder_ && !selected_task_.empty()) {
+    focus_mode_metrics_recorder_->set_tasks_selected_count(
+        focus_mode_metrics_recorder_->tasks_selected_count() + 1);
   }
 }
 
@@ -427,17 +397,12 @@ void FocusModeController::TriggerEndingMomentImmediately() {
 
 void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
-  RecordInitialDurationHistogram(/*session_duration=*/session_duration_);
-  RecordStartSessionSourceHistogram(source);
-  base::UmaHistogramBoolean(/*name=*/focus_mode_histogram_names::
-                                kHasSelectedTaskOnSessionStartHistogramName,
-                            /*sample=*/HasSelectedTask());
+  focus_mode_metrics_recorder_ =
+      std::make_unique<FocusModeMetricsRecorder>(session_duration_);
+  focus_mode_metrics_recorder_->RecordHistogramsOnStart(source);
 
-  // Reset `tasks_selected_count_` to count how many tasks are selected during a
-  // focus session.
-  MetricsDataOnEnd data_on_end;
-  data_on_end.tasks_selected_count = HasSelectedTask() ? 1 : 0;
-  metrics_data_on_end_ = data_on_end;
+  focus_mode_metrics_recorder_->set_tasks_selected_count(HasSelectedTask() ? 1
+                                                                           : 0);
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());
 

@@ -3707,6 +3707,20 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.DNDStateOnFocusEnd"
+    enum="DNDStateOnFocusEndType" expires_after="2025-05-01">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records interactions with Do Not Disturb during a Focus Mode session.
+    Recorded once per session. Indicates the final state of Do Not Disturb and
+    if a user changed the state during the session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FocusMode.DuringSession.ToggleEndSessionSource"
     enum="FocusModeEndSessionSource" expires_after="2024-12-31">
   <owner>hongyulong@chromium.org</owner>

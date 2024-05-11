@@ -313,6 +313,76 @@ TEST_F(FocusModeControllerMultiUserTest, EndingMomentNudgeTest) {
   EXPECT_FALSE(IsEndingMomentNudgeShown());
 }
 
+// Verify that when toggling a focus mode, the histogram will record the initial
+// session duration.
+TEST_F(FocusModeControllerMultiUserTest, CheckInitialDurationHistograms) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 1. Start a focus session with the minimum session duration.
+  controller->SetInactiveSessionDuration(focus_mode_util::kMinimumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      focus_mode_util::kMinimumDuration.InMinutes(), 1);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a new focus session with the maximum session duration.
+  controller->SetInactiveSessionDuration(focus_mode_util::kMaximumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      focus_mode_util::kMaximumDuration.InMinutes(), 1);
+
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kInitialDurationOnSessionStartsHistogramName,
+      2);
+}
+
+// Verify that when we start a focus session, the histogram will record whether
+// there is a selected task or not.
+TEST_F(FocusModeControllerMultiUserTest, CheckHasSelectedTaskHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectTotalCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      0);
+
+  // 1. Start a focus session without a selected task.
+  EXPECT_FALSE(controller->HasSelectedTask());
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      false, 1);
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a focus session with a selected task.
+  FocusModeTask task;
+  task.task_list_id = "abc";
+  task.task_id = "1";
+  task.title = "Focus Task";
+  task.updated = base::Time::Now();
+
+  controller->SetSelectedTask(task);
+  EXPECT_TRUE(controller->HasSelectedTask());
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kHasSelectedTaskOnSessionStartHistogramName,
+      true, 1);
+}
+
 // Tests that the histogram will record how many tasks we selected during a
 // focus session.
 TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {
@@ -351,6 +421,107 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksSelectedHistogram) {
 
   histogram_tester.ExpectBucketCount(
       focus_mode_histogram_names::kTasksSelectedHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
+}
+
+// Verify that when a session is over, the histogram will record which type of
+// the DND state.
+TEST_F(FocusModeControllerMultiUserTest, CheckDNDStateOnFocusEndHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* message_center = message_center::MessageCenter::Get();
+
+  // 1. FocusModeOn - DND enabled by FocusMode (default behavior).
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->turn_on_do_not_disturb());
+  EXPECT_FALSE(message_center->IsQuietMode());
+
+  // Turning on Focus Mode will also turn on DND by default.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(message_center->IsQuietMode());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kDNDStateOnFocusEndHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::DNDStateOnFocusEndType::kFocusModeOn,
+      /*expected_count=*/1);
+
+  // 2. AlreadyOn - DND was already on before FocusMode started and was on when
+  // we finished (with NO user interaction during the session).
+  message_center->SetQuietMode(true);
+  EXPECT_TRUE(message_center->IsQuietMode());
+
+  // Start and end a Focus Mode session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(message_center->IsQuietMode());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kDNDStateOnFocusEndHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::DNDStateOnFocusEndType::kAlreadyOn,
+      /*expected_count=*/1);
+
+  // 3. AlreadyOff - DND was off when FocusMode started, and is still off (with
+  // NO user interactions during the session).
+  message_center->SetQuietMode(false);
+  EXPECT_FALSE(message_center->IsQuietMode());
+
+  // Set `turn_on_do_not_disturb` to prevent Focus Mode from automatically
+  // turning on DND when a session starts.
+  controller->set_turn_on_do_not_disturb(false);
+
+  // Start a session and end it.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(message_center->IsQuietMode());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(message_center->IsQuietMode());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kDNDStateOnFocusEndHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::DNDStateOnFocusEndType::kAlreadyOff,
+      /*expected_count=*/1);
+
+  // 4. TurnedOn - The user manually toggled DND during the focus session, and
+  // the session ends with DND on.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(message_center->IsQuietMode());
+
+  // Turn on DND during the session.
+  message_center->SetQuietMode(true);
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(message_center->IsQuietMode());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kDNDStateOnFocusEndHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::DNDStateOnFocusEndType::kTurnedOn,
+      /*expected_count=*/1);
+
+  // 5. TurnedOff - The user manually toggled DND during the focus session, and
+  // the session ends with DND off.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  // Turn off DND during the session.
+  message_center->SetQuietMode(false);
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(message_center->IsQuietMode());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kDNDStateOnFocusEndHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::DNDStateOnFocusEndType::kTurnedOff,
       /*expected_count=*/1);
 }
 

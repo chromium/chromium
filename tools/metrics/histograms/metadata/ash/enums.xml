@@ -605,6 +605,14 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="16" label="Desk switch due to session restore"/>
 </enum>
 
+<enum name="DNDStateOnFocusEndType">
+  <int value="0" label="FocusModeOn"/>
+  <int value="1" label="AlreadyOn"/>
+  <int value="2" label="AlreadyOff"/>
+  <int value="3" label="TurnedOn"/>
+  <int value="4" label="TurnedOff"/>
+</enum>
+
 <enum name="DockedAction">
   <int value="0" label="None"/>
   <int value="1" label="Dock"/>
