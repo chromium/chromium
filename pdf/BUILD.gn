@@ -84,6 +84,8 @@ if (enable_pdf) {
       "draw_utils/coordinates.h",
       "draw_utils/shadow.cc",
       "draw_utils/shadow.h",
+      "input_utils.cc",
+      "input_utils.h",
       "metrics_handler.cc",
       "metrics_handler.h",
       "page_orientation.cc",

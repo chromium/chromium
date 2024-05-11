@@ -40,6 +40,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/draw_utils/shadow.h"
+#include "pdf/input_utils.h"
 #include "pdf/loader/document_loader_impl.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/loader/url_loader_wrapper_impl.h"
@@ -309,25 +310,6 @@ bool IsLinkArea(PDFiumPage::Area area) {
 
 bool IsSelectableArea(PDFiumPage::Area area) {
   return area == PDFiumPage::TEXT_AREA || IsLinkArea(area);
-}
-
-// Normalize a blink::WebMouseEvent. For macOS, normalization means transforming
-// the ctrl + left button down events into a right button down event.
-blink::WebMouseEvent NormalizeMouseEvent(const blink::WebMouseEvent& event) {
-  blink::WebMouseEvent normalized_event = event;
-#if BUILDFLAG(IS_MAC)
-  using Modifiers = blink::WebInputEvent::Modifiers;
-  if ((event.GetModifiers() & Modifiers::kControlKey) &&
-      event.button == blink::WebPointerProperties::Button::kLeft &&
-      event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
-    constexpr int kUnsetModifiers =
-        Modifiers::kControlKey | Modifiers::kLeftButtonDown;
-    normalized_event.SetModifiers((event.GetModifiers() & ~kUnsetModifiers) |
-                                  Modifiers::kRightButtonDown);
-    normalized_event.button = blink::WebPointerProperties::Button::kRight;
-  }
-#endif
-  return normalized_event;
 }
 
 // These values are intended for the JS to handle, and it doesn't have access
