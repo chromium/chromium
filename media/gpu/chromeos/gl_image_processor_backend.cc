@@ -311,7 +311,9 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // framebuffer and will be eventually attached to the output dma-buf. Since we
   // won't sample from it, we don't need to set parameters.
   glGenFramebuffersEXT(1, &fb_id_);
+  CHECK_GT(fb_id_, 0u);
   glGenTextures(1, &dst_texture_id_);
+  CHECK_GT(dst_texture_id_, 0u);
 
   // These calculations are used to calculate vertices such that
   // regions that were meant to be cropped out would be clipped out
@@ -359,10 +361,12 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   };
 
   glGenBuffersARB(1, &vbo_id_);
+  CHECK_GT(vbo_id_, 0u);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
   glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices, GL_STATIC_DRAW);
 
   glGenVertexArraysOES(1, &vao_id_);
+  CHECK_GT(vao_id_, 0u);
   glBindVertexArrayOES(vao_id_);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
   glEnableVertexAttribArray(0);
@@ -503,6 +507,7 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // Create an input texture. This will be eventually attached to the input
   // dma-buf and we will sample from it, so we need to set some parameters.
   glGenTextures(1, &src_texture_id_);
+  CHECK_GT(src_texture_id_, 0u);
   const auto gl_texture_target =
       scaling ? GL_TEXTURE_2D : GL_TEXTURE_EXTERNAL_OES;
   const auto gl_texture_filter = scaling ? GL_LINEAR : GL_NEAREST;
@@ -537,21 +542,42 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   done->Signal();
 }
 
-// Note that the ImageProcessor calls the destructor from the
-// backend_task_runner, so this should be threadsafe.
+// Note that the ImageProcessor deletes the ImageProcessorBackend on the
+// |backend_task_runner_| so this should be thread-safe.
+//
+// TODO(b/339883058): do we need to explicitly call |gl_surface_|->Destroy()?
 GLImageProcessorBackend::~GLImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  if (gl_context_->MakeCurrent(gl_surface_.get())) {
-    glDeleteTextures(1, &src_texture_id_);
-    glDeleteTextures(1, &dst_texture_id_);
-    glDeleteFramebuffersEXT(1, &fb_id_);
-    glDeleteVertexArraysOES(1, &vao_id_);
-    glDeleteBuffersARB(1, &vbo_id_);
-    gl_context_->ReleaseCurrent(gl_surface_.get());
-    gl_surface_->HasOneRef();
-    gl_context_->HasOneRef();
+  if (!gl_surface_) {
+    // If there's no surface, nothing else was created.
+    CHECK(!gl_context_);
+    return;
   }
+  if (!gl_context_) {
+    // If there's no context, nothing else was created.
+    return;
+  }
+  if (!gl_context_->MakeCurrent(gl_surface_.get())) {
+    // If the context can't be made current, we shouldn't do anything else.
+    return;
+  }
+  if (fb_id_) {
+    glDeleteFramebuffersEXT(1, &fb_id_);
+  }
+  if (dst_texture_id_) {
+    glDeleteTextures(1, &dst_texture_id_);
+  }
+  if (src_texture_id_) {
+    glDeleteTextures(1, &src_texture_id_);
+  }
+  if (vao_id_) {
+    glDeleteVertexArraysOES(1, &vao_id_);
+  }
+  if (vbo_id_) {
+    glDeleteBuffersARB(1, &vbo_id_);
+  }
+  gl_context_->ReleaseCurrent(gl_surface_.get());
 }
 
 void GLImageProcessorBackend::ProcessFrame(
