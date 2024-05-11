@@ -1775,8 +1775,7 @@ void AppMenuModel::Build() {
     SetIsNewFeatureAt(lens_command_index,
                       browser()->window()->MaybeShowNewBadgeFor(
                           lens::features::kLensOverlay));
-  } else if (companion::IsCompanionFeatureEnabled() &&
-             !browser()->profile()->IsIncognitoProfile()) {
+  } else if (companion::IsSearchInCompanionSidePanelSupported(browser())) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SEARCH_COMPANION,
                                      IDS_SHOW_SEARCH_COMPANION,
                                      vector_icons::kGoogleGLogoMonochromeIcon);
