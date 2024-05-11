@@ -7948,46 +7948,46 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <!-- TODO(b/330399248: Finalize and translate the shortcut notification strings. -->
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE" translateable="false" desc="Title of the pop up nudge to remind using fn key.">
-        Use your Fn Key
+        Use your fn Key
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
-        Press Fn + top Row key instead of search + top row key
+        Press fn + the action key
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
-        Press Fn + Right-alt key to switch caps lock
+        Press fn + right alt for CAPS LOCK
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_UP_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus up arrow key.">
-        Press Fn + up arrow key in stead of search + up arrow key
+        Press fn + up for page up
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_DOWN_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus down arrow key.">
-        Press Fn + down arrow key in stead of search + down arrow key
+        Press fn + down for page down
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_LEFT_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus left arrow key.">
-        Press Fn + left arrow key in stead of search + left arrow key
+        Press fn + left for home
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_RIGHT_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus right arrow key.">
-        Press Fn + right arrow key in stead of search + right arrow key
+        Press fn + right for end
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_BACKSPACE_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus backspace key.">
-        Press Fn + backspace in stead of search + backspace key
+        Press fn + backspace for delete
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_SEARCH_PLUS_SHIFT_BACKSPACE_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus shift backspace key.">
         Press Fn + shift + backspace in stead of search + shift + backspace key
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_UP_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses alt plus up arrow key.">
-        Press Fn + up arrow key in stead of alt + up arrow key
+        Press fn + up for page up
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_DOWN_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses alt plus down arrow key.">
-        Press Fn + down arrow key in stead of alt + down arrow key
+        Press fn + down for page down
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_LEFT_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses alt plus left arrow key.">
-        Press Fn + left arrow key in stead of alt + left arrow key
+        Press fn + left for home
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_RIGHT_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses alt plus right arrow key.">
-        Press Fn + right arrow key in stead of allt + right arrow key
+        Press fn + right for end
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_ALT_PLUS_BACKSPACE_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses alt plus backspace key.">
-        Press Fn + backspace in stead of alt + backspace key
+        Press fn + backspace for delete
       </message>
       <!-- Modifier key names -->
       <message name="IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_LAUNCHER" desc="Name of the [Launcher] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Launcher and has a circle/launcher icon.">
