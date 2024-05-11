@@ -35,6 +35,7 @@
 #include "ash/style/style_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/utility/forest_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
@@ -704,6 +705,8 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
   background_animator_.AddObserver(delegate_view_);
   shelf_->AddObserver(this);
 
+  Shell::Get()->overview_controller()->AddObserver(this);
+
   // Sets initial session state to make sure the UI is properly shown.
   OnSessionStateChanged(Shell::Get()->session_controller()->GetSessionState());
   delegate_view_->SetEnableArrowKeyTraversal(true);
@@ -731,6 +734,10 @@ void ShelfWidget::Shutdown() {
   // Don't need to observe focus/activation during shutdown.
   Shell::Get()->focus_cycler()->RemoveWidget(this);
   SetFocusCycler(nullptr);
+
+  if (auto* overview_controller = Shell::Get()->overview_controller()) {
+    overview_controller->RemoveObserver(this);
+  }
 }
 
 void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {
