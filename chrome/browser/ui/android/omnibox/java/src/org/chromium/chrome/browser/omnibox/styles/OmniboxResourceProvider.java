@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 
@@ -416,11 +415,6 @@ public class OmniboxResourceProvider {
 
     /** Get the top padding for the MV carousel. */
     public static @Px int getMostVisitedCarouselTopPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-        }
-
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller);
@@ -428,11 +422,6 @@ public class OmniboxResourceProvider {
 
     /** Get the bottom padding for the MV carousel. */
     public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return context.getResources()
-                    .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
-        }
-
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
@@ -456,10 +445,6 @@ public class OmniboxResourceProvider {
      * focused.
      */
     public static @Px int getFocusedStatusViewLeftSpacing(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return 0;
-        }
-
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.location_bar_status_view_left_space_width_bigger);
     }
@@ -469,10 +454,6 @@ public class OmniboxResourceProvider {
      * focused.
      */
     public static @Px int getToolbarOnFocusHeightIncrease(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            return 0;
-        }
-
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
     }
@@ -495,7 +476,6 @@ public class OmniboxResourceProvider {
     public static @Px int getSuggestionDecorationIconSizeWidth(Context context) {
         Context wrappedContext = maybeReplaceContextForSmallTabletWindow(context);
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && wrappedContext == context) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_modern);
@@ -534,8 +514,7 @@ public class OmniboxResourceProvider {
      */
     @VisibleForTesting
     static Context maybeReplaceContextForSmallTabletWindow(Context context) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return context;
         }
 
