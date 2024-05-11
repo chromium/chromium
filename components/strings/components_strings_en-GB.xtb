@@ -615,6 +615,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2122214041802369259">Price is high</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
+<translation id="2127090458081644412">Password saved to this device</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2132825047782982803">These are shown in random order. You can change your default at any time.</translation>
@@ -1858,7 +1859,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4557573143631562971">Home insurance</translation>
 <translation id="4558551763791394412">Try disabling your extensions.</translation>
 <translation id="4566017918361049074">Outdoors</translation>
-<translation id="4567686777917670400">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Verified</translation>
 <translation id="457875822857220463">Delivery</translation>
 <translation id="4579699065574932398">Banking</translation>
@@ -2032,6 +2032,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4901952598169637881">Casual Shoes</translation>
 <translation id="4905659621780993806">Your administrator will restart your device automatically at <ph name="TIME" /> on <ph name="DATE" />. Save any open items before your device restarts.</translation>
+<translation id="4913784027728226227">To save and use this password on all your devices, verify that it's you</translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4916389289686916969">TV reality shows</translation>
 <translation id="4917064667437236721">Imaging cylinder</translation>
@@ -2315,6 +2316,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Offer writing help</translation>
 <translation id="54817484435770891">Add valid address</translation>
 <translation id="5483838506518938965">You're all set</translation>
 <translation id="5485973315555778056">Cloud machine</translation>
@@ -3877,7 +3879,6 @@ Additional details:
 <translation id="8428634594422941299">Got it</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage your cookie preferences in Chrome settings</translation>
 <translation id="8433057134996913067">This will sign you out of most websites.</translation>
-<translation id="8434014327286137412">To pay faster next time, save your IBAN to your Google Account</translation>
 <translation id="8434840396568290395">Pets</translation>
 <translation id="8436623588884785770">Add policy</translation>
 <translation id="8437238597147034694">&amp;Undo move</translation>
@@ -4228,7 +4229,6 @@ Additional details:
 <translation id="9148507642005240123">&amp;Undo edit</translation>
 <translation id="9148599396704355100">Price is low</translation>
 <translation id="9150025764986957246">You can enter things like:</translation>
-<translation id="9150685862434908345">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Updated</translation>
 <translation id="9155211586651734179">Audio peripherals attached</translation>
 <translation id="9155646082713385498">Magazines</translation>

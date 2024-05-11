@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali slike, idite na <ph name="LINK" /></translation>
 <translation id="2305172810646967500">crnim</translation>
 <translation id="2307344026739914387">Koristite aktuelni par ključeva</translation>
+<translation id="2308243864813041101">Isključite USB kabl uređaja <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="2320295602967756579">Omogućite svetlu temu</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
 <translation id="2324354238778375592">Plutajuće</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">Kontrole</translation>
 <translation id="2652403576514495859">omogućite ili uključite/isključite diktiranje</translation>
 <translation id="2653659639078652383">Pošalji</translation>
+<translation id="2654647726140493436">Ne isključujte uređaj <ph name="DEVICE_TYPE" /> i ne isključujte kabl za napajanje koji <ph name="DEVICE_TYPE" /> koristi dok je ažuriranje u toku</translation>
 <translation id="2656001153562991489">Ekskluzivno za Chromebook Plus</translation>
 <translation id="2665671725390405060">Slušajte izgovor</translation>
 <translation id="267442004702508783">osveži</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">Ponovo napišite</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
 <translation id="324961752321393509">Administrator ne dozvoljava zatvaranje ove aplikacije</translation>
+<translation id="3263941347294171263">Isključite i ponovo priključite uređaj <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="3268178239013324452">Nije uspelo – vrata su otvorena</translation>
 <translation id="3275729367986477355">Slika avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Izmeni fajl}one{Izmeni fajlove}few{Izmeni fajlove}other{Izmeni fajlove}}</translation>
@@ -728,6 +731,7 @@
 <translation id="5160857336552977725">Prijavite se na <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
+<translation id="517075088756846356">Isključite i ponovo priključite kabl za napajanje uređaja <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="5180108905184566358">baobab drveće</translation>
 <translation id="5180712487038406644">Izražajno</translation>
 <translation id="5190187232518914472">Ponovo proživite omiljene uspomene. Da biste dodali ili izmenili albume, idite u <ph name="LINK_BEGIN" />Google slike<ph name="LINK_END" />.</translation>
@@ -789,6 +793,7 @@
 <translation id="554067135846762198">koralne i boje kože</translation>
 <translation id="5543701552415191873">zaključano</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Ovo ažuriranje pruža proizvođač spoljnog uređaja i Google ga nije verifikovao.</translation>
 <translation id="5559898619118303662">Automatski prelazite na tamnu temu u vreme zalaska sunca</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> u nijansama <ph name="TERRAIN_COLOR" /></translation>
@@ -1080,6 +1085,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">šareno</translation>
 <translation id="710028965487274708">Neuspešno – ovlašćenje nije uspelo</translation>
+<translation id="7101959270679078188">Otključajte uređaj <ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Odaberite ekskluzivne ilustracije za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
@@ -1355,6 +1361,7 @@
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
+<translation id="8689520252402395106">Ponovo priključite USB kabl uređaja<ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Koristite taster sa strelicom nalevo ili nadesno da biste upravljali ovom funkcijom.</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
@@ -1362,6 +1369,7 @@
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
+<translation id="8739555075907731077">Pauzirano (završeno je <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="8747900814994928677">Potvrdite promenu</translation>
 <translation id="8749478549112817787">Pozadina kamere</translation>
 <translation id="8755946156089753497">Kula</translation>

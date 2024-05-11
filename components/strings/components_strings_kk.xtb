@@ -1857,7 +1857,6 @@
 <translation id="4557573143631562971">Үй сақтандыру</translation>
 <translation id="4558551763791394412">Кеңейтімдерді ажыратып көріңіз.</translation>
 <translation id="4566017918361049074">Ашық ауадағы демалыс</translation>
-<translation id="4567686777917670400">Браузер параметрін әкімші қашықтан өзгерте алады. Құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">Расталған</translation>
 <translation id="457875822857220463">Жеткізу</translation>
 <translation id="4579699065574932398">Банкинг</translation>
@@ -3876,7 +3875,6 @@
 <translation id="8428634594422941299">Түсінікті</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, cookie файлдарын басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="8433057134996913067">Бұл — көп веб-сайттардан шығарады.</translation>
-<translation id="8434014327286137412">Келесі жолы жылдамырақ төлеу үшін IBAN нөміріңізді Google аккаунтыңызға сақтаңыз.</translation>
 <translation id="8434840396568290395">Үй жануарлары</translation>
 <translation id="8436623588884785770">Саясат қосу</translation>
 <translation id="8437238597147034694">&amp;Жылжытуды болдырмау</translation>
@@ -4226,7 +4224,6 @@
 <translation id="9148507642005240123">&amp;Өзгерту әрекетін кері қайтару</translation>
 <translation id="9148599396704355100">Бағасы төмен</translation>
 <translation id="9150025764986957246">Келесідей нәрселер енгізуге болады:</translation>
-<translation id="9150685862434908345">Браузер реттеуді әкімші қашықтан өзгерте алады. Сонымен қатар құрылғыдағы әрекеттерді Chrome браузерінен тыс басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Жаңартылды</translation>
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>
 <translation id="9155646082713385498">Журналдар</translation>

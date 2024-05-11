@@ -36,6 +36,7 @@
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="155168855724261758">Chrome-ის მორგება</translation>
+<translation id="1551749261806528781">პაროლების შესანახად და გამოსაყენებლად და სხვა მოქმედებების შესასრულებლად მოწყობილობაში, შედით Chrome-ში. შესვლის შემდეგ ეს პაროლი შეინახება თქვენს Google ანგარიშში.</translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="1587223624401073077">Google Chrome იყენებს თქვენს კამერას.</translation>
@@ -319,6 +320,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5940385492829620908">თქვენი ვები, სანიშნეები და Chrome-ის სხვა მასალა არის აქ.</translation>
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
+<translation id="5947104538377036631">Chrome-ის მალსახმობი</translation>
 <translation id="6003112304606738118">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="HOURS" /> საათი</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ში არსებული ხელსაწყოები<ph name="END_LINK" /> დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>

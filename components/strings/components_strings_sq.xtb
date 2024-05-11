@@ -615,6 +615,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2122214041802369259">Çmimi është i lartë</translation>
 <translation id="2122719317867821810">Kjo politikë funksionon sipas parashikimit, por diku është caktuar një vlerë në konflikt dhe ajo është anuluar nga kjo politikë.</translation>
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
+<translation id="2127090458081644412">Fjalëkalimet e ruajtura në këtë pajisje</translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Këto shfaqen në rend të rastësishëm. Mund ta ndryshosh parazgjedhjen në çdo kohë.</translation>
@@ -1858,7 +1859,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4557573143631562971">Sigurimi i shtëpisë</translation>
 <translation id="4558551763791394412">Provo të çaktivizosh shtesat.</translation>
 <translation id="4566017918361049074">Ambientet e hapura</translation>
-<translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4569155249847375786">I verifikuar</translation>
 <translation id="457875822857220463">Dorëzimi</translation>
 <translation id="4579699065574932398">Banka</translation>
@@ -2032,6 +2032,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4901778704868714008">Ruaj...</translation>
 <translation id="4901952598169637881">Këpucë praktike</translation>
 <translation id="4905659621780993806">Administratori yt do ta rinisë pajisjen automatikisht në orën <ph name="TIME" /> më <ph name="DATE" />. Ruaj çdo artikull të hapur përpara se pajisja të riniset.</translation>
+<translation id="4913784027728226227">Verifiko që je ti për ta ruajtur dhe përdorur këtë fjalëkalim në të gjitha pajisjet e tua</translation>
 <translation id="4913987521957242411">Shpim lart majtas</translation>
 <translation id="4916389289686916969">Shfaqje televizive realiteti</translation>
 <translation id="4917064667437236721">Cilindri i imazheve</translation>
@@ -2315,6 +2316,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5470861586879999274">&amp;Ribëj redaktimin</translation>
 <translation id="547963486735802022">Provo t'i transferosh përsëri skedarët e tu</translation>
 <translation id="5481076368049295676">Kjo përmbajtje mund të përpiqet të instalojë softuerë të rrezikshëm në pajisjen tënde që vjedhin ose fshijnë informacionet e tua. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Ofro ndihmë për të shkruarit</translation>
 <translation id="54817484435770891">Shto një adresë të vlefshme</translation>
 <translation id="5483838506518938965">Je plotësisht gati</translation>
 <translation id="5485973315555778056">Makineria e resë kompjuterike</translation>
@@ -3876,7 +3878,6 @@ Detaje shtesë:
 <translation id="8428634594422941299">E kuptova</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="8433057134996913067">Kjo do të bëjë të dalësh nga shumica e sajteve të uebit.</translation>
-<translation id="8434014327286137412">Për të paguar më shpejt herën tjetër, ruaje numrin IBAN në "Llogarinë tënde të Google"</translation>
 <translation id="8434840396568290395">Kafshët shtëpiake</translation>
 <translation id="8436623588884785770">Shto politikën</translation>
 <translation id="8437238597147034694">&amp;Zhbëj zhvendosjen</translation>
@@ -4227,7 +4228,6 @@ Detaje shtesë:
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
 <translation id="9148599396704355100">Çmimi është i ulët</translation>
 <translation id="9150025764986957246">Mund të futësh gjëra të tilla si:</translation>
-<translation id="9150685862434908345">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">I përditësuar</translation>
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>
 <translation id="9155646082713385498">Revista</translation>

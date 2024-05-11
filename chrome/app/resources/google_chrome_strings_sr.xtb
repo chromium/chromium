@@ -37,6 +37,7 @@
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="155168855724261758">Прилагодите Chrome</translation>
+<translation id="1551749261806528781">Да бисте сачували и користили лозинке и друго на свим уређајима, пријавите се у Chrome. Ова лозинка ће бити сачувана на Google налогу када се пријавите.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
@@ -320,6 +321,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5940385492829620908">Веб, обележивачи и други Chrome садржај се овде уживо приказују.</translation>
 <translation id="5941711191222866238">Умањи</translation>
 <translation id="5941830788786076944">Подесите Google Chrome као подразумевани прегледач</translation>
+<translation id="5947104538377036631">Chrome пречица</translation>
 <translation id="6003112304606738118">Преузима се... Још <ph name="HOURS" /> ч</translation>
 <translation id="6014316319780893079">Помоћу <ph name="BEGIN_LINK" />Chrome алатки<ph name="END_LINK" /> можете безбедно да прегледате и задржите контролу</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>

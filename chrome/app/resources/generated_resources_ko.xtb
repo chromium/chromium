@@ -522,7 +522,7 @@
 <translation id="1390548061267426325">일반 탭으로 열기</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />님은 <ph name="PRINTER_NAME" /> 프린터로 인쇄할 권한이 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1392047138650695757">사용자 사전</translation>
-<translation id="139300021892314943">로그인할 수 있는 사용자 제한하기</translation>
+<translation id="139300021892314943">로그인할 수 있는 사용자 제한</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
 <translation id="1395730723686586365">업데이터 시작됨</translation>
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
@@ -1732,6 +1732,7 @@
 <translation id="2256115617011615191">지금 다시 시작</translation>
 <translation id="225614027745146050">환영합니다.</translation>
 <translation id="2257053455312861282">학교 계정을 추가하면 학생이 계속 자녀 보호 기능으로 감독받으면서 웹사이트, 확장 프로그램, 앱에 간편하게 로그인할 수 있습니다.</translation>
+<translation id="225716114209817872">최대</translation>
 <translation id="2261323523305321874">관리자가 시스템 전체에 변경사항을 적용하여 기존의 일부 프로필이 비활성화되었습니다.</translation>
 <translation id="22614517036276112">문서 또는 기기가 조직의 보안 정책 중 일부를 준수하지 않습니다. 관리자와 함께 문제 해결을 상의하세요.</translation>
 <translation id="2262477216570151239">반복 전 지연</translation>
@@ -7993,6 +7994,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
 <translation id="701080569351381435">소스 보기</translation>
 <translation id="7011797924920577670">관심분야를 예측</translation>
+<translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
 <translation id="7014480873681694324">강조표시 삭제</translation>
 <translation id="7014741021609395734">확대/축소 수준</translation>
@@ -8760,7 +8762,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7625025537587898155">새 프로필 추가</translation>
 <translation id="7625568159987162309">사이트 전체에 저장된 권한 및 데이터 보기</translation>
 <translation id="7625823789272218216">새 좌측 탭</translation>
-<translation id="7628201176665550262">새로고침 빈도</translation>
+<translation id="7628201176665550262">화면 재생 빈도</translation>
 <translation id="7628392600831846024">기호 스타일</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
 <translation id="762917478230183172">키별로 작업 선택</translation>
@@ -11052,7 +11054,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="992653586748191655">추천 탭 그룹 <ph name="NUM" />개</translation>
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
 <translation id="993540765962421562">설치 진행 중</translation>
-<translation id="994289308992179865">루프(&amp;L)</translation>
+<translation id="994289308992179865">연속 재생(&amp;L)</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">안전한 연결 설정 중...</translation>
