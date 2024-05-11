@@ -317,6 +317,8 @@ if (enable_pdf) {
     sources = [
       "test/mock_web_associated_url_loader.cc",
       "test/mock_web_associated_url_loader.h",
+      "test/mouse_event_builder.cc",
+      "test/mouse_event_builder.h",
       "test/test_client.cc",
       "test/test_client.h",
       "test/test_document_loader.cc",

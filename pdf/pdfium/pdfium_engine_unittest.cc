@@ -25,6 +25,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
 #include "pdf/ui/thumbnail.h"
@@ -61,48 +62,37 @@ MATCHER_P(LayoutWithOptions, options, "") {
   return arg.options() == options;
 }
 
-blink::WebMouseEvent CreateLeftClickWebMouseEventAtPositionWithClickCount(
-    const gfx::PointF& position,
-    int click_count_param) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseDown, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
-      click_count_param, blink::WebInputEvent::Modifiers::kLeftButtonDown,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-}
-
 blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
-  return CreateLeftClickWebMouseEventAtPositionWithClickCount(position, 1);
+  return MouseEventBuilder().CreateLeftClickAtPosition(position).Build();
 }
 
 blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseUp, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kLeft,
-      /*click_count_param=*/1, blink::WebInputEvent::Modifiers::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseUp)
+      .SetPosition(position)
+      .SetButton(blink::WebPointerProperties::Button::kLeft)
+      .SetClickCount(1)
+      .Build();
 }
 
 blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseDown, /*position=*/position,
-      /*global_position=*/position, blink::WebPointerProperties::Button::kRight,
-      /*click_count_param=*/1,
-      blink::WebInputEvent::Modifiers::kRightButtonDown,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseDown)
+      .SetPosition(position)
+      .SetButton(blink::WebPointerProperties::Button::kRight)
+      .SetClickCount(1)
+      .Build();
 }
 
 blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
     const gfx::PointF& position) {
-  return blink::WebMouseEvent(
-      blink::WebInputEvent::Type::kMouseMove, /*position=*/position,
-      /*global_position=*/position,
-      blink::WebPointerProperties::Button::kNoButton, /*click_count_param=*/0,
-      blink::WebInputEvent::Modifiers::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return MouseEventBuilder()
+      .SetType(blink::WebInputEvent::Type::kMouseMove)
+      .SetPosition(position)
+      .Build();
 }
 
 class MockTestClient : public TestClient {
@@ -819,8 +809,10 @@ TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
@@ -836,8 +828,10 @@ TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 3)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(3)
+                                           .Build()));
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
 
@@ -936,8 +930,10 @@ TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 
   DocumentLayout::Options options;
@@ -967,8 +963,10 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 
   DocumentLayout::Options options;
