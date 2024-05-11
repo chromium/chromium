@@ -227,13 +227,13 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   return ax_platform_node_->GetNativeViewAccessible();
 }
 
-void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
-    ax::mojom::Event event_type) {
+void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
   Widget* const widget = view()->GetWidget();
   if (!widget || widget->IsClosed()) {
     return;
   }
+
   if (event_type == ax::mojom::Event::kAlert) {
     // Do not queue alert events for later. They must be dealt with
     // before the window potentially closes, and they can be fired
@@ -241,8 +241,11 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
     ax_platform_node_->NotifyAccessibilityEvent(event_type);
     return;
   }
-  if (accessibility_events_callback_)
+
+  if (accessibility_events_callback_) {
     accessibility_events_callback_.Run(this, event_type);
+  }
+
   if (g_is_queueing_events) {
     g_event_queue.Get().emplace_back(event_type, GetUniqueId());
     return;

@@ -1586,6 +1586,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns an instance of the native accessibility interface for this view.
   virtual gfx::NativeViewAccessible GetNativeViewAccessible();
 
+  // DEPRECATED: Use `ViewAccessibility::NotifyEvent` instead.
+  //
   // Notifies assistive technology that an accessibility event has
   // occurred on this view, such as when the view is focused or when its
   // value changes. Pass true for |send_native_event| except for rare
@@ -2487,6 +2489,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // `GetAccessibleNodeData`.
   std::unique_ptr<ui::AXNodeData> ax_node_data_;
 
+  // TODO(accessibility): Remove this attribute once we migrate the
+  // SetAccessibilityProperties function to ViewAccessibility.
+  //
   // Used by `SetAccessibilityProperties` and to prevent accessibility
   // property-change events from being fired during initialization of this view.
   bool pause_accessibility_events_ = false;

@@ -62,6 +62,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // (see OverrideFocus, etc. below).
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
 
+  void NotifyEvent(ax::mojom::Event event_type, bool send_native_event = true);
+
   // Made to be overridden on platforms that need the temporary
   // `AtomicViewAXTreeManager` to enable more accessibility functionalities for
   // Views. See crbug.com/1468416 for more info.
@@ -395,8 +397,7 @@ class VIEWS_EXPORT ViewAccessibility {
  protected:
   explicit ViewAccessibility(View* view);
 
-  // Used internally and by View.
-  virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type);
+  virtual void FireNativeEvent(ax::mojom::Event event_type);
 
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
@@ -461,6 +462,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // Whether we need to ensure an AtomicViewAXTreeManager is created for this
   // View.
   bool needs_ax_tree_manager_ = false;
+
+  // Prevents accessibility events from being fired during initialization of
+  // the owning View.
+  bool pause_accessibility_events_ = false;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View

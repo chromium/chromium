@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -253,6 +254,32 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // absolutely need to add something past this point.
 }
 
+void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
+                                    bool send_native_event) {
+  // If `pause_accessibility_events_` is true, it means we are initializing
+  // property values. In this specific case, we do not want to notify platform
+  // assistive technologies that a property has changed.
+  if (pause_accessibility_events_) {
+    return;
+  }
+
+  Widget* const widget = view_->GetWidget();
+  // If it belongs to a widget but its native widget is already destructed, do
+  // not send such accessibility event as it's unexpected to send such events
+  // during destruction, and is likely to lead to crashes/problems.
+  if (widget && !widget->GetNativeView()) {
+    return;
+  }
+
+  AXEventManager::Get()->NotifyViewEvent(view_, event_type);
+
+  if (send_native_event && widget) {
+    FireNativeEvent(event_type);
+  }
+
+  view_->OnAccessibilityEvent(event_type);
+}
+
 void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
   DCHECK(!virtual_view || Contains(virtual_view))
       << "|virtual_view| must be nullptr or a descendant of this view.";
@@ -263,7 +290,7 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
       focused_virtual_child_->NotifyAccessibilityEvent(
           ax::mojom::Event::kFocus);
     } else {
-      view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+      NotifyEvent(ax::mojom::Event::kFocus, true);
     }
   }
 }
@@ -285,7 +312,7 @@ void ViewAccessibility::EndPopupFocusOverride() {
 }
 
 void ViewAccessibility::FireFocusAfterMenuClose() {
-  view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
+  NotifyEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
 void ViewAccessibility::SetProperties(
@@ -295,7 +322,7 @@ void ViewAccessibility::SetProperties(
     std::optional<std::u16string> role_description,
     std::optional<ax::mojom::NameFrom> name_from,
     std::optional<ax::mojom::DescriptionFrom> description_from) {
-  // TODO(javiercon): Add the pause accessibility properties setting here.
+  base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   if (role.has_value()) {
     if (role_description.has_value()) {
       SetRole(role.value(), role_description.value());
@@ -444,7 +471,7 @@ void ViewAccessibility::SetName(const std::string& name,
     data_.SetName(name);
   }
 
-  view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
+  NotifyEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 void ViewAccessibility::SetName(const std::u16string& name,
@@ -555,7 +582,7 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   // TODO(crbug.com/40896388): We need a specific enabled-changed event for
   // this. Some platforms have specific state-changed events and this generic
   // event does not suggest what changed.
-  view()->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  NotifyEvent(ax::mojom::Event::kStateChanged, true);
 }
 
 bool ViewAccessibility::GetIsEnabled() const {
@@ -644,7 +671,7 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
   should_be_ignored_ = is_ignored;
 
   UpdateIgnoredState();
-  view_->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
+  NotifyEvent(ax::mojom::Event::kTreeChanged, true);
 }
 
 bool ViewAccessibility::GetIsIgnored() const {
@@ -698,16 +725,6 @@ ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
   return nullptr;
-}
-
-void ViewAccessibility::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
-  Widget* const widget = view_->GetWidget();
-  if (!widget || widget->IsClosed()) {
-    return;
-  }
-  // Used for unit testing.
-  if (accessibility_events_callback_)
-    accessibility_events_callback_.Run(nullptr, event_type);
 }
 
 void ViewAccessibility::AnnounceAlert(const std::u16string& text) {
@@ -771,6 +788,12 @@ gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   if (focused_virtual_child_)
     return focused_virtual_child_->GetNativeObject();
   return view_->GetNativeViewAccessible();
+}
+
+void ViewAccessibility::FireNativeEvent(ax::mojom::Event event_type) {
+  if (accessibility_events_callback_) {
+    accessibility_events_callback_.Run(nullptr, event_type);
+  }
 }
 
 const ViewAccessibility::AccessibilityEventsCallback&

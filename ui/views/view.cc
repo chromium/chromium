@@ -2100,6 +2100,8 @@ void View::SetAccessibilityProperties(
     std::optional<std::u16string> role_description,
     std::optional<ax::mojom::NameFrom> name_from,
     std::optional<ax::mojom::DescriptionFrom> description_from) {
+  // TODO(accessibility): Remove this attribute once we migrate the
+  // SetAccessibilityProperties function to ViewAccessibility.
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   if (role.has_value()) {
     if (role_description.has_value()) {
@@ -2298,13 +2300,9 @@ gfx::NativeViewAccessible View::GetNativeViewAccessible() {
 
 void View::NotifyAccessibilityEvent(ax::mojom::Event event_type,
                                     bool send_native_event) {
-  // If it belongs to a widget but its native widget is already destructed, do
-  // not send such accessibility event as it's unexpected to send such events
-  // during destruction, and is likely to lead to crashes/problems.
-  if (GetWidget() && !GetWidget()->GetNativeView()) {
-    return;
-  }
-
+  // TODO(accessibility): Remove this condition once we migrate the
+  // SetAccessibilityProperties function to ViewAccessibility.
+  //
   // If `pause_accessibility_events_` is true, it means we are initializing
   // property values. In this specific case, we do not want to notify platform
   // assistive technologies that a property has changed.
@@ -2312,13 +2310,7 @@ void View::NotifyAccessibilityEvent(ax::mojom::Event event_type,
     return;
   }
 
-  AXEventManager::Get()->NotifyViewEvent(this, event_type);
-
-  if (send_native_event && GetWidget()) {
-    GetViewAccessibility().NotifyAccessibilityEvent(event_type);
-  }
-
-  OnAccessibilityEvent(event_type);
+  GetViewAccessibility().NotifyEvent(event_type, send_native_event);
 }
 
 void View::OnAccessibilityEvent(ax::mojom::Event event_type) {}
