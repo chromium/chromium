@@ -856,8 +856,10 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
   // Create glue so that WebUIControllers created by this instance can
   // communicate with this instance.
   CreateGlueForWebView(web_view.get());
-  // Allow accelerators (e.g. hotkeys) to work on this web view.
+  // Set the web contents delegate to this controller so we can handle keyboard
+  // events. Allow accelerators (e.g. hotkeys) to work on this web view.
   web_view->set_allow_accelerators(true);
+  web_view->GetWebContents()->SetDelegate(this);
 
   // Load the untrusted WebUI into the web view.
   GURL url(chrome::kChromeUILensUntrustedURL);
@@ -865,6 +867,20 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
 
   overlay_web_view_ = host_view->AddChildView(std::move(web_view));
   return host_view;
+}
+
+bool LensOverlayController::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  // We do not want to show the browser context menu on the overlay.
+  return true;
+}
+
+bool LensOverlayController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, overlay_web_view_->GetFocusManager());
 }
 
 const GURL& LensOverlayController::GetPageURL() const {

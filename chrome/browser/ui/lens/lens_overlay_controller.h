@@ -17,12 +17,14 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace lens {
@@ -60,7 +62,8 @@ class Profile;
 // thread.
 class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
-                              public lens::mojom::LensSidePanelPageHandler {
+                              public lens::mojom::LensSidePanelPageHandler,
+                              public content::WebContentsDelegate {
  public:
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
@@ -477,6 +480,13 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();
 
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
@@ -644,6 +654,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+
+  // Class for handling key events from the renderer that were not handled.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};
