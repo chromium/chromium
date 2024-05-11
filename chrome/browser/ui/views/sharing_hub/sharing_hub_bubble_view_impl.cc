@@ -45,7 +45,9 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
     views::View* anchor_view,
     share::ShareAttempt attempt,
     SharingHubBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, attempt.web_contents.get()),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    attempt.web_contents.get(),
+                                    /*autosize=*/true),
       attempt_(attempt) {
   DCHECK(anchor_view);
   DCHECK(controller);
@@ -125,15 +127,6 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
         std::make_unique<SharingHubBubbleActionButton>(this, action));
     view->SetGroup(kActionButtonGroup);
   }
-
-  MaybeSizeToContents();
-  DeprecatedLayoutImmediately();
-}
-
-void SharingHubBubbleViewImpl::MaybeSizeToContents() {
-  // The widget may be null if this is called while the dialog is opening.
-  if (GetWidget())
-    SizeToContents();
 }
 
 void SharingHubBubbleViewImpl::OnWindowClosing() {
