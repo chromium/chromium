@@ -712,6 +712,43 @@ Widget* ViewAccessibility::GetPreviousWindowFocus() const {
   return previous_focus_.get();
 }
 
+void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
+  if (show_context_menu) {
+    data_.AddAction(ax::mojom::Action::kShowContextMenu);
+  } else {
+    data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
+  }
+}
+
+void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
+  if (is_enabled) {
+    data_.AddState(state);
+  } else {
+    data_.RemoveState(state);
+  }
+}
+
+void ViewAccessibility::UpdateFocusableState() {
+  bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
+                      GetIsEnabled() && view_->IsDrawn() &&
+                      !ViewAccessibility::GetIsIgnored();
+  SetState(ax::mojom::State::kFocusable, is_focusable);
+}
+
+void ViewAccessibility::UpdateFocusableStateRecursive() {
+  internal::ScopedChildrenLock lock(view_);
+  UpdateFocusableState();
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().UpdateFocusableStateRecursive();
+  }
+}
+
+void ViewAccessibility::UpdateInvisibleState() {
+  bool is_invisible =
+      !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
+  SetState(ax::mojom::State::kInvisible, is_invisible);
+}
+
 void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
     child_tree_id_ = std::nullopt;
@@ -806,14 +843,6 @@ void ViewAccessibility::set_accessibility_events_callback(
   accessibility_events_callback_ = std::move(callback);
 }
 
-void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
-  if (show_context_menu) {
-    data_.AddAction(ax::mojom::Action::kShowContextMenu);
-  } else {
-    data_.RemoveAction(ax::mojom::Action::kShowContextMenu);
-  }
-}
-
 void ViewAccessibility::PruneSubtree() {
   internal::ScopedChildrenLock lock(view_);
   for (auto& child : view_->children()) {
@@ -846,14 +875,6 @@ void ViewAccessibility::UnpruneSubtree() {
   }
 }
 
-void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
-  if (is_enabled) {
-    data_.AddState(state);
-  } else {
-    data_.RemoveState(state);
-  }
-}
-
 void ViewAccessibility::UpdateIgnoredState() {
   bool is_ignored =
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
@@ -861,24 +882,4 @@ void ViewAccessibility::UpdateIgnoredState() {
   UpdateFocusableState();
 }
 
-void ViewAccessibility::UpdateFocusableState() {
-  bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-                      GetIsEnabled() && view_->IsDrawn() &&
-                      !ViewAccessibility::GetIsIgnored();
-  SetState(ax::mojom::State::kFocusable, is_focusable);
-}
-
-void ViewAccessibility::UpdateFocusableStateRecursive() {
-  internal::ScopedChildrenLock lock(view_);
-  UpdateFocusableState();
-  for (auto& child : view_->children()) {
-    child->GetViewAccessibility().UpdateFocusableStateRecursive();
-  }
-}
-
-void ViewAccessibility::UpdateInvisibleState() {
-  bool is_invisible =
-      !view_->GetVisible() && data_.role != ax::mojom::Role::kAlert;
-  SetState(ax::mojom::State::kInvisible, is_invisible);
-}
 }  // namespace views

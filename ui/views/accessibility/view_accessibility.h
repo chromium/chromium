@@ -299,6 +299,10 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* GetNextWindowFocus() const;
   Widget* GetPreviousWindowFocus() const;
 
+  void SetShowContextMenu(bool show_context_menu);
+
+  void SetState(ax::mojom::State state, bool is_enabled);
+
   // Updates the focusable state of the `data_` object.
   // The view is considered focusable if it is not set to never receive focus
   // This function must be called whenever an attribute that can affect the
@@ -309,6 +313,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // and that of the view's children. Then it updates the focusable state of the
   // current view.
   void UpdateFocusableStateRecursive();
+
+  // Updates the invisible state of the `data_` object. The view is considered
+  // invisible if it is not visible and its role is not kAlert.
+  void UpdateInvisibleState();
 
   // Override the child tree id.
   void OverrideChildTreeID(ui::AXTreeID tree_id);
@@ -403,7 +411,18 @@ class VIEWS_EXPORT ViewAccessibility {
   AccessibilityEventsCallback accessibility_events_callback_;
 
  private:
-  friend class View;
+  // Prune/Unprune all descendant views from the accessibility tree. We prune
+  // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
+  // The view is focusable and lacks focusable descendants (e.g. a button with a
+  // label and/or an image).
+  void PruneSubtree();
+  void UnpruneSubtree();
+
+  // Updates the ignored state of the `data_` object.
+  // The view is considered ignored if it should be ignored as per
+  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
+  // is 'kNone'.
+  void UpdateIgnoredState();
 
   // Weak. Owns this.
   const raw_ptr<View> view_;
@@ -472,28 +491,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
   std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
 #endif
-
-  void SetShowContextMenu(bool show_context_menu);
-
-  // Prune/Unprune all descendant views from the accessibility tree. We prune
-  // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
-  // The view is focusable and lacks focusable descendants (e.g. a button with a
-  // label and/or an image).
-  void PruneSubtree();
-  void UnpruneSubtree();
-
-  void SetState(ax::mojom::State state, bool is_enabled);
-
-  // Updates the ignored state of the `data_` object.
-  // The view is considered ignored if it should be ignored as per
-  // `should_be_ignored_`, or if it has been pruned (`pruned_`), or if its role
-  // is 'kNone'.
-  void UpdateIgnoredState();
-
-  // Updates the invisible state of the `data_` object.
-  // The view is considered invisible if it is not visible
-  // (`!view_->GetVisible()`) and its role is not 'kAlert'.
-  void UpdateInvisibleState();
 
   bool ignore_missing_widget_for_testing_ = false;
 };
