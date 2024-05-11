@@ -16,6 +16,8 @@
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
+class SkCanvas;
+
 namespace blink {
 class WebInputEvent;
 class WebMouseEvent;
@@ -33,6 +35,9 @@ class InkModule {
   ~InkModule();
 
   bool enabled() const { return enabled_; }
+
+  // Draws `ink_strokes_` and `ink_inputs_` into `canvas`.
+  void Draw(SkCanvas& canvas);
 
   // Returns whether the event was handled or not.
   bool HandleInputEvent(const blink::WebInputEvent& event);

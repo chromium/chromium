@@ -487,6 +487,14 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     canvas->scale(snapshot_scale_, snapshot_scale_);
 
   canvas->drawImage(snapshot_, 0, 0);
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_) {
+    // TODO(crbug.com/335524380): Use a real canvas.
+    SkCanvas placeholder_canvas(rect.width(), rect.height());
+    ink_module_->Draw(placeholder_canvas);
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,

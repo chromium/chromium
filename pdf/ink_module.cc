@@ -76,6 +76,28 @@ InkModule::InkModule() {
 
 InkModule::~InkModule() = default;
 
+void InkModule::Draw(SkCanvas& canvas) {
+  auto stroke = InkInProgressStroke::Create();
+  // TODO(crbug.com/339682315): This should not fail with the wrapper.
+  if (!stroke) {
+    return;
+  }
+
+  std::unique_ptr<InkBrush> brush = CreateBrush();
+  CHECK(brush);
+  stroke->Start(*brush);
+  auto input_batch = InkStrokeInputBatch::Create(ink_inputs_);
+  CHECK(input_batch);
+  bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
+  CHECK(enqueue_results);
+  stroke->FinishInputs();
+  bool update_results = stroke->UpdateShape(0);
+  CHECK(update_results);
+
+  // TODO(crbug.com/335524380): Draw with InkSkiaRenderer. Add more parameters
+  // as needed.
+}
+
 bool InkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   if (!enabled()) {
     return false;
