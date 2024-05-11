@@ -140,6 +140,10 @@ class PdfViewerStreamManager
   bool IsPdfExtensionFrameTreeNodeId(content::RenderFrameHost* embedder_host,
                                      int frame_tree_node_id);
 
+  // Returns true if `embedder_host` has a PDF extension frame and it has
+  // already finished its navigation, false otherwise.
+  bool DidPdfExtensionFinishNavigation(content::RenderFrameHost* embedder_host);
+
   // Returns true if `render_frame_host` is a content host for a PDF. During a
   // PDF load, the initial RFH for the content frame attempts to navigate to the
   // stream URL. Another RFH will then be chosen to host the content frame. This
@@ -152,6 +156,10 @@ class PdfViewerStreamManager
   // content frame under `embedder_host`, false otherwise.
   bool IsPdfContentFrameTreeNodeId(content::RenderFrameHost* embedder_host,
                                    int frame_tree_node_id);
+
+  // Returns true if `embedder_host` has a PDF content frame and it has already
+  // finished its navigation, false otherwise.
+  bool DidPdfContentNavigate(content::RenderFrameHost* embedder_host);
 
   // Returns whether the PDF plugin should handle save events.
   bool PluginCanSave(content::RenderFrameHost* embedder_host);
@@ -211,6 +219,10 @@ class PdfViewerStreamManager
 
     extensions::StreamContainer* stream() { return stream_.get(); }
 
+    bool did_extension_finish_navigation() const {
+      return did_extension_finish_navigation_;
+    }
+
     const mojo::AssociatedRemote<
         extensions::mojom::MimeHandlerViewContainerManager>&
     mime_handler_view_container_manager() const {
@@ -225,6 +237,8 @@ class PdfViewerStreamManager
     }
 
     int32_t instance_id() const { return instance_id_; }
+
+    void SetDidExtensionFinishNavigation();
 
     bool DidPdfExtensionStartNavigation() const;
 
@@ -260,6 +274,10 @@ class PdfViewerStreamManager
     // A container for the PDF stream. Holds data needed to load the PDF in the
     // PDF viewer.
     const std::unique_ptr<extensions::StreamContainer> stream_;
+
+    // True if the extension host has finished navigating to the PDF extension
+    // URL.
+    bool did_extension_finish_navigation_ = false;
 
     // The container manager used to provide postMessage support.
     mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>

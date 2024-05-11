@@ -94,6 +94,11 @@ PdfViewerStreamManager::StreamInfo::StreamInfo(
 
 PdfViewerStreamManager::StreamInfo::~StreamInfo() = default;
 
+void PdfViewerStreamManager::StreamInfo::SetDidExtensionFinishNavigation() {
+  CHECK(!did_extension_finish_navigation_);
+  did_extension_finish_navigation_ = true;
+}
+
 bool PdfViewerStreamManager::StreamInfo::DidPdfExtensionStartNavigation()
     const {
   return !!extension_host_frame_tree_node_id_;
@@ -200,6 +205,16 @@ bool PdfViewerStreamManager::IsPdfExtensionFrameTreeNodeId(
   return frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
 }
 
+bool PdfViewerStreamManager::DidPdfExtensionFinishNavigation(
+    content::RenderFrameHost* embedder_host) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return false;
+  }
+
+  return stream_info->did_extension_finish_navigation();
+}
+
 bool PdfViewerStreamManager::IsPdfContentHost(
     content::RenderFrameHost* render_frame_host) {
   // The PDF content host should always have a parent host.
@@ -230,6 +245,16 @@ bool PdfViewerStreamManager::IsPdfContentFrameTreeNodeId(
   }
 
   return frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
+}
+
+bool PdfViewerStreamManager::DidPdfContentNavigate(
+    content::RenderFrameHost* embedder_host) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return false;
+  }
+
+  return stream_info->DidPdfContentNavigate();
 }
 
 bool PdfViewerStreamManager::PluginCanSave(
@@ -402,6 +427,31 @@ void PdfViewerStreamManager::DidFinishNavigation(
     return;
   }
 
+  // The rest of the method handles the extension host. The parent host should
+  // be the tracked embedder host.
+  content::RenderFrameHost* embedder_host = navigation_handle->GetParentFrame();
+  if (!embedder_host) {
+    return;
+  }
+
+  // The `StreamInfo` should already have been claimed by the time the extension
+  // host navigates.
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return;
+  }
+
+  // If the extension host has already started its navigation to the PDF
+  // extension URL, set the extension as finished navigating, ignoring other
+  // children of the embedder host.
+  if (stream_info->DidPdfExtensionStartNavigation()) {
+    if (stream_info->extension_host_frame_tree_node_id() ==
+        navigation_handle->GetFrameTreeNodeId()) {
+      stream_info->SetDidExtensionFinishNavigation();
+    }
+    return;
+  }
+
   // During PDF navigation, in the embedder host, an about:blank embed is
   // inserted in a synthetic HTML document as a placeholder for the PDF
   // extension. Navigate the about:blank embed to the PDF extension URL to load
@@ -410,25 +460,9 @@ void PdfViewerStreamManager::DidFinishNavigation(
     return;
   }
 
-  // Ignore any `content::RenderFrameHost`s that aren't the expected PDF
-  // about:blank host. The parent frame should be the tracked embedder
-  // frame.
   content::RenderFrameHost* about_blank_host =
       navigation_handle->GetRenderFrameHost();
   if (!about_blank_host) {
-    return;
-  }
-
-  content::RenderFrameHost* embedder_host = about_blank_host->GetParent();
-  if (!embedder_host) {
-    return;
-  }
-
-  // The `StreamInfo` should already have been claimed. Ignore if the extension
-  // host has already navigated, to avoid multiple about:blanks navigating to
-  // the extension URL.
-  auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!stream_info || stream_info->DidPdfExtensionStartNavigation()) {
     return;
   }
 

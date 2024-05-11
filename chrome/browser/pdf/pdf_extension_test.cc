@@ -4023,6 +4023,54 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
   TestBlockNavigationInContentHost(other_url);
 }
 
+// Test that after the PDF load in a full page PDF, the PDF extension frame
+// cannot re-navigate to the PDF extension URL and the PDF content frame cannot
+// re-navigate to the PDF URL.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       SameUrlNavigationFullPage) {
+  // Load a direct PDF URL full page.
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+
+  // Using an empty `GURL` will trigger a navigation to the same URL.
+  ASSERT_TRUE(LoadPdf(pdf_url));
+  TestBlockNavigationInExtensionHost(GURL());
+
+  ASSERT_TRUE(LoadPdf(pdf_url));
+  TestBlockNavigationInContentHost(GURL());
+}
+
+// Test that after the PDF load in an embed-embedded PDF, the PDF extension
+// frame cannot re-navigate to the PDF extension URL and the PDF content frame
+// cannot re-navigate to the PDF URL.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       SameUrlNavigationEmbed) {
+  // Load the HTML containing an embed embedding a PDF.
+  const GURL url = embedded_test_server()->GetURL("/pdf/pdf_embed.html");
+
+  // Using an empty `GURL` will trigger a navigation to the same URL.
+  ASSERT_TRUE(LoadPdfInFirstChild(url));
+  TestBlockNavigationInExtensionHost(GURL());
+
+  ASSERT_TRUE(LoadPdfInFirstChild(url));
+  TestBlockNavigationInContentHost(GURL());
+}
+
+// Test that after the PDF load in an iframe-embedded PDF, the PDF extension
+// frame cannot re-navigate to the PDF extension URL and the PDF content frame
+// cannot re-navigate to the PDF URL.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifBlockPdfFrameNavigationTest,
+                       SameUrlNavigationIframe) {
+  // Load the HTML containing an iframe embedding a PDF.
+  const GURL url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
+
+  // Using an empty `GURL` will trigger a navigation to the same URL.
+  ASSERT_TRUE(LoadPdfInFirstChild(url));
+  TestBlockNavigationInExtensionHost(GURL());
+
+  ASSERT_TRUE(LoadPdfInFirstChild(url));
+  TestBlockNavigationInContentHost(GURL());
+}
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);

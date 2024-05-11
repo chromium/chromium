@@ -247,10 +247,12 @@ bool ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation(
   if (stream) {
     // Allow navigations for unrelated frames, which might be injected by
     // unrelated extensions. Only allow the PDF extension frame to navigate to
-    // the extension URL.
+    // the extension URL once.
     return !pdf_viewer_stream_manager->IsPdfExtensionFrameTreeNodeId(
                parent_frame, frame_tree_node_id) ||
-           url == stream->handler_url();
+           (!pdf_viewer_stream_manager->DidPdfExtensionFinishNavigation(
+                parent_frame) &&
+            url == stream->handler_url());
   }
 
   // If this navigation is for a PDF content frame, then there should be a
@@ -269,8 +271,10 @@ bool ChromePdfStreamDelegate::ShouldAllowPdfFrameNavigation(
 
   // Allow navigations for unrelated frames, which might be injected by
   // unrelated extensions. Only allow the PDF content frame to navigate to the
-  // original PDF URL.
+  // original PDF URL once.
   return !pdf_viewer_stream_manager->IsPdfContentFrameTreeNodeId(
              grandparent_frame, frame_tree_node_id) ||
-         url == stream->original_url();
+         (!pdf_viewer_stream_manager->DidPdfContentNavigate(
+              grandparent_frame) &&
+          url == stream->original_url());
 }
