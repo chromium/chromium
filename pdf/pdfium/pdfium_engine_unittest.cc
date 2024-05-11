@@ -874,16 +874,13 @@ TEST_P(PDFiumEngineTest, CtrlLeftClickShouldNotSelectTextOnMac) {
   MouseEventBuilder builder;
   builder.CreateLeftClickAtPosition(kStartPosition)
       .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
-  // TODO(crbug.com/339681892): Should return false.
-  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
+  EXPECT_FALSE(engine->HandleInputEvent(builder.Build()));
 
   constexpr gfx::PointF kEndPosition(100, 110);
-  // TODO(crbug.com/339681892): Should return false.
-  EXPECT_TRUE(engine->HandleInputEvent(
+  EXPECT_FALSE(engine->HandleInputEvent(
       CreateMoveWebMouseEventToPosition(kEndPosition)));
 
-  // TODO(crbug.com/339681892): Should return an empty string.
-  EXPECT_EQ("Goodb", engine->GetSelectedText());
+  EXPECT_EQ("", engine->GetSelectedText());
 }
 #else
 TEST_P(PDFiumEngineTest, CtrlLeftClickSelectTextOnNonMac) {

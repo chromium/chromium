@@ -316,11 +316,15 @@ bool IsSelectableArea(PDFiumPage::Area area) {
 blink::WebMouseEvent NormalizeMouseEvent(const blink::WebMouseEvent& event) {
   blink::WebMouseEvent normalized_event = event;
 #if BUILDFLAG(IS_MAC)
-  if ((event.GetModifiers() & blink::WebInputEvent::Modifiers::kControlKey) &&
+  using Modifiers = blink::WebInputEvent::Modifiers;
+  if ((event.GetModifiers() & Modifiers::kControlKey) &&
       event.button == blink::WebPointerProperties::Button::kLeft &&
       event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
-    normalized_event.SetModifiers(
-        event.GetModifiers() & ~blink::WebInputEvent::Modifiers::kControlKey);
+    constexpr int kUnsetModifiers =
+        Modifiers::kControlKey | Modifiers::kLeftButtonDown;
+    normalized_event.SetModifiers((event.GetModifiers() & ~kUnsetModifiers) |
+                                  Modifiers::kRightButtonDown);
+    normalized_event.button = blink::WebPointerProperties::Button::kRight;
   }
 #endif
   return normalized_event;
@@ -1200,13 +1204,14 @@ PDFiumPage::Area PDFiumEngine::GetCharIndex(const gfx::Point& point,
 }
 
 bool PDFiumEngine::OnMouseDown(const blink::WebMouseEvent& event) {
-  switch (event.button) {
+  blink::WebMouseEvent normalized_event = NormalizeMouseEvent(event);
+  switch (normalized_event.button) {
     case blink::WebPointerProperties::Button::kLeft:
-      return OnLeftMouseDown(NormalizeMouseEvent(event));
+      return OnLeftMouseDown(normalized_event);
     case blink::WebPointerProperties::Button::kMiddle:
-      return OnMiddleMouseDown(NormalizeMouseEvent(event));
+      return OnMiddleMouseDown(normalized_event);
     case blink::WebPointerProperties::Button::kRight:
-      return OnRightMouseDown(NormalizeMouseEvent(event));
+      return OnRightMouseDown(normalized_event);
     default:
       return false;
   }
