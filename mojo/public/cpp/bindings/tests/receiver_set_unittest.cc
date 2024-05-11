@@ -201,6 +201,21 @@ TEST_P(ReceiverSetTest, ReceiverSetMutableContext) {
   }
 }
 
+TEST_P(ReceiverSetTest, ReceiverSetGetContext) {
+  PingImpl impl;
+
+  ReceiverSet<PingService, int> receivers;
+  Remote<PingService> ping_a, ping_b;
+  ReceiverId receiver_a =
+      receivers.Add(&impl, ping_a.BindNewPipeAndPassReceiver(), 1);
+  ReceiverId receiver_b =
+      receivers.Add(&impl, ping_b.BindNewPipeAndPassReceiver(), 2);
+
+  EXPECT_EQ(1, *receivers.GetContext(receiver_a));
+  EXPECT_EQ(2, *receivers.GetContext(receiver_b));
+  EXPECT_EQ(nullptr, receivers.GetContext(receiver_b + 1));
+}
+
 TEST_P(ReceiverSetTest, ReceiverSetDispatchReceiver) {
   PingImpl impl;
 
