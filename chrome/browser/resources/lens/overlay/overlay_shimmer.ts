@@ -64,11 +64,11 @@ interface CircleProperties {
 // The colors of the different circles that compose the shimmer. One circle
 // will be generated for each color hex in this array.
 export const COLOR_HEXES = [
-  '#88A9FF',
-  '#E5EDFF',
-  '#FDACEE',
-  '#5B8CFF',
   '#0B57D0',
+  '#5B8CFF',
+  '#FDACEE',
+  '#E5EDFF',
+  '#88A9FF',
 ];
 
 // INVOCATION CONSTANTS: These are the values that the circles will have on
@@ -144,6 +144,9 @@ const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = '40%';
 // selection state.
 const REGION_SELECTION_STATE_FOCUS_DURATION = 750;
 
+// The time (in MS) to wait between updating the sparkle seed.
+const SPARKLE_MOTION_TIMEOUT_MS = 100;
+
 // Specifies which feature is requesting to control the Shimmer. Features are
 // ordered by priority, meaning requesters with higher enum values can take
 // control from lower value requesters, but not vice versa. For example, if
@@ -200,6 +203,7 @@ export class OverlayShimmerElement extends PolymerElement {
       circles: Array,
       isSteadyState: Boolean,
       isWiggling: Boolean,
+      sparkleSeed: Number,
     };
   }
 
@@ -209,6 +213,8 @@ export class OverlayShimmerElement extends PolymerElement {
   private isSteadyState: boolean = true;
   // Whether the circles should be applying wiggle.
   private isWiggling: boolean = true;
+  // The current seed of the sparkling noise.
+  private sparkleSeed: number = 0;
 
   // Event tracker for receiving DOM events.
   private eventTracker_: EventTracker = new EventTracker();
@@ -229,6 +235,8 @@ export class OverlayShimmerElement extends PolymerElement {
   private lastAnimation?: Animation;
   // Whether the results are showing or not.
   private areResultsShowing: boolean = false;
+  // The time stamp in MS of the last time the sparkles were animated.
+  private lastSparkleTime: number = 0;
 
   // Listener ids for events from the browser side.
   private listenerIds: number[];
@@ -291,6 +299,9 @@ export class OverlayShimmerElement extends PolymerElement {
     // Circle blur does not animate on invocation.
     this.style.setProperty('--shimmer-circle-blur', STEADY_STATE_CIRCLE_BLUR);
 
+    // Start the random noise generation of the seed.
+    this.startSparkles();
+
     // Allow the above styles to take effect.
     requestAnimationFrame(() => {
       const centerXOffsetInt = parseInt(STEADY_STATE_CENTER_X_PERCENT_OFFSET);
@@ -307,6 +318,20 @@ export class OverlayShimmerElement extends PolymerElement {
       // Animate to the steady state.
       this.transitionToSteadyState();
     });
+  }
+
+  private startSparkles() {
+    this.updateSparkles(0);
+  }
+
+  private updateSparkles(time: number) {
+    const delta = time - this.lastSparkleTime;
+    if (delta > SPARKLE_MOTION_TIMEOUT_MS) {
+      this.lastSparkleTime = time;
+      this.sparkleSeed = Math.floor(Math.random() * 10);
+    }
+
+    requestAnimationFrame(this.updateSparkles.bind(this));
   }
 
   private onFocusRegion(e: CustomEvent<OverlayShimmerFocusedRegion>) {

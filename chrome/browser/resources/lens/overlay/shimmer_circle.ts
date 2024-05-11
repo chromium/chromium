@@ -116,15 +116,6 @@ export class ShimmerCircleElement extends PolymerElement {
           fill: 'forwards',
         });
     this.steadyStateAnimation = animation;
-
-    // Animation styles do not get automatically applied as CSS styles. Since
-    // animation styles take precedence over CSS styles, leaving a finished
-    // animation is bad practice as it can lead to weird issues where the CSS
-    // property is not being applied due to a finished animation. Therefore, we
-    // need to commit the styles and cleanup the animation.
-    await animation.finished;
-    animation.commitStyles();
-    animation.cancel();
   }
 
   private unfocusSteadyState() {

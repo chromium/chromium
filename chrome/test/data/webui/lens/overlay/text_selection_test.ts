@@ -55,6 +55,10 @@ suite('TextSelection', function() {
     loadTimeData.overrideValues(
         {'verticalTextMarginPx': 0, 'horizontalTextMarginPx': 0});
 
+    // Turn off the shimmer. Since the shimmer is resource intensive, turn off
+    // to prevent from causing issues in the tests.
+    loadTimeData.overrideValues({'enableShimmer': false});
+
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
     // Since the size of the Selection Overlay is based on the screenshot which

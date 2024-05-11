@@ -4,12 +4,12 @@
 
 import 'chrome-untrusted://lens/selection_overlay.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
@@ -38,6 +38,10 @@ suite('ManualRegionSelection', function() {
       ['tapRegionWidth']: TAP_REGION_WIDTH,
       ['tapRegionHeight']: TAP_REGION_HEIGHT,
     });
+
+    // Turn off the shimmer. Since the shimmer is resource intensive, turn off
+    // to prevent from causing issues in the tests.
+    loadTimeData.overrideValues({'enableShimmer': false});
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
