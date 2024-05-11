@@ -377,6 +377,7 @@ public class LocationBarMediatorTest {
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setDisplayText("text")
                         .setInlineAutocompletion("textWithAutocomplete")
+                        .setAdditionalText("additionalText")
                         .setIsSearch(false)
                         .setAllowedToBeDefaultMatch(true)
                         .build());
@@ -390,7 +391,8 @@ public class LocationBarMediatorTest {
                         profile,
                         mTab);
         verify(mStatusCoordinator).onDefaultMatchClassified(false);
-        verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
+        verify(mUrlCoordinator)
+                .setAutocompleteText("text", "textWithAutocomplete", "additionalText");
     }
 
     @Test
@@ -400,7 +402,7 @@ public class LocationBarMediatorTest {
 
         mMediator.onSuggestionsChanged(null);
         verify(mStatusCoordinator).onDefaultMatchClassified(true);
-        verify(mUrlCoordinator).setAutocompleteText("text", "");
+        verify(mUrlCoordinator).setAutocompleteText("text", null, null);
     }
 
     @Test

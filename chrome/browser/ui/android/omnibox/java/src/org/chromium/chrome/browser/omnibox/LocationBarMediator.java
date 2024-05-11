@@ -504,7 +504,9 @@ class LocationBarMediator
                         (defaultMatch != null ? defaultMatch.isSearchSuggestion() : true));
         if (mUrlCoordinator.shouldAutocomplete()) {
             mUrlCoordinator.setAutocompleteText(
-                    userText, defaultMatch != null ? defaultMatch.getInlineAutocompletion() : "");
+                    userText,
+                    defaultMatch != null ? defaultMatch.getInlineAutocompletion() : null,
+                    defaultMatch != null ? defaultMatch.getAdditionalText() : null);
         }
 
         // Handle the case where suggestions (in particular zero suggest) are received without the

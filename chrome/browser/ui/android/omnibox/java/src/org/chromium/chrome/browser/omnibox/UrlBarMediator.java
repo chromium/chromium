@@ -13,6 +13,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -197,15 +198,20 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      *
      * @param userText The existing user text.
      * @param autocompleteText The text to be appended to the user text.
+     * @param additionalText This string is displayed adjacent to the omnibox if this match is the
+     *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
-    public void setAutocompleteText(String userText, String autocompleteText) {
+    public void setAutocompleteText(
+            @NonNull String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText) {
         if (!mHasFocus) {
             assert false : "Should not update autocomplete text when not focused";
             return;
         }
         mModel.set(
                 UrlBarProperties.AUTOCOMPLETE_TEXT,
-                new AutocompleteText(userText, autocompleteText));
+                new AutocompleteText(userText, autocompleteText, additionalText));
     }
 
     private void onUrlFocusChange(boolean focus) {

@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.omnibox;
 import android.graphics.Typeface;
 import android.view.ActionMode;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
@@ -68,14 +71,24 @@ class UrlBarProperties {
     /** Contains the necessary information to display inline autocomplete text. */
     static class AutocompleteText {
         /** The text preceding the autocomplete text (typically entered by the user). */
-        public final String userText;
+        @NonNull public final String userText;
 
         /** The inline autocomplete text to be appended to the end of the user text. */
-        public final String autocompleteText;
+        @Nullable public final String autocompleteText;
 
-        public AutocompleteText(String userText, String autocompleteText) {
+        /**
+         * This string is displayed adjacent to the omnibox if this match is the default. Will
+         * usually be URL when autocompleting a title, and empty otherwise.
+         */
+        @Nullable public final String additionalText;
+
+        public AutocompleteText(
+                @NonNull String userText,
+                @Nullable String autocompleteText,
+                @Nullable String additionalText) {
             this.userText = userText;
-            this.autocompleteText = autocompleteText;
+            this.autocompleteText = autocompleteText != null ? autocompleteText : "";
+            this.additionalText = additionalText;
         }
 
         @Override

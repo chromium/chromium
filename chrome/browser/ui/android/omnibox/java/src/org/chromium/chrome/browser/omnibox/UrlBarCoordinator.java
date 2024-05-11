@@ -134,10 +134,13 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setAutocompleteText(String, String)
+     * @see UrlBarMediator#setAutocompleteText(String, String, String)
      */
-    public void setAutocompleteText(String userText, String autocompleteText) {
-        mMediator.setAutocompleteText(userText, autocompleteText);
+    public void setAutocompleteText(
+            @NonNull String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText) {
+        mMediator.setAutocompleteText(userText, autocompleteText, additionalText);
     }
 
     /**
