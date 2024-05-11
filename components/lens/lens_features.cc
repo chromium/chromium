@@ -95,6 +95,11 @@ constexpr base::FeatureParam<bool>
     kUseSearchContextForTextOnlyLensOverlayRequests{
         &kLensOverlay, "use-search-context-for-text-only-requests", false};
 
+constexpr base::FeatureParam<int> kLensOverlayTapRegionHeight{
+    &kLensOverlay, "tap-region-height", 300};
+constexpr base::FeatureParam<int> kLensOverlayTapRegionWidth{
+    &kLensOverlay, "tap-region-width", 300};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -300,6 +305,14 @@ bool IsLensOverlayGoogleDseRequired() {
 
 std::string GetLensOverlayResultsSearchLoadingURL() {
   return kResultsSearchLoadingUrl.Get();
+}
+
+int GetLensOverlayTapRegionHeight() {
+  return kLensOverlayTapRegionHeight.Get();
+}
+
+int GetLensOverlayTapRegionWidth() {
+  return kLensOverlayTapRegionWidth.Get();
 }
 
 }  // namespace lens::features

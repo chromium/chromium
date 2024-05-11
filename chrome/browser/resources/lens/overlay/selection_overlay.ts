@@ -375,9 +375,13 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         // This gesture was a tap. Let the features respond to a tap.
         if (this.draggingRespondent === DragFeature.TEXT) {
           this.$.textSelectionLayer.handleUpGesture();
-        } else {
-          this.$.objectSelectionLayer.handleUpGesture(this.currentGesture);
+          break;
+        } else if (this.$.objectSelectionLayer.handleUpGesture(
+                       this.currentGesture)) {
+          break;
         }
+
+        this.$.regionSelectionLayer.handleUpGesture(this.currentGesture);
         break;
       default:  // Other states are invalid and ignored.
         break;

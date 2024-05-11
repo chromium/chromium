@@ -60,6 +60,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
                           lens::features::GetLensOverlayVerticalTextMargin());
   html_source->AddInteger("horizontalTextMarginPx",
                           lens::features::GetLensOverlayHorizontalTextMargin());
+  html_source->AddInteger("tapRegionHeight",
+                          lens::features::GetLensOverlayTapRegionHeight());
+  html_source->AddInteger("tapRegionWidth",
+                          lens::features::GetLensOverlayTapRegionWidth());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

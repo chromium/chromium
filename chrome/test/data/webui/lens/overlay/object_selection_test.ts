@@ -91,12 +91,6 @@ suite('ObjectSelection', function() {
         assertBoxesWithinThreshold(objects[1]!.geometry.boundingBox, rect);
       });
 
-  test(`verify that tapping off an object does nothing`, async () => {
-    await simulateClick(selectionOverlayElement, {x: 120, y: 35});
-
-    assertEquals(0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
-  });
-
   test(
       `verify that smaller objects have priority over larger objects`,
       async () => {

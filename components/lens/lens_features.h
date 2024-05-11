@@ -288,6 +288,15 @@ extern bool IsLensOverlayGoogleDseRequired();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayResultsSearchLoadingURL();
 
+// Returns the ideal height of the region that is created when a user taps
+// rather than drags.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayTapRegionHeight();
+
+// Returns the ideal width of the region that is created when a user taps
+// rather than drags.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayTapRegionWidth();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
