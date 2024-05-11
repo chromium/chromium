@@ -210,10 +210,10 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   hideVerticalLines: boolean;
   usingRoutineGroups: boolean;
   ignoreRoutineStatusUpdates: boolean;
-  private announcedText: string;
+  announcedText: string;
+  currentTestName: string;
   private routineStartTimeMs: number;
   private executionStatus: ExecutionProgress;
-  private currentTestName: string;
   private powerRoutineResult: PowerRoutineResult;
   private badgeType: BadgeType;
   private badgeText: string;
@@ -458,7 +458,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   /**
    * Sets status texts for remaining runtime while the routine runs.
    */
-  private setRunningStatusBadgeText(): void {
+  setRunningStatusBadgeText(): void {
     // Routines that are longer than 5 minutes are considered large
     const largeRoutine = this.routineRuntime >= 5;
 
