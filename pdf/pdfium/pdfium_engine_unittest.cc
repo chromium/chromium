@@ -835,6 +835,82 @@ TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, SelectTextWithMouse) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kStartPosition(50, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_P(PDFiumEngineTest, CtrlLeftClickShouldNotSelectTextOnMac) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  // In https://crbug.com/339681892, these are the events PDFiumEngine sees.
+  constexpr gfx::PointF kStartPosition(50, 110);
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  // TODO(crbug.com/339681892): Should return false.
+  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  // TODO(crbug.com/339681892): Should return false.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  // TODO(crbug.com/339681892): Should return an empty string.
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+#else
+TEST_P(PDFiumEngineTest, CtrlLeftClickSelectTextOnNonMac) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kStartPosition(50, 110);
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
+
+  constexpr gfx::PointF kEndPosition(100, 110);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
