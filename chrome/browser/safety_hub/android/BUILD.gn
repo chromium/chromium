@@ -6,8 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
+  ]
 }
 
 android_library("java") {
@@ -19,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
   ]
   deps = [
     ":java_resources",
@@ -115,7 +118,11 @@ source_set("unit_tests") {
     ":android",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/permissions:permissions_common",
+    "//content/test:test_support",
   ]
 }
 

@@ -9,9 +9,13 @@
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/constants.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::android::AttachCurrentThread;
@@ -31,10 +35,32 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
  public:
   UnusedSitePermissionsBridgeTest() : env_(AttachCurrentThread()) {}
 
+  void SetUp() override {
+    hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
+  }
+
+  void AddRevokedPermissions() {
+    base::Value::List revoked_permissions_list;
+    for (ContentSettingsType type : kUnusedPermissionList) {
+      revoked_permissions_list.Append(static_cast<int32_t>(type));
+    }
+    auto dict = base::Value::Dict().Set(permissions::kRevokedKey,
+                                        revoked_permissions_list.Clone());
+
+    hcsm_->SetWebsiteSettingDefaultScope(
+        GURL(kUnusedTestSite), GURL(kUnusedTestSite),
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        base::Value(dict.Clone()));
+  }
+
+  TestingProfile* profile() { return &testing_profile_; }
   raw_ptr<JNIEnv> env() { return env_; }
 
  private:
   raw_ptr<JNIEnv> env_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile testing_profile_;
+  scoped_refptr<HostContentSettingsMap> hcsm_;
 };
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
@@ -65,4 +91,14 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
   EXPECT_EQ(expected.constraints.expiration(),
             converted.constraints.expiration());
   EXPECT_EQ(expected.constraints.lifetime(), converted.constraints.lifetime());
+}
+
+TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {
+  AddRevokedPermissions();
+  std::vector<PermissionsData> revoked_permissions_list =
+      GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 1UL);
+
+  PermissionsData& permissions_data = revoked_permissions_list[0];
+  EXPECT_EQ(permissions_data.permission_types, kUnusedPermissionList);
 }

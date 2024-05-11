@@ -6,9 +6,15 @@
 
 #include <jni.h>
 
+#include <vector>
+
+#include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "chrome/browser/safety_hub/android/jni_headers/PermissionsData_jni.h"
+#include "chrome/browser/safety_hub/android/jni_headers/UnusedSitePermissionsBridge_jni.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -64,4 +70,20 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
       env, obj.origin.ToString(), permissions,
       obj.constraints.expiration().ToDeltaSinceWindowsEpoch().InMicroseconds(),
       obj.constraints.lifetime().InMicroseconds());
+}
+
+std::vector<PermissionsData> GetRevokedPermissions(Profile* profile) {
+  UnusedSitePermissionsService* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(profile);
+  CHECK(service);
+  const auto service_result =
+      service->GetRevokedPermissions()->GetRevokedPermissions();
+  return std::vector<PermissionsData>(service_result.begin(),
+                                      service_result.end());
+}
+
+static std::vector<PermissionsData>
+JNI_UnusedSitePermissionsBridge_GetRevokedPermissions(JNIEnv* env,
+                                                      Profile* profile) {
+  return GetRevokedPermissions(profile);
 }
