@@ -185,7 +185,7 @@
     <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
-    <ph name="BEGIN_LINK">&lt;a href="#" id="signInLink" role="button"&gt;</ph>Sign in<ph name="END_LINK">&lt;/a&gt;</ph> 
+    <ph name="BEGIN_LINK">&lt;a href="#" id="signInLink" role="button"&gt;</ph>Sign in<ph name="END_LINK">&lt;/a&gt;</ph>
     again, then come back to this tab to get writing help
   </message>
   <message name="IDS_COMPOSE_ERROR_REQUEST_THROTTLED" desc="Error that the request was throttled.">
