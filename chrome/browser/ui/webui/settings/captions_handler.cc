@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
+#include <unordered_set>
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -21,7 +22,6 @@
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -156,11 +156,24 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 }
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
-  auto enabled_languages = speech::GetLiveCaptionEnabledLanguages();
+  std::vector<std::string> enabled_and_available_languages;
   std::vector<base::Value::Dict> available_language_packs;
+  {
+    auto enabled_languages = speech::GetLiveCaptionEnabledLanguages();
+    auto available_languages =
+        speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
+    auto available_languages_set = std::unordered_set<std::string>(
+        available_languages.begin(), available_languages.end());
+    for (const auto& enabled_language : enabled_languages) {
+      if (available_languages_set.find(enabled_language) !=
+          available_languages_set.end()) {
+        enabled_and_available_languages.push_back(enabled_language);
+      }
+    }
+  }
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
-        base::Contains(enabled_languages, config.language_name)) {
+        base::Contains(enabled_and_available_languages, config.language_name)) {
       base::Value::Dict available_language_pack;
       available_language_pack.Set(kCodeKey, config.language_name);
       available_language_pack.Set(

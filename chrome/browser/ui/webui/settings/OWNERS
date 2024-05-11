@@ -23,3 +23,4 @@ per-file settings_secure_dns_handler.*=awillia@chromium.org,ericorth@chromium.or
 per-file settings_security_key_handler*=file://device/fido/OWNERS
 
 per-file performance_*=file://chrome/browser/ui/performance_controls/OWNERS
+per-file captions_handler*=evliu@google.com
