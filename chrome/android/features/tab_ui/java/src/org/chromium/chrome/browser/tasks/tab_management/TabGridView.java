@@ -235,9 +235,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
     // SelectableItemViewBase implementation.
 
     @Override
-    protected void onClick() {
-        super.onClick(this);
-    }
+    protected void onClick() {}
 
     @Override
     protected void updateView(boolean animate) {}

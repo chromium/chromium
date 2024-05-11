@@ -271,7 +271,7 @@ class TabGridViewBinder {
             view.setOnClickListener(
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        ((TabGridView) view).onClick();
+                        ((TabGridView) view).onClick(view);
                     });
             view.setOnLongClickListener(
                     v -> {

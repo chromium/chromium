@@ -266,7 +266,7 @@ class TabListViewBinder {
             View.OnClickListener onClickListener =
                     v -> {
                         model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                        tabListView.onClick();
+                        tabListView.onClick(tabListView);
                     };
             View.OnLongClickListener onLongClickListener =
                     v -> {
