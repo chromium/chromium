@@ -1,6 +1,13 @@
-<!-- #html_wrapper_imports_start
-import type {ComboboxGroup, ComboboxItem} from './customize_chrome_combobox.js';
-#html_wrapper_imports_end -->
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ComboboxGroup, ComboboxItem, CustomizeChromeComboboxElement} from './customize_chrome_combobox.js';
+
+export function getHtml(this: CustomizeChromeComboboxElement) {
+  return html`<!--_html_template_start_-->
 <button id="input" class="md-select"
     role="combobox" tabindex="0"
     aria-controls="dropdown"
@@ -59,4 +66,5 @@ import type {ComboboxGroup, ComboboxItem} from './customize_chrome_combobox.js';
       `: ''}
     `)}
   </div>
-</div>
+</div><!--_html_template_end_-->`;
+}

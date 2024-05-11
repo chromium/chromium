@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {WallpaperSearchElement} from './wallpaper_search.js';
+
+export function getHtml(this: WallpaperSearchElement) {
+  return html`<!--_html_template_start_-->
 <div class="sp-card">
   <sp-heading id="heading" @back-button-click="${this.onBackClick_}"
       back-button-aria-label="$i18n{backButton}"
@@ -172,9 +182,12 @@ ${this.inspirationCardEnabled_ ? html`
         ${this.inspirationGroups_.map((item, groupIndex) => html`
           <h3>
             <div class="inspiration-title" role="button" tabindex="0"
-                data-index="${groupIndex}" @click="${this.onInspirationGroupTitleClick_}"
+                data-index="${groupIndex}"
+                @click="${this.onInspirationGroupTitleClick_}"
                 @keydown="${this.onButtonKeydown_}"
-                aria-current="${this.getInspirationDescriptorsCheckedStatus_(item.descriptors)}">
+                aria-current="${
+                      this.getInspirationDescriptorsCheckedStatus_(
+                          item.descriptors)}">
               ${this.getInspirationGroupTitle_(item.descriptors)}
             </div>
           </h3>
@@ -229,3 +242,5 @@ ${this.inspirationCardEnabled_ ? html`
     </cr-grid>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

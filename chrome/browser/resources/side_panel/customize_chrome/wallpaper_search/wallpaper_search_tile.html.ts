@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {WallpaperSearchTileElement} from './wallpaper_search_tile.js';
+
+export function getHtml(this: WallpaperSearchTileElement) {
+  return html`<!--_html_template_start_-->
 <svg id="light" width="154" height="154" viewBox="0 0 154 154" fill="none" xmlns="http://www.w3.org/2000/svg">
   <ellipse cx="43.5416" cy="22.329" rx="43.5416" ry="22.329" transform="matrix(-0.864094 -0.503331 -0.503331 0.864094 174.269 126.832)"
       fill="var(--color-sys-ai-illustration-shape-surface1)"></ellipse>
@@ -61,3 +71,5 @@
     </linearGradient>
   </defs>
 </svg>
+<!--_html_template_end_-->`;
+}
