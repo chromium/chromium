@@ -347,7 +347,9 @@ FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
     content::WebContents* web_contents,
     const url::Origin& origin,
     Usage usage)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
       origin_(origin),
       usage_(std::move(usage)),
       readable_paths_model_(std::move(usage_.readable_files),
@@ -474,12 +476,6 @@ void FileSystemAccessUsageBubbleView::CloseBubble() {
   // this. Additionally web_contents() may have been destroyed.
   bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
-}
-
-void FileSystemAccessUsageBubbleView::ChildPreferredSizeChanged(
-    views::View* child) {
-  LocationBarBubbleDelegateView::ChildPreferredSizeChanged(child);
-  SizeToContents();
 }
 
 BEGIN_METADATA(FileSystemAccessUsageBubbleView)

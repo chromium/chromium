@@ -77,7 +77,6 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   void Init() override;
   void WindowClosing() override;
   void CloseBubble() override;
-  void ChildPreferredSizeChanged(views::View* child) override;
 
   void OnDialogCancelled();
 
