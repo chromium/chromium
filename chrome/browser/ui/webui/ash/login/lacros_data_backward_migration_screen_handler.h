@@ -22,6 +22,13 @@ class LacrosDataBackwardMigrationScreenView {
 
   virtual void Show() = 0;
 
+  // Updates the progress bar.
+  // progress is a percentage.
+  virtual void SetProgressValue(int progress) = 0;
+
+  // Show an error message.
+  virtual void SetFailureStatus() = 0;
+
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<LacrosDataBackwardMigrationScreenView> AsWeakPtr() = 0;
 };
@@ -45,7 +52,8 @@ class LacrosDataBackwardMigrationScreenHandler final
 
   // LacrosDataBackwardMigrationScreenView:
   void Show() override;
-
+  void SetProgressValue(int progress) override;
+  void SetFailureStatus() override;
   base::WeakPtr<LacrosDataBackwardMigrationScreenView> AsWeakPtr() override;
 
  private:

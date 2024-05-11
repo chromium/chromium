@@ -8,8 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
-#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 
 namespace ash {
 
@@ -17,15 +15,8 @@ class LacrosDataBackwardMigrationScreenView;
 
 // A screen that shows loading spinner during user data is copied to lacros
 // directory. The screen is shown during login.
-class LacrosDataBackwardMigrationScreen
-    : public BaseScreen,
-      public screens_login::mojom::LacrosDataBackwardMigrationPageHandler,
-      public OobeMojoBinder<
-          screens_login::mojom::LacrosDataBackwardMigrationPageHandler,
-          screens_login::mojom::LacrosDataBackwardMigrationPage> {
+class LacrosDataBackwardMigrationScreen : public BaseScreen {
  public:
-  using TView = LacrosDataBackwardMigrationScreenView;
-
   explicit LacrosDataBackwardMigrationScreen(
       base::WeakPtr<LacrosDataBackwardMigrationScreenView> view);
   ~LacrosDataBackwardMigrationScreen() override;
@@ -41,9 +32,7 @@ class LacrosDataBackwardMigrationScreen
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-
-  // screens_login::mojom::LacrosDataBackwardMigrationPageHandler
-  void OnCancelButtonClicked() override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Updates progress during migration.
   void OnProgress(int percent);

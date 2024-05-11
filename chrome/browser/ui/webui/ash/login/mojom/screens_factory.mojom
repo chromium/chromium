@@ -5,7 +5,6 @@
 module ash.screens_factory.mojom;
 
 import "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom";
-import "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom";
 import "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom";
 
@@ -25,16 +24,6 @@ interface ScreensFactory {
   // connects it up to the PackagedLicensePage.
   CreatePackagedLicensePageHandler(
         pending_receiver<ash.screens_oobe.mojom.PackagedLicensePageHandler>
-            handler);
-
-  // ash.screens_login.mojom
-
-  // Creates a LacrosDataBackwardMigrationPageHandler and connects
-  // it up to the LacrosDataBackwardMigrationPage.
-  CreateLacrosDataBackwardMigrationScreenHandler(
-      pending_remote<ash.screens_login.mojom.LacrosDataBackwardMigrationPage>
-            page,
-      pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPageHandler>
             handler);
 
   // ash.screens_osauth.mojom

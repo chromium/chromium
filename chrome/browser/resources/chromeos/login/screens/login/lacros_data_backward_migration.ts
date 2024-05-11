@@ -20,8 +20,6 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
-import {LacrosDataBackwardMigrationPageCallbackRouter, LacrosDataBackwardMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
-import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './lacros_data_backward_migration.html.js';
 
@@ -63,22 +61,6 @@ export class LacrosDataBackwardMigrationScreen extends
   }
 
   private progressValue: number;
-  private callbackRouter: LacrosDataBackwardMigrationPageCallbackRouter;
-  private handler: LacrosDataBackwardMigrationPageHandlerRemote;
-
-  constructor() {
-    super();
-    this.callbackRouter = new LacrosDataBackwardMigrationPageCallbackRouter();
-    this.handler = new LacrosDataBackwardMigrationPageHandlerRemote();
-    OobeScreensFacotryBrowserProxy.getInstance()
-        .screenFactory.createLacrosDataBackwardMigrationScreenHandler(
-            this.callbackRouter.$.bindNewPipeAndPassRemote(),
-            this.handler.$.bindNewPipeAndPassReceiver());
-    this.callbackRouter.setProgressValue.addListener(
-        this.setProgressValue.bind(this));
-    this.callbackRouter.setFailureStatus.addListener(
-        this.setFailureStatus.bind(this));
-  }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): string {
@@ -89,6 +71,12 @@ export class LacrosDataBackwardMigrationScreen extends
     return LacrosDataBackwardMigrationStep;
   }
 
+  override get EXTERNAL_API(): string[] {
+    return [
+      'setProgressValue',
+      'setFailureStatus',
+    ];
+  }
 
   /**
    * Called when the migration failed.
@@ -111,7 +99,7 @@ export class LacrosDataBackwardMigrationScreen extends
   }
 
   private onCancelButtonClicked() {
-    this.handler.onCancelButtonClicked();
+    this.userActed('cancel');
   }
 }
 

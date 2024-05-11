@@ -7,14 +7,13 @@
 #include "base/check.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
-#include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
-#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 
@@ -65,20 +64,6 @@ void OobeScreensHandlerFactory::CreatePackagedLicensePageHandler(
       WizardController::default_controller()
           ->GetScreen<PackagedLicenseScreen>();
   packaged_license->BindReceiver(std::move(receiver));
-}
-
-void OobeScreensHandlerFactory::CreateLacrosDataBackwardMigrationScreenHandler(
-    mojo::PendingRemote<screens_login::mojom::LacrosDataBackwardMigrationPage>
-        page,
-    mojo::PendingReceiver<
-        screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
-        receiver) {
-  CHECK(WizardController::default_controller());
-  LacrosDataBackwardMigrationScreen* lacros_data_backward =
-      WizardController::default_controller()
-          ->GetScreen<LacrosDataBackwardMigrationScreen>();
-  lacros_data_backward->BindRemoteAndReceiver(std::move(page),
-                                              std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::CreateLocalDataLossWarningPageHandler(
