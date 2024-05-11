@@ -879,6 +879,12 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
     view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
     view_shadow_->SetRoundedCornerRadius(GetBubbleCornerRadius());
   }
+
+  if (current_page_ == AppListBubblePage::kAppsCollections) {
+    apps_collections_page_->RecordAboveTheFoldMetrics();
+  } else if (current_page_ == AppListBubblePage::kApps) {
+    apps_page_->RecordAboveTheFoldMetrics();
+  }
 }
 
 void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {

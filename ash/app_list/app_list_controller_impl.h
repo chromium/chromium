@@ -215,6 +215,10 @@ class ASH_EXPORT AppListControllerImpl
   int GetShelfSize() override;
   int GetSystemShelfInsetsInTabletMode() override;
   bool IsInTabletMode() const override;
+  void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) override;
 
   // Notifies observers of AppList visibility changes.
   void OnVisibilityChanged(bool visible, int64_t display_id);

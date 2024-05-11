@@ -562,4 +562,38 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, AppsVisibility) {
   EXPECT_EQ(1, GetTestAppListClient()->activate_item_below_the_fold());
 }
 
+// Verifies that apps visibility is correctly calculated.
+TEST_F(AppListBubbleAppsCollectionsPageTest, AppsVisibilityOnShow) {
+  // Create enough apps so that the launcher can be scrolled.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  views::ScrollView* scroll_view = apps_collections_page->scroll_view();
+
+  ASSERT_NE(scroll_view->GetVisibleBounds(),
+            scroll_view->contents()->GetLocalBounds());
+
+  AppsCollectionSectionView* entertainment_collection =
+      GetViewForCollection(AppCollection::kEntertainment);
+  ASSERT_TRUE(entertainment_collection);
+  ASSERT_EQ(entertainment_collection->GetItemViewCount(), 50u);
+
+  int apps_above = 0;
+  int apps_below = 0;
+
+  for (size_t index = 0; index < 50; index++) {
+    if (apps_collections_page->IsAboveTheFold(
+            GetAppItemAtIndex(entertainment_collection, index))) {
+      ++apps_above;
+    } else {
+      ++apps_below;
+    }
+  }
+
+  EXPECT_EQ(apps_above, GetTestAppListClient()->items_above_the_fold_count());
+  EXPECT_EQ(apps_below, GetTestAppListClient()->items_below_the_fold_count());
+}
+
 }  // namespace ash

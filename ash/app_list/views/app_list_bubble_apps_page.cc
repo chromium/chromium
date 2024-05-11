@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
@@ -1005,6 +1006,24 @@ void AppListBubbleAppsPage::OnToggleContinueSection() {
     SlideViewIntoPosition(scrollable_apps_grid_view_, vertical_offset, duration,
                           tween_type);
   }
+}
+
+void AppListBubbleAppsPage::RecordAboveTheFoldMetrics() {
+  std::vector<std::string> apps_above_the_fold = {};
+  std::vector<std::string> apps_below_the_fold = {};
+  for (size_t i = 0; i < scrollable_apps_grid_view_->view_model()->view_size();
+       ++i) {
+    AppListItemView* child_view =
+        scrollable_apps_grid_view_->view_model()->view_at(i);
+    if (scrollable_apps_grid_view_->IsAboveTheFold(child_view)) {
+      apps_above_the_fold.push_back(child_view->item()->id());
+    } else {
+      apps_below_the_fold.push_back(child_view->item()->id());
+    }
+  }
+  view_delegate_->RecordAppsDefaultVisibility(
+      std::move(apps_above_the_fold), std::move(apps_below_the_fold),
+      /*is_apps_collections_page=*/false);
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage)

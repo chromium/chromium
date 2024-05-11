@@ -117,6 +117,10 @@ class AppListClientImpl
   void LoadIcon(int profile_id, const std::string& app_id) override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
   std::optional<bool> IsNewUser(const AccountId& account_id) const override;
+  void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

@@ -117,6 +117,10 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool IsCategoryEnabled(AppListSearchControlCategory category) override;
   void SetCategoryEnabled(AppListSearchControlCategory category,
                           bool enabled) override {}
+  void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) override {}
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

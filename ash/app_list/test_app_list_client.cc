@@ -141,4 +141,12 @@ std::optional<bool> TestAppListClient::IsNewUser(
   return is_new_user_;
 }
 
+void TestAppListClient::RecordAppsDefaultVisibility(
+    const std::vector<std::string>& apps_above_the_fold,
+    const std::vector<std::string>& apps_below_the_fold,
+    bool is_apps_collections_page) {
+  items_above_the_fold_count_ = apps_above_the_fold.size();
+  items_below_the_fold_count_ = apps_below_the_fold.size();
+}
+
 }  // namespace ash

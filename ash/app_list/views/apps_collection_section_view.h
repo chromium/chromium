@@ -58,6 +58,12 @@ class ASH_EXPORT AppsCollectionSectionView : public AppListModelObserver,
 
   AppCollection collection() { return collection_; }
 
+  // Return the view model.
+  views::ViewModelT<AppListItemView>* item_views() { return &item_views_; }
+  const views::ViewModelT<AppListItemView>* item_views() const {
+    return &item_views_;
+  }
+
  private:
   friend class AppListBubbleAppsCollectionsPageTest;
   friend class AppsCollectionSectionViewTest;

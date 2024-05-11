@@ -148,6 +148,12 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Currently only the primary user profile is supported.
   virtual std::optional<bool> IsNewUser(const AccountId& account_id) const = 0;
 
+  // Record metrics regarding the current visibility of apps in the launcher.
+  virtual void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

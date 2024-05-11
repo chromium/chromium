@@ -1512,6 +1512,16 @@ void AppListControllerImpl::SetCategoryEnabled(
   pref_update->Set(GetAppListControlCategoryName(category), enabled);
 }
 
+void AppListControllerImpl::RecordAppsDefaultVisibility(
+    const std::vector<std::string>& apps_above_the_fold,
+    const std::vector<std::string>& apps_below_the_fold,
+    bool is_apps_collections_page) {
+  if (client_) {
+    client_->RecordAppsDefaultVisibility(
+        apps_above_the_fold, apps_below_the_fold, is_apps_collections_page);
+  }
+}
+
 void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();

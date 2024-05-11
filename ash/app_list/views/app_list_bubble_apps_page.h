@@ -140,6 +140,8 @@ class ASH_EXPORT AppListBubbleAppsPage
   // Invoked when the `scroll_view_` received an scrolling event.
   void OnPageScrolled();
 
+  void RecordAboveTheFoldMetrics();
+
   views::ScrollView* scroll_view() { return scroll_view_; }
   IconButton* toggle_continue_section_button() {
     return toggle_continue_section_button_;

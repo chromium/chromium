@@ -95,6 +95,8 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // Updates the controller that the page uses to show dialogs.
   void SetDialogController(SearchResultPageDialogController* dialog_controller);
 
+  void RecordAboveTheFoldMetrics();
+
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 

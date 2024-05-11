@@ -100,6 +100,30 @@ ChromeSearchResult* FindAppResultByAppId(
   return result;
 }
 
+std::string GetAppsCollectionsExperimentSuffixForHistogram() {
+  std::string apps_collections_state;
+  if (app_list_features::IsAppsCollectionsEnabled()) {
+    apps_collections_state =
+        app_list_features::IsAppsCollectionsEnabledCounterfactually()
+            ? ".Counterfactual"
+            : ".Enabled";
+  }
+  return apps_collections_state;
+}
+
+void RecordDefaultAppsForHistogram(const std::string& histogram_name,
+                                   const std::vector<std::string>& apps) {
+  for (std::string id : apps) {
+    const std::optional<apps::DefaultAppName> default_app_name =
+        apps::AppIdToName(id);
+    // Only record default apps.
+    if (!default_app_name) {
+      continue;
+    }
+    base::UmaHistogramEnumeration(histogram_name, default_app_name.value());
+  }
+}
+
 ash::NewWindowDelegate::Disposition ConvertDisposition(
     WindowOpenDisposition disposition) {
   switch (disposition) {
@@ -942,13 +966,6 @@ void AppListClientImpl::MaybeRecordActivatedItemVisibility(
     return;
   }
 
-  std::string_view apps_collections_state;
-  if (app_list_features::IsAppsCollectionsEnabled()) {
-    apps_collections_state =
-        app_list_features::IsAppsCollectionsEnabledCounterfactually()
-            ? ".Counterfactual"
-            : ".Enabled";
-  }
   const std::string_view app_list_page =
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromAppsCollections
           ? "AppsCollectionsPage"
@@ -958,7 +975,7 @@ void AppListClientImpl::MaybeRecordActivatedItemVisibility(
   base::UmaHistogramEnumeration(
       base::StrCat({"Apps.AppListBubble.", app_list_page,
                     ".AppLaunchesByVisibility.", visibility,
-                    apps_collections_state}),
+                    GetAppsCollectionsExperimentSuffixForHistogram()}),
       default_app_name.value());
 }
 
@@ -969,4 +986,29 @@ std::optional<bool> AppListClientImpl::IsNewUser(
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
   return is_primary_profile_new_user_;
+}
+
+void AppListClientImpl::RecordAppsDefaultVisibility(
+    const std::vector<std::string>& apps_above_the_fold,
+    const std::vector<std::string>& apps_below_the_fold,
+    bool is_apps_collections_page) {
+  // Do not record this metric for tablet mode.
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return;
+  }
+
+  const std::string app_list_page =
+      is_apps_collections_page ? "AppsCollectionsPage" : "AppsPage";
+
+  RecordDefaultAppsForHistogram(
+      base::StrCat({"Apps.AppListBubble.", app_list_page,
+                    ".AppVisibilityOnLauncherShown.AboveTheFold",
+                    GetAppsCollectionsExperimentSuffixForHistogram()}),
+      apps_above_the_fold);
+
+  RecordDefaultAppsForHistogram(
+      base::StrCat({"Apps.AppListBubble.", app_list_page,
+                    ".AppVisibilityOnLauncherShown.BelowTheFold",
+                    GetAppsCollectionsExperimentSuffixForHistogram()}),
+      apps_below_the_fold);
 }

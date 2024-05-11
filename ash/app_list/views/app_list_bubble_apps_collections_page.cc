@@ -43,6 +43,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -389,6 +390,26 @@ bool AppListBubbleAppsCollectionsPage::IsAboveTheFold(
 void AppListBubbleAppsCollectionsPage::SetDialogController(
     SearchResultPageDialogController* dialog_controller) {
   dialog_controller_ = dialog_controller;
+}
+
+void AppListBubbleAppsCollectionsPage::RecordAboveTheFoldMetrics() {
+  std::vector<std::string> apps_above_the_fold = {};
+  std::vector<std::string> apps_below_the_fold = {};
+  for (views::View* child_view : sections_container_->children()) {
+    AppsCollectionSectionView* collection_view =
+        views::AsViewClass<AppsCollectionSectionView>(child_view);
+    for (size_t i = 0; i < collection_view->item_views()->view_size(); ++i) {
+      AppListItemView* app_view = collection_view->item_views()->view_at(i);
+      if (IsAboveTheFold(app_view)) {
+        apps_above_the_fold.push_back(app_view->item()->id());
+      } else {
+        apps_below_the_fold.push_back(app_view->item()->id());
+      }
+    }
+  }
+  view_delegate_->RecordAppsDefaultVisibility(
+      apps_above_the_fold, apps_below_the_fold,
+      /*is_apps_collections_page=*/true);
 }
 
 void AppListBubbleAppsCollectionsPage::PopulateCollections(
