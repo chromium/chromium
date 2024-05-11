@@ -81,6 +81,10 @@
     </template>
 
     <cr-action-menu id="actionMenu">
+      <button class="dropdown-item" id="keepAction"
+          on-click="onKeepExtensionActionClick_">
+        $i18n{mv2DeprecationPanelKeepForNowButton}
+      </button>
       <button class="dropdown-item" id="removeAction"
           on-click="onRemoveExtensionActionClicked_">
         $i18n{mv2DeprecationPanelRemoveExtensionButton}

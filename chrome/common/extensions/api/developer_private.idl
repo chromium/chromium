@@ -342,6 +342,7 @@ namespace developerPrivate {
     boolean? showAccessRequestsInToolbar;
     SafetyCheckWarningReason? acknowledgeSafetyCheckWarningReason;
     boolean? acknowledgeSafetyCheckWarning;
+    boolean? acknowledgeMv2DeprecationWarning;
     boolean? pinnedToToolbar;
   };
 

@@ -41,6 +41,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -1128,6 +1130,14 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
             ->developer_private_event_router();
     if (event_router) {
       event_router->OnExtensionConfigurationChanged(extension->id());
+    }
+  }
+  if (update.acknowledge_mv2_deprecation_warning.value_or(false)) {
+    ManifestV2ExperimentManager* experiment_manager =
+        ManifestV2ExperimentManager::Get(browser_context());
+    if (experiment_manager->GetCurrentExperimentStage() !=
+        MV2ExperimentStage::kNone) {
+      experiment_manager->MarkWarningAsAcknowledged(extension->id());
     }
   }
   if (update.pinned_to_toolbar) {

@@ -7,18 +7,19 @@ import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createExtensionInfo, MockItemDelegate} from './test_util.js';
+import {TestService} from './test_service.js';
+import {createExtensionInfo} from './test_util.js';
 
 suite('ExtensionsMV2DeprecationPanel', function() {
   let panelElement: ExtensionsMv2DeprecationPanelElement;
-  let mockDelegate: MockItemDelegate;
+  let mockDelegate: TestService;
 
   setup(function() {
-    mockDelegate = new MockItemDelegate();
+    mockDelegate = new TestService();
 
     panelElement = document.createElement('extensions-mv2-deprecation-panel');
     panelElement.extensions = [createExtensionInfo({
@@ -87,7 +88,30 @@ suite('ExtensionsMV2DeprecationPanel', function() {
             panelElement.shadowRoot!.querySelector<HTMLElement>(
                 '#removeAction');
         assertTrue(!!removeAction);
-        await mockDelegate.testClickingCalls(
-            removeAction, 'deleteItem', [panelElement.extensions[0]?.id]);
+        removeAction.click();
+        await mockDelegate.whenCalled('deleteItem');
+        assertEquals(1, mockDelegate.getCallCount('deleteItem'));
+        assertDeepEquals(
+            [panelElement.extensions[0]?.id],
+            mockDelegate.getArgs('deleteItem'));
+
+        // Click the action button again (the previous click closed it).
+        actionButton.click();
+
+        // Next, click on the "keep for now" button in the action menu, and
+        // verify its own call.
+        const keepAction =
+            panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+        assertTrue(!!keepAction);
+        keepAction.click();
+        await mockDelegate.whenCalled(
+            'dismissMv2DeprecationWarningForExtension');
+        assertEquals(
+            1,
+            mockDelegate.getCallCount(
+                'dismissMv2DeprecationWarningForExtension'));
+        assertDeepEquals(
+            [panelElement.extensions[0]?.id],
+            mockDelegate.getArgs('dismissMv2DeprecationWarningForExtension'));
       });
 });

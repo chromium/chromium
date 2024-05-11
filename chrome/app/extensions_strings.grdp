@@ -617,6 +617,9 @@
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON" desc="The label for a button to find an alternative extension in the manifest v2 deprecation panel">
     Find alternative
   </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_KEEP_FOR_NOW_BUTTON" desc="The label for a button to dismiss the deprecation warning for a given extension, keeping it installed for the time being.">
+    Keep for now
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘

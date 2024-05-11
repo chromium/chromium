@@ -285,6 +285,7 @@ declare global {
         showAccessRequestsInToolbar?: boolean;
         acknowledgeSafetyCheckWarning?: boolean;
         acknowledgeSafetyCheckWarningReason?: SafetyCheckWarningReason;
+        acknowledgeMv2DeprecationWarning?: boolean;
         pinnedToToolbar?: boolean;
       }
 

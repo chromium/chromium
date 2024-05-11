@@ -16,6 +16,10 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import type {ItemDelegate} from './item.js';
 import {getTemplate} from './mv2_deprecation_panel.html.js';
 
+export interface Mv2DeprecationPanelDelegate {
+  dismissMv2DeprecationWarningForExtension(id: string): void;
+}
+
 export interface ExtensionsMv2DeprecationPanelElement {
   $: {
     actionMenu: CrActionMenuElement,
@@ -60,7 +64,7 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   }
 
   extensions: chrome.developerPrivate.ExtensionInfo[];
-  delegate: ItemDelegate;
+  delegate: ItemDelegate&Mv2DeprecationPanelDelegate;
   private headerString_: string;
   private subtitleString_: string;
   private lastClickedExtensionId_: string;
@@ -102,6 +106,15 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   private onRemoveExtensionActionClicked_(): void {
     this.$.actionMenu.close();
     this.delegate.deleteItem(this.lastClickedExtensionId_);
+  }
+
+  /**
+   * Dismisses the warning for a given extension. It will not be shown again.
+   */
+  private onKeepExtensionActionClick_(): void {
+    this.$.actionMenu.close();
+    this.delegate.dismissMv2DeprecationWarningForExtension(
+        this.lastClickedExtensionId_);
   }
 }
 

@@ -34,6 +34,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteItem',
       'deleteItems',
       'dismissSafetyHubExtensionsMenuNotification',
+      'dismissMv2DeprecationWarningForExtension',
       'uninstallItem',
       'downloadActivities',
       'getExtensionActivityLog',
@@ -156,7 +157,6 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
     this.methodCalled('setItemAllowedOnFileUrls', [id, isAllowedOnFileUrls]);
   }
-
 
   setItemSafetyCheckWarningAcknowledged(id: string) {
     this.methodCalled('setItemSafetyCheckWarningAcknowledged', id);
@@ -394,5 +394,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   dismissSafetyHubExtensionsMenuNotification() {
     this.methodCalled('dismissSafetyHubExtensionsMenuNotification');
+  }
+
+  dismissMv2DeprecationWarningForExtension(id: string) {
+    this.methodCalled('dismissMv2DeprecationWarningForExtension', id);
   }
 }
