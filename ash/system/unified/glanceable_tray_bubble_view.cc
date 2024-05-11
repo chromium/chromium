@@ -228,6 +228,24 @@ void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
 }
 
+void GlanceableTrayBubbleView::OnExpandStateChanged(
+    GlanceablesTimeManagementBubbleView::Context context,
+    bool is_expanded) {
+  // If one of the `GlanceablesTimeManagementBubbleView` is expanded, collapse
+  // the other.
+  if (context == GlanceablesTimeManagementBubbleView::Context::kClassroom &&
+      tasks_bubble_view_) {
+    tasks_bubble_view_->SetExpandState(!is_expanded);
+    return;
+  }
+
+  if (context == GlanceablesTimeManagementBubbleView::Context::kTasks &&
+      classroom_bubble_student_view_) {
+    classroom_bubble_student_view_->SetExpandState(!is_expanded);
+    return;
+  }
+}
+
 void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     bool is_role_active) {
   if (!is_role_active) {
@@ -241,6 +259,8 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
     classroom_bubble_student_view_ =
         time_management_container_view_->AddChildView(
             std::make_unique<GlanceablesClassroomStudentView>());
+    time_management_view_observation_.AddObservation(
+        classroom_bubble_student_view_);
     UpdateTimeManagementContainerLayout();
     UpdateBubble();
 
@@ -267,6 +287,7 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
   MaybeCreateTimeManagementContainer();
   tasks_bubble_view_ = time_management_container_view_->AddChildViewAt(
       std::make_unique<GlanceablesTasksView>(task_lists), 0);
+  time_management_view_observation_.AddObservation(tasks_bubble_view_);
   UpdateTimeManagementContainerLayout();
   UpdateBubble();
 

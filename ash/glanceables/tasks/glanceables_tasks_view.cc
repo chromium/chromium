@@ -380,9 +380,14 @@ void GlanceablesTasksView::CreateElevatedBackground() {
   expand_button_->SetVisible(true);
 }
 
-void GlanceablesTasksView::ToggleExpandState() {
-  is_expanded_ = !is_expanded_;
-  expand_button_->SetExpanded(is_expanded_);
+void GlanceablesTasksView::SetExpandState(bool is_expanded) {
+  if (is_expanded_ == is_expanded) {
+    return;
+  }
+
+  is_expanded_ = is_expanded;
+  expand_button_->SetExpanded(is_expanded);
+
   progress_bar_->SetVisible(is_expanded_);
   content_scroll_view_->SetVisible(is_expanded_);
   task_list_combo_box_view_->SetVisible(is_expanded_);
@@ -397,9 +402,15 @@ void GlanceablesTasksView::ToggleExpandState() {
                                        kInteriorGlanceableBubbleMargin, 12);
   SetInteriorMargin(target_interior_margin);
 
+  for (auto& observer : observers_) {
+    observer.OnExpandStateChanged(Context::kTasks, is_expanded_);
+  }
+
   PreferredSizeChanged();
-  // TODO(b/338917100): Update the expand button state, including the Classroom
-  // view.
+}
+
+void GlanceablesTasksView::ToggleExpandState() {
+  SetExpandState(!is_expanded_);
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {

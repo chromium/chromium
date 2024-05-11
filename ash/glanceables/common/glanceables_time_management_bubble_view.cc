@@ -44,6 +44,14 @@ void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
+void GlanceablesTimeManagementBubbleView::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GlanceablesTimeManagementBubbleView::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 BEGIN_METADATA(GlanceablesTimeManagementBubbleView)
 END_METADATA
 

@@ -63,6 +63,9 @@ class ASH_EXPORT GlanceablesTasksView
   // Creates `this` view's own background and updates layout accordingly.
   void CreateElevatedBackground();
 
+  void SetExpandState(bool is_expanded);
+  bool is_expanded() const { return is_expanded_; }
+
  private:
   // The context of why the current task list is shown.
   enum class ListShownContext {

@@ -68,6 +68,8 @@ CounterExpandButton::CounterExpandButton() {
   image->SetProperty(views::kMarginsKey, kImageInsets);
   image_ = AddChildView(std::move(image));
 
+  UpdateTooltip();
+
   views::InstallRoundRectHighlightPathGenerator(this, kFocusInsets,
                                                 kCornerRadius);
 
@@ -128,7 +130,10 @@ void CounterExpandButton::UpdateTooltip() {
   std::u16string tooltip_text = expanded_ ? GetExpandedStateTooltipText()
                                           : GetCollapsedStateTooltipText();
   image_->SetTooltipText(tooltip_text);
-  SetAccessibleName(tooltip_text);
+  SetAccessibleName(tooltip_text,
+                    tooltip_text.empty()
+                        ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                        : ax::mojom::NameFrom::kAttribute);
 }
 
 void CounterExpandButton::AnimateExpandCollapse() {

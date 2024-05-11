@@ -196,6 +196,19 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
 };
 
+TEST_F(GlanceablesClassroomStudentViewTest, Basics) {
+  // Check that `GlanceablesClassroomStudentView` by itself doesn't have a
+  // background.
+  EXPECT_FALSE(view_->GetBackground());
+
+  // Check that the expand button is not visible when
+  // `GlanceablesClassroomStudentView` is created alone.
+  auto* expand_button = view_->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
+  EXPECT_TRUE(expand_button);
+  EXPECT_FALSE(expand_button->GetVisible());
+}
+
 TEST_F(GlanceablesClassroomStudentViewTest, RendersComboBoxView) {
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {

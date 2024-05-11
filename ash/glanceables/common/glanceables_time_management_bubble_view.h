@@ -18,6 +18,14 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
   METADATA_HEADER(GlanceablesTimeManagementBubbleView, views::FlexLayoutView)
 
  public:
+  // The attribute that describes what type this view is used for.
+  enum class Context { kTasks, kClassroom };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnExpandStateChanged(Context context, bool is_expanded) = 0;
+  };
+
   GlanceablesTimeManagementBubbleView();
   GlanceablesTimeManagementBubbleView(
       const GlanceablesTimeManagementBubbleView&) = delete;
@@ -29,6 +37,9 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
   void ChildPreferredSizeChanged(View* child) override;
   void Layout(PassKey) override;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   // Removes an active `error_message_` from the view, if any.
   void MaybeDismissErrorMessage();
@@ -37,6 +48,8 @@ class GlanceablesTimeManagementBubbleView : public views::FlexLayoutView {
                         GlanceablesErrorMessageView::ButtonActionType type);
 
   GlanceablesErrorMessageView* error_message() { return error_message_; }
+
+  base::ObserverList<Observer> observers_;
 
  private:
   // Owned by views hierarchy.

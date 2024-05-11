@@ -326,16 +326,27 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   expand_button_->SetVisible(true);
 }
 
-void GlanceablesClassroomStudentView::ToggleExpandState() {
-  is_expanded_ = !is_expanded_;
-  expand_button_->SetExpanded(is_expanded_);
+void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
+  if (is_expanded_ == is_expanded) {
+    return;
+  }
+
+  is_expanded_ = is_expanded;
+  expand_button_->SetExpanded(is_expanded);
+
   body_container_->SetVisible(is_expanded_);
   combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
+  for (auto& observer : observers_) {
+    observer.OnExpandStateChanged(Context::kClassroom, is_expanded_);
+  }
+
   PreferredSizeChanged();
-  // TODO(b/338917100): Update the expand button state, including the Tasks
-  // view.
+}
+
+void GlanceablesClassroomStudentView::ToggleExpandState() {
+  SetExpandState(!is_expanded_);
 }
 
 void GlanceablesClassroomStudentView::OnSeeAllPressed() {

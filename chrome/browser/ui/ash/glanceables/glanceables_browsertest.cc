@@ -16,10 +16,12 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/glanceables/tasks/test/glanceables_tasks_test_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
+#include "ash/style/counter_expand_button.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
@@ -169,6 +171,11 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
         base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
   }
 
+  CounterExpandButton* GetTasksExpandButtonView() const {
+    return views::AsViewClass<CounterExpandButton>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton)));
+  }
+
   views::LabelButton* GetAddNewTaskButton() const {
     return views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
@@ -195,6 +202,12 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   views::View* GetStudentComboBoxView() const {
     return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
         base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+  }
+
+  CounterExpandButton* GetStudentExpandButtonView() const {
+    return views::AsViewClass<CounterExpandButton>(
+        GetStudentView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kClassroomBubbleExpandButton)));
   }
 
   views::View* GetStudentItemContainerView() const {
@@ -891,6 +904,93 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, SwitchTaskListsWithError) {
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
   EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Dismiss");
+}
+
+// -----------------------------------------------------------------------------
+
+// TODO(b/338917100): Consider converting these browsertests to unittests.
+class GlanceablesTasksAndClassroomTest : public GlanceablesBrowserTest {
+ public:
+  GlanceablesTasksAndClassroomTest() {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kGlanceablesTimeManagementTasksView,
+         features::kGlanceablesTimeManagementClassroomStudentView},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    GlanceablesBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+    ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlanceablesTasksAndClassroomTest, Basics) {
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  auto* const tasks_view = GetTasksView();
+  EXPECT_TRUE(tasks_view);
+  auto* const classroom_view = GetStudentView();
+  EXPECT_TRUE(classroom_view);
+
+  // Check that both views have their own backgrounds.
+  EXPECT_TRUE(tasks_view->GetBackground());
+  EXPECT_TRUE(classroom_view->GetBackground());
+
+  // Check that both views contain their expand buttons.
+  EXPECT_TRUE(GetTasksExpandButtonView());
+  EXPECT_TRUE(GetStudentExpandButtonView());
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesTasksAndClassroomTest,
+                       TimeManagementExpandStates) {
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  auto* const tasks_view =
+      views::AsViewClass<GlanceablesTasksView>(GetTasksView());
+  auto* const classroom_view =
+      views::AsViewClass<GlanceablesClassroomStudentView>(GetStudentView());
+
+  // Initially both views are expanded.
+  // TODO(b/338917100): Consider having a half folded state.
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
+  auto* const tasks_expand_button = GetTasksExpandButtonView();
+  ASSERT_TRUE(tasks_expand_button);
+  GetEventGenerator()->MoveMouseTo(
+      tasks_expand_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseTo(
+      tasks_expand_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
+
+  // Same for `classroom_view`.
+  auto* const classroom_expand_button = GetStudentExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  GetEventGenerator()->MoveMouseTo(
+      classroom_expand_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(tasks_view->is_expanded());
+  EXPECT_TRUE(classroom_view->is_expanded());
+
+  GetEventGenerator()->MoveMouseTo(
+      classroom_expand_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(tasks_view->is_expanded());
+  EXPECT_FALSE(classroom_view->is_expanded());
 }
 
 }  // namespace ash

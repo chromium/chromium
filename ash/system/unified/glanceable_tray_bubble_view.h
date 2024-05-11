@@ -36,8 +36,10 @@ struct GlanceablesClassroomAssignment;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
 // container for the child `tasks` and `classroom` glanceables.
-class GlanceableTrayBubbleView : public TrayBubbleView,
-                                 public ScreenLayoutObserver {
+class GlanceableTrayBubbleView
+    : public TrayBubbleView,
+      public ScreenLayoutObserver,
+      public GlanceablesTimeManagementBubbleView::Observer {
   METADATA_HEADER(GlanceableTrayBubbleView, TrayBubbleView)
 
  public:
@@ -63,6 +65,11 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
 
   // ScreenLayoutObserver:
   void OnDisplayConfigurationChanged() override;
+
+  // GlanceablesTimeManagementBubbleView::Observer:
+  void OnExpandStateChanged(
+      GlanceablesTimeManagementBubbleView::Context context,
+      bool is_expanded) override;
 
  private:
   // Creates classroom student view if needed (if the corresponding
@@ -122,6 +129,11 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   raw_ptr<CalendarView> calendar_view_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
+
+  base::ScopedMultiSourceObservation<
+      GlanceablesTimeManagementBubbleView,
+      GlanceablesTimeManagementBubbleView::Observer>
+      time_management_view_observation_{this};
 
   base::WeakPtrFactory<GlanceableTrayBubbleView> weak_ptr_factory_{this};
 };

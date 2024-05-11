@@ -84,6 +84,9 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Creates `this` view's own background and updates layout accordingly.
   void CreateElevatedBackground();
 
+  void SetExpandState(bool is_expanded);
+  bool is_expanded() const { return is_expanded_; }
+
  private:
   // Toggles `is_expanded_` and updates the layout.
   void ToggleExpandState();

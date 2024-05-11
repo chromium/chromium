@@ -174,6 +174,18 @@ class GlanceablesTasksViewTest : public AshTestBase {
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
 };
 
+TEST_F(GlanceablesTasksViewTest, Basics) {
+  // Check that `GlanceablesTasksView` by itself doesn't have a background.
+  EXPECT_FALSE(view()->GetBackground());
+
+  // Check that the expand button does not exist when `GlanceablesTasksView` is
+  // created alone.
+  auto* expand_button = view()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton));
+  EXPECT_TRUE(expand_button);
+  EXPECT_FALSE(expand_button->GetVisible());
+}
+
 TEST_F(GlanceablesTasksViewTest, RecordShowTimeHistogramOnClose) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
