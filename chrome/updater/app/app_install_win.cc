@@ -63,7 +63,6 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
-#include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client_errors.h"
@@ -998,17 +997,6 @@ scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
     }
   }
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating(
-          [](bool is_silent_install,
-             const std::string& app_name) -> std::unique_ptr<SplashScreen> {
-            if (is_silent_install) {
-              return std::make_unique<ui::SilentSplashScreen>();
-            } else {
-              return std::make_unique<ui::SplashScreen>(
-                  base::UTF8ToUTF16(app_name));
-            }
-          },
-          is_silent_install),
       base::BindRepeating(
           [](bool is_silent_install,
              scoped_refptr<UpdateService> update_service)

@@ -1947,9 +1947,6 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CANCEL_INSTALLATION" desc="For button to cancel the installation.">
           Cancel Installation
         </message>
-        <message name="IDS_SPLASH_SCREEN_MESSAGE" desc="Main message on the splash screen.">
-          On your marks...
-        </message>
         <message name="IDS_BUNDLE_INSTALLED_SUCCESSFULLY" desc="Installation complete message.">
           Installation complete.
         </message>

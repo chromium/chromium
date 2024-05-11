@@ -167,7 +167,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   ScopedIPCSupportWrapper ipc_support;
 #endif
   // TODO(crbug.com/40279944) - eliminate the need to have a UI message type
-  // on the main sequence by refactoring the splash screen and the rest of UI.
+  // on the main sequence by refactoring the UI code.
   const bool is_app_install_mode = command_line->HasSwitch(kInstallSwitch) ||
                                    command_line->HasSwitch(kHandoffSwitch);
   const bool is_silent = command_line->HasSwitch(kSilentSwitch);

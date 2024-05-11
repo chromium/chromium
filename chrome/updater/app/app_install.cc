@@ -39,16 +39,6 @@ namespace updater {
 #if !BUILDFLAG(IS_WIN)
 namespace {
 
-class SplashScreenImpl : public SplashScreen {
- public:
-  // Overrides for SplashScreen.
-  void Show() override {}
-  void Dismiss(base::OnceClosure callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
-};
-
 class AppInstallControllerImpl : public AppInstallController {
  public:
   explicit AppInstallControllerImpl(scoped_refptr<UpdateService> update_service)
@@ -97,10 +87,6 @@ class AppInstallControllerImpl : public AppInstallController {
 
 scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating(
-          [](const std::string& /*app_name*/) -> std::unique_ptr<SplashScreen> {
-            return std::make_unique<SplashScreenImpl>();
-          }),
       base::BindRepeating([](scoped_refptr<UpdateService> update_service)
                               -> scoped_refptr<AppInstallController> {
         return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
@@ -108,12 +94,9 @@ scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
-                       AppInstallController::Maker app_install_controller_maker)
-    : splash_screen_maker_(std::move(splash_screen_maker)),
-      app_install_controller_maker_(app_install_controller_maker),
+AppInstall::AppInstall(AppInstallController::Maker app_install_controller_maker)
+    : app_install_controller_maker_(app_install_controller_maker),
       external_constants_(CreateExternalConstants()) {
-  CHECK(splash_screen_maker_);
   CHECK(app_install_controller_maker_);
 }
 
@@ -163,9 +146,6 @@ void AppInstall::FirstTaskRun() {
         kAppIdSwitch);
   }
 
-  splash_screen_ = splash_screen_maker_.Run(app_name_);
-  splash_screen_->Show();
-
   CreateUpdateServiceProxy();
   update_service_->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this));
@@ -180,19 +160,12 @@ void AppInstall::GetVersionDone(const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG_IF(1, version.IsValid()) << "Active version: " << version.GetString();
   if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
-    splash_screen_->Dismiss(base::BindOnce(&AppInstall::MaybeInstallApp, this));
+    MaybeInstallApp();
     return;
   }
-  InstallCandidate(
-      updater_scope(),
-      base::BindOnce(
-          [](SplashScreen* splash_screen, base::OnceCallback<void(int)> done,
-             int result) {
-            splash_screen->Dismiss(base::BindOnce(std::move(done), result));
-          },
-          splash_screen_.get(),
-          base::BindOnce(&AppInstall::InstallCandidateDone, this,
-                         version.IsValid())));
+  InstallCandidate(updater_scope(),
+                   base::BindOnce(&AppInstall::InstallCandidateDone, this,
+                                  version.IsValid()));
 }
 
 void AppInstall::InstallCandidateDone(bool valid_version, int result) {

@@ -14,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/lock.h"
-#include "chrome/updater/splash_screen.h"
 
 namespace base {
 class Version;
@@ -49,12 +48,11 @@ class AppInstallController
   friend class base::RefCountedThreadSafe<AppInstallController>;
 };
 
-// Sets the updater up, shows up a splash screen, then installs an application
-// while displaying the UI progress window.
+// Sets the updater up then installs an application while displaying the UI
+// progress window.
 class AppInstall : public App {
  public:
-  AppInstall(SplashScreen::Maker splash_screen_maker,
-             AppInstallController::Maker app_install_controller_maker);
+  explicit AppInstall(AppInstallController::Maker app_install_controller_maker);
 
  private:
   ~AppInstall() override;
@@ -92,15 +90,8 @@ class AppInstall : public App {
   std::string app_id_;
   std::string app_name_;
 
-  // Creates instances of |SplashScreen|.
-  SplashScreen::Maker splash_screen_maker_;
-
   // Creates instances of |AppInstallController|.
   AppInstallController::Maker app_install_controller_maker_;
-
-  // The splash screen has a fading effect. That means that the splash screen
-  // needs to be alive for a while, until the fading effect is over.
-  std::unique_ptr<SplashScreen> splash_screen_;
 
   scoped_refptr<AppInstallController> app_install_controller_;
 
