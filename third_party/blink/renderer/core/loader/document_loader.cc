@@ -97,8 +97,11 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
@@ -1931,6 +1934,23 @@ void DocumentLoader::StartLoadingResponse() {
   // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
+
+  // TODO(crbug.com/332706093): See if this optimization can be enabled for
+  // non-main frames after fixing failing tests.
+  if (base::FeatureList::IsEnabled(features::kStreamlineRendererInit) &&
+      frame_->IsMainFrame() && loading_url_as_empty_document_ &&
+      commit_reason_ == CommitReason::kInitialization) {
+    // We know this is an empty document, so explicitly set empty content
+    // without going through the parser, which has a lot of overhead.
+    Document* document = frame_->GetDocument();
+    auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document);
+    html->AppendChild(MakeGarbageCollected<HTMLHeadElement>(*document));
+    document->AppendChild(html);
+    html->AppendChild(MakeGarbageCollected<HTMLBodyElement>(*document));
+
+    FinishedLoading(base::TimeTicks::Now());
+    return;
+  }
 
   CHECK_GE(state_, kCommitted);
 

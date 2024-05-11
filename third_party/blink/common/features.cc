@@ -2296,6 +2296,11 @@ BASE_FEATURE(kStopInBackground,
 #endif
 );
 
+// Reduces the work done during renderer initialization.
+BASE_FEATURE(kStreamlineRendererInit,
+             "StreamlineRendererInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kStylusPointerAdjustment,
              "StylusPointerAdjustment",
              base::FEATURE_ENABLED_BY_DEFAULT);
