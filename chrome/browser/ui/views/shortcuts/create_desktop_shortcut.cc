@@ -4,13 +4,17 @@
 
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
+#include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut.h"
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,7 +31,15 @@
 
 namespace chrome {
 
-void ShowCreateShortcutDialog(
+namespace {
+
+// Shows the `Create Shortcut` dialog to create fire and forget entities on the
+// desktop of the OS. This API works only if kShortcutsNotApps is enabled.
+// Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
+// Callers of the API should pass a |CreateShortcutDialogCallback| so that the
+// user action on the dialog and the title in the dialog's text field can be
+// obtained.
+void ShowCreateDesktopShortcutDialog(
     content::WebContents* web_contents,
     const gfx::ImageSkia& icon,
     std::u16string title,
@@ -102,6 +114,39 @@ void ShowCreateShortcutDialog(
   base::RecordAction(
       base::UserMetricsAction("CreateDesktopShortcutDialogShown"));
   constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+}
+
+}  // namespace
+
+void CreateDesktopShortcutForActiveWebContents(Browser* browser) {
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+
+  if (!web_contents) {
+    return;
+  }
+
+  CreateShortcutForWebContents(web_contents, base::DoNothing());
+}
+
+void ShowCreateDesktopShortcutDialogForTesting(
+    content::WebContents* web_contents,
+    const gfx::ImageSkia& icon,
+    std::u16string title,
+    CreateShortcutDialogCallback dialog_action_and_text_callback) {
+  CHECK_IS_TEST();
+  ShowCreateDesktopShortcutDialog(web_contents, icon, title,
+                                  std::move(dialog_action_and_text_callback));
+}
+
+void CreateShortcutForWebContents(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool shortcuts_created)>
+        shortcut_creation_callback) {
+  shortcuts::CreateShortcutForCurrentWebContentsTask::CreateAndStart(
+      *web_contents,
+      base::BindOnce(&ShowCreateDesktopShortcutDialog, web_contents),
+      std::move(shortcut_creation_callback));
 }
 
 }  // namespace chrome

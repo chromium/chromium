@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
@@ -11,12 +12,14 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut.h"
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -32,11 +35,17 @@ namespace shortcuts {
 
 namespace {
 
+constexpr char kPageWithIcons[] = "/shortcuts/page_icons.html";
+
 class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest overrides:
   void ShowUi(const std::string& name) override {
     ShowDialogInBrowser(browser(), name);
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
  protected:
@@ -50,7 +59,7 @@ class CreateDesktopShortcutDialogViewBrowserTest : public DialogBrowserTest {
         ui_test_utils::NavigateToURL(browser, GURL("https://example.com")));
 
     std::u16string title = base::UTF8ToUTF16(name);
-    chrome::ShowCreateShortcutDialog(
+    chrome::ShowCreateDesktopShortcutDialogForTesting(
         browser->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
         title, std::move(shortcut_callback));
   }
@@ -232,13 +241,13 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
-  chrome::ShowCreateShortcutDialog(
+  chrome::ShowCreateDesktopShortcutDialogForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[0], test_future1.GetCallback());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
 
   // Verify that a second request fails before the first dialog is closed.
-  chrome::ShowCreateShortcutDialog(
+  chrome::ShowCreateDesktopShortcutDialogForTesting(
       browser()->tab_strip_model()->GetActiveWebContents(), gfx::ImageSkia(),
       titles[1], test_future2.GetCallback());
   EXPECT_TRUE(test_future2.Wait());
@@ -258,6 +267,34 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
   // The second dialog wasn't shown, so it does not record being cancelled.
   EXPECT_EQ(
       0, action_tester.GetActionCount("CreateDesktopShortcutDialogCancelled"));
+}
+
+IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
+                       CancelFromCreateShortcutDialogStopsShortcutCreation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
+  base::HistogramTester histogram_tester;
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
+
+  base::test::TestFuture<bool> final_callback;
+  chrome::CreateShortcutForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      final_callback.GetCallback());
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  views::test::CancelDialog(widget);
+  destroy_waiter.Wait();
+  ASSERT_TRUE(final_callback.Wait());
+  EXPECT_FALSE(final_callback.Get<bool>());
+
+  histogram_tester.ExpectBucketCount(
+      "Shortcuts.CreationTask.Result",
+      shortcuts::ShortcutCreationTaskResult::
+          kUserCancelledShortcutCreationFromDialog,
+      1);
 }
 
 }  // namespace

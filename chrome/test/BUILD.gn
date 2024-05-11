@@ -4364,6 +4364,8 @@ if (!is_android) {
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
           "../browser/ui/views/shortcuts/create_desktop_shortcut_dialog_view_browsertest.cc",
         ]
+
+        deps += [ "//chrome/browser/shortcuts" ]
       }
       deps += [
         ":test_support_ui",

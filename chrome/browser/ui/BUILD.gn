@@ -2264,10 +2264,6 @@ static_library("ui") {
     if (!is_android) {
       deps += [ "//chrome/browser/headless:command_processor" ]
     }
-
-    if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/shortcuts" ]
-    }
   }
 
   if (enable_paint_preview) {
@@ -6661,12 +6657,16 @@ static_library("ui") {
         "views/screen_capture_notification_ui_views.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.h",
+        "views/shortcuts/create_desktop_shortcut.cc",
+        "views/shortcuts/create_desktop_shortcut.h",
         "views/shortcuts/create_desktop_shortcut_delegate.cc",
         "views/shortcuts/create_desktop_shortcut_delegate.h",
-        "views/shortcuts/create_desktop_shortcut_dialog_view.cc",
         "views/web_apps/isolated_web_apps/pref_observer.cc",
       ]
-      deps += [ "//ui/views/window/vector_icons" ]
+      deps += [
+        "//chrome/browser/shortcuts",
+        "//ui/views/window/vector_icons",
+      ]
     }
 
     if (is_chromeos_ash) {

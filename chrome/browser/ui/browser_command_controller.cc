@@ -136,10 +136,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace chrome {
@@ -773,15 +769,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-        content::WebContents* const web_contents =
-            browser_->tab_strip_model()->GetActiveWebContents();
-
-        if (web_contents) {
-          shortcuts::CreateShortcutForCurrentWebContentsTask::CreateAndStart(
-              *web_contents,
-              base::BindOnce(&chrome::ShowCreateShortcutDialog, web_contents),
-              base::DoNothing());
-        }
+        chrome::CreateDesktopShortcutForActiveWebContents(browser_);
       } else {
         web_app::CreateWebAppFromCurrentWebContents(
             browser_, web_app::WebAppInstallFlow::kCreateShortcut);

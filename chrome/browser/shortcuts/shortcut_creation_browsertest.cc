@@ -5,31 +5,20 @@
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/test/dialog_test.h"
-#include "ui/views/test/widget_test.h"
-#include "ui/views/test/widget_test_api.h"
-#include "ui/views/widget/any_widget_observer.h"
-
-using base::Bucket;
-using ::testing::IsNull;
 
 namespace shortcuts {
 
@@ -131,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest,
   // Verify task gets destroyed after exiting due to errors.
   EXPECT_THAT(CreateShortcutForCurrentWebContentsTask::GetForCurrentDocument(
                   web_contents()->GetPrimaryMainFrame()),
-              IsNull());
+              testing::IsNull());
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, VisibilityChangeStopsTask) {
@@ -161,33 +150,6 @@ IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, VisibilityChangeStopsTask) {
   histogram_tester.ExpectBucketCount(
       "Shortcuts.CreationTask.Result",
       ShortcutCreationTaskResult::kPageInvalidated, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest,
-                       CancelFromCreateShortcutDialog) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_https_test_server().GetURL(kPageWithIcons)));
-  base::HistogramTester histogram_tester;
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, "CreateDesktopShortcutDialog");
-
-  base::test::TestFuture<bool> final_callback;
-  CreateShortcutForCurrentWebContentsTask::CreateAndStart(
-      *web_contents(),
-      base::BindOnce(&chrome::ShowCreateShortcutDialog, web_contents()),
-      final_callback.GetCallback());
-  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
-  ASSERT_NE(widget, nullptr);
-
-  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
-  views::test::CancelDialog(widget);
-  destroy_waiter.Wait();
-  ASSERT_TRUE(final_callback.Wait());
-  EXPECT_FALSE(final_callback.Get<bool>());
-
-  histogram_tester.ExpectBucketCount(
-      "Shortcuts.CreationTask.Result",
-      ShortcutCreationTaskResult::kUserCancelledShortcutCreationFromDialog, 1);
 }
 
 }  // namespace
