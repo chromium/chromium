@@ -35,6 +35,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabGroupInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
@@ -188,7 +189,7 @@ public class TabSwitcherLayoutTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
+                    .setRevision(5)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
 
@@ -399,7 +400,6 @@ public class TabSwitcherLayoutTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1668,7 +1668,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoGroupClosureInTabSwitcher() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1681,7 +1680,7 @@ public class TabSwitcherLayoutTest {
         assertNotNull(snackbarManager.getCurrentSnackbarForTesting());
 
         // Verify close this tab group and undo in tab switcher.
-        closeFirstTabInTabSwitcher(cta);
+        closeFirstTabGroupInTabSwitcher(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoBarController);
@@ -2495,7 +2494,6 @@ public class TabSwitcherLayoutTest {
     })
     public void testGroupMerge_UndoBarGoneAfterManualUngroup() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
@@ -2692,7 +2690,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoClosure_UndoGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -2729,7 +2726,7 @@ public class TabSwitcherLayoutTest {
         // Temporarily save the tab to get the rootId later.
         Tab tab2 = normalTabModel.getTabAt(1);
 
-        closeFirstTabInTabSwitcher(cta);
+        closeFirstTabGroupInTabSwitcher(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoBarController);
@@ -2750,7 +2747,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testUndoClosure_AcceptGroupClosure() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -2788,7 +2784,7 @@ public class TabSwitcherLayoutTest {
         Tab tab2 = normalTabModel.getTabAt(1);
         int groupRootId = tab2.getRootId();
 
-        closeFirstTabInTabSwitcher(cta);
+        closeFirstTabGroupInTabSwitcher(cta);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof UndoBarController);
