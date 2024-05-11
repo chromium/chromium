@@ -354,44 +354,46 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   // These absolute coordinate space vertices are converted to relative
   // space texture coordinates:
   //    Example: |input_left / input_width|
-  const float input_width =
-      static_cast<float>(input_config_.visible_rect.width());
-  const float input_height =
-      static_cast<float>(input_config_.visible_rect.height());
-  const float input_coded_width =
-      static_cast<float>(input_config_.size.width());
-  const float input_coded_height =
-      static_cast<float>(input_config_.size.height());
+  const GLfloat input_width =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.width());
+  const GLfloat input_height =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.height());
+  const GLfloat input_coded_width =
+      base::checked_cast<GLfloat>(input_coded_size.width());
+  const GLfloat input_coded_height =
+      base::checked_cast<GLfloat>(input_coded_size.height());
 
-  const float input_left = static_cast<float>(input_config_.visible_rect.x());
-  const float input_top = static_cast<float>(input_config_.visible_rect.y());
+  const GLfloat input_left =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.x());
+  const GLfloat input_top =
+      base::checked_cast<GLfloat>(input_config_.visible_rect.y());
 
-  const float normalized_left = input_left / input_width;
-  const float normalized_top = input_top / input_height;
+  const GLfloat normalized_left = input_left / input_width;
+  const GLfloat normalized_top = input_top / input_height;
 
-  const float x_start = -1.0f - normalized_left * 2.0f;
+  const GLfloat x_start = -1.0f - normalized_left * 2.0f;
 
-  const float x_end = 1.0f + (input_coded_width - input_width - input_left) /
-                                 input_width * 2.0f;
+  const GLfloat x_end = 1.0f + (input_coded_width - input_width - input_left) /
+                                   input_width * 2.0f;
 
-  const float y_start = -1.0f - normalized_top * 2.0f;
+  const GLfloat y_start = -1.0f - normalized_top * 2.0f;
 
-  const float y_end = 1.0f + (input_coded_height - input_height - input_top) /
-                                 input_height * 2.0f;
+  const GLfloat y_end = 1.0f + (input_coded_height - input_height - input_top) /
+                                   input_height * 2.0f;
 
-  const float vertices[] = {
+  const GLfloat vertices[] = {
       // clang-format off
-    x_end,   y_start, 0.0f,
-    x_end,   y_end,   0.0f,
-    x_start, y_start, 0.0f,
-    x_start, y_end,   0.0f
+      x_end,   y_start, 0.0f,
+      x_end,   y_end,   0.0f,
+      x_start, y_start, 0.0f,
+      x_start, y_end,   0.0f
       // clang-format on
   };
 
   glGenBuffersARB(1, &vbo_id_);
   CHECK_GT(vbo_id_, 0u);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_id_);
-  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 
   glGenVertexArraysOES(1, &vao_id_);
   CHECK_GT(vao_id_, 0u);
