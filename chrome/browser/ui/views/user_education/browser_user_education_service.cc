@@ -678,6 +678,7 @@ void MaybeRegisterChromeFeaturePromos(
             IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER,
             FeaturePromoSpecification::AcceleratorInfo())
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .SetBubbleIcon(&vector_icons::kCelebrationIcon)
             .SetMetadata(
                 126, "dfried@chromium.org, jdonnelly@google.com",
                 "Triggered when the lens overlay side panel is pinned.")
