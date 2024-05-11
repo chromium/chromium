@@ -293,16 +293,44 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
     return;
   }
 
-  const gfx::Size input_visible_size = input_config_.visible_rect.size();
-  const gfx::Size output_visible_size = output_config_.visible_rect.size();
-  GLint max_texture_size;
+  // Ensure the coded size and visible rectangle are reasonable.
+  const gfx::Size input_coded_size = input_config_.size;
+  const gfx::Size output_coded_size = output_config_.size;
+  if (input_coded_size.IsEmpty() || output_coded_size.IsEmpty()) {
+    LOG(ERROR) << "Either the input or output coded size is empty";
+    done->Signal();
+    return;
+  }
+  if (!VideoFrame::IsValidCodedSize(input_coded_size) ||
+      !VideoFrame::IsValidCodedSize(output_coded_size)) {
+    LOG(ERROR) << "Either the input or output coded size is invalid";
+    done->Signal();
+    return;
+  }
+  if (input_config_.visible_rect.IsEmpty() ||
+      output_config_.visible_rect.IsEmpty()) {
+    LOG(ERROR) << "Either the input or output visible rectangle is empty";
+    done->Signal();
+    return;
+  }
+  if (!gfx::Rect(input_coded_size).Contains(input_config_.visible_rect) ||
+      !gfx::Rect(output_coded_size).Contains(output_config_.visible_rect)) {
+    LOG(ERROR) << "Either the input or output visible rectangle is invalid";
+    done->Signal();
+    return;
+  }
+
+  // Note: we use the coded size to import the frames later in
+  // CreateAndBindImage(), so we need to check that size against
+  // GL_MAX_TEXTURE_SIZE.
+  GLint max_texture_size = 0;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-  if (max_texture_size < input_visible_size.width() ||
-      max_texture_size < input_visible_size.height() ||
-      max_texture_size < output_visible_size.width() ||
-      max_texture_size < output_visible_size.height()) {
-    LOG(ERROR)
-        << "Either the input or output size exceeds the maximum texture size";
+  if (max_texture_size < base::strict_cast<GLint>(input_coded_size.width()) ||
+      max_texture_size < base::strict_cast<GLint>(input_coded_size.height()) ||
+      max_texture_size < base::strict_cast<GLint>(output_coded_size.width()) ||
+      max_texture_size < base::strict_cast<GLint>(output_coded_size.height())) {
+    LOG(ERROR) << "Either the input or output coded size exceeds the maximum "
+                  "texture size";
     done->Signal();
     return;
   }
@@ -520,9 +548,11 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
   if (!scaling) {
     glUniform1i(glGetUniformLocation(program, "tex"), 0);
     glUniform1ui(glGetUniformLocation(program, "width"),
-                 ALIGN(output_visible_size.width(), kTileWidth));
+                 base::checked_cast<GLuint>(
+                     ALIGN(output_config_.visible_rect.width(), kTileWidth)));
     glUniform1ui(glGetUniformLocation(program, "height"),
-                 ALIGN(output_visible_size.height(), kTileHeight));
+                 base::checked_cast<GLuint>(
+                     ALIGN(output_config_.visible_rect.height(), kTileHeight)));
   }
 
   // This glGetError() blocks until all the commands above have executed. This
@@ -535,9 +565,12 @@ void GLImageProcessorBackend::InitializeTask(base::WaitableEvent* done,
     return;
   }
 
-  LOG(ERROR) << "Initialized a GLImageProcessorBackend: input size = "
-             << input_visible_size.ToString()
-             << ", output size = " << output_visible_size.ToString();
+  VLOGF(1) << "Initialized a GLImageProcessorBackend: input coded size = "
+           << input_coded_size.ToString() << ", input visible rectangle = "
+           << input_config_.visible_rect.ToString()
+           << ", output coded size = " << output_coded_size.ToString()
+           << ", output visible rectangle = "
+           << output_config_.visible_rect.ToString();
   *success = true;
   done->Signal();
 }
