@@ -135,13 +135,17 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
     return gfx::ColorSpace();
   }
 
-  // Snap the primaries to those of BT.709/sRGB for performance purposes, see
-  // crbug.com/1073467. kPrimariesTolerance is an educated guess from various
-  // ChromeOS panels observations.
+  // Snap the primaries to known standard ones (e.g. BT.709, DCI-P3) for
+  // performance purposes, see crbug.com/1073467. kPrimariesTolerance is an
+  // educated guess from various ChromeOS panels observations.
   auto color_space_primaries = gfx::ColorSpace::PrimaryID::INVALID;
   constexpr float kPrimariesTolerance = 0.025;
-  if (NearlyEqual(primaries_matrix, SkNamedGamut::kSRGB, kPrimariesTolerance))
+  if (NearlyEqual(primaries_matrix, SkNamedGamut::kSRGB, kPrimariesTolerance)) {
     color_space_primaries = gfx::ColorSpace::PrimaryID::BT709;
+  } else if (NearlyEqual(primaries_matrix, SkNamedGamut::kDisplayP3,
+                         kPrimariesTolerance)) {
+    color_space_primaries = gfx::ColorSpace::PrimaryID::P3;
+  }
 
   const float gamma = edid_parser.gamma();
   if (gamma < 1.0f) {

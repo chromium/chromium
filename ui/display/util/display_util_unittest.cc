@@ -65,6 +65,25 @@ const unsigned char kEdidWithNoGamma[] =
     "\x02\x12\x01\x03\x80\x34\x21\xFF\xEE\xEF\x95\xA3\x54\x4C\x9B\x26"
     "\x0F\x50\x54\xA5\x6B\x80\x81\x40\x81\x80\x81\x99\x71\x00\xA9\x00";
 
+// Screebo display with chromaticities near P3
+const unsigned char kScreeboP3[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x09\xe5\x1b\x0c\x00\x00\x00\x00"
+    "\x12\x21\x01\x04\xb5\x1e\x13\x78\x03\x14\xd5\xae\x51\x42\xb2\x24"
+    "\x0f\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xc0\xd8\x00\xa0\xa0\x40\x64\x60\x30\x20"
+    "\x36\x00\x2e\xbc\x10\x00\x00\x1a\x60\x6c\x00\xa0\xa0\x40\x64\x60"
+    "\x30\x20\x36\x00\x2e\xbc\x10\x00\x00\x1a\x00\x00\x00\xfd\x00\x30"
+    "\x78\xcc\xcc\x37\x01\x0a\x20\x20\x20\x20\x20\x20\x00\x00\x00\xfe"
+    "\x00\x4e\x45\x31\x34\x30\x51\x44\x4d\x2d\x4e\x58\x35\x0a\x01\x1b"
+    "\x02\x03\x22\x00\xe3\x05\x80\x00\xe6\x06\x05\x01\x6a\x6a\x43\x72"
+    "\x1a\x00\x00\x03\x03\x30\x78\x00\x20\x6a\x43\x6a\x43\x78\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3c";
+
 // Chromebook Samsung Galaxy (kohaku) that supports HDR metadata.
 constexpr unsigned char kHDR[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\x83\x42\x41\x00\x00\x00\x00"
@@ -266,6 +285,25 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       1);
   histogram_tester.ExpectTotalCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome", 5);
+
+  // Test with a display that is close to P3.
+  constexpr SkColorSpacePrimaries expected_p3_primaries = {.fRX = 0.680f,
+                                                           .fRY = 0.320f,
+                                                           .fGX = 0.265f,
+                                                           .fGY = 0.690f,
+                                                           .fBX = 0.150f,
+                                                           .fBY = 0.060f,
+                                                           .fWX = 0.3127,
+                                                           .fWY = 0.3290};
+  skcms_Matrix3x3 expected_p3_to_XYZ50_matrix;
+  expected_p3_primaries.toXYZD50(&expected_p3_to_XYZ50_matrix);
+  const std::vector<uint8_t> p3_edid(kScreeboP3,
+                                     kScreeboP3 + std::size(kScreeboP3) - 1);
+  const gfx::ColorSpace expected_p3_color_space = gfx::ColorSpace::CreateCustom(
+      expected_p3_to_XYZ50_matrix, gfx::ColorSpace::TransferID::PQ);
+  EXPECT_TRUE(expected_p3_color_space.IsWide());
+  EXPECT_EQ(expected_p3_color_space.ToString(),
+            GetColorSpaceFromEdid(display::EdidParser(p3_edid)).ToString());
 }
 
 TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
