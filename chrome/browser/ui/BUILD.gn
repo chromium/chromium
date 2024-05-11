@@ -3491,6 +3491,8 @@ static_library("ui") {
       "webui/ash/parent_access/parent_access_ui_handler_impl.h",
       "webui/ash/power_ui.cc",
       "webui/ash/power_ui.h",
+      "webui/ash/print_preview_cros/print_preview_cros_dialog.cc",
+      "webui/ash/print_preview_cros/print_preview_cros_dialog.h",
       "webui/ash/remote_maintenance_curtain_ui.cc",
       "webui/ash/remote_maintenance_curtain_ui.h",
       "webui/ash/scalable_iph/scalable_iph_debug_ui.cc",
