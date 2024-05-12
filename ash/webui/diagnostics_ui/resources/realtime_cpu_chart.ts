@@ -14,6 +14,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './realtime_cpu_chart.html.js';
 
+export interface ChartPadding {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  tick: number;
+}
+
 const RealtimeCpuChartElementBase = I18nMixin(PolymerElement);
 
 /**
@@ -110,8 +118,7 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
   private frameDuration: number;
   private width: number;
   private height: number;
-  private padding:
-      {top: number, right: number, bottom: number, left: number, tick: number};
+  private padding: ChartPadding;
   private graphWidth: number;
   private graphHeight: number;
   // Helper function to map range of x coordinates to graph width.
@@ -320,6 +327,14 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
 
   private getPercentageLabel(value: number): string {
     return loadTimeData.getStringF('percentageLabel', value);
+  }
+
+  getPaddingForTesting(): ChartPadding {
+    return this.padding;
+  }
+
+  getFrameDurationForTesting(): number {
+    return this.frameDuration;
   }
 }
 

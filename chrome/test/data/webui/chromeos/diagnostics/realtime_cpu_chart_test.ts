@@ -5,39 +5,31 @@
 import 'chrome://diagnostics/realtime_cpu_chart.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
-import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {ChartPadding, RealtimeCpuChartElement} from 'chrome://diagnostics/realtime_cpu_chart.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import * as diagnostics_test_utils from './diagnostics_test_utils.js';
 
 suite('realtimeCpuChartTestSuite', function() {
-  /** @type {?RealtimeCpuChartElement} */
-  let realtimeCpuChartElement = null;
+  let realtimeCpuChartElement: RealtimeCpuChartElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    if (realtimeCpuChartElement) {
-      realtimeCpuChartElement.remove();
-    }
+    realtimeCpuChartElement?.remove();
     realtimeCpuChartElement = null;
   });
 
-  /**
-   * @param {number} user
-   * @param {number} system
-   * @return {!Promise}
-   */
-  function initializeRealtimeCpuChart(user, system) {
-    assertFalse(!!realtimeCpuChartElement);
-
+  function initializeRealtimeCpuChart(
+      user: number, system: number): Promise<void> {
     // Add the element to the DOM.
-    realtimeCpuChartElement = /** @type {!RealtimeCpuChartElement} */ (
-        document.createElement('realtime-cpu-chart'));
-    assertTrue(!!realtimeCpuChartElement);
+    realtimeCpuChartElement =
+        document.createElement(RealtimeCpuChartElement.is);
+    assert(realtimeCpuChartElement);
     document.body.appendChild(realtimeCpuChartElement);
     realtimeCpuChartElement.user = user;
     realtimeCpuChartElement.system = system;
@@ -47,28 +39,25 @@ suite('realtimeCpuChartTestSuite', function() {
 
   /**
    * Get frameDuration_ private member for testing.
-   * @suppress {visibility} // access private member
    */
   function getFrameDuration() {
-    assertTrue(!!realtimeCpuChartElement);
-    return realtimeCpuChartElement.frameDuration;
+    assert(realtimeCpuChartElement);
+    return realtimeCpuChartElement.getFrameDurationForTesting();
   }
 
   /**
    * Get padding_ private member for testing.
-   * @suppress {visibility} // access private member
    */
-  function getPaddings() {
-    assertTrue(!!realtimeCpuChartElement);
-    return realtimeCpuChartElement.padding;
+  function getPaddings(): ChartPadding {
+    assert(realtimeCpuChartElement);
+    return realtimeCpuChartElement.getPaddingForTesting();
   }
 
   /**
    * Promise that resolves once at least one refresh interval has passed.
-   * @return {!Promise}
    */
-  function refreshGraph() {
-    assertTrue(!!realtimeCpuChartElement);
+  function refreshGraph(): Promise<void> {
+    assert(realtimeCpuChartElement);
 
     return new Promise(resolve => {
       setTimeout(() => {
@@ -83,11 +72,13 @@ suite('realtimeCpuChartTestSuite', function() {
     const user = 10;
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
+      assert(realtimeCpuChartElement);
       diagnostics_test_utils.assertElementContainsText(
-          realtimeCpuChartElement.shadowRoot.querySelector('#legend-user>span'),
+          realtimeCpuChartElement.shadowRoot!.querySelector(
+              '#legend-user>span'),
           `${user}`);
       diagnostics_test_utils.assertElementContainsText(
-          realtimeCpuChartElement.shadowRoot.querySelector(
+          realtimeCpuChartElement.shadowRoot!.querySelector(
               '#legend-system>span'),
           `${system}`);
 
@@ -100,10 +91,12 @@ suite('realtimeCpuChartTestSuite', function() {
     const user = 10;
     const system = 30;
     return initializeRealtimeCpuChart(user, system).then(() => {
-      const svg = realtimeCpuChartElement.shadowRoot.querySelector('#chart');
+      assert(realtimeCpuChartElement);
+      const svg = realtimeCpuChartElement!.shadowRoot!.querySelector('#chart');
+      assert(svg);
       const boundary =
-          realtimeCpuChartElement.shadowRoot.querySelector('#defClip>rect');
-
+          realtimeCpuChartElement.shadowRoot!.querySelector('#defClip>rect');
+      assert(boundary);
       // Chart area boundary must fit within svg.
       assertGT(
           Number(svg.getAttribute('width')),
@@ -113,8 +106,8 @@ suite('realtimeCpuChartTestSuite', function() {
           Number(boundary.getAttribute('height')));
 
       const chartGroup =
-          realtimeCpuChartElement.shadowRoot.querySelector('#chartGroup');
-
+          realtimeCpuChartElement.shadowRoot!.querySelector('#chartGroup');
+      assert(chartGroup);
       // Margins are in effect.
       assertEquals(
           `translate(${getPaddings().left},${getPaddings().top})`,
@@ -127,24 +120,25 @@ suite('realtimeCpuChartTestSuite', function() {
     const system = 30;
 
     return initializeRealtimeCpuChart(user, system).then(() => {
+      assert(realtimeCpuChartElement);
       // yAxis is drawn.
-      assertTrue(!!realtimeCpuChartElement.shadowRoot.querySelector(
+      assertTrue(!!realtimeCpuChartElement.shadowRoot!.querySelector(
           '#gridLines>path.domain'));
 
       // Correct number of yAxis ticks drawn.
       assertEquals(
           5,
-          realtimeCpuChartElement.shadowRoot
+          realtimeCpuChartElement.shadowRoot!
               .querySelectorAll('#gridLines>g.tick')
               .length);
 
       // Plot lines are drawn.
-      assertTrue(!!realtimeCpuChartElement.shadowRoot
-                       .querySelector('#plotGroup>path.user-area')
-                       .getAttribute('d'));
-      assertTrue(!!realtimeCpuChartElement.shadowRoot
-                       .querySelector('#plotGroup>path.system-area')
-                       .getAttribute('d'));
+      assertTrue(
+          !!realtimeCpuChartElement.shadowRoot!
+                .querySelector('#plotGroup>path.user-area')!.getAttribute('d'));
+      assertTrue(!!realtimeCpuChartElement.shadowRoot!
+                       .querySelector(
+                           '#plotGroup>path.system-area')!.getAttribute('d'));
     });
   });
 });

@@ -45,7 +45,7 @@ build_webui_tests("build_webui_tests") {
     "network_troubleshooting_test.ts",
     "overview_card_test.ts",
     "percent_bar_chart_test.ts",
-    "realtime_cpu_chart_test.js",
+    "realtime_cpu_chart_test.ts",
     "routine_group_test.ts",
     "routine_list_executor_test.ts",
     "routine_result_entry_test.ts",
