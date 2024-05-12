@@ -131,6 +131,15 @@ namespace std {
 
 void default_delete<media::ImageProcessorBackend>::operator()(
     media::ImageProcessorBackend* ptr) const {
+  CHECK(ptr->backend_task_runner_);
+  if (!ptr->backend_task_runner_->RunsTasksInCurrentSequence()) {
+    // base::Unretained() is safe because ImageProcessorBackend::Destroy() *is*
+    // the thing that destroys *|ptr|.
+    ptr->backend_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&media::ImageProcessorBackend::Destroy,
+                                  base::Unretained(ptr)));
+    return;
+  }
   ptr->Destroy();
 }
 

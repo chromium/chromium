@@ -162,7 +162,7 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
 
 namespace std {
 
-// Specialize std::default_delete to call Destroy().
+// Specialize std::default_delete to call Destroy() on the right sequence.
 template <>
 struct MEDIA_GPU_EXPORT default_delete<media::ImageProcessorBackend> {
   constexpr default_delete() = default;
