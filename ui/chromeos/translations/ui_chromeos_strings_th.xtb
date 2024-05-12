@@ -428,7 +428,7 @@
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4432921877815220091">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4439427728133035643">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
-<translation id="4442424173763614572">การค้นหา DNS ล้มเหลว</translation>
+<translation id="4442424173763614572">DNS Lookup ล้มเหลว</translation>
 <translation id="4445896958353114391">กำลังซิงค์ไฟล์</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465725236958772856">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, จัดการโดยผู้ดูแลระบบ, เชื่อมต่อ</translation>
