@@ -34,7 +34,6 @@ class ExtensionViewViews : public views::WebView,
    public:
     virtual ~Container() = default;
 
-    virtual void OnExtensionSizeChanged(ExtensionViewViews* view) {}
     virtual gfx::Size GetMinBounds() = 0;
     virtual gfx::Size GetMaxBounds() = 0;
   };
@@ -77,7 +76,6 @@ class ExtensionViewViews : public views::WebView,
 
   // views::WebView:
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
-  void PreferredSizeChanged() override;
 
   void OnWebContentsAttached(views::WebView*);
 

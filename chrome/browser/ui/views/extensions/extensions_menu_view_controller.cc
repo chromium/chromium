@@ -667,12 +667,6 @@ void ExtensionsMenuViewController::UpdateMainPage(
     menu_item->Update(site_access_toggle_state, site_permissions_button_state,
                       site_permissions_button_access, is_enterprise);
   }
-
-  // Items can be added/removed from the menu, thus we need to resize the menu
-  // contents (e.g extension is added to the requests section).
-  if (bubble_delegate_->GetBubbleFrameView()) {
-    bubble_delegate_->SizeToContents();
-  }
 }
 
 void ExtensionsMenuViewController::UpdateSitePermissionsPage(
@@ -724,11 +718,6 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   DCHECK(main_page);
   int index = FindIndex(*toolbar_model_, action_id);
   InsertMenuItemMainPage(main_page, action_id, index);
-
-  // TODO(crbug.com/40879945): Update message section once
-  // such section is implemented (if the extension added requests
-  // site access, it needs to be added to such section).
-  bubble_delegate_->SizeToContents();
 }
 
 void ExtensionsMenuViewController::OnToolbarActionRemoved(
@@ -749,10 +738,6 @@ void ExtensionsMenuViewController::OnToolbarActionRemoved(
   auto* main_page = GetMainPage(current_page_.view());
   DCHECK(main_page);
   main_page->RemoveMenuItem(action_id);
-
-  // TODO(crbug.com/40879945): Update message section (if the extension
-  // removed was in the section, it needs to be removed).
-  bubble_delegate_->SizeToContents();
 }
 
 void ExtensionsMenuViewController::OnToolbarActionUpdated(
@@ -851,9 +836,6 @@ void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
   }
 
   main_page->RemoveExtensionRequestingAccess(extension_id);
-  if (bubble_delegate_->GetBubbleFrameView()) {
-    bubble_delegate_->SizeToContents();
-  }
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
@@ -948,12 +930,6 @@ void ExtensionsMenuViewController::SwitchToPage(
   }
   DCHECK(!current_page_);
   current_page_.SetView(bubble_contents_->AddChildView(std::move(page)));
-
-  // Only resize the menu if the bubble is created, since page could be added to
-  // the menu beforehand and delegate wouldn't know the bubble bounds.
-  if (bubble_delegate_->GetBubbleFrameView()) {
-    bubble_delegate_->SizeToContents();
-  }
 }
 
 void ExtensionsMenuViewController::PopulateMainPage(

@@ -152,12 +152,6 @@ ui::Cursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
   return ui::Cursor();
 }
 
-void ExtensionViewViews::PreferredSizeChanged() {
-  View::PreferredSizeChanged();
-  if (container_)
-    container_->OnExtensionSizeChanged(this);
-}
-
 void ExtensionViewViews::OnWebContentsAttached(views::WebView*) {
   host_->CreateRendererSoon();
   SetVisible(false);

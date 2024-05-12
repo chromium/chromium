@@ -83,7 +83,6 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                              views::Widget* active_widget) override;
 
   // ExtensionViewViews::Container:
-  void OnExtensionSizeChanged(ExtensionViewViews* view) override;
   gfx::Size GetMinBounds() override;
   gfx::Size GetMaxBounds() override;
 

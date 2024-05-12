@@ -69,7 +69,8 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      anchor_view, views::BubbleBorder::TOP_RIGHT);
+      anchor_view, views::BubbleBorder::TOP_RIGHT,
+      views::BubbleBorder::DIALOG_SHADOW, /*autosize=*/true);
   bubble_delegate->set_margins(gfx::Insets(0));
   bubble_delegate->set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(

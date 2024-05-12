@@ -152,11 +152,6 @@ void ExtensionPopup::OnWidgetTreeActivated(views::Widget* root_widget,
   }
 }
 
-void ExtensionPopup::OnExtensionSizeChanged(ExtensionViewViews* view) {
-  if (GetWidget())
-    SizeToContents();
-}
-
 gfx::Size ExtensionPopup::GetMinBounds() {
   return kMinSize;
 }
@@ -246,7 +241,8 @@ ExtensionPopup::ExtensionPopup(
     ShowPopupCallback callback)
     : BubbleDialogDelegateView(anchor_view,
                                arrow,
-                               views::BubbleBorder::STANDARD_SHADOW),
+                               views::BubbleBorder::STANDARD_SHADOW,
+                               /*autosize=*/true),
       host_(std::move(host)),
       show_action_(show_action),
       shown_callback_(std::move(callback)),
