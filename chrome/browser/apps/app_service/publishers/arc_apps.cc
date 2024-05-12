@@ -477,8 +477,13 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
 apps::InstallReason GetInstallReason(const ArcAppListPrefs* prefs,
                                      const std::string& app_id,
                                      const ArcAppListPrefs::AppInfo& app_info) {
+  if (prefs->IsControlledByPolicy(app_info.package_name)) {
+    return apps::InstallReason::kPolicy;
+  }
+
   // Sticky represents apps that cannot be uninstalled and are installed by the
-  // system.
+  // system. Policy installed apps are also considered sticky, so kPolicy must
+  // be first.
   if (app_info.sticky) {
     return apps::InstallReason::kSystem;
   }
@@ -489,10 +494,6 @@ apps::InstallReason GetInstallReason(const ArcAppListPrefs* prefs,
 
   if (prefs->IsDefault(app_id)) {
     return apps::InstallReason::kDefault;
-  }
-
-  if (prefs->IsControlledByPolicy(app_info.package_name)) {
-    return apps::InstallReason::kPolicy;
   }
 
   return apps::InstallReason::kUser;
