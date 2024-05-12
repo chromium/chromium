@@ -44,7 +44,9 @@ suite('PasskeyDetailsCardTest', function() {
     assertEquals(passkey.username, card.$.usernameValue.value);
     assertEquals(passkey.displayName, card.$.displayNameValue.value);
     assertEquals(
-        card.i18n('passkeyManagementInfoLabel'),
+        // 1/12/70 is the date that matches the creation time set by
+        // `createPasswordEntry`.
+        card.i18n('passkeyManagementInfoLabel', '1/12/70'),
         card.$.infoLabel.innerText.trim());
     assertTrue(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
@@ -105,18 +107,4 @@ suite('PasskeyDetailsCardTest', function() {
     await domChange;
     assertEquals(card.shadowRoot!.querySelector('delete-passkey-dialog'), null);
   });
-
-  test('Mobile device is not needed if PIN available', async function() {
-    passwordManager.data.isPasswordManagerPinAvailable = true;
-
-    card = document.createElement('passkey-details-card');
-    card.passkey = passkey;
-    document.body.appendChild(card);
-    await flushTasks();
-
-    assertEquals(
-        card.i18n('passkeyManagementWithPinInfoLabel'),
-        card.$.infoLabel.innerText.trim());
-  });
-
 });

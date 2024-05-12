@@ -100,6 +100,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     changePasswordUrl: params.changePasswordUrl,
     password: params.password || '',
     affiliatedDomains: params.affiliatedDomains || [domain],
+    creationTime: params.isPasskey ? 1000000000 : undefined,
   };
 }
 
@@ -216,6 +217,7 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     password: params.password,
     note: '',
     compromisedInfo: types.length ? compromisedInfo : undefined,
+    creationTime: undefined,
   };
 }
 

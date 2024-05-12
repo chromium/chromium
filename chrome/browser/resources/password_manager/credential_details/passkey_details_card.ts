@@ -13,6 +13,7 @@ import '../dialogs/delete_passkey_dialog.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
@@ -125,12 +126,14 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   }
 
   private updatePasskeyManagementInfoLabel_() {
-    PasswordManagerImpl.getInstance().isPasswordManagerPinAvailable().then(
-        available => {
-          this.infoLabelText_ = available ?
-              this.i18n('passkeyManagementWithPinInfoLabel') :
-              this.i18n('passkeyManagementInfoLabel');
-        });
+    // Google Password Manager passkeys always have their creation time
+    // available.
+    assert(this.passkey.creationTime !== undefined);
+
+    const date = new Date(this.passkey.creationTime);
+    this.infoLabelText_ = this.i18n(
+        'passkeyManagementInfoLabel',
+        date.toLocaleDateString(/*locales=*/ undefined, {dateStyle: 'short'}));
   }
 }
 

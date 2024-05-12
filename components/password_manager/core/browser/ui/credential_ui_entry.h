@@ -115,6 +115,9 @@ struct CredentialUIEntry {
   // The origin of identity provider used for federated login.
   url::Origin federation_origin;
 
+  // The creation time, if this is a passkey, nullopt otherwise.
+  std::optional<base::Time> creation_time;
+
   // Indicates the stores where the credential is stored.
   base::flat_set<PasswordForm::Store> stored_in;
 

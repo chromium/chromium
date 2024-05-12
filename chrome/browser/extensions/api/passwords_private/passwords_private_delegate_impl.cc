@@ -1273,6 +1273,10 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
   if (entry.is_passkey) {
     entry.display_name = base::UTF16ToUTF8(credential.user_display_name);
   }
+  if (credential.creation_time.has_value()) {
+    entry.creation_time =
+        credential.creation_time->InMillisecondsSinceUnixEpoch();
+  }
   entry.stored_in = extensions::StoreSetFromCredential(credential);
   if (!credential.federation_origin.opaque()) {
     std::u16string formatted_origin =

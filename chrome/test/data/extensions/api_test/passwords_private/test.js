@@ -685,6 +685,7 @@ var availableTests = [
       var passkey = group.entries[group.entries.length - 1];
       chrome.test.assertTrue(passkey.isPasskey);
       chrome.test.assertEq(passkey.displayName, 'displayName');
+      chrome.test.assertEq(passkey.creationTime, 1000);
 
       // Ensure that all entry ids are unique.
       chrome.test.assertEq(group.entries.length, idSet.size);

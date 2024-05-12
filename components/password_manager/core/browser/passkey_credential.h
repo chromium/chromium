@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
@@ -51,7 +52,9 @@ class PasskeyCredential {
                     CredentialId credential_id,
                     UserId user_id,
                     Username username = Username(""),
-                    DisplayName display_name = DisplayName(""));
+                    DisplayName display_name = DisplayName(""),
+                    // Must be provided for kAndroidPhone credentials.
+                    std::optional<base::Time> creation_time = std::nullopt);
   ~PasskeyCredential();
 
   PasskeyCredential(const PasskeyCredential&);
@@ -76,6 +79,9 @@ class PasskeyCredential {
   const std::vector<uint8_t>& user_id() const { return user_id_; }
   const std::string& username() const { return username_; }
   const std::string& display_name() const { return display_name_; }
+  const std::optional<base::Time>& creation_time() const {
+    return creation_time_;
+  }
 
  private:
   friend bool operator==(const PasskeyCredential& lhs,
@@ -107,6 +113,10 @@ class PasskeyCredential {
   // An optional label for the authenticator. If this is not set, a generic
   // device name will be returned by GetAuthenticatorLabel().
   std::optional<std::u16string> authenticator_label_;
+
+  // The time when the credential was created. Used for display in management
+  // UIs. This value is not available for passkeys from some sources.
+  std::optional<base::Time> creation_time_;
 };
 
 bool operator==(const PasskeyCredential& lhs, const PasskeyCredential& rhs);

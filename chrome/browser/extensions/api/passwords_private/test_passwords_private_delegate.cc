@@ -59,6 +59,7 @@ TestPasswordsPrivateDelegate::TestPasswordsPrivateDelegate()
   api::passwords_private::PasswordUiEntry passkey = CreateEntry(kNumMocks);
   passkey.is_passkey = true;
   passkey.display_name = "displayName";
+  passkey.creation_time = 1000;
   current_entries_.push_back(std::move(passkey));
 }
 TestPasswordsPrivateDelegate::~TestPasswordsPrivateDelegate() = default;

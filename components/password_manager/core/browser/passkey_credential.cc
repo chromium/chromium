@@ -47,9 +47,13 @@ std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
         CredentialId(ProtobufBytesToVector(passkey.credential_id())),
         UserId(ProtobufBytesToVector(passkey.user_id())),
         Username(passkey.has_user_name() ? passkey.user_name() : ""),
-        DisplayName(passkey.has_user_display_name()
-                        ? passkey.user_display_name()
-                        : ""));
+        DisplayName(
+            passkey.has_user_display_name() ? passkey.user_display_name() : ""),
+        passkey.creation_time() != 0
+            ? std::optional<base::Time>(
+                  base::Time::FromMillisecondsSinceUnixEpoch(
+                      passkey.creation_time()))
+            : std::nullopt);
   }
   return ret;
 }
@@ -78,13 +82,15 @@ PasskeyCredential::PasskeyCredential(Source source,
                                      CredentialId credential_id,
                                      UserId user_id,
                                      Username username,
-                                     DisplayName display_name)
+                                     DisplayName display_name,
+                                     std::optional<base::Time> creation_time)
     : source_(source),
       rp_id_(std::move(rp_id)),
       credential_id_(std::move(credential_id)),
       user_id_(std::move(user_id)),
       username_(std::move(username)),
-      display_name_(std::move(display_name)) {}
+      display_name_(std::move(display_name)),
+      creation_time_(std::move(creation_time)) {}
 
 PasskeyCredential::~PasskeyCredential() = default;
 

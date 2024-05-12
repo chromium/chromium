@@ -29,11 +29,13 @@ constexpr std::array<const uint8_t, 4> kCredentialId1 = {'a', 'b', 'c', 'd'};
 constexpr std::array<const uint8_t, 4> kUserId1 = {'1', '2', '3', '4'};
 constexpr char kUserName1[] = "reimu";
 constexpr char kUserDisplayName1[] = "Reimu Hakurei";
+constexpr int kCreationEpochSecs1 = 1;
 
 constexpr std::array<const uint8_t, 4> kCredentialId2 = {'e', 'f', 'g', 'h'};
 constexpr std::array<const uint8_t, 4> kUserId2 = {'5', '6', '7', '8'};
 constexpr char kUserName2[] = "marisa";
 constexpr char kUserDisplayName2[] = "Marisa Kirisame";
+constexpr int kCreationEpochSecs2 = 2;
 
 constexpr std::array<const uint8_t, 4> kCredentialIdShadow1 = {'i', 'j', 'k'};
 constexpr std::array<const uint8_t, 4> kCredentialIdShadow2 = {'l', 'm', 'n'};
@@ -58,6 +60,7 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential1.set_user_id(kUserId1.data(), kUserId1.size());
   credential1.set_user_name(kUserName1);
   credential1.set_user_display_name(kUserDisplayName1);
+  credential1.set_creation_time(kCreationEpochSecs1 * 1000);
 
   sync_pb::WebauthnCredentialSpecifics credential2;
   credential2.set_sync_id(base::RandBytesAsString(16));
@@ -66,6 +69,7 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential2.set_user_id(kUserId2.data(), kUserId2.size());
   credential2.set_user_name(kUserName2);
   credential2.set_user_display_name(kUserDisplayName2);
+  credential2.set_creation_time(kCreationEpochSecs2 * 1000);
 
   // Shadow the first credential.
   sync_pb::WebauthnCredentialSpecifics credential1_shadow;
@@ -78,6 +82,7 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
   credential1_shadow.set_user_display_name(kUserDisplayName1);
   credential1_shadow.add_newly_shadowed_credential_ids(
       credential1.credential_id());
+  credential1_shadow.set_creation_time(kCreationEpochSecs1 * 1000);
 
   std::vector<PasskeyCredential> credentials =
       PasskeyCredential::FromCredentialSpecifics(std::vector{
@@ -95,14 +100,16 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
                                 ToUint8Vector(kCredentialIdShadow1)),
                             PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
                             PasskeyCredential::Username(kUserName1),
-                            PasskeyCredential::DisplayName(kUserDisplayName1)),
+                            PasskeyCredential::DisplayName(kUserDisplayName1),
+                            base::Time::FromTimeT(kCreationEpochSecs1)),
           PasskeyCredential(
               PasskeyCredential::Source::kAndroidPhone,
               PasskeyCredential::RpId(kRpId),
               PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId2)),
               PasskeyCredential::UserId(ToUint8Vector(kUserId2)),
               PasskeyCredential::Username(kUserName2),
-              PasskeyCredential::DisplayName(kUserDisplayName2))));
+              PasskeyCredential::DisplayName(kUserDisplayName2),
+              base::Time::FromTimeT(kCreationEpochSecs2))));
 }
 
 // Regression test for crbug.com/1447116.
@@ -152,14 +159,16 @@ TEST_F(PasskeyCredentialTest, ImplicitlyShadowedCredentials) {
               PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId1)),
               PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
               PasskeyCredential::Username(""),
-              PasskeyCredential::DisplayName("")),
+              PasskeyCredential::DisplayName(""),
+              base::Time::FromMillisecondsSinceUnixEpoch(200)),
           PasskeyCredential(
               PasskeyCredential::Source::kAndroidPhone,
               PasskeyCredential::RpId(kRpId),
               PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId2)),
               PasskeyCredential::UserId(ToUint8Vector(kUserId2)),
               PasskeyCredential::Username(""),
-              PasskeyCredential::DisplayName(""))));
+              PasskeyCredential::DisplayName(""),
+              base::Time::FromMillisecondsSinceUnixEpoch(400))));
 }
 
 TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
