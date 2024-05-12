@@ -11,7 +11,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
@@ -166,10 +168,15 @@ bool DefaultBrowserPromoCompleted() {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
 
+    BOOL isUserSignedIn =
+        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    BOOL isContentNotificationEnabled = IsContentNotificationSetUpListEnabled(
+        isUserSignedIn, self.isDefaultSearchEngine, prefService);
     _setUpList = [SetUpList buildFromPrefs:prefService
                                 localState:_localState
                                syncService:syncService
-                     authenticationService:authService];
+                     authenticationService:authService
+                contentNotificationEnabled:isContentNotificationEnabled];
     _setUpList.delegate = self;
 
     _consumers = [SetUpListConsumerList

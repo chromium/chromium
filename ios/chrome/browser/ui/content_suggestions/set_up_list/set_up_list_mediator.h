@@ -107,6 +107,9 @@ class SyncService;
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
+// `YES` if the user is using Google as default search engine.
+@property(nonatomic, assign) BOOL isDefaultSearchEngine;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_SET_UP_LIST_MEDIATOR_H_

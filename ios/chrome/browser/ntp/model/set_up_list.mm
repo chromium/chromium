@@ -137,7 +137,8 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
                    syncService:(syncer::SyncService*)syncService
-         authenticationService:(AuthenticationService*)authService {
+         authenticationService:(AuthenticationService*)authService
+    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
   if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
     return nil;
   }
@@ -159,11 +160,8 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kAutofill, prefs,
                                    localState, authService));
 
-  // Add content notification item if the feature is enabled and the user has
-  // signed in.
-  if (IsIOSTipsNotificationsEnabled() ||
-      (IsContentPushNotificationsSetUpListEnabled() &&
-       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
+  // Add content notification item if the feature is enabled.
+  if (IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled) {
     AddItemIfNotNil(items, BuildItem(SetUpListItemType::kNotifications, prefs,
                                      localState, authService));
   }
@@ -182,12 +180,14 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
   // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
   return [[self alloc] initWithItems:items
                           localState:localState
-               authenticationService:authService];
+               authenticationService:authService
+          contentNotificationEnabled:isContentNotificationEnabled];
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
-                   localState:(PrefService*)localState
-        authenticationService:(AuthenticationService*)authService {
+                    localState:(PrefService*)localState
+         authenticationService:(AuthenticationService*)authService
+    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
   self = [super init];
   if (self) {
     _items = items;
@@ -205,9 +205,7 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
     _shouldIncludeNotificationItem =
-        IsIOSTipsNotificationsEnabled() ||
-        (IsContentPushNotificationsSetUpListEnabled() &&
-         authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+        IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled;
   }
   return self;
 }
