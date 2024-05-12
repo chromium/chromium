@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
@@ -141,8 +142,7 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
   LogUserAction(UserAction::kLinkOpened);
   browser_->OpenURL(
       content::OpenURLParams(
-          GURL("https://support.google.com/"
-               "chrome?p=search_from_page#topic=7439538"),
+          GURL(lens::features::GetLensOverlayHelpCenterURL()),
           content::Referrer(),
           ui::DispositionFromEventFlags(
               event.flags(), WindowOpenDisposition::NEW_BACKGROUND_TAB),

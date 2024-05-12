@@ -200,6 +200,10 @@ extern bool GetShouldIssueProcessPrewarmingForLens();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEnabled();
 
+// Returns the finch configured help center URL for lens permission modal.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayHelpCenterURL();
+
 // Returns the minimum amount of physical memory required to enable the Lens
 // overlay feature.
 COMPONENT_EXPORT(LENS_FEATURES)

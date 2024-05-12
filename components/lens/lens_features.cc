@@ -48,6 +48,9 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
 BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
+const base::FeatureParam<std::string> kHelpCenterUrl{
+    &kLensOverlay, "help-center-url",
+    "https://support.google.com/chrome?p=search_from_page"};
 const base::FeatureParam<std::string> kResultsSearchUrl{
     &kLensOverlay, "results-search-url", "https://www.google.com/search"};
 const base::FeatureParam<int> kLensOverlayScreenshotRenderQuality{
@@ -229,6 +232,10 @@ bool GetShouldIssueProcessPrewarmingForLens() {
 
 bool IsLensOverlayEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlay);
+}
+
+std::string GetLensOverlayHelpCenterURL() {
+  return kHelpCenterUrl.Get();
 }
 
 int GetLensOverlayMinRamMb() {
