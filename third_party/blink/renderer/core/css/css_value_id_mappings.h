@@ -453,26 +453,26 @@ inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
 }
 
 template <>
-inline TextBoxEdge::TextBoxEdgeType CssValueIDToPlatformEnum(CSSValueID id) {
+inline TextBoxEdge::Type CssValueIDToPlatformEnum(CSSValueID id) {
   switch (id) {
     case CSSValueID::kLeading:
-      return TextBoxEdge::TextBoxEdgeType::kLeading;
+      return TextBoxEdge::Type::kLeading;
     case CSSValueID::kText:
-      return TextBoxEdge::TextBoxEdgeType::kText;
+      return TextBoxEdge::Type::kText;
     case CSSValueID::kCap:
-      return TextBoxEdge::TextBoxEdgeType::kCap;
+      return TextBoxEdge::Type::kCap;
     case CSSValueID::kEx:
-      return TextBoxEdge::TextBoxEdgeType::kEx;
+      return TextBoxEdge::Type::kEx;
     case CSSValueID::kAlphabetic:
-      return TextBoxEdge::TextBoxEdgeType::kAlphabetic;
+      return TextBoxEdge::Type::kAlphabetic;
     default:
       NOTREACHED_NORETURN();
   }
 }
 
 template <>
-inline CSSValueID PlatformEnumToCSSValueID(TextBoxEdge::TextBoxEdgeType type) {
-  using enum TextBoxEdge::TextBoxEdgeType;
+inline CSSValueID PlatformEnumToCSSValueID(TextBoxEdge::Type type) {
+  using enum TextBoxEdge::Type;
   switch (type) {
     case kLeading:
       return CSSValueID::kLeading;

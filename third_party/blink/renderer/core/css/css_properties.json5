@@ -5207,7 +5207,7 @@
       field_group: "box",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/text_box_edge.h"],
-      default_value: "TextBoxEdge(TextBoxEdge::TextBoxEdgeType::kLeading)",
+      default_value: "TextBoxEdge()",
       type_name: "TextBoxEdge",
       converter: "ConvertTextBoxEdge",
       runtime_flag: "CSSTextBoxTrim",

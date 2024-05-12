@@ -10,12 +10,16 @@
 
 namespace blink {
 
+//
+// Represents the CSS `text-box-edge` property.
+// https://drafts.csswg.org/css-inline-3/#propdef-text-box-edge
+//
 class CORE_EXPORT TextBoxEdge {
   DISALLOW_NEW();
 
  public:
   // https://drafts.csswg.org/css-inline-3/#text-edges.
-  enum class TextBoxEdgeType : uint8_t {
+  enum class Type : uint8_t {
     kLeading,
     kText,
     kCap,
@@ -26,36 +30,35 @@ class CORE_EXPORT TextBoxEdge {
     // kIdeographicInk, not implemented.
   };
 
-  explicit TextBoxEdge(TextBoxEdgeType over)
-      : TextBoxEdge(over, ComputedMissingUnderEdge(over)) {}
-
-  TextBoxEdge(TextBoxEdgeType over, TextBoxEdgeType under)
-      : over_(over), under_(under) {}
+  TextBoxEdge() : TextBoxEdge(Type::kLeading, Type::kLeading) {}
+  explicit TextBoxEdge(Type over)
+      : TextBoxEdge(over, ComputeMissingUnderEdge(over)) {}
+  TextBoxEdge(Type over, Type under) : over_(over), under_(under) {}
 
   bool operator==(const TextBoxEdge& other) const {
     return over_ == other.Over() && under_ == other.Under();
   }
   bool operator!=(const TextBoxEdge& other) const { return !(*this == other); }
 
-  const TextBoxEdgeType& Over() const { return over_; }
-  const TextBoxEdgeType& Under() const { return under_; }
+  const Type& Over() const { return over_; }
+  const Type& Under() const { return under_; }
 
  private:
-  static TextBoxEdgeType ComputedMissingUnderEdge(TextBoxEdgeType over) {
+  static constexpr Type ComputeMissingUnderEdge(Type over) {
     switch (over) {
-      case TextBoxEdgeType::kText:
-      case TextBoxEdgeType::kLeading:
+      case Type::kText:
+      case Type::kLeading:
         return over;
-      case TextBoxEdgeType::kCap:
-      case TextBoxEdgeType::kEx:
-        return TextBoxEdgeType::kText;
-      case TextBoxEdgeType::kAlphabetic:
+      case Type::kCap:
+      case Type::kEx:
+        return Type::kText;
+      case Type::kAlphabetic:
         NOTREACHED_NORETURN();
     }
   }
 
-  TextBoxEdgeType over_;
-  TextBoxEdgeType under_;
+  Type over_;
+  Type under_;
 };
 
 }  // namespace blink
