@@ -17,6 +17,7 @@
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
@@ -38,9 +39,8 @@ class CameraAppDeviceImpl::DocumentScanner {
     if (!ash::mojo_service_manager::IsServiceManagerBound()) {
       return;
     }
-    // TODO(b/333927344): Add service name to chromeos::mojo_services.
     ash::mojo_service_manager::GetServiceManagerProxy()->Request(
-        "CrosDocumentScanner", std::nullopt,
+        chromeos::mojo_services::kCrosDocumentScanner, std::nullopt,
         document_scanner_remote_.BindNewPipeAndPassReceiver().PassPipe());
   }
 

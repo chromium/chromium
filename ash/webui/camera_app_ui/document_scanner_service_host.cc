@@ -5,6 +5,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_service_host.h"
 
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash {
 
@@ -30,8 +31,7 @@ void DocumentScannerServiceHost::Start() {
   if (ash::mojo_service_manager::IsServiceManagerBound()) {
     auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
     proxy->Register(
-        // TODO(b/333927344): Add service name to chromeos::mojo_services.
-        /*service_name=*/"CrosDocumentScanner",
+        /*service_name=*/chromeos::mojo_services::kCrosDocumentScanner,
         provider_receiver_.BindNewPipeAndPassRemote());
   }
 }
