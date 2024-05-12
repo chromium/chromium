@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
+#include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/lens/core/mojom/search_bubble.mojom.h"
@@ -47,4 +47,4 @@ class SearchBubblePageHandler : public lens::mojom::SearchBubblePageHandler {
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_PAGE_HANDLER_H_

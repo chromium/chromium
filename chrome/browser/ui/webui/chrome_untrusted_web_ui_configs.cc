@@ -19,7 +19,7 @@
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/ui/webui/lens/lens_untrusted_ui_config.h"
+#include "chrome/browser/ui/lens/lens_untrusted_ui_config.h"
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

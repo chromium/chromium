@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_UI_H_
+#ifndef CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_UI_H_
+#define CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_UI_H_
 
 #include "chrome/browser/lens/core/mojom/search_bubble.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -55,4 +55,4 @@ class SearchBubbleUIConfig
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_WEBUI_LENS_SEARCH_BUBBLE_UI_H_
+#endif  // CHROME_BROWSER_UI_LENS_SEARCH_BUBBLE_UI_H_
