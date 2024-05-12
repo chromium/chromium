@@ -512,7 +512,7 @@
 <translation id="139085829239861233">또는 나중에 다시 시도해 주세요.</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />님은 <ph name="PRINTER_NAME" /> 프린터로 인쇄할 권한이 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1392047138650695757">사용자 사전</translation>
-<translation id="139300021892314943">로그인할 수 있는 사용자 제한하기</translation>
+<translation id="139300021892314943">로그인할 수 있는 사용자 제한</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
 <translation id="1395730723686586365">업데이터 시작됨</translation>
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
@@ -8586,7 +8586,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7625025537587898155">새 프로필 추가</translation>
 <translation id="7625568159987162309">사이트 전체에 저장된 권한 및 데이터 보기</translation>
 <translation id="7625823789272218216">새 좌측 탭</translation>
-<translation id="7628201176665550262">새로고침 빈도</translation>
+<translation id="7628201176665550262">화면 재생 빈도</translation>
 <translation id="7628392600831846024">기호 스타일</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />(<ph name="VARIANT" />), <ph name="GRADE" />등급</translation>
 <translation id="762917478230183172">키별로 작업 선택</translation>
@@ -10829,7 +10829,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="992653586748191655">추천 탭 그룹 <ph name="NUM" />개</translation>
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
 <translation id="993540765962421562">설치 진행 중</translation>
-<translation id="994289308992179865">루프(&amp;L)</translation>
+<translation id="994289308992179865">연속 재생(&amp;L)</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">안전한 연결 설정 중...</translation>

@@ -1215,7 +1215,7 @@
 <translation id="1901303067676059328">選取全部(&amp;A)</translation>
 <translation id="1904580727789512086">系統會將你造訪的網址儲存到 Google 帳戶</translation>
 <translation id="1904603806662441960">在 Chrome 中管理網站的攝影機權限</translation>
-<translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
+<translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存等功能</translation>
 <translation id="1906488504371069394">前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />探索更多擴充功能和主題</translation>
 <translation id="1907044622262489040">使用語音輸入。按下搜尋鍵 + D 鍵，然後開始說話。</translation>
 <translation id="1907659324308286326">某些 Thunderbolt 或 USB4 配件必須存取記憶體，才能正常運作。</translation>
@@ -5913,7 +5913,7 @@
 <translation id="5528295196101251711">VM 名稱</translation>
 <translation id="5529554942700688235">記憶體用量節省摘要，已釋出 <ph name="MEMORY_VALUE" /></translation>
 <translation id="5532223876348815659">通用</translation>
-<translation id="5533001281916885985"><ph name="SITE_NAME" />要求下列權限：</translation>
+<translation id="5533001281916885985"><ph name="SITE_NAME" /> 要求下列權限</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">無法連上 Google</translation>
 <translation id="5541694225089836610">你的管理員停用了這個動作</translation>
