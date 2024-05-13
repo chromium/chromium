@@ -4356,16 +4356,13 @@ enum WebFeature {
   kPrefersReducedDataMediaFeature = 4963,
   kScriptingMediaFeature = 4964,
   kInvertedColorsMediaFeature = 4965,
-
   kCSSLightDark = 4966,
-
   kPrivateAggregationApiFilteringIds = 4967,
   kHTMLInputInSelect = 4968,
-
   kCanvas2DMesh = 4969,
   kCaretPositionFromPoint = 4970,
-
   kDocumentPolicyIncludeJSCallStacksInCrashReports = 4971,
+  kMaximumHTMLParserDOMTreeDepthHit = 4972,
 
 
   // Add new features immediately above this line. Don't change assigned
