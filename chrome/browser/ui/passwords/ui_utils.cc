@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -247,6 +248,11 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
   }();
 
   return net::AppendQueryParameter(url, "utm_campaign", campaign);
+}
+
+std::string GetGooglePasswordManagerSubPageURLStr() {
+  return base::StrCat({chrome::kChromeUIPasswordManagerURL, "/",
+                       chrome::kPasswordManagerSubPage});
 }
 
 // Navigation is handled differently on Android.

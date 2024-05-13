@@ -106,6 +106,9 @@ bool IsSyncingAutosignSetting(Profile* profile);
 GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
 
+// Returns a string URL to the Google Password Manager's passwords subpage
+std::string GetGooglePasswordManagerSubPageURLStr();
+
 #if !BUILDFLAG(IS_ANDROID)
 // Navigates to the Google Password Manager page.
 void NavigateToManagePasswordsPage(

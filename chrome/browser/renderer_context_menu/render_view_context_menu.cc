@@ -1176,10 +1176,9 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCH_PROVIDER) &&
       params_.misspelled_word.empty() &&
-      (params_.page_url !=
-           chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage) &&
-       params_.page_url !=
-           chrome::GetSettingsUrl(chrome::kPasswordCheckSubPage))) {
+      (params_.page_url != GetGooglePasswordManagerSubPageURLStr() &&
+       params_.page_url != chrome::kChromeUIPasswordManagerCheckupURL &&
+       params_.page_url != chrome::kChromeUIPasswordManagerSettingsURL)) {
     AppendSearchProvider();
   }
 

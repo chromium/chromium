@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -519,9 +520,8 @@ void ShowPasswordDetailsPage(Browser* browser,
                              const std::string& password_domain_name) {
   base::RecordAction(
       UserMetricsAction("Options_ShowPasswordDetailsInPasswordManager"));
-  std::string url =
-      base::StrCat({kChromeUIPasswordManagerURL, "/", kPasswordManagerSubPage,
-                    "/", password_domain_name});
+  std::string url = base::StrCat(
+      {GetGooglePasswordManagerSubPageURLStr(), "/", password_domain_name});
   ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(url));
 }
 
