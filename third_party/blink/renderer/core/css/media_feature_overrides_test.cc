@@ -22,15 +22,16 @@ TEST(MediaFeatureOverrides, SetOverrideInvalid) {
   MediaFeatureOverrides overrides;
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "1px");
+                        "1px", /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "orange");
+                        "orange", /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "orange");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "orange",
+      /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 }
 
@@ -38,22 +39,23 @@ TEST(MediaFeatureOverrides, SetOverrideValid) {
   MediaFeatureOverrides overrides;
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "light");
+                        "light", /*document=*/nullptr);
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kLight,
             overrides.GetPreferredColorScheme());
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "dark");
+                        "dark", /*document=*/nullptr);
   EXPECT_EQ(mojom::blink::PreferredColorScheme::kDark,
             overrides.GetPreferredColorScheme());
 
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce",
+      /*document=*/nullptr);
   EXPECT_TRUE(overrides.GetPrefersReducedTransparency().value());
 
   overrides.SetOverride(
       media_feature_names::kPrefersReducedTransparencyMediaFeature,
-      "no-preference");
+      "no-preference", /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPrefersReducedTransparency().value());
 }
 
@@ -61,31 +63,35 @@ TEST(MediaFeatureOverrides, ResetOverride) {
   MediaFeatureOverrides overrides;
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "light");
+                        "light", /*document=*/nullptr);
   EXPECT_TRUE(overrides.GetPreferredColorScheme().has_value());
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "");
+                        "", /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "light");
+                        "light", /*document=*/nullptr);
   EXPECT_TRUE(overrides.GetPreferredColorScheme().has_value());
   overrides.SetOverride(media_feature_names::kPrefersColorSchemeMediaFeature,
-                        "invalid");
+                        "invalid", /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPreferredColorScheme().has_value());
 
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce",
+      /*document=*/nullptr);
   EXPECT_TRUE(overrides.GetPrefersReducedTransparency().has_value());
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "",
+      /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPrefersReducedTransparency().has_value());
 
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "reduce",
+      /*document=*/nullptr);
   EXPECT_TRUE(overrides.GetPrefersReducedTransparency().has_value());
   overrides.SetOverride(
-      media_feature_names::kPrefersReducedTransparencyMediaFeature, "invalid");
+      media_feature_names::kPrefersReducedTransparencyMediaFeature, "invalid",
+      /*document=*/nullptr);
   EXPECT_FALSE(overrides.GetPrefersReducedTransparency().has_value());
 }
 

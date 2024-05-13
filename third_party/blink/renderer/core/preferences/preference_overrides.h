@@ -14,6 +14,8 @@
 
 namespace blink {
 
+class Document;
+
 // PreferenceOverrides represents the Web Preferences API overrides.
 // Spec: https://wicg.github.io/web-preferences-api/
 class CORE_EXPORT PreferenceOverrides {
@@ -21,7 +23,9 @@ class CORE_EXPORT PreferenceOverrides {
 
  public:
   // When value_string is empty, or otherwise invalid, it clears the override.
-  void SetOverride(const AtomicString& feature, const String& value_string);
+  void SetOverride(const AtomicString& feature,
+                   const String& value_string,
+                   const Document*);
 
   std::optional<mojom::blink::PreferredColorScheme> GetPreferredColorScheme()
       const {

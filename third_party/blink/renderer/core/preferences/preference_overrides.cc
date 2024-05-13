@@ -11,9 +11,10 @@
 namespace blink {
 
 void PreferenceOverrides::SetOverride(const AtomicString& feature,
-                                      const String& value_string) {
-  MediaQueryExpValue value =
-      MediaFeatureOverrides::ParseMediaQueryValue(feature, value_string);
+                                      const String& value_string,
+                                      const Document* document) {
+  MediaQueryExpValue value = MediaFeatureOverrides::ParseMediaQueryValue(
+      feature, value_string, document);
 
   if (feature == media_feature_names::kPrefersColorSchemeMediaFeature) {
     preferred_color_scheme_ =

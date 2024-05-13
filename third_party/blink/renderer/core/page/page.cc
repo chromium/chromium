@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
@@ -1302,7 +1303,13 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
       return;
     media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
   }
-  media_feature_overrides_->SetOverride(media_feature, value);
+
+  const Document* document = nullptr;
+  if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
+    document = local_frame->GetDocument();
+  }
+
+  media_feature_overrides_->SetOverride(media_feature, value, document);
   if (media_feature == "prefers-color-scheme" ||
       media_feature == "forced-colors")
     SettingsChanged(ChangeType::kColorScheme);
@@ -1324,7 +1331,13 @@ void Page::SetPreferenceOverride(const AtomicString& media_feature,
     }
     preference_overrides_ = std::make_unique<PreferenceOverrides>();
   }
-  preference_overrides_->SetOverride(media_feature, value);
+
+  const Document* document = nullptr;
+  if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
+    document = local_frame->GetDocument();
+  }
+
+  preference_overrides_->SetOverride(media_feature, value, document);
   if (media_feature == "prefers-color-scheme") {
     SettingsChanged(ChangeType::kColorScheme);
   } else {
