@@ -109,6 +109,13 @@ RealboxContextualAndTrendingSuggestions::
 }
 
 // static
+BASE_FEATURE(ReportNumZPSInSession::kReportNumZPSInSession,
+             "ReportNumZPSInSession",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+ReportNumZPSInSession::ReportNumZPSInSession()
+    : enabled(base::FeatureList::IsEnabled(kReportNumZPSInSession)) {}
+
+// static
 BASE_FEATURE(ShortcutBoosting::kShortcutBoost,
              "OmniboxShortcutBoost",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -155,12 +162,5 @@ VitalizeAutocompletedKeywords::VitalizeAutocompletedKeywords() {
                                   "VitalizeAutocompletedKeywordsScore", 450)
               .Get();
 }
-
-// static
-BASE_FEATURE(ReportNumZPSInSession::kReportNumZPSInSession,
-             "ReportNumZPSInSession",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-ReportNumZPSInSession::ReportNumZPSInSession()
-    : enabled(base::FeatureList::IsEnabled(kReportNumZPSInSession)) {}
 
 }  // namespace omnibox_feature_configs
