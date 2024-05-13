@@ -93,6 +93,9 @@ BASE_FEATURE(kDownloadWarningSurvey,
 const base::FeatureParam<int> kDownloadWarningSurveyType{
     &kDownloadWarningSurvey, "survey_type", -1};
 
+const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
+    &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
+
 BASE_FEATURE(kEncryptedArchivesMetadata,
              "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -84,6 +84,10 @@ BASE_DECLARE_FEATURE(kDownloadWarningSurvey);
 // //c/b/download/download_warning_desktop_hats_util.h).
 extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 
+// The time interval after which to consider a download warning ignored, and
+// potentially show the survey for ignoring a download bubble warning.
+extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
+
 // Controls whether Standard Safe Browsing users are permitted to provide
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);

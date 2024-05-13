@@ -99,9 +99,10 @@ class DownloadWarningHatsProductSpecificData {
     // Only logged for users with Safe Browsing enabled.
     // Other users will have a placeholder value.
     static constexpr char kFilename[] = "Download filename";
-    // TODO(chlily): Add kIgnoreTimeout.
-    // Timeout used for "ignore" survey trigger. Only added if the outcome was
-    // ignore.
+    // Timeout used for "ignore" survey trigger. Only added for a download
+    // bubble warning that was ignored.
+    static constexpr char kIgnoreTimeoutSeconds[] =
+        "Threshold for ignored warning (s)";
   };
 
   // Returns a ProductSpecificData with some basic PSD values filled in.
@@ -277,6 +278,9 @@ bool CanShowDownloadWarningHatsSurvey(download::DownloadItem* download);
 // is not eligible, or there is a configuration error, this returns nullopt.
 std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
     DownloadWarningHatsType survey_type);
+
+// Returns the time delay used for kDownloadBubbleIgnore triggers.
+base::TimeDelta GetIgnoreDownloadBubbleWarningDelay();
 
 // Launches a HaTS survey using the desktop HaTS service, if all preconditions
 // are met. The `psd` object encapsulates the data for the survey, including the

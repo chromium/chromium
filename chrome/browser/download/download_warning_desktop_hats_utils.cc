@@ -229,7 +229,11 @@ DownloadWarningHatsProductSpecificData::Create(
   psd.string_data_.insert(
       {Fields::kWarningType, GetWarningTypeStringData(download_model)});
 
-  // TODO(chlily): Implement kIgnoreTimeout.
+  if (survey_type == DownloadWarningHatsType::kDownloadBubbleIgnore) {
+    psd.string_data_.insert(
+        {Fields::kIgnoreTimeoutSeconds,
+         ElapsedTimeToSecondsString(GetIgnoreDownloadBubbleWarningDelay())});
+  }
 
   // Assemble the Profile-dependent PSD.
   Profile* profile = Profile::FromBrowserContext(
@@ -339,6 +343,9 @@ DownloadWarningHatsProductSpecificData::GetStringDataFields(
   };
   if (IsDownloadsPageTrigger(survey_type)) {
     fields.push_back(Fields::kNumPageWarnings);
+  }
+  if (survey_type == DownloadWarningHatsType::kDownloadBubbleIgnore) {
+    fields.push_back(Fields::kIgnoreTimeoutSeconds);
   }
   return fields;
 }
@@ -499,6 +506,11 @@ std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
     case DownloadWarningHatsType::kDownloadsPageIgnore:
       return kHatsSurveyTriggerDownloadWarningPageIgnore;
   }
+}
+
+base::TimeDelta GetIgnoreDownloadBubbleWarningDelay() {
+  return base::Seconds(
+      safe_browsing::kDownloadWarningSurveyIgnoreDelaySeconds.Get());
 }
 
 void MaybeLaunchDownloadWarningHatsSurvey(
