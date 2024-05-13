@@ -496,16 +496,6 @@ def DownloadRPMalloc():
   return rpmalloc_dir
 
 
-def StartGomaAndGetGomaCCPath():
-  bat_ext = '.bat' if sys.platform == 'win32' else ''
-  exe_ext = '.exe' if sys.platform == 'win32' else ''
-  subprocess.check_output(['goma_ctl' + bat_ext, 'ensure_start'])
-  return os.path.join(
-      subprocess.check_output(['goma_ctl' + bat_ext, 'goma_dir'],
-                              universal_newlines=True).rstrip(),
-      'gomacc' + exe_ext)
-
-
 def DownloadPinnedClang():
   PINNED_CLANG_VERSION = 'llvmorg-17-init-16420-g0c545a44-1'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
@@ -712,9 +702,9 @@ def main():
                       help='don\'t build Fuchsia clang_rt runtime (linux/mac)',
                       dest='with_fuchsia',
                       default=sys.platform in ('linux2', 'darwin'))
-  parser.add_argument('--with-goma',
+  parser.add_argument('--with-ccache',
                       action='store_true',
-                      help='Use goma to build the stage 1 compiler')
+                      help='Use ccache to build the stage 1 compiler')
   parser.add_argument('--without-zstd',
                       dest='with_zstd',
                       action='store_false',
@@ -859,13 +849,10 @@ def main():
                                        universal_newlines=True).rstrip()
   base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
-  goma_cmake_args = []
-  goma_ninja_args = []
-  if args.with_goma:
-    goma_path = StartGomaAndGetGomaCCPath()
-    goma_cmake_args.append('-DCMAKE_C_COMPILER_LAUNCHER=' + goma_path)
-    goma_cmake_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=' + goma_path)
-    goma_ninja_args = ['-j' + str(multiprocessing.cpu_count() * 50)]
+  ccache_cmake_args = []
+  if args.with_ccache:
+    ccache_cmake_args.append('-DCMAKE_C_COMPILER_LAUNCHER=ccache')
+    ccache_cmake_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=ccache')
 
   if args.host_cc or args.host_cxx:
     assert args.host_cc and args.host_cxx, \
@@ -981,7 +968,7 @@ def main():
     if sys.platform == 'darwin':
       # Need ARM and AArch64 for building the ios clang_rt.
       bootstrap_targets += ';ARM;AArch64'
-    bootstrap_args = base_cmake_args + goma_cmake_args + [
+    bootstrap_args = base_cmake_args + ccache_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=clang;lld',
         '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
@@ -1015,7 +1002,7 @@ def main():
     if lld is not None: bootstrap_args.append('-DCMAKE_LINKER=' + lld)
     RunCommand(['cmake'] + bootstrap_args + [os.path.join(LLVM_DIR, 'llvm')],
                setenv=True)
-    RunCommand(['ninja'] + goma_ninja_args, setenv=True)
+    RunCommand(['ninja'], setenv=True)
     if args.run_tests:
       RunCommand(['ninja', 'check-all'], env=test_env, setenv=True)
     RunCommand(['ninja', 'install'], setenv=True)
@@ -1437,7 +1424,7 @@ def main():
   # If we're bootstrapping, Goma doesn't know about the bootstrap compiler
   # we're using as the host compiler.
   if not args.bootstrap:
-    cmake_args.extend(goma_cmake_args)
+    cmake_args.extend(ccache_cmake_args)
 
   if os.path.exists(LLVM_BUILD_DIR):
     RmTree(LLVM_BUILD_DIR)
@@ -1446,7 +1433,7 @@ def main():
   RunCommand(['cmake'] + cmake_args + [os.path.join(LLVM_DIR, 'llvm')],
              setenv=True,
              env=deployment_env)
-  RunCommand(['ninja'] + goma_ninja_args, setenv=True)
+  RunCommand(['ninja'], setenv=True)
 
   if chrome_tools:
     # If any Chromium tools were built, install those now.
