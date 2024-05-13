@@ -198,7 +198,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
     // Add compose child suggestions
     Suggestion never_show_on_site = Suggestion(
         l10n_util::GetStringUTF16(
-            IDS_COMPOSE_NEVER_SHOW_ON_THIS_SITE_AGAIN_CHILD_SUGGESTION_TEXT),
+            IDS_COMPOSE_DONT_SHOW_ON_THIS_SITE_CHILD_SUGGESTION_TEXT),
         SuggestionType::kComposeNeverShowOnThisSiteAgain);
     Suggestion disable =
         Suggestion(l10n_util::GetStringUTF16(
