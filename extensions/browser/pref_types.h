@@ -34,6 +34,9 @@ struct PrefMap {
 extern const PrefMap kCorruptedDisableCount;
 extern const PrefMap kUserPermissions;
 extern const PrefMap kUserScriptsWorldsConfiguration;
+// TODO(crbug.com/337191307): Move pref to ManifestV2ExperimentManager and
+// expose it as a public member.
+extern const PrefMap kMV2DeprecationWarningAcknowledgedGloballyPref;
 
 }  // namespace extensions
 

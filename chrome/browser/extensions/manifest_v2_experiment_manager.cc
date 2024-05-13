@@ -135,4 +135,14 @@ void ManifestV2ExperimentManager::MarkWarningAsAcknowledged(
       extension_id, kMV2DeprecationExtensionWarningAcknowledgedPref, true);
 }
 
+bool ManifestV2ExperimentManager::DidUserAcknowledgeWarningGlobally() {
+  return extension_prefs_->GetPrefAsBoolean(
+      kMV2DeprecationWarningAcknowledgedGloballyPref);
+}
+
+void ManifestV2ExperimentManager::MarkWarningAsAcknowledgedGlobally() {
+  extension_prefs_->SetBooleanPref(
+      kMV2DeprecationWarningAcknowledgedGloballyPref, true);
+}
+
 }  // namespace extensions

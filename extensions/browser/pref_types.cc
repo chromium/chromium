@@ -23,4 +23,10 @@ const PrefMap kUserScriptsWorldsConfiguration = {
     "user_scripts_worlds.configuration", PrefType::kDictionary,
     PrefScope::kExtensionSpecific};
 
+// Stores whether the user has acknowledged the MV2 deprecation warning
+// globally.
+const PrefMap kMV2DeprecationWarningAcknowledgedGloballyPref = {
+    "mv2_deprecation_warning_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
+
 }  // namespace extensions

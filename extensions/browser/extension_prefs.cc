@@ -2300,6 +2300,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterIntegerPref(pref_names::kExtensionUnpublishedAvailability,
                                 0);
   registry->RegisterListPref(pref_names::kExtensionInstallTypeBlocklist);
+  registry->RegisterBooleanPref(
+      kMV2DeprecationWarningAcknowledgedGloballyPref.name, false);
 }
 
 template <class ExtensionIdContainer>

@@ -58,6 +58,14 @@ class ManifestV2ExperimentManager : public KeyedService {
   // `extension_id`.
   void MarkWarningAsAcknowledged(const ExtensionId& extension_id);
 
+  // Returns true if the user has acknowledge the global warning for the MV2
+  // deprecation.
+  bool DidUserAcknowledgeWarningGlobally();
+
+  // Called to indicate the user chose to acknowledge the MV2 deprecation global
+  // warning.
+  void MarkWarningAsAcknowledgedGlobally();
+
  private:
   // The current stage of the MV2 deprecation experiments.
   const MV2ExperimentStage experiment_stage_;

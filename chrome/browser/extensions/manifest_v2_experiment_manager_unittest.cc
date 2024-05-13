@@ -128,6 +128,13 @@ TEST_F(ManifestV2ExperimentManagerUnitTest, MarkingWarningsAsAcknowledged) {
   EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarning(ext2->id()));
 }
 
+TEST_F(ManifestV2ExperimentManagerUnitTest,
+       MarkingGeneralWwarningAsAcknowledged) {
+  EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeWarningGlobally());
+  experiment_manager()->MarkWarningAsAcknowledgedGlobally();
+  EXPECT_TRUE(experiment_manager()->DidUserAcknowledgeWarningGlobally());
+}
+
 // Tests that the experiment stage is properly set when the manifest V2
 // deprecation warning experiment is disabled.
 TEST_F(ManifestV2ExperimentManagerDisabledUnitTest,
