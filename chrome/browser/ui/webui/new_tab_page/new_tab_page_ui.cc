@@ -710,8 +710,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   source->AddBoolean(
       "modulesVisibleManagedByPolicy",
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
-  source->AddBoolean("customizeChromeEnabled",
-                     customize_chrome::IsSidePanelEnabled());
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
       customize_chrome::IsWallpaperSearchEnabledForProfile(profile_);
@@ -764,13 +762,11 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_custom_background_service_.get());
 
   // Create and register customize chrome entry on unified side panel
-  if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents());
     if (customize_chrome_tab_helper) {
       customize_chrome_tab_helper->CreateAndRegisterEntry();
     }
-  }
 
   // Populates the load time data with basic info.
   OnColorProviderChanged();
@@ -781,10 +777,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
 
 NewTabPageUI::~NewTabPageUI() {
-  if (!customize_chrome::IsSidePanelEnabled()) {
-    return;
-  }
-
   // Deregister customize chrome entry on unified side panel, unless the
   // WebContents is showing another NewTabPageUI (e.g. in case of reloads).
   if (auto* web_ui = web_contents()->GetWebUI()) {

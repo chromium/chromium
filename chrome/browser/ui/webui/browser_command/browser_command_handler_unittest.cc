@@ -109,10 +109,6 @@ class TestCommandHandler : public BrowserCommandHandler {
     tab_groups_feature_supported_ = is_supported;
   }
 
-  void SetBrowserSupportsCustomizeChromeSidePanel(bool is_supported) {
-    customize_chrome_side_panel_feature_supported_ = is_supported;
-  }
-
   void SetDefaultSearchProviderToGoogle(bool is_google) {
     default_search_provider_is_google_ = is_google;
   }
@@ -124,10 +120,6 @@ class TestCommandHandler : public BrowserCommandHandler {
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
-  }
-
-  bool BrowserSupportsCustomizeChromeSidePanel() override {
-    return customize_chrome_side_panel_feature_supported_;
   }
 
   bool DefaultSearchProviderIsGoogle() override {
@@ -143,7 +135,6 @@ class TestCommandHandler : public BrowserCommandHandler {
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;
-  bool customize_chrome_side_panel_feature_supported_ = true;
   bool default_search_provider_is_google_ = true;
   bool saved_tab_groups_feature_supported_ = true;
 };
@@ -578,12 +569,6 @@ TEST_F(BrowserCommandHandlerTest,
 
   // Allow command to be executed.
   command_handler_->SetTutorialServiceExists(true);
-
-  // If the customize chrome side panel is not enabled, dont run the command.
-  command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(false);
-  EXPECT_FALSE(
-      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
-  command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(true);
 
   // If the search provider is not set to Google, dont run the command
   command_handler_->SetDefaultSearchProviderToGoogle(false);

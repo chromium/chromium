@@ -532,8 +532,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
   }
-  if (url.host_piece() == chrome::kChromeUICustomizeChromeSidePanelHost &&
-      customize_chrome::IsSidePanelEnabled()) {
+  if (url.host_piece() == chrome::kChromeUICustomizeChromeSidePanelHost) {
     return &NewWebUI<CustomizeChromeUI>;
   }
   if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {

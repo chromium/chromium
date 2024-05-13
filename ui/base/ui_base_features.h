@@ -224,11 +224,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kLacrosColorManagement);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsLacrosColorManagementEnabled();
 
-// If enabled, Customize Chrome will be an option in the Unified Side Panel
-// when on the New Tab Page.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kCustomizeChromeSidePanel);
-
 // Exposed for testing and flags integration. For actual checks please use
 // IsChromeRefresh2023().
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);

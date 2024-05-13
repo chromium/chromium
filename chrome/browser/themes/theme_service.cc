@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
@@ -48,7 +47,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -709,8 +707,7 @@ void ThemeService::ClearThemeData(bool clear_ntp_background) {
 
   SwapThemeSupplier(nullptr);
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel) &&
-      clear_ntp_background) {
+  if (clear_ntp_background) {
     NtpCustomBackgroundService::ResetNtpTheme(profile_);
   }
 
@@ -962,14 +959,12 @@ void ThemeService::ClearThemePrefs() {
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
-    NtpCustomBackgroundService::ResetNtpTheme(profile_);
-    // Extensions are incompatible with device themes so turn them off.
-    // TODO(crbug.com/40280173): Remove this if we can otherwise separate
-    // extension and device themes from attempting to apply at the same time.
-    profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
-                                     false);
-  }
+  NtpCustomBackgroundService::ResetNtpTheme(profile_);
+  // Extensions are incompatible with device themes so turn them off.
+  // TODO(crbug.com/40280173): Remove this if we can otherwise separate
+  // extension and device themes from attempting to apply at the same time.
+  profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
+                                   false);
 
   profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, extension->id());
 

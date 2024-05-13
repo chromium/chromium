@@ -187,7 +187,6 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(whats_new::kForceEnabled);
     enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
-    enabled_features.push_back(features::kCustomizeChromeSidePanel);
     enabled_features.push_back(ntp_features::kCustomizeChromeWallpaperSearch);
     enabled_features.push_back(
         optimization_guide::features::kOptimizationGuideModelExecution);

@@ -14,10 +14,6 @@
 
 namespace customize_chrome {
 
-bool IsSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel);
-}
-
 bool IsWallpaperSearchEnabledForProfile(Profile* profile) {
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

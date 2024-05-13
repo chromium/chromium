@@ -11,7 +11,6 @@ class Profile;
 
 namespace customize_chrome {
 
-bool IsSidePanelEnabled();
 bool IsWallpaperSearchEnabledForProfile(Profile* profile);
 
 }  // namespace customize_chrome

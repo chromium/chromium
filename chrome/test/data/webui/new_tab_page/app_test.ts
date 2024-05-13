@@ -875,12 +875,6 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('CustomizeChromeSidePanel', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        customizeChromeEnabled: true,
-      });
-    });
-
     test('customize chrome in product help might show on startup'), () => {
       assertEquals(1, handler.getCallCount('maybeShowFeaturePromo'));
     };

@@ -212,11 +212,6 @@ export class AppElement extends AppElementBase {
         computed: 'computeColorSourceIsBaseline(theme_)',
       },
 
-      customizeChromeEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('customizeChromeEnabled'),
-      },
-
       logoColor_: {
         type: String,
         computed: 'computeLogoColor_(theme_)',
@@ -360,7 +355,6 @@ export class AppElement extends AppElementBase {
   private backgroundImageAttribution2_: string;
   private backgroundImageAttributionUrl_: string;
   private backgroundColor_: SkColor;
-  private customizeChromeEnabled_: boolean;
   private logoColor_: string;
   private singleColoredLogo_: boolean;
   private realboxShown_: boolean;
@@ -607,13 +601,10 @@ export class AppElement extends AppElementBase {
   private onCustomizeClick_() {
     // Let side panel decide what page or section to show.
     this.selectedCustomizeDialogPage_ = null;
-    if (this.customizeChromeEnabled_) {
-      this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
-      if (!this.showCustomize_) {
-        this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
-        recordCustomizeChromeOpen(
-            NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
-      }
+    this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
+    if (!this.showCustomize_) {
+      this.pageHandler_.incrementCustomizeChromeButtonOpenCount();
+      recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
     }
   }
 
@@ -844,9 +835,6 @@ export class AppElement extends AppElementBase {
   }
 
   private setCustomizeChromeSidePanelVisible_(visible: boolean) {
-    if (!this.customizeChromeEnabled_) {
-      return;
-    }
     let section: CustomizeChromeSection = CustomizeChromeSection.kUnspecified;
     switch (this.selectedCustomizeDialogPage_) {
       case CustomizeDialogPage.BACKGROUNDS:

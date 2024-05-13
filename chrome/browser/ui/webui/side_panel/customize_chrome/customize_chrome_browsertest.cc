@@ -18,12 +18,6 @@
 
 class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
  protected:
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kCustomizeChromeSidePanel},
-                                          {});
-    InProcessBrowserTest::SetUp();
-  }
   // Activates the browser tab at `index`.
   void ActivateTabAt(Browser* browser, int index);
 

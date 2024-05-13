@@ -1282,7 +1282,7 @@ void PopulateChromeWebUIFrameBinders(
       map);
 #endif  // !defined(OFFICIAL_BUILD)
 
-  if (IsCartModuleEnabled() && customize_chrome::IsSidePanelEnabled()) {
+  if (IsCartModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<chrome_cart::mojom::CartHandler,
                                            NewTabPageUI, CustomizeChromeUI>(
         map);
@@ -1361,25 +1361,23 @@ void PopulateChromeWebUIFrameBinders(
         PerformanceSidePanelUI>(map);
   }
 
-  if (customize_chrome::IsSidePanelEnabled()) {
+  RegisterWebUIControllerInterfaceBinder<
+      side_panel::mojom::CustomizeChromePageHandlerFactory, CustomizeChromeUI>(
+      map);
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution)) {
     RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::CustomizeChromePageHandlerFactory,
+        side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory,
         CustomizeChromeUI>(map);
+  }
 
-    if (base::FeatureList::IsEnabled(
-            ntp_features::kCustomizeChromeWallpaperSearch) &&
-        base::FeatureList::IsEnabled(
-            optimization_guide::features::kOptimizationGuideModelExecution)) {
-      RegisterWebUIControllerInterfaceBinder<
-          side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory,
-          CustomizeChromeUI>(map);
-    }
-
-    if (features::IsToolbarPinningEnabled()) {
-      RegisterWebUIControllerInterfaceBinder<
-          side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
-          CustomizeChromeUI>(map);
-    }
+  if (features::IsToolbarPinningEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory,
+        CustomizeChromeUI>(map);
   }
 
   if (user_notes::IsUserNotesEnabled()) {

@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -52,7 +51,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/test_native_theme.h"
-#include "ui/views/views_features.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -582,10 +580,6 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableExtensionTest) {
 
 // Test that setting theme to default resets the NTP theme as well.
 TEST_F(ThemeServiceTest, UseDefaultTheme_DisableNtpThemeTest) {
-  // Turn on Customize Chrome Side Panel.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCustomizeChromeSidePanel);
-
   base::Value::Dict test_background_info;
   test_background_info.Set("test_data", "foo");
   pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,

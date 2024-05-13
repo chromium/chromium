@@ -151,9 +151,7 @@ void NtpBackgroundService::FetchCollectionInfo() {
   request.add_filtering_label(base::StrCat(
       {kFilteringLabel, ".M", version_info::GetMajorVersionNumber()}));
   // Add filtering for Panorama feature.
-  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
-    request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
-  }
+  request.add_filtering_label(base::StrCat({kFilteringLabel, ".panorama"}));
   if (features::IsChromeWebuiRefresh2023()) {
     request.add_filtering_label(base::StrCat({kFilteringLabel, ".gm3"}));
   }

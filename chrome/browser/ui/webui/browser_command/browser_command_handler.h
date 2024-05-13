@@ -73,7 +73,6 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual CommandUpdater* GetCommandUpdater();
 
   virtual bool BrowserSupportsTabGroups();
-  virtual bool BrowserSupportsCustomizeChromeSidePanel();
   virtual bool DefaultSearchProviderIsGoogle();
   virtual bool BrowserSupportsSavedTabGroups();
 
