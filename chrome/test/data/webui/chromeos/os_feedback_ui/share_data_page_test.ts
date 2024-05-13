@@ -1181,6 +1181,16 @@ suite('shareDataPageTestSuite', () => {
   });
 
   /**
+   * Test that WifiDebugLogs dialog contains a title.
+   */
+  test('titleForWifiDebugLogsDialog', async () => {
+    await initializePage();
+    assertEquals(
+        'Sharing Wi-Fi Debug Logs',
+        getElementContent('#wifiDebugLogsDialogTitle'));
+  });
+
+  /**
    * Test that clicking the "View more details" link will open the dialog and
    * set the focus on the close dialog icon button.
    */
