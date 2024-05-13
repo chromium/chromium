@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 public class TopicsUtils {
     /**
      * Fetches the icon resource id for a given topic.
@@ -27,5 +29,24 @@ public class TopicsUtils {
             if (iconId != 0) return iconId;
         }
         return 0;
+    }
+
+    /**
+     * Proactive Topics Blocking should not be shown if feature is not enabled. If include-mode-b
+     * param is false and user is part of Mode B, this should return false.
+     *
+     * @return boolean of whether all conditions are met.
+     */
+    public static boolean shouldShowProactiveTopicsBlocking() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            return false;
+        }
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING,
+                        "include-mode-b",
+                        false)
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING);
     }
 }

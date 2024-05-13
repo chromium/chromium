@@ -14,7 +14,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -102,8 +101,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                                 new NoUnderlineClickableSpan(
                                         getContext(), this::onLearnMoreClicked))));
 
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+        if (!TopicsUtils.shouldShowProactiveTopicsBlocking()) {
             mFooterPreference.setSummary(
                     SpanApplier.applySpans(
                             getResources().getString(R.string.settings_fledge_page_footer),
