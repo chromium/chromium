@@ -31,6 +31,8 @@
 #include "third_party/blink/public/common/features.h"
 #endif
 
+using base::Bucket;
+using testing::ElementsAre;
 using PermissionPromptBubbleOneOriginViewTest = ChromeViewsTestBase;
 
 namespace {
@@ -209,6 +211,9 @@ constexpr char kMicId2[] = "mic_id_2";
 constexpr char kMicName2[] = "mic_name_2";
 constexpr char kGroupId2[] = "group_id_2";
 
+constexpr char kOriginTrialAllowedHistogramName[] =
+    "MediaPreviews.UI.Permissions.OriginTrialAllowed";
+
 }  // namespace
 
 // Takes care of all setup needed to initialize page info permission prompt one
@@ -271,6 +276,7 @@ class PermissionPromptBubbleOneOriginViewTestMediaPreview
 
   std::optional<TestDelegate> test_delegate_;
   std::unique_ptr<PermissionPromptBubbleOneOriginView> permission_prompt_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Verify the device counter as well as the tooltip for the mic permission
@@ -302,6 +308,9 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(mic_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName2)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOriginTrialAllowedHistogramName),
+              ElementsAre(Bucket(1, 1)));
 }
 
 // Verify the device counter as well as the tooltip for the camera permission
@@ -331,6 +340,9 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(1));
   EXPECT_EQ(camera_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kCameraName)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOriginTrialAllowedHistogramName),
+              ElementsAre(Bucket(1, 1)));
 }
 
 // Verify the device counter as well as the tooltip for both the camera and the
@@ -373,6 +385,9 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(mic_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName2)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kOriginTrialAllowedHistogramName),
+              ElementsAre(Bucket(1, 1)));
 }
 
 // Verify there is no preview created when there is no camera or mic permissions
@@ -383,6 +398,8 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_FALSE(permission_prompt_->GetMediaPreviewsForTesting());
   ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
   ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
+
+  histogram_tester_.ExpectTotalCount(kOriginTrialAllowedHistogramName, 0);
 }
 
 #endif
