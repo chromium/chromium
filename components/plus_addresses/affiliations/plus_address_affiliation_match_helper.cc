@@ -29,16 +29,21 @@ PlusAddressAffiliationMatchHelper::~PlusAddressAffiliationMatchHelper() =
     default;
 
 void PlusAddressAffiliationMatchHelper::GetAffiliatedPlusProfiles(
-    const PlusProfile& plus_profile,
+    const FacetURI& facet,
     AffiliatedPlusProfilesCallback result_callback) {
+  DCHECK(facet.IsValidWebFacetURI());
+
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAffiliations)) {
-    std::move(result_callback).Run({plus_profile});
+    std::vector<PlusProfile> results;
+    if (std::optional<PlusProfile> profile =
+            plus_address_service_->GetPlusProfile(facet)) {
+      results.push_back(std::move(*profile));
+    }
+    std::move(result_callback).Run(std::move(results));
     return;
   }
 
-  const FacetURI& facet = absl::get<FacetURI>(plus_profile.facet);
-  DCHECK(facet.IsValidWebFacetURI());
   // The barrier is used to collect affiliated plus addresses from multiple
   // sources (i.e. grouped affiliations, PSL matches), combine and return them.
   const int kCallsNumber = 2;

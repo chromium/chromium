@@ -47,12 +47,10 @@ class PlusAddressAffiliationMatchHelper {
       const PlusAddressAffiliationMatchHelper&) = delete;
   virtual ~PlusAddressAffiliationMatchHelper();
 
-  // Returns the complete list of plus profiles, including the specified
-  // `plus_profile`, that belong to the same affiliation group based on their
-  // facet value. Only profiles with valid web facets must be passed-in.
-  // TODO(b/324553908): Update to query by facet.
+  // Returns the complete list of plus profiles that are affiliated with `facet`
+  // based on their facet value. Only valid web facets must be passed-in.
   void GetAffiliatedPlusProfiles(
-      const PlusProfile& plus_profile,
+      const affiliations::FacetURI& facet,
       AffiliatedPlusProfilesCallback result_callback);
 
   // Requests and caches the list of PSL extensions.

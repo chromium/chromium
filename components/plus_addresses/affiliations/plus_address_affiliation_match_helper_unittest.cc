@@ -46,7 +46,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   }
 
   testing::AssertionResult ExpectMatchHelperToReturnProfiles(
-      const PlusProfile& requested_profile,
+      const FacetURI& requested_facet,
       const std::vector<PlusProfile>& expected_profiles) {
     base::MockCallback<
         PlusAddressAffiliationMatchHelper::AffiliatedPlusProfilesCallback>
@@ -54,8 +54,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
     int calls = 0;
     ON_CALL(callback, Run(UnorderedElementsAreArray(expected_profiles)))
         .WillByDefault([&] { ++calls; });
-    match_helper()->GetAffiliatedPlusProfiles(requested_profile,
-                                              callback.Get());
+    match_helper()->GetAffiliatedPlusProfiles(requested_facet, callback.Get());
     return calls == 1
                ? testing::AssertionSuccess()
                : (testing::AssertionFailure() << "Error fetching profiles.");
@@ -166,8 +165,8 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
 
   // `profile3` is not a PSL match because it is an Android facet.
   // `profile4` is not a match due to the PSL extension list exception.
-  EXPECT_TRUE(
-      ExpectMatchHelperToReturnProfiles(profile1, {profile1, profile2}));
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
+      absl::get<FacetURI>(profile1.facet), {profile1, profile2}));
 }
 
 // Verifies that group affiliation matches are returned.
@@ -198,7 +197,8 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, GroupedMatchesTest) {
 
   // `profile2` was not a PSL match nor group affiliated.
   EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
-      profile1, {profile1, android_profile, group_profile}));
+      absl::get<FacetURI>(profile1.facet),
+      {profile1, android_profile, group_profile}));
 }
 
 // Verifies that elements in both group and PSL matches matches are returned
@@ -229,8 +229,9 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
 
   // `psl_match` is part of both group and PSL matches but must be returned only
   // once.
-  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(
-      profile1, {profile1, psl_match, group_profile}));
+  EXPECT_TRUE(
+      ExpectMatchHelperToReturnProfiles(absl::get<FacetURI>(profile1.facet),
+                                        {profile1, psl_match, group_profile}));
 }
 
 }  // namespace plus_addresses
