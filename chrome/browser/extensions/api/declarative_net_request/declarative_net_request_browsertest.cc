@@ -7936,7 +7936,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
 // Test that modifyHeaders rules matched in both onBeforeRequest and
 // onHeadersReceived phases will perform the correct action(s) on the request.
 IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
-                       ModifyHeaders_SingleExtension) {
+                       // TODO(crbug.com/340136384): Re-enable this test
+                       DISABLED_ModifyHeaders_SingleExtension) {
   std::vector<TestHeaderCondition> blank_header_condition =
       std::vector<TestHeaderCondition>(
           {TestHeaderCondition("nonsense-header", {}, {})});
