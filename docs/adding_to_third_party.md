@@ -12,7 +12,8 @@ covered by other licenses.
 
 ## Put the code in //third_party
 
-By default, all code should be checked into [//third_party](../third_party/),
+By default, all third party code should be checked into
+[//third_party](../third_party/),
 for the reasons given above. Other locations are only appropriate in a few
 situations and need explicit approval; don't assume that because there's some
 other directory with third_party in the name it's okay to put new things
@@ -33,7 +34,7 @@ email to chrome-atls-discuss@google.com:
    * If the increase is significant (e.g., 30+ seconds), can we consider making
    this an optional build target?
 * Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)
-   * Any 16 KB increase on Android is flagged on the build bots and
+   * Any increase of 16 KB or more on Android is flagged on the build bots and
    justification is needed.
 * Binary size increase on Windows
 * Is this library maintained on all platforms that we will use it on?
