@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
-#include "url/gurl.h"
 
 namespace {
 
@@ -128,6 +127,17 @@ const GURL FindActiveWebAppBrowser(Profile* profile,
   return GURL::EmptyGURL();
 }
 
+bool IsBrowserApp(const std::string& app_id) {
+  return app_id == app_constants::kChromeAppId ||
+         app_id == app_constants::kAshDebugBrowserAppId ||
+         app_id == app_constants::kLacrosAppId;
+}
+
+bool IsAppActiveAndVisible(const apps::InstanceUpdate& update) {
+  return ((update.State() & apps::InstanceState::kActive) &&
+          (update.State() & apps::InstanceState::kVisible));
+}
+
 }  // namespace
 
 // static
@@ -191,33 +201,30 @@ void CampaignsManagerSession::OnInstanceUpdate(
     return;
   }
 
-  auto app_id = update.AppId();
-
-  if (app_id == app_constants::kChromeAppId ||
-      app_id == app_constants::kAshDebugBrowserAppId ||
-      app_id == app_constants::kLacrosAppId) {
-    // TODO: b/331975665 - handle browser app with URL targeting.
+  if (update.IsDestruction()) {
+    HandleAppInstanceDestruction(update);
     return;
   }
 
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
+  auto app_id = update.AppId();
+  // For browser app, the user can open a new tab or switch to an existing tab.
+  // The campaigns will be triggered when navigating to the target url.
+  if (IsBrowserApp(app_id)) {
+    if (ash::features::IsGrowthCampaignsTriggerByBrowserEnabled() &&
+        IsAppActiveAndVisible(update)) {
+      auto* campaigns_manager = growth::CampaignsManager::Get();
+      CHECK(campaigns_manager);
+
+      // TODO: b/339706247 - Set the app id and window on PrimaryPageChanged.
+      campaigns_manager->SetOpenedApp(app_id);
+      opened_window_ = update.Window();
+    }
+
+    return;
+  }
 
   if (update.IsCreation()) {
-    campaigns_manager->SetOpenedApp(app_id);
-    campaigns_manager->SetActiveUrl(
-        FindActiveWebAppBrowser(GetProfile(), app_id));
-    opened_window_ = update.Window();
-
-    MaybeTriggerCampaignsWhenAppOpened();
-  } else if (update.IsDestruction()) {
-    // TODO: b/330409492 - Maybe trigger a campaign when app is about to be
-    // destroyed.
-    if (app_id == campaigns_manager->GetOpenedAppId()) {
-      campaigns_manager->SetOpenedApp(std::string());
-      opened_window_ = nullptr;
-      active_url_ = GURL::EmptyGURL();
-    }
+    HandleAppInstanceCreation(update);
   }
 }
 
@@ -226,6 +233,21 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
   if (scoped_observation_.GetSource() == cache) {
     scoped_observation_.Reset();
   }
+}
+
+void CampaignsManagerSession::PrimaryPageChanged(const GURL& url) {
+  if (!ash::features::IsGrowthCampaignsTriggerByBrowserEnabled()) {
+    return;
+  }
+
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  if (!IsBrowserApp(campaigns_manager->GetOpenedAppId())) {
+    return;
+  }
+  campaigns_manager->SetActiveUrl(url);
+  MaybeTriggerCampaignsWhenAppOpened();
 }
 
 void CampaignsManagerSession::SetProfileForTesting(Profile* profile) {
@@ -287,4 +309,35 @@ void CampaignsManagerSession::OnLoadCampaignsCompleted() {
   }
 
   MaybeTriggerCampaignsWhenCampaignsLoaded();
+}
+
+void CampaignsManagerSession::HandleAppInstanceCreation(
+    const apps::InstanceUpdate& update) {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto app_id = update.AppId();
+
+  campaigns_manager->SetOpenedApp(app_id);
+  campaigns_manager->SetActiveUrl(
+      FindActiveWebAppBrowser(GetProfile(), app_id));
+  opened_window_ = update.Window();
+
+  MaybeTriggerCampaignsWhenAppOpened();
+}
+
+void CampaignsManagerSession::HandleAppInstanceDestruction(
+    const apps::InstanceUpdate& update) {
+  // TODO: b/330409492 - Maybe trigger a campaign when app is about to be
+  // destroyed.
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  if (update.AppId() != campaigns_manager->GetOpenedAppId()) {
+    return;
+  }
+
+  campaigns_manager->SetOpenedApp(std::string());
+  opened_window_ = nullptr;
+  active_url_ = GURL::EmptyGURL();
 }

@@ -11,6 +11,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "ui/aura/window.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -35,9 +36,10 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  void SetProfileForTesting(Profile* profile);
-
+  void PrimaryPageChanged(const GURL& url);
   aura::Window* GetOpenedWindow() { return opened_window_; }
+
+  void SetProfileForTesting(Profile* profile);
 
  private:
   Profile* GetProfile();
@@ -45,6 +47,8 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void SetupWindowObserver();
   void OnOwnershipDetermined(bool is_user_owner);
   void OnLoadCampaignsCompleted();
+  void HandleAppInstanceCreation(const apps::InstanceUpdate& update);
+  void HandleAppInstanceDestruction(const apps::InstanceUpdate& update);
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

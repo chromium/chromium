@@ -1406,6 +1406,13 @@ BASE_FEATURE(kGrowthCampaignsTriggerByAppOpen,
              "GrowthCampaignsTriggerByAppOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns triggering by url navigation is enabled.
+// This flag is used as a kill switch to disable the feature in the case that
+// the feature introduces any unexpected behaviours.
+BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
+             "kGrowthCampaignsTriggerByBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the Help app will render the App Detail Page and entry point.
 BASE_FEATURE(kHelpAppAppDetailPage,
              "HelpAppAppDetailPage",
@@ -3680,6 +3687,10 @@ bool IsGrowthCampaignsTriggerAtLoadComplete() {
 
 bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
+}
+
+bool IsGrowthCampaignsTriggerByBrowserEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByBrowser);
 }
 
 bool AreGlanceablesV2Enabled() {
