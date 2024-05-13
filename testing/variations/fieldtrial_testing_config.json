@@ -18791,6 +18791,26 @@
             ]
         }
     ],
+    "ShowWebauthnSuggestionsOnAutofocus": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowWebauthnSuggestionsOnAutofocus"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelCompanionDesktopM116Plus": [
         {
             "platforms": [
