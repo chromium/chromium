@@ -263,7 +263,7 @@ bool IsDeviceAuthAvailable(
   return false;
 #endif
 }
-bool IsTouchToFillCreditCardSupported() {
+bool IsTouchToFillPaymentMethodSupported() {
 #if BUILDFLAG(IS_ANDROID)
   // Touch To Fill is only supported on Android.
   return true;

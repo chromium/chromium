@@ -86,7 +86,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id,
                                        const FormData& received_form) {
   // Trigger only on supported platforms.
-  if (!IsTouchToFillCreditCardSupported()) {
+  if (!IsTouchToFillPaymentMethodSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
   }
   const FormStructure* form = manager_->FindCachedFormById(form_id);

@@ -66,7 +66,7 @@ bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator);
 
 // Returns true if the Touch To Fill feature is supported by platform.
-bool IsTouchToFillCreditCardSupported();
+bool IsTouchToFillPaymentMethodSupported();
 
 }  // namespace autofill
 
