@@ -117,3 +117,25 @@ a[href] {
   padding: 12px 20px;
   container-type: inline-size;
 }
+
+.panel-header-text {
+  padding-inline-start: 20px;
+}
+
+.panel-header-text h3 {
+  margin: 5px 0 3px 0;
+  font-weight: 400;
+}
+
+.panel-header-icon {
+  align-items: center;
+  fill: var(--panel-icon-color);
+}
+
+/* clean-css ignore:start */
+@container (max-width:450px) {
+  .panel-header-icon {
+      margin-top: 40px;
+  }
+}
+/* clean-css ignore:end */

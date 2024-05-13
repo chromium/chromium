@@ -36,8 +36,8 @@ suite('ExtensionsMV2DeprecationPanel', function() {
   });
 
   test('header content is always visible', function() {
-    assertTrue(
-        isVisible(panelElement.shadowRoot!.querySelector('.header-text')));
+    assertTrue(isVisible(
+        panelElement.shadowRoot!.querySelector('.panel-header-text')));
     assertTrue(
         isVisible(panelElement.shadowRoot!.querySelector('.header-button')));
   });

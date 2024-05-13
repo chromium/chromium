@@ -9,20 +9,6 @@
     padding: 12px 0px;
   }
 
-  .header-text {
-    padding-inline-start: 20px;
-  }
-
-  .header-text h3 {
-    margin: 5px 0 3px 0;
-    font-weight: 400;
-  }
-
-  .header-icon {
-    align-items: center;
-    fill: var(--review-panel-icon-color);
-  }
-
   .header-button {
     margin-inline-start: auto;
   }
@@ -52,9 +38,9 @@
 <div class="panel-background" id="panelContainer">
   <div class="header cr-row first">
     <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
-        class="header-icon">
+        class="panel-header-icon">
     </iron-icon>
-    <div class="header-text">
+    <div class="panel-header-text">
       <h3 id="headingText">[[headerString_]]</h3>
       <div class="cr-secondary-text"
           inner-h-t-m-l="[[getSubtitleString_(subtitleString_)]]">
