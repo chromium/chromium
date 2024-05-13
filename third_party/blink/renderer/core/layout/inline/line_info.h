@@ -191,7 +191,12 @@ class CORE_EXPORT LineInfo {
   unsigned EndTextOffset() const;
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
-  unsigned InflowEndOffset() const;
+  unsigned InflowEndOffset() const {
+    return InflowEndOffsetInternal(/* skip_forced_break */ false);
+  }
+  unsigned InflowEndOffsetWithoutForcedBreak() const {
+    return InflowEndOffsetInternal(/* skip_forced_break */ true);
+  }
   // End text offset for `text-align: justify`. This excludes preserved trailing
   // spaces. Available only when |TextAlign()| is |kJustify|.
   unsigned EndOffsetForJustify() const {
@@ -276,6 +281,7 @@ class CORE_EXPORT LineInfo {
   // The width of preserved trailing spaces.
   LayoutUnit ComputeTrailingSpaceWidth(
       unsigned* end_offset_out = nullptr) const;
+  unsigned InflowEndOffsetInternal(bool skip_forced_break) const;
 
   Member<const InlineItemsData> items_data_;
   Member<const ComputedStyle> line_style_;

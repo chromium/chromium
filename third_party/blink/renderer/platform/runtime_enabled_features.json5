@@ -3389,6 +3389,12 @@
       status: "experimental",
     },
     {
+      // crbug.com/340041662
+      name: "RubyLineEdgeAlignment",
+      status: "experimental",
+      depends_on: ["RubyLineBreakable"],
+    },
+    {
       // Runs a microtask checkpoint before creating custom elements in
       // XMLDocumentParser. Should be safe to remove after M125
       name: "RunMicrotaskBeforeXmlCustomElement",

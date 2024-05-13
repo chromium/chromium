@@ -82,6 +82,8 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
 // to LogicalLineItems generated from `line_info` after bidi reorder.
 [[nodiscard]] std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(
     LayoutUnit available_line_size,
+    bool on_start_edge,
+    bool on_end_edge,
     LineInfo& line_info);
 
 // Stores ComputeAnnotationOverflow() results.

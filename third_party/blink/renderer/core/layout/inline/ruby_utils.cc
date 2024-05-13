@@ -382,6 +382,8 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
 }
 
 std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
+                                                 bool on_start_edge,
+                                                 bool on_end_edge,
                                                  LineInfo& line_info) {
   DCHECK(line_info.IsRubyBase() || line_info.IsRubyText());
   LayoutUnit space = available_line_size - line_info.WidthForAlignment();
@@ -394,14 +396,31 @@ std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
     JustificationTarget target = JustificationTarget::kNormal;
     if (line_info.IsRubyBase()) {
       target = JustificationTarget::kRubyBase;
+      // Switch to `space-between` if this needs to align both edges.
+      if (on_start_edge && on_end_edge) {
+        target = JustificationTarget::kNormal;
+      }
     } else {
       DCHECK(line_info.IsRubyText());
       target = JustificationTarget::kRubyText;
     }
     std::optional<LayoutUnit> inset =
         ApplyJustification(space, target, &line_info);
+    // https://drafts.csswg.org/css-ruby/#line-edge
     if (inset) {
+      if (on_start_edge && !on_end_edge) {
+        return {LayoutUnit(), *inset * 2};
+      }
+      if (!on_start_edge && on_end_edge) {
+        return {*inset * 2, LayoutUnit()};
+      }
       return {*inset, *inset};
+    }
+    if (on_start_edge && !on_end_edge) {
+      return {LayoutUnit(), space};
+    }
+    if (!on_start_edge && on_end_edge) {
+      return {space, LayoutUnit()};
     }
     return {space / 2, space / 2};
   }
