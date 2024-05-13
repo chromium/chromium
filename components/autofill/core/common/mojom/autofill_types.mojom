@@ -622,4 +622,7 @@ enum AutofillSuggestionTriggerSource {
   // The compose proactive nudge is triggered after a delay by the compose
   // manager.
   kComposeDelayedProactiveNudge,
+  // Password manager renderer received password suggestions from the browser
+  // after the field was focused (likely due to autofocus on the page load).
+  kPasswordManagerProcessedFocusedField,
 };

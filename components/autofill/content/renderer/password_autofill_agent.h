@@ -496,6 +496,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void NotifyPasswordManagerAboutFieldModification(
       const blink::WebInputElement& element);
 
+  // Shows suggestions on the focused element if it was focused before the form
+  // was processed by the password manager.
+  void MaybeTriggerSuggestionsOnFocusedElement(
+      const blink::WebInputElement& username_element,
+      const blink::WebInputElement& password_element);
+
   FieldDataManager& field_data_manager() const {
     return autofill_agent_->field_data_manager();
   }
