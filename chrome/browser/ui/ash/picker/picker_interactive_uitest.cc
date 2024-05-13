@@ -245,10 +245,9 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, SearchAndInsertDate) {
 
 // Searches for '1 + 1', checks the top result is '2', and inserts it
 // into a web input field.
-// TODO(crbug.com/40240570): Re-enable once MSan stops failing on Rust-side
+// TODO: crbug.com/40240570 - Re-enable once MSan stops failing on Rust-side
 // allocations.
-// TODO(crbug.com/338153458): Re-enable once LSan stops failing on Chromium OS.
-#if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_SearchAndInsertMath DISABLED_SearchAndInsertMath
 #else
 #define MAYBE_SearchAndInsertMath SearchAndInsertMath
