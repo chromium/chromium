@@ -4,7 +4,31 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -25,14 +49,19 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroup;
@@ -40,12 +69,18 @@ import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SavedTabGroupSpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroupTab;
 import org.chromium.components.sync.protocol.SyncEntity;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,7 +97,12 @@ import java.util.Set;
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
-    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
+    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+    ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+})
+@Restriction({
+    UiRestriction.RESTRICTION_TYPE_PHONE,
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
 public class TabGroupSyncIntegrationTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
@@ -90,6 +130,9 @@ public class TabGroupSyncIntegrationTest {
     private static final String TAB_TITLE_3 = "Title Of More Awesomeness";
     private static final String TAB_TITLE_4 = "iframe test";
 
+    private static final String NEW_TAB_TITLE = "New tab";
+    public static final String NEW_TAB_URL = UrlConstants.NTP_NON_NATIVE_URL;
+
     // Create individual tabs
     private TabInfo mTab1;
     private TabInfo mTab2;
@@ -107,6 +150,7 @@ public class TabGroupSyncIntegrationTest {
                     GUID_1, GUID_2, GUID_3, GUID_4, GUID_5, GUID_6, GUID_7, GUID_8, GUID_9,
                     GUID_10);
     private int mCurrentGuidIndex;
+    private ModalDialogManager mModalDialogManager;
 
     @Before
     public void setUp() throws Exception {
@@ -116,6 +160,14 @@ public class TabGroupSyncIntegrationTest {
         mSyncTestRule.setSelectedTypes(true, null);
         SyncTestUtil.waitForHistorySyncEnabled();
         assertSyncEntityCount(0);
+
+        mSyncTestRule.getActivity().getTabContentManager().setCaptureMinRequestTimeForTesting(0);
+
+        CriteriaHelper.pollUiThread(
+                mSyncTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+        mModalDialogManager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        mSyncTestRule.getActivity()::getModalDialogManager);
     }
 
     @After
@@ -228,6 +280,180 @@ public class TabGroupSyncIntegrationTest {
                 .deleteEntity(syncEntity.getIdString(), syncEntity.getClientTagHash());
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         waitForLocalTabGroupCountAndTabCount(0, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Sync"})
+    public void testLocal_CreateTabGroup() throws Exception {
+        final ChromeTabbedActivity cta = mSyncTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        verifyFirstCardTitle("2 tabs");
+        verifyFirstCardColor(org.chromium.components.tab_groups.TabGroupColorId.GREY);
+
+        // Verify sync.
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+        List<SyncEntity> entities = getSyncEntities();
+        Assert.assertEquals("Number of sync entities don't match", 3, entities.size());
+        assertSyncEntityCount(3);
+
+        GroupInfo group1 = new GroupInfo("", SavedTabGroupColor.SAVED_TAB_GROUP_COLOR_GREY);
+        TabInfo tab1 = new TabInfo(NEW_TAB_TITLE, NEW_TAB_URL, 1);
+        TabInfo tab2 = new TabInfo(NEW_TAB_TITLE, NEW_TAB_URL, 2);
+        GroupInfo[] expectedGroups =
+                createGroupInfos(new GroupInfo[] {group1}, new TabInfo[][] {{tab1, tab2}});
+        verifySyncEntities(expectedGroups);
+    }
+
+    private void verifySyncEntities(GroupInfo[] expectedGroups) {
+        List<GroupInfo> retrievedGroups = constructGroupInfoFromSyncEntities(getSyncEntities());
+        Assert.assertEquals(expectedGroups.length, retrievedGroups.size());
+
+        for (int i = 0; i < expectedGroups.length; i++) {
+            GroupInfo expectedGroup = expectedGroups[i];
+            GroupInfo actualGroup = retrievedGroups.get(i);
+            Assert.assertEquals(expectedGroup.title, actualGroup.title);
+            Assert.assertEquals(expectedGroup.color, actualGroup.color);
+            Assert.assertEquals(expectedGroup.tabs.size(), actualGroup.tabs.size());
+            for (int j = 0; j < expectedGroup.tabs.size(); j++) {
+                verifyTitleAndUrlForTab(expectedGroup.tabs.get(j), actualGroup.tabs.get(j));
+            }
+        }
+    }
+
+    private void verifyTitleAndUrlForTab(TabInfo expectedTab, TabInfo actualTab) {
+        boolean isNtpUrl = TabGroupSyncUtils.isNtpOrAboutBlankUrl(expectedTab.url);
+        if (isNtpUrl) {
+            Assert.assertTrue(TabGroupSyncUtils.isNtpOrAboutBlankUrl(actualTab.url));
+            Assert.assertTrue(
+                    NEW_TAB_TITLE.equals(actualTab.title) || "about:blank".equals(actualTab.title));
+        } else {
+            Assert.assertEquals(expectedTab.url, actualTab.url);
+            Assert.assertEquals(expectedTab.title, actualTab.title);
+        }
+    }
+
+    private List<GroupInfo> constructGroupInfoFromSyncEntities(List<SyncEntity> syncEntities) {
+        Map<String, GroupInfo> groupInfos = new HashMap();
+
+        // Group specifics.
+        for (SyncEntity entity : syncEntities) {
+            SavedTabGroupSpecifics specifics = entity.getSpecifics().getSavedTabGroup();
+            if (specifics.hasGroup()) {
+                GroupInfo groupInfo =
+                        new GroupInfo(
+                                specifics.getGroup().getTitle(), specifics.getGroup().getColor());
+                groupInfos.put(specifics.getGuid(), groupInfo);
+            }
+        }
+
+        // Tab specifics.
+        for (SyncEntity entity : syncEntities) {
+            SavedTabGroupSpecifics specifics = entity.getSpecifics().getSavedTabGroup();
+            if (specifics.hasGroup()) continue;
+
+            String groupGuid = specifics.getTab().getGroupGuid();
+            TabInfo tabInfo =
+                    new TabInfo(
+                            specifics.getTab().getTitle(),
+                            specifics.getTab().getUrl(),
+                            specifics.getTab().getPosition());
+            groupInfos.get(groupGuid).addTab(tabInfo);
+        }
+
+        return new ArrayList<>(groupInfos.values());
+    }
+
+    private void verifyFirstCardTitle(String title) {
+        onView(
+                        allOf(
+                                isDescendantOfA(
+                                        withId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
+                                                        mSyncTestRule.getActivity()))),
+                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view)))
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+
+                            RecyclerView recyclerView = (RecyclerView) v;
+                            TextView firstCardTitleTextView =
+                                    recyclerView
+                                            .findViewHolderForAdapterPosition(0)
+                                            .itemView
+                                            .findViewById(org.chromium.chrome.test.R.id.tab_title);
+                            assertEquals(title, firstCardTitleTextView.getText().toString());
+                        });
+    }
+
+    private void verifyFirstCardColor(
+            @org.chromium.components.tab_groups.TabGroupColorId int color) {
+        onView(
+                        allOf(
+                                withId(org.chromium.chrome.test.R.id.tab_favicon),
+                                withParent(withId(org.chromium.chrome.test.R.id.card_view))))
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+
+                            ImageView imageView = (ImageView) v;
+                            LayerDrawable layerDrawable = (LayerDrawable) imageView.getDrawable();
+                            GradientDrawable drawable =
+                                    (GradientDrawable) layerDrawable.getDrawable(1);
+
+                            assertEquals(
+                                    ColorStateList.valueOf(
+                                            ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                                    mSyncTestRule.getActivity(), color, false)),
+                                    drawable.getColor());
+                        });
+    }
+
+    private void verifyGroupVisualDataDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the visual data dialog exists.
+        onViewWaiting(
+                        withId(org.chromium.chrome.test.R.id.visual_data_dialog_layout),
+                        /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // TODO(shaktisahu): Do we need to wait till keyboard is showing? Currently fails waiting.
+        // Wait until the keyboard is showing.
+        // KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        // CriteriaHelper.pollUiThread(
+        //     () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+        // Dismiss the tab group visual data dialog.
+        dismissAllModalDialogs();
+        // Verify that the modal dialog is now hidden.
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
+    }
+
+    private void verifyModalDialogShowingAnimationCompleteInTabSwitcher() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true));
+                });
+    }
+
+    private void verifyModalDialogHidingAnimationCompleteInTabSwitcher() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(false));
+                });
+    }
+
+    private void dismissAllModalDialogs() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                });
     }
 
     private void waitForLocalTabGroupCountAndTabCount(int tabGroupCount, int tabCount) {
@@ -395,12 +621,12 @@ public class TabGroupSyncIntegrationTest {
     private static class TabInfo {
         public String title;
         public String url;
-        public int position;
+        public long position;
 
         // Required for connecting with tabs. We don't use it for validation.
         public String syncId;
 
-        public TabInfo(String title, String url, int position) {
+        public TabInfo(String title, String url, long position) {
             this.title = title;
             this.url = url;
             this.position = position;
