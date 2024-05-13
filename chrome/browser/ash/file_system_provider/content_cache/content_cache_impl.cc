@@ -254,7 +254,7 @@ void ContentCacheImpl::EvictItems() {
 
 void ContentCacheImpl::ReadBytes(
     const OpenedCloudFile& file,
-    net::IOBuffer* buffer,
+    scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length,
     ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) {
@@ -318,7 +318,7 @@ void ContentCacheImpl::ReadBytes(
 
   LocalFile& local_file =
       GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
-  local_file.ReadBytes(base::WrapRefCounted(buffer), offset, length,
+  local_file.ReadBytes(buffer, offset, length,
                        base::BindOnce(&ContentCacheImpl::OnBytesRead,
                                       weak_ptr_factory_.GetWeakPtr(),
                                       file.file_path, std::move(callback)));
@@ -356,7 +356,7 @@ void ContentCacheImpl::OnBytesRead(
 }
 
 void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
-                                  net::IOBuffer* buffer,
+                                  scoped_refptr<net::IOBuffer> buffer,
                                   int64_t offset,
                                   int length,
                                   FileErrorCallback callback) {
@@ -410,17 +410,16 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
     context_db_.AsyncCall(&ContextDatabase::AddItem)
         .WithArgs(file.file_path, file.version_tag, ctx.accessed_time(),
                   inserted_id.get())
-        .Then(base::BindOnce(&ContentCacheImpl::OnFileIdGenerated,
-                             weak_ptr_factory_.GetWeakPtr(), file,
-                             base::WrapRefCounted(buffer), offset, length,
-                             std::move(on_bytes_written_callback),
-                             std::move(inserted_id)));
+        .Then(base::BindOnce(
+            &ContentCacheImpl::OnFileIdGenerated,
+            weak_ptr_factory_.GetWeakPtr(), file, buffer, offset, length,
+            std::move(on_bytes_written_callback), std::move(inserted_id)));
   } else {
     // The ID has already been created and is known on disk, bypass generating
     // the ID and simply start writing to the file.
     LocalFile& local_file =
         GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
-    local_file.WriteBytes(base::WrapRefCounted(buffer), offset, length,
+    local_file.WriteBytes(buffer, offset, length,
                           std::move(on_bytes_written_callback));
   }
 }

@@ -74,7 +74,7 @@ class MockContentCache : public ContentCache {
   MOCK_METHOD(void,
               ReadBytes,
               (const OpenedCloudFile& file,
-               net::IOBuffer* buffer,
+               scoped_refptr<net::IOBuffer> buffer,
                int64_t offset,
                int length,
                ProvidedFileSystemInterface::ReadChunkReceivedCallback callback),
@@ -82,7 +82,7 @@ class MockContentCache : public ContentCache {
   MOCK_METHOD(void,
               WriteBytes,
               (const OpenedCloudFile& file,
-               net::IOBuffer* buffer,
+               scoped_refptr<net::IOBuffer> buffer,
                int64_t offset,
                int length,
                FileErrorCallback callback),
@@ -256,7 +256,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest, ContiguousReadsWriteToCache) {
 
   // Set the first read bytes to return `base::File::FILE_ERROR_NOT_FOUND`, this
   // indicates that the data is not cached in the content cache.
-  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer.get(), /*offset=*/0,
+  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer, /*offset=*/0,
                                              /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/-1, /*has_more=*/false,
                                    base::File::FILE_ERROR_NOT_FOUND));
@@ -264,7 +264,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest, ContiguousReadsWriteToCache) {
   // Set the first write bytes to return successfully, this indicates the post
   // FSP stream to disk succeeded.
   EXPECT_CALL(*mock_content_cache,
-              WriteBytes(_, buffer.get(), /*offset=*/0,
+              WriteBytes(_, buffer, /*offset=*/0,
                          /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(base::File::FILE_OK));
 
@@ -280,12 +280,12 @@ TEST_F(FileSystemProviderCloudFileSystemTest, ContiguousReadsWriteToCache) {
                    Field(&Watcher::recursive, IsFalse()))))));
 
   // Read the next chunk.
-  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer.get(), /*offset=*/1,
+  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer, /*offset=*/1,
                                              /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/-1, /*has_more=*/false,
                                    base::File::FILE_ERROR_NOT_FOUND));
   EXPECT_CALL(*mock_content_cache,
-              WriteBytes(_, buffer.get(), /*offset=*/1,
+              WriteBytes(_, buffer, /*offset=*/1,
                          /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(base::File::FILE_OK));
   ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/1,
@@ -315,7 +315,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 
   // Set the first read bytes to return `base::File::FILE_OK`, this indicates
   // that the data is fresh and available in the cache.
-  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer.get(), /*offset=*/0,
+  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer, /*offset=*/0,
                                              /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/1, /*has_more=*/false,
                                    base::File::FILE_OK));
@@ -341,7 +341,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 
   // Make the inner callback to return `base::File::FILE_ERROR_FAILED` to
   // indicate that the actual underlying read of the cached file failed.
-  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer.get(), /*offset=*/0,
+  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer, /*offset=*/0,
                                              /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/-1, /*has_more=*/false,
                                    base::File::FILE_ERROR_FAILED));
@@ -367,7 +367,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 
   // Set the first read bytes to return `base::File::FILE_ERROR_NOT_FOUND`, this
   // indicates that the data is not cached in the content cache.
-  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer.get(), /*offset=*/0,
+  EXPECT_CALL(*mock_content_cache, ReadBytes(_, buffer, /*offset=*/0,
                                              /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/-1, /*has_more=*/false,
                                    base::File::FILE_ERROR_NOT_FOUND));
@@ -377,7 +377,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   // should succeed back to the caller and follow up requests will defer
   // straight to the FSP.
   EXPECT_CALL(*mock_content_cache,
-              WriteBytes(_, buffer.get(), /*offset=*/0,
+              WriteBytes(_, buffer, /*offset=*/0,
                          /*length=*/1, IsNotNullCallback()))
       .WillOnce(RunOnceCallback<4>(base::File::FILE_ERROR_FAILED));
 

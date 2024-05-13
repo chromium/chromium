@@ -41,13 +41,13 @@ class ContentCacheImpl : public ContentCache {
 
   void ReadBytes(
       const OpenedCloudFile& file,
-      net::IOBuffer* buffer,
+      scoped_refptr<net::IOBuffer> buffer,
       int64_t offset,
       int length,
       ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) override;
 
   void WriteBytes(const OpenedCloudFile& file,
-                  net::IOBuffer* buffer,
+                  scoped_refptr<net::IOBuffer> buffer,
                   int64_t offset,
                   int length,
                   FileErrorCallback callback) override;

@@ -48,7 +48,7 @@ class ContentCache {
   // if the bytes don't exist.
   virtual void ReadBytes(
       const OpenedCloudFile& file,
-      net::IOBuffer* buffer,
+      scoped_refptr<net::IOBuffer> buffer,
       int64_t offset,
       int length,
       ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) = 0;
@@ -61,7 +61,7 @@ class ContentCache {
   //   - No other writer must be writing to the file at the moment
   // If any conditions are not satisfied, return false.
   virtual void WriteBytes(const OpenedCloudFile& file,
-                          net::IOBuffer* buffer,
+                          scoped_refptr<net::IOBuffer> buffer,
                           int64_t offset,
                           int length,
                           FileErrorCallback callback) = 0;

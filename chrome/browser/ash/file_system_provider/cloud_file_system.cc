@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
+#include "net/base/io_buffer.h"
 #include "url/origin.h"
 
 namespace ash::file_system_provider {
@@ -246,17 +248,18 @@ AbortCallback CloudFileSystem::ReadFile(int file_handle,
   // `StartReadBytes` succeeds, an actual read of the underlying FD will be
   // kicked off, for the purposes of this method it has finished successfully.
   const OpenedCloudFile& opened_cloud_file = it->second;
+  scoped_refptr<net::IOBuffer> buffer_ref = base::WrapRefCounted(buffer);
   content_cache_->ReadBytes(
-      opened_cloud_file, buffer, offset, length,
+      opened_cloud_file, buffer_ref, offset, length,
       base::BindRepeating(&CloudFileSystem::OnReadFileFromCacheCompleted,
-                          weak_ptr_factory_.GetWeakPtr(), file_handle, buffer,
-                          offset, length, callback));
+                          weak_ptr_factory_.GetWeakPtr(), file_handle,
+                          buffer_ref, offset, length, callback));
   return AbortCallback();
 }
 
 void CloudFileSystem::OnReadFileFromCacheCompleted(
     int file_handle,
-    net::IOBuffer* buffer,
+    scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length,
     ReadChunkReceivedCallback callback,
@@ -274,7 +277,7 @@ void CloudFileSystem::OnReadFileFromCacheCompleted(
     // The file doesn't exist in the cache, we need to make a cloud request
     // first and write the result into the cache upon successful return.
     file_system_->ReadFile(
-        file_handle, buffer, offset, length,
+        file_handle, buffer.get(), offset, length,
         base::BindRepeating(&CloudFileSystem::OnReadFileCompleted,
                             weak_ptr_factory_.GetWeakPtr(), file_handle, buffer,
                             offset, length, callback));
@@ -282,12 +285,12 @@ void CloudFileSystem::OnReadFileFromCacheCompleted(
   }
 
   LOG(ERROR) << "Couldn't read the file from cache";
-  file_system_->ReadFile(file_handle, buffer, offset, length,
+  file_system_->ReadFile(file_handle, buffer.get(), offset, length,
                          std::move(callback));
 }
 
 void CloudFileSystem::OnReadFileCompleted(int file_handle,
-                                          net::IOBuffer* buffer,
+                                          scoped_refptr<net::IOBuffer> buffer,
                                           int64_t offset,
                                           int length,
                                           ReadChunkReceivedCallback callback,

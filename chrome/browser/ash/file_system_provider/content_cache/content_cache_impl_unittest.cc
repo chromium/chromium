@@ -87,9 +87,8 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
     // to disk.
     scoped_refptr<net::IOBufferWithSize> buffer =
         InitializeBufferWithRandBytes(chunk_size);
-    EXPECT_EQ(
-        WriteBytesToContentCache(file, buffer.get(), /*offset=*/0, chunk_size),
-        base::File::FILE_OK);
+    EXPECT_EQ(WriteBytesToContentCache(file, buffer, /*offset=*/0, chunk_size),
+              base::File::FILE_OK);
 
     return file;
   }
@@ -131,10 +130,11 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
         base::RandBytesAsString(kDefaultChunkSize)));
   }
 
-  base::File::Error WriteBytesToContentCache(const OpenedCloudFile& file,
-                                             net::IOBuffer* buffer,
-                                             int64_t offset,
-                                             int length) {
+  base::File::Error WriteBytesToContentCache(
+      const OpenedCloudFile& file,
+      scoped_refptr<net::IOBuffer> buffer,
+      int64_t offset,
+      int length) {
     TestFuture<base::File::Error> future;
     content_cache_->WriteBytes(file, buffer, offset, length,
                                future.GetCallback());
@@ -143,7 +143,7 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
 
   std::pair<int, base::File::Error> ReadBytesFromContentCache(
       const OpenedCloudFile& file,
-      net::IOBuffer* buffer,
+      scoped_refptr<net::IOBuffer> buffer,
       int64_t offset,
       int length) {
     TestFuture<int, bool, base::File::Error> future;
@@ -177,7 +177,7 @@ TEST_F(FileSystemProviderContentCacheImplTest, WriteBytes) {
   // Contiguous writes should be allowed if re-using the same request ID (which
   // is stored in the `OpenedCloudFile` returned from above).
   scoped_refptr<net::IOBuffer> buffer = InitializeBufferWithRandBytes(64);
-  EXPECT_EQ(WriteBytesToContentCache(file, buffer.get(),
+  EXPECT_EQ(WriteBytesToContentCache(file, buffer,
                                      /*offset=*/kDefaultChunkSize, 64),
             base::File::FILE_OK);
 
@@ -279,8 +279,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   TestFuture<base::File::Error> future;
   scoped_refptr<net::IOBufferWithSize> buffer =
       InitializeBufferWithRandBytes(kDefaultChunkSize * 2);
-  content_cache_->WriteBytes(file, buffer.get(), /*offset=*/0,
-                             kDefaultChunkSize, future.GetCallback());
+  content_cache_->WriteBytes(file, buffer, /*offset=*/0, kDefaultChunkSize,
+                             future.GetCallback());
 
   // This attempt will be attempted before the `WriteBytesBlocking` call that is
   // made above, so this should fail as the first 512 byte chunk has not been
@@ -315,7 +315,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                         /*version_tag=*/"versionA", kDefaultChunkSize * 3);
   scoped_refptr<net::IOBufferWithSize> buffer =
       InitializeBufferWithRandBytes(kDefaultChunkSize * 3);
-  EXPECT_EQ(WriteBytesToContentCache(file3, /*buffer=*/buffer.get(),
+  EXPECT_EQ(WriteBytesToContentCache(file3, /*buffer=*/buffer,
                                      /*offset=*/0, kDefaultChunkSize),
             base::File::FILE_OK);
 
@@ -378,7 +378,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   // The file in the cloud has 512 bytes, however, the reader is attempting to
   // get another 512 bytes starting from 512. Readers expect the `bytes_read` to
   // return with 0 to indicate EOF, follow up requests should honor this.
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/512, kDefaultChunkSize),
               Pair(0, base::File::FILE_OK));
 }
@@ -393,7 +393,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                        ++request_id_, version_tag, kDefaultChunkSize);
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(kDefaultChunkSize, base::File::FILE_OK));
 }
@@ -412,13 +412,13 @@ TEST_F(
 
   // First request is made for a file that is 49 bytes big but the request is
   // for `kDefaultChunkSize` instead.
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(49, base::File::FILE_OK));
 
   // The client then requests from the previous offset and the same length, we
   // want to avoid sending this to the FSP as we have all this data available.
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/49, kDefaultChunkSize),
               Pair(0, base::File::FILE_OK));
 }
@@ -438,7 +438,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   // First request is made for a file that is `kDefaultChunkSize` bytes.
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(kDefaultChunkSize, base::File::FILE_OK));
 
@@ -467,14 +467,14 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   TestFuture<int, bool, base::File::Error> future;
 
   // First request is made for a file that is `kDefaultChunkSize` bytes.
-  EXPECT_THAT(ReadBytesFromContentCache(file, buffer.get(),
+  EXPECT_THAT(ReadBytesFromContentCache(file, buffer,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(kDefaultChunkSize, base::File::FILE_OK));
 
   // The client then requests from the previous offset but the remaining length,
   // this should return true but only 64 bytes should be returned.
   EXPECT_THAT(
-      ReadBytesFromContentCache(file, buffer.get(),
+      ReadBytesFromContentCache(file, buffer,
                                 /*offset=*/kDefaultChunkSize, /*length=*/128),
       Pair(64, base::File::FILE_OK));
 
@@ -502,7 +502,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(kDefaultChunkSize);
   EXPECT_THAT(
-      ReadBytesFromContentCache(file, buffer.get(),
+      ReadBytesFromContentCache(file, buffer,
                                 /*offset=*/0, /*length=*/kDefaultChunkSize),
       Pair(kDefaultChunkSize, base::File::FILE_OK));
 }
