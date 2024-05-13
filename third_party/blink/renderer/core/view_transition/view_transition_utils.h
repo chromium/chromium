@@ -190,10 +190,6 @@ class CORE_EXPORT ViewTransitionUtils {
   // ::view-transition pseudo element of a view transition hierarchy.
   static bool IsViewTransitionRoot(const LayoutObject& object);
 
-  // Returns true if this object represents an element that is a view transition
-  // participant.
-  static bool IsViewTransitionParticipant(const LayoutObject& object);
-
   // Returns true if this element is a view transition participant. This is a
   // slow check that walks all of the view transition elements in the
   // ViewTransitionStyleTracker.

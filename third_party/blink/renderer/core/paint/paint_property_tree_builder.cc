@@ -1424,6 +1424,32 @@ static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
          (object.HasLayer() || object.IsSVGChild());
 }
 
+static bool NeedsEffectForViewTransition(const LayoutObject& object) {
+  // The view-transition-name property when set creates a backdrop filter root.
+  // We do this by ensuring that this object needs an effect node.
+  //
+  // This is not required for the root element since its snapshot comes from the
+  // root stacking context which is already a backdrop filter root.
+  const auto& style = object.StyleRef();
+  if (style.ElementIsViewTransitionParticipant()) {
+    DCHECK(
+        ViewTransitionUtils::IsViewTransitionElementExcludingRootFromSupplement(
+            *To<Element>(object.GetNode())));
+    return true;
+  } else {
+#if DCHECK_IS_ON()
+    auto* element = DynamicTo<Element>(object.GetNode());
+    DCHECK(!element ||
+           !ViewTransitionUtils::
+               IsViewTransitionElementExcludingRootFromSupplement(*element))
+        << element;
+#endif
+  }
+
+  return style.ViewTransitionName() && !object.IsDocumentElement() &&
+         !object.IsLayoutView();
+}
+
 static bool NeedsEffectIgnoringClipPath(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
@@ -1480,9 +1506,7 @@ static bool NeedsEffectIgnoringClipPath(
   // We do this by ensuring that this object needs an effect node.
   // This is not required for the root element since its snapshot comes from the
   // root stacking context which is already a backdrop filter root.
-  if ((style.ViewTransitionName() ||
-       ViewTransitionUtils::IsViewTransitionParticipant(object)) &&
-      !object.IsDocumentElement() && !object.IsLayoutView()) {
+  if (NeedsEffectForViewTransition(object)) {
     return true;
   }
 

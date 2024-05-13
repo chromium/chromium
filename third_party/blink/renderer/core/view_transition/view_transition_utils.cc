@@ -86,27 +86,6 @@ bool ViewTransitionUtils::IsViewTransitionRoot(const LayoutObject& object) {
 }
 
 // static
-bool ViewTransitionUtils::IsViewTransitionParticipant(
-    const LayoutObject& object) {
-  // Special case LayoutView to check the supplement directly.
-  if (IsA<LayoutView>(object)) {
-    return IsViewTransitionParticipantFromSupplement(object);
-  }
-
-  if (const Element* element = DynamicTo<Element>(object.GetNode())) {
-    if (const ComputedStyle* style = element->GetComputedStyle()) {
-      DCHECK_EQ(style->ElementIsViewTransitionParticipant(),
-                IsViewTransitionElementExcludingRootFromSupplement(*element))
-          << object.DebugName();
-      return style->ElementIsViewTransitionParticipant();
-    }
-  }
-
-  DCHECK(!IsViewTransitionParticipantFromSupplement(object));
-  return false;
-}
-
-// static
 bool ViewTransitionUtils::IsViewTransitionElementExcludingRootFromSupplement(
     const Element& element) {
   ViewTransition* transition = GetTransition(element.GetDocument());
