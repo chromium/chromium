@@ -249,6 +249,24 @@ std::string GetStringFromDict(const base::Value::Dict& dict, const char* key) {
   return value ? *value : std::string();
 }
 
+base::flat_set<std::string> GetStringsFromDicts(const base::Value::List& dicts,
+                                                const char* key) {
+  base::flat_set<std::string> values;
+  for (const base::Value& dict : dicts) {
+    if (!dict.is_dict()) {
+      continue;
+    }
+
+    const std::string* value = dict.GetDict().FindString(key);
+    if (!value) {
+      continue;
+    }
+
+    values.emplace(*value);
+  }
+  return values;
+}
+
 bool FieldIsRecommended(const base::Value::Dict& object,
                         const std::string& field_name) {
   const base::Value::List* recommended = object.FindList(::onc::kRecommended);
@@ -818,12 +836,38 @@ bool Validator::RequireField(const base::Value::Dict& dict,
   return false;
 }
 
+bool Validator::CheckAdminAssignedAPNIdsAreNonEmptyAndAddToSet(
+    const base::Value::Dict& dict,
+    const std::string& key_list_of_ids) {
+  CHECK(key_list_of_ids == ::onc::cellular::kAdminAssignedAPNIds ||
+        key_list_of_ids ==
+            ::onc::global_network_config::kPSIMAdminAssignedAPNIds);
+
+  const base::Value::List* id_list = dict.FindList(key_list_of_ids);
+  if (!id_list) {
+    return true;
+  }
+
+  for (const base::Value& id_value : *id_list) {
+    const std::string id = id_value.GetString();
+    if (id.empty()) {
+      std::ostringstream msg;
+      msg << key_list_of_ids << " must only include non-empty IDs";
+      AddValidationIssue(true /* is_error */, msg.str());
+      return false;
+    }
+    admin_assigned_apn_ids_.emplace(id);
+  }
+  return true;
+}
+
 bool Validator::CheckGuidIsUniqueAndAddToSet(const base::Value::Dict& dict,
                                              const std::string& key_guid,
                                              std::set<std::string>* guids) {
   const std::string* guid = dict.FindString(key_guid);
-  if (!guid)
+  if (!guid) {
     return true;
+  }
 
   if (guids->count(*guid) != 0) {
     path_.push_back(key_guid);
@@ -863,11 +907,24 @@ bool Validator::ValidateToplevelConfiguration(base::Value::Dict* result) {
   // Enforces unique string identifiers for APNs within the 'AdminAPNList'. Note
   // that duplicate identifiers may still exist in other APN arrays due to
   // sources (like the modem or modb) that don't provide unique Ids.
-  if (admin_apn_list && !HasUniqueValuesForKeyInDicts(
-                            *admin_apn_list, ::onc::cellular_apn::kId)) {
-    AddValidationIssue(/*is_error=*/true,
-                       "APNs in the AdminAPNList do not have unique IDs");
-    return false;
+  if (admin_apn_list) {
+    if (!HasUniqueValuesForKeyInDicts(*admin_apn_list,
+                                      ::onc::cellular_apn::kId)) {
+      AddValidationIssue(/*is_error=*/true,
+                         "APNs in the AdminAPNList do not have unique IDs");
+      return false;
+    }
+
+    base::flat_set<std::string> ids_of_toplevel_apns =
+        GetStringsFromDicts(*admin_apn_list, ::onc::cellular_apn::kId);
+    if (!std::includes(ids_of_toplevel_apns.begin(), ids_of_toplevel_apns.end(),
+                       admin_assigned_apn_ids_.begin(),
+                       admin_assigned_apn_ids_.end())) {
+      AddValidationIssue(/*is_error=*/true,
+                         "Some cellular network configurations have admin APN "
+                         "IDs that are not sourced from the admin");
+      return false;
+    }
   }
 
   if (IsGlobalNetworkConfigInUserImport(*result)) {
@@ -963,6 +1020,12 @@ bool Validator::ValidateCellular(base::Value::Dict* result) {
         R"(The "SMDPAddress" and "SMDSAddress" fields are mutually exclusive.)");
     return false;
   }
+
+  if (!CheckAdminAssignedAPNIdsAreNonEmptyAndAddToSet(
+          *result, ::onc::cellular::kAdminAssignedAPNIds)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -1339,6 +1402,11 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::Value::Dict* result) {
   if (FieldExistsAndHasNoValidValue(
           *result, ::onc::global_network_config::kAllowTextMessages,
           GetValidAllowTextMessagesTypes())) {
+    return false;
+  }
+
+  if (!CheckAdminAssignedAPNIdsAreNonEmptyAndAddToSet(
+          *result, ::onc::global_network_config::kPSIMAdminAssignedAPNIds)) {
     return false;
   }
 
