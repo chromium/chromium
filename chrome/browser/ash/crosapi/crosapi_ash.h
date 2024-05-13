@@ -54,6 +54,7 @@ class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
 class GuestOsSkForwarderFactoryAsh;
+class CecPrivateAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
@@ -192,6 +193,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) override;
   void BindBrowserVersionService(
       mojo::PendingReceiver<mojom::BrowserVersionService> receiver) override;
+  void BindCecPrivate(
+      mojo::PendingReceiver<mojom::CecPrivate> receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
@@ -463,6 +466,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return browser_service_host_ash_.get();
   }
 
+  CecPrivateAsh* cec_private_ash() { return cec_private_ash_.get(); }
+
   CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
 
   CertProvisioningAsh* cert_provisioning_ash() {
@@ -669,6 +674,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
   std::unique_ptr<GuestOsSkForwarderFactoryAsh>
       guest_os_sk_forwarder_factory_ash_;
+  std::unique_ptr<CecPrivateAsh> cec_private_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;

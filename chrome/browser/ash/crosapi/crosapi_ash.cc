@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
+#include "chrome/browser/ash/crosapi/cec_private_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
@@ -228,6 +229,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           g_browser_process->component_updater())),
       guest_os_sk_forwarder_factory_ash_(
           std::make_unique<GuestOsSkForwarderFactoryAsh>()),
+      cec_private_ash_(std::make_unique<CecPrivateAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
@@ -445,6 +447,11 @@ void CrosapiAsh::BindBrowserShortcutPublisher(
 void CrosapiAsh::BindBrowserVersionService(
     mojo::PendingReceiver<crosapi::mojom::BrowserVersionService> receiver) {
   browser_version_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindCecPrivate(
+    mojo::PendingReceiver<mojom::CecPrivate> receiver) {
+  cec_private_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCertDatabase(

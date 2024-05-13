@@ -30,6 +30,7 @@
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
+#include "chromeos/crosapi/mojom/cec_private.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
 #include "chromeos/crosapi/mojom/chaps_service.mojom.h"
@@ -292,6 +293,8 @@ LacrosService::LacrosService()
       crosapi::mojom::AppShortcutPublisher,
       &Crosapi::BindBrowserShortcutPublisher,
       Crosapi::MethodMinVersions::kBindBrowserShortcutPublisherMinVersion>();
+  ConstructRemote<crosapi::mojom::CecPrivate, &Crosapi::BindCecPrivate,
+                  Crosapi::MethodMinVersions::kBindCecPrivateMinVersion>();
   ConstructRemote<
       crosapi::mojom::AppWindowTracker, &Crosapi::BindChromeAppWindowTracker,
       Crosapi::MethodMinVersions::kBindChromeAppWindowTrackerMinVersion>();

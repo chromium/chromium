@@ -25,13 +25,14 @@ component("cec_service") {
 source_set("unit_tests") {
   testonly = true
   deps = [
-    ":cec_service",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus/common",
     "//dbus",
     "//dbus:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  public_deps = [ ":cec_service" ]
   sources = [ "cec_service_client_unittest.cc" ]
 }
