@@ -475,8 +475,6 @@ PA_ALWAYS_INLINE InSlotMetadata::InSlotMetadata(
 static_assert(kAlignment % alignof(InSlotMetadata) == 0,
               "kAlignment must be multiples of alignof(InSlotMetadata).");
 
-static constexpr size_t kInSlotMetadataBufferSize = sizeof(InSlotMetadata);
-
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 #if PA_CONFIG(IN_SLOT_METADATA_CHECK_COOKIE) || \
@@ -561,16 +559,14 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
   }
 }
 
-static_assert(sizeof(InSlotMetadata) <= kInSlotMetadataBufferSize,
-              "InSlotMetadata should fit into the in-slot buffer.");
-
-#else  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
-static constexpr size_t kInSlotMetadataBufferSize = 0;
-
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-constexpr size_t kInSlotMetadataSizeAdjustment = kInSlotMetadataBufferSize;
+static inline constexpr size_t kInSlotMetadataSizeAdjustment =
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    sizeof(InSlotMetadata);
+#else
+    0ul;
+#endif
 
 }  // namespace partition_alloc::internal
 
