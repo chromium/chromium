@@ -1,25 +1,28 @@
 <style>
   :host {
-    --color-realbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
-    --color-realbox-answer-icon-foreground: var(--color-omnibox-answer-icon-g-m3-foreground);
-    --color-realbox-results-action-chip: var(--color-omnibox-results-button-border);
-    --color-realbox-results-action-chip-icon: var(--color-omnibox-results-button-icon);
-    --color-realbox-results-action-chip-focus-outline: var(--color-omnibox-results-button-icon-selected);
-    --color-realbox-results-background: var(--color-omnibox-results-background);
-    --color-realbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
-    --color-realbox-results-dim-selected: var(--color-omnibox-result-text-dimmed-selected);
-    --color-realbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
-    --color-realbox-results-foreground: var(--color-omnibox-text);
-    --color-realbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
-    --color-realbox-results-icon: var(--color-omnibox-results-icon);
-    --color-realbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
-    --color-realbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
-    --color-realbox-results-url: var(--color-omnibox-results-url);
-    --color-realbox-results-url-selected: var(--color-omnibox-results-url-selected);
-    --color-realbox-search-icon-background: var(--color-omnibox-results-icon);
     --cr-realbox-min-width: 75%;
     --cr-realbox-width: 100%;
     font-size: 14.6px; /* closely resembles the omnibox input font size. */
+    /* Colors used in the cr-searchbox results dropdown */
+    --color-realbox-answer-icon-background: var(--color-omnibox-answer-icon-g-m3-background);
+    --color-realbox-answer-icon-foreground: var(--color-omnibox-answer-icon-g-m3-foreground);
+    --color-realbox-results-action-chip-focus-outline: var(--color-omnibox-results-button-icon-selected);
+    --color-realbox-results-action-chip-icon: var(--color-omnibox-results-button-icon);
+    --color-realbox-results-action-chip: var(--color-omnibox-results-button-border);
+    --color-realbox-results-background-hovered: var(--color-omnibox-results-background-hovered);
+    --color-realbox-results-background: var(--color-omnibox-results-background);
+    /* TODO(b/40251392): Replace hardcoded color below with a color token. */
+    --color-realbox-results-button-hover: #202124ff;
+    --color-realbox-results-dim-selected: var(--color-omnibox-result-text-dimmed-selected);
+    --color-realbox-results-focus-indicator: var(--color-omnibox-results-focus-indicator);
+    --color-realbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
+    --color-realbox-results-foreground: var(--color-omnibox-text);
+    --color-realbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
+    --color-realbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
+    --color-realbox-results-icon: var(--color-omnibox-results-icon);
+    --color-realbox-results-url-selected: var(--color-omnibox-results-url-selected);
+    --color-realbox-results-url: var(--color-omnibox-results-url);
+    --color-realbox-search-icon-background: var(--color-omnibox-results-icon);
   }
 
   /**
