@@ -6822,6 +6822,86 @@
             ]
         }
     ],
+    "DownloadWarningSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DownloadBubbleBypass_20240513",
+                    "params": {
+                        "en_site_id": "ikozJtokP0ugnJ3q1cK0SbwHjMKE",
+                        "probability": "1.0",
+                        "survey_type": "0"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "DownloadBubbleHeed_20240513",
+                    "params": {
+                        "en_site_id": "jhF4CtEp50ugnJ3q1cK0UZhzeE9d",
+                        "probability": "1.0",
+                        "survey_type": "1"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "DownloadBubbleIgnore_20240513",
+                    "params": {
+                        "en_site_id": "QGZEf3nUW0ugnJ3q1cK0PoGTrYqX",
+                        "ignore_delay_seconds": "300",
+                        "probability": "0.5",
+                        "survey_type": "2"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "DownloadsPageBypass_20240513",
+                    "params": {
+                        "en_site_id": "B4TxfW2d50ugnJ3q1cK0SrBjxPp9",
+                        "probability": "1.0",
+                        "survey_type": "3"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "DownloadsPageHeed_20240513",
+                    "params": {
+                        "en_site_id": "P1UCDjb5L0ugnJ3q1cK0S1YhAs9h",
+                        "probability": "1.0",
+                        "survey_type": "4"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                },
+                {
+                    "name": "DownloadsPageIgnore_20240513",
+                    "params": {
+                        "en_site_id": "ToBgFcctL0ugnJ3q1cK0UoPbrdFt",
+                        "probability": "0.5",
+                        "survey_type": "5"
+                    },
+                    "enable_features": [
+                        "DownloadWarningSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadsMigrateToJobsAPI": [
         {
             "platforms": [
