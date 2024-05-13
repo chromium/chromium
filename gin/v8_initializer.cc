@@ -398,14 +398,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-intel-jcc-erratum-mitigation");
 
   // JavaScript language features.
-  if (base::FeatureList::IsEnabled(features::kJavaScriptRabGsab)) {
-    SetV8Flags("--harmony-rab-gsab");
-  } else {
-    SetV8Flags("--no-harmony-rab-gsab");
-  }
-  SetV8FlagsIfOverridden(features::kJavaScriptArrayBufferTransfer,
-                         "--harmony-rab-gsab-transfer",
-                         "--no-harmony-rab-gsab-transfer");
   SetV8FlagsIfOverridden(features::kJavaScriptIteratorHelpers,
                          "--harmony-iterator-helpers",
                          "--no-harmony-iterator-helpers");

@@ -236,16 +236,6 @@ BASE_FEATURE(kV8IntelJCCErratumMitigation,
 
 // JavaScript language features.
 
-// Enables the Resizable ArrayBuffer proposal.
-BASE_FEATURE(kJavaScriptRabGsab,
-             "JavaScriptRabGsab",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the ArrayBuffer transfer proposal.
-BASE_FEATURE(kJavaScriptArrayBufferTransfer,
-             "JavaScriptArrayBufferTransfer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the experiment with compile hints as magic comments.
 BASE_FEATURE(kJavaScriptCompileHintsMagic,
              "JavaScriptCompileHintsMagic",
