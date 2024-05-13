@@ -5204,7 +5204,6 @@
     {
       name: "text-box-edge",
       property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
-      inherited: true,
       field_group: "box",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/text_box_edge.h"],
