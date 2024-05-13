@@ -66,7 +66,7 @@ class StringOrdinal {
 
   // Creates an StringOrdinal from the given string of bytes. The StringOrdinal
   // may be valid or invalid.
-  explicit StringOrdinal(const std::string& bytes);
+  explicit StringOrdinal(std::string bytes);
 
   // Creates an invalid StringOrdinal.
   StringOrdinal();
@@ -191,8 +191,6 @@ class StringOrdinal {
 };
 
 bool operator==(const StringOrdinal& lhs, const StringOrdinal& rhs);
-
-bool operator!=(const StringOrdinal& lhs, const StringOrdinal& rhs);
 
 static_assert(StringOrdinal::kZeroDigit == 'a',
               "StringOrdinal has incorrect zero digit");

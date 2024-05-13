@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_BASE_CLIENT_TAG_HASH_H_
 #define COMPONENTS_SYNC_BASE_CLIENT_TAG_HASH_H_
 
+#include <compare>
 #include <iosfwd>
 #include <string>
 
@@ -36,11 +37,14 @@ class ClientTagHash {
 
   ClientTagHash();
   ClientTagHash(const ClientTagHash& other);
+  ClientTagHash& operator=(const ClientTagHash& other);
   ClientTagHash(ClientTagHash&& other);
+  ClientTagHash& operator=(ClientTagHash&& other);
   ~ClientTagHash();
 
-  ClientTagHash& operator=(const ClientTagHash& other);
-  ClientTagHash& operator=(ClientTagHash&& other);
+  friend bool operator==(const ClientTagHash&, const ClientTagHash&) = default;
+  friend std::strong_ordering operator<=>(const ClientTagHash&,
+                                          const ClientTagHash&) = default;
 
   const std::string& value() const { return value_; }
 
@@ -51,9 +55,6 @@ class ClientTagHash {
   std::string value_;
 };
 
-bool operator<(const ClientTagHash& lhs, const ClientTagHash& rhs);
-bool operator==(const ClientTagHash& lhs, const ClientTagHash& rhs);
-bool operator!=(const ClientTagHash& lhs, const ClientTagHash& rhs);
 std::ostream& operator<<(std::ostream& os,
                          const ClientTagHash& client_tag_hash);
 

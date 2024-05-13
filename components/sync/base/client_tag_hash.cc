@@ -40,28 +40,16 @@ ClientTagHash::ClientTagHash(std::string value) : value_(std::move(value)) {}
 
 ClientTagHash::ClientTagHash(const ClientTagHash& other) = default;
 
-ClientTagHash::ClientTagHash(ClientTagHash&& other) = default;
-
-ClientTagHash::~ClientTagHash() = default;
-
 ClientTagHash& ClientTagHash::operator=(const ClientTagHash& other) = default;
+
+ClientTagHash::ClientTagHash(ClientTagHash&& other) = default;
 
 ClientTagHash& ClientTagHash::operator=(ClientTagHash&& other) = default;
 
+ClientTagHash::~ClientTagHash() = default;
+
 size_t ClientTagHash::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(value_);
-}
-
-bool operator<(const ClientTagHash& lhs, const ClientTagHash& rhs) {
-  return lhs.value() < rhs.value();
-}
-
-bool operator==(const ClientTagHash& lhs, const ClientTagHash& rhs) {
-  return lhs.value() == rhs.value();
-}
-
-bool operator!=(const ClientTagHash& lhs, const ClientTagHash& rhs) {
-  return lhs.value() != rhs.value();
 }
 
 std::ostream& operator<<(std::ostream& os,

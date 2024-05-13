@@ -29,8 +29,8 @@ class KeyDerivationParams {
   KeyDerivationParams(const KeyDerivationParams& other);
   KeyDerivationParams(KeyDerivationParams&& other);
   KeyDerivationParams& operator=(const KeyDerivationParams& other);
-  bool operator==(const KeyDerivationParams& other) const;
-  bool operator!=(const KeyDerivationParams& other) const;
+
+  bool operator==(const KeyDerivationParams& other) const = default;
 
  private:
   KeyDerivationParams(KeyDerivationMethod method,

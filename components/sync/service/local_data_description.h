@@ -31,12 +31,11 @@ struct LocalDataDescription {
   LocalDataDescription(LocalDataDescription&&);
   LocalDataDescription& operator=(LocalDataDescription&&);
   ~LocalDataDescription();
+
+  friend bool operator==(const LocalDataDescription&,
+                         const LocalDataDescription&) = default;
 };
 
-bool operator==(const LocalDataDescription& lhs,
-                const LocalDataDescription& rhs);
-bool operator!=(const LocalDataDescription& lhs,
-                const LocalDataDescription& rhs);
 
 // gmock printer helper.
 void PrintTo(const LocalDataDescription& local_data_description,

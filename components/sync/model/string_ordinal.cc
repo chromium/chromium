@@ -5,6 +5,7 @@
 #include "components/sync/model/string_ordinal.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -39,12 +40,8 @@ bool operator==(const StringOrdinal& lhs, const StringOrdinal& rhs) {
   return lhs.EqualsOrBothInvalid(rhs);
 }
 
-bool operator!=(const StringOrdinal& lhs, const StringOrdinal& rhs) {
-  return !(lhs == rhs);
-}
-
-StringOrdinal::StringOrdinal(const std::string& bytes)
-    : bytes_(bytes), is_valid_(IsValidOrdinalBytes(bytes_)) {}
+StringOrdinal::StringOrdinal(std::string bytes)
+    : bytes_(std::move(bytes)), is_valid_(IsValidOrdinalBytes(bytes_)) {}
 
 StringOrdinal::StringOrdinal() : is_valid_(false) {}
 
