@@ -49,7 +49,7 @@ public class CronetLoggerImpl extends CronetLogger {
                 info.cronetInitializationRef,
                 convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
                 info.engineBuilderCreatedLatencyMillis,
-                convertToProtoCronetSource(info.source),
+                convertToProtoCronetEngineBuilderInitializedSource(info.source),
                 OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
                 info.apiVersion.getMajorVersion(),
                 info.apiVersion.getMinorVersion(),
@@ -127,7 +127,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     version.getMinorVersion(),
                     version.getBuildVersion(),
                     version.getPatchVersion(),
-                    convertToProtoCronetSource(source),
+                    convertToProtoCronetEngineCreatedSource(source),
                     builder.isBrotliEnabled(),
                     builder.isHttp2Enabled(),
                     convertToProtoHttpCacheMode(builder.getHttpCacheMode()),
@@ -241,7 +241,27 @@ public class CronetLoggerImpl extends CronetLogger {
         }
     }
 
-    private static int convertToProtoCronetSource(CronetSource source) {
+    private static int convertToProtoCronetEngineBuilderInitializedSource(CronetSource source) {
+        switch (source) {
+            case CRONET_SOURCE_STATICALLY_LINKED:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_EMBEDDED_NATIVE;
+            case CRONET_SOURCE_PLAY_SERVICES:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_GMSCORE_NATIVE;
+            case CRONET_SOURCE_FALLBACK:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA;
+            case CRONET_SOURCE_PLATFORM:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE;
+            default:
+                return CronetStatsLog
+                        .CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_UNSPECIFIED;
+        }
+    }
+
+    private static int convertToProtoCronetEngineCreatedSource(CronetSource source) {
         switch (source) {
             case CRONET_SOURCE_STATICALLY_LINKED:
                 return CronetStatsLog
