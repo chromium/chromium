@@ -11316,6 +11316,68 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
     </message>
       </if>
 
+    <!-- Tab Group Editor Bubble -->
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
+        This will delete the group from all devices signed into Chrome with this Google Account.
+      </message>
+
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_UNGROUP" desc="The body text for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+        The tabs will remain open on this device but the group will be deleted from all devices signed into Chrome with this Google Account.
+      </message>
+
+      <if expr="use_titlecase">
+        <!-- Dont Ask -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_DONT_ASK" desc="The label for a checkbox that prevents the dialg from ever showing again on this device. Displayed in the Tab Group Deletion Dialog.">
+          Don't Ask Again
+        </message>
+        <!-- Title -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_DELETE" desc="The title for deleting. Displayed in the Tab Group Deletion Dialog.">
+          Delete Tab Group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_UNGROUP" desc="The title for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+          Ungroup Tab Group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
+          Close Tab(s) and Delete Group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
+          Remove Tab(s) and Delete Group?
+        </message>
+        <!-- OK Text -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
+          Delete Group
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_UNGROUP" desc="The text displayed on the ok button for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+          Ungroup
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <!-- Dont Ask -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_DONT_ASK" desc="The label for a checkbox that prevents the dialg from ever showing again on this device. Displayed in the Tab Group Deletion Dialog.">
+          Don't ask again
+        </message>
+        <!-- Title -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_DELETE" desc="The title for deleting. Displayed in the Tab Group Deletion Dialog.">
+          Delete tab group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_UNGROUP" desc="The title for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+          Ungroup tab group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE" desc="The title for closing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
+          Close tab(s) and delete group?
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE" desc="The title for removing the tab and deleting the group. Displayed in the Tab Group Deletion Dialog.">
+          Remove tab(s) and delete group?
+        </message>
+        <!-- OK Text -->
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
+          Delete group
+        </message>
+        <message name="IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_UNGROUP" desc="The text displayed on the ok button for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+          Ungroup
+        </message>
+      </if>
+
       <!-- Tab Group Editor Bubble -->
       <message name="IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME" desc="The accessible name of the tab-group-title textfield.">
           Tab-group title
