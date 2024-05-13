@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_util.h"
+#include "google_apis/gcm/engine/connection_factory.h"
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,6 +77,13 @@ std::vector<GURL> BuildEndpoints() {
   return endpoints;
 }
 
+// Used as a builder for test login requests.
+void FillLoginRequest(mcs_proto::LoginRequest* login_request) {
+  std::unique_ptr<mcs_proto::LoginRequest> request =
+      BuildLoginRequest(0, 0, "");
+  login_request->CopyFrom(*request);
+}
+
 // Helper for calculating total expected exponential backoff delay given an
 // arbitrary number of failed attempts. See BackoffEntry::CalculateReleaseTime.
 double CalculateBackoff(int num_attempts) {
@@ -106,8 +114,6 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
 
   // Overridden stubs.
   void StartConnection(bool ignore_connection_failure) override;
-  void InitHandler(mojo::ScopedDataPipeConsumerHandle receive_stream,
-                   mojo::ScopedDataPipeProducerHandle send_stream) override;
   std::unique_ptr<net::BackoffEntry> CreateBackoffEntry(
       const net::BackoffEntry::Policy* const policy) override;
   std::unique_ptr<ConnectionHandler> CreateConnectionHandler(
@@ -138,11 +144,6 @@ class TestConnectionFactoryImpl : public ConnectionFactoryImpl {
   int connect_result_ = net::ERR_UNEXPECTED;
   // The number of expected connection attempts;
   int num_expected_attempts_ = 0;
-  // Whether all expected connection attempts have been fulfilled since an
-  // expectation was last set.
-  bool connections_fulfilled_ = true;
-  // Whether to delay a login handshake completion or not.
-  bool delay_login_ = false;
   // Callback to invoke when all connection attempts have been made.
   base::RepeatingClosure finished_callback_;
   // A temporary scoped pointer to make sure we don't leak the handler in the
@@ -172,7 +173,10 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
       finished_callback_(std::move(finished_callback)),
       scoped_handler_(std::make_unique<FakeConnectionHandler>(
           base::BindRepeating(&ReadContinuation),
-          base::BindRepeating(&WriteContinuation))),
+          base::BindRepeating(&WriteContinuation),
+          base::BindRepeating(
+              &TestConnectionFactoryImpl::ConnectionHandlerCallback,
+              base::Unretained(this)))),
       fake_handler_(scoped_handler_.get()) {
   // Set a non-null time.
   tick_clock_.Advance(base::Milliseconds(1));
@@ -191,34 +195,26 @@ TestConnectionFactoryImpl::~TestConnectionFactoryImpl() {
 
 void TestConnectionFactoryImpl::StartConnection(
     bool ignore_connection_failure) {
-  ASSERT_GT(num_expected_attempts_, 0);
+  ASSERT_GT(num_expected_attempts_, 0) << "Unexpected connection attempt";
   ASSERT_FALSE(GetConnectionHandler()->CanSendMessage());
-  std::unique_ptr<mcs_proto::LoginRequest> request(BuildLoginRequest(0, 0, ""));
-  GetConnectionHandler()->Init(*request, std::move(receive_pipe_consumer_),
-                               std::move(send_pipe_producer_));
+
+  // Update the number of apptempts before calling OnConnectDone() because it
+  // can internally call StartConnection() again, e.g. during a network change.
+  --num_expected_attempts_;
   OnConnectDone(ignore_connection_failure, connect_result_, net::IPEndPoint(),
                 net::IPEndPoint(), mojo::ScopedDataPipeConsumerHandle(),
                 mojo::ScopedDataPipeProducerHandle());
+
   if (!NextRetryAttempt().is_null()) {
     // Advance the time to the next retry time.
     base::TimeDelta time_till_retry =
         NextRetryAttempt() - tick_clock_.NowTicks();
     tick_clock_.Advance(time_till_retry);
   }
-  --num_expected_attempts_;
   if (num_expected_attempts_ == 0) {
     connect_result_ = net::ERR_UNEXPECTED;
-    connections_fulfilled_ = true;
     finished_callback_.Run();
   }
-}
-
-void TestConnectionFactoryImpl::InitHandler(
-    mojo::ScopedDataPipeConsumerHandle receive_stream,
-    mojo::ScopedDataPipeProducerHandle send_stream) {
-  EXPECT_NE(connect_result_, net::ERR_UNEXPECTED);
-  if (!delay_login_)
-    ConnectionHandlerCallback(net::OK);
 }
 
 std::unique_ptr<net::BackoffEntry>
@@ -243,7 +239,6 @@ base::TimeTicks TestConnectionFactoryImpl::NowTicks() {
 void TestConnectionFactoryImpl::SetConnectResult(int connect_result) {
   DCHECK_NE(connect_result, net::ERR_UNEXPECTED);
   ASSERT_EQ(0, num_expected_attempts_);
-  connections_fulfilled_ = false;
   connect_result_ = connect_result;
   num_expected_attempts_ = 1;
   fake_handler_->ExpectOutgoingMessage(
@@ -256,7 +251,6 @@ void TestConnectionFactoryImpl::SetMultipleConnectResults(
   DCHECK_NE(connect_result, net::ERR_UNEXPECTED);
   DCHECK_GT(num_expected_attempts, 0);
   ASSERT_EQ(0, num_expected_attempts_);
-  connections_fulfilled_ = false;
   connect_result_ = connect_result;
   num_expected_attempts_ = num_expected_attempts;
   for (int i = 0 ; i < num_expected_attempts; ++i) {
@@ -266,8 +260,7 @@ void TestConnectionFactoryImpl::SetMultipleConnectResults(
 }
 
 void TestConnectionFactoryImpl::SetDelayLogin(bool delay_login) {
-  delay_login_ = delay_login;
-  fake_handler_->set_fail_login(delay_login_);
+  fake_handler_->set_fail_login(delay_login);
 }
 
 void TestConnectionFactoryImpl::SetSocketError() {
@@ -351,7 +344,7 @@ ConnectionFactoryImplTest::ConnectionFactoryImplTest()
       network_service_.get(),
       network_context_remote_.BindNewPipeAndPassReceiver(), std::move(params));
   factory()->SetConnectionListener(this);
-  factory()->Initialize(ConnectionFactory::BuildLoginRequestCallback(),
+  factory()->Initialize(base::BindRepeating(&FillLoginRequest),
                         ConnectionHandler::ProtoReceivedCallback(),
                         ConnectionHandler::ProtoSentCallback());
 }
@@ -476,9 +469,9 @@ TEST_F(ConnectionFactoryImplTest, FailThenNetworkChangeEvent) {
       network::mojom::ConnectionType::CONNECTION_WIFI);
   WaitForConnections();
 
-  // Backoff should increase.
+  // Backoff should not change because of network change.
   base::TimeTicks next_backoff = factory()->NextRetryAttempt();
-  EXPECT_GT(next_backoff, initial_backoff);
+  EXPECT_EQ(next_backoff, initial_backoff);
   EXPECT_FALSE(factory()->IsEndpointReachable());
 }
 
@@ -780,7 +773,8 @@ TEST_F(ConnectionFactoryImplTest,
 
   // Mimic a network change during handshake, and fail connection request.
   factory()->SetDelayLogin(false);
-  factory()->SetConnectResult(net::ERR_CONNECTION_FAILED);
+  factory()->SetMultipleConnectResults(net::ERR_CONNECTION_FAILED,
+                                       /*num_expected_attempts=*/2);
   factory()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   WaitForConnections();

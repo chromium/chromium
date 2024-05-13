@@ -30,14 +30,15 @@ std::unique_ptr<google::protobuf::MessageLite> BuildLoginResponse(
 
 FakeConnectionHandler::FakeConnectionHandler(
     const ConnectionHandler::ProtoReceivedCallback& read_callback,
-    const ConnectionHandler::ProtoSentCallback& write_callback)
+    const ConnectionHandler::ProtoSentCallback& write_callback,
+    const ConnectionHandler::ConnectionChangedCallback& connection_callback)
     : read_callback_(read_callback),
       write_callback_(write_callback),
+      connection_callback_(connection_callback),
       fail_login_(false),
       fail_send_(false),
       initialized_(false),
-      had_error_(false) {
-}
+      had_error_(false) {}
 
 FakeConnectionHandler::~FakeConnectionHandler() {
 }
@@ -46,13 +47,21 @@ void FakeConnectionHandler::Init(
     const mcs_proto::LoginRequest& login_request,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
+  DVLOG(1) << "Received init call.";
+
+  // Clear client events from the comparison.
+  mcs_proto::LoginRequest normalized_login_request = login_request;
+  normalized_login_request.clear_client_event();
+
   ASSERT_GE(expected_outgoing_messages_.size(), 1U);
   EXPECT_EQ(expected_outgoing_messages_.front().SerializeAsString(),
-            login_request.SerializeAsString());
+            normalized_login_request.SerializeAsString());
   expected_outgoing_messages_.pop_front();
-  DVLOG(1) << "Received init call.";
   read_callback_.Run(BuildLoginResponse(fail_login_));
   initialized_ = !fail_login_;
+  if (connection_callback_ && !fail_login_) {
+    connection_callback_.Run(net::OK);
+  }
 }
 
 void FakeConnectionHandler::Reset() {
