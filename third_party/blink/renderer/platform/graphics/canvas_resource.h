@@ -141,6 +141,7 @@ class PLATFORM_EXPORT CanvasResource
   // The mailbox which can be used to reference this resource in GPU commands.
   // The sync mode indicates how the sync token for the resource should be
   // prepared.
+  // NOTE: Valid to call only if SupportsAcceleratedCompositing() is true.
   virtual const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) = 0;
 
   // A CanvasResource is not thread-safe and does not allow concurrent usage

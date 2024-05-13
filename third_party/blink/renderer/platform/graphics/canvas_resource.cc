@@ -369,7 +369,9 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 
 const gpu::Mailbox& CanvasResourceSharedBitmap::GetOrCreateGpuMailbox(
     MailboxSyncMode sync_mode) {
-  return shared_bitmap_id_;
+  // By contract this method is valid to call only if
+  // SupportsAcceleratedCompositing() is true.
+  NOTREACHED_NORETURN();
 }
 
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
