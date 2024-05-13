@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
 
+#include "base/unguessable_token.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

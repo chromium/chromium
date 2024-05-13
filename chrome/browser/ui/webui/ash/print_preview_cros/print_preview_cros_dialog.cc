@@ -35,7 +35,25 @@ PrintPreviewCrosDialog* PrintPreviewCrosDialog::ShowDialog(
 
   // Attach dialog to parent window and show.
   dialog->ShowSystemDialog();
+
   return dialog;
+}
+
+PrintPreviewCrosDialog::PrintPreviewCrosDialog(base::UnguessableToken token)
+    : SystemWebDialogDelegate(GURL(ash::kChromeUIPrintPreviewCrosURL),
+                              kDialogTitle),
+      dialog_id_(token) {}
+
+PrintPreviewCrosDialog::~PrintPreviewCrosDialog() = default;
+
+void PrintPreviewCrosDialog::AddObserver(
+    PrintPreviewCrosDialogObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void PrintPreviewCrosDialog::RemoveObserver(
+    PrintPreviewCrosDialogObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void PrintPreviewCrosDialog::OnDialogShown(content::WebUI* webui) {
@@ -43,13 +61,16 @@ void PrintPreviewCrosDialog::OnDialogShown(content::WebUI* webui) {
   return SystemWebDialogDelegate::OnDialogShown(webui);
 }
 
-// protected:
-PrintPreviewCrosDialog::PrintPreviewCrosDialog(base::UnguessableToken token)
-    : SystemWebDialogDelegate(GURL(ash::kChromeUIPrintPreviewCrosURL),
-                              kDialogTitle),
-      dialog_id_(token) {}
+void PrintPreviewCrosDialog::OnDialogClosed(const std::string& json_retval) {
+  for (auto& observer : observer_list_) {
+    observer.OnDialogClosed(dialog_id_);
+  }
+}
 
-// private:
+gfx::NativeWindow PrintPreviewCrosDialog::GetDialogWindowForTesting() {
+  return dialog_window();
+}
+
 std::string PrintPreviewCrosDialog::Id() {
   return dialog_id_.ToString();
 }

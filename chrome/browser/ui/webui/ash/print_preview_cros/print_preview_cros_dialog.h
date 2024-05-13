@@ -7,28 +7,47 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ash::printing::print_preview {
 
-// System delegate
+// Print preview dialog implementation. A SystemWebDialog to inherit base
+// behaviors.
 class PrintPreviewCrosDialog : public SystemWebDialogDelegate {
  public:
-  ~PrintPreviewCrosDialog() override = default;
+  // Notifies clients of events related to lifetime of dialog.
+  class PrintPreviewCrosDialogObserver : public base::CheckedObserver {
+   public:
+    ~PrintPreviewCrosDialogObserver() override = default;
+    virtual void OnDialogClosed(base::UnguessableToken token) = 0;
+  };
+
+  ~PrintPreviewCrosDialog() override;
 
   static PrintPreviewCrosDialog* ShowDialog(base::UnguessableToken token);
 
+  void AddObserver(PrintPreviewCrosDialogObserver* observer);
+  void RemoveObserver(PrintPreviewCrosDialogObserver* observer);
+
   // SystemWebDialogDelegate:
   void OnDialogShown(content::WebUI* webui) override;
+  void OnDialogClosed(const std::string& json_retval) override;
+
+  gfx::NativeWindow GetDialogWindowForTesting();
 
  protected:
+  friend class PrintPreviewCrosDialogTest;
+
   explicit PrintPreviewCrosDialog(base::UnguessableToken token);
 
  private:
   // SystemWebDialogDelegate:
   std::string Id() override;
 
+  base::ObserverList<PrintPreviewCrosDialogObserver> observer_list_;
   base::UnguessableToken dialog_id_;
 };
 

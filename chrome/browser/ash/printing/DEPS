@@ -43,6 +43,7 @@ include_rules = [
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/webui/ash/print_preview_cros",
   "+chrome/browser/web_applications/test",
   "+chrome/common/channel_info.h",
   "+chrome/common/chrome_features.h",

@@ -6210,6 +6210,7 @@ source_set("unit_tests") {
     "printing/print_management/print_job_info_mojom_conversions_unittest.cc",
     "printing/print_management/printing_manager_factory_unittest.cc",
     "printing/print_management/printing_manager_unittest.cc",
+    "printing/print_preview/print_preview_dialog_controller_cros_unittest.cc",
     "printing/print_servers_manager_unittest.cc",
     "printing/printer_authenticator_unittest.cc",
     "printing/printer_event_tracker_unittest.cc",
