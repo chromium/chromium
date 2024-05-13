@@ -43,8 +43,11 @@ void MaybeTapAllowNotifications() {
       initWithBundleIdentifier:@"com.apple.springboard"];
   auto button = springboardApplication.buttons[@"Allow"];
   if ([button waitForExistenceWithTimeout:1]) {
-    [button tap];
+    // Wait for the magic stack to settle behind the alert.
+    // Otherwise the test flakes when a snackbar is presented right after the
+    // permissions alert is dismissed.
     [ChromeEarlGreyUI waitForAppToIdle];
+    [button tap];
   }
 }
 
