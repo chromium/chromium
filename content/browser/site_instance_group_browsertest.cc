@@ -27,6 +27,8 @@ class DataURLSiteInstanceGroupTest
       public ::testing::WithParamInterface<bool> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(command_line);
+
     if (IsSiteInstanceGroupEnabled()) {
       feature_list_.InitAndEnableFeature(
           features::kSiteInstanceGroupsForDataUrls);
@@ -103,6 +105,65 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
 
   // TODO(https://crbug.com/40269084, yangsharon): Add DepictFrameTree calls
   // once they fully support SiteInstanceGroups.
+}
+
+// Check that for a main frame data: URL, about:blank frames end up in the data:
+// URL's SiteInstance and can be scripted.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
+                       MainFrameDataURLWithAboutBlank) {
+  // Load a main frame data: URL with an about:blank subframe. The main frame
+  // and subframe should be in the same SiteInstance.
+  GURL data_url(
+      "data:text/html,<body> This page has one about:blank iframe:"
+      "<iframe name='frame1' src='about:blank'></iframe> </body>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+  EXPECT_EQ(main_frame_host()->GetSiteInstance(),
+            main_frame()->child_at(0)->current_frame_host()->GetSiteInstance());
+  EXPECT_EQ(
+      " Site A\n"
+      "   +--Site A\n"
+      "Where A = data:nonce_A",
+      DepictFrameTree(*main_frame()));
+
+  // The main frame should be able to script its about:blank subframe.
+  EXPECT_TRUE(ExecJs(main_frame(), "frames[0].window.name = 'new-name'"));
+  EXPECT_EQ(main_frame()->child_at(0)->frame_name(), "new-name");
+}
+
+// Check that for a subframe data: URL, about:blank frames end up in the data:
+// URL's SiteInstance and can be scripted.
+IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
+                       SubframeDataURLWithAboutBlank) {
+  // Navigate to a main frame with a cross-site iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Navigate the subframe to a data: URL with an about:blank subframe.
+  GURL data_url(
+      "data:text/html,<body> This page has one about:blank iframe:"
+      "<iframe name='frame1' src='about:blank'></iframe> </body>");
+  TestNavigationObserver observer(web_contents());
+  FrameTreeNode* child = main_frame()->child_at(0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, data_url));
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+
+  // The data: frame should be able to script its about:blank subframe.
+  EXPECT_TRUE(ExecJs(child, "frames[0].window.name = 'new-name'"));
+  EXPECT_EQ(child->child_at(0)->frame_name(), "new-name");
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "        +--Site B -- proxies for A\n"
+      "Where A = http://a.com/\n"
+      "      B = http://b.com/",
+      DepictFrameTree(*main_frame()));
+
+  // TODO(https://crbug.com/40269084, yangsharon): Add SiteInstance
+  // comparisons, and a SiteInstanceGroup-enabled DepictFrameTree check once
+  // data: URLs in SiteInstanceGroups are supported.
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
