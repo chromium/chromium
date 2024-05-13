@@ -126,13 +126,6 @@ storage::WatcherManager* DiversionBackendDelegate::GetWatcherManager(
   return wrappee_->GetWatcherManager(type);
 }
 
-void DiversionBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  wrappee_->GetRedirectURLForContents(url, std::move(callback));
-}
-
 void DiversionBackendDelegate::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,

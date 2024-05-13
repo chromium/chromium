@@ -90,12 +90,4 @@ storage::WatcherManager* BackendDelegate::GetWatcherManager(
   return watcher_manager_.get();
 }
 
-void BackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeProvided, url.type());
-  std::move(callback).Run(GURL());
-}
-
 }  // namespace ash::file_system_provider

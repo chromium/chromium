@@ -204,23 +204,7 @@ void ExternalFileResolver::OnHelperResultObtained(
   isolated_file_system_ = std::move(isolated_file_system);
   mime_type_ = mime_type;
 
-  // Check if the entry has a redirect URL.
   file_system_context_ = std::move(file_system_context);
-  ash::FileSystemBackend::Get(*file_system_context_)
-      ->GetRedirectURLForContents(
-          isolated_file_system_.url,
-          base::BindOnce(&ExternalFileResolver::OnRedirectURLObtained,
-                         weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ExternalFileResolver::OnRedirectURLObtained(const GURL& redirect_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (!redirect_url.is_empty()) {
-    std::move(redirect_callback_).Run(mime_type_, redirect_url);
-    return;
-  }
-
-  // If there's no redirect then we're serving the file from the file system.
   file_system_context_->operation_runner()->GetMetadata(
       isolated_file_system_.url,
       {storage::FileSystemOperation::GetMetadataField::kIsDirectory,

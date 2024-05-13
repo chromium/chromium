@@ -164,11 +164,6 @@ class FakeFSBDelegate : public FileSystemBackendDelegate {
     NOTREACHED_NORETURN();
   }
 
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) override {
-    NOTREACHED_NORETURN();
-  }
-
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   storage::AsyncFileUtilAdapter adapter_;

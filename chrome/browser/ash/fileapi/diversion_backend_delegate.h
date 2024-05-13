@@ -93,8 +93,6 @@ class DiversionBackendDelegate : public FileSystemBackendDelegate,
       storage::FileSystemContext* context) override;
   storage::WatcherManager* GetWatcherManager(
       storage::FileSystemType type) override;
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) override;
 
   // storage::AsyncFileUtil overrides.
   void CreateOrOpen(

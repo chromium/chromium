@@ -51,10 +51,4 @@ storage::WatcherManager* SmbFsFileSystemBackendDelegate::GetWatcherManager(
   return nullptr;
 }
 
-void SmbFsFileSystemBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  NOTREACHED();
-}
-
 }  // namespace ash::smb_client

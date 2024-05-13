@@ -70,8 +70,6 @@ class ExternalFileResolver {
       file_manager::util::FileSystemURLAndHandle isolated_file_system,
       const std::string& mime_type);
 
-  void OnRedirectURLObtained(const GURL& redirect_url);
-
   void OnFileInfoObtained(base::File::Error error,
                           const base::File::Info& file_info);
 

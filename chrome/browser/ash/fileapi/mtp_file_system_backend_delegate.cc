@@ -60,12 +60,4 @@ storage::WatcherManager* MTPFileSystemBackendDelegate::GetWatcherManager(
   return mtp_watcher_manager_.get();
 }
 
-void MTPFileSystemBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type());
-
-  std::move(callback).Run(GURL());
-}
-
 }  // namespace ash
