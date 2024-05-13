@@ -4,10 +4,59 @@
 
 /**
  * @fileoverview
- * settings-slider-v2 wraps a cr-slider. It maps the slider's values from a
- * linear UI range to a range of real values. When `value` does not map exactly
- * to a tick mark, it interpolates to the nearest tick.
+ * settings-slider-v2 is a component that displays a range of values. When
+ * `ticks` is specified and `value` does not map exactly to a tick mark, the
+ * slider interpolates to the nearest tick.
+ *
+ * - Usage: without pref
+ *   - `value` must be specified and `pref` must not be used.
+ *
+ *   // With ticks
+ *   <settings-slider-v2
+ *       value="[[sliderValue_]]"
+ *       ticks="[[sliderTicks_]]"
+ *       on-change="onSliderChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}"
+ *       show-markers>
+ *   <settings-slider-v2>
+ *
+ *   // With scale
+ *   <settings-slider-v2
+ *       value="[[sliderValue_]]"
+ *       min="0"
+ *       max="100"
+ *       scale="100"
+ *       on-change="onSliderChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}">
+ *   <settings-slider-v2>
+ *
+ * - Usage: with pref
+ *   - `pref` must be specified and `value` must not be used.
+ *
+ *   // With ticks
+ *   <settings-slider-v2
+ *       pref="[[prefs.foo.bar]]"
+ *       ticks="[[sliderTicks_]]"
+ *       on-change="onSliderChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}"
+ *       show-markers>
+ *   <settings-slider-v2>
+ *
+ *   // With scale
+ *   <settings-slider-v2
+ *       pref="[[prefs.foo.bar]]"
+ *       min="0"
+ *       max="100"
+ *       scale="100"
+ *       on-change="onSliderChange_"
+ *       min-label="$i18n{low}"
+ *       max-label="$i18n{high}">
+ *   <settings-slider-v2>
  */
+
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
@@ -107,7 +156,8 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
 
       /**
        * By default, the slider value will only be updated when the dragging
-       * event is finished.
+       * event is finished. Set this property to true to trigger a change event
+       * any time the slider is dragged.
        */
       updateValueInstantly: {
         type: Boolean,
@@ -115,7 +165,10 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
         observer: 'onSliderChanged_',
       },
 
-      /** Whether or not to show tick marks on the slider. Default to false. */
+      /**
+       * Whether or not to show tick marks on the slider. Default to false.
+       * Only compatible with `ticks`, and not compatible with `scale`.
+       */
       showMarkers: {
         type: Boolean,
         value: false,
