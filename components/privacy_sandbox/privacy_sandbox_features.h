@@ -207,6 +207,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSettingsLaunch);
 
+// Enables tracking protection content setting updates.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionContentSetting);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the trackingProtectionNoticeController to notify the
 // TrackingProtectionOnboardingService when a notice was requested (Message

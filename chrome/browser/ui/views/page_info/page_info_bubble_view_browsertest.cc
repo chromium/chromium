@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "base/files/file_util.h"
@@ -15,6 +14,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
@@ -899,8 +900,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
 }
 
 // Navigate to a malware page with an SSL warning and click through the warning.
-// The "reset decisions" button should not be displayed (otherwise it's confusing
-// which warning the user is re-enabling).
+// The "reset decisions" button should not be displayed (otherwise it's
+// confusing which warning the user is re-enabling).
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHttpsUpgradesBrowserTest,
                        ResetWarningDecisionsButtonCertAndMalwareWarnings) {
   GURL bad_https_url = bad_https_server()->GetURL("baz.com", "/simple.html");
@@ -1318,6 +1319,10 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     return mock_privacy_sandbox_service_.get();
   }
 
+  HostContentSettingsMap* host_content_settings_map() {
+    return HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  }
+
   void SetCookieControlsMode(content_settings::CookieControlsMode mode) {
     prefs_->SetInteger(prefs::kCookieControlsMode, static_cast<int>(mode));
   }
@@ -1450,30 +1455,61 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
-    size_t kExpectedChildren = 2;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_THAT(cookies_buttons_container->children().size(),
-                testing::Eq(kExpectedChildren));
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW));
+  size_t kExpectedChildren = 2;
+  auto* cookies_buttons_container =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_THAT(cookies_buttons_container->children().size(),
+              testing::Eq(kExpectedChildren));
+  EXPECT_TRUE(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
+  EXPECT_TRUE(
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW));
 
-    auto* third_party_cookies_toggle =
-        static_cast<views::ToggleButton*>(GetView(
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
 
-    base::UserActionTester user_actions_stats;
+  base::UserActionTester user_actions_stats;
 
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Allowed"), 1);
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
+  EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Allowed"), 1);
 
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
+}
+
+// Checks that tracking protection exceptions are properly created and removed
+// when flipping the third party cookies toggle.
+IN_PROC_BROWSER_TEST_P(
+    PageInfoBubbleViewBrowserTestCookiesSubpage,
+    ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+  GURL url_example = GURL("http://example/other/stuff.htm");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
+
+  SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+
+  OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
+
+  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
+  content_settings::SettingInfo info;
+  EXPECT_EQ(
+      host_content_settings_map()->GetContentSetting(
+          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+      CONTENT_SETTING_ALLOW);
+
+  PerformMouseClickOnView(third_party_cookies_toggle);
+  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  EXPECT_EQ(
+      host_content_settings_map()->GetContentSetting(
+          GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
+      CONTENT_SETTING_BLOCK);
 }
 
 // Checks if there is a correct number of buttons in cookies subpage when fps

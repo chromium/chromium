@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
@@ -246,13 +247,21 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
+    if (base::FeatureList::IsEnabled(
+            privacy_sandbox::kTrackingProtectionContentSetting)) {
+      tracking_protection_settings_->RemoveTrackingProtectionException(url);
+    }
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   cookie_settings_->SetCookieSettingForUserBypass(url);
-
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtectionContentSetting)) {
+    tracking_protection_settings_->AddTrackingProtectionException(
+        url, /*is_user_bypass_exception=*/true);
+  }
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
   base::Value::Dict metadata = GetMetadata(settings_map_, url);

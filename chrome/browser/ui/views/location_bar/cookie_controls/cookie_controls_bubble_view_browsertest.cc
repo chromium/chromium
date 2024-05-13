@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -62,7 +63,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
   }
@@ -74,6 +75,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     WaitForBubbleClose();
 
     coordinator_ = nullptr;
+    controller_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -95,7 +97,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     view_controller()->OnToggleButtonPressed(new_value);
   }
 
-  void CheckException(const GURL& first_party_url, bool should_exist) {
+  void CheckCookiesException(const GURL& first_party_url, bool should_exist) {
     content_settings::SettingInfo info;
     EXPECT_EQ(host_content_settings_map()->GetContentSetting(
                   GURL(), first_party_url, ContentSettingsType::COOKIES, &info),
@@ -110,6 +112,14 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     } else {
       EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
     }
+  }
+
+  void CheckTrackingProtectionException(const GURL& first_party_url,
+                                        bool should_exist) {
+    EXPECT_EQ(
+        host_content_settings_map()->GetContentSetting(
+            GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION),
+        should_exist ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -138,15 +148,30 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
-                       ToggleCreatesException) {
+                       ToggleCreatesCookiesException) {
   ShowBubble();
-  CheckException(third_party_cookie_page_url(), /*should_exist=*/false);
+  CheckCookiesException(third_party_cookie_page_url(), /*should_exist=*/false);
 
   SimulateTogglePress(true);
-  CheckException(third_party_cookie_page_url(), /*should_exist=*/true);
+  CheckCookiesException(third_party_cookie_page_url(), /*should_exist=*/true);
 
   SimulateTogglePress(false);
-  CheckException(third_party_cookie_page_url(), /*should_exist=*/false);
+  CheckCookiesException(third_party_cookie_page_url(), /*should_exist=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
+                       ToggleCreatesTrackingProtectionException) {
+  ShowBubble();
+  CheckTrackingProtectionException(third_party_cookie_page_url(),
+                                   /*should_exist=*/false);
+
+  SimulateTogglePress(true);
+  CheckTrackingProtectionException(third_party_cookie_page_url(),
+                                   /*should_exist=*/true);
+
+  SimulateTogglePress(false);
+  CheckTrackingProtectionException(third_party_cookie_page_url(),
+                                   /*should_exist=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,

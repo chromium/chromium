@@ -18,6 +18,7 @@ source_set("ui") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/prefs",
+    "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/site_engagement/content",
     "//components/strings",
