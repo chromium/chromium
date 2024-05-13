@@ -137,6 +137,7 @@ suite('CertificateManagerV2Test', () => {
     testProxy.handler.setChromeRootStoreCerts(certs);
     initializeElement();
 
+    await testProxy.handler.whenCalled('getChromeRootStoreCerts');
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
@@ -157,6 +158,7 @@ suite('CertificateManagerV2Test', () => {
     testProxy.handler.setChromeRootStoreCerts(certs);
     initializeElement();
 
+    await testProxy.handler.whenCalled('getChromeRootStoreCerts');
     await microtasksFinished();
 
     const matchEls =
@@ -176,6 +178,7 @@ suite('CertificateManagerV2Test', () => {
     testProxy.handler.setChromeRootStoreCerts(certs);
     initializeElement();
 
+    await testProxy.handler.whenCalled('getChromeRootStoreCerts');
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
@@ -196,6 +199,7 @@ suite('CertificateManagerV2Test', () => {
     testProxy.handler.setPlatformClientCerts(certs);
     initializeElement();
 
+    await testProxy.handler.whenCalled('getPlatformClientCerts');
     await microtasksFinished();
 
     const parent_element =
@@ -218,6 +222,9 @@ suite('CertificateManagerV2Test', () => {
     // </if>
 
     initializeElement();
+    // <if expr="is_win or is_macosx">
+    await testProxy.handler.whenCalled('getProvisionedClientCerts');
+    // </if>
     await microtasksFinished();
 
     const parent_element =
