@@ -141,14 +141,16 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
   // Check if the resulting page area size is usable.
   LogicalSize desired_page_area_size =
       geometry.border_box_size - geometry.border - geometry.padding;
+  bool ignore_author_page_style = false;
   if (desired_page_area_size.inline_size < LayoutUnit(1) ||
       desired_page_area_size.block_size < LayoutUnit(1)) {
     // The resulting page area size would become zero (or very close to
     // it). Ignore CSS, and use the default values provided as input. There are
     // tests that currently expect this behavior. But see
     // https://github.com/w3c/csswg-drafts/issues/8335
+    ignore_author_page_style = true;
     page_container_style = document.GetStyleResolver().StyleForPage(
-        page_index, page_name, /*ignore_author_style=*/true);
+        page_index, page_name, 1.0, ignore_author_page_style);
     page_container->SetStyle(page_container_style,
                              LayoutObject::ApplyStyleChanges::kNo);
     page_containing_block_size =
@@ -159,7 +161,7 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
 
   // TODO(mstensho): This should include page margins, once Blink gains control
   // over that area. For now the size here coincides with the size of the page
-  // *area*, since margins aren't part of layout yet.
+  // border box, since margins aren't part of layout yet.
   LogicalSize page_container_size =
       geometry.border_box_size *
       document.GetLayoutView()->PaginationScaleFactor();
@@ -189,8 +191,9 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
 
   LayoutAlgorithmParams params(page_container_node, margin_box_geometry,
                                child_space, /*break_token=*/nullptr);
-  PageContainerLayoutAlgorithm child_algorithm(params, root_node,
-                                               page_area_params);
+  PageContainerLayoutAlgorithm child_algorithm(params, page_index, page_name,
+                                               root_node, page_area_params,
+                                               ignore_author_page_style);
   const LayoutResult* result = child_algorithm.Layout();
 
   // Since we didn't lay out via BlockNode::Layout(), but rather picked and

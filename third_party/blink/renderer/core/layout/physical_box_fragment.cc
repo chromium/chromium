@@ -413,6 +413,14 @@ void PhysicalBoxFragment::Dispose() {
     ComputeItemsAddress()->~FragmentItems();
 }
 
+PhysicalRect PhysicalBoxFragment::ContentRect() const {
+  PhysicalRect rect(PhysicalOffset(), Size());
+  rect.Contract(Borders() + Padding());
+  DCHECK_GE(rect.size.width, LayoutUnit());
+  DCHECK_GE(rect.size.height, LayoutUnit());
+  return rect;
+}
+
 const LayoutBox* PhysicalBoxFragment::OwnerLayoutBox() const {
   // TODO(layout-dev): We should probably get rid of this method, now that it
   // does nothing, apart from some checking. The checks are useful, but could be

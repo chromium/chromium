@@ -100,10 +100,17 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   // Calculate computed style for a given page index and name.
   //
+  // An optional scale factor may be supplied, which means that the 'zoom'
+  // property will be set to this value. This is used to scale borders etc. when
+  // the page border box needs to be scaled to match the scale factor used by
+  // layout. This should only be used when computing style for the page border
+  // box. The resulting margins should be ignored in that case.
+  //
   // If ignore_author_style is false, only the input print job settings will be
   // honored (to get default size and margins, and nothing else).
   const ComputedStyle* StyleForPage(uint32_t page_index,
                                     const AtomicString& page_name,
+                                    float page_fitting_scale = 1.0,
                                     bool ignore_author_style = false);
 
   const ComputedStyle* StyleForText(Text*);

@@ -1523,8 +1523,11 @@ LogicalSize CalculateChildAvailableSize(
   LogicalSize child_available_size =
       ShrinkLogicalSize(border_box_size, border_scrollbar_padding);
 
-  if (space.IsAnonymous() || node.IsAnonymousBlock())
+  if (space.IsAnonymous() ||
+      (node.IsAnonymousBlock() &&
+       child_available_size.block_size == kIndefiniteSize)) {
     child_available_size.block_size = space.AvailableSize().block_size;
+  }
 
   return child_available_size;
 }

@@ -55,7 +55,19 @@ const LayoutResult* PageBorderBoxLayoutAlgorithm::Layout() {
 
 ConstraintSpace PageBorderBoxLayoutAlgorithm::CreateConstraintSpaceForPageArea()
     const {
-  LogicalSize page_area_size = GetConstraintSpace().AvailableSize();
+  LogicalSize page_area_size = ChildAvailableSize();
+
+  // Round up to the nearest integer. Although layout itself could have handled
+  // subpixels just fine, the paint code cannot without bleeding across page
+  // boundaries. The printing code (outside Blink) also rounds up. It's
+  // important that all pieces of the machinery agree on which way to round, or
+  // we risk clipping away a pixel or so at the edges. The reason for rounding
+  // up (rather than down, or to the closest integer) is so that any box that
+  // starts exactly at the beginning of a page, and uses a block-size exactly
+  // equal to that of the page area (before rounding) will actually fit on one
+  // page.
+  page_area_size.inline_size = LayoutUnit(page_area_size.inline_size.Ceil());
+  page_area_size.block_size = LayoutUnit(page_area_size.block_size.Ceil());
 
   ConstraintSpaceBuilder space_builder(
       GetConstraintSpace(), Style().GetWritingDirection(), /*is_new_fc=*/true);

@@ -36,8 +36,11 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   PageContainerLayoutAlgorithm(const LayoutAlgorithmParams& params,
+                               wtf_size_t page_index,
+                               const AtomicString& page_name,
                                const BlockNode& content_node,
-                               const PageAreaLayoutParams&);
+                               const PageAreaLayoutParams&,
+                               bool ignore_author_page_style);
 
   const LayoutResult* Layout();
 
@@ -51,8 +54,11 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   }
 
  private:
+  wtf_size_t page_index_;
+  const AtomicString& page_name_;
   const BlockNode& content_node_;
   const PageAreaLayoutParams& page_area_params_;
+  bool ignore_author_page_style_;
 
   const BlockBreakToken* fragmentainer_break_token_ = nullptr;
 };

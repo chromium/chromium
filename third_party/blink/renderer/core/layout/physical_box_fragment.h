@@ -255,7 +255,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return PhysicalBoxStrut();
   }
 
-  const PhysicalOffset ContentOffset() const {
+  PhysicalOffset ContentOffset() const {
     if (!HasBorders() && !HasPadding())
       return PhysicalOffset();
     PhysicalOffset offset;
@@ -265,6 +265,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       offset += Padding().Offset();
     return offset;
   }
+
+  PhysicalRect ContentRect() const;
 
   // Returns the bounds of any inflow children for this fragment (specifically
   // no out-of-flow positioned objects). This will return |std::nullopt| if:

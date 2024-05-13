@@ -1739,6 +1739,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
 
 const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
                                                  const AtomicString& page_name,
+                                                 float page_fitting_scale,
                                                  bool ignore_author_style) {
   // The page context inherits from the root element.
   Element* root_element = GetDocument().documentElement();
@@ -1775,6 +1776,10 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
   // Calling this function without being in print mode is unusual and special,
   // but it happens from unit tests, if nothing else.
   if (GetDocument().Printing()) {
+    auto* value = CSSNumericLiteralValue::Create(
+        page_fitting_scale, CSSPrimitiveValue::UnitType::kNumber);
+    StyleBuilder::ApplyProperty(GetCSSPropertyZoom(), state, *value);
+
     const WebPrintParams& params = GetDocument().GetFrame()->GetPrintParams();
     const WebPrintPageDescription& description =
         params.default_page_description;
@@ -1782,7 +1787,7 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
     // unless params.ignore_css_margins is set.
     auto* set =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-    auto* value = CSSNumericLiteralValue::Create(
+    value = CSSNumericLiteralValue::Create(
         description.margin_top, CSSPrimitiveValue::UnitType::kPixels);
     set->SetProperty(CSSPropertyID::kMarginTop, *value,
                      /*important=*/params.ignore_css_margins);
