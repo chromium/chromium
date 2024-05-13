@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 
 // Class that provides additional help to users who don't use Chrome often.
@@ -29,6 +30,11 @@ class LowUsageHelpController : public base::SupportsUserData::Data {
 
   void OnLowUsageSession();
   void MaybeShowPromo();
+
+  // Sometimes during startup there's no active browser window yet; retry after
+  // a short delay.
+  bool retrying_ = false;
+  base::OneShotTimer retry_timer_;
 
   const raw_ptr<Profile> profile_;
   base::CallbackListSubscription subscription_;

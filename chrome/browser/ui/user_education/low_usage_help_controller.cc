@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/user_education/low_usage_help_controller.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -15,6 +16,7 @@
 
 namespace {
 const void* const kLowUsageHelpControllerKey = &kLowUsageHelpControllerKey;
+constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
 }
 
 LowUsageHelpController::LowUsageHelpController(Profile* profile)
@@ -53,6 +55,9 @@ LowUsageHelpController* LowUsageHelpController::GetForProfileForTesting(
 }
 
 void LowUsageHelpController::OnLowUsageSession() {
+  retrying_ = false;
+  retry_timer_.Stop();
+
   // Always want to try to show a promo on a fresh call stack.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LowUsageHelpController::MaybeShowPromo,
@@ -63,10 +68,17 @@ void LowUsageHelpController::MaybeShowPromo() {
   // Get the most recent active browser in the profile.
   auto* const browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
-    // Test the assumption that `FindBrowserWithProfile()` will always result
-    // in a valid browser by the time this method gets called.
-    NOTREACHED() << "Got new session event for profile but profile had no "
-                    "valid browsers.";
+    // This can happen if windows are still loading up; that's fine.
+    // Try again with a small delay. If this was already a retry, then just
+    // don't show the promo.
+    if (!retrying_) {
+      retrying_ = true;
+      retry_timer_.Start(FROM_HERE, kRetryDelay,
+                         base::BindOnce(&LowUsageHelpController::MaybeShowPromo,
+                                        weak_ptr_factory_.GetWeakPtr()));
+    }
+
+    // Either way, don't try to show the promo right now without a window.
     return;
   }
 
