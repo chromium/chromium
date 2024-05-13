@@ -1921,6 +1921,12 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="No dialog: auto_cancel was true"/>
 </enum>
 
+<enum name="BidderSignalsOriginRelation">
+  <int value="0" label="No trusted signals requested"/>
+  <int value="1" label="Same-origin trusted signals requested"/>
+  <int value="2" label="Cross-origin trusted signals requested"/>
+</enum>
+
 <enum name="BitsPerPixelExponential">
   <summary>
     The ratio of image size in bits to displayed size in pixels. Ranges are
@@ -32183,6 +32189,15 @@ Called by update_net_error_codes.py.-->
       label="Cached result is unavailable, execute the model ondemand."/>
   <int value="30"
       label="Ondemand model execution failed, returned cached results."/>
+</enum>
+
+<enum name="SellerSignalsOriginRelation">
+  <int value="0" label="No trusted signals requested"/>
+  <int value="1" label="Same-origin trusted signals requested"/>
+  <int value="2"
+      label="Uknown cross-origin trusted signals. Should not occur here."/>
+  <int value="3" label="Permitted cross-origin trusted signals requested"/>
+  <int value="4" label="Forbidden cross-origin trusted signals requested"/>
 </enum>
 
 <enum name="SendTabToSelfClickResult">

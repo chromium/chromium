@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
@@ -6305,6 +6306,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
       }));
 
   for (bool provide_header : {false, true}) {
+    base::HistogramTester histogram_tester;
     SCOPED_TRACE(provide_header);
     url_loader_factory_.ClearResponses();
     saw_urls.clear();
@@ -6346,6 +6348,15 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
     run_loop.Run();
     // We didn't just time out the signals fetch, it didn't happen at all.
     EXPECT_THAT(saw_urls, testing::ElementsAre(decision_logic_url_));
+
+    // Also check the histograms.
+    histogram_tester.ExpectTotalCount(
+        "Ads.InterestGroup.Auction."
+        "TrustedSellerSignalsCrossOriginPermissionWait",
+        0);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation",
+        SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals, 1);
   }
 }
 
@@ -6425,7 +6436,9 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
   )";
 
   for (base::TimeDelta delay :
-       {base::Seconds(0), TrustedSignalsRequestManager::kAutoSendDelay}) {
+       {base::Seconds(0), TrustedSignalsRequestManager::kAutoSendDelay,
+        base::Milliseconds(50)}) {
+    base::HistogramTester histogram_tester;
     base::RunLoop run_loop;
     auto seller_worklet = CreateWorklet();
     RunScoreAdOnWorkletAsync(
@@ -6465,11 +6478,24 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
     // Now the trusted signals fetch must be pending, too.
     EXPECT_EQ(1, url_loader_factory_.NumPending());
     EXPECT_TRUE(url_loader_factory_.IsPending(kNoComponentSignalsUrl.spec()));
+
+    // Pretend it took 100ms.
+    task_environment_.AdvanceClock(base::Milliseconds(100));
     AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
                              kTrustedScoringSignalsResponse,
                              /*data_version=*/5);
     run_loop.Run();
     url_loader_factory_.ClearResponses();
+
+    // The delay we report on trusted signals is just how long the script
+    // fetch took.
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction."
+        "TrustedSellerSignalsCrossOriginPermissionWait",
+        delay.InMilliseconds(), 1);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation",
+        SellerWorklet::SignalsOriginRelation::kPermittedCrossOriginSignals, 1);
   }
 }
 

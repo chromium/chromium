@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -11997,6 +11998,8 @@ class BidderWorkletCrossOriginTrustedSignalsTest : public BidderWorkletTest {
 // With the feature on, same-origin trusted signals still come in the same,
 // only there is an extra null param.
 TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
+  base::HistogramTester histogram_tester;
+
   const GURL kBaseSignalsUrl("https://signals.test/");
   interest_group_bidding_url_ = kBaseSignalsUrl;
   interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
@@ -12030,11 +12033,17 @@ TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
 
   RunGenerateBidExpectingExpressionIsTrue("trustedBiddingSignals['key1'] === 1",
                                           /*expected_data_version=*/5);
+
+  // Should have one sample for each test.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.TrustedBidderSignalsOriginRelation",
+      BidderWorklet::SignalsOriginRelation::kSameOriginSignals, 5);
 }
 
 // Cross-origin signals (and their version) come in as different parameters
 // and fields.
 TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, CrossOrigin) {
+  base::HistogramTester histogram_tester;
   const GURL kBaseSignalsUrl("https://signals.test/");
   interest_group_bidding_url_ = GURL("https://url.test/");
   interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
@@ -12078,6 +12087,10 @@ TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, CrossOrigin) {
 
   RunGenerateBidExpectingExpressionIsTrue("trustedBiddingSignals === null",
                                           /*expected_data_version=*/5);
+  // Should have one sample for each test.
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.TrustedBidderSignalsOriginRelation",
+      BidderWorklet::SignalsOriginRelation::kCrossOriginSignals, 5);
 }
 
 class BidderWorkletRealTimeReportingEnabledTest : public BidderWorkletTest {

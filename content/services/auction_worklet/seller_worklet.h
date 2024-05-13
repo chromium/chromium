@@ -68,6 +68,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Classification of how trusted signals related to this worklet.
+  // This is used for histograms, so entries should not be reordered or
+  // otherwise renumbered.
   enum class SignalsOriginRelation {
     kNoTrustedSignals,
     kSameOriginSignals,
@@ -77,7 +79,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // forbidden once the permission header is received (or is found missing).
     kUnknownPermissionCrossOriginSignals,
     kPermittedCrossOriginSignals,
-    kForbiddenCrossOriginSignals
+    kForbiddenCrossOriginSignals,
+
+    kMaxValue = kForbiddenCrossOriginSignals
   };
 
   // Starts loading the worklet script on construction.
@@ -572,6 +576,11 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // `trusted_scoring_signals_url`.
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;
+
+  // If any trusted signals requests were deferred because of waiting
+  // on trusted signals classification, this is the first time it
+  // happened.
+  std::optional<base::TimeTicks> first_deferred_trusted_signals_time_;
 
   const std::optional<url::Origin> trusted_scoring_signals_origin_;
   SignalsOriginRelation trusted_signals_relation_ =

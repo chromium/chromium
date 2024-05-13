@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -579,6 +580,10 @@ void SellerWorklet::ScoreAd(
     if (trusted_signals_relation_ !=
         SignalsOriginRelation::kUnknownPermissionCrossOriginSignals) {
       StartFetchingSignalsForTask(score_ad_task);
+    } else {
+      if (!first_deferred_trusted_signals_time_.has_value()) {
+        first_deferred_trusted_signals_time_ = base::TimeTicks::Now();
+      }
     }
     return;
   }
@@ -787,6 +792,9 @@ void SellerWorklet::V8State::ScoreAd(
     // We must have cancelled the fetch, so nothing should be set).
     CHECK(!trusted_scoring_signals);
   }
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation",
+      trusted_signals_relation_);
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdQueueTime",
                           base::TimeTicks::Now() - task_enqueued_time);
   base::ElapsedTimer elapsed_timer;
@@ -1785,6 +1793,19 @@ void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
     // `trusted_signals_relation_` accordingly and start fetches.
     trusted_signals_relation_ =
         SignalsOriginRelation::kPermittedCrossOriginSignals;
+
+    // Measure about how long this delayed things by.
+    base::TimeDelta approx_classify_delay;  // 0 initially.
+    if (first_deferred_trusted_signals_time_.has_value()) {
+      approx_classify_delay =
+          base::TimeTicks::Now() - *first_deferred_trusted_signals_time_;
+    }
+
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction."
+        "TrustedSellerSignalsCrossOriginPermissionWait",
+        approx_classify_delay);
+
     for (auto it = score_ad_tasks_.begin(); it != score_ad_tasks_.end(); ++it) {
       StartFetchingSignalsForTask(it);
     }

@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -1488,6 +1489,9 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   v8::Local<v8::Value> trusted_signals;
   SignalsOriginRelation trusted_signals_relation = ClassifyTrustedSignals(
       script_source_url_, trusted_bidding_signals_origin_);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ads.InterestGroup.Auction.TrustedBidderSignalsOriginRelation",
+      trusted_signals_relation);
   if (!trusted_bidding_signals_result ||
       !bidder_worklet_non_shared_params.trusted_bidding_signals_keys ||
       bidder_worklet_non_shared_params.trusted_bidding_signals_keys->empty()) {

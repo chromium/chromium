@@ -1030,6 +1030,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.TrustedBidderSignalsOriginRelation"
+    enum="BidderSignalsOriginRelation" expires_after="2025-05-10">
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    At time of generateBid(), records how the trusted signals URL, if any,
+    related to the script URL.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ads.InterestGroup.Auction.TrustedSellerSignalsCrossOriginPermissionWait"
+    units="ms" expires_after="2025-05-10">
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Once per worklet, approximately by how much time the fetch of trusted
+    scoring signals was delayed by waiting for permission headers from the
+    seller script. This measures time from when the first outgoing request was
+    queued to when the permission was received, so it may overestimate things by
+    as much as 10ms, as the request may be held for that long for coalescing.
+
+    This is not recorded when the fetch was found to be unauthorized, or when
+    the signals were same-origin.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.TrustedSellerSignalsOriginRelation"
+    enum="SellerSignalsOriginRelation" expires_after="2025-05-10">
+  <owner>morlovich@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    At time of scoreAd(), records how the trusted signals URL, if any, related
+    to the script URL.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.BaDataConstructionTime" units="ms"
     expires_after="2024-09-15">
   <owner>behamilton@google.com</owner>

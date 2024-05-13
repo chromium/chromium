@@ -88,10 +88,14 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
   // Classification of how trusted signals related to this worklet.
+  // This is used for histograms, so entries should not be reordered or
+  // otherwise renumbered.
   enum class SignalsOriginRelation {
     kNoTrustedSignals,
     kSameOriginSignals,
     kCrossOriginSignals,
+
+    kMaxValue = kCrossOriginSignals
   };
 
   // Starts loading the worklet script on construction, as well as the trusted
