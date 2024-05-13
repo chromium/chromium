@@ -1778,6 +1778,14 @@ BASE_FEATURE(
     "IsPartitioned",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPreInitializePageAndFrameForSVGImage,
+             "PreInitializePageAndFrameForSVGImage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int>
+    kMaxCountOfPreInitializePageAndFrameForSVGImage{
+        &kPreInitializePageAndFrameForSVGImage, "max_pre_initialize_count", 5};
+
 BASE_FEATURE(kPrecompileInlineScripts,
              "PrecompileInlineScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);

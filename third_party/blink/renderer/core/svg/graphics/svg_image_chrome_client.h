@@ -52,12 +52,16 @@ class IsolatedSVGChromeClient : public EmptyChromeClient {
 
 class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
  public:
-  explicit SVGImageChromeClient(SVGImage*);
+  explicit SVGImageChromeClient();
 
   void InitAnimationTimer(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
   SVGImage* GetImage() const { return image_; }
+  void SetImage(SVGImage* image) {
+    CHECK(!image_);
+    image_ = image;
+  }
 
   void SuspendAnimation();
   void ResumeAnimation();

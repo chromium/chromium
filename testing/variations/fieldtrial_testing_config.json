@@ -14650,6 +14650,29 @@
             ]
         }
     ],
+    "PreInitializePageAndFrameForSVGImage": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "max_pre_initialize_count": "3"
+                    },
+                    "enable_features": [
+                        "PreInitializePageAndFrameForSVGImage"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreReadDllBrowserProcess": [
         {
             "platforms": [

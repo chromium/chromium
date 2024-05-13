@@ -1129,6 +1129,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned);
 
+// If enabled, instantiate Pages and Frames beforehand to speed up SVGImage.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreInitializePageAndFrameForSVGImage);
+
+// The max count of Pages and Frames that will be prepared.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxCountOfPreInitializePageAndFrameForSVGImage;
+
 // If enabled, inline scripts will be stream compiled using a background HTML
 // scanner.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrecompileInlineScripts);
