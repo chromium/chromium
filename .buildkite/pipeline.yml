@@ -211,11 +211,6 @@ steps:
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
 
-  - label: "Trigger Metabase Tests :hammer:"
-    trigger: "testing-runtime-metabase"
-    depends_on:
-      - "build-chromium-linux-x86_64"
-
   - label: "Trigger FE E2E Tests (linux-x86_64) :hammer:"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
