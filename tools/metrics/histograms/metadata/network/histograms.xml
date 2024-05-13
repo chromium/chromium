@@ -3204,6 +3204,81 @@ chromium-metrics-reviews@google.com.
   <token key="VPNType" variants="VPNType"/>
 </histogram>
 
+<histogram
+    name="Network.Shill.Vpn.{VPNType}.TimeConnectedToDisconnectedSeconds"
+    units="seconds" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each time when the state of a
+    {VPNType} VPN transits from connected to a non-connected state (reconnecting
+    or idle), which tracks how long the VPN driver stays in the connected state
+    of this connection.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.TimeConnectToConnectedMillis"
+    units="ms" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful new {VPNType} VPN
+    connection that tracks time duration from the VPN driver starts connecting
+    to the VPN driver reports connected. The time used by shill and patchpanel
+    for datapath configuration is not counted in this metrics.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.TimeConnectToIdleMillis"
+    units="ms" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each time when the state of a
+    {VPNType} VPN transits from connecting to idle (without being connected
+    once), which tracks the time duration from the VPN driver starts connecting
+    to the VPN driver becomes idle. This can be expected (e.g., user cancel the
+    connection) or unexpected (e.g., cannot reach the VPN server).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.TimeReconnectToConnectedMillis"
+    units="ms" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    reconnection (i.e., was connected before the reconnection restarts) that
+    tracks time duration from the VPN driver starts reconnecting to the VPN
+    driver reports connected. The time used by shill and patchpanel for datapath
+    configuration is not counted in this metrics.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.TimeReconnectToIdleMillis"
+    units="ms" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each time when the state of a
+    {VPNType} VPN transits from reconnecting (i.e., was connected before) to
+    idle (without being connected once), which tracks the time duration from the
+    VPN driver starts reconnecting to the VPN driver becomes idle. This can be
+    expected (e.g., user disconnects the connection) or unexpected (e.g., VPN
+    server is no longer reachable).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.AdapterAllowlisted"
     enum="WiFiAdapterInAllowlist" expires_after="2024-12-31">
   <owner>norvez@chromium.org</owner>
