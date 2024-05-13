@@ -234,18 +234,18 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
       return;
     }
     libyuv::I420Copy(
-        frame->visible_data(media::VideoFrame::kYPlane),
-        frame->stride(media::VideoFrame::kYPlane),
-        frame->visible_data(media::VideoFrame::kUPlane),
-        frame->stride(media::VideoFrame::kUPlane),
-        frame->visible_data(media::VideoFrame::kVPlane),
-        frame->stride(media::VideoFrame::kVPlane),
-        video_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-        video_frame->stride(media::VideoFrame::kYPlane),
-        video_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-        video_frame->stride(media::VideoFrame::kUPlane),
-        video_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
-        video_frame->stride(media::VideoFrame::kVPlane),
+        frame->visible_data(media::VideoFrame::Plane::kY),
+        frame->stride(media::VideoFrame::Plane::kY),
+        frame->visible_data(media::VideoFrame::Plane::kU),
+        frame->stride(media::VideoFrame::Plane::kU),
+        frame->visible_data(media::VideoFrame::Plane::kV),
+        frame->stride(media::VideoFrame::Plane::kV),
+        video_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+        video_frame->stride(media::VideoFrame::Plane::kY),
+        video_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+        video_frame->stride(media::VideoFrame::Plane::kU),
+        video_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
+        video_frame->stride(media::VideoFrame::Plane::kV),
         input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
     video_frame->AddDestructionObserver(base::BindPostTask(

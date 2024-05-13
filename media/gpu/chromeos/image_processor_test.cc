@@ -339,8 +339,9 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
-  uint8_t* y_plane = mapped_ret->GetWritableVisibleData(VideoFrame::kYPlane);
-  uint8_t* uv_plane = mapped_ret->GetWritableVisibleData(VideoFrame::kUVPlane);
+  uint8_t* y_plane = mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kY);
+  uint8_t* uv_plane =
+      mapped_ret->GetWritableVisibleData(VideoFrame::Plane::kUV);
   for (int row = 0; row < size.height(); row++) {
     for (int col = 0; col < size.width(); col++) {
       y_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
@@ -348,9 +349,9 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
         uv_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
       }
     }
-    y_plane += mapped_ret->stride(VideoFrame::kYPlane);
+    y_plane += mapped_ret->stride(VideoFrame::Plane::kY);
     if (row % 2 == 0) {
-      uv_plane += mapped_ret->stride(VideoFrame::kUVPlane);
+      uv_plane += mapped_ret->stride(VideoFrame::Plane::kUV);
     }
   }
 
@@ -401,13 +402,13 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
   }
 
   const uint8_t* test_y_plane =
-      mapped_test_frame->visible_data(VideoFrame::kYPlane);
+      mapped_test_frame->visible_data(VideoFrame::Plane::kY);
   const uint8_t* test_uv_plane =
-      mapped_test_frame->visible_data(VideoFrame::kUVPlane);
+      mapped_test_frame->visible_data(VideoFrame::Plane::kUV);
   const uint8_t* golden_y_plane =
-      mapped_golden_frame->visible_data(VideoFrame::kYPlane);
+      mapped_golden_frame->visible_data(VideoFrame::Plane::kY);
   const uint8_t* golden_uv_plane =
-      mapped_golden_frame->visible_data(VideoFrame::kUVPlane);
+      mapped_golden_frame->visible_data(VideoFrame::Plane::kUV);
   for (int y = 0; y < test_frame->coded_size().height(); y++) {
     for (int x = 0; x < test_frame->coded_size().width(); x++) {
       if (test_y_plane[x] != golden_y_plane[x]) {
@@ -420,11 +421,11 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
         }
       }
     }
-    test_y_plane += mapped_test_frame->stride(VideoFrame::kYPlane);
-    golden_y_plane += mapped_golden_frame->stride(VideoFrame::kYPlane);
+    test_y_plane += mapped_test_frame->stride(VideoFrame::Plane::kY);
+    golden_y_plane += mapped_golden_frame->stride(VideoFrame::Plane::kY);
     if (y % 2 == 0) {
-      test_uv_plane += mapped_test_frame->stride(VideoFrame::kUVPlane);
-      golden_uv_plane += mapped_golden_frame->stride(VideoFrame::kUVPlane);
+      test_uv_plane += mapped_test_frame->stride(VideoFrame::Plane::kUV);
+      golden_uv_plane += mapped_golden_frame->stride(VideoFrame::Plane::kUV);
     }
   }
 
@@ -833,15 +834,15 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   scoped_refptr<VideoFrame> mapped_mm21_frame =
       frame_mapper->Map(mm21_frame, PROT_READ | PROT_WRITE);
   ASSERT_TRUE(mapped_mm21_frame);
-  uint8_t* input_y_plane =
-      (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(VideoFrame::kYPlane);
-  uint8_t* input_uv_plane =
-      (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
+  uint8_t* input_y_plane = (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(
+      VideoFrame::Plane::kY);
+  uint8_t* input_uv_plane = (uint8_t*)mapped_mm21_frame->GetWritableVisibleData(
+      VideoFrame::Plane::kUV);
   libyuv::NV12Copy(
       input_image.Data(), coded_size.width(),
       input_image.Data() + coded_size.GetArea(), coded_size.width(),
-      input_y_plane, mapped_mm21_frame->stride(VideoFrame::kYPlane),
-      input_uv_plane, mapped_mm21_frame->stride(VideoFrame::kUVPlane),
+      input_y_plane, mapped_mm21_frame->stride(VideoFrame::Plane::kY),
+      input_uv_plane, mapped_mm21_frame->stride(VideoFrame::Plane::kUV),
       coded_size.width(), coded_size.height());
 
   gfx::Size output_size(1000, 1000);
@@ -1004,9 +1005,9 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   scoped_refptr<VideoFrame> mapped_output_frame =
       output_frame_mapper->Map(vulkan_output_frame, PROT_READ | PROT_WRITE);
   const uint8_t* argb_plane =
-      mapped_output_frame->visible_data(VideoFrame::kARGBPlane);
+      mapped_output_frame->visible_data(VideoFrame::Plane::kARGB);
   libyuv::ARGBToI420(
-      argb_plane, mapped_output_frame->stride(VideoFrame::kARGBPlane),
+      argb_plane, mapped_output_frame->stride(VideoFrame::Plane::kARGB),
       vulkan_output_y, output_size.width(), vulkan_output_u,
       (output_size.width() + 1) / 2, vulkan_output_v,
       (output_size.width() + 1) / 2, output_size.width(), output_size.height());
@@ -1065,9 +1066,9 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
   scoped_refptr<VideoFrame> mapped_mt2t_frame =
       frame_mapper->Map(mt2t_frame, PROT_READ | PROT_WRITE);
   ASSERT_TRUE(mapped_mt2t_frame);
-  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::kYPlane),
+  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
          input_image.Data(), mt2t_frame->coded_size().GetArea());
-  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::kUVPlane),
+  memcpy(mapped_mt2t_frame->GetWritableVisibleData(VideoFrame::Plane::kUV),
          input_image.Data() + mt2t_frame->coded_size().GetArea(),
          mt2t_frame->coded_size().GetArea() / 2);
 
@@ -1210,8 +1211,8 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
 
   double psnr = test::ComputeAR30PSNR(
       reinterpret_cast<const uint32_t*>(
-          mapped_output_frame->visible_data(VideoFrame::kARGBPlane)),
-      mapped_output_frame->stride(VideoFrame::kARGBPlane) / 4, libyuv_output,
+          mapped_output_frame->visible_data(VideoFrame::Plane::kARGB)),
+      mapped_output_frame->stride(VideoFrame::Plane::kARGB) / 4, libyuv_output,
       output_size.width(), output_size.width(), output_size.height());
 
   // TODO(b/328227651): We have to keep this PSNR threshold pretty low because

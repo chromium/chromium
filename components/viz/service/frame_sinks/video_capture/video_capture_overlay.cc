@@ -425,9 +425,9 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       const float* src = under_weight + num_pixels;
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame's Y plane that will be SrcOver'ed.
-      int dst_stride = frame->stride(VideoFrame::kYPlane);
+      int dst_stride = frame->stride(VideoFrame::Plane::kY);
       uint8_t* dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kYPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kY), dst_stride,
           dst_rect.origin());
       BlitOntoPlane(dst_rect.size(), src_stride, src, under_weight, dst_stride,
                     dst);
@@ -440,19 +440,19 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
           transformed_image_.get() + 2 * num_pixels, src_stride, src_origin);
       const int num_chroma_pixels = size_.GetArea() / 4;
       src = under_weight + num_chroma_pixels;
-      dst_stride = frame->stride(VideoFrame::kUPlane);
+      dst_stride = frame->stride(VideoFrame::Plane::kU);
       const gfx::Rect chroma_blit_rect(dst_rect.x() / 2, dst_rect.y() / 2,
                                        dst_rect.width() / 2,
                                        dst_rect.height() / 2);
       dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kUPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kU), dst_stride,
           chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
       src += num_chroma_pixels;
-      dst_stride = frame->stride(VideoFrame::kVPlane);
+      dst_stride = frame->stride(VideoFrame::Plane::kV);
       dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kVPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kV), dst_stride,
           chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
@@ -469,12 +469,12 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
 
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame that will be SrcOver'ed.
-      const int dst_stride = frame->stride(VideoFrame::kARGBPlane);
+      const int dst_stride = frame->stride(VideoFrame::Plane::kARGB);
       DCHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
       uint8_t* dst = PositionPointerARGB(
-          frame->GetWritableVisibleData(VideoFrame::kARGBPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kARGB), dst_stride,
           dst_rect.origin());
-      DCHECK_EQ((dst - frame->visible_data(VideoFrame::kARGBPlane)) %
+      DCHECK_EQ((dst - frame->visible_data(VideoFrame::Plane::kARGB)) %
                     sizeof(uint32_t),
                 0u);
 

@@ -298,9 +298,9 @@ void FuchsiaVideoEncodeAccelerator::VideoFrameWriterQueue::CopyFrameToBuffer(
   CHECK_LE(frame->coded_size().height(), coded_size_.height());
 
   int result = libyuv::I420Copy(
-      frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
-      frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
-      frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane),
+      frame->data(VideoFrame::Plane::kY), frame->stride(VideoFrame::Plane::kY),
+      frame->data(VideoFrame::Plane::kU), frame->stride(VideoFrame::Plane::kU),
+      frame->data(VideoFrame::Plane::kV), frame->stride(VideoFrame::Plane::kV),
       dst_y, dst_y_stride_, dst_u, dst_uv_stride_, dst_v, dst_uv_stride_,
       frame->coded_size().width(), frame->coded_size().height());
   DCHECK_EQ(result, 0);

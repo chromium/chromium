@@ -503,20 +503,20 @@ void CopyRowsToP010Buffer(int first_row,
   DCHECK_NE(dest_stride_uv, 0);
   DCHECK_EQ(0, first_row % 2);
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
-  DCHECK_LE(width * 2, source_frame->stride(VideoFrame::kYPlane));
+  DCHECK_LE(width * 2, source_frame->stride(VideoFrame::Plane::kY));
 
   const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kYPlane) +
-      first_row * source_frame->stride(VideoFrame::kYPlane));
-  const size_t y_plane_stride = source_frame->stride(VideoFrame::kYPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kY) +
+      first_row * source_frame->stride(VideoFrame::Plane::kY));
+  const size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
   const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kUPlane) +
-      (first_row / 2) * source_frame->stride(VideoFrame::kUPlane));
-  const size_t u_plane_stride = source_frame->stride(VideoFrame::kUPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kU) +
+      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kU));
+  const size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;
   const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kVPlane) +
-      (first_row / 2) * source_frame->stride(VideoFrame::kVPlane));
-  const size_t v_plane_stride = source_frame->stride(VideoFrame::kVPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kV) +
+      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kV));
+  const size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV) / 2;
 
   libyuv::I010ToP010(
       y_plane, y_plane_stride, u_plane, u_plane_stride, v_plane, v_plane_stride,
@@ -551,15 +551,16 @@ void CopyRowsToNV12Buffer(int first_row,
          source_frame->format() == PIXEL_FORMAT_YV12 ||
          source_frame->format() == PIXEL_FORMAT_NV12);
   if (source_frame->format() == PIXEL_FORMAT_NV12) {
-    libyuv::CopyPlane(source_frame->visible_data(VideoFrame::kYPlane) +
-                          first_row * source_frame->stride(VideoFrame::kYPlane),
-                      source_frame->stride(VideoFrame::kYPlane),
-                      dest_y + first_row * dest_stride_y, dest_stride_y,
-                      bytes_per_row_y, rows_y);
     libyuv::CopyPlane(
-        source_frame->visible_data(VideoFrame::kUVPlane) +
-            first_row / 2 * source_frame->stride(VideoFrame::kUVPlane),
-        source_frame->stride(VideoFrame::kUVPlane),
+        source_frame->visible_data(VideoFrame::Plane::kY) +
+            first_row * source_frame->stride(VideoFrame::Plane::kY),
+        source_frame->stride(VideoFrame::Plane::kY),
+        dest_y + first_row * dest_stride_y, dest_stride_y, bytes_per_row_y,
+        rows_y);
+    libyuv::CopyPlane(
+        source_frame->visible_data(VideoFrame::Plane::kUV) +
+            first_row / 2 * source_frame->stride(VideoFrame::Plane::kUV),
+        source_frame->stride(VideoFrame::Plane::kUV),
         dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv,
         bytes_per_row_uv, rows_uv);
 
@@ -567,15 +568,15 @@ void CopyRowsToNV12Buffer(int first_row,
   }
 
   libyuv::I420ToNV12(
-      source_frame->visible_data(VideoFrame::kYPlane) +
-          first_row * source_frame->stride(VideoFrame::kYPlane),
-      source_frame->stride(VideoFrame::kYPlane),
-      source_frame->visible_data(VideoFrame::kUPlane) +
-          first_row / 2 * source_frame->stride(VideoFrame::kUPlane),
-      source_frame->stride(VideoFrame::kUPlane),
-      source_frame->visible_data(VideoFrame::kVPlane) +
-          first_row / 2 * source_frame->stride(VideoFrame::kVPlane),
-      source_frame->stride(VideoFrame::kVPlane),
+      source_frame->visible_data(VideoFrame::Plane::kY) +
+          first_row * source_frame->stride(VideoFrame::Plane::kY),
+      source_frame->stride(VideoFrame::Plane::kY),
+      source_frame->visible_data(VideoFrame::Plane::kU) +
+          first_row / 2 * source_frame->stride(VideoFrame::Plane::kU),
+      source_frame->stride(VideoFrame::Plane::kU),
+      source_frame->visible_data(VideoFrame::Plane::kV) +
+          first_row / 2 * source_frame->stride(VideoFrame::Plane::kV),
+      source_frame->stride(VideoFrame::Plane::kV),
       dest_y + first_row * dest_stride_y, dest_stride_y,
       dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv, bytes_per_row_y,
       rows_y);
@@ -599,17 +600,17 @@ void CopyRowsToRGB10Buffer(bool is_argb,
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
 
   const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kYPlane) +
-      first_row * source_frame->stride(VideoFrame::kYPlane));
-  const size_t y_plane_stride = source_frame->stride(VideoFrame::kYPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kY) +
+      first_row * source_frame->stride(VideoFrame::Plane::kY));
+  const size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
   const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kVPlane) +
-      first_row / 2 * source_frame->stride(VideoFrame::kVPlane));
-  const size_t v_plane_stride = source_frame->stride(VideoFrame::kVPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kV) +
+      first_row / 2 * source_frame->stride(VideoFrame::Plane::kV));
+  const size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV) / 2;
   const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::kUPlane) +
-      first_row / 2 * source_frame->stride(VideoFrame::kUPlane));
-  const size_t u_plane_stride = source_frame->stride(VideoFrame::kUPlane) / 2;
+      source_frame->visible_data(VideoFrame::Plane::kU) +
+      first_row / 2 * source_frame->stride(VideoFrame::Plane::kU));
+  const size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;
   uint8_t* dest_rgb10 = output + first_row * dest_stride;
 
   SkYUVColorSpace skyuv = kRec709_SkYUVColorSpace;
@@ -669,18 +670,18 @@ void CopyRowsToRGBABuffer(bool is_rgba,
   // libyuv uses little-endian for RGBx formats, whereas here we use big endian.
   auto* func_ptr = is_rgba ? libyuv::I420AlphaToABGR : libyuv::I420AlphaToARGB;
 
-  func_ptr(source_frame->visible_data(VideoFrame::kYPlane) +
-               first_row * source_frame->stride(VideoFrame::kYPlane),
-           source_frame->stride(VideoFrame::kYPlane),
-           source_frame->visible_data(VideoFrame::kUPlane) +
-               first_row / 2 * source_frame->stride(VideoFrame::kUPlane),
-           source_frame->stride(VideoFrame::kUPlane),
-           source_frame->visible_data(VideoFrame::kVPlane) +
-               first_row / 2 * source_frame->stride(VideoFrame::kVPlane),
-           source_frame->stride(VideoFrame::kVPlane),
-           source_frame->visible_data(VideoFrame::kAPlane) +
-               first_row * source_frame->stride(VideoFrame::kAPlane),
-           source_frame->stride(VideoFrame::kAPlane),
+  func_ptr(source_frame->visible_data(VideoFrame::Plane::kY) +
+               first_row * source_frame->stride(VideoFrame::Plane::kY),
+           source_frame->stride(VideoFrame::Plane::kY),
+           source_frame->visible_data(VideoFrame::Plane::kU) +
+               first_row / 2 * source_frame->stride(VideoFrame::Plane::kU),
+           source_frame->stride(VideoFrame::Plane::kU),
+           source_frame->visible_data(VideoFrame::Plane::kV) +
+               first_row / 2 * source_frame->stride(VideoFrame::Plane::kV),
+           source_frame->stride(VideoFrame::Plane::kV),
+           source_frame->visible_data(VideoFrame::Plane::kA) +
+               first_row * source_frame->stride(VideoFrame::Plane::kA),
+           source_frame->stride(VideoFrame::Plane::kA),
            output + first_row * dest_stride, dest_stride, width, rows,
            // Textures are expected to be premultiplied by GL and compositors.
            1 /* attenuate, meaning premultiply */);
@@ -1082,13 +1083,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB: {
       const size_t rows_to_copy_y = VideoFrame::Rows(
-          VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
+          VideoFrame::Plane::kY, VideoFormat(output_format), rows_to_copy);
       const size_t rows_to_copy_uv = VideoFrame::Rows(
-          VideoFrame::kUVPlane, VideoFormat(output_format), rows_to_copy);
-      const size_t bytes_per_row_y = VideoFrame::RowBytes(
-          VideoFrame::kYPlane, VideoFormat(output_format), coded_size.width());
-      const size_t bytes_per_row_uv = VideoFrame::RowBytes(
-          VideoFrame::kUVPlane, VideoFormat(output_format), coded_size.width());
+          VideoFrame::Plane::kUV, VideoFormat(output_format), rows_to_copy);
+      const size_t bytes_per_row_y =
+          VideoFrame::RowBytes(VideoFrame::Plane::kY,
+                               VideoFormat(output_format), coded_size.width());
+      const size_t bytes_per_row_uv =
+          VideoFrame::RowBytes(VideoFrame::Plane::kUV,
+                               VideoFormat(output_format), coded_size.width());
       CopyRowsToNV12Buffer(
           row, rows_to_copy_y, rows_to_copy_uv, bytes_per_row_y,
           bytes_per_row_uv, video_frame,
@@ -1099,13 +1102,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
 
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB: {
       const size_t rows_to_copy_y = VideoFrame::Rows(
-          VideoFrame::kYPlane, VideoFormat(output_format), rows_to_copy);
+          VideoFrame::Plane::kY, VideoFormat(output_format), rows_to_copy);
       const size_t rows_to_copy_uv = VideoFrame::Rows(
-          VideoFrame::kUVPlane, VideoFormat(output_format), rows_to_copy);
-      const size_t bytes_per_row_y = VideoFrame::RowBytes(
-          VideoFrame::kYPlane, VideoFormat(output_format), coded_size.width());
-      const size_t bytes_per_row_uv = VideoFrame::RowBytes(
-          VideoFrame::kUVPlane, VideoFormat(output_format), coded_size.width());
+          VideoFrame::Plane::kUV, VideoFormat(output_format), rows_to_copy);
+      const size_t bytes_per_row_y =
+          VideoFrame::RowBytes(VideoFrame::Plane::kY,
+                               VideoFormat(output_format), coded_size.width());
+      const size_t bytes_per_row_uv =
+          VideoFrame::RowBytes(VideoFrame::Plane::kUV,
+                               VideoFormat(output_format), coded_size.width());
       gfx::GpuMemoryBuffer* buffer2 =
           frame_resources->plane_resources[1].gpu_memory_buffer.get();
       CopyRowsToNV12Buffer(

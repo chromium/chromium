@@ -418,9 +418,10 @@ void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
   float draw_opacity = 1.0f;
   const bool with_alpha = (video_frame->format() == media::PIXEL_FORMAT_I420A);
   if (with_alpha) {
-    memset(video_frame->writable_data(media::VideoFrame::kAPlane), alpha_value,
-           video_frame->stride(media::VideoFrame::kAPlane) *
-               video_frame->rows(media::VideoFrame::kAPlane));
+    memset(video_frame->writable_data(media::VideoFrame::Plane::kA),
+           alpha_value,
+           video_frame->stride(media::VideoFrame::Plane::kA) *
+               video_frame->rows(media::VideoFrame::Plane::kA));
   }
 
   // Obtain frame resources and perform AppendQuads which chooses the correct
@@ -573,8 +574,8 @@ scoped_refptr<media::VideoFrame> CreateHighbitVideoFrame(
   // Copy all metadata.
   ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
-  for (int plane = media::VideoFrame::kYPlane;
-       plane <= media::VideoFrame::kVPlane; ++plane) {
+  for (int plane = media::VideoFrame::Plane::kY;
+       plane <= media::VideoFrame::Plane::kV; ++plane) {
     int width = video_frame->row_bytes(plane);
     const uint8_t* src = video_frame->data(plane);
     uint16_t* dst = reinterpret_cast<uint16_t*>(ret->writable_data(plane));
@@ -622,20 +623,20 @@ void CreateTestMultiplanarVideoDrawQuad_Striped(
   uint8_t y_value = 0;
   uint8_t u_value = 0;
   uint8_t v_value = 0;
-  for (int i = 0; i < video_frame->rows(media::VideoFrame::kYPlane); ++i) {
-    uint8_t* y_row = video_frame->writable_data(media::VideoFrame::kYPlane) +
-                     video_frame->stride(media::VideoFrame::kYPlane) * i;
-    for (int j = 0; j < video_frame->row_bytes(media::VideoFrame::kYPlane);
+  for (int i = 0; i < video_frame->rows(media::VideoFrame::Plane::kY); ++i) {
+    uint8_t* y_row = video_frame->writable_data(media::VideoFrame::Plane::kY) +
+                     video_frame->stride(media::VideoFrame::Plane::kY) * i;
+    for (int j = 0; j < video_frame->row_bytes(media::VideoFrame::Plane::kY);
          ++j) {
       y_row[j] = (y_value += 1);
     }
   }
-  for (int i = 0; i < video_frame->rows(media::VideoFrame::kUPlane); ++i) {
-    uint8_t* u_row = video_frame->writable_data(media::VideoFrame::kUPlane) +
-                     video_frame->stride(media::VideoFrame::kUPlane) * i;
-    uint8_t* v_row = video_frame->writable_data(media::VideoFrame::kVPlane) +
-                     video_frame->stride(media::VideoFrame::kVPlane) * i;
-    for (int j = 0; j < video_frame->row_bytes(media::VideoFrame::kUPlane);
+  for (int i = 0; i < video_frame->rows(media::VideoFrame::Plane::kU); ++i) {
+    uint8_t* u_row = video_frame->writable_data(media::VideoFrame::Plane::kU) +
+                     video_frame->stride(media::VideoFrame::Plane::kU) * i;
+    uint8_t* v_row = video_frame->writable_data(media::VideoFrame::Plane::kV) +
+                     video_frame->stride(media::VideoFrame::Plane::kV) * i;
+    for (int j = 0; j < video_frame->row_bytes(media::VideoFrame::Plane::kU);
          ++j) {
       u_row[j] = (u_value += 3);
       v_row[j] = (v_value += 5);
@@ -694,8 +695,8 @@ void CreateTestMultiplanarVideoDrawQuad_TwoColor(
                                      visible_rect.size(), base::TimeDelta());
   video_frame->set_color_space(color_space);
 
-  int planes[] = {media::VideoFrame::kYPlane, media::VideoFrame::kUPlane,
-                  media::VideoFrame::kVPlane};
+  int planes[] = {media::VideoFrame::Plane::kY, media::VideoFrame::Plane::kU,
+                  media::VideoFrame::Plane::kV};
   uint8_t yuv_background[] = {y_background, u_background, v_background};
   uint8_t yuv_foreground[] = {y_foreground, u_foreground, v_foreground};
   int sample_size[] = {1, 2, 2};
@@ -764,15 +765,15 @@ void CreateTestMultiplanarVideoDrawQuad_Solid(
 
   // YUV values of a solid, constant, color. Useful for testing that color
   // space/color range are being handled properly.
-  memset(video_frame->writable_data(media::VideoFrame::kYPlane), y,
-         video_frame->stride(media::VideoFrame::kYPlane) *
-             video_frame->rows(media::VideoFrame::kYPlane));
-  memset(video_frame->writable_data(media::VideoFrame::kUPlane), u,
-         video_frame->stride(media::VideoFrame::kUPlane) *
-             video_frame->rows(media::VideoFrame::kUPlane));
-  memset(video_frame->writable_data(media::VideoFrame::kVPlane), v,
-         video_frame->stride(media::VideoFrame::kVPlane) *
-             video_frame->rows(media::VideoFrame::kVPlane));
+  memset(video_frame->writable_data(media::VideoFrame::Plane::kY), y,
+         video_frame->stride(media::VideoFrame::Plane::kY) *
+             video_frame->rows(media::VideoFrame::Plane::kY));
+  memset(video_frame->writable_data(media::VideoFrame::Plane::kU), u,
+         video_frame->stride(media::VideoFrame::Plane::kU) *
+             video_frame->rows(media::VideoFrame::Plane::kU));
+  memset(video_frame->writable_data(media::VideoFrame::Plane::kV), v,
+         video_frame->stride(media::VideoFrame::Plane::kV) *
+             video_frame->rows(media::VideoFrame::Plane::kV));
 
   uint8_t alpha_value = is_transparent ? 0 : 128;
   CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
@@ -799,9 +800,9 @@ void CreateTestYUVVideoDrawQuad_NV12(
   bool needs_blending = true;
   const gfx::Size ya_tex_size = rect.size();
   const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
-      media::PIXEL_FORMAT_NV12, media::VideoFrame::kUVPlane, rect.size());
+      media::PIXEL_FORMAT_NV12, media::VideoFrame::Plane::kUV, rect.size());
   const gfx::Size uv_sample_size = media::VideoFrame::SampleSize(
-      media::PIXEL_FORMAT_NV12, media::VideoFrame::kUVPlane);
+      media::PIXEL_FORMAT_NV12, media::VideoFrame::Plane::kUV);
 
   std::vector<uint8_t> y_pixels(ya_tex_size.GetArea(), y);
   ResourceId resource_y = CreateGpuResource(

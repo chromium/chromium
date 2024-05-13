@@ -212,18 +212,18 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   aom_image_t aom_image;
   aom_image_t* const result = aom_img_wrap(
       &aom_image, aom_format, frame_size.width(), frame_size.height(), 1,
-      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane)));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::Plane::kY)));
   DCHECK_EQ(result, &aom_image);
 
   aom_image.planes[AOM_PLANE_Y] =
-      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::Plane::kY));
   aom_image.planes[AOM_PLANE_U] =
-      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kUPlane));
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::Plane::kU));
   aom_image.planes[AOM_PLANE_V] =
-      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::kVPlane));
-  aom_image.stride[AOM_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
-  aom_image.stride[AOM_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
-  aom_image.stride[AOM_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
+      const_cast<uint8_t*>(video_frame->visible_data(VideoFrame::Plane::kV));
+  aom_image.stride[AOM_PLANE_Y] = video_frame->stride(VideoFrame::Plane::kY);
+  aom_image.stride[AOM_PLANE_U] = video_frame->stride(VideoFrame::Plane::kU);
+  aom_image.stride[AOM_PLANE_V] = video_frame->stride(VideoFrame::Plane::kV);
 
   // The frame duration given to the AV1 codec affects a number of important
   // behaviors, including: per-frame bandwidth, CPU time spent encoding,

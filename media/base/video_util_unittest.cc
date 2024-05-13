@@ -45,18 +45,18 @@ scoped_refptr<media::VideoFrame> CreateFrameWithPatternFilled(
   scoped_refptr<media::VideoFrame> frame(media::VideoFrame::CreateFrame(
       format, coded_size, visible_rect, natural_size, timestamp));
 
-  FillPlaneWithPattern(frame->writable_data(media::VideoFrame::kYPlane),
-                       frame->stride(media::VideoFrame::kYPlane),
+  FillPlaneWithPattern(frame->writable_data(media::VideoFrame::Plane::kY),
+                       frame->stride(media::VideoFrame::Plane::kY),
                        frame->visible_rect().size());
   FillPlaneWithPattern(
-      frame->writable_data(media::VideoFrame::kUPlane),
-      frame->stride(media::VideoFrame::kUPlane),
-      media::VideoFrame::PlaneSize(format, media::VideoFrame::kUPlane,
+      frame->writable_data(media::VideoFrame::Plane::kU),
+      frame->stride(media::VideoFrame::Plane::kU),
+      media::VideoFrame::PlaneSize(format, media::VideoFrame::Plane::kU,
                                    frame->visible_rect().size()));
   FillPlaneWithPattern(
-      frame->writable_data(media::VideoFrame::kVPlane),
-      frame->stride(media::VideoFrame::kVPlane),
-      media::VideoFrame::PlaneSize(format, media::VideoFrame::kVPlane,
+      frame->writable_data(media::VideoFrame::Plane::kV),
+      frame->stride(media::VideoFrame::Plane::kV),
+      media::VideoFrame::PlaneSize(format, media::VideoFrame::Plane::kV,
                                    frame->visible_rect().size()));
   return frame;
 }
@@ -107,36 +107,40 @@ bool VerifyCopyWithPadding(const media::VideoFrame& src_frame,
     return false;
 
   if (!VerifyPlanCopyWithPadding(
-          src_frame.visible_data(media::VideoFrame::kYPlane),
-          src_frame.stride(media::VideoFrame::kYPlane),
+          src_frame.visible_data(media::VideoFrame::Plane::kY),
+          src_frame.stride(media::VideoFrame::Plane::kY),
           src_frame.visible_rect().size(),
-          dst_frame.data(media::VideoFrame::kYPlane),
-          dst_frame.stride(media::VideoFrame::kYPlane), dst_frame.coded_size()))
+          dst_frame.data(media::VideoFrame::Plane::kY),
+          dst_frame.stride(media::VideoFrame::Plane::kY),
+          dst_frame.coded_size())) {
     return false;
+  }
   if (!VerifyPlanCopyWithPadding(
-          src_frame.visible_data(media::VideoFrame::kUPlane),
-          src_frame.stride(media::VideoFrame::kUPlane),
+          src_frame.visible_data(media::VideoFrame::Plane::kU),
+          src_frame.stride(media::VideoFrame::Plane::kU),
           media::VideoFrame::PlaneSize(media::PIXEL_FORMAT_I420,
-                                       media::VideoFrame::kUPlane,
+                                       media::VideoFrame::Plane::kU,
                                        src_frame.visible_rect().size()),
-          dst_frame.data(media::VideoFrame::kUPlane),
-          dst_frame.stride(media::VideoFrame::kUPlane),
+          dst_frame.data(media::VideoFrame::Plane::kU),
+          dst_frame.stride(media::VideoFrame::Plane::kU),
           media::VideoFrame::PlaneSize(media::PIXEL_FORMAT_I420,
-                                       media::VideoFrame::kUPlane,
-                                       dst_frame.coded_size())))
+                                       media::VideoFrame::Plane::kU,
+                                       dst_frame.coded_size()))) {
     return false;
+  }
   if (!VerifyPlanCopyWithPadding(
-          src_frame.visible_data(media::VideoFrame::kVPlane),
-          src_frame.stride(media::VideoFrame::kVPlane),
+          src_frame.visible_data(media::VideoFrame::Plane::kV),
+          src_frame.stride(media::VideoFrame::Plane::kV),
           media::VideoFrame::PlaneSize(media::PIXEL_FORMAT_I420,
-                                       media::VideoFrame::kVPlane,
+                                       media::VideoFrame::Plane::kV,
                                        src_frame.visible_rect().size()),
-          dst_frame.data(media::VideoFrame::kVPlane),
-          dst_frame.stride(media::VideoFrame::kVPlane),
+          dst_frame.data(media::VideoFrame::Plane::kV),
+          dst_frame.stride(media::VideoFrame::Plane::kV),
           media::VideoFrame::PlaneSize(media::PIXEL_FORMAT_I420,
-                                       media::VideoFrame::kVPlane,
-                                       dst_frame.coded_size())))
+                                       media::VideoFrame::Plane::kV,
+                                       dst_frame.coded_size()))) {
     return false;
+  }
 
   return true;
 }
@@ -571,14 +575,16 @@ TEST_F(VideoUtilTest, LetterboxVideoFrame) {
                   x < view_area.x() + view_area.width() &&
                   y >= view_area.y() &&
                   y < view_area.y() + view_area.height();
-              EXPECT_EQ(frame->data(VideoFrame::kYPlane)[
-                  y * frame->stride(VideoFrame::kYPlane) + x],
+              EXPECT_EQ(frame->data(VideoFrame::Plane::kY)
+                            [y * frame->stride(VideoFrame::Plane::kY) + x],
                         inside ? 0x01 : 0x00);
-              EXPECT_EQ(frame->data(VideoFrame::kUPlane)[
-                  (y / 2) * frame->stride(VideoFrame::kUPlane) + (x / 2)],
+              EXPECT_EQ(frame->data(VideoFrame::Plane::kU)
+                            [(y / 2) * frame->stride(VideoFrame::Plane::kU) +
+                             (x / 2)],
                         inside ? 0x02 : 0x80);
-              EXPECT_EQ(frame->data(VideoFrame::kVPlane)[
-                  (y / 2) * frame->stride(VideoFrame::kVPlane) + (x / 2)],
+              EXPECT_EQ(frame->data(VideoFrame::Plane::kV)
+                            [(y / 2) * frame->stride(VideoFrame::Plane::kV) +
+                             (x / 2)],
                         inside ? 0x03 : 0x80);
             }
           }
@@ -632,8 +638,8 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   EXPECT_EQ(dst_frame->visible_rect(), src_frame->visible_rect());
   EXPECT_EQ(dst_frame->natural_size(), src_frame->natural_size());
 
-  std::vector<size_t> planes = {VideoFrame::kYPlane, VideoFrame::kUPlane,
-                                VideoFrame::kVPlane};
+  std::vector<size_t> planes = {VideoFrame::Plane::kY, VideoFrame::Plane::kU,
+                                VideoFrame::Plane::kV};
   for (auto plane : planes)
     EXPECT_EQ(dst_frame->data(plane), src_frame->data(plane));
 

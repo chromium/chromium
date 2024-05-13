@@ -403,7 +403,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
     DCHECK_LE(width, static_cast<int>(row_bytes));
-    const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
+    const uint8_t* data = plane_meta[VideoFrame::Plane::kARGB].data;
 
     // Handle order swapping depending on the source and destination formats.
     if ((OUTPUT_ARGB &&
@@ -414,11 +414,11 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       for (size_t i = 0; i < rows; i++) {
         memcpy(dest, data, width * 4);
         dest += row_bytes;
-        data += plane_meta[VideoFrame::kARGBPlane].stride;
+        data += plane_meta[VideoFrame::Plane::kARGB].stride;
       }
     } else {
-      LIBYUV_ABGR_TO_ARGB(plane_meta[VideoFrame::kARGBPlane].data,
-                          plane_meta[VideoFrame::kARGBPlane].stride, pixels,
+      LIBYUV_ABGR_TO_ARGB(plane_meta[VideoFrame::Plane::kARGB].data,
+                          plane_meta[VideoFrame::Plane::kARGB].stride, pixels,
                           row_bytes, width, rows);
     }
 
@@ -439,121 +439,121 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(), &yuv_cs);
   const libyuv::YuvConstants* matrix = GetYuvContantsForColorSpace(yuv_cs);
 
-  if (!video_frame->data(VideoFrame::kUPlane) &&
-      !video_frame->data(VideoFrame::kVPlane)) {
+  if (!video_frame->data(VideoFrame::Plane::kU) &&
+      !video_frame->data(VideoFrame::Plane::kV)) {
     DCHECK_EQ(format, PIXEL_FORMAT_I420);
     // For monochrome content ARGB and ABGR are interchangeable.
-    libyuv::I400ToARGBMatrix(plane_meta[VideoFrame::kYPlane].data,
-                             plane_meta[VideoFrame::kYPlane].stride, pixels,
+    libyuv::I400ToARGBMatrix(plane_meta[VideoFrame::Plane::kY].data,
+                             plane_meta[VideoFrame::Plane::kY].stride, pixels,
                              row_bytes, matrix, width, rows);
     done->Run();
     return;
   }
 
   auto convert_yuv = [&](const libyuv::YuvConstants* matrix, auto&& func) {
-    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
-                   plane_meta[VideoFrame::kYPlane].stride,
-                   plane_meta[VideoFrame::kUPlane].data,
-                   plane_meta[VideoFrame::kUPlane].stride,
-                   plane_meta[VideoFrame::kVPlane].data,
-                   plane_meta[VideoFrame::kVPlane].stride),
+    func(YUV_ORDER(plane_meta[VideoFrame::Plane::kY].data,
+                   plane_meta[VideoFrame::Plane::kY].stride,
+                   plane_meta[VideoFrame::Plane::kU].data,
+                   plane_meta[VideoFrame::Plane::kU].stride,
+                   plane_meta[VideoFrame::Plane::kV].data,
+                   plane_meta[VideoFrame::Plane::kV].stride),
          pixels, row_bytes, matrix, width, rows);
   };
 
   auto convert_yuv_with_filter = [&](const libyuv::YuvConstants* matrix,
                                      auto&& func) {
-    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
-                   plane_meta[VideoFrame::kYPlane].stride,
-                   plane_meta[VideoFrame::kUPlane].data,
-                   plane_meta[VideoFrame::kUPlane].stride,
-                   plane_meta[VideoFrame::kVPlane].data,
-                   plane_meta[VideoFrame::kVPlane].stride),
+    func(YUV_ORDER(plane_meta[VideoFrame::Plane::kY].data,
+                   plane_meta[VideoFrame::Plane::kY].stride,
+                   plane_meta[VideoFrame::Plane::kU].data,
+                   plane_meta[VideoFrame::Plane::kU].stride,
+                   plane_meta[VideoFrame::Plane::kV].data,
+                   plane_meta[VideoFrame::Plane::kV].stride),
          pixels, row_bytes, matrix, width, rows, filter);
   };
 
   auto convert_yuva = [&](const libyuv::YuvConstants* matrix, auto&& func) {
-    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
-                   plane_meta[VideoFrame::kYPlane].stride,
-                   plane_meta[VideoFrame::kUPlane].data,
-                   plane_meta[VideoFrame::kUPlane].stride,
-                   plane_meta[VideoFrame::kVPlane].data,
-                   plane_meta[VideoFrame::kVPlane].stride),
-         plane_meta[VideoFrame::kAPlane].data,
-         plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, matrix,
+    func(YUV_ORDER(plane_meta[VideoFrame::Plane::kY].data,
+                   plane_meta[VideoFrame::Plane::kY].stride,
+                   plane_meta[VideoFrame::Plane::kU].data,
+                   plane_meta[VideoFrame::Plane::kU].stride,
+                   plane_meta[VideoFrame::Plane::kV].data,
+                   plane_meta[VideoFrame::Plane::kV].stride),
+         plane_meta[VideoFrame::Plane::kA].data,
+         plane_meta[VideoFrame::Plane::kA].stride, pixels, row_bytes, matrix,
          width, rows, premultiply_alpha);
   };
 
   auto convert_yuva_with_filter = [&](const libyuv::YuvConstants* matrix,
                                       auto&& func) {
-    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
-                   plane_meta[VideoFrame::kYPlane].stride,
-                   plane_meta[VideoFrame::kUPlane].data,
-                   plane_meta[VideoFrame::kUPlane].stride,
-                   plane_meta[VideoFrame::kVPlane].data,
-                   plane_meta[VideoFrame::kVPlane].stride),
-         plane_meta[VideoFrame::kAPlane].data,
-         plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, matrix,
+    func(YUV_ORDER(plane_meta[VideoFrame::Plane::kY].data,
+                   plane_meta[VideoFrame::Plane::kY].stride,
+                   plane_meta[VideoFrame::Plane::kU].data,
+                   plane_meta[VideoFrame::Plane::kU].stride,
+                   plane_meta[VideoFrame::Plane::kV].data,
+                   plane_meta[VideoFrame::Plane::kV].stride),
+         plane_meta[VideoFrame::Plane::kA].data,
+         plane_meta[VideoFrame::Plane::kA].stride, pixels, row_bytes, matrix,
          width, rows, premultiply_alpha, filter);
   };
 
   auto convert_yuv16 = [&](const libyuv::YuvConstants* matrix, auto&& func) {
     func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kYPlane].data),
-                   plane_meta[VideoFrame::kYPlane].stride / 2,
+                       plane_meta[VideoFrame::Plane::kY].data),
+                   plane_meta[VideoFrame::Plane::kY].stride / 2,
                    reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kUPlane].data),
-                   plane_meta[VideoFrame::kUPlane].stride / 2,
+                       plane_meta[VideoFrame::Plane::kU].data),
+                   plane_meta[VideoFrame::Plane::kU].stride / 2,
                    reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kVPlane].data),
-                   plane_meta[VideoFrame::kVPlane].stride / 2),
+                       plane_meta[VideoFrame::Plane::kV].data),
+                   plane_meta[VideoFrame::Plane::kV].stride / 2),
          pixels, row_bytes, matrix, width, rows);
   };
 
   auto convert_yuv16_with_filter = [&](const libyuv::YuvConstants* matrix,
                                        auto&& func) {
     func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kYPlane].data),
-                   plane_meta[VideoFrame::kYPlane].stride / 2,
+                       plane_meta[VideoFrame::Plane::kY].data),
+                   plane_meta[VideoFrame::Plane::kY].stride / 2,
                    reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kUPlane].data),
-                   plane_meta[VideoFrame::kUPlane].stride / 2,
+                       plane_meta[VideoFrame::Plane::kU].data),
+                   plane_meta[VideoFrame::Plane::kU].stride / 2,
                    reinterpret_cast<const uint16_t*>(
-                       plane_meta[VideoFrame::kVPlane].data),
-                   plane_meta[VideoFrame::kVPlane].stride / 2),
+                       plane_meta[VideoFrame::Plane::kV].data),
+                   plane_meta[VideoFrame::Plane::kV].stride / 2),
          pixels, row_bytes, matrix, width, rows, filter);
   };
 
   auto convert_yuva16 = [&](const libyuv::YuvConstants* matrix, auto&& func) {
-    func(
-        YUV_ORDER(reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kYPlane].data),
-                  plane_meta[VideoFrame::kYPlane].stride / 2,
-                  reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kUPlane].data),
-                  plane_meta[VideoFrame::kUPlane].stride / 2,
-                  reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kVPlane].data),
-                  plane_meta[VideoFrame::kVPlane].stride / 2),
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kAPlane].data),
-        plane_meta[VideoFrame::kAPlane].stride / 2, pixels, row_bytes, matrix,
-        width, rows, premultiply_alpha);
+    func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kY].data),
+                   plane_meta[VideoFrame::Plane::kY].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kU].data),
+                   plane_meta[VideoFrame::Plane::kU].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kV].data),
+                   plane_meta[VideoFrame::Plane::kV].stride / 2),
+         reinterpret_cast<const uint16_t*>(
+             plane_meta[VideoFrame::Plane::kA].data),
+         plane_meta[VideoFrame::Plane::kA].stride / 2, pixels, row_bytes,
+         matrix, width, rows, premultiply_alpha);
   };
 
   auto convert_yuva16_with_filter = [&](const libyuv::YuvConstants* matrix,
                                         auto&& func) {
-    func(
-        YUV_ORDER(reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kYPlane].data),
-                  plane_meta[VideoFrame::kYPlane].stride / 2,
-                  reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kUPlane].data),
-                  plane_meta[VideoFrame::kUPlane].stride / 2,
-                  reinterpret_cast<const uint16_t*>(
-                      plane_meta[VideoFrame::kVPlane].data),
-                  plane_meta[VideoFrame::kVPlane].stride / 2),
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kAPlane].data),
-        plane_meta[VideoFrame::kAPlane].stride / 2, pixels, row_bytes, matrix,
-        width, rows, premultiply_alpha, filter);
+    func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kY].data),
+                   plane_meta[VideoFrame::Plane::kY].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kU].data),
+                   plane_meta[VideoFrame::Plane::kU].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::Plane::kV].data),
+                   plane_meta[VideoFrame::Plane::kV].stride / 2),
+         reinterpret_cast<const uint16_t*>(
+             plane_meta[VideoFrame::Plane::kA].data),
+         plane_meta[VideoFrame::Plane::kA].stride / 2, pixels, row_bytes,
+         matrix, width, rows, premultiply_alpha, filter);
   };
 
   switch (format) {
@@ -569,14 +569,14 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       if (video_frame->ColorSpace().GetMatrixID() ==
           gfx::ColorSpace::MatrixID::GBR) {
         libyuv::MergeARGBPlane(
-            GBR_TO_RGB_ORDER(plane_meta[VideoFrame::kYPlane].data,
-                             plane_meta[VideoFrame::kYPlane].stride,
-                             plane_meta[VideoFrame::kUPlane].data,
-                             plane_meta[VideoFrame::kUPlane].stride,
-                             plane_meta[VideoFrame::kVPlane].data,
-                             plane_meta[VideoFrame::kVPlane].stride),
-            plane_meta[VideoFrame::kAPlane].data,
-            plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, width,
+            GBR_TO_RGB_ORDER(plane_meta[VideoFrame::Plane::kY].data,
+                             plane_meta[VideoFrame::Plane::kY].stride,
+                             plane_meta[VideoFrame::Plane::kU].data,
+                             plane_meta[VideoFrame::Plane::kU].stride,
+                             plane_meta[VideoFrame::Plane::kV].data,
+                             plane_meta[VideoFrame::Plane::kV].stride),
+            plane_meta[VideoFrame::Plane::kA].data,
+            plane_meta[VideoFrame::Plane::kA].stride, pixels, row_bytes, width,
             rows);
       } else {
         convert_yuv(matrix, libyuv::I444ToARGBMatrix);
@@ -614,20 +614,20 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       break;
 
     case PIXEL_FORMAT_NV12:
-      LIBYUV_NV12_TO_ARGB_MATRIX(plane_meta[VideoFrame::kYPlane].data,
-                                 plane_meta[VideoFrame::kYPlane].stride,
-                                 plane_meta[VideoFrame::kUVPlane].data,
-                                 plane_meta[VideoFrame::kUVPlane].stride,
+      LIBYUV_NV12_TO_ARGB_MATRIX(plane_meta[VideoFrame::Plane::kY].data,
+                                 plane_meta[VideoFrame::Plane::kY].stride,
+                                 plane_meta[VideoFrame::Plane::kUV].data,
+                                 plane_meta[VideoFrame::Plane::kUV].stride,
                                  pixels, row_bytes, matrix, width, rows);
       break;
     case PIXEL_FORMAT_P016LE:
       libyuv::P016ToARGBMatrix(reinterpret_cast<const uint16_t*>(
-                                   plane_meta[VideoFrame::kYPlane].data),
-                               plane_meta[VideoFrame::kYPlane].stride,
+                                   plane_meta[VideoFrame::Plane::kY].data),
+                               plane_meta[VideoFrame::Plane::kY].stride,
                                reinterpret_cast<const uint16_t*>(
-                                   plane_meta[VideoFrame::kUVPlane].data),
-                               plane_meta[VideoFrame::kUVPlane].stride, pixels,
-                               row_bytes, matrix, width, rows);
+                                   plane_meta[VideoFrame::Plane::kUV].data),
+                               plane_meta[VideoFrame::Plane::kUV].stride,
+                               pixels, row_bytes, matrix, width, rows);
       if (!OUTPUT_ARGB)
         libyuv::ARGBToABGR(pixels, row_bytes, pixels, row_bytes, width, rows);
       break;
@@ -793,7 +793,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     // We use the Y plane size because it may get rounded up to an even size.
     // Our implementation of GetYUVAPlanes expects this.
     auto y_size = VideoFrame::PlaneSizeInSamples(
-        frame_->format(), VideoFrame::kYPlane, frame_->visible_rect().size());
+        frame_->format(), VideoFrame::Plane::kY, frame_->visible_rect().size());
     auto yuva_info = SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
                                 subsampling, yuv_color_space);
     *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
@@ -817,7 +817,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
 #endif
 
-    for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
+    for (int plane = VideoFrame::Plane::kY; plane <= VideoFrame::Plane::kV;
          ++plane) {
       const auto plane_size = VideoFrame::PlaneSizeInSamples(
           frame_->format(), plane, frame_->visible_rect().size());
@@ -1203,7 +1203,8 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   // (May be enough to copy color space)
   ret->metadata().MergeMetadataFrom(video_frame->metadata());
 
-  for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane; ++plane) {
+  for (int plane = VideoFrame::Plane::kY; plane <= VideoFrame::Plane::kV;
+       ++plane) {
     int width = VideoFrame::Columns(plane, video_frame->format(),
                                     video_frame->visible_rect().width());
     int height = VideoFrame::Rows(plane, video_frame->format(),
@@ -1214,7 +1215,7 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
     if (!src) {
       // An AV1 monochrome (grayscale) frame has no U and V planes. Set all U
       // and V samples to the neutral value (128).
-      DCHECK_NE(plane, VideoFrame::kYPlane);
+      DCHECK_NE(plane, VideoFrame::Plane::kY);
       memset(dst, 128, height * ret->stride(plane));
       continue;
     }
@@ -1382,8 +1383,8 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
       // frame with no U and V planes. Since there are no 10-bit and 12-bit
       // versions of libyuv::I400ToARGBMatrix(), convert the frame to an 8-bit
       // YUV 4:2:0 frame with U and V planes.
-      if (!video_frame->data(VideoFrame::kUPlane) &&
-          !video_frame->data(VideoFrame::kVPlane)) {
+      if (!video_frame->data(VideoFrame::Plane::kU) &&
+          !video_frame->data(VideoFrame::Plane::kV)) {
         temporary_frame = DownShiftHighbitVideoFrame(video_frame);
         video_frame = temporary_frame.get();
       }

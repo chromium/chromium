@@ -481,12 +481,12 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
 
     auto rect = video_frame->visible_rect();
 
-    const auto bytes_per_row = video_frame->row_bytes(VideoFrame::kARGBPlane);
+    const auto bytes_per_row = video_frame->row_bytes(VideoFrame::Plane::kARGB);
     const auto bytes_per_element =
-        VideoFrame::BytesPerElement(fmt, VideoFrame::kARGBPlane);
+        VideoFrame::BytesPerElement(fmt, VideoFrame::Plane::kARGB);
     auto* dest_pixels = gl_->last_upload() + rect.y() * bytes_per_row +
                         rect.x() * bytes_per_element;
-    auto* src_pixels = video_frame->visible_data(VideoFrame::kARGBPlane);
+    auto* src_pixels = video_frame->visible_data(VideoFrame::Plane::kARGB);
 
     // Pixels are 0xFFFFFFFF, so channel reordering doesn't matter.
     for (int y = 0; y < rect.height(); ++y) {
@@ -513,10 +513,11 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
   // Just used for sizing information, channel order doesn't matter.
   constexpr auto kOutputFormat = PIXEL_FORMAT_ARGB;
 
-  const auto bytes_per_row = VideoFrame::RowBytes(
-      VideoFrame::kARGBPlane, kOutputFormat, video_frame->coded_size().width());
+  const auto bytes_per_row =
+      VideoFrame::RowBytes(VideoFrame::Plane::kARGB, kOutputFormat,
+                           video_frame->coded_size().width());
   const auto bytes_per_element =
-      VideoFrame::BytesPerElement(kOutputFormat, VideoFrame::kARGBPlane);
+      VideoFrame::BytesPerElement(kOutputFormat, VideoFrame::Plane::kARGB);
   auto* dest_pixels = gl_->last_upload() + rect.y() * bytes_per_row +
                       rect.x() * bytes_per_element;
 

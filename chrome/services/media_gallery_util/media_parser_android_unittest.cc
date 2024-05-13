@@ -37,7 +37,7 @@ bool HasH264StartCode(const std::vector<uint8_t>& data) {
 bool HasValidYUVData(const media::VideoFrame& frame) {
   bool valid = false;
   for (size_t i = 0; i < 8; ++i) {
-    valid |= *(frame.data(media::VideoFrame::kYPlane) + i);
+    valid |= *(frame.data(media::VideoFrame::Plane::kY) + i);
     if (valid)
       break;
   }

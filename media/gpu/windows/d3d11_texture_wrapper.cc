@@ -121,8 +121,9 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
 
   // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
   // case we don't use all the planes.
-  for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++)
+  for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
     (*mailbox_dest)[i] = mailbox_holders_[i];
+  }
 
   // We're just binding, so the output and output color spaces are the same.
   *output_color_space = input_color_space;

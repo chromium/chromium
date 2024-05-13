@@ -215,13 +215,13 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
 
       libyuv::NV12ToI420(
           y_plane, y_stride, uv_plane, uv_stride,
-          i420_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-          i420_frame->stride(media::VideoFrame::kYPlane),
-          i420_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-          i420_frame->stride(media::VideoFrame::kUPlane),
-          i420_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
-          i420_frame->stride(media::VideoFrame::kVPlane), original_size.width(),
-          original_size.height());
+          i420_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+          i420_frame->stride(media::VideoFrame::Plane::kY),
+          i420_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+          i420_frame->stride(media::VideoFrame::Plane::kU),
+          i420_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
+          i420_frame->stride(media::VideoFrame::Plane::kV),
+          original_size.width(), original_size.height());
     } else {
       switch (destination_pixel_format) {
         case libyuv::FOURCC_ABGR:
@@ -267,29 +267,29 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
       }();
 
       libyuv::I420Rotate(
-          i420_frame->visible_data(media::VideoFrame::kYPlane),
-          i420_frame->stride(media::VideoFrame::kYPlane),
-          i420_frame->visible_data(media::VideoFrame::kUPlane),
-          i420_frame->stride(media::VideoFrame::kUPlane),
-          i420_frame->visible_data(media::VideoFrame::kVPlane),
-          i420_frame->stride(media::VideoFrame::kVPlane),
-          rotated_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-          rotated_frame->stride(media::VideoFrame::kYPlane),
-          rotated_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-          rotated_frame->stride(media::VideoFrame::kUPlane),
-          rotated_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
-          rotated_frame->stride(media::VideoFrame::kVPlane),
+          i420_frame->visible_data(media::VideoFrame::Plane::kY),
+          i420_frame->stride(media::VideoFrame::Plane::kY),
+          i420_frame->visible_data(media::VideoFrame::Plane::kU),
+          i420_frame->stride(media::VideoFrame::Plane::kU),
+          i420_frame->visible_data(media::VideoFrame::Plane::kV),
+          i420_frame->stride(media::VideoFrame::Plane::kV),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+          rotated_frame->stride(media::VideoFrame::Plane::kY),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+          rotated_frame->stride(media::VideoFrame::Plane::kU),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
+          rotated_frame->stride(media::VideoFrame::Plane::kV),
           original_size.width(), original_size.height(), libyuv_rotate);
       i420_frame = std::move(rotated_frame);
     }
 
     libyuv::ConvertFromI420(
-        i420_frame->visible_data(media::VideoFrame::kYPlane),
-        i420_frame->stride(media::VideoFrame::kYPlane),
-        i420_frame->visible_data(media::VideoFrame::kUPlane),
-        i420_frame->stride(media::VideoFrame::kUPlane),
-        i420_frame->visible_data(media::VideoFrame::kVPlane),
-        i420_frame->stride(media::VideoFrame::kVPlane), destination_plane,
+        i420_frame->visible_data(media::VideoFrame::Plane::kY),
+        i420_frame->stride(media::VideoFrame::Plane::kY),
+        i420_frame->visible_data(media::VideoFrame::Plane::kU),
+        i420_frame->stride(media::VideoFrame::Plane::kU),
+        i420_frame->visible_data(media::VideoFrame::Plane::kV),
+        i420_frame->stride(media::VideoFrame::Plane::kV), destination_plane,
         destination_stride, destination_width, destination_height,
         destination_pixel_format);
 
@@ -297,8 +297,8 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
       DCHECK(!info.isOpaque());
       // This function copies any plane into the alpha channel of an ARGB image.
       libyuv::ARGBCopyYToAlpha(
-          i420_frame->visible_data(media::VideoFrame::kAPlane),
-          i420_frame->stride(media::VideoFrame::kAPlane), destination_plane,
+          i420_frame->visible_data(media::VideoFrame::Plane::kA),
+          i420_frame->stride(media::VideoFrame::Plane::kA), destination_plane,
           destination_stride, destination_width, destination_height);
     }
   }

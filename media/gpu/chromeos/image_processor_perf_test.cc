@@ -182,8 +182,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   }
 
   uint8_t* y_plane_ptr =
-      mapped_frame->GetWritableVisibleData(VideoFrame::kYPlane);
-  const auto y_plane_stride = mapped_frame->stride(VideoFrame::kYPlane);
+      mapped_frame->GetWritableVisibleData(VideoFrame::Plane::kY);
+  const auto y_plane_stride = mapped_frame->stride(VideoFrame::Plane::kY);
   base::span<uint8_t> y_plane =
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers.
@@ -193,8 +193,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
               base::checked_cast<size_t>(mapped_frame->coded_size().height())));
 
   uint8_t* uv_plane_ptr =
-      mapped_frame->GetWritableVisibleData(VideoFrame::kUVPlane);
-  const auto uv_plane_stride = mapped_frame->stride(VideoFrame::kUVPlane);
+      mapped_frame->GetWritableVisibleData(VideoFrame::Plane::kUV);
+  const auto uv_plane_stride = mapped_frame->stride(VideoFrame::Plane::kUV);
   base::span<uint8_t> uv_plane =
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers. Note: Elsewhere the `height / 2` is rounded up, but

@@ -986,18 +986,18 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
       switch (frame->format()) {
         case media::PIXEL_FORMAT_I420:
           strides = base::StringPrintf("strideY:%d StrideU:%d StrideV:%d",
-                                       frame->stride(VideoFrame::kYPlane),
-                                       frame->stride(VideoFrame::kUPlane),
-                                       frame->stride(VideoFrame::kVPlane));
+                                       frame->stride(VideoFrame::Plane::kY),
+                                       frame->stride(VideoFrame::Plane::kU),
+                                       frame->stride(VideoFrame::Plane::kV));
           break;
         case media::PIXEL_FORMAT_ARGB:
           strides = base::StringPrintf("strideARGB:%d",
-                                       frame->stride(VideoFrame::kARGBPlane));
+                                       frame->stride(VideoFrame::Plane::kARGB));
           break;
         case media::PIXEL_FORMAT_NV12:
           strides = base::StringPrintf("strideY:%d StrideUV:%d",
-                                       frame->stride(VideoFrame::kYPlane),
-                                       frame->stride(VideoFrame::kUVPlane));
+                                       frame->stride(VideoFrame::Plane::kY),
+                                       frame->stride(VideoFrame::Plane::kUV));
           break;
         default:
           strides = "strides:???";
@@ -1225,9 +1225,9 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       case CopyOutputResult::Format::I420_PLANES:
         format = "I420";
         strides = base::StringPrintf("strideY:%d StrideU:%d StrideV:%d",
-                                     frame->stride(VideoFrame::kYPlane),
-                                     frame->stride(VideoFrame::kUPlane),
-                                     frame->stride(VideoFrame::kVPlane));
+                                     frame->stride(VideoFrame::Plane::kY),
+                                     frame->stride(VideoFrame::Plane::kU),
+                                     frame->stride(VideoFrame::Plane::kV));
         break;
       case CopyOutputResult::Format::NV12_PLANES:
       case CopyOutputResult::Format::NV12_MULTIPLANE:
@@ -1235,12 +1235,12 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                      ? "NV12_MULTIPLANE"
                      : "NV12";
         strides = base::StringPrintf("strideY:%d StrideUV:%d",
-                                     frame->stride(VideoFrame::kYPlane),
-                                     frame->stride(VideoFrame::kUVPlane));
+                                     frame->stride(VideoFrame::Plane::kY),
+                                     frame->stride(VideoFrame::Plane::kUV));
         break;
       case CopyOutputResult::Format::RGBA:
         strides = base::StringPrintf("strideARGB:%d",
-                                     frame->stride(VideoFrame::kARGBPlane));
+                                     frame->stride(VideoFrame::Plane::kARGB));
 
         switch (result->destination()) {
           case CopyOutputResult::Destination::kSystemMemory:
@@ -1273,15 +1273,15 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     DCHECK_EQ(content_rect.width() % 2, 0);
     DCHECK_EQ(content_rect.height() % 2, 0);
     // Populate the VideoFrame from the CopyOutputResult.
-    const int y_stride = frame->stride(VideoFrame::kYPlane);
-    uint8_t* const y = frame->GetWritableVisibleData(VideoFrame::kYPlane) +
+    const int y_stride = frame->stride(VideoFrame::Plane::kY);
+    uint8_t* const y = frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
                        content_rect.y() * y_stride + content_rect.x();
-    const int u_stride = frame->stride(VideoFrame::kUPlane);
-    uint8_t* const u = frame->GetWritableVisibleData(VideoFrame::kUPlane) +
+    const int u_stride = frame->stride(VideoFrame::Plane::kU);
+    uint8_t* const u = frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
                        (content_rect.y() / 2) * u_stride +
                        (content_rect.x() / 2);
-    const int v_stride = frame->stride(VideoFrame::kVPlane);
-    uint8_t* const v = frame->GetWritableVisibleData(VideoFrame::kVPlane) +
+    const int v_stride = frame->stride(VideoFrame::Plane::kV);
+    uint8_t* const v = frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
                        (content_rect.y() / 2) * v_stride +
                        (content_rect.x() / 2);
     bool success =
@@ -1299,11 +1299,11 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     UMA_HISTOGRAM_CAPTURE_SUCCEEDED("I420", success);
   } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
     if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
-      int stride = frame->stride(VideoFrame::kARGBPlane);
+      int stride = frame->stride(VideoFrame::Plane::kARGB);
       // Note: ResultFormat::RGBA CopyOutputResult's format currently is
       // kN32_SkColorType, which can be RGBA or BGRA depending on the platform.
       uint8_t* const pixels =
-          frame->GetWritableVisibleData(VideoFrame::kARGBPlane) +
+          frame->GetWritableVisibleData(VideoFrame::Plane::kARGB) +
           content_rect.y() * stride + content_rect.x() * 4;
       bool success = result->ReadRGBAPlane(pixels, stride);
       if (success) {

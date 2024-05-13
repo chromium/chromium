@@ -114,21 +114,22 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
   std::vector<gfx::ColorTransform::TriStim> stims(bitmap.width());
   for (int row = 0; row < bitmap.height(); ++row) {
     if (frame.format() == media::VideoPixelFormat::PIXEL_FORMAT_I420) {
-      LoadStimsFromYUV(frame.visible_data(media::VideoFrame::kYPlane) +
-                           row * frame.stride(media::VideoFrame::kYPlane),
-                       frame.visible_data(media::VideoFrame::kUPlane) +
-                           (row / 2) * frame.stride(media::VideoFrame::kUPlane),
-                       frame.visible_data(media::VideoFrame::kVPlane) +
-                           (row / 2) * frame.stride(media::VideoFrame::kVPlane),
-                       bitmap.width(), stims.data());
+      LoadStimsFromYUV(
+          frame.visible_data(media::VideoFrame::Plane::kY) +
+              row * frame.stride(media::VideoFrame::Plane::kY),
+          frame.visible_data(media::VideoFrame::Plane::kU) +
+              (row / 2) * frame.stride(media::VideoFrame::Plane::kU),
+          frame.visible_data(media::VideoFrame::Plane::kV) +
+              (row / 2) * frame.stride(media::VideoFrame::Plane::kV),
+          bitmap.width(), stims.data());
     } else {
       CHECK_EQ(frame.format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
       LoadStimsFromYUV(
-          frame.visible_data(media::VideoFrame::kYPlane) +
-              row * frame.stride(media::VideoFrame::kYPlane),
+          frame.visible_data(media::VideoFrame::Plane::kY) +
+              row * frame.stride(media::VideoFrame::Plane::kY),
           reinterpret_cast<const uint16_t*>(
-              frame.visible_data(media::VideoFrame::kUVPlane) +
-              (row / 2) * frame.stride(media::VideoFrame::kUVPlane)),
+              frame.visible_data(media::VideoFrame::Plane::kUV) +
+              (row / 2) * frame.stride(media::VideoFrame::Plane::kUV)),
           bitmap.width(), stims.data());
     }
     transform->Transform(stims.data(), stims.size());

@@ -493,11 +493,11 @@ class RTCVideoEncoderTest {
     EXPECT_EQ(kInputFrameWidth, frame->visible_rect().width());
     EXPECT_EQ(kInputFrameHeight, frame->visible_rect().height());
     EXPECT_EQ(kInputFrameFillY,
-              frame->visible_data(media::VideoFrame::kYPlane)[0]);
+              frame->visible_data(media::VideoFrame::Plane::kY)[0]);
     EXPECT_EQ(kInputFrameFillU,
-              frame->visible_data(media::VideoFrame::kUPlane)[0]);
+              frame->visible_data(media::VideoFrame::Plane::kU)[0]);
     EXPECT_EQ(kInputFrameFillV,
-              frame->visible_data(media::VideoFrame::kVPlane)[0]);
+              frame->visible_data(media::VideoFrame::Plane::kV)[0]);
   }
 
   void DropFrame(scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {

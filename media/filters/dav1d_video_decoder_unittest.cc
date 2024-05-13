@@ -238,7 +238,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_8bitMono) {
 
   const auto& frame = output_frames_.front();
   EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
-  EXPECT_EQ(frame->data(VideoFrame::kUPlane), frame->data(VideoFrame::kVPlane));
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
+            frame->data(VideoFrame::Plane::kV));
   EXPECT_EQ("eeba03dcc9c22c4632bf74b481db36b2", GetVideoFrameHash(*frame));
 }
 
@@ -251,7 +252,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_10bitMono) {
 
   const auto& frame = output_frames_.front();
   EXPECT_EQ(PIXEL_FORMAT_YUV420P10, frame->format());
-  EXPECT_EQ(frame->data(VideoFrame::kUPlane), frame->data(VideoFrame::kVPlane));
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
+            frame->data(VideoFrame::Plane::kV));
   EXPECT_EQ("026c1fed9e161f09d816ac7278458a80", GetVideoFrameHash(*frame));
 }
 
@@ -264,7 +266,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
 
   const auto& frame = output_frames_.front();
   EXPECT_EQ(PIXEL_FORMAT_YUV420P12, frame->format());
-  EXPECT_EQ(frame->data(VideoFrame::kUPlane), frame->data(VideoFrame::kVPlane));
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kU),
+            frame->data(VideoFrame::Plane::kV));
   EXPECT_EQ("32115092dc00fbe86823b0b714a0f63e", GetVideoFrameHash(*frame));
 }
 
@@ -332,9 +335,9 @@ TEST_F(Dav1dVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->writable_data(VideoFrame::kYPlane), 0xff,
-         output_frames_.front()->rows(VideoFrame::kYPlane) *
-             output_frames_.front()->stride(VideoFrame::kYPlane));
+  memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
+         output_frames_.front()->rows(VideoFrame::Plane::kY) *
+             output_frames_.front()->stride(VideoFrame::Plane::kY));
 }
 
 }  // namespace media

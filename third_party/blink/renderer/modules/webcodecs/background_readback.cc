@@ -37,7 +37,7 @@ bool CanUseRgbReadback(media::VideoFrame& frame) {
 SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
                                  const gfx::Size& size) {
   SkColorType color_type =
-      SkColorTypeForPlane(frame.format(), media::VideoFrame::kARGBPlane);
+      SkColorTypeForPlane(frame.format(), media::VideoFrame::Plane::kARGB);
   SkAlphaType alpha_type = kUnpremul_SkAlphaType;
   return SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
 }
@@ -201,8 +201,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       "timestamp", txt_frame->timestamp());
 
   uint8_t* dst_pixels =
-      result->GetWritableVisibleData(media::VideoFrame::kARGBPlane);
-  int rgba_stide = result->stride(media::VideoFrame::kARGBPlane);
+      result->GetWritableVisibleData(media::VideoFrame::Plane::kARGB);
+  int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
   DCHECK_GT(rgba_stide, 0);
 
   auto origin = txt_frame->metadata().texture_origin_is_top_left

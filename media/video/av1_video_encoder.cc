@@ -78,14 +78,14 @@ aom_img_fmt GetAomImgFormat(VideoPixelFormat format) {
 void SetupStandardYuvPlanes(const VideoFrame& frame, aom_image_t* aom_image) {
   DCHECK_EQ(VideoFrame::NumPlanes(frame.format()), 3u);
   aom_image->planes[AOM_PLANE_Y] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kY));
   aom_image->planes[AOM_PLANE_U] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kUPlane));
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kU));
   aom_image->planes[AOM_PLANE_V] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kVPlane));
-  aom_image->stride[AOM_PLANE_Y] = frame.stride(VideoFrame::kYPlane);
-  aom_image->stride[AOM_PLANE_U] = frame.stride(VideoFrame::kUPlane);
-  aom_image->stride[AOM_PLANE_V] = frame.stride(VideoFrame::kVPlane);
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kV));
+  aom_image->stride[AOM_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
+  aom_image->stride[AOM_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
+  aom_image->stride[AOM_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
 }
 
 EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
@@ -479,7 +479,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   aom_image_t* image = aom_img_wrap(
       &image_, GetAomImgFormat(frame->format()), options_.frame_size.width(),
       options_.frame_size.height(), 1,
-      const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane)));
+      const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY)));
   DCHECK_EQ(image, &image_);
 
   // Resizing should have been taken care of above.
@@ -490,12 +490,12 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
              frame->format() == PIXEL_FORMAT_I420);
       if (frame->format() == PIXEL_FORMAT_NV12) {
         image_.planes[AOM_PLANE_Y] =
-            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
         image_.planes[AOM_PLANE_U] =
-            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kUV));
         image_.planes[AOM_PLANE_V] = nullptr;
-        image_.stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
-        image_.stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
+        image_.stride[AOM_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
+        image_.stride[AOM_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
         image_.stride[AOM_PLANE_V] = 0;
       } else {
         SetupStandardYuvPlanes(*frame, &image_);

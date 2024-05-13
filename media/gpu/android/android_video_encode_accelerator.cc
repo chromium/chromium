@@ -371,7 +371,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   const int dst_stride_uv = input_buffer_stride_;
 
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
-      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, visible_size);
+      PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, visible_size);
   const size_t queued_size =
       // size of Y-plane plus padding till UV-plane
       uv_plane_offset +
@@ -391,12 +391,12 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // Why NV12?  Because COLOR_FORMAT_YUV420_SEMIPLANAR.  See comment at other
   // mention of that constant.
   bool converted = !libyuv::I420ToNV12(
-      frame->visible_data(VideoFrame::kYPlane),
-      frame->stride(VideoFrame::kYPlane),
-      frame->visible_data(VideoFrame::kUPlane),
-      frame->stride(VideoFrame::kUPlane),
-      frame->visible_data(VideoFrame::kVPlane),
-      frame->stride(VideoFrame::kVPlane), dst_y, dst_stride_y, dst_uv,
+      frame->visible_data(VideoFrame::Plane::kY),
+      frame->stride(VideoFrame::Plane::kY),
+      frame->visible_data(VideoFrame::Plane::kU),
+      frame->stride(VideoFrame::Plane::kU),
+      frame->visible_data(VideoFrame::Plane::kV),
+      frame->stride(VideoFrame::Plane::kV), dst_y, dst_stride_y, dst_uv,
       dst_stride_uv, visible_size.width(), visible_size.height());
   if (!converted) {
     NotifyErrorStatus({EncoderStatus::Codes::kFormatConversionError,

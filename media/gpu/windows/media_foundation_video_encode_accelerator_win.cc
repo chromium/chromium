@@ -1717,15 +1717,15 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   DCHECK(scoped_buffer.get());
   uint8_t* dst_y = scoped_buffer.get();
   size_t dst_y_stride = VideoFrame::RowBytes(
-      VideoFrame::kYPlane, kTargetPixelFormat, input_visible_size_.width());
+      VideoFrame::Plane::kY, kTargetPixelFormat, input_visible_size_.width());
   uint8_t* dst_uv =
       scoped_buffer.get() +
-      dst_y_stride * VideoFrame::Rows(VideoFrame::kYPlane, kTargetPixelFormat,
+      dst_y_stride * VideoFrame::Rows(VideoFrame::Plane::kY, kTargetPixelFormat,
                                       input_visible_size_.height());
   size_t dst_uv_stride = VideoFrame::RowBytes(
-      VideoFrame::kUVPlane, kTargetPixelFormat, input_visible_size_.width());
+      VideoFrame::Plane::kUV, kTargetPixelFormat, input_visible_size_.width());
   uint8_t* end =
-      dst_uv + dst_uv_stride * VideoFrame::Rows(VideoFrame::kUVPlane,
+      dst_uv + dst_uv_stride * VideoFrame::Rows(VideoFrame::Plane::kUV,
                                                 kTargetPixelFormat,
                                                 input_visible_size_.height());
   DCHECK_GE(static_cast<ptrdiff_t>(scoped_buffer.max_length()),

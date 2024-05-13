@@ -365,55 +365,60 @@ int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
 #define Y_U_V_DATA(fr)                                                        \
-  fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane),     \
-      fr->visible_data(VideoFrame::kUPlane), fr->stride(VideoFrame::kUPlane), \
-      fr->visible_data(VideoFrame::kVPlane), fr->stride(VideoFrame::kVPlane)
+  fr->visible_data(VideoFrame::Plane::kY), fr->stride(VideoFrame::Plane::kY), \
+      fr->visible_data(VideoFrame::Plane::kU),                                \
+      fr->stride(VideoFrame::Plane::kU),                                      \
+      fr->visible_data(VideoFrame::Plane::kV),                                \
+      fr->stride(VideoFrame::Plane::kV)
 
-#define Y_U_V_DATA_W(fr)                               \
-  fr->GetWritableVisibleData(VideoFrame::kYPlane),     \
-      fr->stride(VideoFrame::kYPlane),                 \
-      fr->GetWritableVisibleData(VideoFrame::kUPlane), \
-      fr->stride(VideoFrame::kUPlane),                 \
-      fr->GetWritableVisibleData(VideoFrame::kVPlane), \
-      fr->stride(VideoFrame::kVPlane)
+#define Y_U_V_DATA_W(fr)                                 \
+  fr->GetWritableVisibleData(VideoFrame::Plane::kY),     \
+      fr->stride(VideoFrame::Plane::kY),                 \
+      fr->GetWritableVisibleData(VideoFrame::Plane::kU), \
+      fr->stride(VideoFrame::Plane::kU),                 \
+      fr->GetWritableVisibleData(VideoFrame::Plane::kV), \
+      fr->stride(VideoFrame::Plane::kV)
 
 #define Y_V_U_DATA(fr)                                                        \
-  fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane),     \
-      fr->visible_data(VideoFrame::kVPlane), fr->stride(VideoFrame::kVPlane), \
-      fr->visible_data(VideoFrame::kUPlane), fr->stride(VideoFrame::kUPlane)
+  fr->visible_data(VideoFrame::Plane::kY), fr->stride(VideoFrame::Plane::kY), \
+      fr->visible_data(VideoFrame::Plane::kV),                                \
+      fr->stride(VideoFrame::Plane::kV),                                      \
+      fr->visible_data(VideoFrame::Plane::kU),                                \
+      fr->stride(VideoFrame::Plane::kU)
 
-#define Y_UV_DATA(fr)                                                     \
-  fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane), \
-      fr->visible_data(VideoFrame::kUVPlane), fr->stride(VideoFrame::kUVPlane)
+#define Y_UV_DATA(fr)                                                         \
+  fr->visible_data(VideoFrame::Plane::kY), fr->stride(VideoFrame::Plane::kY), \
+      fr->visible_data(VideoFrame::Plane::kUV),                               \
+      fr->stride(VideoFrame::Plane::kUV)
 
-#define Y_UV_DATA_W(fr)                                 \
-  fr->GetWritableVisibleData(VideoFrame::kYPlane),      \
-      fr->stride(VideoFrame::kYPlane),                  \
-      fr->GetWritableVisibleData(VideoFrame::kUVPlane), \
-      fr->stride(VideoFrame::kUVPlane)
+#define Y_UV_DATA_W(fr)                                   \
+  fr->GetWritableVisibleData(VideoFrame::Plane::kY),      \
+      fr->stride(VideoFrame::Plane::kY),                  \
+      fr->GetWritableVisibleData(VideoFrame::Plane::kUV), \
+      fr->stride(VideoFrame::Plane::kUV)
 
 #define YUY2_DATA(fr) \
-  fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane)
+  fr->visible_data(VideoFrame::Plane::kY), fr->stride(VideoFrame::Plane::kY)
 
-#define Y_UV_DATA_10BIT(fr)                                                 \
-  reinterpret_cast<const uint16_t*>(fr->visible_data(VideoFrame::kYPlane)), \
-      fr->stride(VideoFrame::kYPlane),                                      \
-      reinterpret_cast<const uint16_t*>(                                    \
-          fr->visible_data(VideoFrame::kUVPlane)),                          \
-      fr->stride(VideoFrame::kUVPlane)
+#define Y_UV_DATA_10BIT(fr)                                                   \
+  reinterpret_cast<const uint16_t*>(fr->visible_data(VideoFrame::Plane::kY)), \
+      fr->stride(VideoFrame::Plane::kY),                                      \
+      reinterpret_cast<const uint16_t*>(                                      \
+          fr->visible_data(VideoFrame::Plane::kUV)),                          \
+      fr->stride(VideoFrame::Plane::kUV)
 
-#define Y_UV_DATA_W_10BIT(fr)                                \
-  reinterpret_cast<uint16_t*>(                               \
-      fr->GetWritableVisibleData(VideoFrame::kYPlane)),      \
-      fr->stride(VideoFrame::kYPlane),                       \
-      reinterpret_cast<uint16_t*>(                           \
-          fr->GetWritableVisibleData(VideoFrame::kUVPlane)), \
-      fr->stride(VideoFrame::kUVPlane)
+#define Y_UV_DATA_W_10BIT(fr)                                  \
+  reinterpret_cast<uint16_t*>(                                 \
+      fr->GetWritableVisibleData(VideoFrame::Plane::kY)),      \
+      fr->stride(VideoFrame::Plane::kY),                       \
+      reinterpret_cast<uint16_t*>(                             \
+          fr->GetWritableVisibleData(VideoFrame::Plane::kUV)), \
+      fr->stride(VideoFrame::Plane::kUV)
 
 #if BUILDFLAG(IS_LINUX)
-#define ARGB_DATA(fr)                                 \
-  fr->GetWritableVisibleData(VideoFrame::kARGBPlane), \
-      fr->stride(VideoFrame::kARGBPlane)
+#define ARGB_DATA(fr)                                   \
+  fr->GetWritableVisibleData(VideoFrame::Plane::kARGB), \
+      fr->stride(VideoFrame::Plane::kARGB)
 #endif
 
 #define LIBYUV_FUNC(func, i, o)                      \
@@ -430,18 +435,19 @@ int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
       case PIXEL_FORMAT_NV12:
         // MM21 mode.
         if (input_config_.fourcc == Fourcc(Fourcc::MM21)) {
-          return libyuv::MM21ToNV12(input->data(VideoFrame::kYPlane),
-                                    input->stride(VideoFrame::kYPlane),
-                                    input->data(VideoFrame::kUVPlane),
-                                    input->stride(VideoFrame::kUVPlane),
-                                    output->writable_data(VideoFrame::kYPlane),
-                                    output->stride(VideoFrame::kYPlane),
-                                    output->writable_data(VideoFrame::kUVPlane),
-                                    output->stride(VideoFrame::kUVPlane),
-                                    std::min(output->coded_size().width(),
-                                             input->coded_size().width()),
-                                    std::min(output->coded_size().height(),
-                                             input->coded_size().height()));
+          return libyuv::MM21ToNV12(
+              input->data(VideoFrame::Plane::kY),
+              input->stride(VideoFrame::Plane::kY),
+              input->data(VideoFrame::Plane::kUV),
+              input->stride(VideoFrame::Plane::kUV),
+              output->writable_data(VideoFrame::Plane::kY),
+              output->stride(VideoFrame::Plane::kY),
+              output->writable_data(VideoFrame::Plane::kUV),
+              output->stride(VideoFrame::Plane::kUV),
+              std::min(output->coded_size().width(),
+                       input->coded_size().width()),
+              std::min(output->coded_size().height(),
+                       input->coded_size().height()));
         }
 
         // Scaling mode.
@@ -550,17 +556,17 @@ int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
     if (input_config_.fourcc == Fourcc(Fourcc::MT2T)) {
       // stride is 5/4 because MT2T is a packed 10bit format
       const uint32_t src_stride_mt2t =
-          (input->stride(VideoFrame::kYPlane) * 5) >> 2;
+          (input->stride(VideoFrame::Plane::kY) * 5) >> 2;
 
       int libyuv_result = libyuv::MT2TToP010(
-          input->visible_data(VideoFrame::kYPlane), src_stride_mt2t,
-          input->visible_data(VideoFrame::kUVPlane), src_stride_mt2t,
+          input->visible_data(VideoFrame::Plane::kY), src_stride_mt2t,
+          input->visible_data(VideoFrame::Plane::kUV), src_stride_mt2t,
           reinterpret_cast<uint16_t*>(
-              output->GetWritableVisibleData(VideoFrame::kYPlane)),
-          output->stride(VideoFrame::kYPlane) >> 1,
+              output->GetWritableVisibleData(VideoFrame::Plane::kY)),
+          output->stride(VideoFrame::Plane::kY) >> 1,
           reinterpret_cast<uint16_t*>(
-              output->GetWritableVisibleData(VideoFrame::kUVPlane)),
-          output->stride(VideoFrame::kUVPlane) >> 1,
+              output->GetWritableVisibleData(VideoFrame::Plane::kUV)),
+          output->stride(VideoFrame::Plane::kUV) >> 1,
           output->visible_rect().width(), output->visible_rect().height());
 
       if (libyuv_result) {

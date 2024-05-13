@@ -281,14 +281,14 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
 void SetupStandardYuvPlanes(const VideoFrame& frame, vpx_image_t* vpx_image) {
   DCHECK_EQ(VideoFrame::NumPlanes(frame.format()), 3u);
   vpx_image->planes[VPX_PLANE_Y] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kYPlane));
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kY));
   vpx_image->planes[VPX_PLANE_U] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kUPlane));
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kU));
   vpx_image->planes[VPX_PLANE_V] =
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kVPlane));
-  vpx_image->stride[VPX_PLANE_Y] = frame.stride(VideoFrame::kYPlane);
-  vpx_image->stride[VPX_PLANE_U] = frame.stride(VideoFrame::kUPlane);
-  vpx_image->stride[VPX_PLANE_V] = frame.stride(VideoFrame::kVPlane);
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kV));
+  vpx_image->stride[VPX_PLANE_Y] = frame.stride(VideoFrame::Plane::kY);
+  vpx_image->stride[VPX_PLANE_U] = frame.stride(VideoFrame::Plane::kU);
+  vpx_image->stride[VPX_PLANE_V] = frame.stride(VideoFrame::Plane::kV);
 }
 
 void I444ToI410(const VideoFrame& frame, vpx_image_t* vpx_image) {
@@ -605,16 +605,16 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       if (frame->format() == PIXEL_FORMAT_NV12) {
         RecreateVpxImageIfNeeded(VPX_IMG_FMT_NV12, /*needs_memory=*/false);
         vpx_image_.planes[VPX_PLANE_Y] =
-            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kYPlane));
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kY));
         vpx_image_.planes[VPX_PLANE_U] =
-            const_cast<uint8_t*>(frame->visible_data(VideoFrame::kUVPlane));
+            const_cast<uint8_t*>(frame->visible_data(VideoFrame::Plane::kUV));
         // In NV12 U and V samples are combined in one plane (bytes go UVUVUV),
         // but libvpx treats them as two planes with the same stride but shifted
         // by one byte.
         vpx_image_.planes[VPX_PLANE_V] = vpx_image_.planes[VPX_PLANE_U] + 1;
-        vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
-        vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::kUVPlane);
-        vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::kUVPlane);
+        vpx_image_.stride[VPX_PLANE_Y] = frame->stride(VideoFrame::Plane::kY);
+        vpx_image_.stride[VPX_PLANE_U] = frame->stride(VideoFrame::Plane::kUV);
+        vpx_image_.stride[VPX_PLANE_V] = frame->stride(VideoFrame::Plane::kUV);
       } else {
         RecreateVpxImageIfNeeded(VPX_IMG_FMT_I420, /*needs_memory=*/false);
         SetupStandardYuvPlanes(*frame, &vpx_image_);
@@ -631,12 +631,12 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       }
       RecreateVpxImageIfNeeded(VPX_IMG_FMT_I42016, /*needs_memory=*/true);
       libyuv::I420ToI010(
-          frame->visible_data(VideoFrame::kYPlane),
-          frame->stride(VideoFrame::kYPlane),
-          frame->visible_data(VideoFrame::kUPlane),
-          frame->stride(VideoFrame::kUPlane),
-          frame->visible_data(VideoFrame::kVPlane),
-          frame->stride(VideoFrame::kVPlane),
+          frame->visible_data(VideoFrame::Plane::kY),
+          frame->stride(VideoFrame::Plane::kY),
+          frame->visible_data(VideoFrame::Plane::kU),
+          frame->stride(VideoFrame::Plane::kU),
+          frame->visible_data(VideoFrame::Plane::kV),
+          frame->stride(VideoFrame::Plane::kV),
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_Y]),
           vpx_image_.stride[VPX_PLANE_Y] / 2,
           reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_U]),

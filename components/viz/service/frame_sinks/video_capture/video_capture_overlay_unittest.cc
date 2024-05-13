@@ -449,8 +449,8 @@ class VideoCaptureOverlayRenderTest
     // as those of the YUV tests, and so only one set of golden files needs to
     // be used.
     if (is_argb_test()) {
-      uint8_t* dst = frame->GetWritableVisibleData(VideoFrame::kARGBPlane);
-      const int stride = frame->stride(VideoFrame::kARGBPlane);
+      uint8_t* dst = frame->GetWritableVisibleData(VideoFrame::Plane::kARGB);
+      const int stride = frame->stride(VideoFrame::Plane::kARGB);
       for (int row = 0; row < size.height(); ++row, dst += stride) {
         uint32_t* const begin = reinterpret_cast<uint32_t*>(dst);
         std::fill(begin, begin + size.width(), UINT32_C(0xff000000));
@@ -486,8 +486,8 @@ class VideoCaptureOverlayRenderTest
             kBGRA_8888_SkColorType, kUnpremul_SkAlphaType,
             frame.ColorSpace().ToSkColorSpace());
         canonical_bitmap.writePixels(
-            SkPixmap(frame_format, frame.visible_data(VideoFrame::kARGBPlane),
-                     frame.stride(VideoFrame::kARGBPlane)),
+            SkPixmap(frame_format, frame.visible_data(VideoFrame::Plane::kARGB),
+                     frame.stride(VideoFrame::Plane::kARGB)),
             0, 0);
         break;
       }
@@ -500,12 +500,12 @@ class VideoCaptureOverlayRenderTest
             new gfx::ColorTransform::TriStim[size.GetArea()]);
         int pos = 0;
         for (int row = 0; row < size.height(); ++row) {
-          const uint8_t* y = frame.visible_data(VideoFrame::kYPlane) +
-                             (row * frame.stride(VideoFrame::kYPlane));
-          const uint8_t* u = frame.visible_data(VideoFrame::kUPlane) +
-                             ((row / 2) * frame.stride(VideoFrame::kUPlane));
-          const uint8_t* v = frame.visible_data(VideoFrame::kVPlane) +
-                             ((row / 2) * frame.stride(VideoFrame::kVPlane));
+          const uint8_t* y = frame.visible_data(VideoFrame::Plane::kY) +
+                             (row * frame.stride(VideoFrame::Plane::kY));
+          const uint8_t* u = frame.visible_data(VideoFrame::Plane::kU) +
+                             ((row / 2) * frame.stride(VideoFrame::Plane::kU));
+          const uint8_t* v = frame.visible_data(VideoFrame::Plane::kV) +
+                             ((row / 2) * frame.stride(VideoFrame::Plane::kV));
           for (int col = 0; col < size.width(); ++col) {
             colors[pos].SetPoint(y[col] / 255.0f, u[col / 2] / 255.0f,
                                  v[col / 2] / 255.0f);

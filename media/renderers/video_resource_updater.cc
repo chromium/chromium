@@ -908,7 +908,7 @@ void VideoResourceUpdater::AppendQuads(
 
       // Get the scaling factor of the YA texture relative to the UV texture.
       const gfx::Size uv_sample_size =
-          VideoFrame::SampleSize(frame->format(), VideoFrame::kUPlane);
+          VideoFrame::SampleSize(frame->format(), VideoFrame::Plane::kU);
 
       auto* yuv_video_quad =
           render_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
@@ -1373,7 +1373,7 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   const VideoPixelFormat input_frame_format = video_frame->format();
   // Note: Strides may be negative in case of bottom-up layouts.
-  const int stride = video_frame->stride(VideoFrame::kARGBPlane);
+  const int stride = video_frame->stride(VideoFrame::Plane::kARGB);
   const bool has_compatible_stride =
       stride > 0 && static_cast<size_t>(stride) == bytes_per_row;
 
@@ -1383,7 +1383,7 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
     // We can passthrough when the texture format matches. Since we
     // always copy the entire coded area we don't have to worry about
     // origin.
-    source_pixels = video_frame->data(VideoFrame::kARGBPlane);
+    source_pixels = video_frame->data(VideoFrame::Plane::kARGB);
   } else {
     size_t needed_size = bytes_per_row * video_frame->coded_size().height();
     if (upload_pixels_size_[0] < needed_size) {

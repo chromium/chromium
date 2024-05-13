@@ -267,7 +267,7 @@ TEST_F(VpxVideoDecoderTest, SimpleFrameReuse) {
 
   ASSERT_EQ(1u, output_frames_.size());
   scoped_refptr<VideoFrame> frame = std::move(output_frames_.front());
-  const uint8_t* old_y_data = frame->data(VideoFrame::kYPlane);
+  const uint8_t* old_y_data = frame->data(VideoFrame::Plane::kY);
   output_frames_.pop_back();
 
   // Clear frame reference to return the frame to the pool.
@@ -277,14 +277,14 @@ TEST_F(VpxVideoDecoderTest, SimpleFrameReuse) {
   // libvpx will still have a ref on the previous buffer. So verify we see an
   // increase to two frames.
   Decode(i_frame_buffer_);
-  EXPECT_NE(old_y_data, output_frames_.front()->data(VideoFrame::kYPlane));
+  EXPECT_NE(old_y_data, output_frames_.front()->data(VideoFrame::Plane::kY));
 
   // Issuing another decode should reuse the first buffer now that the refs have
   // been dropped by the previous decode.
   Decode(i_frame_buffer_);
 
   ASSERT_EQ(2u, output_frames_.size());
-  EXPECT_EQ(old_y_data, output_frames_.back()->data(VideoFrame::kYPlane));
+  EXPECT_EQ(old_y_data, output_frames_.back()->data(VideoFrame::Plane::kY));
 }
 
 TEST_F(VpxVideoDecoderTest, SimpleFormatChange) {
@@ -306,9 +306,9 @@ TEST_F(VpxVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->writable_data(VideoFrame::kYPlane), 0xff,
-         output_frames_.front()->rows(VideoFrame::kYPlane) *
-             output_frames_.front()->stride(VideoFrame::kYPlane));
+  memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
+         output_frames_.front()->rows(VideoFrame::Plane::kY) *
+             output_frames_.front()->stride(VideoFrame::Plane::kY));
 }
 
 // The test stream uses profile 2, which needs high bit depth support in libvpx.
@@ -341,12 +341,12 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   scoped_refptr<VideoFrame> last_frame = output_frames_[25];
   scoped_refptr<VideoFrame> dupe_frame = output_frames_[23];
 
-  EXPECT_EQ(last_frame->data(VideoFrame::kYPlane),
-            dupe_frame->data(VideoFrame::kYPlane));
-  EXPECT_EQ(last_frame->data(VideoFrame::kUPlane),
-            dupe_frame->data(VideoFrame::kUPlane));
-  EXPECT_EQ(last_frame->data(VideoFrame::kVPlane),
-            dupe_frame->data(VideoFrame::kVPlane));
+  EXPECT_EQ(last_frame->data(VideoFrame::Plane::kY),
+            dupe_frame->data(VideoFrame::Plane::kY));
+  EXPECT_EQ(last_frame->data(VideoFrame::Plane::kU),
+            dupe_frame->data(VideoFrame::Plane::kU));
+  EXPECT_EQ(last_frame->data(VideoFrame::Plane::kV),
+            dupe_frame->data(VideoFrame::Plane::kV));
 
   // This will release all frames held by the memory pool, but should not
   // release |last_frame| since we still have a ref despite sharing the same
@@ -356,8 +356,8 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   Destroy();
 
   // ASAN will be very unhappy with this line if the above is incorrect.
-  memset(last_frame->writable_data(VideoFrame::kYPlane), 0,
-         last_frame->row_bytes(VideoFrame::kYPlane));
+  memset(last_frame->writable_data(VideoFrame::Plane::kY), 0,
+         last_frame->row_bytes(VideoFrame::Plane::kY));
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
 

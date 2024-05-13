@@ -668,12 +668,12 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
     if (libyuv::ConvertToI420(
             static_cast<uint8_t*>(pixmap.writable_addr()),
             pixmap.computeByteSize(),
-            frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-            frame->stride(media::VideoFrame::kYPlane),
-            frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-            frame->stride(media::VideoFrame::kUPlane),
-            frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
-            frame->stride(media::VideoFrame::kVPlane), 0 /* crop_x */,
+            frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+            frame->stride(media::VideoFrame::Plane::kY),
+            frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+            frame->stride(media::VideoFrame::Plane::kU),
+            frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
+            frame->stride(media::VideoFrame::Plane::kV), 0 /* crop_x */,
             0 /* crop_y */, pixmap.width(), pixmap.height(),
             old_visible_size.width(), old_visible_size.height(),
             MediaVideoRotationToRotationMode(video_rotation),
@@ -686,8 +686,8 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
       libyuv::ARGBExtractAlpha(
           static_cast<uint8_t*>(pixmap.writable_addr()),
           static_cast<int>(pixmap.rowBytes()) /* stride */,
-          frame->GetWritableVisibleData(media::VideoFrame::kAPlane),
-          frame->stride(media::VideoFrame::kAPlane), pixmap.width(),
+          frame->GetWritableVisibleData(media::VideoFrame::Plane::kA),
+          frame->stride(media::VideoFrame::Plane::kA), pixmap.width(),
           pixmap.height());
     }
   }
@@ -718,12 +718,12 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
       frame->visible_rect(), frame->natural_size(), frame->timestamp());
   auto ret = libyuv::NV12ToI420(
       frame->data(0), frame->stride(0), frame->data(1), frame->stride(1),
-      i420_frame->writable_data(media::VideoFrame::kYPlane),
-      i420_frame->stride(media::VideoFrame::kYPlane),
-      i420_frame->writable_data(media::VideoFrame::kUPlane),
-      i420_frame->stride(media::VideoFrame::kUPlane),
-      i420_frame->writable_data(media::VideoFrame::kVPlane),
-      i420_frame->stride(media::VideoFrame::kVPlane),
+      i420_frame->writable_data(media::VideoFrame::Plane::kY),
+      i420_frame->stride(media::VideoFrame::Plane::kY),
+      i420_frame->writable_data(media::VideoFrame::Plane::kU),
+      i420_frame->stride(media::VideoFrame::Plane::kU),
+      i420_frame->writable_data(media::VideoFrame::Plane::kV),
+      i420_frame->stride(media::VideoFrame::Plane::kV),
       frame->coded_size().width(), frame->coded_size().height());
   if (ret)
     return frame;

@@ -2877,13 +2877,15 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     }
 
     if (frame.format() == PIXEL_FORMAT_I420) {
-      ret = libyuv::I420ToNV12(
-          frame.data(VideoFrame::kYPlane), frame.stride(VideoFrame::kYPlane),
-          frame.data(VideoFrame::kUPlane), frame.stride(VideoFrame::kUPlane),
-          frame.data(VideoFrame::kVPlane), frame.stride(VideoFrame::kVPlane),
-          image_ptr + image.offsets[0], image.pitches[0],
-          image_ptr + image.offsets[1], image.pitches[1], visible_size.width(),
-          visible_size.height());
+      ret = libyuv::I420ToNV12(frame.data(VideoFrame::Plane::kY),
+                               frame.stride(VideoFrame::Plane::kY),
+                               frame.data(VideoFrame::Plane::kU),
+                               frame.stride(VideoFrame::Plane::kU),
+                               frame.data(VideoFrame::Plane::kV),
+                               frame.stride(VideoFrame::Plane::kV),
+                               image_ptr + image.offsets[0], image.pitches[0],
+                               image_ptr + image.offsets[1], image.pitches[1],
+                               visible_size.width(), visible_size.height());
     } else {
       LOG(ERROR) << "Unsupported pixel format: "
                  << VideoPixelFormatToString(frame.format());

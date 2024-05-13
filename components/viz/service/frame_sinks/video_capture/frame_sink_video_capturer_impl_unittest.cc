@@ -624,7 +624,7 @@ bool IsLetterboxedI420Plane(int plane,
                             const VideoFrame& frame,
                             testing::MatchResultListener* result_listener) {
   gfx::Rect content_rect_copy = content_rect;
-  if (plane != VideoFrame::kYPlane) {
+  if (plane != VideoFrame::Plane::kY) {
     content_rect_copy = gfx::Rect(
         content_rect_copy.x() / 2, content_rect_copy.y() / 2,
         content_rect_copy.width() / 2, content_rect_copy.height() / 2);
@@ -643,7 +643,7 @@ bool IsLetterboxedI420Plane(int plane,
           return false;
         }
       } else {  // Letterbox border around content.
-        if (plane == VideoFrame::kYPlane && p[col] != 0x00) {
+        if (plane == VideoFrame::Plane::kY && p[col] != 0x00) {
           *result_listener << " where pixel at (" << col << ", " << row
                            << ") should be outside content rectangle and the "
                               "component should match 0x00 but is 0x"
@@ -665,8 +665,8 @@ bool IsLetterboxedRGBA(SkColor color,
                                                 frame.coded_size().height());
   bitmap.installPixels(
       bitmap_info,
-      const_cast<uint8_t*>(frame.visible_data(VideoFrame::kARGBPlane)),
-      frame.stride(VideoFrame::kARGBPlane));
+      const_cast<uint8_t*>(frame.visible_data(VideoFrame::Plane::kARGB)),
+      frame.stride(VideoFrame::Plane::kARGB));
 
   for (int row = 0; row < bitmap.height(); ++row) {
     for (int col = 0; col < bitmap.width(); ++col) {
@@ -719,11 +719,11 @@ MATCHER_P3(IsLetterboxedFrame, color, content_rect, pixel_format, "") {
     }
     case media::PIXEL_FORMAT_I420: {
       const YUVColor yuvColor = RGBToYUV(color);
-      return IsLetterboxedI420Plane(VideoFrame::kYPlane, yuvColor.y,
+      return IsLetterboxedI420Plane(VideoFrame::Plane::kY, yuvColor.y,
                                     content_rect, frame, result_listener) &&
-             IsLetterboxedI420Plane(VideoFrame::kUPlane, yuvColor.u,
+             IsLetterboxedI420Plane(VideoFrame::Plane::kU, yuvColor.u,
                                     content_rect, frame, result_listener) &&
-             IsLetterboxedI420Plane(VideoFrame::kVPlane, yuvColor.v,
+             IsLetterboxedI420Plane(VideoFrame::Plane::kV, yuvColor.v,
                                     content_rect, frame, result_listener);
     }
     default: {

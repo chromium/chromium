@@ -167,8 +167,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsSync(
   if (!paint_image.readPixels(
           image_info,
           temp_argb_frame->GetWritableVisibleData(
-              media::VideoFrame::kARGBPlane),
-          temp_argb_frame->stride(media::VideoFrame::kARGBPlane), 0 /*srcX*/,
+              media::VideoFrame::Plane::kARGB),
+          temp_argb_frame->stride(media::VideoFrame::Plane::kARGB), 0 /*srcX*/,
           0 /*srcY*/)) {
     DLOG(ERROR) << "Couldn't read pixels from PaintImage";
     return;
@@ -214,8 +214,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin,
       image_size, src_point, info,
-      temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
-      temp_argb_frame->GetWritableVisibleData(media::VideoFrame::kARGBPlane),
+      temp_argb_frame->stride(media::VideoFrame::Plane::kARGB),
+      temp_argb_frame->GetWritableVisibleData(media::VideoFrame::Plane::kARGB),
       WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                     weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
                     std::move(callback)));
@@ -246,12 +246,12 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
   context_provider->RasterInterface()->ReadbackYUVPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
       gfx::Rect(image_size), !image->IsOriginTopLeft(),
-      output_frame->stride(media::VideoFrame::kYPlane),
-      output_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-      output_frame->stride(media::VideoFrame::kUPlane),
-      output_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-      output_frame->stride(media::VideoFrame::kVPlane),
-      output_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+      output_frame->stride(media::VideoFrame::Plane::kY),
+      output_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+      output_frame->stride(media::VideoFrame::Plane::kU),
+      output_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+      output_frame->stride(media::VideoFrame::Plane::kV),
+      output_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
       gfx::Point(0, 0),
       WTF::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
                     weak_ptr_factory_.GetWeakPtr(), image),

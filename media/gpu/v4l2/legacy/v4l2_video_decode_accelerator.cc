@@ -2351,8 +2351,8 @@ bool V4L2VideoDecodeAccelerator::ProcessFrame(int32_t bitstream_buffer_id,
           static_cast<const uint8_t*>(buf->GetPlaneMapping(0)),
           static_cast<const uint8_t*>(buf->GetPlaneMapping(1)),
           buf->GetPlaneBytesUsed(0), buf->GetPlaneBytesUsed(1),
-          mapped_output_frame->GetWritableVisibleData(VideoFrame::kYPlane),
-          mapped_output_frame->GetWritableVisibleData(VideoFrame::kUVPlane));
+          mapped_output_frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+          mapped_output_frame->GetWritableVisibleData(VideoFrame::Plane::kUV));
     }
 
     FrameProcessed(bitstream_buffer_id, buf->BufferId(), mapped_output_frame);

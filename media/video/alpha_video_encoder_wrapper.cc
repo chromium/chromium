@@ -111,7 +111,7 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
 
   const gfx::Size frame_size = frame->coded_size();
   auto dummy_plane_size =
-      VideoFrame::PlaneSize(frame->format(), VideoFrame::kVPlane, frame_size)
+      VideoFrame::PlaneSize(frame->format(), VideoFrame::Plane::kV, frame_size)
           .Area64();
 
   if (dummy_plane_size != dummy_uv_planes_.size()) {
@@ -122,14 +122,14 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
   yuv_output_.reset();
   alpha_output_.reset();
   encode_status_.reset();
-  auto uv_stride = VideoFrame::RowBytes(VideoFrame::kUPlane, frame->format(),
+  auto uv_stride = VideoFrame::RowBytes(VideoFrame::Plane::kU, frame->format(),
                                         frame_size.width());
 
   auto yuv_frame = WrapAsI420VideoFrame(frame);
   auto alpha_frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_I420, frame->visible_rect().size(), frame->visible_rect(),
-      frame->natural_size(), frame->stride(VideoFrame::kAPlane), uv_stride,
-      uv_stride, frame->visible_data(VideoFrame::kAPlane),
+      frame->natural_size(), frame->stride(VideoFrame::Plane::kA), uv_stride,
+      uv_stride, frame->visible_data(VideoFrame::Plane::kA),
       dummy_uv_planes_.data(), dummy_uv_planes_.data(), frame->timestamp());
   alpha_frame->metadata().MergeMetadataFrom(frame->metadata());
 

@@ -70,7 +70,7 @@ TEST_P(VideoFramePoolTest, FrameInitializedAndZeroed) {
 TEST_P(VideoFramePoolTest, FrameReuse) {
   scoped_refptr<VideoFrame> frame =
       CreateFrame(std::get<0>(GetParam()), std::get<1>(GetParam()), 10);
-  const uint8_t* old_y_data = frame->data(VideoFrame::kYPlane);
+  const uint8_t* old_y_data = frame->data(VideoFrame::Plane::kY);
 
   // Clear frame reference to return the frame to the pool.
   frame.reset();
@@ -78,7 +78,7 @@ TEST_P(VideoFramePoolTest, FrameReuse) {
   // Verify that the next frame from the pool uses the same memory.
   scoped_refptr<VideoFrame> new_frame =
       CreateFrame(std::get<0>(GetParam()), std::get<1>(GetParam()), 20);
-  EXPECT_EQ(old_y_data, new_frame->data(VideoFrame::kYPlane));
+  EXPECT_EQ(old_y_data, new_frame->data(VideoFrame::Plane::kY));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -121,8 +121,9 @@ TEST_F(VideoFramePoolTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(frame->writable_data(VideoFrame::kYPlane), 0xff,
-         frame->rows(VideoFrame::kYPlane) * frame->stride(VideoFrame::kYPlane));
+  memset(frame->writable_data(VideoFrame::Plane::kY), 0xff,
+         frame->rows(VideoFrame::Plane::kY) *
+             frame->stride(VideoFrame::Plane::kY));
 }
 
 TEST_F(VideoFramePoolTest, StaleFramesAreExpired) {

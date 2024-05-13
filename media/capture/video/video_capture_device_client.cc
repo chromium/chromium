@@ -78,11 +78,11 @@ void GetI420BufferAccess(
   *y_plane_data = buffer.handle_provider->GetHandleForInProcessAccess()->data();
   *u_plane_data = *y_plane_data + media::VideoFrame::PlaneSize(
                                       media::PIXEL_FORMAT_I420,
-                                      media::VideoFrame::kYPlane, dimensions)
+                                      media::VideoFrame::Plane::kY, dimensions)
                                       .GetArea();
   *v_plane_data = *u_plane_data + media::VideoFrame::PlaneSize(
                                       media::PIXEL_FORMAT_I420,
-                                      media::VideoFrame::kUPlane, dimensions)
+                                      media::VideoFrame::Plane::kU, dimensions)
                                       .GetArea();
   *y_plane_stride = dimensions.width();
   *uv_plane_stride = *y_plane_stride / 2;

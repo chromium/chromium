@@ -310,20 +310,20 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
         &vpx_image, VPX_IMG_FMT_I420, frame.frame->visible_rect().width(),
         frame.frame->visible_rect().height(), 1,
         const_cast<uint8_t*>(
-            frame.frame->visible_data(media::VideoFrame::kYPlane)));
+            frame.frame->visible_data(media::VideoFrame::Plane::kY)));
     DCHECK_EQ(result, &vpx_image);
     vpx_image.planes[VPX_PLANE_Y] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kYPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kY));
     vpx_image.planes[VPX_PLANE_U] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kUPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kU));
     vpx_image.planes[VPX_PLANE_V] = const_cast<uint8_t*>(
-        frame.frame->visible_data(media::VideoFrame::kVPlane));
+        frame.frame->visible_data(media::VideoFrame::Plane::kV));
     vpx_image.stride[VPX_PLANE_Y] =
-        frame.frame->stride(media::VideoFrame::kYPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kY);
     vpx_image.stride[VPX_PLANE_U] =
-        frame.frame->stride(media::VideoFrame::kUPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kU);
     vpx_image.stride[VPX_PLANE_V] =
-        frame.frame->stride(media::VideoFrame::kVPlane);
+        frame.frame->stride(media::VideoFrame::Plane::kV);
 
     vpx_codec_flags_t flags = 0;
     if (frame.force_keyframe)

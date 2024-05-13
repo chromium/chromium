@@ -108,9 +108,9 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
   // a gfx::ColorSpace (from VideoFrame) to another other ColorSpace like
   // cdm::ColorSpace.
 
-  static_assert(VideoFrame::kYPlane == cdm::kYPlane && cdm::kYPlane == 0, "");
-  static_assert(VideoFrame::kUPlane == cdm::kUPlane && cdm::kUPlane == 1, "");
-  static_assert(VideoFrame::kVPlane == cdm::kVPlane && cdm::kVPlane == 2, "");
+  static_assert(VideoFrame::Plane::kY == cdm::kYPlane && cdm::kYPlane == 0, "");
+  static_assert(VideoFrame::Plane::kU == cdm::kUPlane && cdm::kUPlane == 1, "");
+  static_assert(VideoFrame::Plane::kV == cdm::kVPlane && cdm::kVPlane == 2, "");
 
   uint8_t* dst = buffer->Data();
   uint32_t offset = 0;

@@ -269,20 +269,23 @@ TEST_F(MediaStreamVideoTrackTest, SetEnabled) {
 
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(1, sink.number_of_frames());
-  EXPECT_EQ(kColorValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kColorValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
 
   video_track->SetEnabled(false);
   EXPECT_FALSE(sink.enabled());
 
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(2, sink.number_of_frames());
-  EXPECT_EQ(kBlackValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kBlackValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
 
   video_track->SetEnabled(true);
   EXPECT_TRUE(sink.enabled());
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(3, sink.number_of_frames());
-  EXPECT_EQ(kColorValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kColorValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
   sink.DisconnectFromTrack();
 }
 

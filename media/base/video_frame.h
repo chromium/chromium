@@ -86,6 +86,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   static constexpr size_t kFrameAddressAlignment =
       VideoFrameLayout::kBufferAddressAlignment;
 
+  static constexpr size_t kMaxPlanes = 4;
+
   enum Plane : uint8_t {
     kY = 0,
     kARGB = kY,
@@ -94,18 +96,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     kV = 2,
     kATriPlanar = kV,
     kA = 3,
-  };
-
-  enum {
-    kMaxPlanes = 4,
-
-    kYPlane = 0,
-    kARGBPlane = kYPlane,
-    kUPlane = 1,
-    kUVPlane = kUPlane,
-    kVPlane = 2,
-    kAPlaneTriPlanar = kVPlane,
-    kAPlane = 3,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

@@ -138,10 +138,10 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
     return -1;
   }
 
-  uint8_t* dst_y = (uint8_t*)gpu_memory_buff->memory(VideoFrame::kYPlane);
-  uint8_t* dst_uv = (uint8_t*)gpu_memory_buff->memory(VideoFrame::kUVPlane);
-  const int dst_stride_y = gpu_memory_buff->stride(VideoFrame::kYPlane);
-  const int dst_stride_uv = gpu_memory_buff->stride(VideoFrame::kUVPlane);
+  uint8_t* dst_y = (uint8_t*)gpu_memory_buff->memory(VideoFrame::Plane::kY);
+  uint8_t* dst_uv = (uint8_t*)gpu_memory_buff->memory(VideoFrame::Plane::kUV);
+  const int dst_stride_y = gpu_memory_buff->stride(VideoFrame::Plane::kY);
+  const int dst_stride_uv = gpu_memory_buff->stride(VideoFrame::Plane::kUV);
   int status = ConvertCaptureDataToNV12(
       sample, sample_size, capture_format, dimensions, data_color_space,
       rotation, dst_y, dst_uv, dst_stride_y, dst_stride_uv);
@@ -194,17 +194,17 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
   uint8_t* i420_y = i420_buffer_.data();
   uint8_t* i420_u =
       i420_y + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
-                                     VideoFrame::kYPlane, dimensions)
+                                     VideoFrame::Plane::kY, dimensions)
                    .GetArea();
   uint8_t* i420_v =
       i420_u + VideoFrame::PlaneSize(VideoPixelFormat::PIXEL_FORMAT_I420,
-                                     VideoFrame::kUPlane, dimensions)
+                                     VideoFrame::Plane::kU, dimensions)
                    .GetArea();
   std::vector<int32_t> i420_strides = VideoFrame::ComputeStrides(
       VideoPixelFormat::PIXEL_FORMAT_I420, dimensions);
-  const int i420_stride_y = i420_strides[VideoFrame::kYPlane];
-  const int i420_stride_u = i420_strides[VideoFrame::kUPlane];
-  const int i420_stride_v = i420_strides[VideoFrame::kVPlane];
+  const int i420_stride_y = i420_strides[VideoFrame::Plane::kY];
+  const int i420_stride_u = i420_strides[VideoFrame::Plane::kU];
+  const int i420_stride_v = i420_strides[VideoFrame::Plane::kV];
 
   const int width = capture_format.frame_size.width();
   const int height = capture_format.frame_size.height();

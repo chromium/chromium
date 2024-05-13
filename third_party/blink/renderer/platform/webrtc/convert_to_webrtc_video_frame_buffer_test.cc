@@ -269,7 +269,7 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
       media::VideoFrame::STORAGE_OWNED_MEMORY,
       media::VideoPixelFormat::PIXEL_FORMAT_ARGB, base::TimeDelta());
   // fill mock image with whilte color.
-  memset(memory_frame->writable_data(media::VideoFrame::kARGBPlane), 0xFF,
+  memset(memory_frame->writable_data(media::VideoFrame::Plane::kARGB), 0xFF,
          kCodedSize.GetArea() * 4);
 
   // Should call texture conversion.

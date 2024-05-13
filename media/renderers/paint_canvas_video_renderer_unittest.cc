@@ -241,12 +241,12 @@ static scoped_refptr<VideoFrame> CreateCroppedFrame() {
   };
 
   libyuv::I420Copy(cropped_y_plane, 16, cropped_u_plane, 8, cropped_v_plane, 8,
-                   cropped_frame->writable_data(VideoFrame::kYPlane),
-                   cropped_frame->stride(VideoFrame::kYPlane),
-                   cropped_frame->writable_data(VideoFrame::kUPlane),
-                   cropped_frame->stride(VideoFrame::kUPlane),
-                   cropped_frame->writable_data(VideoFrame::kVPlane),
-                   cropped_frame->stride(VideoFrame::kVPlane), 16, 16);
+                   cropped_frame->writable_data(VideoFrame::Plane::kY),
+                   cropped_frame->stride(VideoFrame::Plane::kY),
+                   cropped_frame->writable_data(VideoFrame::Plane::kU),
+                   cropped_frame->stride(VideoFrame::Plane::kU),
+                   cropped_frame->writable_data(VideoFrame::Plane::kV),
+                   cropped_frame->stride(VideoFrame::Plane::kV), 16, 16);
 
   return cropped_frame;
 }
@@ -620,7 +620,7 @@ TEST_F(PaintCanvasVideoRendererTest, HighBitDepth) {
         param.format, cropped_frame()->coded_size(),
         cropped_frame()->visible_rect(), cropped_frame()->natural_size(),
         cropped_frame()->timestamp()));
-    for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
+    for (int plane = VideoFrame::Plane::kY; plane <= VideoFrame::Plane::kV;
          ++plane) {
       int width = cropped_frame()->row_bytes(plane);
       uint16_t* dst = reinterpret_cast<uint16_t*>(frame->writable_data(plane));

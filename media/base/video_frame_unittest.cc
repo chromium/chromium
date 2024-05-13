@@ -150,19 +150,19 @@ void InitializeYV12Frame(VideoFrame* frame, double white_to_black) {
   EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
   const int first_black_row =
       static_cast<int>(frame->coded_size().height() * white_to_black);
-  uint8_t* y_plane = frame->writable_data(VideoFrame::kYPlane);
+  uint8_t* y_plane = frame->writable_data(VideoFrame::Plane::kY);
   for (int row = 0; row < frame->coded_size().height(); ++row) {
     int color = (row < first_black_row) ? 0xFF : 0x00;
-    memset(y_plane, color, frame->stride(VideoFrame::kYPlane));
-    y_plane += frame->stride(VideoFrame::kYPlane);
+    memset(y_plane, color, frame->stride(VideoFrame::Plane::kY));
+    y_plane += frame->stride(VideoFrame::Plane::kY);
   }
-  uint8_t* u_plane = frame->writable_data(VideoFrame::kUPlane);
-  uint8_t* v_plane = frame->writable_data(VideoFrame::kVPlane);
+  uint8_t* u_plane = frame->writable_data(VideoFrame::Plane::kU);
+  uint8_t* v_plane = frame->writable_data(VideoFrame::Plane::kV);
   for (int row = 0; row < frame->coded_size().height(); row += 2) {
-    memset(u_plane, 0x80, frame->stride(VideoFrame::kUPlane));
-    memset(v_plane, 0x80, frame->stride(VideoFrame::kVPlane));
-    u_plane += frame->stride(VideoFrame::kUPlane);
-    v_plane += frame->stride(VideoFrame::kVPlane);
+    memset(u_plane, 0x80, frame->stride(VideoFrame::Plane::kU));
+    memset(v_plane, 0x80, frame->stride(VideoFrame::Plane::kV));
+    u_plane += frame->stride(VideoFrame::Plane::kU);
+    v_plane += frame->stride(VideoFrame::Plane::kV);
   }
 }
 
@@ -170,8 +170,8 @@ void InitializeYV12Frame(VideoFrame* frame, double white_to_black) {
 // makes sure that all the pixels of the RBG frame equal |expect_rgb_color|.
 void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
   ASSERT_EQ(PIXEL_FORMAT_YV12, yv12_frame->format());
-  ASSERT_EQ(yv12_frame->stride(VideoFrame::kUPlane),
-            yv12_frame->stride(VideoFrame::kVPlane));
+  ASSERT_EQ(yv12_frame->stride(VideoFrame::Plane::kU),
+            yv12_frame->stride(VideoFrame::Plane::kV));
   ASSERT_EQ(
       yv12_frame->coded_size().width() & (VideoFrame::kFrameSizeAlignment - 1),
       0u);
@@ -185,12 +185,12 @@ void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
                              VideoFrame::kFrameSizePadding,
                          VideoFrame::kFrameAddressAlignment));
 
-  libyuv::I420ToARGB(yv12_frame->data(VideoFrame::kYPlane),
-                     yv12_frame->stride(VideoFrame::kYPlane),
-                     yv12_frame->data(VideoFrame::kUPlane),
-                     yv12_frame->stride(VideoFrame::kUPlane),
-                     yv12_frame->data(VideoFrame::kVPlane),
-                     yv12_frame->stride(VideoFrame::kVPlane), rgb_data,
+  libyuv::I420ToARGB(yv12_frame->data(VideoFrame::Plane::kY),
+                     yv12_frame->stride(VideoFrame::Plane::kY),
+                     yv12_frame->data(VideoFrame::Plane::kU),
+                     yv12_frame->stride(VideoFrame::Plane::kU),
+                     yv12_frame->data(VideoFrame::Plane::kV),
+                     yv12_frame->stride(VideoFrame::Plane::kV), rgb_data,
                      bytes_per_row, yv12_frame->coded_size().width(),
                      yv12_frame->coded_size().height());
 
@@ -279,7 +279,8 @@ TEST(VideoFrame, CreateFrame) {
   frame = VideoFrame::CreateFrame(PIXEL_FORMAT_ARGB, size, gfx::Rect(size),
                                   size, kTimestamp);
   EXPECT_EQ(PIXEL_FORMAT_ARGB, frame->format());
-  EXPECT_GE(frame->stride(VideoFrame::kARGBPlane), frame->coded_size().width());
+  EXPECT_GE(frame->stride(VideoFrame::Plane::kARGB),
+            frame->coded_size().width());
 
   // Test double planar frame.
   frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size, gfx::Rect(size),
@@ -336,19 +337,19 @@ TEST(VideoFrame, CreateBlackFrame) {
   EXPECT_EQ(kHeight, frame->coded_size().height());
 
   // Test frames themselves.
-  uint8_t* y_plane = frame->writable_data(VideoFrame::kYPlane);
+  uint8_t* y_plane = frame->writable_data(VideoFrame::Plane::kY);
   for (int y = 0; y < frame->coded_size().height(); ++y) {
     EXPECT_EQ(0, memcmp(kExpectedYRow, y_plane, std::size(kExpectedYRow)));
-    y_plane += frame->stride(VideoFrame::kYPlane);
+    y_plane += frame->stride(VideoFrame::Plane::kY);
   }
 
-  uint8_t* u_plane = frame->writable_data(VideoFrame::kUPlane);
-  uint8_t* v_plane = frame->writable_data(VideoFrame::kVPlane);
+  uint8_t* u_plane = frame->writable_data(VideoFrame::Plane::kU);
+  uint8_t* v_plane = frame->writable_data(VideoFrame::Plane::kV);
   for (int y = 0; y < frame->coded_size().height() / 2; ++y) {
     EXPECT_EQ(0, memcmp(kExpectedUVRow, u_plane, std::size(kExpectedUVRow)));
     EXPECT_EQ(0, memcmp(kExpectedUVRow, v_plane, std::size(kExpectedUVRow)));
-    u_plane += frame->stride(VideoFrame::kUPlane);
-    v_plane += frame->stride(VideoFrame::kVPlane);
+    u_plane += frame->stride(VideoFrame::Plane::kU);
+    v_plane += frame->stride(VideoFrame::Plane::kV);
   }
 }
 
@@ -377,8 +378,8 @@ TEST(VideoFrame, WrapVideoFrame) {
         &FrameNoLongerNeededCallback, &base_frame_done_callback_was_run));
     ASSERT_TRUE(frame);
     EXPECT_EQ(base_frame->coded_size(), frame->coded_size());
-    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
-              frame->data(VideoFrame::kYPlane));
+    EXPECT_EQ(base_frame->data(VideoFrame::Plane::kY),
+              frame->data(VideoFrame::Plane::kY));
     EXPECT_NE(base_frame->visible_rect(), frame->visible_rect());
     EXPECT_EQ(visible_rect, frame->visible_rect());
     EXPECT_NE(base_frame->natural_size(), frame->natural_size());
@@ -401,8 +402,8 @@ TEST(VideoFrame, WrapVideoFrame) {
                                         natural_size);
     ASSERT_TRUE(frame2);
     EXPECT_EQ(base_frame->coded_size(), frame2->coded_size());
-    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
-              frame2->data(VideoFrame::kYPlane));
+    EXPECT_EQ(base_frame->data(VideoFrame::Plane::kY),
+              frame2->data(VideoFrame::Plane::kY));
     EXPECT_NE(base_frame->visible_rect(), frame2->visible_rect());
     EXPECT_EQ(visible_rect, frame2->visible_rect());
     EXPECT_NE(base_frame->natural_size(), frame2->natural_size());
@@ -421,8 +422,8 @@ TEST(VideoFrame, WrapVideoFrame) {
                                              larger_visible_rect.size());
     ASSERT_TRUE(frame3);
     EXPECT_EQ(base_frame->coded_size(), frame3->coded_size());
-    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
-              frame3->data(VideoFrame::kYPlane));
+    EXPECT_EQ(base_frame->data(VideoFrame::Plane::kY),
+              frame3->data(VideoFrame::Plane::kY));
     EXPECT_NE(base_frame->visible_rect(), frame3->visible_rect());
     EXPECT_EQ(larger_visible_rect, frame3->visible_rect());
     EXPECT_NE(base_frame->natural_size(), frame3->natural_size());
@@ -469,7 +470,7 @@ TEST(VideoFrame, WrapExternalData) {
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
-  EXPECT_EQ(frame->data(VideoFrame::kYPlane)[0], 0xff);
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kY)[0], 0xff);
 }
 
 // Create a frame that wraps read-only shared memory.
@@ -493,7 +494,7 @@ TEST(VideoFrame, WrapSharedMemory) {
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
-  EXPECT_EQ(frame->data(VideoFrame::kYPlane)[0], 0xff);
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kY)[0], 0xff);
 }
 
 TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
@@ -675,7 +676,7 @@ TEST(VideoFrame,
     SimpleSyncTokenClient client(release_sync_token);
     frame->UpdateReleaseSyncToken(&client);
     EXPECT_EQ(sync_token,
-              frame->mailbox_holder(VideoFrame::kYPlane).sync_token);
+              frame->mailbox_holder(VideoFrame::Plane::kY).sync_token);
   }
   EXPECT_EQ(release_sync_token, called_sync_token);
 }

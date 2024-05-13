@@ -394,8 +394,9 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
   // TODO(fbarchard): Work around for FFmpeg http://crbug.com/27675
   // The decoder is in a bad state and not decoding correctly.
   // Checking for NULL avoids a crash in CopyPlane().
-  if (!frame->data[VideoFrame::kYPlane] || !frame->data[VideoFrame::kUPlane] ||
-      !frame->data[VideoFrame::kVPlane]) {
+  if (!frame->data[VideoFrame::Plane::kY] ||
+      !frame->data[VideoFrame::Plane::kU] ||
+      !frame->data[VideoFrame::Plane::kV]) {
     DLOG(ERROR) << "Video frame was produced yet has invalid frame data.";
     return false;
   }

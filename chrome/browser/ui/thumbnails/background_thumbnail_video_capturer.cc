@@ -168,7 +168,7 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
                            kPremul_SkAlphaType,
                            info->color_space.ToSkColorSpace()),
       pixels,
-      media::VideoFrame::RowBytes(media::VideoFrame::kARGBPlane,
+      media::VideoFrame::RowBytes(media::VideoFrame::Plane::kARGB,
                                   info->pixel_format, info->coded_size.width()),
       [](void* addr, void* context) {
         delete static_cast<FramePinner*>(context);

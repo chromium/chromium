@@ -354,8 +354,8 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     libyuv::CopyPlane(
         vpx_image_alpha->planes[VPX_PLANE_Y],
         vpx_image_alpha->stride[VPX_PLANE_Y],
-        (*video_frame)->GetWritableVisibleData(VideoFrame::kAPlane),
-        (*video_frame)->stride(VideoFrame::kAPlane),
+        (*video_frame)->GetWritableVisibleData(VideoFrame::Plane::kA),
+        (*video_frame)->stride(VideoFrame::Plane::kA),
         (*video_frame)->visible_rect().width(),
         (*video_frame)->visible_rect().height());
   }

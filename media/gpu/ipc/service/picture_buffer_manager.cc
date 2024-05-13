@@ -230,7 +230,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     // If this |picture| has a SharedImage, then keep a reference to the
     // SharedImage in |picture_buffer_data|.
-    for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
+    for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
       auto image = picture.scoped_shared_image(i);
       picture_buffer_data.scoped_shared_images[i] = std::move(image);
     }
@@ -255,7 +255,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
       CHECK(picture_buffer_data.scoped_shared_images[0]);
 
-      for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
+      for (size_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
         const auto& image = picture_buffer_data.scoped_shared_images[i];
         if (image) {
           mailbox_holders[i] = image->GetMailboxHolder();
