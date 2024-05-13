@@ -264,7 +264,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         std::make_unique<OnDeviceModelAccessController>(pref_service_);
     access_controller_ = access_controller.get();
     test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-        std::move(access_controller),
+        &fake_settings_, std::move(access_controller),
         on_device_component_state_manager_.get()->GetWeakPtr());
 
     test_controller_->Init();
@@ -368,8 +368,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
-  ScopedOnDeviceModelServiceTestSettings
-      scoped_on_device_model_service_test_settings_;
+  FakeOnDeviceServiceSettings fake_settings_;
   TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
       &pref_service_};
   scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
@@ -587,8 +586,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
   Initialize();
-  scoped_on_device_model_service_test_settings_.SetExecuteDelay(
-      base::Seconds(10));
+  fake_settings_.set_execute_delay(base::Seconds(10));
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -1044,8 +1042,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
   EXPECT_TRUE(session);
 
   // Should fail the default raw output check.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"unsafe_output"});
+  fake_settings_.set_execute_result({"unsafe_output"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(response_received_);
@@ -1094,8 +1091,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"reasonable_output"});
+  fake_settings_.set_execute_result({"reasonable_output"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
@@ -1141,8 +1137,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
   EXPECT_TRUE(session);
 
   // Should fail the configured checks, but not not be retracted.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"unsafe_output"});
+  fake_settings_.set_execute_result({"unsafe_output"});
 
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -1187,7 +1182,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1237,7 +1232,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1287,7 +1282,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1339,7 +1334,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1392,7 +1387,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1431,7 +1426,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1469,7 +1464,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1508,7 +1503,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1547,7 +1542,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should pass the default raw output safety check
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"reasonable but unsafe output in esperanto"});
 
   auto session = test_controller_->CreateSession(
@@ -1603,8 +1598,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should be used in the raw output check.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"reasonable_output"});
+  fake_settings_.set_execute_result({"reasonable_output"});
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1659,8 +1653,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
   }
 
   // This should be used in the raw output check.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"reasonable_output"});
+  fake_settings_.set_execute_result({"reasonable_output"});
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1714,8 +1707,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   }
 
   // This should be used in the raw output check.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"reasonable_output"});
+  fake_settings_.set_execute_result({"reasonable_output"});
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1768,8 +1760,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
   EXPECT_TRUE(session);
 
   // Should fail raw output, but not retract.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"unsafe_output"});
+  fake_settings_.set_execute_result({"unsafe_output"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_received_);
@@ -1825,8 +1816,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
   EXPECT_TRUE(session);
 
   // Would fail other feature's raw output check, but it shouldn't run.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"unsafe_output"});
+  fake_settings_.set_execute_result({"unsafe_output"});
 
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -1949,7 +1939,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   Initialize();
   // Start a session.
-  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -1975,7 +1965,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
   Initialize();
-  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -1993,7 +1983,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   Initialize();
   // Start a session.
-  test_controller_->set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
     auto session = test_controller_->CreateSession(
@@ -2021,7 +2011,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
   Initialize();
   // Start a session.
   for (int i = 0; i < 10; ++i) {
-    test_controller_->set_drop_connection_request(i % 2 == 1);
+    fake_settings_.set_drop_connection_request(i % 2 == 1);
     auto session = test_controller_->CreateSession(
         kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
         /*config_params=*/std::nullopt);
@@ -2034,7 +2024,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
        MultipleDisconnectsThenVersionChangeRetries) {
   Initialize();
   // Create enough sessions that fail to trigger no longer creating a session.
-  test_controller_->set_drop_connection_request(true);
+  fake_settings_.set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
     auto session = test_controller_->CreateSession(
@@ -2185,7 +2175,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   Initialize();
-  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  fake_settings_.set_load_model_result(LoadModelResult::kGpuBlocked);
   auto session = test_controller_->CreateSession(
       kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -2263,7 +2253,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
 
 TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
   Initialize();
-  scoped_on_device_model_service_test_settings_.SetExecuteDelay(
+  fake_settings_.set_execute_delay(
       features::GetOnDeviceModelTimeForInitialResponse() * 2);
 
   auto session = test_controller_->CreateSession(
@@ -2363,7 +2353,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 
 TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
   Initialize();
-  scoped_on_device_model_service_test_settings_.SetExecuteDelay(
+  fake_settings_.set_execute_delay(
       features::GetOnDeviceModelTimeForInitialResponse() * 2);
 
   // Create a bunch of sessions that all timeout.
@@ -2421,8 +2411,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response2));
 
   // Output contains redacted text (and  input doesn't), so redact.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"Input: abarx\n"});
+  fake_settings_.set_execute_result({"Input: abarx\n"});
   response_received_.reset();
   streamed_responses_.clear();
   auto session3 = test_controller_->CreateSession(
@@ -2483,8 +2472,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   Initialize({.config = config});
 
   // Force 'bar' to be returned from model.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"Input: bar\n"});
+  fake_settings_.set_execute_result({"Input: bar\n"});
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -2505,8 +2493,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   Initialize({.config = config});
 
   // Output contains redacted text (and  input doesn't), so redact.
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"Input: abarx\n"});
+  fake_settings_.set_execute_result({"Input: abarx\n"});
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       /*config_params=*/std::nullopt);
@@ -2528,7 +2515,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeats) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   Initialize();
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more repeating text",
@@ -2576,7 +2563,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   Initialize();
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more repeating text",
@@ -2626,7 +2613,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAcrossResponses) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   Initialize();
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating",
       " text",
@@ -2679,7 +2666,7 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   Initialize();
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -2728,7 +2715,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   PopulateConfigForFeature(kFeature, config);
   Initialize({.config = config});
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -2765,7 +2752,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
   input_url_proto_field->add_proto_descriptors()->set_tag_number(1);
   Initialize({.config = config});
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -2843,7 +2830,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   config.mutable_text_safety_fallback_config();
   Initialize({.config = config});
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -2922,7 +2909,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   config.mutable_text_safety_fallback_config();
   Initialize({.config = config});
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -2977,7 +2964,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   config.mutable_text_safety_fallback_config();
   Initialize({.config = config});
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more non repeating text",
@@ -3044,7 +3031,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       std::make_unique<OnDeviceModelAccessController>(pref_service_);
   access_controller_ = access_controller.get();
   test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
-      std::move(access_controller),
+      &fake_settings_, std::move(access_controller),
       on_device_component_state_manager_.get()->GetWeakPtr());
 
   on_device_component_state_manager_.Reset();
@@ -3093,7 +3080,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -3127,7 +3114,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval1) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
+  fake_settings_.set_execute_result(
       {"token1", " token2", " token3", " token4"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -3165,9 +3152,8 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult(
-      {"token1", " token2", " token3", " token4", " token5", " token6",
-       " token7"});
+  fake_settings_.set_execute_result({"token1", " token2", " token3", " token4",
+                                     " token5", " token6", " token7"});
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
 
@@ -3234,7 +3220,7 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       /*config_params=*/std::nullopt);
   EXPECT_TRUE(session);
 
-  scoped_on_device_model_service_test_settings_.SetExecuteResult({
+  fake_settings_.set_execute_result({
       "some text",
       " some more repeating text",
       " some more repeating text",

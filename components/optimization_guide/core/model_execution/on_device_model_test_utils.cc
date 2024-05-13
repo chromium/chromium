@@ -11,24 +11,15 @@
 
 namespace optimization_guide {
 
-namespace {
-
-// If non-zero this amount of delay is added before the response is sent.
-base::TimeDelta g_execute_delay = base::TimeDelta();
-
-// If non-empty, used as the output from Execute().
-std::vector<std::string> g_model_execute_result;
-
-// Counter to assign an identifier for the adaptation model.
-uint32_t g_adaptation_model_id_counter = 0;
-
-}  // namespace
-
 using on_device_model::mojom::LoadModelResult;
 
+FakeOnDeviceServiceSettings::FakeOnDeviceServiceSettings() = default;
+FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
+
 FakeOnDeviceSession::FakeOnDeviceSession(
+    FakeOnDeviceServiceSettings* settings,
     std::optional<uint32_t> adaptation_model_id)
-    : adaptation_model_id_(adaptation_model_id) {}
+    : settings_(settings), adaptation_model_id_(adaptation_model_id) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
@@ -44,7 +35,7 @@ void FakeOnDeviceSession::AddContext(
 void FakeOnDeviceSession::Execute(
     on_device_model::mojom::InputOptionsPtr input,
     mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response) {
-  if (g_execute_delay.is_zero()) {
+  if (settings_->execute_delay.is_zero()) {
     ExecuteImpl(std::move(input), std::move(response));
     return;
   }
@@ -53,7 +44,7 @@ void FakeOnDeviceSession::Execute(
       base::BindOnce(&FakeOnDeviceSession::ExecuteImpl,
                      weak_factory_.GetWeakPtr(), std::move(input),
                      std::move(response)),
-      g_execute_delay);
+      settings_->execute_delay);
 }
 
 void FakeOnDeviceSession::GetSizeInTokens(const std::string& text,
@@ -79,7 +70,7 @@ void FakeOnDeviceSession::ExecuteImpl(
     remote->OnResponse(std::move(chunk));
   }
 
-  if (g_model_execute_result.empty()) {
+  if (settings_->model_execute_result.empty()) {
     auto chunk = on_device_model::mojom::ResponseChunk::New();
     chunk->text = "Input: " + input->text + "\n";
     if (input->top_k > 1) {
@@ -89,7 +80,7 @@ void FakeOnDeviceSession::ExecuteImpl(
     }
     remote->OnResponse(std::move(chunk));
   } else {
-    for (const auto& text : g_model_execute_result) {
+    for (const auto& text : settings_->model_execute_result) {
       auto chunk = on_device_model::mojom::ResponseChunk::New();
       chunk->text = text;
       remote->OnResponse(std::move(chunk));
@@ -126,8 +117,9 @@ void FakeOnDeviceSession::AddContextInternal(
 }
 
 FakeOnDeviceModel::FakeOnDeviceModel(
+    FakeOnDeviceServiceSettings* settings,
     std::optional<uint32_t> adaptation_model_id)
-    : adaptation_model_id_(adaptation_model_id) {}
+    : settings_(settings), adaptation_model_id_(adaptation_model_id) {}
 
 FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
@@ -136,8 +128,9 @@ void FakeOnDeviceModel::StartSession(
   // Mirror what the real OnDeviceModel does, which is only allow a single
   // Session.
   receivers_.Clear();
-  receivers_.Add(std::make_unique<FakeOnDeviceSession>(adaptation_model_id_),
-                 std::move(session));
+  receivers_.Add(
+      std::make_unique<FakeOnDeviceSession>(settings_, adaptation_model_id_),
+      std::move(session));
 }
 
 void FakeOnDeviceModel::DetectLanguage(const std::string& text,
@@ -173,8 +166,8 @@ void FakeOnDeviceModel::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadAdaptationCallback callback) {
-  auto test_model =
-      std::make_unique<FakeOnDeviceModel>(++g_adaptation_model_id_counter);
+  auto test_model = std::make_unique<FakeOnDeviceModel>(
+      settings_, ++settings_->adaptation_model_id_counter);
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(on_device_model::mojom::LoadModelResult::kSuccess);
 }
@@ -182,11 +175,8 @@ void FakeOnDeviceModel::LoadAdaptation(
 FakeOnDeviceModelService::FakeOnDeviceModelService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         receiver,
-    LoadModelResult result,
-    bool drop_connection_request)
-    : receiver_(this, std::move(receiver)),
-      load_model_result_(result),
-      drop_connection_request_(drop_connection_request) {}
+    FakeOnDeviceServiceSettings* settings)
+    : settings_(settings), receiver_(this, std::move(receiver)) {}
 
 FakeOnDeviceModelService::~FakeOnDeviceModelService() = default;
 
@@ -194,13 +184,13 @@ void FakeOnDeviceModelService::LoadModel(
     on_device_model::mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-  if (drop_connection_request_) {
-    std::move(callback).Run(load_model_result_);
+  if (settings_->drop_connection_request) {
+    std::move(callback).Run(settings_->load_model_result);
     return;
   }
-  auto test_model = std::make_unique<FakeOnDeviceModel>();
+  auto test_model = std::make_unique<FakeOnDeviceModel>(settings_);
   model_receivers_.Add(std::move(test_model), std::move(model));
-  std::move(callback).Run(load_model_result_);
+  std::move(callback).Run(settings_->load_model_result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -208,13 +198,13 @@ void FakeOnDeviceModelService::LoadPlatformModel(
     const base::Uuid& uuid,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
-  if (drop_connection_request_) {
-    std::move(callback).Run(load_model_result_);
+  if (settings_->drop_connection_request) {
+    std::move(callback).Run(settings_->load_model_result);
     return;
   }
-  auto test_model = std::make_unique<FakeOnDeviceModel>();
+  auto test_model = std::make_unique<FakeOnDeviceModel>(settings_);
   model_receivers_.Add(std::move(test_model), std::move(model));
-  std::move(callback).Run(load_model_result_);
+  std::move(callback).Run(settings_->load_model_result);
 }
 #endif
 
@@ -224,12 +214,14 @@ void FakeOnDeviceModelService::GetEstimatedPerformanceClass(
 }
 
 FakeOnDeviceModelServiceController::FakeOnDeviceModelServiceController(
+    FakeOnDeviceServiceSettings* settings,
     std::unique_ptr<OnDeviceModelAccessController> access_controller,
     base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager)
     : OnDeviceModelServiceController(
           std::move(access_controller),
-          std::move(on_device_component_state_manager)) {}
+          std::move(on_device_component_state_manager)),
+      settings_(settings) {}
 
 FakeOnDeviceModelServiceController::~FakeOnDeviceModelServiceController() =
     default;
@@ -238,32 +230,7 @@ void FakeOnDeviceModelServiceController::LaunchService() {
   did_launch_service_ = true;
   service_remote_.reset();
   service_ = std::make_unique<FakeOnDeviceModelService>(
-      service_remote_.BindNewPipeAndPassReceiver(), load_model_result_,
-      drop_connection_request_);
-}
-
-ScopedOnDeviceModelServiceTestSettings::ScopedOnDeviceModelServiceTestSettings()
-    : old_execute_delay_(g_execute_delay),
-      old_model_execute_result_(g_model_execute_result) {
-  g_execute_delay = base::TimeDelta();
-  g_model_execute_result.clear();
-}
-
-ScopedOnDeviceModelServiceTestSettings::
-    ~ScopedOnDeviceModelServiceTestSettings() {
-  g_execute_delay = old_execute_delay_;
-  g_model_execute_result = old_model_execute_result_;
-  g_adaptation_model_id_counter = 0;
-}
-
-void ScopedOnDeviceModelServiceTestSettings::SetExecuteDelay(
-    base::TimeDelta delay) {
-  g_execute_delay = delay;
-}
-
-void ScopedOnDeviceModelServiceTestSettings::SetExecuteResult(
-    const std::vector<std::string>& result) {
-  g_model_execute_result = result;
+      service_remote_.BindNewPipeAndPassReceiver(), settings_);
 }
 
 }  // namespace optimization_guide
