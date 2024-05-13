@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
@@ -574,6 +575,22 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   return modules;
 }
 
+void SafetyHubHandler::HandleRecordSafetyHubVisit(
+    const base::Value::List& args) {
+  if (TrustSafetySentimentService* sentiment_service =
+          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
+    sentiment_service->SafetyHubVisited();
+  }
+}
+
+void SafetyHubHandler::HandleRecordSafetyHubInteraction(
+    const base::Value::List& args) {
+  if (TrustSafetySentimentService* sentiment_service =
+          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
+    sentiment_service->SafetyHubModuleInteracted();
+  }
+}
+
 void SafetyHubHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
@@ -670,6 +687,14 @@ void SafetyHubHandler::RegisterMessages() {
       base::BindRepeating(
           &SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordSafetyHubPageVisit",
+      base::BindRepeating(&SafetyHubHandler::HandleRecordSafetyHubVisit,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordSafetyHubInteraction",
+      base::BindRepeating(&SafetyHubHandler::HandleRecordSafetyHubInteraction,
+                          base::Unretained(this)));
 }
 
 void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {

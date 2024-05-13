@@ -166,6 +166,15 @@ class TrustSafetySentimentService
   // warning.
   virtual void PhishedPasswordUpdateFinished();
 
+  // Called when the user interacts with a module of Safety Hub.
+  virtual void SafetyHubModuleInteracted();
+
+  // Called when the user clicks a menu notification from Safety Hub.
+  virtual void SafetyHubNotificationClicked();
+
+  // Called when the user visits the Safety Hub page.
+  virtual void SafetyHubVisited();
+
   // Checks that this feature area is valid for the current version.
   static bool VersionCheck(FeatureArea feature_area);
 
@@ -201,6 +210,8 @@ class TrustSafetySentimentService
                            V2_BrowsingData_NotInterested);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_PrivacyGuide);
   FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest, V2_ControlGroup);
+  FRIEND_TEST_ALL_PREFIXES(TrustSafetySentimentServiceTest,
+                           SafetyHubInteractionState);
 
   // Struct representing a trigger (user action relevant to T&S) that previously
   // occurred, and is awaiting the appropriate eligibility steps before causing
@@ -260,6 +271,14 @@ class TrustSafetySentimentService
     bool finished_action = false;
   };
 
+  // Struct that represents the Safety Hub state, and more specifically the
+  // user's interactions with it.
+  struct SafetyHubInteractionState {
+    bool has_visited = false;
+    bool has_interacted_with_module = false;
+    bool has_clicked_notification = false;
+  };
+
   void SettingsWatcherComplete();
 
   // Record that a trigger occurred, placing it in the set of pending triggers.
@@ -292,6 +311,7 @@ class TrustSafetySentimentService
   std::unique_ptr<SettingsWatcher> settings_watcher_;
   std::unique_ptr<PageInfoState> page_info_state_;
   std::unique_ptr<PhishedPasswordChangeState> phished_password_change_state_;
+  std::unique_ptr<SafetyHubInteractionState> safety_hub_interaction_state_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
   bool performed_control_group_dice_roll_;

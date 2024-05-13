@@ -268,6 +268,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertUndoToast(
         true, 'safetyCheckNotificationPermissionReviewBlockedToastLabel');
 
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
+
     // Ensure the metric for 'Block' action is recorded.
     await assertInteractionMetricRecorded(Interactions.BLOCK);
   });
@@ -289,6 +291,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
         true, 'safetyCheckNotificationPermissionReviewIgnoredToastLabel');
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
 
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
+
     // Ensure the metric for 'Ignore' action is recorded.
     await assertInteractionMetricRecorded(Interactions.IGNORE);
   });
@@ -309,6 +313,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertUndoToast(
         true, 'safetyCheckNotificationPermissionReviewResetToastLabel');
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
+
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
 
     // Ensure the metric for 'Reset' action is recorded.
     await assertInteractionMetricRecorded(Interactions.RESET);
@@ -387,6 +393,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done and no undo toast is shown.
     await assertBrowserCallPlural('blockNotificationPermissionForOrigins');
     assertUndoToast(false);
+
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
 
     // UI should be in a completion state.
     webUIListenerCallback(

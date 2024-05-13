@@ -55,6 +55,8 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'getVersionCardData',
       'getSafetyHubEntryPointData',
       'dismissActiveMenuNotification',
+      'recordSafetyHubPageVisit',
+      'recordSafetyHubInteraction',
     ]);
   }
 
@@ -164,5 +166,13 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   dismissActiveMenuNotification() {
     this.methodCalled('dismissActiveMenuNotification');
+  }
+
+  recordSafetyHubPageVisit() {
+    this.methodCalled('recordSafetyHubPageVisit');
+  }
+
+  recordSafetyHubInteraction() {
+    this.methodCalled('recordSafetyHubInteraction');
   }
 }

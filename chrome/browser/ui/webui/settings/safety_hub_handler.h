@@ -238,6 +238,12 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
                               extensions::UninstallReason reason) override;
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
+  // Record a visit to the Safety Hub page.
+  void HandleRecordSafetyHubVisit(const base::Value::List& args);
+
+  // Record an interaction with one of the Safety Hub modules.
+  void HandleRecordSafetyHubInteraction(const base::Value::List& args);
+
   // The `extension_sh_result_` contains the needed information about how
   // many extensions should be reviewed by the user.
   std::unique_ptr<SafetyHubExtensionsResult> extension_sh_result_;

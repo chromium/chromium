@@ -248,6 +248,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await assertAllowAgain();
     assertUndoToast(true, 'safetyCheckUnusedSitePermissionsToastLabel');
 
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
+
     // Ensure the metric for 'Allow Again' action is recorded.
     await assertInteractionMetricRecorded(Interactions.ALLOW_AGAIN);
   });
@@ -309,6 +311,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     await browserProxy.whenCalled(
         'acknowledgeRevokedUnusedSitePermissionsList');
     assertUndoToast(false);
+    await browserProxy.whenCalled('recordSafetyHubInteraction');
 
     // UI should be in a completion state.
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);

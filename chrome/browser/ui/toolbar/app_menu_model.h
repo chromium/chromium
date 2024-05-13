@@ -262,9 +262,8 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // in the menu. When an expected module is provided, the metrics will only be
   // logged when the module matches the one for which there is an active menu
   // notification.
-  static void LogSafetyHubInteractionMetrics(
-      safety_hub::SafetyHubModuleType sh_module,
-      int event_flags);
+  void LogSafetyHubInteractionMetrics(safety_hub::SafetyHubModuleType sh_module,
+                                      int event_flags);
 
  private:
   // Adds actionable global error menu items to the menu.

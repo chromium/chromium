@@ -237,6 +237,7 @@ suite('SafetyHubPage', function() {
     assertEquals(PasswordManagerPage.CHECKUP, param);
 
     // Ensure the card state on click metrics are recorded.
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     const result =
         await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
     assertEquals('Settings.SafetyHub.PasswordsCard.StatusOnClick', result[0]);
@@ -280,6 +281,7 @@ suite('SafetyHubPage', function() {
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
 
     // Ensure the card state on click metrics are recorded.
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     const result =
         await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
     assertEquals('Settings.SafetyHub.VersionCard.StatusOnClick', result[0]);
@@ -324,6 +326,7 @@ suite('SafetyHubPage', function() {
     // </if>
 
     // Ensure the card state on click metrics are recorded.
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     const result =
         await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
     assertEquals('Settings.SafetyHub.VersionCard.StatusOnClick', result[0]);
@@ -368,6 +371,7 @@ suite('SafetyHubPage', function() {
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
 
     // Ensure the card state on click metrics are recorded.
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     const result =
         await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
     assertEquals(
@@ -512,6 +516,7 @@ suite('SafetyHubPage', function() {
     // Check clicking the Safety Tools link causes metric recording.
     assertTrue(!!links[0]);
     links[0].click();
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     assertEquals(
         'Settings.SafetyHub.SafetyToolsLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -520,6 +525,7 @@ suite('SafetyHubPage', function() {
     // Check clicking the Incognito link causes metric recording.
     assertTrue(!!links[1]);
     links[1].click();
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     assertEquals(
         'Settings.SafetyHub.IncognitoLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -528,8 +534,35 @@ suite('SafetyHubPage', function() {
     // Check clicking the Safe Browsing link causes metric recording.
     assertTrue(!!links[2]);
     links[2].click();
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubInteraction');
     assertEquals(
         'Settings.SafetyHub.SafeBrowsingLinkClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('Record Safety Hub page visit', async function() {
+    // Override setTimeout, and only alter behavior for the 20s timeout (the
+    // delay for considering a SH page visit).
+    // Using MockTimer did not work here, as it interfered with many other,
+    // unrelated timers.
+    const origSetTimeout = window.setTimeout;
+    window.setTimeout = function(
+        handler: TimerHandler, timeout: number|undefined): number {
+      if (timeout === 20000) {
+        const callback = handler as Function;
+        callback();
+        return 0;
+      }
+      return origSetTimeout(handler, timeout);
+    };
+
+    document.body.removeChild(testElement);
+    testElement = document.createElement('settings-safety-hub-page');
+    document.body.appendChild(testElement);
+    await flushTasks();
+
+    await safetyHubBrowserProxy.whenCalled('recordSafetyHubPageVisit');
+
+    window.setTimeout = origSetTimeout;
   });
 });

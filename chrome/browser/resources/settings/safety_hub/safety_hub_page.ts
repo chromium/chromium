@@ -137,6 +137,14 @@ export class SettingsSafetyHubPageElement extends
     // notification is dismissed.
     this.browserProxy_.dismissActiveMenuNotification();
 
+    // Record a visit to Safety Hub page if the user is still on the SH page
+    // after 20 seconds.
+    setTimeout(() => {
+      if (Router.getInstance().getCurrentRoute() === routes.SAFETY_HUB) {
+        this.browserProxy_.recordSafetyHubPageVisit();
+      }
+    }, 20000);
+
     this.metricsBrowserProxy_.recordSafetyHubImpression(
         SafetyHubSurfaces.SAFETY_HUB_PAGE);
     this.metricsBrowserProxy_.recordSafetyHubInteraction(
@@ -213,6 +221,7 @@ export class SettingsSafetyHubPageElement extends
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.PasswordsCard.StatusOnClick',
         this.passwordCardData_.state as unknown as SafetyHubCardState);
+    this.browserProxy_.recordSafetyHubInteraction();
 
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.CHECKUP);
@@ -229,6 +238,7 @@ export class SettingsSafetyHubPageElement extends
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.VersionCard.StatusOnClick',
         this.versionCardData_.state as unknown as SafetyHubCardState);
+    this.browserProxy_.recordSafetyHubInteraction();
 
     if (this.versionCardData_.state === CardState.WARNING) {
       // Optional parameter alwaysShowDialog is set to true to always show the
@@ -242,6 +252,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onEducationLinkClick_(event: CustomEvent<HTMLAnchorElement>) {
+    this.browserProxy_.recordSafetyHubInteraction();
     const headerString =
         event.detail.querySelector('.site-representation')!.textContent;
 
@@ -274,6 +285,7 @@ export class SettingsSafetyHubPageElement extends
     this.metricsBrowserProxy_.recordSafetyHubCardStateClicked(
         'Settings.SafetyHub.SafeBrowsingCard.StatusOnClick',
         this.safeBrowsingCardData_.state as unknown as SafetyHubCardState);
+    this.browserProxy_.recordSafetyHubInteraction();
 
     Router.getInstance().navigateTo(
         routes.SECURITY, /* dynamicParams= */ undefined,

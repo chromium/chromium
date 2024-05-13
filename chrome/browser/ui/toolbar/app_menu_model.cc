@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -979,7 +980,6 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   chrome::ExecuteCommand(browser_, command_id);
 }
 
-// static
 void AppMenuModel::LogSafetyHubInteractionMetrics(
     safety_hub::SafetyHubModuleType sh_module,
     int event_flags) {
@@ -990,6 +990,11 @@ void AppMenuModel::LogSafetyHubInteractionMetrics(
       safety_hub::SafetyHubEntryPoint::kMenuNotifications);
   base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
                                 sh_module);
+  if (TrustSafetySentimentService* sentiment_service =
+          TrustSafetySentimentServiceFactory::GetForProfile(
+              browser_->profile())) {
+    sentiment_service->SafetyHubNotificationClicked();
+  }
 }
 
 void AppMenuModel::LogMenuMetrics(int command_id) {
@@ -1983,7 +1988,7 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   SetExecuteCallbackAt(
       GetIndexOfCommandId(notification->command).value(),
       base::BindRepeating(&AppMenuModel::LogSafetyHubInteractionMetrics,
-                          notification->module));
+                          base::Unretained(this), notification->module));
   return true;
 }
 

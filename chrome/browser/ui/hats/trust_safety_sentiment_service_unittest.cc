@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -23,6 +24,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -1474,4 +1476,75 @@ TEST_F(TrustSafetySentimentServiceTest,
   service()->OpenedNewTabPage();
   CheckCallTriggerOccurredHistogram(
       {{TrustSafetySentimentService::FeatureArea::kPasswordProtectionUI, 2}});
+}
+
+TEST_F(TrustSafetySentimentServiceTest, SafetyHubInteractionState) {
+  FeatureParamsV2 params;
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(features::kSafetyHub);
+
+  // A profile password store is required to launch the password status check
+  // service, which is used to get the password card data, which is part of the
+  // retrieved PSD.
+  CreateAndUseTestPasswordStore(profile());
+
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User visited Safety Hub page")
+                   ->second);
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User clicked Safety Hub notification")
+                   ->second);
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User interacted with Safety Hub")
+                   ->second);
+
+  service()->SafetyHubVisited();
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User visited Safety Hub page")
+                  ->second);
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User clicked Safety Hub notification")
+                   ->second);
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User interacted with Safety Hub")
+                   ->second);
+
+  service()->SafetyHubNotificationClicked();
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User visited Safety Hub page")
+                  ->second);
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User clicked Safety Hub notification")
+                  ->second);
+  EXPECT_FALSE(service()
+                   ->GetSafetyHubProductSpecificData()
+                   .find("User interacted with Safety Hub")
+                   ->second);
+
+  service()->SafetyHubModuleInteracted();
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User visited Safety Hub page")
+                  ->second);
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User clicked Safety Hub notification")
+                  ->second);
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("User interacted with Safety Hub")
+                  ->second);
 }

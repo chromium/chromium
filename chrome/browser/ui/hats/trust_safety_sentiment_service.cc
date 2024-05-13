@@ -234,6 +234,8 @@ TrustSafetySentimentService::TrustSafetySentimentService(Profile* profile)
     metrics::DesktopSessionDurationTracker::Get()->AddObserver(this);
     performed_control_group_dice_roll_ = false;
   }
+
+  safety_hub_interaction_state_ = std::make_unique<SafetyHubInteractionState>();
 }
 
 TrustSafetySentimentService::~TrustSafetySentimentService() {
@@ -681,6 +683,13 @@ void TrustSafetySentimentService::MaybeTriggerPasswordProtectionSurvey(
 std::map<std::string, bool>
 TrustSafetySentimentService::GetSafetyHubProductSpecificData() {
   std::map<std::string, bool> product_specific_data;
+  product_specific_data["User visited Safety Hub page"] =
+      safety_hub_interaction_state_->has_visited;
+  product_specific_data["User clicked Safety Hub notification"] =
+      safety_hub_interaction_state_->has_clicked_notification;
+  product_specific_data["User interacted with Safety Hub"] =
+      safety_hub_interaction_state_->has_interacted_with_module;
+
   auto* notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_);
   std::optional<safety_hub::SafetyHubModuleType> last_module =
@@ -716,6 +725,18 @@ TrustSafetySentimentService::GetSafetyHubProductSpecificData() {
   }
 
   return product_specific_data;
+}
+
+void TrustSafetySentimentService::SafetyHubModuleInteracted() {
+  safety_hub_interaction_state_->has_interacted_with_module = true;
+}
+
+void TrustSafetySentimentService::SafetyHubNotificationClicked() {
+  safety_hub_interaction_state_->has_clicked_notification = true;
+}
+
+void TrustSafetySentimentService::SafetyHubVisited() {
+  safety_hub_interaction_state_->has_visited = true;
 }
 
 // static

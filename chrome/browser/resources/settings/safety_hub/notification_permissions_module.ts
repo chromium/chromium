@@ -252,6 +252,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         this.browserProxy_.blockNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
             SafetyCheckNotificationsModuleInteractions.BLOCK);
@@ -278,6 +279,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         this.browserProxy_.ignoreNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
             SafetyCheckNotificationsModuleInteractions.IGNORE);
@@ -298,6 +300,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         this.browserProxy_.resetNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
             SafetyCheckNotificationsModuleInteractions.RESET);
@@ -315,6 +318,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         this.browserProxy_.blockNotificationPermissionForOrigins.bind(
             this.browserProxy_, this.lastOrigins_));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
             SafetyCheckNotificationsModuleInteractions.BLOCK_ALL);

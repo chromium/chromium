@@ -143,6 +143,12 @@ export interface SafetyHubBrowserProxy {
 
   /** Get the subheader for Safety Hub entry point in settings. */
   getSafetyHubEntryPointData(): Promise<EntryPointInfo>;
+
+  /* Record a visit to the Safety Hub page. */
+  recordSafetyHubPageVisit(): void;
+
+  /* Record an interaction on the Safety Hub page. */
+  recordSafetyHubInteraction(): void;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -217,6 +223,14 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
 
   getSafetyHubEntryPointData() {
     return sendWithPromise('getSafetyHubEntryPointData');
+  }
+
+  recordSafetyHubPageVisit() {
+    return sendWithPromise('recordSafetyHubPageVisit');
+  }
+
+  recordSafetyHubInteraction() {
+    return sendWithPromise('recordSafetyHubInteraction');
   }
 
   static getInstance(): SafetyHubBrowserProxy {

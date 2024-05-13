@@ -254,6 +254,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
             this.browserProxy_, item.origin));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN);
@@ -276,6 +277,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList.bind(
             this.browserProxy_));
 
+    this.browserProxy_.recordSafetyHubInteraction();
     this.metricsBrowserProxy_
         .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
             SafetyCheckUnusedSitePermissionsModuleInteractions.ACKNOWLEDGE_ALL);
