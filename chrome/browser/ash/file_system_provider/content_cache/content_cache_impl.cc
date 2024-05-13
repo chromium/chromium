@@ -272,9 +272,8 @@ void ContentCacheImpl::ReadBytes(
     return;
   }
 
-  auto local_file_it = local_files_.find(file.request_id);
-  bool already_opened = local_file_it != local_files_.end();
-  const CacheFileContext& ctx = it->second;
+  CacheFileContext& ctx = it->second;
+  bool already_opened = ctx.HasLocalFD(file.request_id);
   if (!already_opened && ctx.pending_removal()) {
     VLOG(1) << "Cache miss: file evicted";
     callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
@@ -316,12 +315,12 @@ void ContentCacheImpl::ReadBytes(
           << length << "', bytes_on_disk = '" << ctx.bytes_on_disk()
           << "'} is available";
 
-  LocalFD& local_file =
-      GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(ctx.id()));
-  local_file.ReadBytes(buffer, offset, length,
-                       base::BindOnce(&ContentCacheImpl::OnBytesRead,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      file.file_path, std::move(callback)));
+  LocalFD& local_fd = ctx.GetOrCreateLocalFD(
+      file.request_id, GetPathOnDiskFromId(ctx.id()), io_task_runner_);
+  local_fd.ReadBytes(
+      buffer, offset, length,
+      base::BindOnce(&ContentCacheImpl::OnBytesRead,
+                     weak_ptr_factory_.GetWeakPtr(), file.file_path, callback));
 }
 
 void ContentCacheImpl::OnBytesRead(
@@ -417,18 +416,18 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
   } else {
     // The ID has already been created and is known on disk, bypass generating
     // the ID and simply start writing to the file.
-    LocalFD& local_file =
-        GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(ctx.id()));
-    local_file.WriteBytes(buffer, offset, length,
-                          std::move(on_bytes_written_callback));
+    LocalFD& local_fd = ctx.GetOrCreateLocalFD(
+        file.request_id, GetPathOnDiskFromId(ctx.id()), io_task_runner_);
+    local_fd.WriteBytes(buffer, offset, length,
+                        std::move(on_bytes_written_callback));
   }
 }
 
 void ContentCacheImpl::CloseFile(const OpenedCloudFile& file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto it = local_files_.find(file.request_id); it != local_files_.end()) {
-    it->second.Close(base::DoNothing());
+  if (auto it = lru_cache_.Peek(file.file_path); it != lru_cache_.end()) {
+    it->second.CloseLocalFD(file.request_id);
   }
 }
 
@@ -452,11 +451,13 @@ void ContentCacheImpl::OnFileIdGenerated(
   DCHECK(it != lru_cache_.end());
   DCHECK(inserted_id);
   DCHECK_GT(*inserted_id, 0);
-  it->second.set_id(*inserted_id);
-  LocalFD& local_file =
-      GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(*inserted_id));
-  local_file.WriteBytes(buffer, offset, length,
-                        std::move(on_bytes_written_callback));
+  CacheFileContext& ctx = it->second;
+  ctx.set_id(*inserted_id);
+
+  LocalFD& local_fd = ctx.GetOrCreateLocalFD(
+      file.request_id, GetPathOnDiskFromId(*inserted_id), io_task_runner_);
+  local_fd.WriteBytes(buffer, offset, length,
+                      std::move(on_bytes_written_callback));
 }
 
 void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
@@ -596,16 +597,6 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
     }
   }
   return cached_file_paths;
-}
-
-LocalFD& ContentCacheImpl::GetOrCreateLocalFD(int request_id,
-                                              const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto [cached_file, inserted] =
-      local_files_.try_emplace(request_id, path, io_task_runner_);
-  VLOG_IF(1, !inserted) << "Re-using cached file descriptor {request_id = '"
-                        << request_id << "', path = '" << path << "'}";
-  return cached_file->second;
 }
 
 }  // namespace ash::file_system_provider

@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_FILE_CONTEXT_H_
 
 #include <functional>
+#include <map>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
 
 namespace ash::file_system_provider {
 
@@ -33,6 +35,13 @@ class CacheFileContext {
   CacheFileContext& operator=(const CacheFileContext&) = delete;
 
   ~CacheFileContext();
+
+  bool HasLocalFD(int request_id) { return open_fds_.contains(request_id); }
+  LocalFD& GetOrCreateLocalFD(
+      int request_id,
+      base::FilePath path_on_disk,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  bool CloseLocalFD(int request_id) { return open_fds_.erase(request_id) == 1; }
 
   int64_t bytes_on_disk() const { return bytes_on_disk_; }
   void set_bytes_on_disk(int64_t bytes_on_disk) {
@@ -83,6 +92,10 @@ class CacheFileContext {
   // Evicted items are scheduled to be removed from disk and the database, so
   // any further use should be disallowed.
   bool pending_removal_ = false;
+
+  // A map (keyed by request ID) that represents any open file descriptors for
+  // this specific file.
+  std::map<int, LocalFD> open_fds_;
 };
 
 using PathContextPair = std::pair<base::FilePath, CacheFileContext>;

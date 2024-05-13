@@ -134,19 +134,10 @@ class ContentCacheImpl : public ContentCache {
   // Generates the absolute path on disk from the supplied `item_id`.
   const base::FilePath GetPathOnDiskFromId(int64_t item_id);
 
-  // A `LocalFD` represents a wrapper around an open FD. We either create a
-  // new `LocalFD` or get the existing one to avoid opening up a new FD for
-  // every chunked read request.
-  LocalFD& GetOrCreateLocalFD(int request_id, const base::FilePath& path);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::FilePath root_dir_;
   ContentLRUCache lru_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // A map of `LocalFD`s that are keyed by the incoming request ID. This is
-  // analogous to a 1:1 mapping of request ID <-> file handle.
-  std::map<int, LocalFD> local_files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   BoundContextDatabase context_db_;
