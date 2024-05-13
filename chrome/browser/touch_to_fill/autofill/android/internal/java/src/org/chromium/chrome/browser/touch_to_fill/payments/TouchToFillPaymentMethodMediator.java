@@ -75,11 +75,11 @@ class TouchToFillPaymentMethodMediator {
     }
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_OUTCOME_HISTOGRAM =
+    static final String TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM =
             "Autofill.TouchToFill.CreditCard.Outcome2";
 
     @VisibleForTesting
-    static final String TOUCH_TO_FILL_INDEX_SELECTED =
+    static final String TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED =
             "Autofill.TouchToFill.CreditCard.SelectedIndex";
 
     @VisibleForTesting
@@ -190,7 +190,7 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.onDismissed(dismissedByUser);
         if (dismissedByUser) {
             RecordHistogram.recordEnumeratedHistogram(
-                    TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                    TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                     TouchToFillCreditCardOutcome.DISMISS,
                     TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         }
@@ -213,7 +213,8 @@ class TouchToFillPaymentMethodMediator {
                 card.getIsVirtual()
                         ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
                         : TouchToFillCreditCardOutcome.CREDIT_CARD);
-        RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
+        RecordHistogram.recordCount100Histogram(
+                TOUCH_TO_FILL_CREDIT_CARD_INDEX_SELECTED, mCards.indexOf(card));
     }
 
     public void onSelectedIban(Iban iban) {
@@ -283,10 +284,10 @@ class TouchToFillPaymentMethodMediator {
                                 TouchToFillPaymentMethodProperties.IbanProperties
                                         .NON_TRANSFORMING_IBAN_KEYS)
                         .with(
-                            TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE,
+                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE,
                                 iban.getLabel())
                         .with(
-                            TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME,
+                                TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME,
                                 iban.getNickname())
                         .with(ON_IBAN_CLICK_ACTION, () -> this.onSelectedIban(iban));
         return ibanModelBuilder.build();
@@ -336,7 +337,7 @@ class TouchToFillPaymentMethodMediator {
     private static void recordTouchToFillOutcomeHistogram(
             @TouchToFillCreditCardOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
-                TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
+                TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                 outcome,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
