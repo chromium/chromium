@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
@@ -190,36 +189,15 @@ class AnswerTextNewLayout implements AnswerText {
         mAccessibilityDescription = mText.toString();
     }
 
-    @SuppressWarnings("deprecation") // Update usage of Html.fromHtml when API min is 24
     private void appendAndStyleText(String text, MetricAffectingSpan style) {
         // Unescape HTML entities (e.g. "&quot;", "&gt;").
-        text = processAnswerText(Html.fromHtml(text).toString());
+        text = AnswerTextUtils.processAnswerText(text, mIsAnswer, mAnswerType);
 
         // Append as HTML (answer responses contain simple markup).
         int start = mText.length();
         mText.append(text);
         int end = mText.length();
         mText.setSpan(style, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-    }
-
-    /**
-     * Process, if applicable, the content of the answer text, modifying it to improve readability.
-     *
-     * @param text Source text.
-     * @return Either original or modified text.
-     */
-    private String processAnswerText(String text) {
-        if (mIsAnswer && mAnswerType == AnswerType.CURRENCY) {
-            // Modify the content of answer to present only the value after conversion, that is:
-            //    1,000 United State Dollar = 1,330.75 Canadian Dollar
-            // becomes
-            //    1,330.75 Canadian Dollar
-            int offset = text.indexOf(" = ");
-            if (offset > 0) {
-                text = text.substring(offset + 3);
-            }
-        }
-        return text;
     }
 
     /**

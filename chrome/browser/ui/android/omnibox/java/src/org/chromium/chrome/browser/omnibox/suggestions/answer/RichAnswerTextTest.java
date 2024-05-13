@@ -354,4 +354,43 @@ public class RichAnswerTextTest {
         Assert.assertEquals(texts[0].getMaxLines(), 3);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
     }
+
+    @Test
+    @SmallTest
+    public void testCurrencyAnswer() {
+        FormattedString headline =
+                FormattedString.newBuilder()
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("1 usd to jpy"))
+                        .build();
+        FormattedString subhead =
+                FormattedString.newBuilder()
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("1 United States Dollar = 156.23 Japanese Yen"))
+                        .build();
+
+        RichAnswerTemplate richAnswerTemplate =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(AnswerType.CURRENCY)
+                        .addAnswers(
+                                0,
+                                AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
+                        .build();
+
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
+        SpannableStringBuilder primaryText = texts[0].getText();
+        SpannableStringBuilder secondaryText = texts[1].getText();
+
+        Assert.assertEquals(primaryText.toString(), "156.23 Japanese Yen");
+        TextAppearanceSpan[] textAppearanceSpans =
+                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 1);
+        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+
+        Assert.assertEquals(secondaryText.toString(), "1 usd to jpy");
+    }
 }

@@ -97,6 +97,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerSuggestionViewProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerText.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerTextNewLayout.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/AnswerTextUtils.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/answer/RichAnswerText.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/ActionChipsBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/base/ActionChipsProcessor.java",

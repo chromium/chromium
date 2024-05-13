@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
@@ -140,14 +139,13 @@ class RichAnswerText implements AnswerText {
             FormattedStringFragment formattedStringFragment,
             MetricAffectingSpan style,
             SpannableStringBuilder result) {
-        // TODO(b/327497146): handle replacement for currency answers.
         if (!result.toString().isEmpty()) {
             result.append(" ");
         }
 
         String text =
-                Html.fromHtml(formattedStringFragment.getText(), Html.FROM_HTML_MODE_LEGACY)
-                        .toString();
+                AnswerTextUtils.processAnswerText(
+                        formattedStringFragment.getText(), mIsAnswerLine, mAnswerType);
         int startIndex = result.length();
         result.append(text);
         result.setSpan(style, startIndex, result.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
