@@ -1199,6 +1199,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
               .AsExplicit();
       CHECK(explicit_state);
       text = explicit_state->GetExplicitText();
+      color = color_provider->GetColor(kColorAvatarButtonHighlightExplicitText);
       break;
     }
     case ButtonState::kSyncError: {
@@ -1290,15 +1291,13 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
             kColorAvatarButtonHighlightSyncErrorForeground);
       }
     }
-    case ButtonState::kGuestSession:
-    case ButtonState::kExplicitTextShowing:
-    case ButtonState::kShowIdentityName:
-      return color_provider->GetColor(
-          kColorAvatarButtonHighlightDefaultForeground);
     case ButtonState::kManagement:
     case ButtonState::kSigninPaused:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightNormalForeground);
+    case ButtonState::kExplicitTextShowing:
+    case ButtonState::kGuestSession:
+    case ButtonState::kShowIdentityName:
     case ButtonState::kNormal:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
