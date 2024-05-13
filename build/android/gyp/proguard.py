@@ -66,6 +66,10 @@ _IGNORE_WARNINGS = (
     # This is a banner warning and each individual file affected will have
     # its own warning.
     r'Warning: Invalid parameter counts in MethodParameter attributes',
+    # Full error: "Warning: InnerClasses attribute has entries missing a
+    # corresponding EnclosingMethod attribute. Such InnerClasses attribute
+    # entries are ignored."
+    r'Warning: InnerClasses attribute has entries missing a corresponding EnclosingMethod attribute',  # pylint: disable=line-too-long
     r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_core_java',  # pylint: disable=line-too-long
     r'Warning in obj/third_party/androidx/androidx_test_espresso_espresso_web_java',  # pylint: disable=line-too-long
 

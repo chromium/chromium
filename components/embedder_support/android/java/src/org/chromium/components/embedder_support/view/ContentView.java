@@ -27,7 +27,9 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -341,6 +343,9 @@ public class ContentView extends FrameLayout
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         // Calls may come while/after WebContents is destroyed. See https://crbug.com/821750#c8.
         if (!hasValidWebContents()) return null;
+        // Espresso sometimes calls onCreateInputConnection on the instrumentation thread when
+        // printing the view Hierarchy. See b/339675001
+        if (BuildConfig.IS_FOR_TEST && !ThreadUtils.runningOnUiThread()) return null;
         return ImeAdapter.fromWebContents(mWebContents).onCreateInputConnection(outAttrs);
     }
 

@@ -131,13 +131,21 @@ dependencies {
     androidTestCompile 'androidx.test:monitor:1.4.0-rc01'
     androidTestCompile 'androidx.test:rules:1.2.0'
     androidTestCompile 'androidx.test:runner:1.5.2'
-    androidTestCompile 'androidx.test.espresso:espresso-contrib:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-web:3.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-contrib:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-intents:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-web:3.5.1'
     androidTestCompile 'androidx.test.ext:junit:1.1.1'
     androidTestCompile 'androidx.test.services:storage:1.4.1'
     androidTestCompile 'androidx.test.uiautomator:uiautomator:2.2.0'
+
+    // accessibility-test-framework (dependancy of anroidx.espresso) somehow
+    // pulls in files from these dependencies without actually depending on
+    // them. This breaks some of our assumptions in the code so adding these
+    // explicitly to fix the asserts.  Remove when no longer needed.
+    androidTestCompile 'org.checkerframework:checker-compat-qual:2.5.5'
+    androidTestCompile 'com.google.errorprone:error_prone_annotations:2.3.4'
+    androidTestCompile 'com.google.j2objc:j2objc-annotations:1.3'
 }
 
 // The snapshot repository only has the latest version of each dependency.  When
