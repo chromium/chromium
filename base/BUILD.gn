@@ -4301,10 +4301,7 @@ if (enable_nocompile_tests) {
       "unsafe_buffers_nocompile.nc",
       "values_nocompile.nc",
     ]
-    deps = [
-      ":base",
-      "//build/config/clang:unsafe_buffers_buildflags",
-    ]
+    deps = [ ":base" ]
   }
 }
 
