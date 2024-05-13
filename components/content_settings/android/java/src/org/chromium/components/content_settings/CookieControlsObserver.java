@@ -22,13 +22,6 @@ public interface CookieControlsObserver {
             @CookieBlocking3pcdStatus int blockingStatus,
             long expiration) {}
 
-    /**
-     * Called when there is an update in the number of sites where cookies are used/blocked.
-     * @param allowedSites An integer indicating the number of sites with cookies being used.
-     * @param blockedSites An integer indicating the number of sites with cookies being blocked.
-     */
-    default void onSitesCountChanged(int allowedSites, int blockedSites) {}
-
     /** Called when we should surface a visual indicator due to potential site breakage. */
     default void onHighlightCookieControl(boolean shouldHighlight) {}
 }

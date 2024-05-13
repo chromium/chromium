@@ -76,13 +76,6 @@ public class CookieControlsBridgeTest {
         }
 
         @Override
-        public void onSitesCountChanged(int allowedSites, int blockedSites) {
-            mAllowedSites = allowedSites;
-            mBlockedSites = blockedSites;
-            mHelper.notifyCalled();
-        }
-
-        @Override
         public void onHighlightCookieControl(boolean shouldHighlight) {
             mShouldHighlight = shouldHighlight;
             mHelper.notifyCalled();
@@ -105,10 +98,6 @@ public class CookieControlsBridgeTest {
     private boolean mThirdPartyCookiesBlocked;
     private int mEnforcement;
     private long mExpiration;
-    private int mAllowedCookies;
-    private int mBlockedCookies;
-    private int mAllowedSites;
-    private int mBlockedSites;
     private boolean mShouldHighlight;
 
     @Before
@@ -118,10 +107,6 @@ public class CookieControlsBridgeTest {
         mTestServer = sActivityTestRule.getTestServer();
         mCookieControlsVisible = false;
         mThirdPartyCookiesBlocked = false;
-        mAllowedCookies = -1;
-        mBlockedCookies = -1;
-        mAllowedSites = -1;
-        mBlockedSites = -1;
         mExpiration = -1;
         mShouldHighlight = false;
     }
@@ -173,8 +158,6 @@ public class CookieControlsBridgeTest {
         assertEquals(false, mCookieControlsVisible);
         assertEquals(false, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
     }
 
     @Test
@@ -204,8 +187,6 @@ public class CookieControlsBridgeTest {
         assertEquals(true, mCookieControlsVisible);
         assertEquals(true, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
     }
 
     @Test
@@ -230,15 +211,11 @@ public class CookieControlsBridgeTest {
         assertEquals(false, mCookieControlsVisible);
         assertEquals(false, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
 
         // Try to set a cookie on the page when cookies are allowed.
         currentCallCount = mCallbackHelper.getCallCount();
         JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(), "setCookie()");
         mCallbackHelper.waitForCallback(currentCallCount, 1);
-        assertEquals(1, mAllowedSites);
-        assertEquals(0, mBlockedSites);
     }
 
     @Test
@@ -275,15 +252,11 @@ public class CookieControlsBridgeTest {
         assertEquals(true, mCookieControlsVisible);
         assertEquals(true, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
 
         // Try to set a cookie on the page when cookies are blocked.
         currentCallCount = mCallbackHelper.getCallCount();
         JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(), "setCookie()");
         mCallbackHelper.waitForCallback(currentCallCount, 1);
-        assertEquals(0, mAllowedSites);
-        assertEquals(1, mBlockedSites);
     }
 
     @Test
@@ -316,8 +289,6 @@ public class CookieControlsBridgeTest {
         assertEquals(false, mCookieControlsVisible);
         assertEquals(false, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
 
         // Make new incognito page now
         Tab incognitoTab = sActivityTestRule.loadUrlInNewTab(url, true);
@@ -333,7 +304,5 @@ public class CookieControlsBridgeTest {
         assertEquals(true, mCookieControlsVisible);
         assertEquals(true, mThirdPartyCookiesBlocked);
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
-        assertEquals(0, mAllowedSites);
-        assertEquals(0, mBlockedSites);
     }
 }

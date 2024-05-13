@@ -132,8 +132,8 @@ class CookieControlsController final
 
   bool HasOriginSandboxedTopLevelDocument() const;
 
-  // Updates the blocked cookie count of |icon_|.
-  void PresentBlockedCookieCounter();
+  // Updates user bypass visibility and/or highlighting.
+  void UpdateUserBypass();
 
   void OnPageReloadDetected(int recent_reloads_count);
 
@@ -158,8 +158,7 @@ class CookieControlsController final
 
   bool ShouldHighlightUserBypass();
   bool ShouldUserBypassIconBeVisible(bool protections_on,
-                                     bool controls_visible,
-                                     int third_party_sites_count);
+                                     bool controls_visible);
   content::WebContents* GetWebContents() const;
 
   std::unique_ptr<TabObserver> tab_observer_;

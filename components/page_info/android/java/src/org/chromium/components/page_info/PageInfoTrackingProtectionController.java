@@ -35,10 +35,6 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
     private CookieControlsBridge mBridge;
     private PageInfoTrackingProtectionSettings mSubPage;
 
-    private int mAllowedCookies;
-    private int mBlockedCookies;
-    private int mAllowedSites;
-    private int mBlockedSites;
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
     private int mEnforcement;
@@ -116,7 +112,6 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         mSubPage.setParams(params);
         mSubPage.setCookieStatus(
                 mCookieControlsVisible, mThirdPartyCookiesBlocked, mEnforcement, mExpiration);
-        mSubPage.setSitesCount(mAllowedSites, mBlockedSites);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
@@ -201,15 +196,6 @@ public class PageInfoTrackingProtectionController extends PageInfoPreferenceSubp
         if (mSubPage != null) {
             mSubPage.setCookieStatus(
                     mCookieControlsVisible, mThirdPartyCookiesBlocked, mEnforcement, expiration);
-        }
-    }
-
-    @Override
-    public void onSitesCountChanged(int allowedSites, int blockedSites) {
-        mAllowedSites = allowedSites;
-        mBlockedSites = blockedSites;
-        if (mSubPage != null) {
-            mSubPage.setSitesCount(allowedSites, blockedSites);
         }
     }
 

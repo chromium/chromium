@@ -32,14 +32,6 @@ class CookieControlsObserver : public base::CheckedObserver {
       // The expiration time of the active UB exception if it is present.
       base::Time expiration) {}
 
-  // Called whenever `OnStatusChanged()` is called and whenever site data is
-  // accessed. The site counts are the number of third-party sites that are
-  // allowed to or are blocked from accessing site data. There might be reasons
-  // other than 3PCB to why a site is blocked or allowed (ex. site data
-  // exceptions).
-  virtual void OnSitesCountChanged(int allowed_third_party_sites_count,
-                                   int blocked_third_party_sites_count) {}
-
   // Called to update the user bypass entrypoint in the omnibox. This can impact
   // any property of the entrypoint (i.e. the visibility, label, or icon).
   virtual void OnCookieControlsIconStatusChanged(

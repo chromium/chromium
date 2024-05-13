@@ -79,23 +79,6 @@ void CookieControlsBridge::OnStatusChanged(
       expiration.InMillisecondsSinceUnixEpoch());
 }
 
-void CookieControlsBridge::OnSitesCountChanged(
-    int allowed_third_party_sites_count,
-    int blocked_third_party_sites_count) {
-  // The site counts change quite frequently, so avoid unnecessary
-  // UI updates if possible.
-  if (allowed_third_party_sites_count_ == allowed_third_party_sites_count &&
-      blocked_third_party_sites_count_ == blocked_third_party_sites_count) {
-    return;
-  }
-  allowed_third_party_sites_count_ = allowed_third_party_sites_count;
-  blocked_third_party_sites_count_ = blocked_third_party_sites_count;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CookieControlsBridge_onSitesCountChanged(
-      env, jobject_, allowed_third_party_sites_count,
-      blocked_third_party_sites_count);
-}
-
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     bool protections_on,

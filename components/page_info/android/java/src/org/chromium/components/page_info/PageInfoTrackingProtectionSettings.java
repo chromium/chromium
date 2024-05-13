@@ -53,8 +53,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
-    private int mAllowedSites;
-    private int mBlockedSites;
     private CharSequence mHostName;
     private FPSCookieInfo mFPSInfo;
     private boolean mBlockAll3PC;
@@ -282,15 +280,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                             getString(resId),
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         }
-        updateCookieSwitch();
-    }
-
-    public void setSitesCount(int allowedSites, int blockedSites) {
-        mAllowedSites = allowedSites;
-        mBlockedSites = blockedSites;
-
-        mDataUsed |= allowedSites != 0;
-        updateStorageDeleteButton();
         updateCookieSwitch();
     }
 

@@ -90,11 +90,6 @@ public class CookieControlsBridge {
     }
 
     @CalledByNative
-    private void onSitesCountChanged(int allowedSites, int blockedSites) {
-        mObserver.onSitesCountChanged(allowedSites, blockedSites);
-    }
-
-    @CalledByNative
     private void onHighlightCookieControl(boolean shouldHighlight) {
         mObserver.onHighlightCookieControl(shouldHighlight);
     }

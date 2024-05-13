@@ -136,18 +136,13 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
     SetUserChangedCookieBlockingForSite(false);
   }
   auto status = GetStatus(web_contents);
-  int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
-  int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.controls_visible, status.protections_on,
                              status.enforcement, status.blocking_status,
                              status.expiration);
-    observer.OnSitesCountChanged(third_party_allowed_sites,
-                                 third_party_blocked_sites);
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(
-            status.protections_on, status.controls_visible,
-            third_party_allowed_sites + third_party_blocked_sites),
+        ShouldUserBypassIconBeVisible(status.protections_on,
+                                      status.controls_visible),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
   }
@@ -332,25 +327,12 @@ int CookieControlsController::GetStatefulBounceCount() const {
   }
 }
 
-bool CookieControlsController::SiteDataAccessed(int third_party_allowed_sites,
-                                                int third_party_blocked_sites) {
-  return third_party_allowed_sites + third_party_blocked_sites +
-             GetStatefulBounceCount() !=
-         0;
-}
-
-void CookieControlsController::PresentBlockedCookieCounter() {
+void CookieControlsController::UpdateUserBypass() {
   auto status = GetStatus(GetWebContents());
-  int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
-  int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
-
   for (auto& observer : observers_) {
-    observer.OnSitesCountChanged(third_party_allowed_sites,
-                                 third_party_blocked_sites);
     observer.OnCookieControlsIconStatusChanged(
-        ShouldUserBypassIconBeVisible(
-            status.protections_on, status.controls_visible,
-            third_party_allowed_sites + third_party_blocked_sites),
+        ShouldUserBypassIconBeVisible(status.protections_on,
+                                      status.controls_visible),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
   }
@@ -444,10 +426,9 @@ void CookieControlsController::RecordActivationMetrics() {
       "Privacy.CookieControlsActivated.SiteEngagementScore",
       GetSiteEngagementScore(), 100);
 
-  int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
-  int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
-  auto site_data_access_type = GetSiteDataAccessType(third_party_allowed_sites,
-                                                     third_party_blocked_sites);
+  auto site_data_access_type =
+      GetSiteDataAccessType(GetAllowedThirdPartyCookiesSitesCount(),
+                            GetBlockedThirdPartyCookiesSitesCount());
   base::UmaHistogramEnumeration(
       "Privacy.CookieControlsActivated.SiteDataAccessType",
       site_data_access_type);
@@ -517,15 +498,16 @@ bool CookieControlsController::ShouldHighlightUserBypass() {
 
 bool CookieControlsController::ShouldUserBypassIconBeVisible(
     bool protections_on,
-    bool controls_visible,
-    int third_party_sites_count) {
+    bool controls_visible) {
   // If no 3P sites have attempted to access site data, nor were any stateful
   // bounces recorded, the icon should not be displayed. Take into account both
   // allow and blocked counts, since the breakage might be related to storage
   // partitioning. Partitioned site will be allowed to access partitioned
   // storage.
   bool site_data_access_attempted =
-      third_party_sites_count + GetStatefulBounceCount() != 0;
+      GetAllowedThirdPartyCookiesSitesCount() +
+          GetBlockedThirdPartyCookiesSitesCount() + GetStatefulBounceCount() !=
+      0;
 
   // 3PCD prevents SameSite=None cookies from being sent when the top-level
   // document is sandboxed without `allow-origin`. For instance when loaded
@@ -552,7 +534,7 @@ CookieControlsController::TabObserver::~TabObserver() = default;
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
     const AccessDetails& access_details) {
   if (access_details.site_data_type != SiteDataType::kCookies) {
-    cookie_controls_->PresentBlockedCookieCounter();
+    cookie_controls_->UpdateUserBypass();
     return;
   }
 
@@ -575,11 +557,11 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
     return;
   }
   cookie_accessed_set_.insert(access_details);
-  cookie_controls_->PresentBlockedCookieCounter();
+  cookie_controls_->UpdateUserBypass();
 }
 
 void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
-  cookie_controls_->PresentBlockedCookieCounter();
+  cookie_controls_->UpdateUserBypass();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(
