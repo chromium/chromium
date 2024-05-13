@@ -29,11 +29,12 @@ class PrimaryAccountChangeEvent {
 
   struct State {
     State();
-    State(const State& other);
     State(CoreAccountInfo account_info, ConsentLevel consent_level);
+    State(const State& other);
+    State& operator=(const State& other);
     ~State();
 
-    State& operator=(const State& other);
+    friend bool operator==(const State&, const State&) = default;
 
     CoreAccountInfo primary_account;
     ConsentLevel consent_level = ConsentLevel::kSignin;
@@ -72,9 +73,6 @@ class PrimaryAccountChangeEvent {
   absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
       event_source_;
 };
-
-bool operator==(const PrimaryAccountChangeEvent::State& lhs,
-                const PrimaryAccountChangeEvent::State& rhs);
 
 std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state);

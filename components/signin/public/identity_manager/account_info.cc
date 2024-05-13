@@ -168,9 +168,6 @@ bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r) {
          gaia::AreEmailsSame(l.email, r.email) &&
          l.is_under_advanced_protection == r.is_under_advanced_protection;
 }
-bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r) {
-  return !(l == r);
-}
 
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account) {
   os << "account_id: " << account.account_id << ", gaia: " << account.gaia

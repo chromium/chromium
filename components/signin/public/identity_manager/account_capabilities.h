@@ -109,7 +109,6 @@ class AccountCapabilities {
   bool UpdateWith(const AccountCapabilities& other);
 
   bool operator==(const AccountCapabilities& other) const;
-  bool operator!=(const AccountCapabilities& other) const;
 
  private:
   friend std::optional<AccountCapabilities> AccountCapabilitiesFromValue(

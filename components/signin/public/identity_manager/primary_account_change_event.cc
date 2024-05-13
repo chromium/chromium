@@ -167,12 +167,6 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   return true;
 }
 
-bool operator==(const PrimaryAccountChangeEvent::State& lhs,
-                const PrimaryAccountChangeEvent::State& rhs) {
-  return lhs.primary_account == rhs.primary_account &&
-         lhs.consent_level == rhs.consent_level;
-}
-
 std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state) {
   os << "{ primary_account: " << state.primary_account.account_id << ", "

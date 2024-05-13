@@ -255,9 +255,7 @@ struct Cookie {
   std::string gaia_id;
   bool is_valid;
 
-  bool operator==(const Cookie& other) const {
-    return gaia_id == other.gaia_id && is_valid == other.is_valid;
-  }
+  bool operator==(const Cookie& other) const = default;
 };
 
 // Converts CookieParams to ListedAccounts.

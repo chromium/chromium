@@ -115,7 +115,6 @@ struct AccountInfo : public CoreAccountInfo {
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
-bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
 
 // Comparing `AccountInfo`s is likely a mistake. You should compare either

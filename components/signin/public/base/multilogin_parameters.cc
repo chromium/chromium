@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "base/strings/string_util.h"
 
@@ -27,15 +28,16 @@ MultiloginParameters::MultiloginParameters() = default;
 
 MultiloginParameters::MultiloginParameters(
     const gaia::MultiloginMode mode,
-    const std::vector<CoreAccountId>& accounts_to_send)
-    : mode(mode), accounts_to_send(accounts_to_send) {}
+    std::vector<CoreAccountId> accounts_to_send)
+    : mode(mode), accounts_to_send(std::move(accounts_to_send)) {}
 
 MultiloginParameters::~MultiloginParameters() = default;
 
-MultiloginParameters::MultiloginParameters(const MultiloginParameters& other) {
-  mode = other.mode;
-  accounts_to_send = other.accounts_to_send;
-}
+MultiloginParameters::MultiloginParameters(const MultiloginParameters&) =
+    default;
+
+MultiloginParameters& MultiloginParameters::operator=(
+    const MultiloginParameters&) = default;
 
 std::string MultiloginParameters::ToString() const {
   std::stringstream ss;
@@ -44,13 +46,6 @@ std::string MultiloginParameters::ToString() const {
      << ", accounts_to_send: " << GetAccountsAsString(accounts_to_send);
 
   return ss.str();
-}
-
-MultiloginParameters& MultiloginParameters::operator=(
-    const MultiloginParameters& other) {
-  mode = other.mode;
-  accounts_to_send = other.accounts_to_send;
-  return *this;
 }
 
 std::ostream& operator<<(std::ostream& out, const MultiloginParameters& p) {

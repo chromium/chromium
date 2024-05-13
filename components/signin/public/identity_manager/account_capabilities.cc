@@ -157,10 +157,6 @@ bool AccountCapabilities::operator==(const AccountCapabilities& other) const {
   return true;
 }
 
-bool AccountCapabilities::operator!=(const AccountCapabilities& other) const {
-  return !(*this == other);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // static
 AccountCapabilities AccountCapabilities::ConvertFromJavaAccountCapabilities(

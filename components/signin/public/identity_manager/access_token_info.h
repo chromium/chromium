@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCESS_TOKEN_INFO_H_
 
 #include <string>
+#include <utility>
 
 #include "base/time/time.h"
 
@@ -27,16 +28,17 @@ struct AccessTokenInfo {
   std::string id_token;
 
   AccessTokenInfo() = default;
-  AccessTokenInfo(const std::string& token_param,
-                  const base::Time& expiration_time_param,
-                  const std::string& id_token)
-      : token(token_param),
+  AccessTokenInfo(std::string token_param,
+                  base::Time expiration_time_param,
+                  std::string id_token)
+      : token(std::move(token_param)),
         expiration_time(expiration_time_param),
-        id_token(id_token) {}
-};
+        id_token(std::move(id_token)) {}
 
-// Defined for testing purposes only.
-bool operator==(const AccessTokenInfo& lhs, const AccessTokenInfo& rhs);
+  // Defined for testing purposes only.
+  friend bool operator==(const AccessTokenInfo&,
+                         const AccessTokenInfo&) = default;
+};
 
 }  // namespace signin
 

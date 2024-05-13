@@ -115,7 +115,8 @@ std::vector<GaiaIdHash> DeserializeGaiaIdHashVector(const base::Pickle& p) {
 
   base::PickleIterator iterator(p);
   while (iterator.ReadString(&hash)) {
-    hashes.push_back(GaiaIdHash::FromBinary(hash));
+    hashes.push_back(GaiaIdHash::FromBinary(std::move(hash)));
+    hash = {};
   }
   return hashes;
 }
