@@ -582,6 +582,9 @@ MULTIPROCESS_TEST_MAIN(CheckCwdProcess) {
   return kSuccess;
 }
 
+// A relative binary loader path is set in MSAN builds, so binaries must be
+// run from the build directory.
+#if !defined(MEMORY_SANITIZER)
 TEST_F(ProcessUtilTest, CurrentDirectory) {
   // TODO(rickyz): Add support for passing arguments to multiprocess children,
   // then create a special directory for this test.
@@ -598,6 +601,7 @@ TEST_F(ProcessUtilTest, CurrentDirectory) {
   EXPECT_TRUE(process.WaitForExit(&exit_code));
   EXPECT_EQ(kSuccess, exit_code);
 }
+#endif  // !defined(MEMORY_SANITIZER)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
