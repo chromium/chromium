@@ -1386,6 +1386,19 @@
   <message name="IDS_LOGIN_CATEGORIES_SCREEN_SKIP" translateable="false" desc="The label on the button that skips the categories screen">
     Skip
   </message>
+  <!-- string for new recommend apps screen-->
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_LOADING" translateable="false" desc="The title of the recommended apps screen">
+   Please wait...
+  </message>
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_TITLE" translateable="false" desc="The title of the recommended apps screen">
+    Top apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE" translateable="false" desc="The subtitle of the recommended apps screen">
+    Installation happens after setup. Find more recommendations later in Explore app.
+  </message>
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SKIP" translateable="false" desc="The label on the button that skips the recommended apps screen">
+    Skip
+  </message>
   <!-- Strings for recommend apps screen -->
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Install apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> from the Google Play Store

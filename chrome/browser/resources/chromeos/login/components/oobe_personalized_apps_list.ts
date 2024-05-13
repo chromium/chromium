@@ -105,7 +105,7 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     if (this.itemRendered === this.appsList.length &&
         this.loadedIconsCount === this.appsList.length) {
       this.dispatchEvent(new CustomEvent(
-          'apss-icons-loaded', {bubbles: true, composed: true}));
+          'apps-icons-loaded', {bubbles: true, composed: true}));
     }
   }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -20,10 +21,25 @@ PersonalizedRecommendAppsScreenHandler::
     ~PersonalizedRecommendAppsScreenHandler() = default;
 
 void PersonalizedRecommendAppsScreenHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("personalizedRecommendedLoading",
+               IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_LOADING);
+  builder->AddF("personalizedRecommendedAppsScreenTitle",
+                IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_TITLE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("personalizedRecommendedAppsScreenDescription",
+               IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE);
+  builder->Add("personalizedRecommendedAppsScreenSkip",
+               IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SKIP);
+}
 
 void PersonalizedRecommendAppsScreenHandler::Show() {
   ShowInWebUI();
+}
+
+void PersonalizedRecommendAppsScreenHandler::SetCategoriesAppsMapData(
+    base::Value::Dict categoriesApps) {
+  CallExternalAPI("setCategoriesAppsMapData", std::move(categoriesApps));
 }
 
 base::WeakPtr<PersonalizedRecommendAppsScreenView>

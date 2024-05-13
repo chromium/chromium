@@ -5,7 +5,36 @@ found in the LICENSE file.
 -->
 <style include="oobe-dialog-host-styles">
 </style>
-
-<oobe-loading-dialog title-key="[[gettingDeviceReadyTitle]]">
-    <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+<oobe-loading-dialog id="progressDialog" for-step="loading"
+        title-key="personalizedRecommendedLoading" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'personalizedRecommendedLoading')]]">
+    <iron-icon slot="icon" icon="oobe-32:perosonalized-apps"></iron-icon>
 </oobe-loading-dialog>
+<oobe-adaptive-dialog id="personalizedRecommendDialog" role="presentation"
+      for-step="overview">
+    <iron-icon slot="icon" icon="oobe-32:perosonalized-apps"></iron-icon>
+    <h1 slot="title" id="recommend-title" aria-live="polite">
+      [[i18nDynamic(locale,
+            'personalizedRecommendedAppsScreenTitle')]]
+    </h1>
+    <div slot="subtitle" id="recommend-subtitle">
+      [[i18nDynamic(locale,
+            'personalizedRecommendedAppsScreenDescription')]]
+    </div>
+    <div slot="content" class="layout vertical">
+        <oobe-personalized-apps-list id="categoriesAppsList"
+            class="focus-on-show"
+            selected-apps-count="{{numberOfSelectedApps}}"
+            on-apps-icons-loaded="onFullyLoaded">
+        </oobe-personalized-apps-list>
+    </div>
+    <div slot="bottom-buttons">
+      <oobe-text-button id="skipButton"
+            text-key="personalizedRecommendedAppsScreenSkip" 
+            on-click="onSkip" border>
+      </oobe-text-button>
+      <oobe-next-button id="nextButton" on-click="onNextClicked"
+        disabled="[[!canProceed(numberOfSelectedApps)]]">
+      </oobe-next-button>
+    </div>
+</oobe-adaptive-dialog>

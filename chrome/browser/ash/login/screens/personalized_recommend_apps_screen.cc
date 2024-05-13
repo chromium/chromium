@@ -10,8 +10,8 @@
 namespace ash {
 namespace {
 
-// constexpr const char kUserActionNext[] = "next";
-// constexpr const char kUserActionSkip[] = "skip";
+constexpr const char kUserActionNext[] = "next";
+constexpr const char kUserActionSkip[] = "skip";
 
 }  // namespace
 
@@ -51,6 +51,10 @@ void PersonalizedRecommendAppsScreen::ShowImpl() {
     return;
   }
 
+  // TODO(b/339789465) : get the list of apps and categories
+  // user selected and generate the data for the screen
+  // map[category]: list<Apps>
+
   view_->Show();
 }
 
@@ -58,7 +62,21 @@ void PersonalizedRecommendAppsScreen::HideImpl() {}
 
 void PersonalizedRecommendAppsScreen::OnUserAction(
     const base::Value::List& args) {
-  NOTIMPLEMENTED();
+  const std::string& action_id = args[0].GetString();
+
+  if (action_id == kUserActionSkip) {
+    exit_callback_.Run(Result::kSkip);
+    return;
+  }
+
+  if (action_id == kUserActionNext) {
+    CHECK_EQ(args.size(), 2u);
+    // TODO(b/339789465) : the install logic of the apps.
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
+  BaseScreen::OnUserAction(args);
 }
 
 }  // namespace ash

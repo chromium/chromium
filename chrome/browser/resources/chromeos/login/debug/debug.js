@@ -25,6 +25,133 @@ function createQuickStartQR() {
   return qrData;
 }
 
+function createCategoriesAppsData() {
+  const data = {
+    data: {
+      'categorie_1': [
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Pinterest',
+          subname: 'Music streaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'WhatsApp Messenger',
+          subname: 'Office software',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Clash Royale',
+          subname: 'Messaging',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Zoom',
+          subname: 'Cloud gaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+      ],
+      'categorie_23': [
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Pinterest',
+          subname: 'Music streaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'WhatsApp Messenger',
+          subname: 'Office software',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Clash Royale',
+          subname: 'Messaging',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+        {
+          AppId: 'screenID1',
+          icon:
+              'https://lh3.googleusercontent.com/dVsv8Hc4TOUeLFAahxR8KANg22W9dj2jBsTW1VHv3CV-5NCZjP9D9i2j5IpfVx2NTB8',
+          name: 'Zoom',
+          subname: 'Cloud gaming',
+          package_name: 'Pinterest',
+          selected: false,
+        },
+      ],
+    },
+  };
+  return data;
+}
+
+function createCategoriesData() {
+  const data = {
+    categories: [
+      {
+        categoryId: 'oobe_business',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/business.svg',
+        title: 'Small Business',
+        subtitle: 'Small business essentials',
+        selected: false,
+      },
+      {
+        categoryId: 'oobe_entertainment',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/entertainment.svg',
+        title: 'Entertainment',
+        subtitle: 'Media, music, video streaming',
+        selected: false,
+      },
+      {
+        categoryId: 'oobe_communication',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/communication.svg',
+        title: 'Communication',
+        subtitle: 'Messaging, video chat, social media',
+        selected: false,
+      },
+      {
+        categoryId: 'oobe_creativity',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/productivity.svg',
+        title: 'Creativity',
+        subtitle: 'Drawing, design and media editing',
+        selected: false,
+      },
+      {
+        categoryId: 'oobe_productivity',
+        icon: 'https://meltingpot.googleusercontent.com/oobe/creativity.svg',
+        title: 'Productivity',
+        subtitle: 'Home office, productivity work',
+        selected: false,
+      },
+    ],
+  };
+  return data;
+}
+
 const createAssistantData = (isMinor) => {
   const data = {};
   data['valuePropTitle'] =
@@ -1800,6 +1927,34 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'drive-pinning',
       kind: ScreenKind.NORMAL,
+    },
+    {
+      id: 'categories-selection',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
+      states: [
+        {
+          id: 'overview',
+          trigger: (screen) => {
+            screen.setUIStep('overview');
+            screen.setCategoriesData(createCategoriesData());
+          },
+        },
+      ],
+    },
+    {
+      id: 'personalized-apps',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'overview',
+      states: [
+        {
+          id: 'overview',
+          trigger: (screen) => {
+            screen.setUIStep('overview');
+            screen.setCategoriesAppsMapData(createCategoriesAppsData());
+          },
+        },
+      ],
     },
     {
       id: 'marketing-opt-in',
