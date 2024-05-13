@@ -346,12 +346,10 @@ ContentSetting CookieSettings::GetContentSetting(
 
 bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
     const std::string& scheme) const {
-  const content_settings::ContentSettingsInfo* content_settings_info =
-      content_settings::ContentSettingsRegistry::GetInstance()->Get(
-          ContentSettingsType::COOKIES);
-  const std::vector<std::string> allowed_schemes =
-      content_settings_info->third_party_cookie_allowed_secondary_schemes();
-  return base::Contains(allowed_schemes, scheme);
+  return base::Contains(ContentSettingsRegistry::GetInstance()
+                            ->Get(ContentSettingsType::COOKIES)
+                            ->third_party_cookie_allowed_secondary_schemes(),
+                        scheme);
 }
 
 CookieSettings::~CookieSettings() = default;
