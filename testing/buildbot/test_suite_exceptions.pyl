@@ -3044,6 +3044,12 @@
       'linux-wpt-chromium-rel': {
         'experiment_percentage': 100,
       },
+      'win10-wpt-chromium-rel': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
     },
   },
   'info_collection_tests': {

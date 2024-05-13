@@ -52286,6 +52286,10 @@
   "win10-wpt-chromium-rel": {
     "isolated_scripts": [
       {
+        "args": [
+          "--target",
+          "Release_x64"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [
