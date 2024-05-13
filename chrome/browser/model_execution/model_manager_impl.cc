@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,20 +58,6 @@ void ModelManagerImpl::Create(
 
 void ModelManagerImpl::CanCreateGenericSession(
     CanCreateGenericSessionCallback callback) {
-  // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
-  // TODO(https://crbug.com/330819915): add the checks after optimization guide
-  // component provide more method to determine if a session could be started.
-  content::BrowserContext* browser_context = browser_context_.get();
-  CHECK(browser_context);
-  if (!OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context))) {
-    render_frame_host().AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        "Unable to create generic session because the service is not running.");
-    std::move(callback).Run(/*can_create=*/false);
-    return;
-  }
-
   // If the model path is empty or invalid, return false.
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
@@ -149,6 +136,81 @@ void ModelManagerImpl::GetDefaultGenericSessionSamplingParams(
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
+std::string ConvertOnDeviceModelEligibilityReasonToString(
+    optimization_guide::OnDeviceModelEligibilityReason debug_reason) {
+  switch (debug_reason) {
+    case optimization_guide::OnDeviceModelEligibilityReason::kUnknown:
+      return "The service is unable to create new session.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kFeatureNotEnabled:
+      return "The feature flag gating model execution was disabled.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kModelNotAvailable:
+      return "There was no model available.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kConfigNotAvailableForFeature:
+      return "The model was available but there was not an execution config "
+             "available for the feature.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kGpuBlocked:
+      return "The GPU is blocked.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kTooManyRecentCrashes:
+      return "The model process crashed too many times for this version.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kTooManyRecentTimeouts:
+      return "The model took too long too many times for this version.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kSafetyModelNotAvailable:
+      return "The safety model was required but not available.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kSafetyConfigNotAvailableForFeature:
+      return "The safety model was available but there was not a safety config "
+             "available for the feature.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kLanguageDetectionModelNotAvailable:
+      return "The language detection model was required but not available.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kFeatureExecutionNotEnabled:
+      return "Model execution for this feature was not enabled.";
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kModelAdaptationNotAvailable:
+      return "Model adaptation was required but not available.";
+    case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
+      NOTREACHED();
+  }
+  return "";
+}
+
+void ModelManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
+    CanCreateGenericSessionCallback callback) {
+  content::BrowserContext* browser_context = browser_context_.get();
+  CHECK(browser_context);
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+
+  // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
+  if (!service) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Unable to create generic session because the service is not running.");
+    std::move(callback).Run(/*can_create=*/false);
+    return;
+  }
+
+  // If the `OptimizationGuideKeyedService` cannot create new session, return
+  // false.
+  optimization_guide::OnDeviceModelEligibilityReason debug_reason;
+  if (!service->CanCreateOnDeviceSession(
+          optimization_guide::ModelBasedCapabilityKey::kTest, &debug_reason)) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        ConvertOnDeviceModelEligibilityReasonToString(debug_reason));
+    std::move(callback).Run(/*can_create=*/false);
+    return;
+  }
+
+  std::move(callback).Run(/*can_create=*/true);
+}
+
 void ModelManagerImpl::OnModelPathValidationComplete(
     CanCreateGenericSessionCallback callback,
     const std::string& model_path,
@@ -159,6 +221,9 @@ void ModelManagerImpl::OnModelPathValidationComplete(
         base::StringPrintf("Unable to create generic session because "
                            "the model path ('%s') is invalid.",
                            model_path.c_str()));
+    std::move(callback).Run(false);
+    return;
   }
-  std::move(callback).Run(is_valid_path);
+
+  CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
 }

@@ -51,6 +51,9 @@ class ModelManagerImpl : public content::DocumentUserData<ModelManagerImpl>,
                                      const std::string& model_path,
                                      bool is_valid_path);
 
+  void CanOptimizationGuideKeyedServiceCreateGenericSession(
+      CanCreateGenericSessionCallback callback);
+
   base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::ModelManager> receiver_{this};
 
