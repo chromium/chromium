@@ -95,7 +95,7 @@ bool Check() {
   if (IsBoard("volteer")) {
     return HasSufficientHardware(kIntelCpuRegex);
   }
-  if (BoardIn({"brya", "adlrvp", "brask"})) {
+  if (BoardIn({"brya", "adlrvp", "brask", "brox"})) {
     return HasSufficientHardware(kIntelCpuRegex);
   }
   if (BoardIn({"guybrush", "majolica"})) {
