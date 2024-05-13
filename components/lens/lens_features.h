@@ -276,6 +276,10 @@ extern bool IsLensOverlaySearchBubbleEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayShimmerEnabled();
 
+// Returns whether to render the sparkling effect on the Lens overlay shimmer.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayShimmerSparklesEnabled();
+
 // Returns whether to allow dragging the Lens overlay selection box.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySelectionDraggingEnabled();

@@ -55,6 +55,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableShimmer",
                           lens::features::IsLensOverlayShimmerEnabled());
   html_source->AddBoolean(
+      "enableShimmerSparkles",
+      lens::features::IsLensOverlayShimmerSparklesEnabled());
+  html_source->AddBoolean(
       "enableSelectionDragging",
       lens::features::IsLensOverlaySelectionDraggingEnabled());
   html_source->AddInteger("verticalTextMarginPx",

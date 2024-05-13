@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import './shimmer_circle.js';
+import './strings.m.js';
 
 import {assert, assertInstanceof, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -204,6 +206,10 @@ export class OverlayShimmerElement extends PolymerElement {
       isSteadyState: Boolean,
       isWiggling: Boolean,
       sparkleSeed: Number,
+      enableSparkles: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -215,6 +221,9 @@ export class OverlayShimmerElement extends PolymerElement {
   private isWiggling: boolean = true;
   // The current seed of the sparkling noise.
   private sparkleSeed: number = 0;
+  // Whether the sparkles are enabled or not.
+  private enableSparkles: boolean =
+      loadTimeData.getBoolean('enableShimmerSparkles');
 
   // Event tracker for receiving DOM events.
   private eventTracker_: EventTracker = new EventTracker();
@@ -321,7 +330,9 @@ export class OverlayShimmerElement extends PolymerElement {
   }
 
   private startSparkles() {
-    this.updateSparkles(0);
+    if (this.enableSparkles) {
+      this.updateSparkles(0);
+    }
   }
 
   private updateSparkles(time: number) {
