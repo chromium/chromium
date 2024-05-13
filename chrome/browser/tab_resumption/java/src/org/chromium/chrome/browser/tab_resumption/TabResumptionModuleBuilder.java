@@ -150,8 +150,12 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         if (mSuggestionEntrySourceRefCount == 0) {
             assert mSuggestionEntrySource == null;
             Profile profile = getRegularProfile();
+            boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
             SuggestionBackend suggestionBackend =
-                    new ForeignSessionSuggestionBackend(new ForeignSessionHelper(profile));
+                    isV2Enabled
+                            ? new VisitedUrlRankingBackend(profile)
+                            : new ForeignSessionSuggestionBackend(
+                                    new ForeignSessionHelper(profile));
             mSuggestionEntrySource =
                     SyncDerivedSuggestionEntrySource.createFromProfile(profile, suggestionBackend);
         }
@@ -169,12 +173,6 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     private TabResumptionDataProvider makeDataProvider(
             Profile profile, @NonNull ModuleDelegate moduleDelegate) {
-        boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
-        if (isV2Enabled) {
-            TabResumptionBridge bridge = new TabResumptionBridge(profile);
-            return new SmartTabResumptionDataProvider(bridge);
-        }
-
         LocalTabTabResumptionDataProvider localTabProvider =
                 TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
                         ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())

@@ -3478,8 +3478,8 @@ static_library("browser") {
       "sync/glue/web_contents_state_synced_tab_delegate.h",
       "tab/web_contents_state.cc",
       "tab/web_contents_state.h",
-      "tab_resumption/tab_resumption_bridge.cc",
-      "tab_resumption/tab_resumption_bridge.h",
+      "tab_resumption/visited_url_ranking_backend.cc",
+      "tab_resumption/visited_url_ranking_backend.h",
       "trusted_vault/trusted_vault_client_android.cc",
       "trusted_vault/trusted_vault_client_android.h",
 
