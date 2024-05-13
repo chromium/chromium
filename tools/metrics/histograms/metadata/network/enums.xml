@@ -2322,6 +2322,25 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Configured by policy"/>
 </enum>
 
+<enum name="VPNConnectFailureReason">
+  <int value="0" label="Disconnect request"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Internal"/>
+  <int value="3" label="Underlying network change"/>
+  <int value="4" label="Authentication failure"/>
+  <int value="5" label="DNS lookup failure"/>
+  <int value="6" label="Connect timeout"/>
+  <int value="7" label="Invalid configuration"/>
+</enum>
+
+<enum name="VPNConnectionLostReason">
+  <int value="0" label="Disconnect request"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Internal"/>
+  <int value="3" label="Underlying network change"/>
+  <int value="4" label="Reconnect"/>
+</enum>
+
 <enum name="VPNDriver">
   <int value="0" label="OpenVPN"/>
   <int value="1" label="L2TP/IPSec"/>
