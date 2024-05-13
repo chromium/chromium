@@ -550,7 +550,28 @@ void Frame::InsertAfter(Frame* new_child, Frame* previous_sibling) {
   }
 
   Tree().InvalidateScopedChildCount();
-  GetPage()->IncrementSubframeCount();
+
+  // When a frame is inserted, we almost always want to increment the
+  // subframe count that is local to the current `blink::Page`. The exception is
+  // if in the frame's embedder process, it is a state-preserving atomic move
+  // that triggers the insert. In that case, skip the increment, because the
+  // insertion under these circumstances is really a "move" operation. During
+  // a move, we never decremented the subframe count since frame did not
+  // detach, so we shouldn't re-increment it here.
+  HTMLFrameOwnerElement* local_owner = new_child->DeprecatedLocalOwner();
+  const bool increment_subframe_count =
+      // When `local_owner` is null, then this code is running in an OOPIF's
+      // inner process, where its embedder is remote. The concept of a
+      // state-preserving atomic move does not apply there, so increment the
+      // subframe count as usual.
+      !local_owner ||
+      // If `local_owner` is non-null but is not experiencing a state-preserving
+      // atomic move, then increment the subframe count as usual.
+      !local_owner->GetDocument().StatePreservingAtomicMoveInProgress();
+
+  if (increment_subframe_count) {
+    GetPage()->IncrementSubframeCount();
+  }
 }
 
 base::OnceClosure Frame::ScheduleFormSubmission(

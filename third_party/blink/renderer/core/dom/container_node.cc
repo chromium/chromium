@@ -644,7 +644,21 @@ void ContainerNode::WillRemoveChild(Node& child) {
   ChildListMutationScope(*this).WillRemoveChild(child);
   child.NotifyMutationObserversNodeWillDetach();
   DispatchChildRemovalEvents(child);
-  ChildFrameDisconnector(child).Disconnect();
+
+  // Only disconnect subframes in the non-state-preserving-atomic-move case,
+  // i.e., the traditional case where we intend to *fully* remove a node from
+  // the tree, instead of atomically re-inserting it.
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // TODO(crbug.com/40150299): Mutation events should be suppressed during a
+    // state-preserving atomic move. Once this is implemented, enable the
+    // following CHECK which asserts that during this kind of move, the child
+    // node could not have moved documents during `DispatchChildRemovalEvents()`
+    // above.
+    //
+    // CHECK_EQ(GetDocument(), child.GetDocument());
+    ChildFrameDisconnector(child).Disconnect();
+  }
+
   if (GetDocument() != child.GetDocument()) {
     // |child| was moved to another document by the DOM mutation event handler.
     return;
@@ -677,6 +691,7 @@ void ContainerNode::WillRemoveChildren() {
     DispatchChildRemovalEvents(child);
   }
 
+  CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
   ChildFrameDisconnector(*this).Disconnect(
       ChildFrameDisconnector::kDescendantsOnly);
 }
@@ -833,6 +848,7 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
   DCHECK(!old_child.IsDocumentFragment());
 
   // This may cause arbitrary Javascript execution via onunload handlers.
+  CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
   if (old_child.ConnectedSubframeCount())
     ChildFrameDisconnector(old_child).Disconnect();
 
@@ -1094,6 +1110,8 @@ DISABLE_CFI_PERF
 void ContainerNode::NotifyNodeInsertedInternal(
     Node& root,
     NodeVector& post_insertion_notification_targets) {
+  const bool is_state_preserving_atomic_insert =
+      GetDocument().StatePreservingAtomicMoveInProgress();
   EventDispatchForbiddenScope assert_no_event_dispatch;
   ScriptForbiddenScope forbid_script;
 
@@ -1105,12 +1123,21 @@ void ContainerNode::NotifyNodeInsertedInternal(
         !node.GetDOMParts()) {
       continue;
     }
+
+    // Only tag the target as one that we need to call post-insertion steps on
+    // if it is being *fully* inserted, and not re-inserted as part of a
+    // state-preserving atomic move. That's because the post-insertion steps can
+    // run script and modify the frame tree, neither of which are allowed in a
+    // state-preserving atomic move.
     if (Node::kInsertionShouldCallDidNotifySubtreeInsertions ==
-        node.InsertedInto(*this))
+            node.InsertedInto(*this) &&
+        !is_state_preserving_atomic_insert) {
       post_insertion_notification_targets.push_back(&node);
-    if (ShadowRoot* shadow_root = node.GetShadowRoot())
+    }
+    if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
       NotifyNodeInsertedInternal(*shadow_root,
                                  post_insertion_notification_targets);
+    }
   }
 }
 

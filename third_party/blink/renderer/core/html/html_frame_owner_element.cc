@@ -285,12 +285,70 @@ LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   return DynamicTo<LayoutEmbeddedContent>(GetLayoutObject());
 }
 
+Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  InsertionNotificationRequest result =
+      HTMLElement::InsertedInto(insertion_point);
+  // If a state-preserving atomic move is in progress, then we have to manually
+  // perform some bookkeeping that ordinarily would only be done deeper in the
+  // frame setup logic that gets triggered in the *NON* state-preserving atomic
+  // move flow.
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // State-preserving atomic moves can only be in-progress when all elements
+    // are connected, and when `HTMLFrameOwnerElement` is connected, it must
+    // have a non-null `ContentFrame()`.
+    CHECK(ContentFrame());
+    // During a state-preserving atomic move, we must specifically inform all of
+    // `this`'s ancestor nodes of the new connected frame they are adopting.
+    //
+    // For the non-state-preserving atomic move case (i.e., when we're setting
+    // up a full frame due to real insertion), this is done in
+    // `HTMLFrameOwnerElement::SetContentFrame()` below.
+    for (ContainerNode* node = this; node;
+         node = node->ParentOrShadowHostNode()) {
+      node->IncrementConnectedSubframeCount();
+    }
+  }
+
+  return result;
+}
+
+void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
+  // See documentation in `InsertedInto()` above. In the state-preserving atomic
+  // move case, we don't invoke `ClearContentFrame()`, which would normally do
+  // at least two things:
+  //   1. Teardown the underlying `ContentFrame()`.
+  //   2. Notify all of the ancestor nodes that they lost a connected subframe.
+  //
+  // Not doing (1) is a good thing, since we're trying to preserve the frame,
+  // but we still have to do (2) manually to maintain bookkeeping consistency
+  // among the ancestor nodes.
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // `this` is no longer connected, so we have to decrement our subframe count
+    // separately from our old ancestors's subframe count (i.e.,
+    // `insertion_point`).
+    DecrementConnectedSubframeCount();
+    for (ContainerNode* node = &insertion_point; node;
+         node = node->ParentOrShadowHostNode()) {
+      node->DecrementConnectedSubframeCount();
+    }
+  }
+
+  HTMLElement::RemovedFrom(insertion_point);
+}
+
 void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
   // Make sure we will not end up with two frames referencing the same owner
   // element.
   DCHECK(!content_frame_ || content_frame_->Owner() != this);
   // Disconnected frames should not be allowed to load.
   DCHECK(isConnected());
+
+  // During a state-preserving atomic move, we never set up a new underlying
+  // `content_frame_`, since it is preserved. Therefore when `SetContentFrame()`
+  // is called, we can be sure that we're not in the middle of a
+  // state-preserving atomic move.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
 
   // There should be no lazy load in progress since before SetContentFrame,
   // |this| frame element should have been disconnected.
@@ -319,6 +377,9 @@ void HTMLFrameOwnerElement::SetContentFrame(Frame& frame) {
 }
 
 void HTMLFrameOwnerElement::ClearContentFrame() {
+  // See similar documentation in `SetContentFrame()` above.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+
   if (!content_frame_)
     return;
 

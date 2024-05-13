@@ -101,6 +101,11 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     friend class HTMLFrameOwnerElement;
   };
 
+  // Node overrides:
+  Node::InsertionNotificationRequest InsertedInto(
+      ContainerNode& insertion_point) override;
+  void RemovedFrom(ContainerNode& insertion_point) override;
+
   // FrameOwner overrides:
   Frame* ContentFrame() const final { return content_frame_.Get(); }
   void SetContentFrame(Frame&) final;
