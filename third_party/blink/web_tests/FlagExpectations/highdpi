@@ -443,5 +443,3 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 
 # Fails with a single-pixel offset when run with single-threaded compositing.
 crbug.com/1491883 [ Linux ] fast/forms/date/date-with-csp.html [ Failure ]  # Reftest image failure
-
-crbug.com/337904202 [ Linux ] external/wpt/html/rendering/replaced-elements/the-select-element/select-1-block-size.html [ Failure ]

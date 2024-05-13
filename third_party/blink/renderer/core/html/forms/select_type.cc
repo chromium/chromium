@@ -66,6 +66,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/core/svg/svg_path_element.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
 
@@ -437,6 +439,18 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     default_button_icon->SetShadowPseudoId(
         shadow_element_names::kSelectFallbackButtonIcon);
     default_button_->AppendChild(default_button_icon);
+
+    auto* default_button_icon_svg = MakeGarbageCollected<SVGSVGElement>(doc);
+    default_button_icon_svg->setAttribute(svg_names::kViewBoxAttr,
+                                          AtomicString("0 0 20 16"));
+    default_button_icon_svg->setAttribute(svg_names::kFillAttr,
+                                          AtomicString("none"));
+    default_button_icon->AppendChild(default_button_icon_svg);
+
+    auto* svg_path = MakeGarbageCollected<SVGPathElement>(doc);
+    svg_path->setAttribute(svg_names::kDAttr,
+                           AtomicString("M4 6 L10 12 L 16 6"));
+    default_button_icon_svg->AppendChild(svg_path);
 
     datalist_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     datalist_slot_->SetIdAttribute(shadow_element_names::kSelectDatalist);

@@ -5283,6 +5283,8 @@ crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/f
 crbug.com/1511354 [ Linux ] virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-writing-mode-vertical-lr.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-writing-mode-vertical-rl.tentative.html [ Failure ]
+crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-icon-color.tentative.html [ Failure ]
+crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-appearance-dark-mode.tentative.html [ Failure ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
