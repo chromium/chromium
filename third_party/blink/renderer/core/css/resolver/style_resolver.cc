@@ -1737,9 +1737,9 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
   return CompositorKeyframeValueFactory::Create(property, *style, offset);
 }
 
-const ComputedStyle* StyleResolver::StyleForPage(
-    uint32_t page_index,
-    const AtomicString& page_name) {
+const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
+                                                 const AtomicString& page_name,
+                                                 bool ignore_author_style) {
   // The page context inherits from the root element.
   Element* root_element = GetDocument().documentElement();
   if (!root_element) {
@@ -1802,9 +1802,11 @@ const ComputedStyle* StyleResolver::StyleForPage(
         set, CascadeOrigin::kUserAgent);
   }
 
-  if (ScopedStyleResolver* scoped_resolver =
-          GetDocument().GetScopedStyleResolver()) {
-    scoped_resolver->MatchPageRules(collector);
+  if (!ignore_author_style) {
+    if (ScopedStyleResolver* scoped_resolver =
+            GetDocument().GetScopedStyleResolver()) {
+      scoped_resolver->MatchPageRules(collector);
+    }
   }
 
   cascade.Apply();

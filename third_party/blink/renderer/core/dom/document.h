@@ -150,7 +150,6 @@ class CheckPseudoHasCacheScope;
 class ChromeClient;
 class Comment;
 class ComputedAccessibleNode;
-class ComputedStyle;
 class ConsoleMessage;
 class CookieJar;
 class DOMFeaturePolicy;
@@ -768,13 +767,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void UpdateStyleAndLayoutForNode(const Node*, DocumentUpdateReason);
   void UpdateStyleAndLayoutForRange(const Range*, DocumentUpdateReason);
 
-  // Get the computed style for a given page and name. Note that when using the
-  // function that doesn't provide a page name, layout needs to be complete,
-  // since page names are determined during layout.
-  const ComputedStyle* StyleForPage(uint32_t page_index);
-  const ComputedStyle* StyleForPage(uint32_t page_index,
-                                    const AtomicString& page_name);
-
   // Ensures that location-based data will be valid for a given node.
   //
   // This will run style and layout if they are currently dirty, and it may also
@@ -787,12 +779,9 @@ class CORE_EXPORT Document : public ContainerNode,
                                            DocumentUpdateReason reason);
 
   // Gets the description for the specified page. This includes preferred page
-  // size and margins in pixels, assuming 96 pixels per inch. The size and
-  // margins must be initialized to the default values that are used if auto is
-  // specified. Updates layout as needed to get the description.
+  // size and margins in pixels, assuming 96 pixels per inch. Updates layout as
+  // needed to get the description.
   WebPrintPageDescription GetPageDescription(uint32_t page_index);
-  WebPrintPageDescription GetPageDescriptionNoLifecycleUpdate(
-      const ComputedStyle&);
 
   ResourceFetcher* Fetcher() const { return fetcher_.Get(); }
 

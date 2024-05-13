@@ -86,6 +86,19 @@ enum class AutoSizeBehavior : uint8_t {
 // store a result in.
 enum class LayoutResultCacheSlot { kLayout, kMeasure };
 
+// How to resolve percentage-based margin and padding.
+enum class DecorationPercentageResolutionType {
+  // Resolve margins and padding on any side against the inline-size of the
+  // containing block. This is the default, and the behavior for regular CSS
+  // boxes.
+  kContainingBlockInlineSize,
+
+  // Resolve block margins and padding against the block-size of the containing
+  // block, and inline ones against the inline-size of the containing block.
+  // This is only used by @page boxes.
+  kContainingBlockSize
+};
+
 // The ConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a LogicalFragment within.
 class CORE_EXPORT ConstraintSpace final {
@@ -261,12 +274,17 @@ class CORE_EXPORT ConstraintSpace final {
 
   // Return the size to use for percentage resolution for margin/padding.
   LogicalSize MarginPaddingPercentageResolutionSize() const {
+    if (GetDecorationPercentageResolutionType() ==
+        DecorationPercentageResolutionType::kContainingBlockSize) {
+      // @page margin and padding are different from those on regular CSS boxes.
+      // Inline percentages are resolved against the inline-size of the margin
+      // box, and block percentages are resolved against its block-size.
+      DCHECK(!IsOrthogonalWritingModeRoot());
+      return PercentageResolutionSize();
+    }
+
     // For regular CSS boxes, percentage-based margin and padding get computed
     // relatively to the inline-size of the containing block.
-    //
-    // TODO(mstensho): @page margin and padding resolution is different from the
-    // rest. Inline percentages are resolved against the inline-size of the
-    // margin box, and block percentages are resolved against its block-size.
     LayoutUnit cb_inline_size;
     if (!IsOrthogonalWritingModeRoot()) {
       cb_inline_size = PercentageResolutionInlineSize();
@@ -785,6 +803,16 @@ class CORE_EXPORT ConstraintSpace final {
     return HasRareData() && rare_data_->should_text_box_trim_end;
   }
 
+  // Return how percentage-based margins and padding should be resolved.
+  DecorationPercentageResolutionType GetDecorationPercentageResolutionType()
+      const {
+    if (!HasRareData()) {
+      return DecorationPercentageResolutionType::kContainingBlockInlineSize;
+    }
+    return static_cast<DecorationPercentageResolutionType>(
+        rare_data_->decoration_percentage_resolution_type);
+  }
+
   const GridLayoutSubtree* GetGridLayoutSubtree() const {
     return HasRareData() ? rare_data_->GetGridLayoutSubtree() : nullptr;
   }
@@ -947,7 +975,9 @@ class CORE_EXPORT ConstraintSpace final {
           should_repeat(other.should_repeat),
           is_inside_repeatable_content(other.is_inside_repeatable_content),
           should_text_box_trim_start(other.should_text_box_trim_start),
-          should_text_box_trim_end(other.should_text_box_trim_end) {
+          should_text_box_trim_end(other.should_text_box_trim_end),
+          decoration_percentage_resolution_type(
+              other.decoration_percentage_resolution_type) {
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
           break;
@@ -1030,7 +1060,9 @@ class CORE_EXPORT ConstraintSpace final {
           should_repeat != other.should_repeat ||
           is_inside_repeatable_content != other.is_inside_repeatable_content ||
           should_text_box_trim_start != other.should_text_box_trim_start ||
-          should_text_box_trim_end != other.should_text_box_trim_end) {
+          should_text_box_trim_end != other.should_text_box_trim_end ||
+          decoration_percentage_resolution_type !=
+              other.decoration_percentage_resolution_type) {
         return false;
       }
 
@@ -1069,7 +1101,8 @@ class CORE_EXPORT ConstraintSpace final {
           min_break_appeal != kBreakAppealLastResort ||
           propagate_child_break_values || is_at_fragmentainer_start ||
           should_repeat || is_inside_repeatable_content ||
-          should_text_box_trim_start || should_text_box_trim_end) {
+          should_text_box_trim_start || should_text_box_trim_end ||
+          decoration_percentage_resolution_type) {
         return false;
       }
 
@@ -1344,6 +1377,8 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_inside_repeatable_content : 1 = false;
     unsigned should_text_box_trim_start : 1 = false;
     unsigned should_text_box_trim_end : 1 = false;
+    unsigned decoration_percentage_resolution_type : 1 = static_cast<unsigned>(
+        DecorationPercentageResolutionType::kContainingBlockInlineSize);
 
    private:
     struct BlockData {

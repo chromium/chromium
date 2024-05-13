@@ -3204,8 +3204,8 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     return;
   }
 
-  auto LayoutForPrinting = [&layout_view]() {
-    Document& document = layout_view->GetDocument();
+  Document& document = *frame_->GetDocument();
+  auto LayoutForPrinting = [&layout_view, &document]() {
     document.GetStyleEngine().UpdateViewportSize();
     document.MarkViewportUnitsDirty();
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
@@ -3216,7 +3216,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   // Need to update computed style before we can set the initial containing
   // block size. A zoom factor may have been set, and it shouldn't be applied
   // when printing, e.g. when resolving @page margins.
-  frame_->GetDocument()->UpdateStyleAndLayoutTree();
+  document.UpdateStyleAndLayoutTree();
 
   // Set up the initial containing block size for pagination. This is defined as
   // the page area size of the *first* page. [1] The size of the first page may
@@ -3229,29 +3229,23 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   // [1] https://www.w3.org/TR/css-page-3/#page-model
   // [2] https://www.w3.org/TR/css-page-3/#using-named-pages
   PhysicalSize initial_containing_block_size =
-      layout_view->PageAreaSize(/* page_index */ 0u,
-                                /* page_name */ AtomicString());
+      CalculateInitialContainingBlockSizeForPagination(document);
   layout_view->SetInitialContainingBlockSizeForPagination(
       initial_containing_block_size);
 
   LayoutForPrinting();
 
-  const auto& first_page = To<PhysicalBoxFragment>(
-      *layout_view->GetPhysicalFragment(0)->Children()[0]);
-  const AtomicString& first_page_name = first_page.PageName();
-  if (first_page_name) {
-    PhysicalSize new_size =
-        layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
-    if (new_size != initial_containing_block_size) {
-      // If the first page was named (this isn't something we can detect without
-      // laying out first), and the size of the first page is different from
-      // what we got above, the initial containing block used was wrong (which
-      // affects e.g. elements with viewport units). Set a new size and lay out
-      // again.
-      layout_view->SetInitialContainingBlockSizeForPagination(new_size);
+  PhysicalSize new_initial_containing_block_size =
+      CalculateInitialContainingBlockSizeForPagination(document);
+  if (new_initial_containing_block_size != initial_containing_block_size) {
+    // If the first page was named (this isn't something we can detect without
+    // laying out first), and the size of the first page is different from what
+    // we got above, the initial containing block used was wrong (which affects
+    // e.g. elements with viewport units). Set a new size and lay out again.
+    layout_view->SetInitialContainingBlockSizeForPagination(
+        new_initial_containing_block_size);
 
-      LayoutForPrinting();
-    }
+    LayoutForPrinting();
   }
 
   // If we don't fit in the given page width, we'll lay out again. If we don't
@@ -3269,13 +3263,14 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     layout_view->SetPaginationScaleFactor(layout_view->PaginationScaleFactor() *
                                           overall_scale_factor);
     PhysicalSize new_size =
-        layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
+        CalculateInitialContainingBlockSizeForPagination(document);
     layout_view->SetInitialContainingBlockSizeForPagination(new_size);
     LayoutForPrinting();
   }
 
-  if (TextAutosizer* text_autosizer = frame_->GetDocument()->GetTextAutosizer())
+  if (TextAutosizer* text_autosizer = document.GetTextAutosizer()) {
     text_autosizer->UpdatePageInfo();
+  }
   AdjustViewSize();
   UpdateStyleAndLayout();
 }

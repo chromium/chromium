@@ -271,6 +271,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
@@ -2893,19 +2894,6 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
     focused_element_->blur();
 }
 
-const ComputedStyle* Document::StyleForPage(uint32_t page_index) {
-  AtomicString page_name;
-  if (const LayoutView* layout_view = GetLayoutView())
-    page_name = layout_view->NamedPageAtIndex(page_index);
-  return StyleForPage(page_index, page_name);
-}
-
-const ComputedStyle* Document::StyleForPage(uint32_t page_index,
-                                            const AtomicString& page_name) {
-  return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
-                                                          page_name);
-}
-
 void Document::EnsurePaintLocationDataValidForNode(
     const Node* node,
     DocumentUpdateReason reason) {
@@ -2914,82 +2902,7 @@ void Document::EnsurePaintLocationDataValidForNode(
 
 WebPrintPageDescription Document::GetPageDescription(uint32_t page_index) {
   View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kUnknown);
-  return GetPageDescriptionNoLifecycleUpdate(*StyleForPage(page_index));
-}
-
-WebPrintPageDescription Document::GetPageDescriptionNoLifecycleUpdate(
-    const ComputedStyle& style) {
-  DocumentLifecycle::DisallowTransitionScope scope(Lifecycle());
-  const WebPrintParams& print_params = GetFrame()->GetPrintParams();
-  WebPrintPageDescription description = print_params.default_page_description;
-
-  // TODO(mstensho): We may want to adjust page_size_type accordingly if we
-  // decide to disregard the specified @page size below.
-  description.page_size_type = style.GetPageSizeType();
-
-  switch (style.GetPageSizeType()) {
-    case PageSizeType::kAuto:
-      break;
-    case PageSizeType::kLandscape:
-      if (description.size.width() < description.size.height()) {
-        description.size.Transpose();
-      }
-      break;
-    case PageSizeType::kPortrait:
-      if (description.size.width() > description.size.height()) {
-        description.size.Transpose();
-      }
-      break;
-    case PageSizeType::kFixed: {
-      gfx::SizeF css_size = style.PageSize();
-      if (!print_params.ignore_page_size) {
-        description.size = css_size;
-        break;
-      }
-      if ((css_size.width() > css_size.height()) !=
-          (description.size.width() > description.size.height())) {
-        // Keep the page size, but match orientation.
-        description.size.Transpose();
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-
-  if (!style.MarginTop().IsAuto()) {
-    description.margin_top =
-        FloatValueForLength(style.MarginTop(), description.size.height());
-  }
-  if (!style.MarginRight().IsAuto()) {
-    description.margin_right =
-        FloatValueForLength(style.MarginRight(), description.size.width());
-  }
-  if (!style.MarginBottom().IsAuto()) {
-    description.margin_bottom =
-        FloatValueForLength(style.MarginBottom(), description.size.height());
-  }
-  if (!style.MarginLeft().IsAuto()) {
-    description.margin_left =
-        FloatValueForLength(style.MarginLeft(), description.size.width());
-  }
-
-  float page_area_width = description.size.width() -
-                          (description.margin_left + description.margin_right);
-  float page_area_height = description.size.height() -
-                           (description.margin_top + description.margin_bottom);
-
-  if (page_area_width < 1 || page_area_height < 1) {
-    // The resulting page area size would become zero (or very close to
-    // it). Ignore CSS, and use the default values provided as input. There are
-    // tests that currently expect this behavior. But see
-    // https://github.com/w3c/csswg-drafts/issues/8335
-    description = print_params.default_page_description;
-  }
-
-  description.orientation = style.GetPageOrientation();
-
-  return description;
+  return GetPageDescriptionFromLayout(*this, page_index);
 }
 
 void Document::SetIsXrOverlay(bool val, Element* overlay_element) {

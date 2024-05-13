@@ -210,11 +210,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     return pagination_scale_factor_;
   }
 
-  // Get the page area size (fragmentainer size) for a given page number and
-  // name.
-  PhysicalSize PageAreaSize(wtf_size_t page_index,
-                            const AtomicString& page_name) const;
-
   AtomicString NamedPageAtIndex(wtf_size_t page_index) const;
 
   PhysicalRect DocumentRect() const;

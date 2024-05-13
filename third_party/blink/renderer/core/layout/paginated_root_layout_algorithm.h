@@ -15,7 +15,6 @@ namespace blink {
 class BlockBreakToken;
 class BlockNode;
 class ConstraintSpace;
-struct LogicalSize;
 struct PageAreaLayoutParams;
 
 // This is the root layout algorithm when the document is paginated (for
@@ -114,10 +113,6 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       wtf_size_t page_index,
       const AtomicString& page_name,
       const PageAreaLayoutParams&);
-
-  static ConstraintSpace CreateConstraintSpaceForPages(const BlockNode&,
-                                                       const ConstraintSpace&,
-                                                       const LogicalSize& size);
 };
 
 }  // namespace blink

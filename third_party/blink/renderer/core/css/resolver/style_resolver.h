@@ -98,8 +98,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
+  // Calculate computed style for a given page index and name.
+  //
+  // If ignore_author_style is false, only the input print job settings will be
+  // honored (to get default size and margins, and nothing else).
   const ComputedStyle* StyleForPage(uint32_t page_index,
-                                    const AtomicString& page_name);
+                                    const AtomicString& page_name,
+                                    bool ignore_author_style = false);
+
   const ComputedStyle* StyleForText(Text*);
   const ComputedStyle* StyleForViewport();
   const ComputedStyle* StyleForFormattedText(

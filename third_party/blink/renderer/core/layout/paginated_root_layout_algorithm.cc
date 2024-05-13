@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/page_border_box_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/page_container_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -104,13 +105,6 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
     const AtomicString& page_name,
     const PageAreaLayoutParams& page_area_params) {
   Document& document = root_node.GetDocument();
-  const LayoutView* view = document.GetLayoutView();
-  WritingMode writing_mode = parent_space.GetWritingMode();
-  LogicalSize page_size =
-      view->PageAreaSize(page_index, page_name).ConvertToLogical(writing_mode);
-
-  DCHECK(page_size.inline_size != kIndefiniteSize);
-  DCHECK(page_size.block_size != kIndefiniteSize);
   const ComputedStyle* page_container_style =
       document.GetStyleResolver().StyleForPage(page_index, page_name);
 
@@ -119,11 +113,81 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
           document, *page_container_style);
   BlockNode page_container_node(page_container);
 
-  ConstraintSpace child_space =
-      CreateConstraintSpaceForPages(root_node, parent_space, page_size);
-  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-      child_space, root_node, /*break_token=*/nullptr);
-  LayoutAlgorithmParams params(page_container_node, fragment_geometry,
+  // Calculate the page border box size based on @page properties, such as
+  // 'size' and 'margin', but also padding, width, height, min-height, and so
+  // on. Auto margins will be resolved. One interesting detail here is how
+  // over-constrainedness is handled. Although, for regular CSS boxes, margins
+  // will be adjusted to resolve it, for page boxes, the containing block size
+  // (the one set by the 'size' descriptor / property) is adjusted instead.
+  //
+  // Example: @page { size:500px; margin:50px; width:100px; }
+  //
+  // The equation (omitting border and padding, since they are 0 in this
+  // example):
+  // 'margin-left' + 'width' + 'margin-right' = width of containing block
+  //
+  // The width of the containing block is 500px (from size). This is what needs
+  // to be adjusted to resolve the overconstraintedness - i.e. it needs to
+  // become 50+100+50=200. So we end up with a page box size of 200x500, and a
+  // page area size of 100x400.
+  //
+  // https://drafts.csswg.org/css-page-3/#page-model
+  FragmentGeometry geometry;
+  LogicalSize page_containing_block_size =
+      DesiredPageContainingBlockSize(document, *page_container_style);
+  ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
+                         &geometry);
+
+  // Check if the resulting page area size is usable.
+  LogicalSize desired_page_area_size =
+      geometry.border_box_size - geometry.border - geometry.padding;
+  if (desired_page_area_size.inline_size < LayoutUnit(1) ||
+      desired_page_area_size.block_size < LayoutUnit(1)) {
+    // The resulting page area size would become zero (or very close to
+    // it). Ignore CSS, and use the default values provided as input. There are
+    // tests that currently expect this behavior. But see
+    // https://github.com/w3c/csswg-drafts/issues/8335
+    page_container_style = document.GetStyleResolver().StyleForPage(
+        page_index, page_name, /*ignore_author_style=*/true);
+    page_container->SetStyle(page_container_style,
+                             LayoutObject::ApplyStyleChanges::kNo);
+    page_containing_block_size =
+        DesiredPageContainingBlockSize(document, *page_container_style);
+    ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
+                           &geometry);
+  }
+
+  // TODO(mstensho): This should include page margins, once Blink gains control
+  // over that area. For now the size here coincides with the size of the page
+  // *area*, since margins aren't part of layout yet.
+  LogicalSize page_container_size =
+      geometry.border_box_size *
+      document.GetLayoutView()->PaginationScaleFactor();
+  // Round up to the nearest integer. Although layout itself could have handled
+  // subpixels just fine, the paint code cannot without bleeding across page
+  // boundaries. The printing code (outside Blink) also rounds up. It's
+  // important that all pieces of the machinery agree on which way to round, or
+  // we risk clipping away a pixel or so at the edges. The reason for rounding
+  // up (rather than down, or to the closest integer) is so that any box that
+  // starts exactly at the beginning of a page, and uses a block-size exactly
+  // equal to that of the page area (before rounding) will actually fit on one
+  // page.
+  page_container_size.inline_size =
+      LayoutUnit(page_container_size.inline_size.Ceil());
+  page_container_size.block_size =
+      LayoutUnit(page_container_size.block_size.Ceil());
+
+  ConstraintSpaceBuilder space_builder(
+      parent_space, page_container_style->GetWritingDirection(),
+      /*is_new_fc=*/true);
+  SetUpSpaceBuilderForPageBox(page_container_size, &space_builder);
+  space_builder.SetShouldPropagateChildBreakValues();
+  ConstraintSpace child_space = space_builder.ToConstraintSpace();
+
+  FragmentGeometry margin_box_geometry = {.border_box_size =
+                                              page_container_size};
+
+  LayoutAlgorithmParams params(page_container_node, margin_box_geometry,
                                child_space, /*break_token=*/nullptr);
   PageContainerLayoutAlgorithm child_algorithm(params, root_node,
                                                page_area_params);
@@ -137,21 +201,6 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
   return PageContainerResult(
       To<PhysicalBoxFragment>(result->GetPhysicalFragment()),
       child_algorithm.FragmentainerBreakToken());
-}
-
-ConstraintSpace PaginatedRootLayoutAlgorithm::CreateConstraintSpaceForPages(
-    const BlockNode& node,
-    const ConstraintSpace& space,
-    const LogicalSize& page_size) {
-  ConstraintSpaceBuilder space_builder(
-      space, node.Style().GetWritingDirection(), /*is_new_fc=*/true);
-  space_builder.SetAvailableSize(page_size);
-  space_builder.SetPercentageResolutionSize(page_size);
-  space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-  space_builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchImplicit);
-  space_builder.SetShouldPropagateChildBreakValues();
-
-  return space_builder.ToConstraintSpace();
 }
 
 }  // namespace blink

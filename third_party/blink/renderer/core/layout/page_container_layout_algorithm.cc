@@ -28,8 +28,8 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
 
   // TODO(mstensho): The page container should include margins (which it
   // currently doesn't), whereas they should not be part of the page border box.
-  FragmentGeometry fragment_geometry = {
-      .border_box_size = GetConstraintSpace().AvailableSize()};
+  FragmentGeometry fragment_geometry = {.border_box_size =
+                                            ChildAvailableSize()};
 
   LayoutBlockFlow* page_border_box =
       document.View()->GetPaginationState()->CreateAnonymousPageLayoutObject(

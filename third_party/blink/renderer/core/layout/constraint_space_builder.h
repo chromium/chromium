@@ -498,6 +498,12 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     space_.EnsureRareData()->should_text_box_trim_end = true;
   }
 
+  void SetDecorationPercentageResolutionType(
+      DecorationPercentageResolutionType type) {
+    space_.EnsureRareData()->decoration_percentage_resolution_type =
+        static_cast<unsigned>(type);
+  }
+
   void SetIsPushedByFloats() {
     space_.EnsureRareData()->is_pushed_by_floats = true;
   }

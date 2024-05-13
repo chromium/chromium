@@ -46,6 +46,11 @@ struct CORE_EXPORT LogicalSize {
     return !(*this == other);
   }
 
+  LogicalSize operator*(float scale) const {
+    return LogicalSize(LayoutUnit(inline_size * scale),
+                       LayoutUnit(block_size * scale));
+  }
+
   constexpr bool IsEmpty() const {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
@@ -81,6 +86,10 @@ inline LogicalSize& operator-=(LogicalSize& a, const BoxStrut& b) {
   a.inline_size -= b.InlineSum();
   a.block_size -= b.BlockSum();
   return a;
+}
+
+inline LogicalSize operator+(const LogicalSize& a, const BoxStrut& b) {
+  return {a.inline_size + b.InlineSum(), a.block_size + b.BlockSum()};
 }
 
 inline LogicalOffset operator+(const LogicalOffset& offset,
