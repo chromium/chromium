@@ -8,6 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -18,12 +22,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -62,10 +73,17 @@ public class IdentityErrorCardPreferenceTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+
         mActivityTestRule.startMainActivityOnBlankPage();
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -82,7 +100,12 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSigninTestRule.addTestAccountThenSignin();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.AuthError",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(getIdentityErrorCardView(), "identity_error_card_auth_error");
     }
 
@@ -93,7 +116,12 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSigninTestRule.addTestAccountThenSignin();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(), "identity_error_card_client_out_of_date");
     }
@@ -106,7 +134,12 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
         mSigninTestRule.addTestAccountThenSignin();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.PassphraseRequired",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(), "identity_error_card_passphrase_required");
     }
@@ -121,6 +154,12 @@ public class IdentityErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.TrustedVaultKeyRequiredForEverything",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(), "identity_error_card_trusted_vault_key_required");
     }
@@ -135,6 +174,12 @@ public class IdentityErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.TrustedVaultKeyRequiredForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(),
                 "identity_error_card_trusted_vault_key_required_for_passwords");
@@ -151,6 +196,12 @@ public class IdentityErrorCardPreferenceTest {
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.TrustedVaultRecoverabilityDegradedForEverything",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(),
                 "identity_error_card_trusted_vault_recoverability_degraded_for_everything");
@@ -166,10 +217,34 @@ public class IdentityErrorCardPreferenceTest {
         mFakeSyncServiceImpl.setEncryptEverythingEnabled(false);
         mSigninTestRule.addTestAccountThenSignin();
 
-        mSettingsActivityTestRule.startSettingsActivity();
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.TrustedVaultRecoverabilityDegradedForPasswords",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
         mRenderTestRule.render(
                 getIdentityErrorCardView(),
                 "identity_error_card_trusted_vault_recoverability_degraded_for_passwords");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testIdentityErrorCardForUpmBackendOutdated() throws Exception {
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), eq(true)))
+                .thenReturn(true);
+
+        mSigninTestRule.addTestAccountThenSignin();
+
+        try (HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.UpmBackendOutdated",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN)) {
+            mSettingsActivityTestRule.startSettingsActivity();
+        }
+        mRenderTestRule.render(
+                getIdentityErrorCardView(), "identity_error_card_upm_backend_outdated");
     }
 
     @Test
