@@ -48,7 +48,7 @@ extern const int kCompatibleVersionNumber;
 // the login information.
 class LoginDatabase {
  public:
-  struct LoginDatabaseEmptynessState {
+  struct LoginDatabaseEmptinessState {
     // True if the login database has 0 passwords stored.
     bool no_login_found = true;
     // True if the database has autofillable credentials. Used to decide whether
@@ -57,12 +57,12 @@ class LoginDatabase {
     // username-only credentials.
     bool autofillable_credentials_exist = false;
 
-    friend bool operator==(const LoginDatabaseEmptynessState&,
-                           const LoginDatabaseEmptynessState&) = default;
+    friend bool operator==(const LoginDatabaseEmptinessState&,
+                           const LoginDatabaseEmptinessState&) = default;
   };
 
   using IsEmptyCallback =
-      base::RepeatingCallback<void(LoginDatabaseEmptynessState)>;
+      base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
 
   LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
   LoginDatabase(const LoginDatabase&) = delete;
@@ -170,7 +170,7 @@ class LoginDatabase {
   // whether further use of this login database will succeed is unspecified.
   bool DeleteAndRecreateDatabaseFile();
 
-  LoginDatabaseEmptynessState IsEmpty();
+  LoginDatabaseEmptinessState IsEmpty();
 
   // On MacOS, it deletes all logins from the database that cannot be decrypted
   // when encryption key from Keychain is available. If the Keychain is locked,

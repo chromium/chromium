@@ -2254,7 +2254,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   // Delete undecryptable logins and make sure we can get valid logins.
   // `is_empty_cb_` is called more than once because DeleteUndecryptableLogins()
   // internally calls RemoveLogin() for each form.
-  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                .no_login_found = false,
                                .autofillable_credentials_exist = true}))
       .Times(AnyNumber());
@@ -2807,7 +2807,7 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_InitEmpty) {
                    IsAccountStore(false));
   NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
   db.SetIsEmptyCb(is_empty_cb.Get());
-  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                .no_login_found = true,
                                .autofillable_credentials_exist = false}));
   db.Init();
@@ -2827,7 +2827,7 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
   LoginDatabase db(directory, IsAccountStore(false));
   NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
   db.SetIsEmptyCb(is_empty_cb.Get());
-  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                .no_login_found = false,
                                .autofillable_credentials_exist = true}));
   db.Init();
@@ -2836,7 +2836,7 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
 TEST_F(LoginDatabaseTest, IsEmptyCb_AddLogin) {
   ASSERT_TRUE(db().IsEmpty().no_login_found &&
               !db().IsEmpty().autofillable_credentials_exist);
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = false,
                                 .autofillable_credentials_exist = true}));
   std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
@@ -2847,7 +2847,7 @@ TEST_F(LoginDatabaseTest,
   ASSERT_TRUE(db().IsEmpty().no_login_found &&
               !db().IsEmpty().autofillable_credentials_exist);
   PasswordForm blocklist = GenerateBlocklistedForm();
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = false,
                                 .autofillable_credentials_exist = false}));
   std::ignore = db().AddLogin(blocklist, /*error=*/nullptr);
@@ -2858,7 +2858,7 @@ TEST_F(LoginDatabaseTest,
   ASSERT_TRUE(db().IsEmpty().no_login_found &&
               !db().IsEmpty().autofillable_credentials_exist);
   PasswordForm federated_credential = GenerateFederatedCredentialForm();
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = false,
                                 .autofillable_credentials_exist = false}));
   std::ignore = db().AddLogin(federated_credential, /*error=*/nullptr);
@@ -2869,7 +2869,7 @@ TEST_F(LoginDatabaseTest,
   ASSERT_TRUE(db().IsEmpty().no_login_found &&
               !db().IsEmpty().autofillable_credentials_exist);
   PasswordForm username_only = GenerateUsernameOnlyForm();
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = false,
                                 .autofillable_credentials_exist = false}));
   std::ignore = db().AddLogin(username_only, /*error=*/nullptr);
@@ -2891,12 +2891,12 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLogin) {
   testing::MockFunction<void(int)> check;
   {
     testing::InSequence in_sequence;
-    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                   .no_login_found = false,
                                   .autofillable_credentials_exist = false}))
         .Times(3);
     EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                   .no_login_found = true,
                                   .autofillable_credentials_exist = false}));
   }
@@ -2931,12 +2931,12 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLoginByPrimaryKey) {
   testing::MockFunction<void(int)> check;
   {
     testing::InSequence in_sequence;
-    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                   .no_login_found = false,
                                   .autofillable_credentials_exist = false}))
         .Times(3);
     EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+    EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                   .no_login_found = true,
                                   .autofillable_credentials_exist = false}));
   }
@@ -2957,7 +2957,7 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_RemoveLoginsCreatedBetween) {
   std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
   ASSERT_TRUE(!db().IsEmpty().no_login_found &&
               db().IsEmpty().autofillable_credentials_exist);
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = true,
                                 .autofillable_credentials_exist = false}));
   std::ignore = db().RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
@@ -2968,7 +2968,7 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_DeleteAndRecreateDatabaseFile) {
   std::ignore = db().AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
   ASSERT_TRUE(!db().IsEmpty().no_login_found &&
               db().IsEmpty().autofillable_credentials_exist);
-  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptynessState{
+  EXPECT_CALL(is_empty_cb_, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                 .no_login_found = true,
                                 .autofillable_credentials_exist = false}));
   db().DeleteAndRecreateDatabaseFile();

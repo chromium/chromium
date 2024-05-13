@@ -80,7 +80,7 @@ void RemoveUselessCredentials(
 void SetEmptyStorePref(PrefService* prefs,
                        base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
-                       LoginDatabase::LoginDatabaseEmptynessState value) {
+                       LoginDatabase::LoginDatabaseEmptinessState value) {
   // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
   // called, because it will lead to a use-after-free failure. When any backend
   // is shut down, the weak pointers are invalidated.
@@ -94,7 +94,7 @@ void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
     base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
-    LoginDatabase::LoginDatabaseEmptynessState value) {
+    LoginDatabase::LoginDatabaseEmptinessState value) {
   // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
   // called, because it will lead to a use-after-free failure. When any backend
   // is shut down, the weak pointers are invalidated.

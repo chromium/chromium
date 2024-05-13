@@ -57,7 +57,7 @@ void RemoveUselessCredentials(
 void SetEmptyStorePref(PrefService* prefs,
                        base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
-                       LoginDatabase::LoginDatabaseEmptynessState value);
+                       LoginDatabase::LoginDatabaseEmptinessState value);
 
 // Extracts `value.autofillable_credentials_exist` and uses it as a value for
 // the pref.
@@ -65,7 +65,7 @@ void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
     base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
-    LoginDatabase::LoginDatabaseEmptynessState value);
+    LoginDatabase::LoginDatabaseEmptinessState value);
 
 }  // namespace password_manager
 

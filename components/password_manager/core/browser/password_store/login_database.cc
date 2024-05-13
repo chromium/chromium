@@ -1808,7 +1808,7 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
   return true;
 }
 
-LoginDatabase::LoginDatabaseEmptynessState LoginDatabase::IsEmpty() {
+LoginDatabase::LoginDatabaseEmptinessState LoginDatabase::IsEmpty() {
   sql::Statement count_all_logins(db_.GetCachedStatement(
       SQL_FROM_HERE, "SELECT EXISTS(SELECT 1 FROM logins)"));
   // `blacklisted_by_user = 0` means the entry is not a blocklisted entry.
@@ -1819,7 +1819,7 @@ LoginDatabase::LoginDatabaseEmptynessState LoginDatabase::IsEmpty() {
       "SELECT EXISTS(SELECT 1 FROM logins WHERE blacklisted_by_user = 0 AND "
       "LENGTH(federation_url) = 0 AND scheme <> 4)"));
 
-  return LoginDatabase::LoginDatabaseEmptynessState{
+  return LoginDatabase::LoginDatabaseEmptinessState{
       .no_login_found =
           (count_all_logins.Step() && count_all_logins.ColumnInt(0) == 0),
       .autofillable_credentials_exist =
