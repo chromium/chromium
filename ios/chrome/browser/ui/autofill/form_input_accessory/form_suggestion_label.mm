@@ -39,6 +39,9 @@ constexpr CGFloat kSpacing = 4;
 // The corner radius of the label.
 constexpr CGFloat kCornerRadius = 8;
 
+// The extra space between the title label and the subtitle.
+constexpr CGFloat kVerticalSpacing = 3;
+
 // Shadow parameters.
 constexpr CGFloat kShadowRadius = 0.5;
 constexpr CGFloat kShadowVerticalOffset = 1.0;
@@ -123,6 +126,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       verticalStackView.layoutMarginsRelativeArrangement = YES;
       verticalStackView.layoutMargins =
           UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
+      verticalStackView.spacing = kVerticalSpacing;
       [stackView addArrangedSubview:verticalStackView];
 
       // Insert the next subviews vertically instead of horizonatally.
