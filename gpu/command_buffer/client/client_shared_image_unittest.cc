@@ -30,6 +30,10 @@ gfx::GpuMemoryBufferType GetNativeBufferType() {
 #endif
 }
 
+constexpr viz::SharedImageFormat kMultiPlaneFormatsWithHardwareGMBs[4] = {
+    viz::MultiPlaneFormat::kYV12, viz::MultiPlaneFormat::kNV12,
+    viz::MultiPlaneFormat::kNV12A, viz::MultiPlaneFormat::kP010};
+
 }  // namespace
 
 namespace {
@@ -334,10 +338,10 @@ TEST(ClientSharedImageTest,
   }
 }
 
-// When the client asks for SCANOUT usage with a single-plane format,
-// GL_TEXTURE_2D should be used as the texture target on all platforms other
-// than Mac, where the MacOS-specific target for native buffers should be used.
-TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_ScanoutUsage) {
+// When the client asks for SCANOUT usage, GL_TEXTURE_2D should be used as the
+// texture target on all platforms other than Mac, where the MacOS-specific
+// target for native buffers should be used.
+TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
@@ -350,7 +354,17 @@ TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_ScanoutUsage) {
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage = SHARED_IMAGE_USAGE_SCANOUT;
 
+  // Test all single-plane formats as well as multiplane formats for which
+  // hardware GMBs are supported.
+  std::vector<viz::SharedImageFormat> formats_to_test;
   for (auto format : viz::SinglePlaneFormat::kAll) {
+    formats_to_test.push_back(format);
+  }
+  for (auto format : kMultiPlaneFormatsWithHardwareGMBs) {
+    formats_to_test.push_back(format);
+  }
+
+  for (auto format : formats_to_test) {
     SharedImageInfo si_info{format,
                             kSize,
                             gfx::ColorSpace(),
@@ -420,9 +434,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Pass all the multiplanar formats that are used with hardware GMBs.
-  for (auto format :
-       {viz::MultiPlaneFormat::kYV12, viz::MultiPlaneFormat::kNV12,
-        viz::MultiPlaneFormat::kNV12A, viz::MultiPlaneFormat::kP010}) {
+  for (auto format : kMultiPlaneFormatsWithHardwareGMBs) {
     SharedImageInfo si_info{format,
                             kSize,
                             gfx::ColorSpace(),
