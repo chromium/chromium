@@ -32,11 +32,10 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -772,7 +771,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   // bar widget bounds. We can't do this before we attempt dropping the window
   // on a desk mini_view, since this will change where it is relative to the
   // current |location_in_screen|.
-  base::ScopedClosureRunner at_exit_runner(base::BindOnce([]() {
+  absl::Cleanup at_exit_runner = [] {
     // Overview might have exited if we snapped windows on both sides.
     auto* overview_controller = OverviewController::Get();
     if (!overview_controller->InOverviewSession())
@@ -780,7 +779,7 @@ OverviewWindowDragController::CompleteNormalDrag(
 
     for (auto& grid : overview_controller->overview_session()->grid_list())
       grid->MaybeUpdateDesksWidgetBounds();
-  }));
+  };
 
   aura::Window* target_root = GetRootWindowBeingDraggedIn();
   const bool is_dragged_to_other_display = target_root != item_->root_window();

@@ -23,11 +23,11 @@
 #include "ash/wm/wm_constants.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
@@ -182,13 +182,12 @@ void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
                                   OverviewAnimationType animation_type) {
   // Run at the exit of this function to `UpdateRoundedCornersAndShadow()`.
-  base::ScopedClosureRunner exit_runner(base::BindOnce(
-      [](base::WeakPtr<OverviewGroupItem> overview_group_item) {
-        if (overview_group_item) {
-          overview_group_item->UpdateRoundedCornersAndShadow();
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr()));
+  // TODO(dcheng): This can probably just capture `this`.
+  absl::Cleanup exit_runner = [overview_group_item =
+                                   weak_ptr_factory_.GetWeakPtr()] {
+    CHECK(overview_group_item);
+    overview_group_item->UpdateRoundedCornersAndShadow();
+  };
 
   target_bounds_ = target_bounds;
 

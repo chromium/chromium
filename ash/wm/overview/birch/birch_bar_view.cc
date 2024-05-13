@@ -16,9 +16,8 @@
 #include "ash/wm/overview/birch/birch_chip_loader_view.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -293,8 +292,7 @@ BirchBarView::LayoutType BirchBarView::GetExpectedLayoutType(
 }
 
 void BirchBarView::Relayout(RelayoutReason reason) {
-  base::ScopedClosureRunner scoped_closure(base::BindOnce(
-      &BirchBarView::OnRelayout, base::Unretained(this), reason));
+  absl::Cleanup scoped_on_relayout = [this, reason] { OnRelayout(reason); };
 
   const size_t primary_size =
       GetExpectedLayoutType(chips_.size()) == LayoutType::kOneByFour

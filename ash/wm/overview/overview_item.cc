@@ -48,6 +48,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -388,31 +389,28 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
 
   // Run at the exit of this function to update rounded corners, shadow and the
   // cannot snap widget.
-  base::ScopedClosureRunner at_exit_runner(base::BindOnce(
-      [](base::WeakPtr<OverviewItem> item,
-         OverviewAnimationType animation_type) {
-        if (!item.get()) {
-          return;
-        }
+  // TODO(dcheng): This can probably just capture `this`.
+  absl::Cleanup at_exit_runner = [item = weak_ptr_factory_.GetWeakPtr(),
+                                  new_animation_type] {
+    CHECK(item);
 
-        // Shadow is normally set after an animation is finished. In the case of
-        // no animations, manually set the shadow. Shadow relies on both the
-        // window transform and `item_widget_`'s new bounds so set it after
-        // `SetItemBounds()` and `UpdateHeaderLayout()`. Do not apply the shadow
-        // for drop target.
-        if (animation_type == OVERVIEW_ANIMATION_NONE) {
-          item->UpdateRoundedCornersAndShadow();
-        }
+    // Shadow is normally set after an animation is finished. In the case of
+    // no animations, manually set the shadow. Shadow relies on both the
+    // window transform and `item_widget_`'s new bounds so set it after
+    // `SetItemBounds()` and `UpdateHeaderLayout()`. Do not apply the shadow
+    // for drop target.
+    if (new_animation_type == OVERVIEW_ANIMATION_NONE) {
+      item->UpdateRoundedCornersAndShadow();
+    }
 
-        if (RoundedLabelWidget* widget = item->cannot_snap_widget_.get()) {
-          SetWidgetBoundsAndMaybeAnimateTransform(
-              widget,
-              widget->GetBoundsCenteredIn(
-                  ToStableSizeRoundedRect(item->GetTargetBoundsWithInsets())),
-              animation_type, nullptr);
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr(), new_animation_type));
+    if (RoundedLabelWidget* widget = item->cannot_snap_widget_.get()) {
+      SetWidgetBoundsAndMaybeAnimateTransform(
+          widget,
+          widget->GetBoundsCenteredIn(
+              ToStableSizeRoundedRect(item->GetTargetBoundsWithInsets())),
+          new_animation_type, nullptr);
+    }
+  };
 
   // For non minimized or tucked windows, we simply apply the transform and
   // update the header.

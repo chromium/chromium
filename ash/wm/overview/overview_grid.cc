@@ -97,6 +97,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "overview_focus_cycler_old.h"
 #include "overview_session.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor_observer.h"
@@ -2334,12 +2335,11 @@ void OverviewGrid::UpdateSaveDeskButtons() {
 
   // Adds or removes the widget from the accessibility focus order when exiting
   // the scope. Skip the update if the widget's visibility hasn't changed.
-  base::ScopedClosureRunner update_accessibility_focus(base::BindOnce(
-      [](OverviewSession* session, bool widget_visibility_changed) {
-        if (widget_visibility_changed)
-          session->UpdateAccessibilityFocus();
-      },
-      overview_session_, visibility_changed));
+  absl::Cleanup update_accessibility_focus = [this, visibility_changed] {
+    if (visibility_changed) {
+      overview_session_->UpdateAccessibilityFocus();
+    }
+  };
 
   if (!target_visible) {
     if (visibility_changed && save_desk_button_container_widget_) {
