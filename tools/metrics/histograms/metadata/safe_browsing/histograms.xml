@@ -1786,8 +1786,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.DlpResult"
-    enum="BooleanSuccess" expires_after="2023-10-20">
-  <owner>rogerta@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2024-11-20">
+  <owner>domfc@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records whether local DLP scanning succeeded or not. It is logged once
@@ -1797,8 +1798,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.Duration" units="ms"
-    expires_after="2023-10-20">
-  <owner>rogerta@chromium.org</owner>
+    expires_after="2024-11-20">
+  <owner>domfc@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records the duration of each binary upload request. It is logged once
@@ -1808,8 +1810,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.LocalBinaryUploadRequest.Result"
-    enum="BooleanSuccess" expires_after="2023-10-20">
-  <owner>rogerta@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2024-11-20">
+  <owner>domfc@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     This records whether DLP scanning succeeded or not. It is logged once for
@@ -3273,8 +3276,9 @@ failing to fetch the updates which puts users' security at risk. -->
 
 <histogram
     name="SafeBrowsing.{CloudOrLocal}DeepScan.{Connector}.BytesPerSeconds"
-    units="bytes" expires_after="2023-10-20">
-  <owner>rogerta@chromium.org</owner>
+    units="bytes" expires_after="2024-11-03">
+  <owner>domfc@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
     This records the bytes/sec from the size of a {CloudOrLocal} {Connector}
@@ -3290,7 +3294,7 @@ failing to fetch the updates which puts users' security at risk. -->
     units="ms" expires_after="2024-11-03">
   <owner>domfc@chromium.org</owner>
   <owner>drubery@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
+  <owner>nancylanxiao@google.com</owner>
   <owner>sseckler@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
