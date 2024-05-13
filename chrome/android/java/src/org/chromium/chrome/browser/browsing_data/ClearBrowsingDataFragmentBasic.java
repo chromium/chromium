@@ -255,7 +255,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     }
 
     @Override
-    protected List<Integer> getDialogOptions() {
+    protected List<Integer> getDialogOptions(Bundle fragmentArgs) {
         return Arrays.asList(
                 DialogOption.CLEAR_HISTORY,
                 DialogOption.CLEAR_COOKIES_AND_SITE_DATA,

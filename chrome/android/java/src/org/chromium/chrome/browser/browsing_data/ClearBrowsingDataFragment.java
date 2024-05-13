@@ -90,6 +90,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     static final String FETCHER_SUPPLIED_FROM_OUTSIDE =
             "ClearBrowsingDataFetcherSuppliedFromOutside";
 
+    static final String CLEAR_BROWSING_DATA_REFERRER = "ClearBrowsingDataReferrer";
+
     /** Represents a single item in the dialog. */
     private static class Item
             implements BrowsingDataCounterCallback, Preference.OnPreferenceClickListener {
@@ -334,14 +336,16 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     /**
      * A method to create the {@link ClearBrowsingDataFragment} arguments.
      *
+     * @param referrer The name of the referrer activity.
      * @param isFetcherSuppliedFromOutside A boolean indicating whether the {@link
-     *         ClearBrowsingDataFetcher} would be supplied later or it needs to be re-created.
+     *     ClearBrowsingDataFetcher} would be supplied later or it needs to be re-created.
      */
-    public static Bundle createFragmentArgs(boolean isFetcherSuppliedFromOutside) {
+    public static Bundle createFragmentArgs(String referrer, boolean isFetcherSuppliedFromOutside) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(
                 ClearBrowsingDataFragment.FETCHER_SUPPLIED_FROM_OUTSIDE,
                 isFetcherSuppliedFromOutside);
+        bundle.putString(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, referrer);
         return bundle;
     }
 
@@ -452,7 +456,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     }
 
     /** Returns the list of supported {@link DialogOption}. */
-    protected abstract List<Integer> getDialogOptions();
+    protected abstract List<Integer> getDialogOptions(Bundle fragmentArgs);
 
     /** Returns whether is a basic or advanced Clear Browsing Data tab. */
     protected abstract @ClearBrowsingDataTab int getClearBrowsingDataTabType();
@@ -583,14 +587,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         return spinnerOptionIndex;
     }
 
-    private void setUpClearBrowsingDataFetcher(Bundle savedInstanceState) {
+    private void setUpClearBrowsingDataFetcher(Bundle savedInstanceState, Bundle fragmentArgs) {
         if (savedInstanceState != null) {
             mFetcher = savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER);
             return;
         }
-
-        Bundle fragmentArgs = getArguments();
-        assert fragmentArgs != null : "A valid fragment argument is required.";
 
         boolean isSuppliedFromOutside =
                 fragmentArgs.getBoolean(
@@ -605,11 +606,14 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setUpClearBrowsingDataFetcher(savedInstanceState);
+        Bundle fragmentArgs = getArguments();
+        assert fragmentArgs != null : "A valid fragment argument is required.";
+
+        setUpClearBrowsingDataFetcher(savedInstanceState, fragmentArgs);
         getActivity().setTitle(R.string.clear_browsing_data_title);
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        List<Integer> options = getDialogOptions();
+        List<Integer> options = getDialogOptions(fragmentArgs);
         mItems = new Item[options.size()];
 
         BrowsingDataBridge browsingDataBridge = BrowsingDataBridge.getForProfile(mProfile);

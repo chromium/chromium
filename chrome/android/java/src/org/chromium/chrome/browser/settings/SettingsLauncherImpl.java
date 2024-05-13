@@ -50,12 +50,16 @@ public class SettingsLauncherImpl implements SettingsLauncher {
 
             case SettingsFragment.CLEAR_BROWSING_DATA:
                 fragment = ClearBrowsingDataTabsFragment.class;
+                fragmentArgs =
+                        ClearBrowsingDataTabsFragment.createFragmentArgs(
+                                context.getClass().getName());
                 break;
 
             case SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE:
                 fragment = ClearBrowsingDataFragmentAdvanced.class;
                 fragmentArgs =
                         ClearBrowsingDataFragment.createFragmentArgs(
+                                context.getClass().getName(),
                                 /* isFetcherSuppliedFromOutside= */ false);
                 break;
 
