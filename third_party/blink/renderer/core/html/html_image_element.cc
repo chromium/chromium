@@ -931,9 +931,15 @@ static SourceSizeValueResult SourceSizeValue(const Element* element,
   SourceSizeValueResult result;
 
   auto* img = DynamicTo<HTMLImageElement>(element);
-  if (auto* picture_parent =
-          DynamicTo<HTMLPictureElement>(element->parentNode())) {
-    img = DynamicTo<HTMLImageElement>(picture_parent->lastChild());
+
+  if (!img) {
+    // Lookup the <img> from the parent <picture>. The content model for
+    // <picture> is "zero or more source elements, followed by one img element,
+    // optionally intermixed with script-supporting elements."
+    // https://html.spec.whatwg.org/multipage/embedded-content.html#the-picture-element
+    if (auto* picture = DynamicTo<HTMLPictureElement>(element->parentNode())) {
+      img = Traversal<HTMLImageElement>::LastChild(*picture);
+    }
   }
 
   String sizes = element->FastGetAttribute(html_names::kSizesAttr);

@@ -170,6 +170,34 @@ TEST_F(HTMLImageElementTest, ImageAdRectangleUpdate) {
             gfx::Rect());
 }
 
+TEST_F(HTMLImageElementTest, ResourceWidthWithPicture) {
+  SetBodyInnerHTML(R"HTML(
+    <picture>
+      <source srcset="a.png" sizes="auto"/>
+      <img id="i" width="5" height="5" src="b.png" loading="lazy" sizes="auto"/>
+    </picture>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_NE(image, nullptr);
+  EXPECT_EQ(*image->GetResourceWidth(), 5);
+}
+
+TEST_F(HTMLImageElementTest, ResourceWidthWithPictureContainingScripts) {
+  SetBodyInnerHTML(R"HTML(
+    <picture>
+      <source srcset="a.png" sizes="auto"/>
+      <script></script>
+      <img id="i" width="5" height="5" src="b.png" loading="lazy" sizes="auto"/>
+      <script></script>
+    </picture>
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_NE(image, nullptr);
+  EXPECT_EQ(*image->GetResourceWidth(), 5);
+}
+
 using HTMLImageElementSimTest = SimTest;
 
 TEST_F(HTMLImageElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
