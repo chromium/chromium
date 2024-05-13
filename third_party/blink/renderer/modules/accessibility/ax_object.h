@@ -1187,12 +1187,15 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // Works for all nodes, and may return nodes that are ignored,
   // including nodes that might not be in the tree.
-  // - ParentObject() asserts that the parent is not missing (unless the root).
+  // - ParentObject() (const) asserts the parent is present.
+  // - ParentObject() (non-const) returns the parent if there is one, otherwise
+  //   it prunes the subtree.
   // - ParentObjectIfPresent() returns null if the parent is missing.
   // Both methods return null for the root.
   // Most callers should use ParentObject(), but ParentObjectIfPresent() can be
   // helpful when parent-child relations are being constructed or torn down.
   AXObject* ParentObject() const;
+  AXObject* ParentObject();
   AXObject* ParentObjectIfPresent() const { return parent_; }
 
   // Get the current unignored children without refreshing them, even if

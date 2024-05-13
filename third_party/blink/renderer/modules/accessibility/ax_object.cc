@@ -5835,6 +5835,18 @@ AXObject* AXObject::ParentObject() const {
   return parent_;
 }
 
+AXObject* AXObject::ParentObject() {
+  DUMP_WILL_BE_CHECK(!IsDetached());
+
+  // TODO(crbug.com/337178753): this should not be necessary once subtree
+  // removals can be immediate, complete and safe.
+  if (IsMissingParent()) {
+    AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ true);
+    return nullptr;
+  }
+  return parent_;
+}
+
 AXObject* AXObject::ParentObjectUnignored() const {
   AXObject* parent;
   for (parent = ParentObject(); parent && parent->IsIgnored();
