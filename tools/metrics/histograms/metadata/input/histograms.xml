@@ -1529,6 +1529,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.OnFocusMigratedToSystemPk"
+    enum="Boolean" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs whether user is using SystemPK (if true) or legacy extension (if false)
+    mozc when any input is focused on.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.StartupAction"
     enum="JapaneseStartupAction" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>

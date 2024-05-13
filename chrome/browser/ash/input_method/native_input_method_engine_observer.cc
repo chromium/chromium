@@ -873,6 +873,11 @@ void NativeInputMethodEngineObserver::OnFocus(
     const std::string& engine_id,
     int context_id,
     const TextInputMethod::InputContext& context) {
+  if (IsJapaneseEngine(engine_id)) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "InputMethod.PhysicalKeyboard.Japanese.OnFocusMigratedToSystemPk",
+        !ShouldInitializeJpPrefsFromLegacyConfig(*prefs_));
+  }
   text_client_ =
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
   if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
