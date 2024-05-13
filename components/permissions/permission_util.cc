@@ -239,6 +239,9 @@ bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
 
 bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
   switch (type) {
+#if !BUILDFLAG(IS_ANDROID)
+    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
+#endif
     case ContentSettingsType::GEOLOCATION:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA:

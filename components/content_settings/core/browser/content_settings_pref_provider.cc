@@ -220,9 +220,13 @@ bool PrefProvider::SetWebsiteSetting(
   // permission has been set by the One Time Provider, therefore we reset a
   // potentially existing Allow Always setting.
   if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
-    DCHECK(content_type == ContentSettingsType::GEOLOCATION ||
-           content_type == ContentSettingsType::MEDIASTREAM_MIC ||
-           content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
+    DCHECK(
+#if !BUILDFLAG(IS_ANDROID)
+        content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM ||
+#endif
+        content_type == ContentSettingsType::GEOLOCATION ||
+        content_type == ContentSettingsType::MEDIASTREAM_MIC ||
+        content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
     in_value = base::Value();
   }
 
