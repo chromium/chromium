@@ -2684,6 +2684,56 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.iOS.FormRemoval.RemovedForms" units="count"
+    expires_after="2024-09-12">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the number of removed forms in a form removal event. Recorded when a
+    set of html forms or formless fields are removed from the page. Maximum
+    number of forms recorded is 100. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormRemoval.RemovedUnownedFields" units="count"
+    expires_after="2024-09-12">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records then number of removed formless fields in a form removal event.
+    Recorded when a set of html forms or formless fields are removed from the
+    page. Maximum number of fields recorded is 100. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormRemoval.SubmissionDetected" enum="Boolean"
+    expires_after="2024-09-12">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records whether a form submission was inferred after html forms or formless
+    fields were removed from the page. Recorded when a set of html forms or
+    formless fields are removed from the page. iOS only.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.iOS.FormRemoval.SubmissionDetected.IsFormless"
+    enum="Boolean" expires_after="2024-09-12">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records whether the form detected as submitted after a form removal event
+    was the synthetic form. The synthetic form is an Autofill abstraction that
+    represents all fields in a web frame not directly contained in a form
+    element. Recorded when the browser detects a form submission after a set of
+    html forms or formless fields are removed from the page. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

@@ -6,6 +6,7 @@
 #import <set>
 
 #import "base/ranges/algorithm.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
@@ -64,6 +65,8 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
     // Setup fake frames injection in the content world used by Autofill
     // features.
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
@@ -110,6 +113,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   std::unique_ptr<TestAutofillManagerInjector<TestingAutofillManager>>
       autofill_manager_injector_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Tests that typing values in forms and removing them triggers a submission
@@ -164,6 +168,23 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   EXPECT_THAT(autofill_manager.submitted_form()->fields,
               ElementsAre(Property(&FormFieldData::value, u"value2"),
                           Property(&FormFieldData::value, u"value3")));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/2,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that autofilling a form and removing it triggers a submission
@@ -196,6 +217,23 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
       FormData::DeepEqual(*autofill_manager.submitted_form(), form_data));
   EXPECT_THAT(autofill_manager.submitted_form()->fields,
               ElementsAre(Property(&FormFieldData::value, u"value")));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that typing values in formless fields and then removing the last
@@ -239,6 +277,25 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   auto& autofill_manager = main_frame_manager();
   EXPECT_FALSE(autofill_manager.submitted_form());
 
+  histogram_tester_->ExpectTotalCount(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*expected_count=*/0);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectTotalCount(
+      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
+      /*expected_count=*/0);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/1,
+      /*expected_bucket_count=*/1);
+
+  // Reset histogram stats and measure second removal event.
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+
   // Simulate the removal of the second field.
   autofill_driver->FormsRemoved(
       /*removed_forms=*/{},
@@ -252,6 +309,23 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   EXPECT_THAT(autofill_manager.submitted_form()->fields,
               ElementsAre(Property(&FormFieldData::value, u"value1"),
                           Property(&FormFieldData::value, u"value2")));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram, /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that no submission is detected if a form is removed without user
@@ -275,6 +349,22 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Validate that no form was sent to AutfillManager as submitted.
   auto& autofill_manager = main_frame_manager();
   EXPECT_FALSE(autofill_manager.submitted_form());
+
+  histogram_tester_->ExpectTotalCount(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*expected_count=*/0);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormSubmissionAfterFormRemovalHistogram, /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectTotalCount(
+      /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
+      /*expected_count=*/0);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedFormsHistogram, /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram, /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that a removed form detected as submitted is updated with data from

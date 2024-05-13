@@ -371,8 +371,13 @@ void AutofillDriverIOS::FormsRemoved(
   CHECK(base::FeatureList::IsEnabled(
       autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
 
-  if (DetectFormSubmissionAfterFormRemoval(removed_forms,
-                                           removed_unowned_fields)) {
+  const bool submission_detected = DetectFormSubmissionAfterFormRemoval(
+      removed_forms, removed_unowned_fields);
+  RecordFormRemoval(
+      submission_detected, /*removed_forms_count=*/removed_forms.size(),
+      /*removed_unowned_fields_count=*/removed_unowned_fields.size());
+
+  if (submission_detected) {
     UpdateLastInteractedFormFromFieldDataManager();
 
     FormSubmitted(last_interacted_form_->form_data,
@@ -386,7 +391,7 @@ void AutofillDriverIOS::FormsRemoved(
 
 bool AutofillDriverIOS::DetectFormSubmissionAfterFormRemoval(
     const std::set<FormRendererId>& removed_forms,
-    const std::set<autofill::FieldRendererId>& removed_unowned_fields) const {
+    const std::set<FieldRendererId>& removed_unowned_fields) const {
   // Detect a form submission only if the last interacted form or formless field
   // was removed.
   if (!last_interacted_form_) {
@@ -429,6 +434,25 @@ void AutofillDriverIOS::UpdateLastInteractedFormFromFieldDataManager() {
     field.set_value(field_data_manager->GetUserInput(field_id));
     field.set_properties_mask(
         field_data_manager->GetFieldPropertiesMask(field_id));
+  }
+}
+
+void AutofillDriverIOS::RecordFormRemoval(bool submission_detected,
+                                          int removed_forms_count,
+                                          int removed_unowned_fields_count) {
+  base::UmaHistogramBoolean(/*name=*/kFormSubmissionAfterFormRemovalHistogram,
+                            /*sample=*/submission_detected);
+  base::UmaHistogramCounts100(/*name=*/kFormRemovalRemovedFormsHistogram,
+                              /*sample=*/removed_forms_count);
+  base::UmaHistogramCounts100(
+      /*name=*/kFormRemovalRemovedUnownedFieldsHistogram,
+      /*sample=*/removed_unowned_fields_count);
+
+  if (submission_detected) {
+    CHECK(last_interacted_form_);
+    base::UmaHistogramBoolean(
+        /*name=*/kFormlessSubmissionAfterFormRemovalHistogram,
+        /*sample=*/!last_interacted_form_->form_data.renderer_id);
   }
 }
 
