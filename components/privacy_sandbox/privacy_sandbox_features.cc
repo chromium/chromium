@@ -125,6 +125,14 @@ BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kPrivacySandboxProactiveTopicsBlockingIncludeModeBName[] =
+    "include-mode-b";
+
+const base::FeatureParam<bool>
+    kPrivacySandboxProactiveTopicsBlockingIncludeModeB{
+        &kPrivacySandboxProactiveTopicsBlocking,
+        kPrivacySandboxProactiveTopicsBlockingIncludeModeBName, false};
+
 BASE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice,
              "TrackingProtectionSettingsPageRollbackNotice",
              base::FEATURE_DISABLED_BY_DEFAULT);

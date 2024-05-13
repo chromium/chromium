@@ -558,6 +558,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
 
+  html_source->AddBoolean(
+      "proactiveTopicsBlockingIncludesModeB",
+      privacy_sandbox::kPrivacySandboxProactiveTopicsBlockingIncludeModeB
+          .Get());
+
+  html_source->AddBoolean("isInCookieDeprecationFacilitatedTesting",
+                          base::FeatureList::IsEnabled(
+                              features::kCookieDeprecationFacilitatedTesting));
+
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

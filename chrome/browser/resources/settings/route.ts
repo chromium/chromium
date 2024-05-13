@@ -37,7 +37,11 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
-    if (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
+    // Manage Topics Route should only be created if PTB is enabled. If user is
+    // in Mode B, only create it if include-mode-b param is true.
+    if (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled') &&
+        (loadTimeData.getBoolean('proactiveTopicsBlockingIncludesModeB') ||
+         !loadTimeData.getBoolean('isInCookieDeprecationFacilitatedTesting'))) {
       r.PRIVACY_SANDBOX_MANAGE_TOPICS =
           r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
     }

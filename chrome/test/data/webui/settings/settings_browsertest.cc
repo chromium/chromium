@@ -1056,8 +1056,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
 class ProactiveTopicsBlockingTest : public SettingsPrivacySandboxPageTest {
  protected:
   ProactiveTopicsBlockingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
+          {{privacy_sandbox::
+                kPrivacySandboxProactiveTopicsBlockingIncludeModeBName,
+            "false"}}}},
+        {{features::kCookieDeprecationFacilitatedTesting}});
   }
 
  private:
@@ -1103,8 +1107,64 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxPageRedesign, RedesignToggles) {
           "runMochaSuite('PrivacySandboxPageRedesignToggles')");
 }
 
+class PrivacySandboxPTBIncludesModeB : public SettingsPrivacySandboxPageTest {
+ protected:
+  PrivacySandboxPTBIncludesModeB() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
+          {{privacy_sandbox::
+                kPrivacySandboxProactiveTopicsBlockingIncludeModeBName,
+            "true"}}},
+         {features::kCookieDeprecationFacilitatedTesting, {{}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPTBIncludesModeB,
+                       TopicsSubpagePTBEnabledIncludesModeB) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpagePTBEnabledIncludesModeB')");
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPTBIncludesModeB,
+                       FledgeSubpagePTBEnabledIncludesModeB) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpagePTBEnabledIncludesModeB')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ReviewNotificationPermissions) {
   RunTest("settings/review_notification_permissions_test.js", "mocha.run()");
+}
+
+class PrivacySandboxPTBExcludesModeB : public SettingsPrivacySandboxPageTest {
+ protected:
+  PrivacySandboxPTBExcludesModeB() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
+          {{privacy_sandbox::
+                kPrivacySandboxProactiveTopicsBlockingIncludeModeBName,
+            "false"}}},
+         {features::kCookieDeprecationFacilitatedTesting, {{}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPTBExcludesModeB,
+                       TopicsSubpagePTBEnabledExcludesModeB) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpagePTBEnabledExcludesModeB')");
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPTBExcludesModeB,
+                       FledgeSubpagePTBEnabledExcludesModeB) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('FledgeSubpagePTBEnabledExcludesModeB')");
 }
 
 using SettingsRouteTest = SettingsBrowserTest;

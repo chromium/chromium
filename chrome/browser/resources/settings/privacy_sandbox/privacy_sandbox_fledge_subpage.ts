@@ -128,10 +128,22 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
         observer: 'onBlockedSitesExpanded_',
       },
 
+      // Version 2 of Ad Topics Page should be displayed. True when Proactive
+      // Topics Blocking is enabled. If include-mode-b param is false and user
+      // is part of Mode B, this should be false.
+      // TODO (b/340217427): Consolidate into separate file to be shared
+      // across the different pages.
       shouldShowV2_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+        value() {
+          if (!loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
+            return false;
+          }
+          return loadTimeData.getBoolean(
+                     'proactiveTopicsBlockingIncludesModeB') ||
+              !loadTimeData.getBoolean(
+                  'isInCookieDeprecationFacilitatedTesting');
+        },
       },
     };
   }

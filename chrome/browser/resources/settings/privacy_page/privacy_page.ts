@@ -612,9 +612,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacySandboxRestrictedNoticeEnabled_;
   }
 
+  // Only show Manage Topics page when PTB is enabled. If user is part of Mode B
+  // and include-mode-b feature param is false, don't show the page.
   private shouldShowManageTopics_(): boolean {
-    return this.isProactiveTopicsBlockingEnabled_ &&
-        !this.isPrivacySandboxRestricted_;
+    if (!this.isProactiveTopicsBlockingEnabled_ ||
+        this.isPrivacySandboxRestricted_) {
+      return false;
+    }
+    return loadTimeData.getBoolean('proactiveTopicsBlockingIncludesModeB') ||
+        !loadTimeData.getBoolean('isInCookieDeprecationFacilitatedTesting');
   }
 
   private onSafetyHubButtonClick_() {
