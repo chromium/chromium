@@ -55,6 +55,9 @@ class PermissionPromptBubbleOneOriginView :
   const raw_ptr<views::Label> GetCameraPermissionLabelForTesting() const {
     return camera_permission_label_;
   }
+  const raw_ptr<views::Label> GetPtzCameraPermissionLabelForTesting() const {
+    return ptz_camera_permission_label_;
+  }
   const raw_ptr<views::Label> GetMicPermissionLabelForTesting() const {
     return mic_permission_label_;
   }
@@ -84,6 +87,7 @@ class PermissionPromptBubbleOneOriginView :
           device_infos) override;
   std::optional<PermissionPromptPreviewsCoordinator> media_previews_;
   raw_ptr<views::Label> camera_permission_label_ = nullptr;
+  raw_ptr<views::Label> ptz_camera_permission_label_ = nullptr;
   raw_ptr<views::Label> mic_permission_label_ = nullptr;
   base::ScopedObservation<media_effects::MediaDeviceInfo,
                           PermissionPromptBubbleOneOriginView>

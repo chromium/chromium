@@ -263,6 +263,12 @@ class PermissionPromptBubbleOneOriginViewTestMediaPreview
         base::NumberToString16(devices));
   }
 
+  std::u16string GetExpectedPTZCameraLabelText(size_t devices) {
+    return l10n_util::GetStringFUTF16(
+        IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT_WITH_COUNT,
+        base::NumberToString16(devices));
+  }
+
   std::u16string GetExpectedMicLabelText(size_t devices) {
     return l10n_util::GetStringFUTF16(
         IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
@@ -286,6 +292,7 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   InitializePremissionPrompt({permissions::RequestType::kMicStream});
   ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
   ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
+  ASSERT_FALSE(permission_prompt_->GetPtzCameraPermissionLabelForTesting());
   auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
   ASSERT_TRUE(mic_label);
 
@@ -321,6 +328,7 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
   auto camera_label = permission_prompt_->GetCameraPermissionLabelForTesting();
   ASSERT_TRUE(camera_label);
+  ASSERT_FALSE(permission_prompt_->GetPtzCameraPermissionLabelForTesting());
   ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
@@ -345,6 +353,37 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
               ElementsAre(Bucket(1, 1)));
 }
 
+// Verify the device counter as well as the tooltip for the ptz camera
+// permission label.
+TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
+       MediaPreviewPTZCameraOnly) {
+  InitializePremissionPrompt({permissions::RequestType::kCameraPanTiltZoom});
+  ASSERT_TRUE(permission_prompt_->GetMediaPreviewsForTesting());
+  ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
+  auto ptz_camera_label =
+      permission_prompt_->GetPtzCameraPermissionLabelForTesting();
+  ASSERT_TRUE(ptz_camera_label);
+  ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
+
+  EXPECT_EQ(ptz_camera_label->GetText(), GetExpectedPTZCameraLabelText(0));
+  EXPECT_EQ(ptz_camera_label->GetTooltipText(), std::u16string());
+
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName, kCameraId}));
+  EXPECT_EQ(ptz_camera_label->GetText(), GetExpectedPTZCameraLabelText(1));
+  EXPECT_EQ(ptz_camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kCameraName)));
+
+  ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName2, kCameraId2}));
+  EXPECT_EQ(ptz_camera_label->GetText(), GetExpectedPTZCameraLabelText(2));
+  EXPECT_EQ(ptz_camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(kCameraName + std::string("\n") + kCameraName2));
+
+  ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
+  EXPECT_EQ(ptz_camera_label->GetText(), GetExpectedPTZCameraLabelText(1));
+  EXPECT_EQ(ptz_camera_label->GetTooltipText(),
+            base::UTF8ToUTF16(std::string(kCameraName)));
+}
+
 // Verify the device counter as well as the tooltip for both the camera and the
 // mic permission labels.
 TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
@@ -356,6 +395,7 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_TRUE(camera_label);
   auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
   ASSERT_TRUE(mic_label);
+  ASSERT_FALSE(permission_prompt_->GetPtzCameraPermissionLabelForTesting());
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
   EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
@@ -397,6 +437,7 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   InitializePremissionPrompt({permissions::RequestType::kGeolocation});
   ASSERT_FALSE(permission_prompt_->GetMediaPreviewsForTesting());
   ASSERT_FALSE(permission_prompt_->GetCameraPermissionLabelForTesting());
+  ASSERT_FALSE(permission_prompt_->GetPtzCameraPermissionLabelForTesting());
   ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
 
   histogram_tester_.ExpectTotalCount(kOriginTrialAllowedHistogramName, 0);

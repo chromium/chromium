@@ -298,6 +298,11 @@ void PageInfoPermissionContentView::OnVideoDevicesChanged(
     SetTitleTextAndTooltip(
         IDS_SITE_SETTINGS_TYPE_CAMERA_WITH_COUNT,
         media_effects::GetRealVideoDeviceNames(device_infos.value()));
+  } else if (type_ == ContentSettingsType::CAMERA_PAN_TILT_ZOOM &&
+             device_infos) {
+    SetTitleTextAndTooltip(
+        IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_WITH_COUNT,
+        media_effects::GetRealVideoDeviceNames(device_infos.value()));
   }
 }
 
@@ -350,7 +355,8 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
     views::View& preceding_separator) {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
-      type_ != ContentSettingsType::MEDIASTREAM_MIC) {
+      type_ != ContentSettingsType::MEDIASTREAM_MIC &&
+      type_ != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     return;
   }
 
@@ -363,7 +369,8 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
 
   auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
   devices_observer_.Observe(cached_device_info);
-  if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA) {
+  if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||
+      type_ == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     // Initialize `title_` with the current number of cached video devices.
     OnVideoDevicesChanged(cached_device_info->GetVideoDeviceInfos());
   } else {

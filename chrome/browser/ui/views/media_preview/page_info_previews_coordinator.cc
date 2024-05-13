@@ -16,7 +16,8 @@ namespace {
 
 MediaCoordinator::ViewType ComputePreviewType(
     ContentSettingsType content_settings_type) {
-  if (content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+  if (content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+      content_settings_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     return MediaCoordinator::ViewType::kCameraOnly;
   }
 
@@ -24,8 +25,8 @@ MediaCoordinator::ViewType ComputePreviewType(
     return MediaCoordinator::ViewType::kMicOnly;
   }
 
-  // We always expect that `content_settings_type` is either MEDIASTREAM_CAMERA
-  // or MEDIASTREAM_MIC.
+  // We always expect that `content_settings_type` is either MEDIASTREAM_CAMERA,
+  // CAMERA_PAN_TILT_ZOOM or MEDIASTREAM_MIC.
   NOTREACHED_NORETURN();
 }
 
