@@ -30,6 +30,7 @@
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 using performance_manager::mechanism::PageDiscarder;
@@ -135,9 +136,9 @@ void PageDiscardingHelper::DiscardMultiplePages(
   }
 
   // Ensures running post_discard_cb on early return.
-  auto split_callback = base::SplitOnceCallback(std::move(post_discard_cb));
-  base::ScopedClosureRunner run_post_discard_cb_on_return(
-      base::BindOnce(std::move(split_callback.first), false));
+  absl::Cleanup run_post_discard_cb_on_return = [&post_discard_cb] {
+    std::move(post_discard_cb).Run(false);
+  };
 
   std::vector<const PageNode*> page_nodes = graph_->GetAllPageNodes();
 
@@ -212,13 +213,13 @@ void PageDiscardingHelper::DiscardMultiplePages(
   }
 
   // Got to the end successfully, don't call the early return callback.
-  run_post_discard_cb_on_return.ReplaceClosure(base::DoNothing());
+  std::move(run_post_discard_cb_on_return).Cancel();
 
   page_discarder_->DiscardPageNodes(
       discard_attempts, discard_reason,
       base::BindOnce(&PageDiscardingHelper::PostDiscardAttemptCallback,
                      weak_factory_.GetWeakPtr(), reclaim_target,
-                     discard_protected_tabs, std::move(split_callback.second),
+                     discard_protected_tabs, std::move(post_discard_cb),
                      discard_reason, minimum_time_in_background));
 }
 
