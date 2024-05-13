@@ -13,13 +13,18 @@
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
-
-constexpr base::TimeDelta kMaxSupportedFrameInterval = base::Hertz(14);
 namespace {
 
 // Output level for VLOG. TODO(crbug.com/40062488): Remove loggings after
 // CVDisplayLinkBeginFrameSource is cleaned up.
 constexpr int kOutputLevel = 4;
+
+constexpr base::TimeDelta kMaxSupportedFrameInterval = base::Hertz(14);
+constexpr auto kDeltaAlmostEqual = base::Microseconds(10);
+
+bool AlmostEqual(base::TimeDelta a, base::TimeDelta b) {
+  return (a - b).magnitude() < kDeltaAlmostEqual;
+}
 
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
              "ForceMacVSyncTimerForDebugging",
@@ -233,7 +238,8 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     interval = params.display_times_valid ? params.display_interval
                                           : nominal_refresh_period_;
   }
-  bool display_link_frame_interval_change = nominal_refresh_period_ != interval;
+  bool display_link_frame_interval_changed =
+      !AlmostEqual(nominal_refresh_period_, interval);
   nominal_refresh_period_ = interval;
 
   // If the preferred frame interval is not equal to |nominal_refresh_period_|,
@@ -245,7 +251,7 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
       source_id(), frame_time, frame_time + interval, interval));
 
   // Notify Display FrameRateDecider of the frame interval change.
-  if (display_link_frame_interval_change) {
+  if (display_link_frame_interval_changed) {
     DCHECK(update_vsync_params_callback_);
     VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                        << "::OnDisplayLinkCallback: " << display_id_
@@ -339,12 +345,15 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
   if (interval < nominal_refresh_period_) {
     adjusted_interval = nominal_refresh_period_;
   } else if (interval > kMaxSupportedFrameInterval &&
-             interval != nominal_refresh_period_) {
+             !AlmostEqual(interval, nominal_refresh_period_)) {
     adjusted_interval = kMaxSupportedFrameInterval;
   }
 
-  vsyncs_to_skip_ = 0;
-  vsync_subsampling_factor_ = adjusted_interval.IntDiv(nominal_refresh_period_);
+  // Keep |vsyncs_to_skip_| unchanged so it will complete the whole frame
+  // interal.
+
+  vsync_subsampling_factor_ =
+      adjusted_interval.IntDiv((nominal_refresh_period_ - kDeltaAlmostEqual));
 
   TRACE_EVENT1("gpu", "ExternalBeginFrameSourceMac::SetPreferredInterval",
                "vsync_subsampling_factor", vsync_subsampling_factor_);
