@@ -453,7 +453,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // moving each check to a separate function, and 2) requiring that failed
   // checks provide a PrefetchStatus related to the check.
 
-  if (browser_context_->IsOffTheRecord()) {
+  if (browser_context_->IsOffTheRecord() &&
+      !base::FeatureList::IsEnabled(features::kPrefetchOffTheRecord)) {
     std::move(result_callback)
         .Run(prefetch_container,
              PreloadingEligibility::kBrowserContextOffTheRecord);

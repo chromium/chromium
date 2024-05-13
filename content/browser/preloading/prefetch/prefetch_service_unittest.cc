@@ -2769,6 +2769,8 @@ class PrefetchServiceIncognitoTest : public PrefetchServiceTest {
 };
 
 TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
+  base::test::ScopedFeatureList disable_otr;
+  disable_otr.InitAndDisableFeature(features::kPrefetchOffTheRecord);
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2792,6 +2794,27 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
       PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord);
 }
 
+TEST_F(PrefetchServiceIncognitoTest, OffTheRecordEligible) {
+  base::test::ScopedFeatureList enable_otr;
+  enable_otr.InitAndEnableFeature(features::kPrefetchOffTheRecord);
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com/"));
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false, {}, kHTMLBody);
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+}
+
 TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
   base::HistogramTester histogram_tester;
 
@@ -2802,7 +2825,7 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
+                   /*use_prefetch_proxy=*/false,
                    blink::mojom::SpeculationEagerness::kEager));
   task_environment()->RunUntilIdle();
 
@@ -2814,7 +2837,9 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
   NavigateInitiatedByRenderer(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
   ExpectServingMetrics(
-      PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition);
+      PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition,
+      /*prefetch_header_latency=*/false,
+      /*required_private_prefetch_proxy=*/false);
 }
 
 class PrefetchServiceStreamingURLLoaderTest : public PrefetchServiceTest {
