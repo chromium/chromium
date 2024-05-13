@@ -49,8 +49,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   Iterator& operator++() {
     DCHECK(*this);
     const PaintOp& op = **this;
-    ptr_ += op.aligned_size;
-    op_offset_ += op.aligned_size;
+    ptr_ += op.AlignedSize();
+    op_offset_ += op.AlignedSize();
 
     CHECK_LE(op_offset_, buffer_->used_);
     return *this;

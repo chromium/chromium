@@ -267,7 +267,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
     new (op) T{std::forward<Args>(args)...};
     DCHECK_EQ(op->type, static_cast<uint8_t>(T::kType));
-    op->aligned_size = aligned_size;
+    DCHECK_EQ(aligned_size, op->AlignedSize());
     AnalyzeAddedOp(op);
     return *op;
   }

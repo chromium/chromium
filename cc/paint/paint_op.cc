@@ -165,10 +165,6 @@ static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
 static_assert(kNumOpTypes == TYPES(M), "Missing op in list");
 #undef M
 
-#define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
-static constexpr uint16_t g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
-#undef M
-
 template <typename T, bool HasFlags>
 struct Rasterizer {
   static void RasterWithFlags(const T* op,
@@ -276,7 +272,6 @@ PaintOp* Deserialize(PaintOpReader& reader, void* output, size_t output_size) {
     op->~T();
     return nullptr;
   }
-  op->aligned_size = PaintOpBuffer::ComputeOpAlignedSize<T>();
   return op;
 }
 #define M(T) &Deserialize<T>,
@@ -327,6 +322,10 @@ static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 #undef M
 
 }  // namespace
+
+#define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
+uint16_t PaintOp::g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
+#undef M
 
 #define M(T) T::kIsDrawOp,
 bool PaintOp::g_is_draw_op[kNumOpTypes] = {TYPES(M)};

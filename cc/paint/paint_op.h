@@ -122,7 +122,6 @@ CC_PAINT_EXPORT std::ostream& operator<<(std::ostream&, PaintOpType);
 class CC_PAINT_EXPORT PaintOp {
  public:
   uint8_t type;
-  uint16_t aligned_size;
 
   using SerializeOptions = PaintOpBuffer::SerializeOptions;
   using DeserializeOptions = PaintOpBuffer::DeserializeOptions;
@@ -138,6 +137,7 @@ class CC_PAINT_EXPORT PaintOp {
   void Raster(SkCanvas* canvas, const PlaybackParams& params) const;
   bool IsDrawOp() const { return g_is_draw_op[type]; }
   bool IsPaintOpWithFlags() const { return g_has_paint_flags[type]; }
+  uint16_t AlignedSize() const { return g_type_to_aligned_size[type]; }
 
   bool EqualsForTesting(const PaintOp& other) const;
 
@@ -262,6 +262,7 @@ class CC_PAINT_EXPORT PaintOp {
       static_cast<size_t>(PaintOpType::kLastPaintOpType) + 1;
   static bool g_is_draw_op[kNumOpTypes];
   static bool g_has_paint_flags[kNumOpTypes];
+  static uint16_t g_type_to_aligned_size[kNumOpTypes];
 
   static constexpr bool kIsDrawOp = false;
   static constexpr bool kHasPaintFlags = false;

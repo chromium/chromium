@@ -2201,7 +2201,7 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
       // Serizlized sizes are only valid if they are aligned.
       if (read_size >= serialized_size && read_size % kAlign == 0) {
         ASSERT_NE(nullptr, written);
-        ASSERT_LE(written->aligned_size, kOutputOpSize);
+        ASSERT_LE(written->AlignedSize(), kOutputOpSize);
         EXPECT_EQ(GetParamType(), written->GetType());
         EXPECT_EQ(read_size, bytes_read);
 
@@ -4404,7 +4404,7 @@ TEST(IteratorTest, OffsetIterationTest) {
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
 
   std::vector<size_t> offsets = {
-      0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
+      0, static_cast<size_t>(op1.AlignedSize() + op2.AlignedSize())};
   EXPECT_THAT(PaintOpBuffer::OffsetIterator(buffer, offsets),
               ElementsAre(PaintOpEq<SaveOp>(),
                           PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
@@ -4416,7 +4416,7 @@ TEST(IteratorTest, CompositeIterationTest) {
   const PaintOp& op2 = buffer.push<RestoreOp>();
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
   std::vector<size_t> offsets = {
-      0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
+      0, static_cast<size_t>(op1.AlignedSize() + op2.AlignedSize())};
 
   EXPECT_THAT(PaintOpBuffer::CompositeIterator(buffer, /*offsets=*/nullptr),
               ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<RestoreOp>(),
@@ -4440,8 +4440,8 @@ TEST(IteratorTest, EqualityTest) {
 TEST(IteratorTest, OffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().aligned_size;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
+  offset += buffer.push<SaveOp>().AlignedSize();
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).AlignedSize();
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4466,8 +4466,8 @@ TEST(IteratorTest, CompositeEqualityTest) {
 TEST(IteratorTest, CompositeOffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().aligned_size;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
+  offset += buffer.push<SaveOp>().AlignedSize();
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).AlignedSize();
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4492,8 +4492,8 @@ TEST(IteratorTest, CompositeOffsetMixedTypeEqualityTest) {
 TEST(IteratorTest, CompositeOffsetBoolCheck) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().aligned_size;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
+  offset += buffer.push<SaveOp>().AlignedSize();
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).AlignedSize();
   buffer.push<NoopOp>();
 
   PaintOpBuffer::CompositeIterator iter(buffer, /*offsets=*/nullptr);

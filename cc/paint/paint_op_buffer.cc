@@ -104,7 +104,7 @@ void PaintOpBuffer::DestroyOps() {
   if (data_) {
     for (size_t offset = 0; offset < used_;) {
       auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
-      offset += op->aligned_size;
+      offset += op->AlignedSize();
       op->DestroyThis();
     }
   }
