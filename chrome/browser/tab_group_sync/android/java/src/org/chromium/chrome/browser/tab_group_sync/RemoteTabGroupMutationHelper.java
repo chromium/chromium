@@ -95,13 +95,6 @@ public class RemoteTabGroupMutationHelper {
                 tabGroupId, tab.getId(), urlAndTitle.second, urlAndTitle.first, position);
     }
 
-    public void updateTab(LocalTabGroupId tabGroupId, Tab tab, int position) {
-        Pair<GURL, String> urlAndTitle =
-                TabGroupSyncUtils.getFilteredUrlAndTitle(tab.getUrl(), tab.getTitle());
-        mTabGroupSyncService.updateTab(
-                tabGroupId, tab.getId(), urlAndTitle.second, urlAndTitle.first, position);
-    }
-
     public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newPosition) {
         mTabGroupSyncService.moveTab(tabGroupId, tabId, newPosition);
     }
