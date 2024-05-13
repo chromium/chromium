@@ -8,9 +8,9 @@
 #include <string_view>
 #include <vector>
 
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/query.h"
@@ -58,14 +58,17 @@ class FileIndexServiceTest : public testing::Test {
         bar_url_(MakeLocalURL("bar.txt")),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  void SetUp() override {
+  void SetUp() override { CreateIndex(); }
+
+  void TearDown() override { DestroyIndex(); }
+
+  // Convenience methods that convert asynchronous results to synchronous.
+  void CreateIndex() {
     index_service_ = std::make_unique<FileIndexService>(&profile_);
     ASSERT_EQ(Init(), OpResults::kSuccess);
   }
 
-  void TearDown() override { index_service_.reset(); }
-
-  // Convenience methods that convert asynchronous results to synchronous.
+  void DestroyIndex() { index_service_.reset(); }
 
   OpResults Init() {
     base::RunLoop run_loop;
@@ -162,6 +165,19 @@ class FileIndexServiceTest : public testing::Test {
 };
 
 typedef std::vector<FileInfo> FileInfoList;
+
+TEST_F(FileIndexServiceTest, InitializeTwice) {
+  ASSERT_EQ(Init(), OpResults::kSuccess);
+}
+
+TEST_F(FileIndexServiceTest, CreateDestroyCreate) {
+  // Index is already created by SetUp(). Thus just destroy it and create.
+  // it again.
+  DestroyIndex();
+  // TODO(b:327534824): Remove the sleep statement.
+  base::PlatformThread::Sleep(base::Milliseconds(250));
+  CreateIndex();
+}
 
 TEST_F(FileIndexServiceTest, EmptySearch) {
   // Empty query on an empty index.

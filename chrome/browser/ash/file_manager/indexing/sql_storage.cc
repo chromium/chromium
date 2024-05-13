@@ -35,6 +35,7 @@ SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
 }
 
 SqlStorage::~SqlStorage() {
+  db_.Close();
   db_.reset_error_callback();
 }
 

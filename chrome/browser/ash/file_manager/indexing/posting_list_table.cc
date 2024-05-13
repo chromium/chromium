@@ -32,8 +32,8 @@ static constexpr char kCreatePostingListTableQuery[] =
 // term.
 static constexpr char kCreatePostingIndexQuery[] =
     // clang-format off
-    "CREATE INDEX " POSTING_LIST_INDEX " ON " POSTING_LIST_TABLE "("
-    TERM_ID ")";
+    "CREATE INDEX IF NOT EXISTS " POSTING_LIST_INDEX " ON "
+    POSTING_LIST_TABLE "(" TERM_ID ")";
 // clang-format on
 
 // The statement that creates an plain index from URL IDs to term IDs.
@@ -41,7 +41,8 @@ static constexpr char kCreatePostingIndexQuery[] =
 // given URL ID (and thus, a file).
 static constexpr char kCreateUrlIndexQuery[] =
     // clang-format off
-    "CREATE INDEX " URL_ID_INDEX " ON posting_list_table(" URL_ID ")";
+    "CREATE INDEX IF NOT EXISTS " URL_ID_INDEX " ON "
+    POSTING_LIST_TABLE "(" URL_ID ")";
 // clang-format on
 
 // The statement used to insert a new association between the term ID
