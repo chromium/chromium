@@ -204,7 +204,41 @@ void AutofillHandler::SetAddresses(
   std::optional<std::vector<autofill::AutofillProfile>> autofill_profiles =
       autofill::AutofillProfilesFromJSON(&profiles);
   if (autofill_profiles) {
+    const std::string locale = "en-US";
     for (const autofill::AutofillProfile& profile : *autofill_profiles) {
+      const std::u16string test_address_country =
+          profile.GetInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY, locale);
+      // The current test address for Germany is based on the old model. If the
+      // new model is enabled we should not offer it in the list of
+      // available addresses.
+      // TODO(b/40270486): Offer a test address version for when the new model
+      // is enabled.
+      if (test_address_country == u"Germany" &&
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUseDEAddressModel)) {
+        continue;
+      }
+
+      // Similar to the case above. However for these countries we are already
+      // using the new model.
+      if (test_address_country == u"United States" &&
+          !base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUseI18nAddressModel)) {
+        continue;
+      }
+
+      if (test_address_country == u"Brazil" &&
+          !base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUseBRAddressModel)) {
+        continue;
+      }
+
+      if (test_address_country == u"Mexico" &&
+          !base::FeatureList::IsEnabled(
+              autofill::features::kAutofillUseMXAddressModel)) {
+        continue;
+      }
+
       test_address_for_countries.push_back(profile);
     }
   }
