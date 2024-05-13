@@ -10315,6 +10315,21 @@
             ]
         }
     ],
+    "IncognitoScreenshot": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IncognitoScreenshot"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncreaseCoookieAccesCacheSize": [
         {
             "platforms": [
