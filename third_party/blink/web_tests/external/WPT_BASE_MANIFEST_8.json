@@ -71578,32 +71578,6 @@
        {}
       ]
      ],
-     "position-try-switch-from-fixed-anchor.html": [
-      "904aa55180dafd92ed7526854d13edb1f7ae0406",
-      [
-       null,
-       [
-        [
-         "/css/css-anchor-position/position-try-switch-from-fixed-anchor-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "position-try-switch-to-fixed-anchor.html": [
-      "54fcb2e4df3d6155ca672ea067ca4180b2893173",
-      [
-       null,
-       [
-        [
-         "/css/css-anchor-position/position-try-switch-to-fixed-anchor-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "position-visibility-add-no-overflow.html": [
       "de0647f88bedb93a886761080a72582e4a76f045",
       [
@@ -234088,7 +234062,7 @@
       ]
      ],
      "massive-element-below-viewport-offscreen-old.html": [
-      "567819fadff7b6e846229a8fecb48ffc7e8b198d",
+      "763a98cfb30be54f1a5b473c07847b1b66384e8b",
       [
        null,
        [
@@ -234108,7 +234082,7 @@
            ],
            [
             0,
-            445
+            1497
            ]
           ]
          ]
@@ -234320,7 +234294,7 @@
       ]
      ],
      "massive-element-on-top-of-viewport-offscreen-old.html": [
-      "8dfc8eefe1458e4c669302179f0da0e68dbf136e",
+      "c42170c1b9fad0060a3b50763bebac0003f03d81",
       [
        null,
        [
@@ -234336,7 +234310,7 @@
           [
            [
             0,
-            3
+            16
            ],
            [
             0,
@@ -234494,7 +234468,7 @@
       ]
      ],
      "massive-element-right-of-viewport-offscreen-old.html": [
-      "b5337c4491428a828f935782d669554ef011c89f",
+      "5ffb5443fb3b35ced10e70b2e53c8d5494ad4477",
       [
        null,
        [
@@ -234514,7 +234488,7 @@
            ],
            [
             0,
-            445
+            1497777777
            ]
           ]
          ]
@@ -303954,14 +303928,6 @@
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
       []
      ],
-     "position-try-switch-from-fixed-anchor-ref.html": [
-      "72026a2f63e0bef3ba9481780946f1f9d1148a5a",
-      []
-     ],
-     "position-try-switch-to-fixed-anchor-ref.html": [
-      "254cbf3df455dad3c235a7880463f5a275e2957b",
-      []
-     ],
      "position-visibility-anchors-valid-ref.html": [
       "96b4e865512c2adf1215e7aaae43bc1053bd6356",
       []
@@ -307824,7 +307790,7 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "706f4c9d61b2e98e532d7a9944b3b8e68cdde4de",
+       "2f6e7af107f32535b27196602c3efaed1c15f169",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -362476,6 +362442,18 @@
        }
       }
      },
+     "historical.any-expected.txt": [
+      "953030f472f051dbc64b12f2cbdd2c2c89a8a2ec",
+      []
+     ],
+     "historical.any.worker-expected.txt": [
+      "953030f472f051dbc64b12f2cbdd2c2c89a8a2ec",
+      []
+     ],
+     "historical.window-expected.txt": [
+      "682fa28191e1763a56b933d173ccac2efe9af261",
+      []
+     ],
      "offscreen": {
       "META.yml": [
        "d0524194c9186da948d150da7b36f0f1144a61f9",
@@ -447295,7 +447273,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "5a58ae6179834ffbcc4098318f5ba0f8825698e6",
+       "3b1b09215926e305600a0eb513b0aa53185fffb2",
        [
         null,
         {}
@@ -461504,6 +461482,13 @@
       ]
      ],
      "parsing": {
+      "highlight-pseudos-001.tentative.html": [
+       "312135ccf4da13cb7486d22cbb42a567286af53d",
+       [
+        null,
+        {}
+       ]
+      ],
       "highlight-pseudos.html": [
        "aa3c4e20aa2d15b267cddfb76163d8edf9ff03c8",
        [
@@ -512505,7 +512490,7 @@
        ]
       ],
       "redirect-referrer-override.any.js": [
-       "56e55d79e141fd90124c2d5ea4cef419ee8a9cbd",
+       "337f8dd06983e144389512ecd594bb04def869de",
        [
         "fetch/api/redirect/redirect-referrer-override.any.html",
         {
@@ -551518,6 +551503,24 @@
        ]
       }
      },
+     "historical.any.js": [
+      "a68b1dcabc80cc09e961d3c558770157ea3c4c52",
+      [
+       "html/canvas/historical.any.html",
+       {}
+      ],
+      [
+       "html/canvas/historical.any.worker.html",
+       {}
+      ]
+     ],
+     "historical.window.js": [
+      "dde72541cfa9171ae3cfb105f75aee249625c54b",
+      [
+       "html/canvas/historical.window.html",
+       {}
+      ]
+     ],
      "offscreen": {
       "2d.conformance.requirements.basics.html": [
        "a89ec10f9b5ff8816962e42b119dc03785d1b203",
