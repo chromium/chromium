@@ -29,6 +29,10 @@ class WebState;
 
 namespace autofill {
 
+// Histogram for recording the renderer event used to infer a form submission.
+inline constexpr char kAutofillSubmissionDetectionSourceHistogram[] =
+    "Autofill.SubmissionDetectionSource.AutofillAgent";
+
 class AutofillDriverIOSFactory;
 
 // AutofillDriverIOS drives the Autofill flow in the browser process based

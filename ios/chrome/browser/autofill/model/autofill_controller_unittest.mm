@@ -30,6 +30,7 @@
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -315,11 +316,10 @@ class AutofillControllerTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   bool processed_a_task_ = false;
-
- private:
   // Histogram tester for these tests.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
+ private:
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
 
   AutofillAgent* autofill_agent_;
@@ -858,6 +858,11 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
             credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
   EXPECT_EQ(u"2999", credit_card.GetInfo(
                          AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::FORM_SUBMISSION,
+      /*expected_count=*/1);
 }
 
 // Checks that an HTML page containing a credit card-type form which is
@@ -924,6 +929,11 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
             credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
   EXPECT_EQ(u"2999", credit_card.GetInfo(
                          AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_count=*/1);
 }
 
 // Checks that an HTML page containing a credit card-type form which is
@@ -1070,6 +1080,11 @@ TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
             profile.GetInfo(AutofillType(ADDRESS_HOME_CITY), "en-US"));
   EXPECT_EQ(u"IL", profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
   EXPECT_EQ(u"55123", profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
+
+  histogram_tester_->ExpectUniqueSample(
+      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
+      /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
+      /*expected_count=*/1);
 }
 
 }  // namespace

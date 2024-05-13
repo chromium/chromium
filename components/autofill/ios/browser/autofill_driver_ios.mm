@@ -5,6 +5,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
@@ -293,6 +294,8 @@ void AutofillDriverIOS::FormSubmitted(
     const FormData& form,
     bool known_success,
     mojom::SubmissionSource submission_source) {
+  base::UmaHistogramEnumeration(kAutofillSubmissionDetectionSourceHistogram,
+                                submission_source);
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   GetAutofillManager().OnFormSubmitted(form, known_success, submission_source);
   ClearLastInteractedForm();
