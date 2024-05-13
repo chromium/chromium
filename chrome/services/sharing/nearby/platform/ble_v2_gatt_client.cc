@@ -285,9 +285,7 @@ bool BleV2GattClient::SetCharacteristicSubscription(
 }
 
 void BleV2GattClient::Disconnect() {
-  // TODO(b/311430390): For now, just tear down the connection when we call
-  // Disconnect. In the future this should clean up state.
-  remote_device_.reset();
+  remote_device_->Disconnect();
 }
 
 BleV2GattClient::GattService::GattService() = default;

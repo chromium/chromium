@@ -63,7 +63,14 @@ class FakeDevice : public mojom::Device {
     read_value_ = value;
   }
 
+  void set_on_disconnected_callback(
+      base::OnceClosure on_disconnected_callback) {
+    on_disconnected_callback_ = std::move(on_disconnected_callback);
+  }
+
  private:
+  base::OnceClosure on_disconnected_callback_;
+  bool is_disconnected_ = false;
   std::vector<bluetooth::mojom::ServiceInfoPtr> services_;
   std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
       characteristics_;

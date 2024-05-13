@@ -11,9 +11,10 @@ FakeDevice::FakeDevice() = default;
 FakeDevice::~FakeDevice() = default;
 
 void FakeDevice::Disconnect() {
-  // TODO(b/311430390): Implement when `BleV2GattClient` calls
-  // `ReadValueForCharacteristic()` for testing.
-  NOTIMPLEMENTED();
+  is_disconnected_ = true;
+  if (on_disconnected_callback_) {
+    std::move(on_disconnected_callback_).Run();
+  }
 }
 
 void FakeDevice::GetInfo(GetInfoCallback callback) {

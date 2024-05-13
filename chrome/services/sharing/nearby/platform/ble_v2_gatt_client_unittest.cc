@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -68,12 +69,14 @@ class BleV2GattClientTest : public testing::Test {
   }
 
   void TearDown() override {
-    fake_device_ = nullptr;
-
+    base::RunLoop run_loop;
+    fake_device_->set_on_disconnected_callback(run_loop.QuitClosure());
     ble_v2_gatt_client_->Disconnect();
+    run_loop.Run();
 
-    // TODO(b/316395226): Rework to avoid RunUntilIdle().
-    base::RunLoop().RunUntilIdle();
+    // Need to reset `fake_device_` since it gets deleted on disconnect to avoid
+    // dangling raw_ptr.
+    fake_device_ = nullptr;
   }
 
   void CallDiscoverServiceAndCharacteristics(
