@@ -84,7 +84,7 @@ jobs:
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
-    if: ${{ !cancelled() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
+    if: ${{ failure() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
     # Needed to remove the label to prevent a loop
     permissions:
       pull-requests: write
