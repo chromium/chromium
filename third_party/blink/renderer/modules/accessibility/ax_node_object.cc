@@ -6007,6 +6007,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     return true;
   }
 
+#if BUILDFLAG(IS_ANDROID)
   // If this node is already the currently focused node, then calling
   // focus() won't do anything.  That is a problem when focus is removed
   // from the webpage to chrome, and then returns.  In these cases, we need
@@ -6020,6 +6021,7 @@ bool AXNodeObject::OnNativeFocusAction() {
       return false;
     }
   }
+#endif
 
   element->Focus(FocusParams(FocusTrigger::kUserGesture));
 
