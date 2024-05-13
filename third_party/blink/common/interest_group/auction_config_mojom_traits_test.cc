@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -265,6 +266,50 @@ TEST(AuctionConfigMojomTraitsTest,
   auction_config.non_shared_params.all_buyers_priority_signals = {
       {"browserSignals.goats", 2}};
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
+TEST(AuctionConfigMojomTraitsTest, SerializeAndDeserializeNonFinite) {
+  double test_cases[] = {
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::signaling_NaN(),
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity(),
+  };
+  size_t i = 0u;
+  for (double test_case : test_cases) {
+    SCOPED_TRACE(i++);
+    const url::Origin kBuyer = url::Origin::Create(GURL("https://buyer.test"));
+
+    AuctionConfig auction_config_bad_per_buyer_priority_signals =
+        CreateBasicAuctionConfig();
+    auction_config_bad_per_buyer_priority_signals.non_shared_params
+        .interest_group_buyers.emplace();
+    auction_config_bad_per_buyer_priority_signals.non_shared_params
+        .interest_group_buyers = {{kBuyer}};
+    auction_config_bad_per_buyer_priority_signals.non_shared_params
+        .per_buyer_priority_signals.emplace();
+    (*auction_config_bad_per_buyer_priority_signals.non_shared_params
+          .per_buyer_priority_signals)[kBuyer] = {{"foo", test_case}};
+    EXPECT_FALSE(
+        SerializeAndDeserialize(auction_config_bad_per_buyer_priority_signals));
+
+    AuctionConfig auction_config_bad_all_buyers_priority_signals =
+        CreateBasicAuctionConfig();
+    auction_config_bad_all_buyers_priority_signals.non_shared_params
+        .all_buyers_priority_signals = {{"foo", test_case}};
+    EXPECT_FALSE(SerializeAndDeserialize(
+        auction_config_bad_all_buyers_priority_signals));
+
+    AuctionConfig auction_config_bad_auction_report_buyers_scale =
+        CreateBasicAuctionConfig();
+    auction_config_bad_auction_report_buyers_scale.non_shared_params
+        .auction_report_buyers = {
+        {blink::AuctionConfig::NonSharedParams::BuyerReportType::
+             kTotalSignalsFetchLatency,
+         {absl::uint128(1), test_case}}};
+    EXPECT_FALSE(SerializeAndDeserialize(
+        auction_config_bad_auction_report_buyers_scale));
+  }
 }
 
 TEST(AuctionConfigMojomTraitsTest, BuyerNotHttps) {

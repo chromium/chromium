@@ -166,6 +166,23 @@ bool InterestGroup::IsValid() const {
     return false;
   }
 
+  if (priority_vector) {
+    for (const auto& [unused_signal_name, value] : *priority_vector) {
+      if (!std::isfinite(value)) {
+        return false;
+      }
+    }
+  }
+
+  if (priority_signals_overrides) {
+    for (const auto& [unused_signal_name, value] :
+         *priority_signals_overrides) {
+      if (!std::isfinite(value)) {
+        return false;
+      }
+    }
+  }
+
   if (seller_capabilities) {
     for (const auto& [seller_origin, flags] : *seller_capabilities) {
       if (seller_origin.scheme() != url::kHttpsScheme) {

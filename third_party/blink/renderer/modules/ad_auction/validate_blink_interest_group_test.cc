@@ -957,28 +957,6 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   ExpectInterestGroupIsValid(blink_interest_group);
 }
 
-TEST_F(ValidateBlinkInterestGroupTest, InvalidPriority) {
-  struct {
-    double priority;
-    const char* priority_text;
-  } test_cases[] = {
-      {std::numeric_limits<double>::quiet_NaN(), "NaN"},
-      {std::numeric_limits<double>::signaling_NaN(), "NaN"},
-      {std::numeric_limits<double>::infinity(), "Infinity"},
-      {-std::numeric_limits<double>::infinity(), "-Infinity"},
-  };
-  for (const auto& test_case : test_cases) {
-    mojom::blink::InterestGroupPtr blink_interest_group =
-        CreateMinimalInterestGroup();
-    blink_interest_group->priority = test_case.priority;
-    ExpectInterestGroupIsNotValid(
-        blink_interest_group,
-        /*expected_error_field_name=*/String::FromUTF8("priority"),
-        /*expected_error_field_value=*/test_case.priority_text,
-        /*expected_error=*/String::FromUTF8("priority must be finite."));
-  }
-}
-
 TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
   constexpr char kSizeError[] =
       "Ad sizes must have a valid (non-zero/non-infinite) width and height.";

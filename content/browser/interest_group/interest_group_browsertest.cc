@@ -3403,36 +3403,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       JoinInterestGroupInvalidPriorityVector) {
-  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
-  std::string origin_string = url::Origin::Create(url).Serialize();
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-  AttachInterestGroupObserver();
-
-  EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "Failed to read the 'priorityVector' property from "
-      "'AuctionAdInterestGroup': The provided double value is non-finite.",
-      EvalJs(shell(), JsReplace(R"(
-(async function() {
-  try {
-    await navigator.joinAdInterestGroup(
-        {
-          name: 'cars',
-          owner: $1,
-          priorityVector: {'foo': 'invalid'},
-        },
-        /*joinDurationSec=*/1);
-  } catch (e) {
-    return e.toString();
-  }
-  return 'done';
-})())",
-                                origin_string.c_str())));
-  WaitForAccessObserved({});
-}
-
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupInvalidPrioritySignalsOverrides) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
@@ -6389,19 +6359,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   AttachInterestGroupObserver();
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
-      "read the 'perBuyerPrioritySignals' property from 'AuctionAdConfig': The "
-      "provided double value is non-finite.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicURL: 'https://test.com',
-      perBuyerPrioritySignals: {
-          'https://foo.com/':{"key": "Values must be numbers"}
-      }
-  })"));
-  WaitForAccessObserved({});
-
-  EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
       "perBuyerPrioritySignals key 'browserSignals.thisPrefixIsReserved' for "
       "AuctionAdConfig with seller 'https://test.com' must not start with "
@@ -6413,6 +6370,131 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           'https://foo.com/':{"browserSignals.thisPrefixIsReserved": 1}
       }
   })"));
+  WaitForAccessObserved({});
+}
+
+// Note -- this property is enforced by using the `double` WebIDL type.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NonFiniteValuesRejected) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  std::string test_cases[] = {
+      "NaN",
+      "Infinity",
+      "-Infinity",
+      "'Values must be numbers'",
+  };
+  for (const std::string& test_case : test_cases) {
+    SCOPED_TRACE(test_case);
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+        "Failed to read the 'priority' property from 'AuctionAdInterestGroup': "
+        "The provided double value is non-finite.",
+        EvalJs(shell(),
+               base::StringPrintf(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: '%s',
+          priority: %s,
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                  origin_string.c_str(), test_case.c_str())));
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+        "Failed to read the 'priorityVector' property from "
+        "'AuctionAdInterestGroup': The provided double value is non-finite.",
+        EvalJs(shell(),
+               base::StringPrintf(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: '%s',
+          priorityVector: {'foo': %s},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                  origin_string.c_str(), test_case.c_str())));
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+        "Failed to read the 'prioritySignalsOverrides' property from "
+        "'AuctionAdInterestGroup': The provided double value is non-finite.",
+        EvalJs(shell(),
+               base::StringPrintf(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: '%s',
+          prioritySignalsOverrides: {'foo': %s},
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                  origin_string.c_str(), test_case.c_str())));
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+        "read the 'perBuyerPrioritySignals' property from 'AuctionAdConfig': "
+        "The provided double value is non-finite.",
+        RunAuctionAndWait(base::StringPrintf(R"({
+      seller: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
+      perBuyerPrioritySignals: {
+          'https://foo.com/':{'key': %s}
+      }
+  })",
+                                             test_case.c_str())));
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+        "read the 'perBuyerPrioritySignals' property from 'AuctionAdConfig': "
+        "The provided double value is non-finite.",
+        RunAuctionAndWait(base::StringPrintf(R"({
+      seller: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
+      perBuyerPrioritySignals: {
+          '*':{'key': %s}
+      }
+  })",
+                                             test_case.c_str())));
+
+    EXPECT_EQ(
+        "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+        "read the 'auctionReportBuyers' property from 'AuctionAdConfig': "
+        "Failed to read the 'scale' property from 'AuctionReportBuyersConfig': "
+        "The provided double value is non-finite.",
+        RunAuctionAndWait(base::StringPrintf(R"({
+      seller: 'https://test.com',
+      decisionLogicURL: 'https://test.com',
+      auctionReportBuyers: {
+          'interestGroupCount':{'bucket': 0n, 'scale': %s}
+      }
+  })",
+                                             test_case.c_str())));
+  }
   WaitForAccessObserved({});
 }
 

@@ -206,12 +206,8 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     return false;
   }
 
-  if (!std::isfinite(group.priority)) {
-    error_field_name = "priority";
-    error_field_value = String::NumberToStringECMAScript(group.priority);
-    error = "priority must be finite.";
-    return false;
-  }
+  // Checking for finiteness for priority, priority_vector, and
+  // priority_signals_overrides is performed by WebIDL.
 
   // This check is here to keep it in sync with InterestGroup::IsValid(), but
   // checks in navigator_auction.cc should ensure the execution mode is always

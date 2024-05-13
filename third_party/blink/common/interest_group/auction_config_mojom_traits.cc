@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <cmath>
 #include <optional>
 #include <string>
 
@@ -32,6 +33,9 @@ bool AreBuyerPrioritySignalsValid(
     const base::flat_map<std::string, double>& buyer_priority_signals) {
   for (const auto& priority_signal : buyer_priority_signals) {
     if (base::StartsWith(priority_signal.first, "browserSignals.")) {
+      return false;
+    }
+    if (!std::isfinite(priority_signal.second)) {
       return false;
     }
   }
@@ -178,6 +182,9 @@ bool StructTraits<
     return false;
   }
   out->scale = data.scale();
+  if (!std::isfinite(out->scale)) {
+    return false;
+  }
   return true;
 }
 
