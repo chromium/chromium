@@ -167,12 +167,15 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   }
 
   /**
-   * Computes the extensions that are affected by the manifest v2 deprecation.
+   * Computes the extensions that are affected by the manifest v2 deprecation
+   * and should be visible in the MV2 deprecation panel.
    */
   private computeMv2DeprecatedExtensions_():
       chrome.developerPrivate.ExtensionInfo[] {
-    return this.extensions.filter(
-        extension => extension.isAffectedByMV2Deprecation);
+    return this.extensions.filter((extension) => {
+      return extension.isAffectedByMV2Deprecation &&
+          !extension.didAcknowledgeMV2DeprecationWarning;
+    });
   }
 
   private computeShowSafetyCheckReviewPanel_(): boolean {

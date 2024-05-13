@@ -234,5 +234,18 @@ suite('ExtensionItemListTest', function() {
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', true);
     assertEquals(2, mv2DeprecationPanel.extensions.length);
+
+    // Extensions that are affected by the MV2 deprecation, but have already
+    // been acknowledged, are not included in the list.
+    itemList.push('extensions', createExtensionInfo({
+                    name: 'Extension F',
+                    id: 'f'.repeat(32),
+                    isAffectedByMV2Deprecation: true,
+                    didAcknowledgeMV2DeprecationWarning: true,
+                  }));
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', true);
+    // The length remains at 2.
+    assertEquals(2, mv2DeprecationPanel.extensions.length);
   });
 });

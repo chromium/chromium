@@ -411,6 +411,8 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
             Object.assign({}, this.getData_(eventData.item_id), {
               acknowledgeSafetyCheckWarning:
                   eventData.extensionInfo?.acknowledgeSafetyCheckWarning,
+              didAcknowledgeMV2DeprecationWarning:
+                  eventData.extensionInfo?.didAcknowledgeMV2DeprecationWarning,
               safetyCheckText: eventData.extensionInfo?.safetyCheckText,
             }));
         break;

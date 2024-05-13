@@ -956,6 +956,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   CHECK(mv2_experiment_manager);
   info->is_affected_by_mv2_deprecation =
       mv2_experiment_manager->IsExtensionAffected(extension);
+  info->did_acknowledge_mv2_deprecation_warning =
+      mv2_experiment_manager->DidUserAcknowledgeWarning(extension.id());
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

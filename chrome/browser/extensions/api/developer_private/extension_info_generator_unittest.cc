@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -52,6 +53,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
@@ -168,12 +170,17 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(GetExtensionServiceInitParams());
     extension_action_test_util::CreateToolbarModelForProfile(profile());
-    feature_list_.InitWithFeatures(
-        {features::kSafetyHubExtensionsUwSTrigger,
-         features::kSafetyHubExtensionsOffStoreTrigger,
-         features::kSafetyHubExtensionsNoPrivacyPracticesTrigger},
-        /*disabled_features=*/{});
+    if (ShouldUseSafetyHubFeatures()) {
+      feature_list_.emplace();
+      feature_list_->InitWithFeatures(
+          {features::kSafetyHubExtensionsUwSTrigger,
+           features::kSafetyHubExtensionsOffStoreTrigger,
+           features::kSafetyHubExtensionsNoPrivacyPracticesTrigger},
+          /*disabled_features=*/{});
+    }
   }
+
+  virtual bool ShouldUseSafetyHubFeatures() { return true; }
 
   // Returns the initialization parameters for the extension service.
   virtual ExtensionServiceInitParams GetExtensionServiceInitParams() {
@@ -366,7 +373,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  std::optional<base::test::ScopedFeatureList> feature_list_;
   base::OnceClosure quit_closure_;
 };
 
@@ -1481,6 +1488,47 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
                               disable_reason::DISABLE_USER_ACTION);
   info = GenerateExtensionInfo(extension->id());
   EXPECT_FALSE(info->pinned_to_toolbar.has_value());
+}
+
+class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
+    : public ExtensionInfoGeneratorUnitTest {
+ public:
+  ExtensionInfoGeneratorWithMV2DeprecationUnitTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionManifestV2DeprecationWarning);
+  }
+  ~ExtensionInfoGeneratorWithMV2DeprecationUnitTest() override = default;
+
+ private:
+  bool ShouldUseSafetyHubFeatures() override { return false; }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
+       DidAcknowledgeMv2DeprecationWarning) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("ext").SetManifestVersion(2).Build();
+  service()->AddExtension(extension.get());
+
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeWarning(extension->id()));
+
+  {
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension->id());
+    EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_warning);
+  }
+
+  experiment_manager->MarkWarningAsAcknowledged(extension->id());
+
+  {
+    std::unique_ptr<developer::ExtensionInfo> info =
+        GenerateExtensionInfo(extension->id());
+    EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_warning);
+  }
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

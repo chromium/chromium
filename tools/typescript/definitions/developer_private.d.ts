@@ -266,6 +266,7 @@ declare global {
         acknowledgeSafetyCheckWarning: boolean;
         pinnedToToolbar?: boolean;
         isAffectedByMV2Deprecation: boolean;
+        didAcknowledgeMV2DeprecationWarning: boolean;
       }
 
       export interface ProfileInfo {

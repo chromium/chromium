@@ -281,6 +281,7 @@ namespace developerPrivate {
     boolean acknowledgeSafetyCheckWarning;
     boolean? pinnedToToolbar;
     boolean isAffectedByMV2Deprecation;
+    boolean didAcknowledgeMV2DeprecationWarning;
   };
 
   dictionary ProfileInfo {
