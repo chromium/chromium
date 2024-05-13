@@ -436,7 +436,8 @@ void MockSellerWorklet::ReportResult(
 }
 
 void MockSellerWorklet::ConnectDevToolsAgent(
-    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+    uint32_t thread_index) {
   ADD_FAILURE()
       << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
 }

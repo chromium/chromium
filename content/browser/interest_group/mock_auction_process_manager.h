@@ -304,8 +304,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       uint64_t trace_id,
       ReportResultCallback report_result_callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override;
 
   // Closes the receiver pipe with the provided reason.
   void ResetReceiverWithReason(const std::string& reason);

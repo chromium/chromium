@@ -36,7 +36,7 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
     (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent));
   } else {
     absl::get<auction_worklet::mojom::SellerWorklet*>(worklet_)
-        ->ConnectDevToolsAgent(std::move(agent));
+        ->ConnectDevToolsAgent(std::move(agent), /*thread_index=*/0);
   }
 }
 

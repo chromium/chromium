@@ -399,9 +399,9 @@ bool SetDataVersion(
 }  // namespace
 
 SellerWorklet::SellerWorklet(
-    scoped_refptr<AuctionV8Helper> v8_helper,
-    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-        shared_storage_host_remote,
+    std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
+    std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+        shared_storage_hosts,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -411,21 +411,37 @@ SellerWorklet::SellerWorklet(
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-    std::optional<uint16_t> experiment_group_id)
-    : v8_runner_(v8_helper->v8_runner()),
-      v8_helper_(std::move(v8_helper)),
-      debug_id_(
-          base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper_.get())),
-      url_loader_factory_(std::move(pending_url_loader_factory)),
+    std::optional<uint16_t> experiment_group_id,
+    GetNextThreadIndexCallback get_next_thread_index_callback)
+    : url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
                                             *trusted_scoring_signals_url))
                                       : std::nullopt),
-      v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
       auction_network_events_handler_(
-          std::move(auction_network_events_handler)) {
+          std::move(auction_network_events_handler)),
+      get_next_thread_index_callback_(
+          std::move(get_next_thread_index_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  DCHECK(!v8_helpers.empty());
+  DCHECK_EQ(v8_helpers.size(), shared_storage_hosts.size());
+
+  for (size_t i = 0; i < v8_helpers.size(); ++i) {
+    v8_runners_.push_back(v8_helpers[i]->v8_runner());
+    v8_helpers_.push_back(std::move(v8_helpers[i]));
+    debug_ids_.push_back(
+        base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helpers_[i].get()));
+    v8_state_.push_back(std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
+        new V8State(v8_helpers_[i], debug_ids_[i],
+                    std::move(shared_storage_hosts[i]), decision_logic_url,
+                    trusted_scoring_signals_url,
+                    trusted_scoring_signals_origin_, top_window_origin,
+                    permissions_policy_state->Clone(), experiment_group_id,
+                    weak_ptr_factory_.GetWeakPtr()),
+        base::OnTaskRunnerDeleter(v8_runners_[i])));
+  }
 
   trusted_signals_request_manager_ =
       (trusted_scoring_signals_url
@@ -439,18 +455,10 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 v8_helper_.get())
+                 v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
       script_source_url_, trusted_scoring_signals_origin_);
-
-  v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper_, debug_id_, std::move(shared_storage_host_remote),
-                  decision_logic_url, trusted_scoring_signals_url,
-                  trusted_scoring_signals_origin_, top_window_origin,
-                  std::move(permissions_policy_state), experiment_group_id,
-                  weak_ptr_factory_.GetWeakPtr()),
-      base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
   if (!paused_) {
@@ -460,11 +468,18 @@ SellerWorklet::SellerWorklet(
 
 SellerWorklet::~SellerWorklet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  debug_id_->AbortDebuggerPauses();
+
+  for (const auto& debug_id : debug_ids_) {
+    debug_id->AbortDebuggerPauses();
+  }
 }
 
-int SellerWorklet::context_group_id_for_testing() const {
-  return debug_id_->context_group_id();
+std::vector<int> SellerWorklet::context_group_ids_for_testing() const {
+  std::vector<int> results;
+  for (const auto& debug_id : debug_ids_) {
+    results.push_back(debug_id->context_group_id());
+  }
+  return results;
 }
 
 void SellerWorklet::ScoreAd(
@@ -706,12 +721,14 @@ void SellerWorklet::ReportResult(
 }
 
 void SellerWorklet::ConnectDevToolsAgent(
-    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+    uint32_t thread_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  v8_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&V8State::ConnectDevToolsAgent,
-                     base::Unretained(v8_state_.get()), std::move(agent)));
+
+  v8_runners_[thread_index]->PostTask(
+      FROM_HERE, base::BindOnce(&V8State::ConnectDevToolsAgent,
+                                base::Unretained(v8_state_[thread_index].get()),
+                                std::move(agent)));
 }
 
 SellerWorklet::ScoreAdTask::ScoreAdTask() = default;
@@ -1686,8 +1703,11 @@ void SellerWorklet::ResumeIfPaused() {
     return;
   }
 
-  paused_ = false;
-  Start();
+  resumed_count_++;
+  if (resumed_count_ == v8_helpers_.size()) {
+    paused_ = false;
+    Start();
+  }
 }
 
 void SellerWorklet::Start() {
@@ -1706,11 +1726,12 @@ void SellerWorklet::Start() {
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
+
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
-      script_source_url_, std::vector{v8_helper_}, std::vector{debug_id_},
+      script_source_url_, v8_helpers_, debug_ids_,
       std::move(on_got_cross_origin_signals_permissions),
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
@@ -1721,18 +1742,19 @@ void SellerWorklet::OnDownloadComplete(
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  DCHECK_EQ(worklet_scripts.size(), 1u);
-  WorkletLoader::Result worklet_script = std::move(worklet_scripts[0]);
+  DCHECK_EQ(worklet_scripts.size(), v8_helpers_.size());
 
+  // Use `worklet_scripts[0]` for metrics and for the failure check. All the
+  // results should be the same.
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.ScoringScriptJS",
-      worklet_script.original_size_bytes());
+      worklet_scripts[0].original_size_bytes());
   base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.ScoringScriptJS",
-                          worklet_script.download_time());
+                          worklet_scripts[0].download_time());
   worklet_loader_.reset();
 
   // On failure, delete `this`, as it can't do anything without a loaded script.
-  bool success = worklet_script.success();
+  bool success = worklet_scripts[0].success();
   if (!success) {
     std::move(close_pipe_callback_)
         .Run(error_msg ? error_msg.value() : std::string());
@@ -1746,11 +1768,15 @@ void SellerWorklet::OnDownloadComplete(
 
   DCHECK_NE(trusted_signals_relation_,
             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
-  v8_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
-                     base::Unretained(v8_state_.get()),
-                     std::move(worklet_script), trusted_signals_relation_));
+
+  for (size_t i = 0; i < v8_runners_.size(); ++i) {
+    v8_runners_[i]->PostTask(
+        FROM_HERE, base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
+                                  base::Unretained(v8_state_[i].get()),
+                                  std::move(worklet_scripts[i]),
+                                  trusted_signals_relation_));
+  }
+
   MaybeRecordCodeWait();
 
   for (auto score_ad_task = score_ad_tasks_.begin();
@@ -1969,10 +1995,12 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
       base::BindOnce(&SellerWorklet::CleanUpScoreAdTaskOnUserThread,
                      weak_ptr_factory_.GetWeakPtr(), task));
 
+  int thread_index = get_next_thread_index_callback_.Run();
   task->task_id = cancelable_task_tracker_.PostTask(
-      v8_runner_.get(), FROM_HERE,
+      v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
-          &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
+          &SellerWorklet::V8State::ScoreAd,
+          base::Unretained(v8_state_[thread_index].get()),
           task->ad_metadata_json, task->bid, std::move(task->bid_currency),
           std::move(task->auction_ad_config_non_shared_params),
           std::move(task->direct_from_seller_result_seller_signals),
@@ -1990,7 +2018,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
           std::move(task->seller_timeout), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
-          /*task_enqueued_time*/ base::TimeTicks::Now(),
+          /*task_enqueued_time=*/base::TimeTicks::Now(),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
@@ -2101,11 +2129,12 @@ void SellerWorklet::RunReportResultIfReady(
       });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
+  size_t thread_index = get_next_thread_index_callback_.Run();
   cancelable_task_tracker_.PostTask(
-      v8_runner_.get(), FROM_HERE,
+      v8_runners_[thread_index].get(), FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ReportResult,
-          base::Unretained(v8_state_.get()),
+          base::Unretained(v8_state_[thread_index].get()),
           std::move(task->auction_ad_config_non_shared_params),
           std::move(task->direct_from_seller_result_seller_signals),
           std::move(task->direct_from_seller_seller_signals_header_ad_slot),

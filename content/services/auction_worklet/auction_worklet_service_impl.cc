@@ -224,13 +224,20 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id) {
+  std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts;
+  shared_storage_hosts.push_back(std::move(shared_storage_host_remote));
+
   auto seller_worklet = std::make_unique<SellerWorklet>(
-      auction_seller_v8_helper_holder_->V8Helper(),
-      std::move(shared_storage_host_remote), pause_for_debugger_on_start,
+      std::vector{auction_seller_v8_helper_holder_->V8Helper()},
+      std::move(shared_storage_hosts), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), decision_logic_url,
       trusted_scoring_signals_url, top_window_origin,
-      std::move(permissions_policy_state), experiment_group_id);
+      std::move(permissions_policy_state), experiment_group_id,
+      base::BindRepeating(
+          &AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex,
+          base::Unretained(this)));
   auto* seller_worklet_ptr = seller_worklet.get();
 
   mojo::ReceiverId receiver_id = seller_worklets_.Add(
@@ -239,6 +246,10 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
   seller_worklet_ptr->set_close_pipe_callback(
       base::BindOnce(&AuctionWorkletServiceImpl::DisconnectSellerWorklet,
                      base::Unretained(this), receiver_id));
+}
+
+size_t AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex() {
+  return 0;
 }
 
 void AuctionWorkletServiceImpl::DisconnectSellerWorklet(

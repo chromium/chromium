@@ -207,13 +207,18 @@ class SellerWorkletTest : public testing::Test {
   ~SellerWorkletTest() override = default;
 
   void SetUp() override {
-    // v8_helper_ needs to be created here instead of the constructor, because
-    // this test fixture has a subclass that initializes a ScopedFeatureList in
-    // in their constructor, which needs to be done BEFORE other threads are
-    // started in multithreaded test environments so that no other threads use
-    // it when it's being initiated.
+    // The v8_helpers need to be created here instead of the constructor,
+    // because this test fixture has a subclass that initializes a
+    // ScopedFeatureList in in their constructor, which needs to be done BEFORE
+    // other threads are started in multithreaded test environments so that no
+    // other threads use it when it's being initiated.
     // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;drc=60124005e97ae2716b0fb34187d82da6019b571f;l=37
-    v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+    while (v8_helpers_.size() < NumThreads()) {
+      v8_helpers_.push_back(
+          AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner()));
+    }
+
+    shared_storage_hosts_.resize(NumThreads());
   }
 
   void TearDown() override {
@@ -222,13 +227,15 @@ class SellerWorkletTest : public testing::Test {
     // that will result in UAFs. These lines are not necessary for any test to
     // pass. This needs to be done before a subclass resets ScopedFeatureList,
     // so no thread queries it while it's being modified.
-    v8_helper_.reset();
+    v8_helpers_.clear();
     task_environment_.RunUntilIdle();
 
     // In all tests where the SellerWorklet receiver is closed before the
     // remote, the disconnect reason should be consumed and validated.
     EXPECT_FALSE(disconnect_reason_);
   }
+
+  virtual size_t NumThreads() { return 1u; }
 
   // Sets default values for scoreAd() and report_result() arguments. No test
   // actually depends on these being anything but valid, but this does allow
@@ -743,13 +750,20 @@ class SellerWorkletTest : public testing::Test {
           url_loader_factory.InitWithNewPipeAndPassReceiver());
     }
 
+    CHECK_EQ(v8_helpers_.size(), shared_storage_hosts_.size());
+
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
-        v8_helper_, std::move(shared_storage_host_remote_),
+        v8_helpers_, std::move(shared_storage_hosts_),
         pause_for_debugger_on_start, std::move(url_loader_factory),
         auction_network_events_handler_.CreateRemote(), decision_logic_url_,
         trusted_scoring_signals_url_, top_window_origin_,
-        permissions_policy_state_.Clone(), experiment_group_id_);
+        permissions_policy_state_.Clone(), experiment_group_id_,
+        base::BindRepeating(&SellerWorkletTest::GetNextThreadIndex,
+                            base::Unretained(this)));
+
+    shared_storage_hosts_.resize(NumThreads());
+
     auto* seller_worklet_ptr = seller_worklet_impl.get();
     mojo::ReceiverId receiver_id =
         seller_worklets_.Add(std::move(seller_worklet_impl),
@@ -765,6 +779,12 @@ class SellerWorkletTest : public testing::Test {
     }
     return seller_worklet;
   }
+
+  // Use a round-robin scheduling. The state is shared across worklets in the
+  // same test case.
+  size_t GetNextThreadIndex() { return next_thread_index_++ % NumThreads(); }
+
+  scoped_refptr<AuctionV8Helper> v8_helper() { return v8_helpers_[0]; }
 
   // Waits for OnDisconnectWithReason() to be invoked, if it hasn't been
   // already, and returns the error string it was invoked with.
@@ -849,18 +869,42 @@ class SellerWorkletTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
   network::TestURLLoaderFactory alternate_url_loader_factory_;
-  scoped_refptr<AuctionV8Helper> v8_helper_;
+
+  std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
 
   TestAuctionNetworkEventsHandler auction_network_events_handler_;
 
-  mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-      shared_storage_host_remote_;
+  std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts_;
+
+  size_t next_thread_index_ = 0;
 
   // Owns all created seller worklets - having a ReceiverSet allows them to have
   // a ClosePipeCallback which behaves just like the one in
   // AuctionWorkletServiceImpl, to better match production behavior.
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
 };
+
+class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
+ private:
+  size_t NumThreads() override { return 2u; }
+};
+
+class SellerWorkletMultiThreadingTest
+    : public SellerWorkletTest,
+      public testing::WithParamInterface<size_t> {
+ private:
+  size_t NumThreads() override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SellerWorkletMultiThreadingTest,
+                         testing::Values(1, 2),
+                         [](const auto& info) {
+                           return base::StrCat({info.param == 2
+                                                    ? "TwoThreads"
+                                                    : "SingleThread"});
+                         });
 
 // Test the case the SellerWorklet pipe is closed before any of its methods are
 // invoked. Nothing should happen.
@@ -1588,14 +1632,14 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrl) {
 // TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript("browserSignals.renderUrl ? 1 : 0"));
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -1617,14 +1661,14 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
 //
 // TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(SellerWorkletTest, ScoreAdRenderUrlNoDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript("browserSignals.renderURL ? 1 : 0"));
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -1719,7 +1763,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
 // TODO(crbug.com/40266734): Remove this test when the fields are
 // removed.
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   decision_logic_url_ = GURL("https://url.test/");
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
@@ -1766,7 +1810,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -1829,7 +1873,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
 // TODO(crbug.com/40266734): Remove this test when `decisionLogicUrl` and
 // `trustedScoringSignalsUrl` are removed.
 TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlNoDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   decision_logic_url_ = GURL("https://url.test/");
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
@@ -1876,7 +1920,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlNoDeprecationWarning) {
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -1898,7 +1942,7 @@ TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
 // instead, the test advances the mock clock by
 // TrustedSignalsRequestManager::kAutoSendDelay, triggering each request to
 // automatically be sent.
-TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
+TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
   // With no trusted scoring signals URL, `trustedScoringSignals` should be
   // null.
   trusted_scoring_signals_url_ = std::nullopt;
@@ -2092,7 +2136,7 @@ TEST_F(SellerWorkletTest, ScoreAdExperimentGroupId) {
 
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
 // the worklet script has loaded.
-TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
+TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelBeforeLoadComplete) {
   auto seller_worklet = CreateWorklet(/*pause_for_debugger_on_start=*/false);
 
   const size_t kNumWorklets = 10;
@@ -2138,7 +2182,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
 
 // Test the case of a bunch of ScoreAd() calls in parallel, all started after
 // the worklet script has loaded.
-TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
+TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelAfterLoadComplete) {
   // Seller script that uses the last character of `renderURL` as the score.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
@@ -2176,7 +2220,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
 
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
 // the worklet script fails to load.
-TEST_F(SellerWorkletTest, ScoreAdParallelLoadFails) {
+TEST_P(SellerWorkletMultiThreadingTest, ScoreAdParallelLoadFails) {
   auto seller_worklet = CreateWorklet();
 
   for (size_t i = 0; i < 10; ++i) {
@@ -2202,7 +2246,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelLoadFails) {
 // Test the case of a bunch of ScoreAd() calls in parallel, in the case trusted
 // scoring signals is non-null. In this case, call AllBidsGenerated() between
 // scoring each bid, which should result in requests being sent individually.
-TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
+TEST_P(SellerWorkletMultiThreadingTest,
+       ScoreAdParallelTrustedScoringSignalsNotBatched) {
   base::Time start_time = base::Time::Now();
 
   // Seller script that gets the score from the `trustedScoringSignals` value of
@@ -2279,7 +2324,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
 // 1) The worklet script load completes.
 // 2) ScoreAd() calls are made.
 // 3) The trusted bidding signals are loaded.
-TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
+TEST_P(SellerWorkletMultiThreadingTest,
+       ScoreAdParallelTrustedScoringSignalsBatched1) {
   // Seller script that gets the score from the `trustedScoringSignals` value of
   // the passed in `renderURL`.
   AddJavascriptResponse(
@@ -2351,7 +2397,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
 // 1) ScoreAd() calls are made.
 // 2) The worklet script load completes.
 // 3) The trusted bidding signals are loaded.
-TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
+TEST_P(SellerWorkletMultiThreadingTest,
+       ScoreAdParallelTrustedScoringSignalsBatched2) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -2426,7 +2473,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
 // 1) ScoreAd() calls are made.
 // 2) The trusted bidding signals are loaded.
 // 3) The worklet script load completes.
-TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
+TEST_P(SellerWorkletMultiThreadingTest,
+       ScoreAdParallelTrustedScoringSignalsBatched3) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -3052,13 +3100,13 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
 // TODO(crbug.com/40266734): Remove this test when the field itself is
 // removed.
 TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         CreateReportToScript("browserSignals.renderUrl"));
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -3088,13 +3136,13 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
 //
 // TODO(crbug.com/40266734): Remove this test when renderUrl is removed.
 TEST_F(SellerWorkletTest, ReportResultRenderUrlNoDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         CreateReportToScript("browserSignals.renderURL"));
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -3493,7 +3541,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 // TODO(crbug.com/40266734): Remove this test when the fields are
 // removed.
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   decision_logic_url_ = GURL("https://url.test/");
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
@@ -3531,7 +3579,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -3607,7 +3655,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
 // TODO(crbug.com/40266734): Remove this test when `decisionLogicUrl` and
 // `trustedScoringSignalsUrl` are removed.
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlNoDeprecationWarning) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   decision_logic_url_ = GURL("https://url.test/");
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
@@ -3645,7 +3693,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlNoDeprecationWarning) {
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/false, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel =
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
@@ -3811,7 +3859,7 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
 
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
-TEST_F(SellerWorkletTest, ScriptIsolation) {
+TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       blink::features::kFledgeAlwaysReuseSellerContext);
@@ -4010,6 +4058,300 @@ TEST_F(SellerWorkletTest,
   run_loop.Run();
 }
 
+TEST_F(
+    SellerWorkletTwoThreadsTest,
+    OneWorklet_ContextIsReusedInSameThreadIfFledgeAlwaysReuseSellerContextEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAlwaysReuseSellerContext);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        // Globally scoped variable.
+        if (!globalThis.var1)
+          globalThis.var1 = [1];
+        scoreAd = function() {
+          // Value only visible within this closure.
+          var var2 = [2];
+          return function() {
+            if (2 == ++globalThis.var1[0] && 3 == ++var2[0])
+              return 2;
+            return 1;
+          }
+        }();
+
+        reportResult = scoreAd;
+      )");
+
+  auto seller_worklet = CreateWorklet();
+
+  ASSERT_TRUE(seller_worklet);
+
+  // Context is reused within the same thread. Since we use a round-robin
+  // scheduling approach and the thread pool has a size of 2, it means the first
+  // two ScoreAds should have score=2 and the rest of them should have score=1.
+  std::vector<double> expected_scores = {2, 2, 1, 1, 1, 1};
+  for (int i = 0; i < 6; ++i) {
+    double expected_score = expected_scores[i];
+    base::RunLoop run_loop;
+    seller_worklet->ScoreAd(
+        ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_,
+        direct_from_seller_seller_signals_header_ad_slot_,
+        direct_from_seller_auction_signals_,
+        direct_from_seller_auction_signals_header_ad_slot_,
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+        seller_timeout_,
+        /*trace_id=*/1,
+        TestScoreAdClient::Create(base::BindLambdaForTesting(
+            [&run_loop, &expected_score](
+                double score, mojom::RejectReason reject_reason,
+                mojom::ComponentAuctionModifiedBidParamsPtr
+                    component_auction_modified_bid_params,
+                std::optional<double> bid_in_seller_currency,
+                std::optional<uint32_t> scoring_signals_data_version,
+                const std::optional<GURL>& debug_loss_report_url,
+                const std::optional<GURL>& debug_win_report_url,
+                PrivateAggregationRequests pa_requests,
+                RealTimeReportingContributions real_time_contributions,
+                base::TimeDelta scoring_latency,
+                mojom::ScoreAdDependencyLatenciesPtr
+                    score_ad_dependency_latencies,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_score, score);
+              EXPECT_FALSE(scoring_signals_data_version.has_value());
+              EXPECT_TRUE(errors.empty());
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
+
+  // The Report worklet should still get a fresh context.
+  base::RunLoop run_loop;
+  seller_worklet->ReportResult(
+      auction_ad_config_non_shared_params_, direct_from_seller_seller_signals_,
+      direct_from_seller_seller_signals_header_ad_slot_,
+      direct_from_seller_auction_signals_,
+      direct_from_seller_auction_signals_header_ad_slot_,
+      browser_signals_other_seller_.Clone(),
+      browser_signal_interest_group_owner_,
+      browser_signal_buyer_and_seller_reporting_id_, browser_signal_render_url_,
+      bid_, bid_currency_, browser_signal_desireability_,
+      browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
+      browser_signals_component_auction_report_result_params_.Clone(),
+      browser_signal_data_version_,
+      /*trace_id=*/1,
+      base::BindLambdaForTesting(
+          [&run_loop](const std::optional<std::string>& signals_for_winner,
+                      const std::optional<GURL>& report_url,
+                      const base::flat_map<std::string, GURL>& ad_beacon_map,
+                      PrivateAggregationRequests pa_requests,
+                      base::TimeDelta reporting_latency,
+                      const std::vector<std::string>& errors) {
+            EXPECT_EQ("2", signals_for_winner);
+            EXPECT_TRUE(errors.empty());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(
+    SellerWorkletTwoThreadsTest,
+    TwoWorklets_ContextIsReusedInSameThreadIfFledgeAlwaysReuseSellerContextEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAlwaysReuseSellerContext);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        // Globally scoped variable.
+        if (!globalThis.var1)
+          globalThis.var1 = [1];
+        scoreAd = function() {
+          // Value only visible within this closure.
+          var var2 = [2];
+          return function() {
+            if (2 == ++globalThis.var1[0] && 3 == ++var2[0])
+              return 2;
+            return 1;
+          }
+        }();
+
+        reportResult = scoreAd;
+      )");
+
+  auto seller_worklet1 = CreateWorklet();
+  auto seller_worklet2 = CreateWorklet();
+
+  // Context is reused within the same thread. Since we use a round-robin
+  // scheduling approach and the thread pool has a size of 2, it means the first
+  // two ScoreAds should have score=2 and the rest of them should have score=1.
+  //
+  // Together with the "OneWorklet_XXX" test variant above, this also shows that
+  // the round-robin scheduling state is not local to each SellerWorklet, but
+  // all worklets in the same test case will share the same state.
+  std::vector<double> expected_scores = {2, 2, 1, 1, 1, 1};
+  for (int i = 0; i < 6; ++i) {
+    auto* seller_worklet = (i % 2 == 0) ? &seller_worklet1 : &seller_worklet2;
+
+    double expected_score = expected_scores[i];
+    base::RunLoop run_loop;
+    (*seller_worklet)
+        ->ScoreAd(
+            ad_metadata_, bid_, bid_currency_,
+            auction_ad_config_non_shared_params_,
+            direct_from_seller_seller_signals_,
+            direct_from_seller_seller_signals_header_ad_slot_,
+            direct_from_seller_auction_signals_,
+            direct_from_seller_auction_signals_header_ad_slot_,
+            browser_signals_other_seller_.Clone(),
+            component_expect_bid_currency_,
+            browser_signal_interest_group_owner_, browser_signal_render_url_,
+            browser_signal_ad_components_,
+            browser_signal_bidding_duration_msecs_, browser_signal_render_size_,
+            browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+            seller_timeout_,
+            /*trace_id=*/1,
+            TestScoreAdClient::Create(base::BindLambdaForTesting(
+                [&run_loop, &expected_score](
+                    double score, mojom::RejectReason reject_reason,
+                    mojom::ComponentAuctionModifiedBidParamsPtr
+                        component_auction_modified_bid_params,
+                    std::optional<double> bid_in_seller_currency,
+                    std::optional<uint32_t> scoring_signals_data_version,
+                    const std::optional<GURL>& debug_loss_report_url,
+                    const std::optional<GURL>& debug_win_report_url,
+                    PrivateAggregationRequests pa_requests,
+                    RealTimeReportingContributions real_time_contributions,
+                    base::TimeDelta scoring_latency,
+                    mojom::ScoreAdDependencyLatenciesPtr
+                        score_ad_dependency_latencies,
+                    const std::vector<std::string>& errors) {
+                  EXPECT_EQ(expected_score, score);
+                  EXPECT_FALSE(scoring_signals_data_version.has_value());
+                  EXPECT_TRUE(errors.empty());
+                  run_loop.Quit();
+                })));
+    run_loop.Run();
+  }
+
+  // The Report worklet should still get a fresh context.
+  for (auto* seller_worklet : {&seller_worklet1, &seller_worklet2}) {
+    base::RunLoop run_loop;
+    (*seller_worklet)
+        ->ReportResult(
+            auction_ad_config_non_shared_params_,
+            direct_from_seller_seller_signals_,
+            direct_from_seller_seller_signals_header_ad_slot_,
+            direct_from_seller_auction_signals_,
+            direct_from_seller_auction_signals_header_ad_slot_,
+            browser_signals_other_seller_.Clone(),
+            browser_signal_interest_group_owner_,
+            browser_signal_buyer_and_seller_reporting_id_,
+            browser_signal_render_url_, bid_, bid_currency_,
+            browser_signal_desireability_,
+            browser_signal_highest_scoring_other_bid_,
+            browser_signal_highest_scoring_other_bid_currency_,
+            browser_signals_component_auction_report_result_params_.Clone(),
+            browser_signal_data_version_,
+            /*trace_id=*/1,
+            base::BindLambdaForTesting(
+                [&run_loop](
+                    const std::optional<std::string>& signals_for_winner,
+                    const std::optional<GURL>& report_url,
+                    const base::flat_map<std::string, GURL>& ad_beacon_map,
+                    PrivateAggregationRequests pa_requests,
+                    base::TimeDelta reporting_latency,
+                    const std::vector<std::string>& errors) {
+                  EXPECT_EQ("2", signals_for_winner);
+                  EXPECT_TRUE(errors.empty());
+                  run_loop.Quit();
+                }));
+    run_loop.Run();
+  }
+}
+
+TEST_F(SellerWorkletTwoThreadsTest,
+       TrustedScoringSignalsTaskTriggersNextThreadIndexCallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAlwaysReuseSellerContext);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        R"(
+        // Globally scoped variable.
+        if (!globalThis.var1)
+          globalThis.var1 = [1];
+        scoreAd = function() {
+          // Value only visible within this closure.
+          var var2 = [2];
+          return function() {
+            if (2 == ++globalThis.var1[0] && 3 == ++var2[0])
+              return 2;
+            return 1;
+          }
+        }();
+
+        reportResult = scoreAd;
+      )");
+
+  auto seller_worklet = CreateWorklet();
+
+  ASSERT_TRUE(seller_worklet);
+
+  // Before the second ScoreAd (i == 1), create another worklet with non-empty
+  // `trusted_scoring_signals_url_`. The first and the third ScoreAd are
+  // expected to have a new context. This implies that creating a worklet with
+  // `trusted_scoring_signals_url_` will trigger the
+  // `GetNextThreadIndexCallback`.
+  std::vector<double> expected_scores = {2, 1, 2, 1, 1, 1};
+  for (int i = 0; i < 6; ++i) {
+    if (i == 1) {
+      trusted_scoring_signals_url_ = GURL("https://url.test/trustedsignals");
+      auto new_worklet = CreateWorklet();
+    }
+
+    double expected_score = expected_scores[i];
+    base::RunLoop run_loop;
+    seller_worklet->ScoreAd(
+        ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        direct_from_seller_seller_signals_,
+        direct_from_seller_seller_signals_header_ad_slot_,
+        direct_from_seller_auction_signals_,
+        direct_from_seller_auction_signals_header_ad_slot_,
+        browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+        seller_timeout_,
+        /*trace_id=*/1,
+        TestScoreAdClient::Create(base::BindLambdaForTesting(
+            [&run_loop, &expected_score](
+                double score, mojom::RejectReason reject_reason,
+                mojom::ComponentAuctionModifiedBidParamsPtr
+                    component_auction_modified_bid_params,
+                std::optional<double> bid_in_seller_currency,
+                std::optional<uint32_t> scoring_signals_data_version,
+                const std::optional<GURL>& debug_loss_report_url,
+                const std::optional<GURL>& debug_win_report_url,
+                PrivateAggregationRequests pa_requests,
+                RealTimeReportingContributions real_time_contributions,
+                base::TimeDelta scoring_latency,
+                mojom::ScoreAdDependencyLatenciesPtr
+                    score_ad_dependency_latencies,
+                const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_score, score);
+              EXPECT_FALSE(scoring_signals_data_version.has_value());
+              EXPECT_TRUE(errors.empty());
+              run_loop.Quit();
+            })));
+    run_loop.Run();
+  }
+}
+
 TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -4076,7 +4418,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   auto seller_worklet = CreateWorklet();
   ASSERT_TRUE(seller_worklet);
 
-  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
       direct_from_seller_seller_signals_,
@@ -4107,7 +4449,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
   // Need to call ScoreAd() calling ReportResult().
   RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), 1);
 
-  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
   seller_worklet->ReportResult(
       auction_ad_config_non_shared_params_, direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
@@ -4144,7 +4486,7 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/true, &worklet_impl);
   // Grab the context ID to be able to resume.
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
 
   // Queue a ScoreAd() call, which should not happen immediately since loading
   // is paused.
@@ -4175,15 +4517,15 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
   EXPECT_FALSE(run_loop.AnyQuitCalled());
 
   // Let the ScoreAd() call run.
-  v8_helper_->v8_runner()->PostTask(
+  v8_helper()->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce([](scoped_refptr<AuctionV8Helper> v8_helper,
                                    int id) { v8_helper->Resume(id); },
-                                v8_helper_, id));
+                                v8_helper(), id));
 
   run_loop.RunUntilIdle();
 }
 
-TEST_F(SellerWorkletTest, PauseOnStartDelete) {
+TEST_P(SellerWorkletMultiThreadingTest, PauseOnStartDelete) {
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         CreateScoreAdScript("10"));
 
@@ -4199,23 +4541,23 @@ TEST_F(SellerWorkletTest, PauseOnStartDelete) {
   task_environment_.RunUntilIdle();
 
   // Grab the context ID.
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
 
   // Delete the worklet.
   worklet.reset();
   task_environment_.RunUntilIdle();
 
   // Try to resume post-delete. Should not crash
-  v8_helper_->v8_runner()->PostTask(
+  v8_helper()->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce([](scoped_refptr<AuctionV8Helper> v8_helper,
                                    int id) { v8_helper->Resume(id); },
-                                v8_helper_, id));
+                                v8_helper(), id));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(SellerWorkletTest, BasicV8Debug) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
 
   // Helper for looking for scriptParsed events.
   auto is_script_parsed = [](const TestChannel::Event& event) -> bool {
@@ -4274,8 +4616,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
       /*expected_signals_fetch_latency=*/std::nullopt,
       /*expected_code_ready_latency=*/std::nullopt, run_loop2.QuitClosure());
 
-  int id1 = worklet_impl1->context_group_id_for_testing();
-  int id2 = worklet_impl2->context_group_id_for_testing();
+  int id1 = worklet_impl1->context_group_ids_for_testing()[0];
+  int id2 = worklet_impl2->context_group_ids_for_testing()[0];
 
   TestChannel* channel1 = inspector_support.ConnectDebuggerSession(id1);
   TestChannel* channel2 = inspector_support.ConnectDebuggerSession(id2);
@@ -4341,14 +4683,115 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
 }
 
+TEST_F(SellerWorkletTwoThreadsTest, BasicV8Debug) {
+  ScopedInspectorSupport inspector_support0(v8_helpers_[0].get());
+  ScopedInspectorSupport inspector_support1(v8_helpers_[1].get());
+
+  // Helper for looking for scriptParsed events.
+  auto is_script_parsed = [](const TestChannel::Event& event) -> bool {
+    if (event.type != TestChannel::Event::Type::Notification) {
+      return false;
+    }
+
+    const std::string* candidate_method =
+        event.value.GetDict().FindString("method");
+    return (candidate_method && *candidate_method == "Debugger.scriptParsed");
+  };
+
+  const GURL kUrl1 = GURL("http://example.test/first.js");
+
+  AddJavascriptResponse(&url_loader_factory_, kUrl1, CreateScoreAdScript("1"));
+
+  SellerWorklet* worklet_impl = nullptr;
+  decision_logic_url_ = kUrl1;
+  auto worklet = CreateWorklet(
+      /*pause_for_debugger_on_start=*/true, &worklet_impl);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      worklet.get(), /*expected_score=*/1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+
+  std::vector<int> ids = worklet_impl->context_group_ids_for_testing();
+  ASSERT_EQ(ids.size(), 2u);
+
+  TestChannel* channel0 = inspector_support0.ConnectDebuggerSession(ids[0]);
+  TestChannel* channel1 = inspector_support1.ConnectDebuggerSession(ids[1]);
+
+  channel0->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel0->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  channel1->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel1->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Should not see scriptParsed before resume.
+  std::list<TestChannel::Event> events0 = channel0->TakeAllEvents();
+  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
+  std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+
+  // Unpause execution for `channel0`. Expect that `run_loop` hasn't quit, as
+  // the worklet is waiting on both V8 threads to resume.
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  channel0->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+
+  // Unpause execution for `channel1`. Expect that `run_loop` has quit.
+  channel1->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+
+  // `channel0` should have had a parsed notification for kUrl1, as the
+  // ScoreAd is executed on the corresponding thread.
+  events1 = channel1->TakeAllEvents();
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+
+  TestChannel::Event script_parsed0 =
+      channel0->WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url =
+      script_parsed0.value.GetDict().FindStringByDottedPath("params.url");
+  ASSERT_TRUE(url);
+  EXPECT_EQ(kUrl1.spec(), *url);
+
+  worklet.reset();
+  task_environment_.RunUntilIdle();
+
+  // No other scriptParsed events should be on any channel.
+  events0 = channel0->TakeAllEvents();
+  events1 = channel1->TakeAllEvents();
+  EXPECT_TRUE(base::ranges::none_of(events0, is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+}
+
 TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
-  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  ScopedInspectorSupport inspector_support(v8_helper().get());
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         "Invalid Javascript");
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
       CreateWorklet(/*pause_for_debugger_on_start=*/true, &worklet_impl);
-  int id = worklet_impl->context_group_id_for_testing();
+  int id = worklet_impl->context_group_ids_for_testing()[0];
   TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
 
   channel->RunCommandAndWaitForResult(
@@ -4370,6 +4813,59 @@ TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
       parse_error.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url);
   EXPECT_EQ(decision_logic_url_.spec(), *error_url);
+}
+
+TEST_F(SellerWorkletTwoThreadsTest, ParseErrorV8Debug) {
+  ScopedInspectorSupport inspector_support0(v8_helpers_[0].get());
+  ScopedInspectorSupport inspector_support1(v8_helpers_[1].get());
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "Invalid Javascript");
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet =
+      CreateWorklet(/*pause_for_debugger_on_start=*/true, &worklet_impl);
+
+  std::vector<int> ids = worklet_impl->context_group_ids_for_testing();
+  EXPECT_EQ(ids.size(), 2u);
+
+  TestChannel* channel0 = inspector_support0.ConnectDebuggerSession(ids[0]);
+  TestChannel* channel1 = inspector_support1.ConnectDebuggerSession(ids[1]);
+
+  channel0->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel0->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  channel1->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel1->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Unpause execution and wait for the pipe to be closed with an error.
+  channel0->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  channel1->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  EXPECT_FALSE(WaitForDisconnect().empty());
+
+  // Should have gotten a parse error notification for each channel.
+  TestChannel::Event parse_error0 =
+      channel0->WaitForMethodNotification("Debugger.scriptFailedToParse");
+  const std::string* error_url0 =
+      parse_error0.value.GetDict().FindStringByDottedPath("params.url");
+  ASSERT_TRUE(error_url0);
+  EXPECT_EQ(decision_logic_url_.spec(), *error_url0);
+
+  TestChannel::Event parse_error1 =
+      channel1->WaitForMethodNotification("Debugger.scriptFailedToParse");
+  const std::string* error_url1 =
+      parse_error1.value.GetDict().FindStringByDottedPath("params.url");
+  ASSERT_TRUE(error_url1);
+  EXPECT_EQ(decision_logic_url_.spec(), *error_url1);
 }
 
 TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
@@ -4422,8 +4918,10 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       /*expected_code_ready_latency=*/std::nullopt, run_loop2.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
-  worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver());
-  worklet2->ConnectDevToolsAgent(agent2.BindNewEndpointAndPassReceiver());
+  worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver(),
+                                 /*thread_index=*/0);
+  worklet2->ConnectDevToolsAgent(agent2.BindNewEndpointAndPassReceiver(),
+                                 /*thread_index=*/0);
 
   TestDevToolsAgentClient debug1(std::move(agent1), "123",
                                  /*use_binary_protocol=*/true);
@@ -4550,6 +5048,186 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   run_loop2.Run();
 }
 
+TEST_F(SellerWorkletTwoThreadsTest, BasicDevToolsDebug) {
+  const char kScriptResult[] = "this.global_score ? this.global_score : 10";
+
+  const char kUrl1[] = "http://example.test/first.js";
+
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
+                        CreateScoreAdScript(kScriptResult));
+
+  decision_logic_url_ = GURL(kUrl1);
+  auto worklet = CreateWorklet(/*pause_for_debugger_on_start=*/true);
+  base::RunLoop run_loop0;
+  RunScoreAdOnWorkletAsync(
+      worklet.get(), /*expected_score=*/100.5,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop0.QuitClosure());
+
+  base::RunLoop run_loop1;
+  RunScoreAdOnWorkletAsync(
+      worklet.get(), /*expected_score=*/100.6,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_real_time_contributions=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop1.QuitClosure());
+
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent0, agent1;
+  worklet->ConnectDevToolsAgent(agent0.BindNewEndpointAndPassReceiver(),
+                                /*thread_index=*/0);
+  worklet->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver(),
+                                /*thread_index=*/1);
+
+  TestDevToolsAgentClient debug0(std::move(agent0), "123",
+                                 /*use_binary_protocol=*/true);
+  TestDevToolsAgentClient debug1(std::move(agent1), "456",
+                                 /*use_binary_protocol=*/true);
+
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  const char kBreakpointTemplate[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 2,
+          "url": "%s",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl1));
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      base::StringPrintf(kBreakpointTemplate, kUrl1));
+
+  // Now resume. We should see a scriptParsed event for `debug0` and `debug1`,
+  // as the two ScoreAds are executed on the corresponding thread respectively.
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+  TestDevToolsAgentClient::Event script_parsed0 =
+      debug0.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url0 =
+      script_parsed0.value.GetDict().FindStringByDottedPath("params.url");
+  ASSERT_TRUE(url0);
+  EXPECT_EQ(*url0, kUrl1);
+
+  TestDevToolsAgentClient::Event script_parsed1 =
+      debug1.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url1 =
+      script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
+  ASSERT_TRUE(url1);
+  EXPECT_EQ(*url1, kUrl1);
+
+  // The breakpoints will be hit.
+  TestDevToolsAgentClient::Event breakpoint_hit0 =
+      debug0.WaitForMethodNotification("Debugger.paused");
+  TestDevToolsAgentClient::Event breakpoint_hit1 =
+      debug1.WaitForMethodNotification("Debugger.paused");
+
+  base::Value::List* hit_breakpoints0 =
+      breakpoint_hit0.value.GetDict().FindDict("params")->FindList(
+          "hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints0);
+  ASSERT_EQ(1u, hit_breakpoints0->size());
+  ASSERT_TRUE((*hit_breakpoints0)[0].is_string());
+  EXPECT_EQ("1:2:0:http://example.test/first.js",
+            (*hit_breakpoints0)[0].GetString());
+  std::string* callframe_id0 = breakpoint_hit0.value.GetDict()
+                                   .FindDict("params")
+                                   ->FindList("callFrames")
+                                   ->front()
+                                   .GetDict()
+                                   .FindString("callFrameId");
+
+  base::Value::List* hit_breakpoints1 =
+      breakpoint_hit1.value.GetDict().FindDict("params")->FindList(
+          "hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints1);
+  ASSERT_EQ(1u, hit_breakpoints1->size());
+  ASSERT_TRUE((*hit_breakpoints1)[0].is_string());
+  EXPECT_EQ("1:2:0:http://example.test/first.js",
+            (*hit_breakpoints1)[0].GetString());
+  std::string* callframe_id1 = breakpoint_hit1.value.GetDict()
+                                   .FindDict("params")
+                                   ->FindList("callFrames")
+                                   ->front()
+                                   .GetDict()
+                                   .FindString("callFrameId");
+
+  // Override the score value.
+  const char kCommandTemplate[] = R"({
+    "id": 5,
+    "method": "Debugger.evaluateOnCallFrame",
+    "params": {
+      "callFrameId": "%s",
+      "expression": "global_score = %s"
+    }
+  })";
+
+  // Note that ScoreAds are processed in the opposite order they were queued.
+  // Thus `debug0` should correspond to the first `RunScoreAdOnWorkletAsync`
+  // call, and `debug1` should correspond to the second call.
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
+      base::StringPrintf(kCommandTemplate, callframe_id0->c_str(), "100.6"));
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 5, "Debugger.evaluateOnCallFrame",
+      base::StringPrintf(kCommandTemplate, callframe_id1->c_str(), "100.5"));
+
+  // Let the thread associated with `debug0` resume.
+  EXPECT_FALSE(run_loop1.AnyQuitCalled());
+  debug0.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  run_loop1.Run();
+
+  // Let the thread associated with `debug1` resume.
+  EXPECT_FALSE(run_loop0.AnyQuitCalled());
+  debug1.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  run_loop0.Run();
+}
+
 TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   const char kUrl[] = "http://example.test/script.js";
 
@@ -4577,7 +5255,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver(),
+                                /*thread_index=*/0);
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 /*use_binary_protocol=*/true);
@@ -4693,7 +5372,8 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
   RunScoreAdOnWorkletExpectingCallbackNeverInvoked(worklet.get());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
-  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
+  worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver(),
+                                /*thread_index=*/0);
 
   TestDevToolsAgentClient debug(std::move(agent), "123",
                                 /*use_binary_protocol=*/true);
@@ -4757,7 +5437,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
 
   // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
   // chance to cancel the script *before* it actually tries running.
-  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
 
   TestScoreAdClient client(TestScoreAdClient::ScoreAdNeverInvokedCallback());
   mojo::Receiver<mojom::ScoreAdClient> client_receiver(&client);
@@ -4790,13 +5470,13 @@ TEST_F(SellerWorkletTest, CancelationDtor) {
   seller_timeout_ = base::Days(360);
 
   // ReportResult timeout isn't configurable the way scoreAd is.
-  v8_helper_->v8_runner()->PostTask(
+  v8_helper()->v8_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<AuctionV8Helper> v8_helper) {
             v8_helper->set_script_timeout_for_testing(base::Days(360));
           },
-          v8_helper_));
+          v8_helper()));
 
   AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                         "while(true) {}");
@@ -4806,7 +5486,7 @@ TEST_F(SellerWorkletTest, CancelationDtor) {
 
   // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
   // chance to cancel the script *before* it actually tries running.
-  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
 
   RunScoreAdOnWorkletExpectingCallbackNeverInvoked(seller_worklet.get());
   RunReportResultExpectingCallbackNeverInvoked(seller_worklet.get());
@@ -5037,7 +5717,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
   {
     mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
         &test_shared_storage_host);
-    shared_storage_host_remote_ = receiver.BindNewPipeAndPassRemote();
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", /*extra_code=*/R"(
@@ -5087,7 +5767,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
   }
 
   {
-    shared_storage_host_remote_ =
+    shared_storage_hosts_[0] =
         mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
 
     // Set the shared-storage permissions policy to disallowed.
@@ -5124,7 +5804,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
   {
     mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
         &test_shared_storage_host);
-    shared_storage_host_remote_ = receiver.BindNewPipeAndPassRemote();
+    shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
@@ -5172,7 +5852,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
   }
 
   {
-    shared_storage_host_remote_ =
+    shared_storage_hosts_[0] =
         mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
 
     // Set the shared-storage permissions policy to disallowed.
@@ -5198,6 +5878,54 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/true);
   }
+}
+
+class SellerWorkletTwoThreadsSharedStorageAPIEnabledTest
+    : public SellerWorkletSharedStorageAPIEnabledTest {
+ public:
+  size_t NumThreads() override { return 2u; }
+};
+
+TEST_F(SellerWorkletTwoThreadsSharedStorageAPIEnabledTest,
+       SharedStorageWriteInScoreAd) {
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host0;
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host1;
+
+  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver0(
+      &test_shared_storage_host0);
+  shared_storage_hosts_[0] = receiver0.BindNewPipeAndPassRemote();
+
+  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver1(
+      &test_shared_storage_host0);
+  shared_storage_hosts_[1] = receiver1.BindNewPipeAndPassRemote();
+
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      /*javascript=*/CreateScoreAdScript("5", /*extra_code=*/R"(
+        sharedStorage.set('a', 'b');
+      )"));
+
+  auto seller_worklet = CreateWorklet();
+
+  RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), 5);
+
+  // Make sure the shared storage mojom methods are invoked as they use a
+  // dedicated pipe.
+  task_environment_.RunUntilIdle();
+
+  // Expect that only the shared storage host corresponding to the thread
+  // handling the ScoreAd has observed the requests.
+  EXPECT_TRUE(test_shared_storage_host1.observed_requests().empty());
+
+  using RequestType =
+      auction_worklet::TestAuctionSharedStorageHost::RequestType;
+  using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
+
+  EXPECT_THAT(test_shared_storage_host0.observed_requests(),
+              testing::ElementsAre(Request{.type = RequestType::kSet,
+                                           .key = u"a",
+                                           .value = u"b",
+                                           .ignore_if_present = false}));
 }
 
 class SellerWorkletRealTimeTest : public SellerWorkletTest {
@@ -5247,14 +5975,14 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   // that if the seller script with endless loop times out, we know that the
   // seller timeout overwrote the default script timeout and worked.
   const base::TimeDelta kScriptTimeout = base::Days(360);
-  v8_helper_->v8_runner()->PostTask(
+  v8_helper()->v8_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<AuctionV8Helper> v8_helper,
              const base::TimeDelta script_timeout) {
             v8_helper->set_script_timeout_for_testing(script_timeout);
           },
-          v8_helper_, kScriptTimeout));
+          v8_helper(), kScriptTimeout));
   // Make sure set_script_timeout_for_testing is called.
   task_environment_.RunUntilIdle();
 
@@ -5320,14 +6048,14 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultTimeoutFromAuctionConfig) {
   // that if the reportResult() script with endless loop times out, we know that
   // the reporting timeout overwrote the default script timeout and worked.
   const base::TimeDelta kScriptTimeout = base::Days(360);
-  v8_helper_->v8_runner()->PostTask(
+  v8_helper()->v8_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<AuctionV8Helper> v8_helper,
              const base::TimeDelta script_timeout) {
             v8_helper->set_script_timeout_for_testing(script_timeout);
           },
-          v8_helper_, kScriptTimeout));
+          v8_helper(), kScriptTimeout));
   // Make sure set_script_timeout_for_testing is called.
   task_environment_.RunUntilIdle();
 

@@ -387,7 +387,11 @@ interface SellerWorklet {
            mojo_base.mojom.TimeDelta reporting_latency,
            array<string> error_msgs);
 
-  // Establishes a debugger connection to the worklet.
+  // Establishes a debugger connection to the worklet thread.
+  //
+  // Arguments:
+  // `thread_index` The index of the thread in the thread pool.
   ConnectDevToolsAgent(
-      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent,
+      uint32 thread_index);
 };

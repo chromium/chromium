@@ -88,6 +88,10 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id) override;
 
+  // Returns an index in the seller thread pool, where the corresponding V8
+  // thread will be used to execute the next task.
+  size_t GetNextSellerWorkletThreadIndex();
+
  private:
   class V8HelperHolder;
   enum class ProcessModel { kDedicated, kShared };
