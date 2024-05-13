@@ -56,6 +56,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
+    enum="FingerprintingProtectionActivationDecision"
+    expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the ActivationDecision computed by the
+    FingerprintingProtectionPageActivationThrottle, considering the tracking
+    protection content setting values, on the navigation. Computed once in
+    WillProcessResponse, before committing the navigation.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.PageLoad.ActivationLevel"
+    enum="FingerprintingProtectionActivationLevel" expires_after="2025-04-30">
+  <owner>thesalsa@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the ActivationLevel computed by the
+    FingerprintingProtectionPageActivationThrottle, considering the tracking
+    protection content setting values, on the navigation. Computed once in
+    WillProcessResponse, before committing the navigation.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.WriteRuleset.Result"
     enum="SubresourceFilterWriteRulesetResult" expires_after="2025-04-30">
   <owner>rizvis@google.com</owner>

@@ -20,6 +20,12 @@ extern const subresource_filter::RulesetConfig
 // Fingerprinting Protection.
 extern const base::FilePath::CharType kUnindexedRulesetDataFileName[];
 
+const char ActivationDecisionHistogramName[] =
+    "FingerprintingProtection.PageLoad.ActivationDecision";
+
+const char ActivationLevelHistogramName[] =
+    "FingerprintingProtection.PageLoad.ActivationLevel";
+
 }  // namespace fingerprinting_protection_filter
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_FILTER_CONSTANTS_H_

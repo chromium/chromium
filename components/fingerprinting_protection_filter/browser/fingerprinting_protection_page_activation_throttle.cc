@@ -5,6 +5,8 @@
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_page_activation_throttle.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
@@ -58,20 +60,29 @@ FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
 
 void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     ActivationDecision decision) {
-  if (delegate_) {
-    delegate_->OnPageActivationComputed(
-        navigation_handle(), features::kActivationLevel.Get(), &decision);
+  // The ActivationDecision should only be UNKNOWN when the flag is disabled.
+  if (decision == ActivationDecision::UNKNOWN) {
+    return;
   }
-
+  ActivationLevel activation_level = features::kActivationLevel.Get();
+  if (delegate_) {
+    activation_level = delegate_->OnPageActivationComputed(
+        navigation_handle(), activation_level, &decision);
+  }
   FingerprintingProtectionWebContentsHelper::FromWebContents(
       navigation_handle()->GetWebContents())
       ->NotifyPageActivationComputed(navigation_handle(), decision);
+
+  LogMetricsOnChecksComplete(decision, activation_level);
 }
 
 void FingerprintingProtectionPageActivationThrottle::LogMetricsOnChecksComplete(
     ActivationDecision decision,
     ActivationLevel level) const {
-  // TODO(crbug/327005578): Log UKM and UMA metrics.
+  // TODO(crbug/327005578): Log UKM metrics.
+  UMA_HISTOGRAM_ENUMERATION(ActivationLevelHistogramName, level);
+  UMA_HISTOGRAM_ENUMERATION(ActivationDecisionHistogramName, decision,
+                            ActivationDecision::ACTIVATION_DECISION_MAX);
 }
 
 }  // namespace fingerprinting_protection_filter

@@ -12101,6 +12101,23 @@ Called by update_permissions_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="FingerprintingProtectionActivationDecision">
+  <int value="0" label="Unknown, or not known yet, activation decision"/>
+  <int value="1" label="Fingerprinting protection activated"/>
+  <int value="2" label="Fingerprinting protection disabled"/>
+  <int value="4"
+      label="Fingerpringing protection activation exception on this url"/>
+  <int value="5"
+      label="Fingerpringing protection activation conditions not met"/>
+  <int value="6" label="Fingerpringing protection force-activated"/>
+</enum>
+
+<enum name="FingerprintingProtectionActivationLevel">
+  <int value="0" label="kDisabled"/>
+  <int value="1" label="kDryRun"/>
+  <int value="2" label="kEnabled"/>
+</enum>
+
 <enum name="FirebaseConfiguredState">
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled, at First Run"/>
