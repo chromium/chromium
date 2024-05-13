@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta http-equiv="Delegate-CH" content="Sec-CH-Width">
+<title>Tests Sec-CH-Width</title>
+<link rel="help" href="https://wicg.github.io/responsive-image-client-hints/#sec-ch-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img src="resources/2x3-svg-scaled-by-sec-ch-width.py" width="50" height="50">
+
+<script>
+  promise_test(async (test) => {
+    const testImage = document.getElementsByTagName('img')[0];
+    await new Promise(resolve => testImage.onload = resolve);
+    assert_equals(testImage.naturalWidth, 100);
+    assert_equals(testImage.naturalHeight, 150);
+  }, 'Sec-CH-Width should be set');
+</script>
