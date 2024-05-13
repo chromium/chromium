@@ -80,7 +80,7 @@ String InlineItemResult::ToString(const String& ifc_text_content,
     builder.Append(
         ifc_text_content.Substring(TextOffset().start, TextOffset().Length())
             .EncodeForDebugging());
-  } else if (item->Type() == InlineItem::kOpenRubyColumn && ruby_column) {
+  } else if (IsRubyColumn()) {
     builder.Append(item->GetLayoutObject()->ToString());
     builder.Append(", base_line: [\n");
     String child_indent = indent + "\t";

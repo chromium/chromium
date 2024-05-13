@@ -44,8 +44,7 @@ String BuildJustificationText(const String& text_content,
         line_text_builder.Append(kTextCombineItemMarker);
         continue;
       }
-      if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
-          item_result.ruby_column) {
+      if (item_result.IsRubyColumn()) {
         // No need to add k*IsolateCharacter for kOpenRubyColumn if
         // is_continuation is true. It is not followed by `base_line` results.
         if (!item_result.ruby_column->is_continuation) {
@@ -155,8 +154,7 @@ void JustifyResults(const String& text_content,
         // |spacing_before| is non-zero only before CJK characters.
         DCHECK_EQ(spacing_before, 0.0f);
       }
-    } else if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
-               item_result.ruby_column) {
+    } else if (item_result.IsRubyColumn()) {
       LineInfo& base_line = item_result.ruby_column->base_line;
       if (item_result.inline_size == base_line.Width()) {
         JustifyResults(text_content, line_text, line_text_start_offset, spacing,

@@ -83,6 +83,10 @@ struct CORE_EXPORT InlineItemResult {
   InlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
   InlineItemTextIndex End() const { return {item_index, EndOffset()}; }
 
+  // Return `true` if the InlineItem type is kOpenRubyColumn and this contains
+  // data for the base and annotation lines.
+  bool IsRubyColumn() const { return ruby_column; }
+
   // Compute/clear |hyphen_string| and |hyphen_shape_result|.
   void ShapeHyphen();
 

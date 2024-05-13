@@ -1913,7 +1913,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
             continue;
           }
         }
-        if (item.Type() == InlineItem::kOpenRubyColumn && result.ruby_column) {
+        if (result.IsRubyColumn()) {
           ComputeFromMinSizeInternal(result.ruby_column->base_line);
           continue;
         }

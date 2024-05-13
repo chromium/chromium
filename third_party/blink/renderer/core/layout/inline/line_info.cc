@@ -184,8 +184,7 @@ unsigned LineInfo::InflowEndOffset() const {
         item.Type() == InlineItem::kControl ||
         item.Type() == InlineItem::kAtomicInline) {
       return item_result.EndOffset();
-    } else if (item.Type() == InlineItem::kOpenRubyColumn &&
-               item_result.ruby_column) {
+    } else if (item_result.IsRubyColumn()) {
       const LineInfo& base_line = item_result.ruby_column->base_line;
       unsigned end_offset = base_line.InflowEndOffset();
       if (end_offset != base_line.StartOffset()) {
