@@ -29,6 +29,7 @@
 
 import logging
 import re
+import os
 from typing import List, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
@@ -132,6 +133,8 @@ class Git:
 
     def find_checkout_root(self, path):
         """Returns the absolute path to the root of the repository."""
+        if os.getcwd().startswith('/google/cog/cloud'):
+            return os.getcwd()
         return self.run(['rev-parse', '--show-toplevel'], cwd=path).strip()
 
     @classmethod

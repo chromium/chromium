@@ -33,6 +33,7 @@ import optparse
 import posixpath
 import re
 import traceback
+import os
 from typing import List, Optional
 
 from blinkpy.common import exit_codes
@@ -435,7 +436,9 @@ def check_test_lists(host, options):
 def run_checks(host, options):
     failures = []
     warnings = []
-
+    if os.getcwd().startswith('/google/cog/cloud'):
+        _log.info('Skipping run_checks for cog workspace')
+        return 0
     f, w = lint(host, options)
     failures += f
     warnings += w
