@@ -6,6 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -67,6 +68,53 @@ suite('ExtensionsMV2DeprecationPanel', function() {
         extensionRows[1]?.querySelector('.extension-name')?.textContent?.trim(),
         'Extension B');
   });
+
+  test(
+      'find alternative button is visible if extension has recommendations' +
+          'url, and opens url when clicked',
+      async function() {
+        let extension = panelElement.shadowRoot!
+                            .querySelectorAll<HTMLElement>('.extension-row')
+                            ?.[0];
+        assertTrue(!!extension);
+
+        // Find alternative button is hidden when the extension doesn't have a
+        // recommendations url.
+        let findAlternativeButton = extension.querySelector<CrButtonElement>(
+            '.find-alternative-button');
+        assertFalse(isVisible(findAlternativeButton));
+
+        // Add a recommendations url to the existent extension.
+        const id = 'a'.repeat(32);
+        const recommendationsUrl =
+            `https://chromewebstore.google.com/detail/${id}` +
+            `/related-recommendations`;
+        panelElement.set('extensions.0', createExtensionInfo({
+                           name: 'Extension A',
+                           id,
+                           isAffectedByMV2Deprecation: true,
+                           recommendationsUrl,
+                         }));
+        await flushTasks();
+
+        extension = panelElement.shadowRoot!
+                        .querySelectorAll<HTMLElement>('.extension-row')
+                        ?.[0];
+        assertTrue(!!extension);
+
+        // Find alternative button is visible when the extension has a
+        // recommendations url.
+        findAlternativeButton = extension.querySelector<CrButtonElement>(
+            '.find-alternative-button');
+        assertTrue(isVisible(findAlternativeButton));
+
+        // Click on the find alternative button, and verify it triggered the
+        // correct delegate call.
+        findAlternativeButton?.click();
+        await mockDelegate.whenCalled('openUrl');
+        assertEquals(1, mockDelegate.getCallCount('openUrl'));
+        assertDeepEquals([recommendationsUrl], mockDelegate.getArgs('openUrl'));
+      });
 
   test(
       'remove action is visible if extension can be removed, and triggers' +

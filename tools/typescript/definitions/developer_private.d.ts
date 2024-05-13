@@ -251,6 +251,7 @@ declare global {
         path?: string;
         permissions: Permissions;
         prettifiedPath?: string;
+        recommendationsUrl?: string;
         runtimeErrors: RuntimeError[];
         runtimeWarnings: string[];
         state: ExtensionState;

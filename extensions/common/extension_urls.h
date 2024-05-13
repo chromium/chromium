@@ -87,6 +87,11 @@ GURL GetWebstoreUpdateUrl();
 GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                const std::string& referrer_id);
 
+// Returns the URL with extension recommendations related to `extension_id` in
+// the new Web Store.
+GURL GetNewWebstoreItemRecommendationsUrl(
+    const extensions::ExtensionId& extension_id);
+
 // Returns whether the URL's host matches or is in the same domain as any of the
 // webstore URLs. Note: This includes any subdomains of the webstore URLs.
 // TODO(crbug.com/40235977): We should move the domain checks for the webstore

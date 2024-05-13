@@ -54,6 +54,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -958,6 +959,11 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       mv2_experiment_manager->IsExtensionAffected(extension);
   info->did_acknowledge_mv2_deprecation_warning =
       mv2_experiment_manager->DidUserAcknowledgeWarning(extension.id());
+  if (info->web_store_url.length() > 0) {
+    info->recommendations_url =
+        extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
+            .spec();
+  }
 
   // The icon.
   ExtensionResource icon = IconsInfo::GetIconResource(

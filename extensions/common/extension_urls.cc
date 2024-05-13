@@ -108,6 +108,13 @@ GURL GetWebstoreReportAbuseUrl(const extensions::ExtensionId& extension_id,
                                  extension_id.c_str(), referrer_id.c_str()));
 }
 
+GURL GetNewWebstoreItemRecommendationsUrl(
+    const extensions::ExtensionId& extension_id) {
+  return GURL(base::StringPrintf("%s/detail/%s/related-recommendations",
+                                 GetNewWebstoreLaunchURL().spec().c_str(),
+                                 extension_id.c_str()));
+}
+
 bool IsWebstoreDomain(const GURL& url) {
   return url.DomainIs(GetWebstoreLaunchURL().host()) ||
          url.DomainIs(GetNewWebstoreLaunchURL().host());

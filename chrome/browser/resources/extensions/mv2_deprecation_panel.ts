@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -92,6 +93,18 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
    */
   private getSubtitleString_(): TrustedHTML {
     return sanitizeInnerHtml(this.subtitleString_);
+  }
+
+  /**
+   * Opens a URL in the Web Store with extensions recommendations for the
+   * extension whose find alternative button is clicked.
+   */
+  private onFindAlternativeButtonClick_(
+      event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    const recommendationsUrl: string|undefined =
+        event.model.item.recommendationsUrl;
+    assert(!!recommendationsUrl);
+    this.delegate.openUrl(recommendationsUrl);
   }
 
   /**

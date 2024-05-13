@@ -44,7 +44,7 @@
     padding-inline-start: 20px;
   }
 
-  .find-alternative-button {
+  .extension-buttons {
     margin-inline-start: auto;
   }
 </style>
@@ -70,13 +70,17 @@
       <div class="extension-row cr-row">
         <img class="extension-icon" src="[[item.iconUrl]]" role="presentation">
         <div class="extension-name text-elide">[[item.name]]</div>
-        <cr-button class="find-alternative-button">
-          $i18n{mv2DeprecationPanelFindAlternativeButton}
-          <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
-        </cr-button>
-        <cr-icon-button class="icon-more-vert header-aligned-button"
-            on-click="onExtensionActionMenuClick_">
-        </cr-icon-button>
+        <div class="extension-buttons">
+          <cr-button class="find-alternative-button"
+              on-click="onFindAlternativeButtonClick_"
+              hidden="[[!item.recommendationsUrl]]">
+            $i18n{mv2DeprecationPanelFindAlternativeButton}
+            <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
+          </cr-button>
+          <cr-icon-button class="icon-more-vert header-aligned-button"
+              on-click="onExtensionActionMenuClick_">
+          </cr-icon-button>
+        </div>
       </div>
     </template>
 

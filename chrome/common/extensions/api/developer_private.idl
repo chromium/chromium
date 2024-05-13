@@ -266,6 +266,7 @@ namespace developerPrivate {
     DOMString? path;
     Permissions permissions;
     DOMString? prettifiedPath;
+    DOMString? recommendationsUrl;
     RuntimeError[] runtimeErrors;
     DOMString[] runtimeWarnings;
     ExtensionState state;
