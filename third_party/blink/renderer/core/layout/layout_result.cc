@@ -376,7 +376,6 @@ void LayoutResult::Trace(Visitor* visitor) const {
 
 void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
-  visitor->Trace(non_overflowing_scroll_ranges);
   // This will not cause TOCTOU issue because data_union_type is set in the
   // constructor and never changed.
   if (const BlockData* data = GetBlockData())

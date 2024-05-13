@@ -4357,8 +4357,8 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
 }
 
-const HeapVector<NonOverflowingScrollRange>*
-LayoutBox::NonOverflowingScrollRanges() const {
+const Vector<NonOverflowingScrollRange>* LayoutBox::NonOverflowingScrollRanges()
+    const {
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return nullptr;

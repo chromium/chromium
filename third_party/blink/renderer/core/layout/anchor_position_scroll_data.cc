@@ -23,7 +23,7 @@ const LayoutObject* PositionAnchorObject(const LayoutBox& box) {
                                 : box.AcceptableImplicitAnchor();
 }
 
-const HeapVector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
+const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
     const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
     return nullptr;
@@ -56,15 +56,6 @@ bool AnchorPositionScrollData::IsActive() const {
   return anchored_element_->GetAnchorPositionScrollData() == this;
 }
 
-gfx::Vector2dF AnchorPositionScrollData::TotalOffset(
-    const LayoutObject& anchor_object) const {
-  if (anchor_object == default_anchor_adjustment_data_.anchor_object) {
-    return default_anchor_adjustment_data_.TotalOffset();
-  }
-
-  return ComputeAdjustmentContainersData(anchor_object).TotalOffset();
-}
-
 AnchorPositionScrollData::AdjustmentData
 AnchorPositionScrollData::ComputeAdjustmentContainersData(
     const LayoutObject& anchor) const {
@@ -80,7 +71,6 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     return container;
   };
 
-  result.anchor_object = &anchor;
   const auto* bounding_container = container_ignore_layout_view_for_fixed_pos(
       *anchored_element_->GetLayoutObject());
 
@@ -184,24 +174,31 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
   AdjustmentData new_adjustment_data = ComputeDefaultAnchorAdjustmentData();
 
   SnapshotDiff diff = SnapshotDiff::kNone;
-  if (default_anchor_adjustment_data_.anchor_object !=
-          new_adjustment_data.anchor_object ||
-      AdjustmentContainerIds() !=
-          new_adjustment_data.adjustment_container_ids ||
-      !IsFallbackPositionValid(new_adjustment_data)) {
+  if (AdjustmentContainerIds() !=
+      new_adjustment_data.adjustment_container_ids) {
     diff = SnapshotDiff::kScrollersOrFallbackPosition;
-  } else if (NeedsScrollAdjustmentInX() !=
-                 new_adjustment_data.needs_scroll_adjustment_in_x ||
-             NeedsScrollAdjustmentInY() !=
-                 new_adjustment_data.needs_scroll_adjustment_in_y ||
-             default_anchor_adjustment_data_.TotalOffset() !=
-                 new_adjustment_data.TotalOffset() ||
-             AccumulatedAdjustmentScrollOrigin() !=
-                 new_adjustment_data.accumulated_adjustment_scroll_origin) {
-    // When needs_scroll_adjustment_in_x/y changes, we still need to update
-    // paint properties so that compositor can calculate the translation
-    // offset correctly.
-    diff = SnapshotDiff::kOffsetOnly;
+  } else {
+    const bool anchor_scrolled =
+        TotalOffset() !=
+            new_adjustment_data.accumulated_adjustment +
+                new_adjustment_data.anchored_element_container_scroll_offset ||
+        AccumulatedAdjustmentScrollOrigin() !=
+            new_adjustment_data.accumulated_adjustment_scroll_origin;
+    if (anchor_scrolled &&
+        !IsFallbackPositionValid(
+            new_adjustment_data.accumulated_adjustment,
+            new_adjustment_data.anchored_element_container_scroll_offset)) {
+      diff = SnapshotDiff::kScrollersOrFallbackPosition;
+    } else if (anchor_scrolled ||
+               NeedsScrollAdjustmentInX() !=
+                   new_adjustment_data.needs_scroll_adjustment_in_x ||
+               NeedsScrollAdjustmentInY() !=
+                   new_adjustment_data.needs_scroll_adjustment_in_y) {
+      // When needs_scroll_adjustment_in_x/y changes, we still need to update
+      // paint properties so that compositor can calculate the translation
+      // offset correctly.
+      diff = SnapshotDiff::kOffsetOnly;
+    }
   }
 
   if (update && diff != SnapshotDiff::kNone) {
@@ -212,8 +209,9 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
 }
 
 bool AnchorPositionScrollData::IsFallbackPositionValid(
-    const AdjustmentData& new_adjustment_data) const {
-  const HeapVector<NonOverflowingScrollRange>* non_overflowing_scroll_ranges =
+    const gfx::Vector2dF& new_accumulated_adjustment,
+    const gfx::Vector2dF& new_anchored_element_container_scroll_offset) const {
+  const Vector<NonOverflowingScrollRange>* non_overflowing_scroll_ranges =
       GetNonOverflowingScrollRanges(anchored_element_->GetLayoutObject());
   if (!non_overflowing_scroll_ranges ||
       non_overflowing_scroll_ranges->empty()) {
@@ -222,31 +220,39 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
 
   for (const NonOverflowingScrollRange& range :
        *non_overflowing_scroll_ranges) {
-    if (range.anchor_object != new_adjustment_data.anchor_object) {
-      // The range was calculated with a different anchor object. Check if the
-      // anchored element (which previously overflowed with the try option that
-      // specified that anchor) will become non-overflowing with that option.
-      if (range.Contains(TotalOffset(*range.anchor_object))) {
-        return false;
-      }
-    } else {
-      // The range was calculated with the same anchor object as this data.
-      // Check if the overflow status of the anchored element will change with
-      // the new total offset.
-      if (range.Contains(default_anchor_adjustment_data_.TotalOffset()) !=
-          range.Contains(new_adjustment_data.TotalOffset())) {
-        return false;
-      }
+    if (range.Contains(TotalOffset()) !=
+        range.Contains(new_accumulated_adjustment +
+                       new_anchored_element_container_scroll_offset)) {
+      return false;
     }
   }
   return true;
 }
 
 void AnchorPositionScrollData::UpdateSnapshot() {
-  ValidateSnapshot();
+  if (!IsActive()) {
+    return;
+  }
+
+  SnapshotDiff diff = TakeAndCompareSnapshot(true /* update */);
+  switch (diff) {
+    case SnapshotDiff::kNone:
+      return;
+    case SnapshotDiff::kOffsetOnly:
+      InvalidatePaint();
+      return;
+    case SnapshotDiff::kScrollersOrFallbackPosition:
+      InvalidateLayoutAndPaint();
+      return;
+  }
 }
 
 bool AnchorPositionScrollData::ValidateSnapshot() {
+  if (is_snapshot_validated_) {
+    return true;
+  }
+  is_snapshot_validated_ = true;
+
   // If this AnchorPositionScrollData is detached in the previous style recalc,
   // we no longer need to validate it.
   if (!IsActive()) {
@@ -256,9 +262,10 @@ bool AnchorPositionScrollData::ValidateSnapshot() {
   SnapshotDiff diff = TakeAndCompareSnapshot(true /* update */);
   switch (diff) {
     case SnapshotDiff::kNone:
-      return true;
     case SnapshotDiff::kOffsetOnly:
-      InvalidatePaint();
+      // We don't need to rewind to layout recalc for offset-only diff, as this
+      // function is called at LayoutClean during lifecycle update, and
+      // offset-only diff only needs paint update.
       return true;
     case SnapshotDiff::kScrollersOrFallbackPosition:
       InvalidateLayoutAndPaint();
@@ -297,7 +304,6 @@ void AnchorPositionScrollData::InvalidatePaint() {
 
 void AnchorPositionScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(anchored_element_);
-  visitor->Trace(default_anchor_adjustment_data_);
   visitor->Trace(position_visibility_observer_);
   ScrollSnapshotClient::Trace(visitor);
   ElementRareDataField::Trace(visitor);
