@@ -3426,7 +3426,6 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite",
                 "$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile",
             ],
-            ci_only = True,
             swarming = targets.swarming(
                 shards = 3,
             ),
