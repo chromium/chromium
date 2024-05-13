@@ -136,6 +136,10 @@
     opacity: .5;
   }
 
+  #esb-download-row-promo {
+    background-color: var(--cr-hover-background-color);
+  }
+
   #file-icon-wrapper iron-icon[icon-color='light-grey'] {
     color: var(--google-grey-400);
   }
@@ -410,7 +414,7 @@
           </template>
           <template is="dom-if" if="[[showDeepScan_]]" restamp>
             <span role="gridcell">
-              <cr-button on-click="onDeepScanClick_" id="deepScan" 
+              <cr-button on-click="onDeepScanClick_" id="deepScan"
                   class="action-button" focus-row-control focus-type="open">
                 [[computeDeepScanControlText_(data.state)]]
               </cr-button>
@@ -445,7 +449,7 @@
         <div id="safe" class="controls" hidden="[[isDangerous_]]">
           <template is="dom-if" if="[[showDeepScan_]]" restamp>
             <span role="gridcell">
-              <cr-button on-click="onDeepScanClick_" id="deepScan" 
+              <cr-button on-click="onDeepScanClick_" id="deepScan"
                   class="action-button" focus-row-control focus-type="open">
                 [[computeDeepScanControlText_(data.state)]]
               </cr-button>
@@ -459,7 +463,7 @@
 
       <!-- Show the dangerous control buttons in the old UX only. -->
       <template is="dom-if"
-          if="[[computeShowButtonsForDangerous_(isDangerous_, 
+          if="[[computeShowButtonsForDangerous_(isDangerous_,
               improvedDownloadWarningsUx_)]]">
         <div id="dangerous" class="controls">
           <!-- Files that enterprise policies allow to be reviewed. -->
