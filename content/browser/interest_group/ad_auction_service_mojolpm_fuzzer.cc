@@ -4,6 +4,8 @@
 
 // A MojoLPM fuzzer targeting the public API surfaces of the Protected Audiences
 // API.
+//
+// See documentation in ad_auction_service_mojolpm_fuzzer_docs.md.
 
 #include <stdint.h>
 
