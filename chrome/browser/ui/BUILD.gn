@@ -96,8 +96,6 @@ static_library("ui") {
     "bluetooth/bluetooth_dialogs.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
-    "browser_element_identifiers.cc",
-    "browser_element_identifiers.h",
     "browser_navigator_params.cc",
     "browser_navigator_params.h",
     "browser_ui_prefs.cc",
@@ -423,6 +421,7 @@ static_library("ui") {
     "//mojo/public/cpp/bindings",
   ]
   deps = [
+    ":browser_element_identifiers",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -4213,8 +4212,6 @@ static_library("ui") {
       "lens/lens_overlay_side_panel_coordinator.h",
       "lens/lens_overlay_side_panel_navigation_throttle.cc",
       "lens/lens_overlay_side_panel_navigation_throttle.h",
-      "lens/lens_permission_bubble_controller.cc",
-      "lens/lens_permission_bubble_controller.h",
       "lens/lens_search_bubble_controller.cc",
       "lens/lens_search_bubble_controller.h",
       "lens/lens_untrusted_ui.cc",
@@ -7322,6 +7319,14 @@ static_library("test_support") {
     ]
     deps += [ "//extensions/browser" ]
   }
+}
+
+static_library("browser_element_identifiers") {
+  sources = [
+    "browser_element_identifiers.cc",
+    "browser_element_identifiers.h",
+  ]
+  deps = [ "//ui/base" ]
 }
 
 if (is_chromeos_ash) {

@@ -79,6 +79,7 @@ if (!is_android) {
       ":in_process_fuzzer_buildflags",
       "//chrome:packed_resources",
       "//chrome/app:command_ids",
+      "//chrome/browser/ui:browser_element_identifiers",
     ]
 
     # Used for UI controls

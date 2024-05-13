@@ -259,8 +259,8 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_)) {
     if (!permission_bubble_controller_) {
       permission_bubble_controller_ =
-          lens::LensPermissionBubbleController::CreateInstance(tab_browser,
-                                                               pref_service_);
+          std::make_unique<lens::LensPermissionBubbleController>(
+              tab_->GetBrowserWindowInterface(), pref_service_);
     }
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),

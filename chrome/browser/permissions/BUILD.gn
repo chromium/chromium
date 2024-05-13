@@ -204,6 +204,7 @@ if (!is_android) {
     deps = [
       ":permissions",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",

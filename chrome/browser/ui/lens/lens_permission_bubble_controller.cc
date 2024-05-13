@@ -7,12 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
-#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -21,6 +18,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -44,18 +43,11 @@ void LogUserAction(LensPermissionBubbleController::UserAction user_action) {
 
 }  // namespace
 
-// static
-std::unique_ptr<LensPermissionBubbleController>
-LensPermissionBubbleController::CreateInstance(Browser* browser,
-                                               PrefService* pref_service) {
-  return std::make_unique<LensPermissionBubbleController>(browser,
-                                                          pref_service);
-}
-
 LensPermissionBubbleController::LensPermissionBubbleController(
-    Browser* browser,
+    BrowserWindowInterface* browser_window_interface,
     PrefService* pref_service)
-    : browser_(browser), pref_service_(pref_service) {}
+    : browser_window_interface_(browser_window_interface),
+      pref_service_(pref_service) {}
 
 LensPermissionBubbleController::~LensPermissionBubbleController() {
   if (HasOpenDialogWidget()) {
@@ -140,14 +132,10 @@ bool LensPermissionBubbleController::HasOpenDialogWidget() {
 void LensPermissionBubbleController::OnHelpCenterLinkClicked(
     const ui::Event& event) {
   LogUserAction(UserAction::kLinkOpened);
-  browser_->OpenURL(
-      content::OpenURLParams(
-          GURL(lens::features::GetLensOverlayHelpCenterURL()),
-          content::Referrer(),
-          ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::NEW_BACKGROUND_TAB),
-          ui::PAGE_TRANSITION_LINK, false),
-      /*navigation_handle_callback=*/{});
+  browser_window_interface_->OpenURL(
+      GURL(lens::features::GetLensOverlayHelpCenterURL()),
+      ui::DispositionFromEventFlags(event.flags(),
+                                    WindowOpenDisposition::NEW_BACKGROUND_TAB));
 }
 
 void LensPermissionBubbleController::OnPermissionDialogAccept() {

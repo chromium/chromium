@@ -24,7 +24,7 @@ namespace views {
 class Widget;
 }
 
-class Browser;
+class BrowserWindowInterface;
 class PrefService;
 
 namespace lens {
@@ -53,16 +53,14 @@ class LensPermissionBubbleController {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensPermissionBubbleUserAction)
 
-  LensPermissionBubbleController(Browser* browser, PrefService* pref_service);
+  LensPermissionBubbleController(
+      BrowserWindowInterface* browser_window_interface,
+      PrefService* pref_service);
   LensPermissionBubbleController(const LensPermissionBubbleController&) =
       delete;
   LensPermissionBubbleController& operator=(
       const LensPermissionBubbleController&) = delete;
   ~LensPermissionBubbleController();
-
-  static std::unique_ptr<LensPermissionBubbleController> CreateInstance(
-      Browser* browser,
-      PrefService* pref_service);
 
   // Shows a tab-modal dialog. `callback` is called when the permission is
   // granted, whether by user directly accepting this dialog or indirectly via
@@ -83,7 +81,7 @@ class LensPermissionBubbleController {
   void OnPermissionPreferenceUpdated(RequestPermissionCallback callback);
 
   // The associated browser.
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
   // The pref service associated with the current profile.
   raw_ptr<PrefService> pref_service_ = nullptr;
   // Registrar for pref change notifications.
