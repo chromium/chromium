@@ -315,13 +315,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
 
             ItemOnScreenFacility<HostStationT, SelectReturnT> focusedItem =
                     new ItemOnScreenFacility<>(mHostStation, this);
-
-            try {
-                onView(mOnScreenViewMatcher).check(matches(isCompletelyDisplayed()));
-                return Facility.enterSync(focusedItem, /* trigger= */ null);
-            } catch (AssertionError | NoMatchingViewException e) {
-                return Facility.enterSync(focusedItem, this::triggerScrollTo);
-            }
+            return Facility.enterSync(focusedItem, this::maybeScrollTo);
         }
 
         protected void setSelectHandler(Callable<SelectReturnT> selectHandler) {
@@ -341,14 +335,18 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             return mSelectHandler;
         }
 
-        private void triggerScrollTo() {
+        private void maybeScrollTo() {
             try {
-                onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo());
-            } catch (PerformException performException) {
-                throw TravelException.newTravelException(
-                        String.format(
-                                "Could not scroll using data matcher %s", mOnScreenViewMatcher),
-                        performException);
+                onView(mOnScreenViewMatcher).check(matches(isCompletelyDisplayed()));
+            } catch (AssertionError | NoMatchingViewException e) {
+                try {
+                    onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo());
+                } catch (PerformException performException) {
+                    throw TravelException.newTravelException(
+                            String.format(
+                                    "Could not scroll using data matcher %s", mOnScreenViewMatcher),
+                            performException);
+                }
             }
         }
     }

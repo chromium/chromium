@@ -38,7 +38,6 @@ class FacilityCheckOut extends Transition {
         // and FacilityCheckOut#exitSync().
         onBeforeTransition();
         mWaits = createWaits();
-        ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
         for (ConditionWait wait : mWaits) {
             wait.getCondition().onStartMonitoring();
         }

@@ -13,7 +13,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
-import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 
@@ -166,15 +165,14 @@ public class ConditionWaiter {
     private static final String TAG = "Transit";
 
     /**
-     * Start timers, perform the first Condition checks before running the Trigger.
+     * Blocks waiting for multiple {@link Condition}s, polling them and reporting their status to he
+     * {@link ConditionWait}es.
      *
-     * <p>Ensure at least one Condition is not fulfilled before running the Trigger.
-     *
-     * <p>This also makes supplied values available for Conditions that implement Supplier before
-     * {@link Condition#onStartMonitoring()} is called.
+     * @param conditionWaits the {@link ConditionWait}es to process.
+     * @param options the {@link TransitionOptions} to configure the polling parameters.
+     * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
      */
-    static void preCheck(
-            List<ConditionWait> conditionWaits, TransitionOptions options, Trigger trigger) {
+    public static void waitFor(List<ConditionWait> conditionWaits, TransitionOptions options) {
         if (conditionWaits.isEmpty()) {
             Log.i(TAG, "No conditions to fulfill.");
         }
@@ -183,32 +181,6 @@ public class ConditionWaiter {
             wait.startTimer();
         }
 
-        boolean anyCriteriaMissing = false;
-        for (ConditionWait wait : conditionWaits) {
-            anyCriteriaMissing |= wait.update();
-        }
-
-        // At least one Condition should be not fulfilled, or this is likely an incorrectly designed
-        // Transition. Exceptions to this rule:
-        //     1. null Trigger, for example when focusing on secondary elements of a screen that
-        //        aren't declared in Station#declareElements().
-        //     2. A explicit exception is made with TransitionOptions.mPossiblyAlreadyFulfilled.
-        //        E.g. when not possible to determine whether the trigger needs to be run.
-        if (!anyCriteriaMissing && !options.mPossiblyAlreadyFulfilled && trigger != null) {
-            throw buildWaitConditionsException(
-                    "All Conditions already fulfilled before running Trigger", conditionWaits);
-        }
-    }
-
-    /**
-     * Blocks waiting for multiple {@link Condition}s, polling them and reporting their status to he
-     * {@link ConditionWait}es.
-     *
-     * @param conditionWaits the {@link ConditionWait}es to process.
-     * @param options the {@link TransitionOptions} to configure the polling parameters.
-     * @throws AssertionError if not all {@link Condition}s are fulfilled before timing out.
-     */
-    static void waitFor(List<ConditionWait> conditionWaits, TransitionOptions options) {
         Runnable checker =
                 () -> {
                     boolean anyCriteriaMissing = false;
@@ -217,8 +189,7 @@ public class ConditionWaiter {
                     }
 
                     if (anyCriteriaMissing) {
-                        throw buildWaitConditionsException(
-                                "Did not meet all conditions", conditionWaits);
+                        throw buildWaitConditionsException(conditionWaits);
                     } else {
                         Log.i(
                                 TAG,
@@ -232,9 +203,9 @@ public class ConditionWaiter {
     }
 
     private static CriteriaNotSatisfiedException buildWaitConditionsException(
-            String message, List<ConditionWait> conditionWaits) {
+            List<ConditionWait> conditionWaits) {
         return new CriteriaNotSatisfiedException(
-                message + ":\n" + createWaitConditionsSummary(conditionWaits));
+                "Did not meet all conditions:\n" + createWaitConditionsSummary(conditionWaits));
     }
 
     private static String createWaitConditionsSummary(List<ConditionWait> conditionStatuses) {

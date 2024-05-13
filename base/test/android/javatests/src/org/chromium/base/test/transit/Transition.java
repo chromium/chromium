@@ -22,7 +22,7 @@ public abstract class Transition {
     }
 
     protected final TransitionOptions mOptions;
-    @Nullable protected final Trigger mTrigger;
+    @Nullable private final Trigger mTrigger;
 
     Transition(TransitionOptions options, @Nullable Trigger trigger) {
         mOptions = options;
@@ -91,7 +91,6 @@ public abstract class Transition {
         @Nullable List<Condition> mTransitionConditions;
         long mTimeoutMs;
         int mTries = 1;
-        boolean mPossiblyAlreadyFulfilled;
 
         private TransitionOptions() {}
 
@@ -127,12 +126,6 @@ public abstract class Transition {
              */
             public Builder withRetry() {
                 mTries = 2;
-                return this;
-            }
-
-            /** The Transition's Conditions might already be all fulfilled before the Trigger. */
-            public Builder withPossiblyAlreadyFulfilled() {
-                mPossiblyAlreadyFulfilled = true;
                 return this;
             }
         }
