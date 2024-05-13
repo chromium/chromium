@@ -353,9 +353,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   int GetNumCriticalUpdates();
 
-  // Determines if RefreshRemote is necassary.
-  bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source);
-
   // Gets /tmp directory path to store downloaded files.
   const base::FilePath GetCacheDirPath();
 

@@ -384,6 +384,46 @@ std::string UncompressFileAndGetFilename(std::string file_contents) {
   return firmware_filename;
 }
 
+bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source,
+                          bool refresh_remote_for_testing) {
+  FIRMWARE_LOG(DEBUG) << "RefreshRemoteAllowed()";
+  DCHECK(NetworkHandler::IsInitialized());
+  const bool is_metered = NetworkHandler::Get()
+                              ->network_state_handler()
+                              ->default_network_is_metered();
+  const bool connection_ok =
+      !is_metered || source == FirmwareUpdateManager::Source::kUI;
+  FIRMWARE_LOG(DEBUG) << "Connection metered: " << is_metered
+                      << ", Source: " << static_cast<int>(source)
+                      << ", Refresh Remote connection okay: " << connection_ok;
+  if (!connection_ok) {
+    return false;
+  }
+
+  // Always refresh the remote in tests for consistent results.
+  if (refresh_remote_for_testing) {
+    return true;
+  }
+  const base::FilePath local_firmware_path =
+      base::FilePath(kLocalFirmwareBasePath)
+          .Append(kLVFSRemoteId)
+          .Append(kLocalMetadataFileName);
+  base::File::Info info;
+  if (!GetMetadataFileInfo(local_firmware_path, &info)) {
+    // Allow RefreshRemote if file not found or info not found
+    return true;
+  }
+  base::TimeDelta age = base::Time::Now() - info.last_modified;
+  if (age >= base::Hours(0) && age <= base::Hours(24)) {
+    FIRMWARE_LOG(DEBUG) << "Local firmware file age < 24 hours, age: "
+                        << static_cast<int>(age.InHours());
+    return false;
+  }
+  FIRMWARE_LOG(DEBUG) << "Local firmware file age > 24 hours, age: "
+                      << static_cast<int>(age.InHours());
+  return true;
+}
+
 }  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager()
@@ -449,46 +489,6 @@ int FirmwareUpdateManager::GetNumCriticalUpdates() {
     }
   }
   return critical_update_count;
-}
-
-bool FirmwareUpdateManager::RefreshRemoteAllowed(
-    FirmwareUpdateManager::Source source) {
-  FIRMWARE_LOG(DEBUG) << "RefreshRemoteAllowed()";
-  DCHECK(NetworkHandler::IsInitialized());
-  const bool is_metered = NetworkHandler::Get()
-                              ->network_state_handler()
-                              ->default_network_is_metered();
-  const bool connection_ok =
-      !is_metered || source == FirmwareUpdateManager::Source::kUI;
-  FIRMWARE_LOG(DEBUG) << "Connection metered: " << is_metered
-                      << ", Source: " << static_cast<int>(source)
-                      << ", Refresh Remote connection okay: " << connection_ok;
-  if (!connection_ok) {
-    return false;
-  }
-
-  // Always refresh the remote in tests for consistent results.
-  if (refresh_remote_for_testing_) {
-    return true;
-  }
-  const base::FilePath local_firmware_path =
-      base::FilePath(kLocalFirmwareBasePath)
-          .Append(kLVFSRemoteId)
-          .Append(kLocalMetadataFileName);
-  base::File::Info info;
-  if (!GetMetadataFileInfo(local_firmware_path, &info)) {
-    // Allow RefreshRemote if file not found or info not found
-    return true;
-  }
-  base::TimeDelta age = base::Time::Now() - info.last_modified;
-  if (age >= base::Hours(0) && age <= base::Hours(24)) {
-    FIRMWARE_LOG(DEBUG) << "Local firmware file age < 24 hours, age: "
-                        << static_cast<int>(age.InHours());
-    return false;
-  }
-  FIRMWARE_LOG(DEBUG) << "Local firmware file age > 24 hours, age: "
-                      << static_cast<int>(age.InHours());
-  return true;
 }
 
 const base::FilePath FirmwareUpdateManager::GetCacheDirPath() {
@@ -577,8 +577,8 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
   is_fetching_updates_ = true;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FirmwareUpdateManager::RefreshRemoteAllowed,
-                     base::Unretained(this), source),
+      base::BindOnce(&RefreshRemoteAllowed, source,
+                     refresh_remote_for_testing_),
       base::BindOnce(&FirmwareUpdateManager::MaybeRefreshRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 }
