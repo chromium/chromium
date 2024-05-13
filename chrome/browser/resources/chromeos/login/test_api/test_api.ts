@@ -1158,6 +1158,10 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
   }
 
+  isOobeQuickStartEnabled(): boolean {
+    return loadTimeData.getBoolean('testapi_isOobeQuickStartEnabled');
+  }
+
   /**
    * Select option to manually enter Google credentials.
    */
