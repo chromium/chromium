@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ariaColIndexText on Element must enqueue an attributeChanged reaction when adding aria-colindextext content attribute
+  assert_array_equals: lengths differ, expected array ["attributeChanged"] length 1, got [] length 0
+[FAIL] ariaColIndexText on Element must enqueue an attributeChanged reaction when replacing an existing attribute
+  assert_array_equals: lengths differ, expected array ["constructed", "attributeChanged"] length 2, got ["constructed"] length 1
+[FAIL] ariaRowIndexText on Element must enqueue an attributeChanged reaction when adding aria-rowindextext content attribute
+  assert_array_equals: lengths differ, expected array ["attributeChanged"] length 1, got [] length 0
+[FAIL] ariaRowIndexText on Element must enqueue an attributeChanged reaction when replacing an existing attribute
+  assert_array_equals: lengths differ, expected array ["constructed", "attributeChanged"] length 2, got ["constructed"] length 1
+Harness: the test ran to completion.
+
