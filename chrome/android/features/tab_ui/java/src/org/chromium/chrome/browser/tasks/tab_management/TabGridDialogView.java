@@ -10,6 +10,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
@@ -34,6 +35,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
@@ -155,9 +157,11 @@ public class TabGridDialogView extends FrameLayout {
                             .isKeyboardShowing(mContext, this)) {
                         mParentWidth = mParent.getWidth();
                         mParentHeight = mParent.getHeight();
+                        updateDialogWithOrientation(mOrientation);
                     }
                 };
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
+        updateDialogWithOrientation(mOrientation);
         setVisibility(GONE);
     }
 
@@ -708,19 +712,25 @@ public class TabGridDialogView extends FrameLayout {
 
     @VisibleForTesting
     void updateDialogWithOrientation(int orientation) {
+        Resources res = mContext.getResources();
+        int minMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_margin);
+        int maxMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mSideMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_side_margin);
-            mTopMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
+            mSideMargin = minMargin;
+            mTopMargin = clampMargin(Math.round(mParentHeight * 0.1f), minMargin, maxMargin);
         } else {
-            mSideMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
-            mTopMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_side_margin);
+            mSideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
+            mTopMargin = minMargin;
         }
         mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
         mOrientation = orientation;
+    }
+
+    private int clampMargin(int sizeAdjustedValue, int lowerBound, int upperBound) {
+        // In the event the parent isn't laid out yet just default to the upper bound.
+        if (sizeAdjustedValue == 0) return upperBound;
+
+        return MathUtils.clamp(sizeAdjustedValue, lowerBound, upperBound);
     }
 
     private void updateAnimationCardView(View view) {
