@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
+#include "gin/converter.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "net/base/ip_address.h"
@@ -147,24 +148,26 @@ class V8ExternalASCIILiteral
 // the cutoff length for when to start wrapping rather than creating copies.
 const size_t kMaxStringBytesForCopy = 256;
 
-// Converts a V8 String to a UTF8 std::string.
-std::string V8StringToUTF8(v8::Isolate* isolate, v8::Local<v8::String> s) {
-  int len = s->Utf8Length(isolate);
-  std::string str(base::checked_cast<size_t>(len), '\0');
-  s->WriteUtf8(isolate, str.data(), len, /*nchars_ref=*/nullptr,
-               v8::String::NO_NULL_TERMINATION);
-  return str;
+// Converts a V8 String to a UTF8 std::string. Returns false if `Value` is empty
+// or not a string.
+bool V8StringToUtf8(v8::Isolate* isolate,
+                    v8::Local<v8::Value> v8_value,
+                    std::string& out) {
+  if (v8_value.IsEmpty()) {
+    return false;
+  }
+  return gin::ConvertFromV8(isolate, v8_value, &out);
 }
 
-// Converts a V8 String to a UTF16 std::u16string.
-std::u16string V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
-  int len = s->Length();
-  std::u16string str(base::checked_cast<size_t>(len), '\0');
-  // `char16_t` and `uint16_t` are not the same type, but we build with strict
-  // aliasing off. See https://crbug.com/42209752.
-  s->Write(isolate, reinterpret_cast<uint16_t*>(str.data()), /*start=*/0, len,
-           v8::String::NO_NULL_TERMINATION);
-  return str;
+// Converts a V8 String to a UTF16 std::u16string. Returns false if `v8_value`
+// is empty or not a string.
+bool V8StringToUtf16(v8::Isolate* isolate,
+                     v8::Local<v8::Value> v8_value,
+                     std::u16string& out) {
+  if (v8_value.IsEmpty()) {
+    return false;
+  }
+  return gin::ConvertFromV8(isolate, v8_value, &out);
 }
 
 // Converts an ASCII std::string to a V8 string.
@@ -216,10 +219,8 @@ bool V8ObjectToUTF16String(v8::Local<v8::Value> object,
 
   v8::HandleScope scope(isolate);
   v8::Local<v8::String> str_object;
-  if (!object->ToString(isolate->GetCurrentContext()).ToLocal(&str_object))
-    return false;
-  *utf16_result = V8StringToUTF16(isolate, str_object);
-  return true;
+  return object->ToString(isolate->GetCurrentContext()).ToLocal(&str_object) &&
+         V8StringToUtf16(isolate, str_object, *utf16_result);
 }
 
 // Extracts an hostname argument from |args|. On success returns true
@@ -227,11 +228,11 @@ bool V8ObjectToUTF16String(v8::Local<v8::Value> object,
 bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
                          std::string* hostname) {
   // The first argument should be a string.
-  if (args.Length() == 0 || args[0].IsEmpty() || !args[0]->IsString())
+  std::u16string hostname_utf16;
+  if (args.Length() == 0 ||
+      !V8StringToUtf16(args.GetIsolate(), args[0], hostname_utf16)) {
     return false;
-
-  const std::u16string hostname_utf16 =
-      V8StringToUTF16(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
+  }
 
   // If the hostname is already in ASCII, simply return it as is.
   if (base::IsStringASCII(hostname_utf16)) {
@@ -488,13 +489,11 @@ class ProxyResolverV8::Context {
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
-    if (!ret->IsString()) {
+    std::u16string ret_str;
+    if (!V8StringToUtf16(isolate_, ret, ret_str)) {
       js_bindings()->OnError(-1, u"FindProxyForURL() did not return a string.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
-
-    std::u16string ret_str =
-        V8StringToUTF16(isolate_, v8::Local<v8::String>::Cast(ret));
 
     if (!base::IsStringASCII(ret_str)) {
       // TODO(eroman): Rather than failing when a wide string is returned, we
@@ -797,13 +796,13 @@ class ProxyResolverV8::Context {
   static void SortIpAddressListCallback(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
     // We need at least one string argument.
-    if (args.Length() == 0 || args[0].IsEmpty() || !args[0]->IsString()) {
+    std::string ip_address_list;
+    if (args.Length() == 0 ||
+        !V8StringToUtf8(args.GetIsolate(), args[0], ip_address_list)) {
       args.GetReturnValue().SetNull();
       return;
     }
 
-    std::string ip_address_list =
-        V8StringToUTF8(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
     if (!base::IsStringASCII(ip_address_list)) {
       args.GetReturnValue().SetNull();
       return;
@@ -822,21 +821,16 @@ class ProxyResolverV8::Context {
   static void IsInNetExCallback(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
     // We need at least 2 string arguments.
-    if (args.Length() < 2 || args[0].IsEmpty() || !args[0]->IsString() ||
-        args[1].IsEmpty() || !args[1]->IsString()) {
+    std::string ip_address;
+    std::string ip_prefix;
+    if (args.Length() < 2 ||
+        !V8StringToUtf8(args.GetIsolate(), args[0], ip_address) ||
+        !V8StringToUtf8(args.GetIsolate(), args[1], ip_prefix)) {
       args.GetReturnValue().SetNull();
       return;
     }
 
-    std::string ip_address =
-        V8StringToUTF8(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
-    if (!base::IsStringASCII(ip_address)) {
-      args.GetReturnValue().Set(false);
-      return;
-    }
-    std::string ip_prefix =
-        V8StringToUTF8(args.GetIsolate(), v8::Local<v8::String>::Cast(args[1]));
-    if (!base::IsStringASCII(ip_prefix)) {
+    if (!base::IsStringASCII(ip_address) || !base::IsStringASCII(ip_prefix)) {
       args.GetReturnValue().Set(false);
       return;
     }
@@ -847,15 +841,15 @@ class ProxyResolverV8::Context {
   static void IsPlainHostNameCallback(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
     // Need at least 1 string arguments.
-    if (args.Length() < 1 || args[0].IsEmpty() || !args[0]->IsString()) {
+    std::string hostname_utf8;
+    if (args.Length() < 1 ||
+        !V8StringToUtf8(args.GetIsolate(), args[0], hostname_utf8)) {
       args.GetIsolate()->ThrowException(
           v8::Exception::TypeError(ASCIIStringToV8String(
               args.GetIsolate(), "Requires 1 string parameter")));
       return;
     }
 
-    std::string hostname_utf8 =
-        V8StringToUTF8(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
     args.GetReturnValue().Set(IsPlainHostName(hostname_utf8));
   }
 
