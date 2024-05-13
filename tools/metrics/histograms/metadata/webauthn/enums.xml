@@ -276,6 +276,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Polling cancelled before finding window"/>
 </enum>
 
+<enum name="WindowsKeyCredentialCreateResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="System operation returned an error"/>
+  <int value="2" label="ActivationFactory Not Available"/>
+  <int value="3" label="RequestCreateAsync Call Failed"/>
+  <int value="4" label="PostAsyncHandlers Call Failed"/>
+  <int value="5" label="Invalid status returned"/>
+  <int value="6" label="Invalid result returned"/>
+  <int value="7" label="Invalid credential returned"/>
+</enum>
+
 <enum name="WindowsKeyCredentialManagerSupportResults">
   <int value="0" label="KeyCredentialManager Available"/>
   <int value="1" label="KeyCredentialManager Not Available"/>
@@ -283,6 +294,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IsSupportedAsync Call Failed"/>
   <int value="4" label="PostAsyncHandlers Call Failed"/>
   <int value="5" label="Async Operation Failed"/>
+</enum>
+
+<enum name="WindowsKeyCredentialSignResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="System operation returned an error"/>
+  <int value="2" label="RequestSignAsync call failed"/>
+  <int value="3" label="PostAsyncHandlers call failed"/>
+  <int value="4" label="IBuffer creation failed"/>
+  <int value="5" label="Invalid status returned"/>
+  <int value="6" label="Invalid result returned"/>
+  <int value="7" label="Invalid signature buffer returned"/>
 </enum>
 
 </enums>
