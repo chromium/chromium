@@ -20,7 +20,6 @@ static_library("presence") {
   ]
 
   deps = [
-    ":nearby_presence_connections_manager",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -41,6 +40,7 @@ static_library("presence") {
   ]
 
   public_deps = [
+    ":nearby_presence_connections_manager",
     "//third_party/nearby:connections_metadata_proto",
     "//third_party/nearby:presence_types",
   ]

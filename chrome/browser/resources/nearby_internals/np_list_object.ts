@@ -30,7 +30,7 @@ class NpObjectElement extends PolymerElement {
   private browserProxy_: NearbyPresenceBrowserProxy =
       NearbyPresenceBrowserProxy.getInstance();
 
-  onConnectClicked() {
+  private onConnectClicked_(): void {
     this.browserProxy_.connectToPresenceDevice(this.device.endpoint_id);
   }
 }

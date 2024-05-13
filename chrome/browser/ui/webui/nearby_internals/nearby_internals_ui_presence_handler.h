@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_UI_PRESENCE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_INTERNALS_NEARBY_INTERNALS_UI_PRESENCE_HANDLER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -57,10 +60,20 @@ class NearbyInternalsPresenceHandler
 
   void HandleSendUpdateCredentialsMessage(const base::Value::List& args);
 
+  void OnConnection(const std::string& endpoint_id,
+                    NearbyConnection* connection);
+
  private:
+  ash::nearby::presence::NearbyPresenceConnectionsManager*
+  GetNearbyPresenceConnectionsManager();
+
   const raw_ptr<content::BrowserContext> context_;
+  base::flat_map<std::string, std::unique_ptr<nearby::presence::PresenceDevice>>
+      endpoint_id_to_presence_device_map_;
   std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
       scan_session_;
+  std::unique_ptr<ash::nearby::presence::NearbyPresenceConnectionsManager>
+      nearby_presence_connections_manager_;
 
   base::WeakPtrFactory<NearbyInternalsPresenceHandler> weak_ptr_factory_{this};
 };
