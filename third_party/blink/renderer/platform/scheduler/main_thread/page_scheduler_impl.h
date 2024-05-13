@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/lazy_now.h"
@@ -219,6 +220,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // now, perform the state transition. Otherwise, schedules another call to
   // this method at the time when it should change.
   void UpdateFrozenState(PolicyUpdater& policy_updater);
+  void UpdateFrozenState(PolicyUpdater& policy_updater,
+                         base::MemoryReductionTaskContext called_from);
 
   // Returns all WakeUpBudgetPools owned by this PageSchedulerImpl.
   static constexpr int kNumWakeUpBudgetPools = 4;
@@ -287,7 +290,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   CancelableClosureHolder do_intensively_throttle_wake_ups_callback_;
   CancelableClosureHolder reset_had_recent_title_or_favicon_update_;
   CancelableClosureHolder on_audio_silent_closure_;
-  CancelableClosureHolder update_frozen_state_callback_;
+  base::OneShotDelayedBackgroundTimer update_frozen_state_timer_;
   const base::TimeDelta delay_for_background_tab_freezing_;
 
   // Interval between throttled wake ups for unimportant frames (visible, small
