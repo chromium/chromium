@@ -132,6 +132,7 @@ StatusOr<Record> ProduceRecord(std::string dm_token,
             {"Abnormal system timestamp obtained. Microseconds since epoch: ",
              base::NumberToString(time_since_epoch_us)})));
   }
+  record.set_timestamp_us(time_since_epoch_us);
   return std::move(record);
 }
 
