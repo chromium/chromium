@@ -119,21 +119,27 @@ suite('networkCardTestSuite', function() {
     const networkInfoElement = getNetworkInfoElement();
     assert(networkInfoElement);
 
-    return dx_utils.getCellularInfoElement(networkInfoElement);
+    const cellularInfo = dx_utils.getCellularInfoElement(networkInfoElement);
+    assert(cellularInfo);
+    return cellularInfo;
   }
 
   function getEthernetInfoElement(): EthernetInfoElement {
     const networkInfoElement = getNetworkInfoElement();
     assert(networkInfoElement);
 
-    return dx_utils.getEthernetInfoElement(networkInfoElement);
+    const ethernetInfo = dx_utils.getEthernetInfoElement(networkInfoElement);
+    assert(ethernetInfo);
+    return ethernetInfo;
   }
 
   function getWifiInfoElement(): WifiInfoElement {
     const networkInfoElement = getNetworkInfoElement();
     assert(networkInfoElement);
 
-    return dx_utils.getWifiInfoElement(networkInfoElement);
+    const wifiInfo = dx_utils.getWifiInfoElement(networkInfoElement);
+    assert(wifiInfo);
+    return wifiInfo;
   }
 
   function getNameServers(): string[] {

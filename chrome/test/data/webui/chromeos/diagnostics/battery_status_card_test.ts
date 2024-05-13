@@ -100,6 +100,7 @@ suite('batteryStatusCardTestSuite', function() {
     return initializeBatteryStatusCard(
                fakeBatteryInfo, fakeBatteryChargeStatus, fakeBatteryHealth)
         .then(() => {
+          assert(batteryStatusElement);
           dx_utils.assertTextContains(
               dx_utils.getDataPointValue(
                   batteryStatusElement, '#batteryHealth'),

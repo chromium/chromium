@@ -11,6 +11,7 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -68,7 +69,7 @@ suite('cpuCardTestSuite', function() {
   /**
    * Returns the Run Tests button from inside the routine-section.
    */
-  function getRunTestsButton(): HTMLButtonElement {
+  function getRunTestsButton(): CrButtonElement {
     const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
     assert(button);
     return button;
@@ -89,6 +90,7 @@ suite('cpuCardTestSuite', function() {
     }];
     return initializeCpuCard(fakeCpuUsage, fakeSystemInfo, highMemoryAvailable)
         .then(() => {
+          assert(cpuElement);
           dx_utils.assertTextContains(
               dx_utils.getDataPointValue(cpuElement, '#cpuUsageUser'),
               `${
@@ -140,6 +142,7 @@ suite('cpuCardTestSuite', function() {
           return flushTasks();
         })
         .then(() => {
+          assert(cpuElement);
           assertEquals(
               dx_utils.getDataPoint(cpuElement, '#cpuSpeed').tooltipText, '');
         });

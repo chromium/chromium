@@ -47,8 +47,8 @@ export interface RoutineSectionElement {
 const RoutineSectionElementBase = I18nMixin(PolymerElement);
 
 export class RoutineSectionElement extends RoutineSectionElementBase {
-  static get is(): string {
-    return 'routine-section';
+  static get is(): 'routine-section' {
+    return 'routine-section' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -615,7 +615,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'routine-section': RoutineSectionElement;
+    [RoutineSectionElement.is]: RoutineSectionElement;
   }
 }
 

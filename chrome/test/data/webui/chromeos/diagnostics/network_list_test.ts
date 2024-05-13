@@ -185,6 +185,7 @@ suite('networkListTestSuite', function() {
     const wifiInfoElement = dx_utils.getWifiInfoElement(
         networkCardElements[0]!.shadowRoot!.querySelector(
             NetworkInfoElement.is));
+    assert(wifiInfoElement);
     dx_utils.assertTextContains(
         wifiInfoElement.shadowRoot!.querySelector<DataPointElement>(
                                        '#ssid')!.value,
@@ -198,6 +199,7 @@ suite('networkListTestSuite', function() {
     const cellularInfoElement = dx_utils.getCellularInfoElement(
         networkCardElements[0]!.shadowRoot!.querySelector(
             NetworkInfoElement.is));
+    assert(cellularInfoElement);
     dx_utils.assertTextContains(
         cellularInfoElement.shadowRoot!
             .querySelector<DataPointElement>('#iccid')!.value,

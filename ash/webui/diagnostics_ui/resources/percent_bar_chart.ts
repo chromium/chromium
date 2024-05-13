@@ -20,8 +20,8 @@ import {getTemplate} from './percent_bar_chart.html.js';
  */
 
 export class PercentBarChartElement extends PolymerElement {
-  static get is(): string {
-    return 'percent-bar-chart';
+  static get is(): 'percent-bar-chart' {
+    return 'percent-bar-chart' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -63,7 +63,7 @@ export class PercentBarChartElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'percent-bar-chart': PercentBarChartElement;
+    [PercentBarChartElement.is]: PercentBarChartElement;
   }
 }
 
