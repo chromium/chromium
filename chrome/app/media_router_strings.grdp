@@ -70,10 +70,10 @@
     </message>
   </if>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION" desc="Title of a notification shown while waiting for the user to accept or reject the cast request.">
-      Accept Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+      Accept cast request on your <ph name="DEVICE_NAME">$1</ph>.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED" desc="Title of an issue shown when the user rejects the cast request.">
-      Make sure to accept the Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+      Make sure to accept the cast request on your <ph name="DEVICE_NAME">$1</ph>.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED" desc="Title of an issue shown when the notifications on the reciever device is disabled.">
       Make sure notifications are turned on on your <ph name="DEVICE_NAME">$1</ph>.
@@ -97,7 +97,7 @@
     No devices found. Open a help center article in a new tab.
   </message>
   <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Chromecast help center explaining possible reasons why none are detected.">
-    No Cast destinations found. Need help?
+    No cast destinations found. Need help?
   </message>
   <message name="IDS_MEDIA_ROUTER_SINK_AVAILABLE" desc="Text shown as the status of a Cast destination that the user can Cast to." meaning="Device status shown in Cast dialog">
     Available
@@ -171,7 +171,7 @@
     Optimize fullscreen casting?
   </message>
   <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_BODY_TEXT" desc="Body text shown in the dialog to enable/disable Media Remoting. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    Get better quality video and save battery life. Video will play only on your Cast-enabled screen.
+    Get better quality video and save battery life. Video will play only on your cast-enabled screen.
   </message>
   <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_CHECKBOX" desc="Label for the checkbox that the user can click on to get their preference to enable/disable Media Remoting recorded. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
     Don't ask again
