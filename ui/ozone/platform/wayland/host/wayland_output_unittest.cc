@@ -121,10 +121,10 @@ TEST_F(WaylandOutputTest, ScaleFactorCalculationNoop) {
   wl_output->physical_size_ = gfx::Size(100, 100);
   wl_output->scale_factor_ = kWlOutputScale;
 
-  // When wl_output is ready but xdg_output is not yet ready, scale_factor
-  // should fall back to the value sent in wl_output::scale.
+  // Since the logical size is the same as physical size, scale_factor should
+  // fall back to the value sent in wl_output::scale.
   wl_output->is_ready_ = true;
-  wl_output->xdg_output_->is_ready_ = false;
+  wl_output->xdg_output_->is_ready_ = true;
 
   wl_output->UpdateMetrics();
   EXPECT_EQ(kWlOutputScale, wl_output->scale_factor());
