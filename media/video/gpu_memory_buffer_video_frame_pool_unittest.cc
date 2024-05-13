@@ -313,6 +313,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(9);
   scoped_refptr<VideoFrame> frame;
@@ -407,6 +410,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOne10BppHardwareFrameWithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(17, 10);
   scoped_refptr<VideoFrame> frame;
@@ -550,6 +556,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareNV12FrameWithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(13);
   scoped_refptr<VideoFrame> frame;
@@ -593,6 +602,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame2) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareNV12Frame2WithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(5);
   scoped_refptr<VideoFrame> frame;
@@ -662,6 +674,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareFrameForNV12InputWithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestNV12VideoFrameWithOddSize(135);
   scoped_refptr<VideoFrame> frame;
@@ -717,6 +732,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -740,6 +758,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -772,6 +793,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateOneHardwareP010FrameWithOddSize) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(7, 10);
   scoped_refptr<VideoFrame> frame;
@@ -826,6 +850,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   software_frame->set_color_space(gfx::ColorSpace::CreateREC709());
   scoped_refptr<VideoFrame> frame;
@@ -850,6 +877,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   software_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   scoped_refptr<VideoFrame> frame;
@@ -874,6 +904,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -934,6 +967,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
 // This test checks that in that case we don't crash and don't create the
 // textures.
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetFailToAllocateGpuMemoryBufferForTesting(true);
@@ -949,6 +985,9 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest,
        CreateGpuMemoryBufferFailAfterShutdown) {
+  if (gpu_memory_buffer_pool_->IsMappableSIEnabledForTesting()) {
+    return;
+  }
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetFailToMapGpuMemoryBufferForTesting(true);

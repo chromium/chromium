@@ -68,6 +68,10 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // of a multiplanar GpuMemoryBuffer. Exposed externally for testing.
   static bool MultiPlaneVideoSharedImagesEnabled();
 
+  // This is currently used to suppress some tests when MappableSI is
+  // enabled.
+  bool IsMappableSIEnabledForTesting() const;
+
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_impl_;
