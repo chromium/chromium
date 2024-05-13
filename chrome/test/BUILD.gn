@@ -7769,6 +7769,7 @@ test("unit_tests") {
       "../browser/device_notifications/device_test_utils.h",
       "../browser/devtools/aida_client_unittest.cc",
       "../browser/devtools/device/android_device_manager_unittest.cc",
+      "../browser/devtools/devtools_file_helper_unittest.cc",
       "../browser/devtools/devtools_file_system_indexer_unittest.cc",
       "../browser/devtools/devtools_file_watcher_unittest.cc",
       "../browser/devtools/devtools_settings_unittest.cc",

@@ -148,7 +148,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void ShowItemInFolder(const std::string& file_system_path) override;
   void SaveToFile(const std::string& url,
                   const std::string& content,
-                  bool save_as) override;
+                  bool save_as,
+                  bool is_base64) override;
   void AppendToFile(const std::string& url,
                     const std::string& content) override;
   void RequestFileSystems() override;

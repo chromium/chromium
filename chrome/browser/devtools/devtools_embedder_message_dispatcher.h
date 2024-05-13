@@ -50,7 +50,8 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void ShowItemInFolder(const std::string& file_system_path) = 0;
     virtual void SaveToFile(const std::string& url,
                             const std::string& content,
-                            bool save_as) = 0;
+                            bool save_as,
+                            bool is_base64) = 0;
     virtual void AppendToFile(const std::string& url,
                               const std::string& content) = 0;
     virtual void RequestFileSystems() = 0;

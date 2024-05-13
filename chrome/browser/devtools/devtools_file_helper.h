@@ -78,6 +78,7 @@ class DevToolsFileHelper {
   void Save(const std::string& url,
             const std::string& content,
             bool save_as,
+            bool is_base64,
             SaveCallback saveCallback,
             base::OnceClosure cancelCallback);
 
@@ -131,6 +132,7 @@ class DevToolsFileHelper {
                           platform_util::OpenOperationResult result);
   void SaveAsFileSelected(const std::string& url,
                           const std::string& content,
+                          bool is_base64,
                           SaveCallback callback,
                           const base::FilePath& path);
   void InnerAddFileSystem(const ShowInfoBarCallback& show_info_bar_callback,
