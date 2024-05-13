@@ -158,6 +158,13 @@ TEST_F(SodaInstallerImplTest, UninstallLanguagePacks) {
   ASSERT_TRUE(IsLanguagePackInstalled(kJapaneseLocale));
 }
 
+TEST_F(SodaInstallerImplTest, AvailableLanguagesTest) {
+  auto actual_available_langs = soda_installer_impl_->GetAvailableLanguages();
+  auto expected_available_langs = speech::GetLiveCaptionEnabledLanguages();
+  EXPECT_THAT(actual_available_langs,
+              ::testing::UnorderedElementsAreArray(expected_available_langs));
+}
+
 TEST_F(SodaInstallerImplTest, UninstallSodaAfterThirtyDays) {
   Init();
   ASSERT_TRUE(IsSodaInstalled());

@@ -164,6 +164,13 @@ TEST_F(SodaInstallerImplChromeOSTest, OnlyEnglishAvailable) {
   EXPECT_THAT(actual_langs, ::testing::UnorderedElementsAre("en-US"));
 }
 
+TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
+  std::vector<std::string> actual_langs =
+      GetInstance()->GetAvailableLanguages();
+  auto expected_available_langs = speech::GetLiveCaptionEnabledLanguages();
+  EXPECT_THAT(actual_langs, ::testing::IsSubsetOf(expected_available_langs));
+}
+
 TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
   base::test::ScopedFeatureList scoped_feature_list_internal;
   std::map<std::string, std::string> params;
