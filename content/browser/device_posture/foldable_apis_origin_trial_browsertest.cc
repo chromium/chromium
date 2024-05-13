@@ -5,13 +5,17 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -34,9 +38,40 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
         kBaseDataDir, GURL("https://example.test/"));
   }
 
+  RenderWidgetHostViewBase* view() {
+    return static_cast<RenderWidgetHostViewBase*>(
+        shell()->web_contents()->GetRenderWidgetHostView());
+  }
+
+  WebContentsImpl* web_contents_impl() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  void SetUpFoldableState() {
+    web_contents_impl()
+        ->GetDevicePostureProvider()
+        ->OverrideDevicePostureForEmulation(
+            blink::mojom::DevicePostureType::kFolded);
+    const int kDisplayFeatureLength = 10;
+    DisplayFeature emulated_display_feature{
+        DisplayFeature::Orientation::kVertical,
+        /* offset */ view()->GetVisibleViewportSize().width() / 2 -
+            kDisplayFeatureLength / 2,
+        /* mask_length */ kDisplayFeatureLength};
+    view()->SetDisplayFeatureForTesting(&emulated_display_feature);
+    FrameTreeNode* root = web_contents_impl()->GetPrimaryFrameTree().root();
+    RenderWidgetHostImpl* root_widget =
+        root->current_frame_host()->GetRenderWidgetHost();
+    root_widget->SynchronizeVisualProperties();
+  }
+
   void TearDownOnMainThread() override {
     interceptor_.reset();
     ContentBrowserTest::TearDownOnMainThread();
+    web_contents_impl()
+        ->GetDevicePostureProvider()
+        ->DisableDevicePostureOverrideForEmulation();
+    view()->SetDisplayFeatureForTesting(nullptr);
   }
 
   bool HasDevicePostureApi() {
@@ -44,7 +79,8 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   }
 
   bool HasDevicePostureCSSApi() {
-    return EvalJs(shell(), "window.matchMedia('(device-posture)').matches")
+    return EvalJs(shell(),
+                  "window.matchMedia('(device-posture: folded)').matches")
         .ExtractBool();
   }
 
@@ -53,8 +89,16 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   }
 
   bool HasViewportSegmentsCSSApi() {
+    return EvalJs(
+               shell(),
+               "window.matchMedia('(horizontal-viewport-segments: 2)').matches")
+        .ExtractBool();
+  }
+
+  bool HasViewportSegmentsEnvVariablesCSSApi() {
     return EvalJs(shell(),
-                  "window.matchMedia('(vertical-viewport-segments)').matches")
+                  "getComputedStyle(document.getElementById('content')).width "
+                  "!= '0px'")
         .ExtractBool();
   }
 
@@ -68,18 +112,22 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest,
                        ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
+  SetUpFoldableState();
   EXPECT_TRUE(HasDevicePostureApi());
   EXPECT_TRUE(HasDevicePostureCSSApi());
   EXPECT_TRUE(HasViewportSegmentsApi());
   EXPECT_TRUE(HasViewportSegmentsCSSApi());
+  EXPECT_TRUE(HasViewportSegmentsEnvVariablesCSSApi());
 }
 
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest, NoOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kNoTokenUrl));
+  SetUpFoldableState();
   EXPECT_FALSE(HasDevicePostureApi());
   EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
+  EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
 }
 
 class FoldableAPIsOriginTrialKillSwitchBrowserTest
@@ -99,19 +147,23 @@ class FoldableAPIsOriginTrialKillSwitchBrowserTest
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialKillSwitchBrowserTest,
                        ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
+  SetUpFoldableState();
   EXPECT_FALSE(HasDevicePostureApi());
   EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
+  EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
 }
 
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialKillSwitchBrowserTest,
                        NoOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kNoTokenUrl));
+  SetUpFoldableState();
   EXPECT_FALSE(HasDevicePostureApi());
   EXPECT_FALSE(HasDevicePostureCSSApi());
   EXPECT_FALSE(HasViewportSegmentsApi());
   EXPECT_FALSE(HasViewportSegmentsCSSApi());
+  EXPECT_FALSE(HasViewportSegmentsEnvVariablesCSSApi());
 }
 
 }  // namespace

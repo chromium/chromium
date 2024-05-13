@@ -118,7 +118,7 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
                                        unsigned second_dimension,
                                        const String& value) {
     StyleEnvironmentVariables::GetRootInstance().SetVariable(
-        variable, first_dimension, second_dimension, value);
+        variable, first_dimension, second_dimension, value, nullptr);
   }
 };
 

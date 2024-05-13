@@ -684,7 +684,8 @@ RenderWidgetHostViewBase::GetDevicePosturePlatformProvider() {
   }
 
   DevicePostureProviderImpl* posture_provider =
-      host()->delegate()->GetDevicePostureProvider();
+      static_cast<DevicePostureProviderImpl*>(
+          host()->delegate()->GetDevicePostureProvider());
   if (!posture_provider) {
     return nullptr;
   }

@@ -215,8 +215,9 @@ void StyleEnvironmentVariables::SetVariable(
     UADefinedTwoDimensionalVariable variable,
     unsigned first_dimension,
     unsigned second_dimension,
-    const String& value) {
-  SetVariable(GetVariableName(variable, GetFeatureContext()), first_dimension,
+    const String& value,
+    const FeatureContext* feature_context) {
+  SetVariable(GetVariableName(variable, feature_context), first_dimension,
               second_dimension, value);
 }
 
@@ -226,8 +227,9 @@ void StyleEnvironmentVariables::RemoveVariable(UADefinedVariable variable) {
 }
 
 void StyleEnvironmentVariables::RemoveVariable(
-    UADefinedTwoDimensionalVariable variable) {
-  const AtomicString name = GetVariableName(variable, GetFeatureContext());
+    UADefinedTwoDimensionalVariable variable,
+    const FeatureContext* feature_context) {
+  const AtomicString name = GetVariableName(variable, feature_context);
   RemoveVariable(name);
 }
 

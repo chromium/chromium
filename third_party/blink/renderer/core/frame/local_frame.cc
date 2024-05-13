@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -293,25 +294,32 @@ RemoteFrame* SourceFrameForOptionalToken(
 void SetViewportSegmentVariablesForRect(StyleEnvironmentVariables& vars,
                                         gfx::Rect segment_rect,
                                         unsigned first_dimension,
-                                        unsigned second_dimension) {
+                                        unsigned second_dimension,
+                                        const ExecutionContext* context) {
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentTop,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.y()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.y()),
+                   context);
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentRight,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.right()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.right()),
+                   context);
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentBottom,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.bottom()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.bottom()),
+                   context);
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentLeft,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.x()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.x()),
+                   context);
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.width()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.width()),
+                   context);
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
                    first_dimension, second_dimension,
-                   StyleEnvironmentVariables::FormatPx(segment_rect.height()));
+                   StyleEnvironmentVariables::FormatPx(segment_rect.height()),
+                   context);
 }
 
 mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
@@ -1612,8 +1620,14 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
       UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
       UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
   };
+  ExecutionContext* context =
+      GetDocument() ? GetDocument()->GetExecutionContext() : nullptr;
+  if (!context) {
+    return;
+  }
+
   for (auto var : vars_to_remove) {
-    vars.RemoveVariable(var);
+    vars.RemoveVariable(var, context);
   }
 
   // Per [css-env-1], only set the segment variables if there is more than one.
@@ -1624,12 +1638,12 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     unsigned x_index = 0;
     unsigned y_index = 0;
     SetViewportSegmentVariablesForRect(vars, viewport_segments[0], x_index,
-                                       y_index);
+                                       y_index, context);
     for (size_t i = 1; i < viewport_segments.size(); i++) {
       if (viewport_segments[i].y() == current_y_position) {
         x_index++;
         SetViewportSegmentVariablesForRect(vars, viewport_segments[i], x_index,
-                                           y_index);
+                                           y_index, context);
       } else {
         // If there is a different y value, this is the next row so increase
         // y index and start again from 0 for x.
@@ -1637,7 +1651,7 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
         x_index = 0;
         current_y_position = viewport_segments[i].y();
         SetViewportSegmentVariablesForRect(vars, viewport_segments[i], x_index,
-                                           y_index);
+                                           y_index, context);
       }
     }
   }

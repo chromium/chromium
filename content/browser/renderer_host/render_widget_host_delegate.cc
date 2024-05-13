@@ -95,7 +95,7 @@ ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::WindowShowState::SHOW_STATE_DEFAULT;
 }
 
-DevicePostureProviderImpl*
+blink::mojom::DevicePostureProvider*
 RenderWidgetHostDelegate::GetDevicePostureProvider() {
   return nullptr;
 }
