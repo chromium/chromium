@@ -423,11 +423,11 @@ TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_WebGPUUsage) {
   }
 }
 
-#if !BUILDFLAG(IS_MAC)
-// When not on Mac, the default target should be used for multi-planar
-// formats if external sampling is not set (the logic for Mac is distinct and is
-// tested separately).
-TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
+// On all platforms, the default target should be used for multi-planar
+// formats if external sampling is not set and scanout/WebGPU usage are not
+// specified.
+TEST(ClientSharedImageTest,
+     GetTextureTarget_MultiplanarFormats_NoScanoutOrWebGPUUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =
@@ -451,7 +451,6 @@ TEST(ClientSharedImageTest, GetTextureTarget_MultiplanarFormats) {
               static_cast<uint32_t>(GL_TEXTURE_2D));
   }
 }
-#endif
 
 #if BUILDFLAG(IS_OZONE)
 // On Ozone, the target for native buffers should be used if a
