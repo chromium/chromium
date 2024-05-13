@@ -59,6 +59,17 @@ class TestUIHandler : public mojom::TestUIHandlerMojo {
   void SetClientPage(mojo::PendingRemote<mojom::TestPage> page) override {
     page_.Bind(std::move(page));
   }
+
+  void HandleJsMessageWithCallback(
+      const std::string& message,
+      HandleJsMessageWithCallbackCallback callback) override {
+    auto result = mojom::NativeMessageResultMojo::New();
+    result->message = "ack2";
+    // Replay via PostTask to check it also works well.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  }
+
   void HandleJsMessage(const std::string& message) override {
     if (message == "syn") {
       // Received "syn" message from WebUI page, send "ack" as reply.
