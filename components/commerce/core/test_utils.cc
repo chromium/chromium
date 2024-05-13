@@ -32,9 +32,15 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     const int64_t price_micros,
     const std::string& currency_code,
     const std::optional<int64_t>& last_subscription_change_time) {
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url,
-                             nullptr, std::nullopt, std::nullopt, true);
+  // Prefer account bookmarks if available. `other_node()` is still relevant for
+  // tests that continue to exercise the legacy sync-feature-on case.
+  const bookmarks::BookmarkNode* parent =
+      (bookmark_model->account_other_node() != nullptr)
+          ? bookmark_model->account_other_node()
+          : bookmark_model->other_node();
+
+  const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
+      parent, 0, title, url, nullptr, std::nullopt, std::nullopt, true);
 
   AddProductInfoToExistingBookmark(
       bookmark_model, node, title, cluster_id, is_price_tracked, price_micros,
