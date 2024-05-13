@@ -1261,6 +1261,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private logSpeechPlaySession() {
     // Don't log a playback session just in case something has gotten out of
     // sync and we call stopSpeech before playSpeech.
+    assert(this.playSessionStartTime > 0, 'invalid speech playing start time');
     if (this.playSessionStartTime > 0) {
       chrome.readingMode.logLongMetric(
           Date.now() - this.playSessionStartTime,
