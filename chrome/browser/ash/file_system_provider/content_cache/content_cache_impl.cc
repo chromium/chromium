@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "net/base/io_buffer.h"
 
@@ -316,8 +316,8 @@ void ContentCacheImpl::ReadBytes(
           << length << "', bytes_on_disk = '" << ctx.bytes_on_disk()
           << "'} is available";
 
-  LocalFile& local_file =
-      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
+  LocalFD& local_file =
+      GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(ctx.id()));
   local_file.ReadBytes(buffer, offset, length,
                        base::BindOnce(&ContentCacheImpl::OnBytesRead,
                                       weak_ptr_factory_.GetWeakPtr(),
@@ -417,8 +417,8 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
   } else {
     // The ID has already been created and is known on disk, bypass generating
     // the ID and simply start writing to the file.
-    LocalFile& local_file =
-        GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(ctx.id()));
+    LocalFD& local_file =
+        GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(ctx.id()));
     local_file.WriteBytes(buffer, offset, length,
                           std::move(on_bytes_written_callback));
   }
@@ -453,8 +453,8 @@ void ContentCacheImpl::OnFileIdGenerated(
   DCHECK(inserted_id);
   DCHECK_GT(*inserted_id, 0);
   it->second.set_id(*inserted_id);
-  LocalFile& local_file =
-      GetOrCreateLocalFile(file.request_id, GetPathOnDiskFromId(*inserted_id));
+  LocalFD& local_file =
+      GetOrCreateLocalFD(file.request_id, GetPathOnDiskFromId(*inserted_id));
   local_file.WriteBytes(buffer, offset, length,
                         std::move(on_bytes_written_callback));
 }
@@ -598,8 +598,8 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
   return cached_file_paths;
 }
 
-LocalFile& ContentCacheImpl::GetOrCreateLocalFile(int request_id,
-                                                  const base::FilePath& path) {
+LocalFD& ContentCacheImpl::GetOrCreateLocalFD(int request_id,
+                                              const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto [cached_file, inserted] =
       local_files_.try_emplace(request_id, path, io_task_runner_);

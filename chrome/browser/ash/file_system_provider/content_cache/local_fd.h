@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FILE_H_
-#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FILE_H_
+#ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FD_H_
+#define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FD_H_
 
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
@@ -29,15 +29,15 @@ using FileErrorOrBytesReadCallback =
 // if the events come in interleaved (e.g. a `ReadFile` is still responding when
 // a `CloseFile` is received, the `CloseFile` will happen only after the
 // `ReadFile` returns).
-class LocalFile {
+class LocalFD {
  public:
-  LocalFile(const base::FilePath& file_path,
+  LocalFD(const base::FilePath& file_path,
             scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
-  LocalFile(const LocalFile&) = delete;
-  LocalFile& operator=(const LocalFile&) = delete;
+  LocalFD(const LocalFD&) = delete;
+  LocalFD& operator=(const LocalFD&) = delete;
 
-  ~LocalFile();
+  ~LocalFD();
 
   // Write the bytes in `buffer` at `offset` for `length` into the underlying
   // `file_` that was opened. If `file_` is `nullptr` one will be created with
@@ -97,9 +97,9 @@ class LocalFile {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<base::File> file_;
 
-  base::WeakPtrFactory<LocalFile> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LocalFD> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::file_system_provider
 
-#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FILE_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_LOCAL_FD_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
 
 #include "base/files/file_error_or.h"
 #include "base/logging.h"
@@ -45,6 +45,7 @@ FileErrorOrFileAndBytesRead ReadBytesBlocking(
   }
   int bytes_read = file->Read(offset, buffer->data(), length);
   if (bytes_read < 0) {
+    PLOG(ERROR) << "Failed to read bytes from file";
     return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
@@ -56,24 +57,24 @@ FileErrorOrFileAndBytesRead ReadBytesBlocking(
 
 }  // namespace
 
-LocalFile::LocalFile(
+LocalFD::LocalFD(
     const base::FilePath& file_path,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : file_path_(file_path), blocking_task_runner_(blocking_task_runner) {
-  VLOG(2) << "Local file instance created {file_path = '" << file_path_ << "'}";
+  VLOG(2) << "LocalFD instance created {file_path = '" << file_path_ << "'}";
 }
 
-LocalFile::~LocalFile() {
+LocalFD::~LocalFD() {
   DCHECK(!in_progress_operation_)
-      << "Operation still pending when file destroyed";
-  VLOG(2) << "Local file instance destroyed {file_path = '" << file_path_
+      << "Operation still pending when FD destroyed";
+  VLOG(2) << "LocalFD instance destroyed {file_path = '" << file_path_
           << "'}";
   if (file_) {
     CloseFile();
   }
 }
 
-void LocalFile::WriteBytes(
+void LocalFD::WriteBytes(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t offset,
     int length,
@@ -94,11 +95,11 @@ void LocalFile::WriteBytes(
       FROM_HERE,
       base::BindOnce(&WriteBytesBlocking, std::move(file_), file_path_, buffer,
                      offset, length),
-      base::BindOnce(&LocalFile::OnBytesWritten, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&LocalFD::OnBytesWritten, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
 
-void LocalFile::OnBytesWritten(
+void LocalFD::OnBytesWritten(
     base::OnceCallback<void(base::File::Error)> callback,
     FileErrorOrFile error_or_file) {
   base::File::Error result = error_or_file.error_or(base::File::FILE_OK);
@@ -108,7 +109,7 @@ void LocalFile::OnBytesWritten(
   std::move(callback).Run(result);
 }
 
-void LocalFile::ReadBytes(scoped_refptr<net::IOBuffer> buffer,
+void LocalFD::ReadBytes(scoped_refptr<net::IOBuffer> buffer,
                           int64_t offset,
                           int length,
                           FileErrorOrBytesReadCallback callback) {
@@ -121,11 +122,11 @@ void LocalFile::ReadBytes(scoped_refptr<net::IOBuffer> buffer,
       FROM_HERE,
       base::BindOnce(&ReadBytesBlocking, std::move(file_), file_path_, buffer,
                      offset, length),
-      base::BindOnce(&LocalFile::OnBytesRead, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&LocalFD::OnBytesRead, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
 
-void LocalFile::OnBytesRead(
+void LocalFD::OnBytesRead(
     FileErrorOrBytesReadCallback callback,
     FileErrorOrFileAndBytesRead error_or_file_and_bytes_read) {
   base::File::Error result =
@@ -140,7 +141,7 @@ void LocalFile::OnBytesRead(
   std::move(callback).Run(bytes_read);
 }
 
-void LocalFile::CloseOrCacheFile(std::unique_ptr<base::File> file) {
+void LocalFD::CloseOrCacheFile(std::unique_ptr<base::File> file) {
   in_progress_operation_ = false;
   if (!close_closure_.is_null()) {
     VLOG(2) << "File closed whilst reading/writing, closing FD";
@@ -151,7 +152,7 @@ void LocalFile::CloseOrCacheFile(std::unique_ptr<base::File> file) {
   }
 }
 
-void LocalFile::Close(base::OnceClosure close_closure) {
+void LocalFD::Close(base::OnceClosure close_closure) {
   DCHECK(close_closure_.is_null());
   close_closure_ = std::move(close_closure);
   if (in_progress_operation_) {
@@ -163,7 +164,7 @@ void LocalFile::Close(base::OnceClosure close_closure) {
   CloseFile();
 }
 
-void LocalFile::CloseFile() {
+void LocalFD::CloseFile() {
   if (close_closure_) {
     std::move(close_closure_).Run();
   }

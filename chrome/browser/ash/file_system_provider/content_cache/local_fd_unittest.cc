@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
 
 #include <cstring>
 
@@ -22,10 +22,10 @@ namespace {
 
 using testing::Property;
 
-class FileSystemProviderLocalFileTest : public testing::Test {
+class FileSystemProviderLocalFDTest : public testing::Test {
  protected:
-  FileSystemProviderLocalFileTest() = default;
-  ~FileSystemProviderLocalFileTest() override = default;
+  FileSystemProviderLocalFDTest() = default;
+  ~FileSystemProviderLocalFDTest() override = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -49,12 +49,12 @@ class FileSystemProviderLocalFileTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(FileSystemProviderLocalFileTest, BytesCanBeReadSuccessfully) {
+TEST_F(FileSystemProviderLocalFDTest, BytesCanBeReadSuccessfully) {
   // Create a buffer that the contents of `file_path` will be read into.
   scoped_refptr<net::IOBuffer> read_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(test_file_size_);
 
-  LocalFile file(test_file_path_, task_runner_);
+  LocalFD file(test_file_path_, task_runner_);
   base::test::TestFuture<base::FileErrorOr<int>> read_bytes_future;
   file.ReadBytes(read_buffer, /*offset=*/0, /*length=*/test_file_size_,
                  read_bytes_future.GetCallback());
@@ -70,12 +70,12 @@ TEST_F(FileSystemProviderLocalFileTest, BytesCanBeReadSuccessfully) {
   EXPECT_TRUE(close_future.Wait());
 }
 
-TEST_F(FileSystemProviderLocalFileTest, BytesCanBeReadThenWrittenTo) {
+TEST_F(FileSystemProviderLocalFDTest, BytesCanBeReadThenWrittenTo) {
   scoped_refptr<net::IOBuffer> read_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(test_file_size_);
 
   // Read the current bytes from the existing file.
-  LocalFile file(test_file_path_, task_runner_);
+  LocalFD file(test_file_path_, task_runner_);
   base::test::TestFuture<base::FileErrorOr<int>> future;
   file.ReadBytes(read_buffer, /*offset=*/0, /*length=*/test_file_size_,
                  future.GetCallback());
@@ -105,11 +105,11 @@ TEST_F(FileSystemProviderLocalFileTest, BytesCanBeReadThenWrittenTo) {
                base::StrCat({test_file_contents_, contents_to_append}).c_str());
 }
 
-TEST_F(FileSystemProviderLocalFileTest, FileCanBeScheduledToBeClosed) {
+TEST_F(FileSystemProviderLocalFDTest, FileCanBeScheduledToBeClosed) {
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(test_file_size_);
 
-  LocalFile file(test_file_path_, task_runner_);
+  LocalFD file(test_file_path_, task_runner_);
   base::test::TestFuture<base::FileErrorOr<int>> read_bytes_future;
   file.ReadBytes(buffer, /*offset=*/0, /*length=*/test_file_size_,
                  read_bytes_future.GetCallback());
@@ -121,11 +121,11 @@ TEST_F(FileSystemProviderLocalFileTest, FileCanBeScheduledToBeClosed) {
   EXPECT_TRUE(close_future.Wait());
 }
 
-TEST_F(FileSystemProviderLocalFileTest, ConcurrentReadsAreNotAllowed) {
+TEST_F(FileSystemProviderLocalFDTest, ConcurrentReadsAreNotAllowed) {
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(test_file_size_);
 
-  LocalFile file(test_file_path_, task_runner_);
+  LocalFD file(test_file_path_, task_runner_);
 
   // First read call should succeed.
   base::test::TestFuture<base::FileErrorOr<int>> read_bytes_future_allowed;

@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"
-#include "chrome/browser/ash/file_system_provider/content_cache/local_file.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
 #include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
@@ -134,19 +134,19 @@ class ContentCacheImpl : public ContentCache {
   // Generates the absolute path on disk from the supplied `item_id`.
   const base::FilePath GetPathOnDiskFromId(int64_t item_id);
 
-  // A `LocalFile` represents a wrapper around an open FD. We either create a
-  // new `LocalFile` or get the existing one to avoid opening up a new FD for
+  // A `LocalFD` represents a wrapper around an open FD. We either create a
+  // new `LocalFD` or get the existing one to avoid opening up a new FD for
   // every chunked read request.
-  LocalFile& GetOrCreateLocalFile(int request_id, const base::FilePath& path);
+  LocalFD& GetOrCreateLocalFD(int request_id, const base::FilePath& path);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::FilePath root_dir_;
   ContentLRUCache lru_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // A map of `LocalFile`s that are keyed by the incoming request ID. This is
+  // A map of `LocalFD`s that are keyed by the incoming request ID. This is
   // analogous to a 1:1 mapping of request ID <-> file handle.
-  std::map<int, LocalFile> local_files_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<int, LocalFD> local_files_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   BoundContextDatabase context_db_;
