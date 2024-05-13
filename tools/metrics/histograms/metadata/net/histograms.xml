@@ -874,6 +874,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.DnsClientCapability"
+    enum="DNS.DnsClientCapability" expires_after="2024-08-13">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether DNS clients can and are allowed to perform secure and insecure DNS
+    transactions. Logged when HostResolverManager receives a host resolution
+    request using HostResolverSource::ANY.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.Nsswitch.Compatible" enum="BooleanValid"
     expires_after="2024-09-22">
   <owner>horo@chromium.org</owner>

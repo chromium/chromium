@@ -240,6 +240,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DnsHTTPAttempt"/>
 </enum>
 
+<!-- LINT.IfChange(DnsClientCapability) -->
+
+<enum name="DNS.DnsClientCapability">
+  <int value="0" label="Secure DNS disabled, insecure DNS disabled"/>
+  <int value="1" label="Secure DNS disabled, insecure DNS enabled"/>
+  <int value="2" label="Secure DNS enabled, insecure DNS disabled"/>
+  <int value="3" label="Secure DNS enabled, insecure DNS enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/net/dns/host_resolver_manager.cc:DnsClientCapability) -->
+
 <enum name="DNS.SvcbHttpsTransactionError">
   <int value="0" label="No transaction error"/>
   <int value="1" label="Insecure DNS transaction error (never task-fatal)"/>
