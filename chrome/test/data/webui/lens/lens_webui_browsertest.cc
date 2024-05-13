@@ -151,4 +151,9 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
   RunOverlayTest("lens/side_panel/results_frame_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
+  RunOverlayTest("lens/side_panel/searchbox_back_button_test.js",
+                 "mocha.run()");
+}
+
 }  // namespace

@@ -32,6 +32,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedURL);
+  html_source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
   html_source->AddLocalizedString("close", IDS_CLOSE);
   html_source->AddLocalizedString("sendFeedback", IDS_LENS_SEND_FEEDBACK_LABEL);
   html_source->AddLocalizedString("copy", IDS_LENS_OVERLAY_COPY);

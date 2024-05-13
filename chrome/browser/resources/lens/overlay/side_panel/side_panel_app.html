@@ -1,6 +1,10 @@
-<style>
+<style include="cr-icons">
   :host {
-    --cr-realbox-min-width: 340px
+    --cr-realbox-min-width: 340px;
+  }
+
+  :host([is-back-arrow-visible]) {
+    --cr-realbox-min-width: 300px;
   }
 
   .results-pane {
@@ -37,6 +41,7 @@
   }
 
   #realboxContainer {
+    align-items: center;
     display: flex;
     font-family: Roboto, Arial, sans-serif;
     margin: 12px 8px;
@@ -53,8 +58,18 @@
     --color-realbox-results-focus-indicator: #e9e9eaff;
     --color-realbox-shadow: #20212451;
   }
+
+  cr-icon-button.icon-arrow-back {
+    margin-inline-start: 0px;
+    margin-inline-end: 12px;
+  }
 </style>
 <div id="realboxContainer">
+  <template is="dom-if" if="[[isBackArrowVisible]]">
+    <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
+        on-click="onBackArrowClick" aria-label="$i18n{backButton}">
+    </cr-icon-button>
+  </template>
   <cr-realbox id="realbox"></cr-realbox>
 </div>
 

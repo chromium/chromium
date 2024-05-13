@@ -506,6 +506,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   if (loaded_search_query) {
     initialization_data_->search_query_history_stack_.push_back(
         loaded_search_query.value());
+    side_panel_page_->SetBackArrowVisible(true);
   }
 
   // Set the currently loaded search query to the one we just created.
@@ -521,6 +522,10 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   // from the list.
   auto query = initialization_data_->search_query_history_stack_.back();
   initialization_data_->search_query_history_stack_.pop_back();
+
+  if (initialization_data_->search_query_history_stack_.empty()) {
+    side_panel_page_->SetBackArrowVisible(false);
+  }
 
   // Clear any active selections on the page and then re-add selections for this
   // query.

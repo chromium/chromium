@@ -321,9 +321,8 @@ class LensOverlayController : public LensSearchboxClient,
   // the user to navigate to previous SRP results after sending new queries.
   void AddQueryToHistory(std::string query, GURL search_url);
 
-  // Pops the most recent search query from the history stack to load in the
-  // side panel.
-  void PopAndLoadQueryFromHistory();
+  // lens::mojom::LensSidePanelPageHandler overrides.
+  void PopAndLoadQueryFromHistory() override;
 
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
