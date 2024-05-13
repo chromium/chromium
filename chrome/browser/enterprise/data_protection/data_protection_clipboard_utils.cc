@@ -307,7 +307,10 @@ void PasteIfAllowedByDataControls(
         base::BindOnce(&OnDataControlsPasteWarning, source, destination,
                        metadata, std::move(clipboard_paste_data),
                        std::move(callback)));
+    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
     return;
+  } else if (verdict.level() == data_controls::Rule::Level::kReport) {
+    MaybeReportDataControlsPaste(source, destination, metadata, verdict);
   }
 
   // If the data currently being pasted was replaced when it was initially
