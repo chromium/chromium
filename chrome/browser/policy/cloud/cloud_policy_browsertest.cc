@@ -425,6 +425,9 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 // crbug.com/1230268 not working on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
+#elif BUILDFLAG(IS_WIN)
+// Test is flaky on Windows bots: https://crbug.com/40187980
+#define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
 #else
 #define MAYBE_InvalidatePolicy InvalidatePolicy
 #endif

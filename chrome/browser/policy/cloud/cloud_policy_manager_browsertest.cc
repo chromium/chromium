@@ -297,7 +297,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFails) {
   EXPECT_FALSE(policy_manager()->core()->client()->is_registered());
 }
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFailsWithRetries) {
+#if BUILDFLAG(IS_WIN)
+// Test is flaky on Windows bots: https://crbug.com/40187980
+#define MAYBE_RegisterFailsWithRetries DISABLED_RegisterFailsWithRetries
+#else
+#define MAYBE_RegisterFailsWithRetries RegisterFailsWithRetries
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterFailsWithRetries) {
   // Fail 4 times with ERR_NETWORK_CHANGED; the first 3 will trigger a retry,
   // the last one will forward the error to the client and unblock the
   // register process.
