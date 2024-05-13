@@ -339,12 +339,16 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     separator->SetProperty(views::kMarginsKey,
                            gfx::Insets::VH(kSeparatorPadding, 0));
 
-    menu_items_.push_back(AddChildView(CreateMenuItem(
+    views::LabelButton* delete_group_menu_item = AddChildView(CreateMenuItem(
         IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
         base::BindRepeating(&TabGroupEditorBubbleView::DeleteGroupPressed,
                             base::Unretained(this)),
-        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon))));
+        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon)));
+    menu_items_.push_back(std::move(delete_group_menu_item));
+    delete_group_menu_item->SetProperty(
+        views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
+
     footer_ = AddChildView(std::make_unique<Footer>(browser_));
   }
 
@@ -776,7 +780,7 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
   const gfx::Insets control_insets =
       ui::TouchUiController::Get()->touch_ui()
           ? gfx::Insets::VH(5 * vertical_spacing / 4, horizontal_spacing)
-          : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
+          : gfx::Insets::VH(2 * vertical_spacing, horizontal_spacing);
   footer_label->SizeToFit(kDialogWidth - control_insets.right() -
                           control_insets.left());
   SetSize({kDialogWidth, height()});
