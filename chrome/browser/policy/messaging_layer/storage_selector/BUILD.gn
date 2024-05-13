@@ -27,7 +27,6 @@ component("storage_selector") {
     deps = [
       "//chromeos/dbus/missive",
       "//components/reporting/proto:interface_proto",
-      "//components/reporting/storage:missive_storage_module",
     ]
   } else {
     sources += [ "storage_selector.cc" ]
