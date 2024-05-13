@@ -6,7 +6,6 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/iron-location/iron-location.js';
 
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
