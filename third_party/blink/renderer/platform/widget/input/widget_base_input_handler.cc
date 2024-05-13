@@ -144,13 +144,11 @@ WebCoalescedInputEvent GetCoalescedWebPointerEventForTouch(
                                 std::move(predicted_pointer_events), latency);
 }
 
-mojom::InputEventResultState GetAckResult(WebInputEventResult processed) {
-  if (processed == WebInputEventResult::kNotHandled) {
-    return base::FeatureList::IsEnabled(features::kFixGestureScrollQueuingBug)
-               ? mojom::InputEventResultState::kNotConsumedBlocking
-               : mojom::InputEventResultState::kNotConsumed;
-  }
-  return mojom::InputEventResultState::kConsumed;
+mojom::blink::InputEventResultState GetAckResult(
+    WebInputEventResult processed) {
+  return processed == WebInputEventResult::kNotHandled
+             ? mojom::blink::InputEventResultState::kNotConsumed
+             : mojom::blink::InputEventResultState::kConsumed;
 }
 
 bool IsGestureScroll(WebInputEvent::Type type) {

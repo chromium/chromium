@@ -8151,35 +8151,6 @@
             ]
         }
     ],
-    "FixInputQueueingBug": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "queue_all_gesture_scrolls",
-                    "enable_features": [
-                        "FixGestureScrollQueuingBug",
-                        "QueueBlockingGestureScrolls"
-                    ]
-                },
-                {
-                    "name": "fix_input_queueing_bug",
-                    "enable_features": [
-                        "FixGestureScrollQueuingBug"
-                    ]
-                }
-            ]
-        }
-    ],
     "Floss": [
         {
             "platforms": [

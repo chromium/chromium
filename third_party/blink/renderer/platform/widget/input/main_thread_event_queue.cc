@@ -336,9 +336,7 @@ void MainThreadEventQueue::HandleEvent(
   DCHECK(ack_result == mojom::blink::InputEventResultState::kSetNonBlocking ||
          ack_result ==
              mojom::blink::InputEventResultState::kSetNonBlockingDueToFling ||
-         ack_result == mojom::blink::InputEventResultState::kNotConsumed ||
-         ack_result ==
-             mojom::blink::InputEventResultState::kNotConsumedBlocking);
+         ack_result == mojom::blink::InputEventResultState::kNotConsumed);
   DCHECK(Allowed(event->Event(), allow_main_gesture_scroll));
 
   bool is_blocking =

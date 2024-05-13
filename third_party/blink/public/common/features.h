@@ -488,11 +488,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFilteringScrollPrediction);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kFilteringScrollPredictionFilterParam;
 
-// (b/283408783): When enabled, first gesture scrolls on web pages that have
-// touch handlers registered will go through the normal queueing process if
-// while gesture scrolls that hit a touch handlers will be queued instantly.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFixGestureScrollQueuingBug);
-
 // FLEDGE ad serving runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledge);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeBiddingAndAuctionServer);
@@ -1273,11 +1268,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCompileHints);
 // Cache information about which functions are compiled and use it for eager-
 // compiling those functions when the same script is loaded again.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);
-
-// When enabled, gesture scroll updates that hit a JS touch handlers
-// will be queued normally on CC, enabling coalescing and consistent
-// input handling.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kQueueBlockingGestureScrolls);
 
 // Whether Sec-CH-UA headers on subresource fetches that contain an empty
 // string should be quoted (`""`) as they are for navigation fetches. See

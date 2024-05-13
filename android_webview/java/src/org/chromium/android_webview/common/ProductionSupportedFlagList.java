@@ -743,16 +743,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.PREFETCH_REDIRECTS,
                 "Enables following redirects during speculation rules prefetch."),
         Flag.baseFeature(
-                BlinkFeatures.FIX_GESTURE_SCROLL_QUEUING_BUG,
-                "Queues gesture scrolls that do not hit a blocking handler, "
-                        + "while handling events that hit a blocking handler instantly"
-                        + " as this behaviour was flipped before this fix."),
-        Flag.baseFeature(
-                BlinkFeatures.QUEUE_BLOCKING_GESTURE_SCROLLS,
-                "Queues all gesture scrolls regardless of blocking status on the"
-                        + "compositor for more consistency and scrolling performance"
-                        + "improvement"),
-        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_MEMORY_RECLAIMER,
                 "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
                         + "system pages as much as possible so that other applications can "

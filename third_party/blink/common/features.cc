@@ -952,10 +952,6 @@ BASE_FEATURE(kFilteringScrollPrediction,
 const base::FeatureParam<std::string> kFilteringScrollPredictionFilterParam{
     &kFilteringScrollPrediction, "filter", "one_euro_filter"};
 
-BASE_FEATURE(kFixGestureScrollQueuingBug,
-             "FixGestureScrollQueuingBug",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
 BASE_FEATURE(kFledge, "Fledge", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1959,10 +1955,6 @@ BASE_FEATURE(kConsumeCompileHints,
 BASE_FEATURE(kLocalCompileHints,
              "LocalCompileHints",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kQueueBlockingGestureScrolls,
-             "QueueBlockingGestureScrolls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
