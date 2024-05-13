@@ -1776,7 +1776,7 @@ chromium-metrics-reviews@google.com.
     different category.
   </summary>
   <token key="AppListPage">
-    <variant name="AppCollectionsPage" summary=""/>
+    <variant name="AppsCollectionsPage" summary=""/>
     <variant name="AppsPage" summary=""/>
   </token>
   <token key="ExperimentalArm">
@@ -1799,7 +1799,7 @@ chromium-metrics-reviews@google.com.
     entity that the apps belongs to (Default apps or Third-Party apps).
   </summary>
   <token key="AppListPage">
-    <variant name="AppCollectionsPage" summary=""/>
+    <variant name="AppsCollectionsPage" summary=""/>
     <variant name="AppsPage" summary=""/>
   </token>
   <token key="ExperimentalArm">
@@ -1825,7 +1825,7 @@ chromium-metrics-reviews@google.com.
     if it were visible when the apps grid view is not scrolled.
   </summary>
   <token key="AppListPage">
-    <variant name="AppCollectionsPage" summary="Apps Collections page"/>
+    <variant name="AppsCollectionsPage" summary="Apps Collections page"/>
     <variant name="AppsPage" summary="Apps page"/>
   </token>
   <token key="ExperimentalArm">
@@ -1852,7 +1852,7 @@ chromium-metrics-reviews@google.com.
     bucket records a particular default app.
   </summary>
   <token key="AppListPage">
-    <variant name="AppCollectionsPage" summary="Apps Collections page"/>
+    <variant name="AppsCollectionsPage" summary="Apps Collections page"/>
     <variant name="AppsPage" summary="Apps page"/>
   </token>
   <token key="ExperimentalArm">
