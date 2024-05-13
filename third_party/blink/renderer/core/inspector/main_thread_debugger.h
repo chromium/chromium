@@ -126,7 +126,6 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
 
   std::unique_ptr<ClientMessageLoop> client_message_loop_;
   bool paused_;
-  static MainThreadDebugger* instance_;
   std::unique_ptr<DocumentLifecycle::PostponeTransitionScope>
       postponed_transition_scope_;
 };

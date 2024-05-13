@@ -79,11 +79,6 @@ namespace blink {
 
 namespace {
 
-base::Lock& CreationLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
-}
-
 LocalFrame* ToFrame(ExecutionContext* context) {
   if (!context)
     return nullptr;
@@ -95,20 +90,11 @@ LocalFrame* ToFrame(ExecutionContext* context) {
 }
 }
 
-MainThreadDebugger* MainThreadDebugger::instance_ = nullptr;
-
 MainThreadDebugger::MainThreadDebugger(v8::Isolate* isolate)
     : ThreadDebuggerCommonImpl(isolate), paused_(false) {
-  base::AutoLock locker(CreationLock());
-  DCHECK(!instance_);
-  instance_ = this;
 }
 
-MainThreadDebugger::~MainThreadDebugger() {
-  base::AutoLock locker(CreationLock());
-  DCHECK_EQ(instance_, this);
-  instance_ = nullptr;
-}
+MainThreadDebugger::~MainThreadDebugger() = default;
 
 void MainThreadDebugger::ReportConsoleMessage(
     ExecutionContext* context,
