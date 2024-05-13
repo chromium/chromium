@@ -2760,6 +2760,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Omnibox.SearchActivity.SessionTerminationReason{IntentOrigin}"
+    enum="SearchActivityTerminationReason" expires_after="2024-09-01">
+  <owner>ender@chromium.org</owner>
+  <summary>
+    Records the reason SearchActivity was closed.
+
+    Captures the {IntentOrigin} SearchActivity metrics. Recorded exactly once
+    per SearchActivity session.
+  </summary>
+  <token key="IntentOrigin" variants="SearchActivityIntentOriginVariants"/>
+</histogram>
+
 <histogram name="Android.Omnibox.SetGeolocationHeadersTime" units="ms"
     expires_after="2024-04-28">
   <owner>spelchat@chromium.org</owner>

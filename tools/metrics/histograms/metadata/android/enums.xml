@@ -1239,6 +1239,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Lens"/>
 </enum>
 
+<enum name="SearchActivityTerminationReason">
+  <int value="0" label="Navigation"/>
+  <int value="1" label="Unspecified termination"/>
+  <int value="2" label="Tap Outside"/>
+  <int value="3" label="Back Key Pressed"/>
+  <int value="4" label="Omnibox Focus Lost"/>
+  <int value="5" label="Activity Focus Lost"/>
+  <int value="6" label="FRE Not Completed"/>
+</enum>
+
 <enum name="SearchPrefetchTouchDownPrefetchResult">
   <int value="0" label="Hit, last prefetch matches navigation"/>
   <int value="1" label="Miss, last prefetch does not match navigation"/>

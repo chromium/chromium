@@ -134,6 +134,12 @@ public class SearchActivity extends AsyncInitializationActivity
             "Android.Omnibox.SearchActivity.NavigationTargetType";
 
     @VisibleForTesting
+    /* package */ static final String HISTOGRAM_SESSION_TERMINATION_REASON =
+            "Android.Omnibox.SearchActivity.SessionTerminationReason";
+
+    // NOTE: This is used to capture HISTOGRAM_NAVIGATION_TARGET_TYPE.
+    // Do not shuffle or reassign values.
+    @VisibleForTesting
     @IntDef({
         NavigationTargetType.URL,
         NavigationTargetType.SEARCH,
@@ -146,6 +152,30 @@ public class SearchActivity extends AsyncInitializationActivity
         int SEARCH = 1;
         int NATIVE_PAGE = 2;
         int COUNT = 3;
+    }
+
+    // NOTE: This is used to capture HISTOGRAM_SESSION_TERMINATION_REASON.
+    // Do not shuffle or reassign values.
+    @IntDef({
+        TerminationReason.NAVIGATION,
+        TerminationReason.UNSPECIFIED,
+        TerminationReason.TAP_OUTSIDE,
+        TerminationReason.BACK_KEY_PRESSED,
+        TerminationReason.OMNIBOX_FOCUS_LOST,
+        TerminationReason.ACTIVITY_FOCUS_LOST,
+        TerminationReason.FRE_NOT_COMPLETED,
+        TerminationReason.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TerminationReason {
+        int NAVIGATION = 0;
+        int UNSPECIFIED = 1;
+        int TAP_OUTSIDE = 2;
+        int BACK_KEY_PRESSED = 3;
+        int OMNIBOX_FOCUS_LOST = 4;
+        int ACTIVITY_FOCUS_LOST = 5;
+        int FRE_NOT_COMPLETED = 6;
+        int COUNT = 7;
     }
 
     @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
@@ -489,7 +519,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                     if (result == null || !result.booleanValue()) {
                         Log.e(TAG, "User failed to select a default search engine.");
-                        finish();
+                        finish(TerminationReason.FRE_NOT_COMPLETED);
                         return;
                     }
 
@@ -503,7 +533,7 @@ public class SearchActivity extends AsyncInitializationActivity
     // OverrideBackKeyBehaviorDelegate implementation.
     @Override
     public boolean handleBackKeyPressed() {
-        cancelSearch();
+        finish(TerminationReason.BACK_KEY_PRESSED);
         return true;
     }
 
@@ -621,23 +651,20 @@ public class SearchActivity extends AsyncInitializationActivity
         } else {
             // TODO(crbug.com/329702834): Terminate SearchActivity on focus change:
             // it's possible that we're running in a multi-window mode.
-            finish();
+            finish(TerminationReason.OMNIBOX_FOCUS_LOST);
         }
     }
 
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
-        recordNavigationTargetType(mProfileSupplier.get(), new GURL(params.url), mIntentOrigin);
+        recordNavigationTargetType(new GURL(params.url));
 
-        var exitAnimationRes = 0;
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
-            exitAnimationRes = android.R.anim.fade_out;
         } else {
             loadUrlInChromeBrowser(params);
         }
 
-        finish();
-        overridePendingTransition(0, exitAnimationRes);
+        finish(TerminationReason.NAVIGATION);
         return true;
     }
 
@@ -670,21 +697,42 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ ViewGroup createContentView() {
         var contentView =
                 (ViewGroup) getLayoutInflater().inflate(R.layout.search_activity, null, false);
-        contentView.setOnClickListener(v -> cancelSearch());
+        contentView.setOnClickListener(v -> finish(TerminationReason.TAP_OUTSIDE));
         return contentView;
     }
 
+    /**
+     * Terminate search session, invoking animations appropriate for the session type, and recording
+     * session termination reason.
+     *
+     * <p>This method should be called instead of {@link finish()}.
+     *
+     * @param reason the reason session was terminated
+     */
     @VisibleForTesting
-    /* package */ void cancelSearch() {
+    /* package */ void finish(@TerminationReason int reason) {
+        if (isFinishing()) return;
+
         var exitAnimationRes = 0;
-        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
-            SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
+        if (mIntentOrigin != null && mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+            if (reason != TerminationReason.NAVIGATION) {
+                SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
+            }
             exitAnimationRes = android.R.anim.fade_out;
         } else {
             exitAnimationRes = R.anim.activity_close_exit;
         }
-        finish();
+
+        recordEnumeratedHistogramWithIntentOriginBreakdown(
+                HISTOGRAM_SESSION_TERMINATION_REASON, reason, TerminationReason.COUNT);
+
+        super.finish();
         overridePendingTransition(0, exitAnimationRes);
+    }
+
+    @Override
+    public void finish() {
+        finish(TerminationReason.UNSPECIFIED);
     }
 
     @VisibleForTesting
@@ -722,9 +770,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     @VisibleForTesting
-    static void recordNavigationTargetType(
-            @NonNull Profile profile, @NonNull GURL url, @IntentOrigin int origin) {
-        var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
+    void recordNavigationTargetType(@NonNull GURL url) {
+        var templateSvc = TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get());
         boolean isSearch =
                 templateSvc != null
                         && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
@@ -736,17 +783,34 @@ public class SearchActivity extends AsyncInitializationActivity
                         ? NavigationTargetType.NATIVE_PAGE
                         : isSearch ? NavigationTargetType.SEARCH : NavigationTargetType.URL;
 
-        String suffix =
-                switch (origin) {
-                    case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
-                    case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
-                    default -> ".SearchWidget";
-                };
-
-        RecordHistogram.recordEnumeratedHistogram(
+        recordEnumeratedHistogramWithIntentOriginBreakdown(
                 HISTOGRAM_NAVIGATION_TARGET_TYPE, targetType, NavigationTargetType.COUNT);
-        RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_NAVIGATION_TARGET_TYPE + suffix, targetType, NavigationTargetType.COUNT);
+    }
+
+    /**
+     * An extension of {@link RecordHistogram.recordEnumeratedHistogram} that captures the value
+     * with an additional breakdown by {@link IntentOrigin}.
+     *
+     * <p>The break down may not be captured if the histogram is recorded ahead of origin being
+     * identified (e.g. the activity was terminated before it was able to process the intent).
+     *
+     * @param histogramName the name of histogram to record
+     * @param sample the sample value to record
+     * @param max the maximum value the histogram can take
+     */
+    private void recordEnumeratedHistogramWithIntentOriginBreakdown(
+            String histogramName, int sample, int max) {
+        RecordHistogram.recordEnumeratedHistogram(histogramName, sample, max);
+
+        if (mIntentOrigin != null) {
+            String suffix =
+                    switch (mIntentOrigin) {
+                        case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
+                        case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
+                        default -> ".SearchWidget";
+                    };
+            RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);
+        }
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {

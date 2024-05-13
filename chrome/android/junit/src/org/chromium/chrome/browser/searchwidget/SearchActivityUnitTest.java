@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
+import org.chromium.chrome.browser.searchwidget.SearchActivity.TerminationReason;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -91,6 +93,9 @@ import java.util.Set;
 public class SearchActivityUnitTest {
     private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
             new OmniboxLoadUrlParams.Builder("https://abc.xyz", PageTransition.TYPED).build();
+    private static final String HISTOGRAM_SUFFIX_SEARCH_WIDGET = ".SearchWidget";
+    private static final String HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET = ".ShortcutsWidget";
+    private static final String HISTOGRAM_SUFFIX_CUSTOM_TAB = ".CustomTab";
 
     // SearchActivityUtils call intercepting mock.
     private interface TestSearchActivityUtils {
@@ -248,13 +253,24 @@ public class SearchActivityUnitTest {
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
-
         mActivity.handleNewIntent(new Intent(), false);
 
-        mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         ArgumentCaptor<OmniboxLoadUrlParams> captor =
                 ArgumentCaptor.forClass(OmniboxLoadUrlParams.class);
-        verify(mUtils).resolveOmniboxRequestForResult(eq(mActivity), captor.capture());
+
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON,
+                                TerminationReason.NAVIGATION)
+                        .expectIntRecord(
+                                SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                        + HISTOGRAM_SUFFIX_CUSTOM_TAB,
+                                TerminationReason.NAVIGATION)
+                        .build()) {
+            mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
+            verify(mUtils).resolveOmniboxRequestForResult(eq(mActivity), captor.capture());
+        }
 
         assertEquals("https://abc.xyz", captor.getValue().url);
         assertNull(mShadowActivity.getNextStartedActivity());
@@ -283,20 +299,95 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void cancelSearch_dispatchResultToCallingActivity() {
+    public void terminateSession_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent(), false);
+        clearInvocations(mUtils);
 
-        mActivity.cancelSearch();
-        verify(mUtils).resolveOmniboxRequestForResult(mActivity, null);
+        // Start at the first non-NAVIGATION reason. NAVIGATION is covered by a separate test
+        // because it resolves termination slightly differently.
+        for (@TerminationReason int reason = TerminationReason.NAVIGATION + 1;
+                reason < TerminationReason.COUNT;
+                reason++) {
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON, reason)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                            + HISTOGRAM_SUFFIX_CUSTOM_TAB,
+                                    reason)
+                            .build()) {
+                mActivity.finish(reason);
+                verify(mUtils).resolveOmniboxRequestForResult(mActivity, null);
+                clearInvocations(mUtils);
+
+                // Subsequent calls must be ignored.
+                mActivity.finish(reason);
+                verifyNoMoreInteractions(mUtils);
+
+                mShadowActivity.resetIsFinishing();
+            }
+        }
     }
 
     @Test
-    public void cancelSearch_terminateSearch() {
+    public void terminateSession_searchWidget() {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent(), false);
+        clearInvocations(mUtils);
 
-        mActivity.cancelSearch();
+        for (@TerminationReason int reason = TerminationReason.NAVIGATION;
+                reason < TerminationReason.COUNT;
+                reason++) {
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON, reason)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                            + HISTOGRAM_SUFFIX_SEARCH_WIDGET,
+                                    reason)
+                            .build()) {
+                mActivity.finish(reason);
+                verifyNoMoreInteractions(mUtils);
+
+                // Verify that termination reason is recorded exactly once.
+                mActivity.finish(reason);
+                verifyNoMoreInteractions(mUtils);
+                mShadowActivity.resetIsFinishing();
+            }
+        }
+        verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
+    }
+
+    @Test
+    public void terminateSession_shortcutsWidget() {
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent(), false);
+        clearInvocations(mUtils);
+
+        for (@TerminationReason int reason = TerminationReason.NAVIGATION;
+                reason < TerminationReason.COUNT;
+                reason++) {
+            try (var watcher =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON, reason)
+                            .expectIntRecord(
+                                    SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON
+                                            + HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET,
+                                    reason)
+                            .build()) {
+                mActivity.finish(reason);
+                verifyNoMoreInteractions(mUtils);
+
+                // Verify that termination reason is recorded exactly once.
+                mActivity.finish(reason);
+                verifyNoMoreInteractions(mUtils);
+                mShadowActivity.resetIsFinishing();
+            }
+        }
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
     }
 
@@ -597,6 +688,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoCanceled() {
+        mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
         ShadowProfileManager.setProfile(mProfile);
@@ -615,6 +707,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void finishNativeInitialization_stopActivityWhenSearchEnginePromoFailed() {
+        mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
         ShadowProfileManager.setProfile(mProfile);
@@ -650,7 +743,20 @@ public class SearchActivityUnitTest {
     }
 
     @Test
+    public void finish_recordsUnspecifiedTerminationReason() {
+        mActivity.handleNewIntent(new Intent(), false);
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SearchActivity.HISTOGRAM_SESSION_TERMINATION_REASON,
+                        TerminationReason.UNSPECIFIED)) {
+            mActivity.finish();
+        }
+    }
+
+    @Test
     public void finishNativeInitialization_abortIfActivityTerminated() {
+        mActivity.handleNewIntent(new Intent(), false);
         doNothing().when(mActivity).finishDeferredInitialization();
 
         ShadowProfileManager.setProfile(mProfile);
@@ -660,7 +766,7 @@ public class SearchActivityUnitTest {
         verify(mDelegate).showSearchEngineDialogIfNeeded(eq(mActivity), captor.capture());
 
         // Cancel activity, and notify that the search engine promo dialog was completed.
-        mActivity.finish();
+        mActivity.finish(TerminationReason.ACTIVITY_FOCUS_LOST);
         captor.getValue().onResult(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -827,6 +933,8 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onUrlFocusChange_terminateOnFocusLost() {
+        mActivity.handleNewIntent(new Intent(), false);
+
         assertFalse(mActivity.isFinishing());
         mActivity.onUrlFocusChange(false);
         assertTrue(mActivity.isFinishing());
@@ -864,11 +972,12 @@ public class SearchActivityUnitTest {
                             .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
                             .expectIntRecord(
                                     SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
-                                            + ".SearchWidget",
+                                            + HISTOGRAM_SUFFIX_SEARCH_WIDGET,
                                     type)
                             .build()) {
-                SearchActivity.recordNavigationTargetType(
-                        mProfile, entry.getKey(), IntentOrigin.SEARCH_WIDGET);
+                doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+                mActivity.onNewIntent(new Intent());
+                mActivity.recordNavigationTargetType(entry.getKey());
             }
 
             try (var watcher =
@@ -876,22 +985,27 @@ public class SearchActivityUnitTest {
                             .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
                             .expectIntRecord(
                                     SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
-                                            + ".ShortcutsWidget",
+                                            + HISTOGRAM_SUFFIX_SHORTCUTS_WIDGET,
                                     type)
                             .build()) {
-                SearchActivity.recordNavigationTargetType(
-                        mProfile, entry.getKey(), IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
+                doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET)
+                        .when(mUtils)
+                        .getIntentOrigin(any());
+                mActivity.onNewIntent(new Intent());
+                mActivity.recordNavigationTargetType(entry.getKey());
             }
 
             try (var watcher =
                     HistogramWatcher.newBuilder()
                             .expectIntRecord(SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE, type)
                             .expectIntRecord(
-                                    SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE + ".CustomTab",
+                                    SearchActivity.HISTOGRAM_NAVIGATION_TARGET_TYPE
+                                            + HISTOGRAM_SUFFIX_CUSTOM_TAB,
                                     type)
                             .build()) {
-                SearchActivity.recordNavigationTargetType(
-                        mProfile, entry.getKey(), IntentOrigin.CUSTOM_TAB);
+                doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+                mActivity.onNewIntent(new Intent());
+                mActivity.recordNavigationTargetType(entry.getKey());
             }
         }
     }
