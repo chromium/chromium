@@ -1435,6 +1435,13 @@
       },
     },
   },
+  'win11-any': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-11',
+      },
+    },
+  },
   'win11_qualcomm_adreno_690_stable': {
     'swarming': {
       'dimensions': {

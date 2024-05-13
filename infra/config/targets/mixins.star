@@ -1842,6 +1842,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11-any",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Windows-11",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win-arm64",
     swarming = targets.swarming(
         dimensions = {

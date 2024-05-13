@@ -5789,7 +5789,7 @@
       },
       'win11-updater-tester-dbg-uac': {
         'mixins': [
-          'win11',
+          'win11-any',
           'x86-64',
         ],
         'test_suites': {
