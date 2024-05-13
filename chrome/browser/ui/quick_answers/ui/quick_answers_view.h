@@ -72,8 +72,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   ui::ImageModel GetIconImageModelForTesting();
 
  private:
-  void InitLayout();
-  void AddContentView();
+  bool HasFocusInside();
   void AddFrameButtons();
   bool ShouldAddPhoneticsAudioButton(ResultType result_type,
                                      GURL phonetics_audio,
@@ -81,9 +80,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   void AddPhoneticsAudioButton(
       const quick_answers::PhoneticsInfo& phonetics_info,
       View* container);
-  void AddAssistantIcon();
-  void AddGoogleIcon();
-  void AddDefaultResultTypeIcon();
   int GetLabelWidth(bool is_title);
   void ResetContentView();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);

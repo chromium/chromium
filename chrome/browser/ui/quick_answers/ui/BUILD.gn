@@ -14,3 +14,15 @@ source_set("quick_answers_stage_button") {
     "//ui/views",
   ]
 }
+
+source_set("loading_view") {
+  sources = [
+    "loading_view.cc",
+    "loading_view.h",
+  ]
+  deps = [
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
