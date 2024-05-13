@@ -301,7 +301,21 @@ std::ostream& operator<<(std::ostream& os,
 
 std::ostream& operator<<(std::ostream& os, const LcppData& data) {
   os << "[" << data.host() << "," << data.last_visit_time() << "]" << std::endl;
+  os << "lcpp_stat:" << std::endl;
   os << data.lcpp_stat();
+  os << "lcpp_key_stat:" << std::endl;
+  os << data.lcpp_key_stat();
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const LcppKeyStat& key_stat) {
+  os << "\t" << "lcpp_stat_map:" << std::endl;
+  for (const auto& [path, path_key_stat] : key_stat.lcpp_stat_map()) {
+    os << "\t\t" << path << std::endl;
+    os << path_key_stat << std::endl;
+  }
+  os << "\t" << "key_frequency_stat:" << std::endl;
+  os << key_stat.key_frequency_stat();
   return os;
 }
 
