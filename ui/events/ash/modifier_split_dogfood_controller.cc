@@ -7,12 +7,9 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ui {
-
-namespace {
-constexpr char kGoogleDomain[] = "@google.com";
-}
 
 ModifierSplitDogfoodController::ModifierSplitDogfoodController() {
   modifier_split_enabled_ = ash::features::IsModifierSplitEnabled() &&
@@ -46,8 +43,8 @@ void ModifierSplitDogfoodController::OnUserLoggedIn(
     return;
   }
 
-  modifier_split_enabled_ = base::EndsWith(
-      primary_user->GetAccountId().GetUserEmail(), kGoogleDomain);
+  modifier_split_enabled_ = gaia::IsGoogleInternalAccountEmail(
+      primary_user->GetAccountId().GetUserEmail());
 }
 
 }  // namespace ui

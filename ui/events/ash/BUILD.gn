@@ -41,6 +41,7 @@ source_set("ash") {
     "//base",
     "//components/user_manager",
     "//device/udev_linux",
+    "//google_apis",
     "//ui/base",
     "//ui/base:features",
     "//ui/base/ime/ash",
