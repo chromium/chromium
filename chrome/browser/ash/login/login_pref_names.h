@@ -103,6 +103,10 @@ inline constexpr char kOobeDrivePinningEnabledDeferred[] =
 inline constexpr char kOobeDisplaySizeFactorDeferred[] =
     "oobe.display_size_factor_defer";
 
+// List of categories selected from the CategoriesSelection screen.
+// This list is used to filter the apps in the new recommended apps screen.
+inline constexpr char kOobeCategoriesSelected[] = "oobe.categories_selected";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).

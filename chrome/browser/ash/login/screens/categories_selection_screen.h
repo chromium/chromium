@@ -42,6 +42,9 @@ class CategoriesSelectionScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  // Called when the user selects categories on the screen.
+  void OnSelect(base::Value::List screens);
+
   base::WeakPtr<CategoriesSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;
 };

@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/categories_selection_screen_handler.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace {
@@ -45,6 +52,17 @@ bool CategoriesSelectionScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
+  bool is_child_account = user_manager->IsLoggedInAsChildUser();
+  if (is_managed_account || is_child_account) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
   return false;
 }
 
@@ -59,6 +77,11 @@ void CategoriesSelectionScreen::ShowImpl() {
 
 void CategoriesSelectionScreen::HideImpl() {}
 
+void CategoriesSelectionScreen::OnSelect(base::Value::List categories) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetList(prefs::kOobeCategoriesSelected, std::move(categories));
+}
+
 void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
@@ -69,7 +92,7 @@ void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
 
   if (action_id == kUserActionNext) {
     CHECK_EQ(args.size(), 2u);
-    // TODO(b/337674429) : save the selected categories into user preferences.
+    OnSelect(args[1].GetList().Clone());
     exit_callback_.Run(Result::kNext);
     return;
   }

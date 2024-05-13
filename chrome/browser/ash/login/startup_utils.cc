@@ -165,6 +165,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
                                   false);
   }
 
+  if (features::IsOobePersonalizedOnboardingEnabled()) {
+    registry->RegisterListPref(prefs::kOobeCategoriesSelected);
+  }
+
   if (features::IsOobeDisplaySizeEnabled()) {
     registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
   }
