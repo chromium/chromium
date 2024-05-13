@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
@@ -16,6 +17,7 @@
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
 #import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_consumer.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -560,11 +562,16 @@ using PriceNotificationItems =
   const bookmarks::BookmarkNode* bookmark =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
   bool isNewBookmark = bookmark == nullptr;
-  // TODO(b/333063857): New bookmarks are not created before registering price
-  // tracking.
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
-        self.bookmarkModel->mobile_node();
+        base::FeatureList::IsEnabled(
+            syncer::kEnableBookmarkFoldersForAccountStorage)
+            ? self.bookmarkModel->account_mobile_node()
+            : self.bookmarkModel->mobile_node();
+    if (!defaultFolder) {
+      // Cannot track URL: the user is likely signed out.
+      return;
+    }
     bookmark = self.bookmarkModel->AddURL(defaultFolder,
                                           defaultFolder->children().size(),
                                           base::SysNSStringToUTF16(title), URL);
