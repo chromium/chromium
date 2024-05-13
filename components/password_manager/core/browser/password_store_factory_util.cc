@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -23,13 +24,11 @@
 namespace password_manager {
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory,
-    const base::RepeatingCallback<
-        void(LoginDatabase::LoginDatabaseEmptynessState)>& is_empty_cb) {
+    const base::FilePath& db_directory) {
   base::FilePath login_db_file_path =
       db_directory.Append(kLoginDataForProfileFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
-                                         IsAccountStore(false), is_empty_cb);
+                                         IsAccountStore(false));
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
@@ -79,16 +78,30 @@ void RemoveUselessCredentials(
 }
 
 void SetEmptyStorePref(PrefService* prefs,
+                       base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
                        LoginDatabase::LoginDatabaseEmptynessState value) {
-  prefs->SetBoolean(pref, value.no_login_found);
+  // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
+  // called, because it will lead to a use-after-free failure. When any backend
+  // is shut down, the weak pointers are invalidated.
+  if (backend) {
+    CHECK(prefs);
+    prefs->SetBoolean(pref, value.no_login_found);
+  }
 }
 
 void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
+    base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
     LoginDatabase::LoginDatabaseEmptynessState value) {
-  prefs->SetBoolean(pref, value.autofillable_credentials_exist);
+  // The prefs should not be set after `PasswordStoreBackend::Shutdown()` was
+  // called, because it will lead to a use-after-free failure. When any backend
+  // is shut down, the weak pointers are invalidated.
+  if (backend) {
+    CHECK(prefs);
+    prefs->SetBoolean(pref, value.autofillable_credentials_exist);
+  }
 }
 
 }  // namespace password_manager

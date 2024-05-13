@@ -1003,14 +1003,10 @@ struct LoginDatabase::PrimaryKeyAndPassword {
   std::string keychain_identifier;
 };
 
-LoginDatabase::LoginDatabase(
-    const base::FilePath& db_path,
-    IsAccountStore is_account_store,
-    const base::RepeatingCallback<void(LoginDatabaseEmptynessState)>&
-        is_empty_cb)
+LoginDatabase::LoginDatabase(const base::FilePath& db_path,
+                             IsAccountStore is_account_store)
     : db_path_(db_path),
       is_account_store_(is_account_store),
-      is_empty_cb_(is_empty_cb),
       // Set options for a small, private database (based on WebDatabase).
       db_({.page_size = 2048, .cache_size = 32}) {}
 
@@ -1917,6 +1913,10 @@ void LoginDatabase::RollbackTransaction() {
 bool LoginDatabase::CommitTransaction() {
   TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
   return db_.CommitTransaction();
+}
+
+void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
+  is_empty_cb_ = std::move(is_empty_cb);
 }
 
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)

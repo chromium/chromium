@@ -87,8 +87,7 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
-          context->GetStatePath(),
-          /*is_empty_cb=*/base::NullCallback()));
+          context->GetStatePath()));
 
   scoped_refptr<password_manager::PasswordStore> store =
       base::MakeRefCounted<password_manager::PasswordStore>(

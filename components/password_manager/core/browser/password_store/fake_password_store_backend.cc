@@ -97,6 +97,7 @@ void FakePasswordStoreBackend::InitBackend(
 }
 
 void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   match_helper_ = nullptr;
   // Ensure that the shutdown is only completed after any other backend task on
   // the same task runner concluded. The backend always uses the same runner.

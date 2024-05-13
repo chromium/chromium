@@ -61,6 +61,9 @@ class PasswordStoreBackend {
 
   // Shuts down the store asynchronously. The callback is run on the main thread
   // after the shutdown has concluded and it is safe to delete the backend.
+  // Please invalidate the weak pointers whenever defining this method.
+  // Otherwise, some prefs might be set after the backend is shut down, leading
+  // to a crash.
   virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
 
   // Necessary condition to offer saving passwords.

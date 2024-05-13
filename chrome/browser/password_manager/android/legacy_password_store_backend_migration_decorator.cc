@@ -136,6 +136,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::InitBackend(
 
 void LegacyPasswordStoreBackendMigrationDecorator::Shutdown(
     base::OnceClosure shutdown_completed) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   migrator_.reset();
   built_in_backend_ = nullptr;
   android_backend_ = nullptr;

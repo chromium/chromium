@@ -1174,16 +1174,21 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     // This block of tests is designed to test the behavior of login database
     // (namely that the profile database file is renamed to be the account
     // database file when using the split stores feature).
-    auto is_profile_db_empty_cb =
-        base::BindPostTaskToCurrentDefault(base::BindRepeating(
-            &password_manager::SetEmptyStorePref, profile->GetPrefs(),
-            password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+    std::unique_ptr<password_manager::LoginDatabase> login_db(
+        password_manager::CreateLoginDatabaseForProfileStorage(
+            profile->GetPath()));
+    password_manager::LoginDatabase* login_db_ptr = login_db.get();
     std::unique_ptr<password_manager::PasswordStoreBackend> profile_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-            password_manager::CreateLoginDatabaseForProfileStorage(
-                profile->GetPath(), std::move(is_profile_db_empty_cb)),
+            std::move(login_db),
             syncer::WipeModelUponSyncDisabledBehavior::kNever,
             profile->GetPrefs());
+    auto is_db_empty_cb =
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+            &password_manager::SetEmptyStorePref, profile->GetPrefs(),
+            profile_backend->AsWeakPtr(),
+            password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+    login_db_ptr->SetIsEmptyCb(std::move(is_db_empty_cb));
     ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         profile,
         base::BindRepeating(

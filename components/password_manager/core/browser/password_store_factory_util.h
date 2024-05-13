@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
@@ -21,19 +22,14 @@ class PrefService;
 namespace password_manager {
 
 class CredentialsCleanerRunner;
+class PasswordStoreBackend;
 class PasswordStoreInterface;
 
 // Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
-// If a non-null `is_empty_cb` is passed, it's called to signal whether the
-// database is empty (i.e. without any logins *or* blocklists) and whether there
-// are any autofillable logins. The call happens when initializing the database
-// and when adding/removing entries, regardless of success.
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory,
-    const base::RepeatingCallback<
-        void(LoginDatabase::LoginDatabaseEmptynessState)>& is_empty_cb);
+    const base::FilePath& db_directory);
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
     const base::FilePath& db_directory);
 
@@ -59,6 +55,7 @@ void RemoveUselessCredentials(
 
 // Extracts `value.no_login_found` and uses it as a value for the pref.
 void SetEmptyStorePref(PrefService* prefs,
+                       base::WeakPtr<PasswordStoreBackend> backend,
                        const std::string& pref,
                        LoginDatabase::LoginDatabaseEmptynessState value);
 
@@ -66,6 +63,7 @@ void SetEmptyStorePref(PrefService* prefs,
 // the pref.
 void SetAutofillableCredentialsStorePref(
     PrefService* prefs,
+    base::WeakPtr<PasswordStoreBackend> backend,
     const std::string& pref,
     LoginDatabase::LoginDatabaseEmptynessState value);
 

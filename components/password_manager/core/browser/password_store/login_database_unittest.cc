@@ -281,8 +281,8 @@ class LoginDatabaseTest : public testing::Test {
     file_ = temp_dir_.GetPath().AppendASCII("TestMetadataStoreMacDatabase");
     OSCryptMocker::SetUp();
 
-    db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false),
-                                          is_empty_cb_.Get());
+    db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false));
+    db_->SetIsEmptyCb(is_empty_cb_.Get());
     ASSERT_TRUE(db_->Init());
   }
 
@@ -292,9 +292,7 @@ class LoginDatabaseTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath file_;
-  NiceMock<base::MockCallback<base::RepeatingCallback<void(
-      LoginDatabase::LoginDatabaseEmptynessState)>>>
-      is_empty_cb_;
+  NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb_;
   std::unique_ptr<LoginDatabase> db_;
   // A full TaskEnvironment is required instead of only
   // SingleThreadTaskEnvironment because on iOS,
@@ -2236,10 +2234,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/true, /*blocklisted=*/true);
 
-  NiceMock<base::MockCallback<base::RepeatingCallback<void(
-      LoginDatabase::LoginDatabaseEmptynessState)>>>
-      is_empty_cb;
-  LoginDatabase db(database_path(), IsAccountStore(false), is_empty_cb.Get());
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
+  db.SetIsEmptyCb(is_empty_cb.Get());
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(db.Init());
 
@@ -2806,11 +2803,10 @@ TEST_F(LoginDatabaseTest, AddLoginWithNonEmptyInvalidURL) {
 }
 
 TEST_F(LoginDatabaseTest, IsEmptyCb_InitEmpty) {
-  NiceMock<base::MockCallback<base::RepeatingCallback<void(
-      LoginDatabase::LoginDatabaseEmptynessState)>>>
-      is_empty_cb;
   LoginDatabase db(temp_dir_.GetPath().AppendASCII("DbDirectory"),
-                   IsAccountStore(false), is_empty_cb.Get());
+                   IsAccountStore(false));
+  NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
+  db.SetIsEmptyCb(is_empty_cb.Get());
   EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptynessState{
                                .no_login_found = true,
                                .autofillable_credentials_exist = false}));
@@ -2821,18 +2817,16 @@ TEST_F(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
   base::FilePath directory = temp_dir_.GetPath().AppendASCII("DbDirectory");
   {
     // Simulate the DB being populated in a previous startup.
-    auto db = std::make_unique<LoginDatabase>(directory, IsAccountStore(false),
-                                              base::NullCallback());
+    auto db = std::make_unique<LoginDatabase>(directory, IsAccountStore(false));
     db->Init();
     std::ignore =
         db->AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
     db.reset();
   }
 
-  NiceMock<base::MockCallback<base::RepeatingCallback<void(
-      LoginDatabase::LoginDatabaseEmptynessState)>>>
-      is_empty_cb;
-  LoginDatabase db(directory, IsAccountStore(false), is_empty_cb.Get());
+  LoginDatabase db(directory, IsAccountStore(false));
+  NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
+  db.SetIsEmptyCb(is_empty_cb.Get());
   EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptynessState{
                                .no_login_found = false,
                                .autofillable_credentials_exist = true}));

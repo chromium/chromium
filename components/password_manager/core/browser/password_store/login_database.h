@@ -61,16 +61,10 @@ class LoginDatabase {
                            const LoginDatabaseEmptynessState&) = default;
   };
 
-  // If a non-null `is_empty_cb` is passed, it's called to signal whether the
-  // database is empty (i.e. without any logins *or* blocklists) and whether
-  // there are any autofillable logins. The call happens when initializing the
-  // database and when adding/removing entries, regardless of success.
-  LoginDatabase(
-      const base::FilePath& db_path,
-      IsAccountStore is_account_store,
-      const base::RepeatingCallback<void(LoginDatabaseEmptynessState)>&
-          is_empty_cb = base::NullCallback());
+  using IsEmptyCallback =
+      base::RepeatingCallback<void(LoginDatabaseEmptynessState)>;
 
+  LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
@@ -194,6 +188,12 @@ class LoginDatabase {
   bool BeginTransaction();
   void RollbackTransaction();
   bool CommitTransaction();
+
+  // `is_empty_cb`is called to signal whether the database is empty (i.e.
+  // without any logins *or* blocklists) and whether there are any autofillable
+  // logins. The call happens when initializing the database and when
+  // adding/removing entries, regardless of success.
+  void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
 
   StatisticsTable& stats_table() { return stats_table_; }
   InsecureCredentialsTable& insecure_credentials_table() {
@@ -371,7 +371,7 @@ class LoginDatabase {
 
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
-  const base::RepeatingCallback<void(LoginDatabaseEmptynessState)> is_empty_cb_;
+  IsEmptyCallback is_empty_cb_ = base::NullCallback();
 
   mutable sql::Database db_;
   sql::MetaTable meta_table_;

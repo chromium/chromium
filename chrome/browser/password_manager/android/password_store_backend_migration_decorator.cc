@@ -82,6 +82,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
     base::OnceClosure shutdown_completed) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   migrator_.reset();
 
   auto shutdown_closure =

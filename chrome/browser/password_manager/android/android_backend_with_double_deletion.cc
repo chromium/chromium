@@ -53,6 +53,7 @@ void AndroidBackendWithDoubleDeletion::InitBackend(
 
 void AndroidBackendWithDoubleDeletion::Shutdown(
     base::OnceClosure shutdown_completed) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   auto shutdown_closure =
       base::BarrierClosure(2, std::move(shutdown_completed));
   built_in_backend_->Shutdown(

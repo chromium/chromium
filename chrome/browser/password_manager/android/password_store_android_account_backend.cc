@@ -200,6 +200,7 @@ void PasswordStoreAndroidAccountBackend::InitBackend(
 
 void PasswordStoreAndroidAccountBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   affiliated_match_helper_ = nullptr;
   sync_service_ = nullptr;
   PasswordStoreAndroidBackend::Shutdown(std::move(shutdown_completed));
