@@ -884,6 +884,27 @@ TEST_P(URLUtilTypedTest, TestResolveRelativeWithNonSpecialBase) {
   }
 }
 
+TEST_P(URLUtilTypedTest, OpaqueNonSpecialScheme) {
+  // Ensure that the behavior of "android:" scheme URL is preserved, which is
+  // not URL Standard compliant.
+  //
+  // URL Standard-wise, "android://a b" is an invalid URL because the host part
+  // includes a space character, which is not allowed.
+  std::optional<std::string> res = CanonicalizeSpec("android://a b", false);
+  ASSERT_TRUE(res);
+  EXPECT_EQ(*res, "android://a b");
+
+  // Test a "git:" scheme URL for comparison.
+  res = CanonicalizeSpec("git://a b", false);
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // This is correct behavior because "git://a b" is an invalid URL.
+    EXPECT_FALSE(res);
+  } else {
+    ASSERT_TRUE(res);
+    EXPECT_EQ(*res, "git://a b");
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, URLUtilTypedTest, ::testing::Bool());
 
 }  // namespace url

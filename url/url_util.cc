@@ -116,6 +116,13 @@ struct SchemeRegistry {
       kAboutScheme,
   };
 
+  // Non-special schemes that should be treated as opaque path URLs for
+  // compatibility reasons.
+  std::vector<std::string> opaque_non_special_schemes = {
+      // See https://crrev.com/c/5465607 for the reason.
+      kAndroidScheme,
+  };
+
   // Schemes with a predefined default custom handler.
   std::vector<SchemeWithHandler> predefined_handler_schemes;
 
@@ -189,6 +196,19 @@ bool DoIsStandard(const CHAR* spec, const Component& scheme, SchemeType* type) {
                        GetSchemeRegistry().standard_schemes);
 }
 
+template <typename CHAR>
+bool DoIsOpaqueNonSpecial(const CHAR* spec, const Component& scheme) {
+  if (scheme.is_empty()) {
+    return false;
+  }
+  for (const std::string& s : GetSchemeRegistry().opaque_non_special_schemes) {
+    if (base::EqualsCaseInsensitiveASCII(
+            std::basic_string_view(&spec[scheme.begin], scheme.len), s)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 template<typename CHAR>
 bool DoFindAndCompareScheme(const CHAR* str,
@@ -296,7 +316,8 @@ bool DoCanonicalize(const CHAR* spec,
 
   } else {
     // Non-special scheme URLs like data: and javascript:.
-    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+        !DoIsOpaqueNonSpecial(spec, scheme)) {
       success = CanonicalizeNonSpecialURL(
           spec, spec_len,
           ParseNonSpecialURLInternal(std::basic_string_view(spec, spec_len),

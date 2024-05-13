@@ -21,6 +21,8 @@ inline constexpr char16_t kAboutSrcdocPath16[] = u"srcdoc";
 
 inline constexpr char kAboutScheme[] = "about";
 inline constexpr char16_t kAboutScheme16[] = u"about";
+inline constexpr char kAndroidScheme[] = "android";
+inline constexpr char16_t kAndroidScheme16[] = u"android";
 inline constexpr char kBlobScheme[] = "blob";
 inline constexpr char16_t kBlobScheme16[] = u"blob";
 inline constexpr char kContentScheme[] = "content";
