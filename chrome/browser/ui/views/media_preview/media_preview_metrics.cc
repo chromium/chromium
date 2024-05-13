@@ -11,22 +11,24 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
+using base::StrCat;
+
 namespace media_preview_metrics {
 
 namespace {
 
 constexpr char kUiPrefix[] = "MediaPreviews.UI.";
-constexpr char kDeviceSelectionPrefix[] = "MediaPreviews.UI.DeviceSelection.";
-constexpr char kVideoPrefix[] = "MediaPreviews.UI.Preview.";
+constexpr char kDeviceSelection[] = "DeviceSelection.";
+constexpr char kPreview[] = "Preview.";
 
-base::HistogramBase* GetMediaPreviewDurationHistogram(std::string name) {
+base::HistogramBase* GetMediaPreviewDurationHistogram(const std::string& name) {
   // Duration buckets as powers of 2
   const std::vector<int> custom_ranges{1, 2, 4, 8, 16, 32, 64, 128, 256, 512};
   return base::CustomHistogram::FactoryGet(
       name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-std::string GetUiLocationString(UiLocation location) {
+const char* GetUiLocationString(UiLocation location) {
   switch (location) {
     case UiLocation::kPermissionPrompt:
       return "Permissions";
@@ -35,7 +37,7 @@ std::string GetUiLocationString(UiLocation location) {
   }
 }
 
-std::string GetPreviewTypeString(const Context& context) {
+const char* GetPreviewTypeString(const Context& context) {
   switch (context.preview_type) {
     case PreviewType::kCamera:
       return "Camera";
@@ -49,8 +51,8 @@ std::string GetPreviewTypeString(const Context& context) {
 // Doesn't accept a Context with PreviewType::kCameraAndMic.
 std::string GetUiLocationAndPreviewTypeString(const Context& context) {
   CHECK_NE(context.preview_type, PreviewType::kCameraAndMic);
-  return GetUiLocationString(context.ui_location) + "." +
-         GetPreviewTypeString(context);
+  return StrCat({GetUiLocationString(context.ui_location), ".",
+                 GetPreviewTypeString(context)});
 }
 
 std::string GetUiLocationAndPreviewTypeStringAllowingBoth(
@@ -58,8 +60,8 @@ std::string GetUiLocationAndPreviewTypeStringAllowingBoth(
   if (context.preview_type == PreviewType::kCameraAndMic) {
     CHECK_EQ(context.ui_location, UiLocation::kPermissionPrompt);
   }
-  return GetUiLocationString(context.ui_location) + "." +
-         GetPreviewTypeString(context);
+  return StrCat({GetUiLocationString(context.ui_location), ".",
+                 GetPreviewTypeString(context)});
 }
 
 void UmaHistogramLinearCounts(const std::string& name,
@@ -81,8 +83,9 @@ Context::~Context() = default;
 
 void RecordPageInfoNumInUseDevices(const Context& context, int devices) {
   CHECK_EQ(context.ui_location, UiLocation::kPageInfo);
-  std::string location_plus_type = GetUiLocationAndPreviewTypeString(context);
-  std::string metric_name = kUiPrefix + location_plus_type + ".NumInUseDevices";
+  std::string metric_name =
+      StrCat({kUiPrefix, GetUiLocationAndPreviewTypeString(context),
+              ".NumInUseDevices"});
   base::UmaHistogramExactLinear(metric_name, devices, /*exclusive_max=*/5);
 }
 
@@ -90,31 +93,32 @@ void RecordMediaPreviewDuration(const Context& context,
                                 const base::TimeDelta& delta) {
   std::string location_plus_type =
       GetUiLocationAndPreviewTypeStringAllowingBoth(context);
-  std::string metric_name = kUiPrefix + location_plus_type + ".Duration";
+  std::string metric_name =
+      StrCat({kUiPrefix, location_plus_type, ".Duration"});
   GetMediaPreviewDurationHistogram(metric_name)->Add(delta.InSeconds());
 }
 
 void RecordDeviceSelectionTotalDevices(const Context& context, int devices) {
-  std::string location_plus_type = GetUiLocationAndPreviewTypeString(context);
   std::string metric_name =
-      kDeviceSelectionPrefix + location_plus_type + ".NumDevices";
+      StrCat({kUiPrefix, kDeviceSelection,
+              GetUiLocationAndPreviewTypeString(context), ".NumDevices"});
   base::UmaHistogramExactLinear(metric_name, devices, /*exclusive_max=*/5);
 }
 
 void RecordDeviceSelectionAction(
     const Context& context,
     MediaPreviewDeviceSelectionUserAction user_action) {
-  std::string location_plus_type = GetUiLocationAndPreviewTypeString(context);
   std::string metric_name =
-      kDeviceSelectionPrefix + location_plus_type + ".Action";
+      StrCat({kUiPrefix, kDeviceSelection,
+              GetUiLocationAndPreviewTypeString(context), ".Action"});
   base::UmaHistogramEnumeration(metric_name, user_action);
 }
 
 void RecordPreviewCameraPixelHeight(const Context& context, int pixel_height) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name = kUiPrefix +
-                            GetUiLocationString(context.ui_location) +
-                            ".Camera.PixelHeight";
+  std::string metric_name =
+      StrCat({kUiPrefix, GetUiLocationString(context.ui_location),
+              ".Camera.PixelHeight"});
   // This really has 8 buckets for 1-1080, but we have to add 2 for underflow
   // and overflow.
   UmaHistogramLinearCounts(metric_name, pixel_height, /*minimum=*/1,
@@ -123,18 +127,18 @@ void RecordPreviewCameraPixelHeight(const Context& context, int pixel_height) {
 
 void RecordPreviewVideoExpectedFPS(const Context& context, int expected_fps) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name = kVideoPrefix +
-                            GetUiLocationString(context.ui_location) +
-                            ".Video.ExpectedFPS";
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.ExpectedFPS"});
   base::UmaHistogramExactLinear(metric_name, expected_fps,
                                 /*exclusive_max=*/61);
 }
 
 void RecordPreviewVideoActualFPS(const Context& context, int actual_fps) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name = kVideoPrefix +
-                            GetUiLocationString(context.ui_location) +
-                            ".Video.ActualFPS";
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.ActualFPS"});
   base::UmaHistogramExactLinear(metric_name, actual_fps,
                                 /*exclusive_max=*/61);
 }
@@ -142,9 +146,9 @@ void RecordPreviewVideoActualFPS(const Context& context, int actual_fps) {
 void RecordPreviewVideoFramesRenderedPercent(const Context& context,
                                              float percent) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name = kVideoPrefix +
-                            GetUiLocationString(context.ui_location) +
-                            ".Video.RenderedPercent";
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.RenderedPercent"});
   // Convert percentage to 0-100 integer.
   int integer_percent = std::clamp(percent, /*lo=*/0.0f, /*hi=*/1.0f) * 100;
   base::UmaHistogramPercentage(metric_name, integer_percent);
@@ -152,8 +156,7 @@ void RecordPreviewVideoFramesRenderedPercent(const Context& context,
 
 void RecordOriginTrialAllowed(UiLocation location, bool allowed) {
   base::UmaHistogramBoolean(
-      base::StrCat(
-          {kUiPrefix, GetUiLocationString(location), ".OriginTrialAllowed"}),
+      StrCat({kUiPrefix, GetUiLocationString(location), ".OriginTrialAllowed"}),
       allowed);
 }
 
