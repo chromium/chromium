@@ -1405,7 +1405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Startup.AccountInfoFullyLoaded2" enum="BooleanLoaded"
-    expires_after="2024-10-20">
+    expires_after="2025-05-15">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -1416,7 +1416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Startup.SignedInWithoutAccountInfo2"
-    enum="BooleanIsSignedIn" expires_after="2024-06-15">
+    enum="BooleanIsSignedIn" expires_after="2025-05-15">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
