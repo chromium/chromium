@@ -286,7 +286,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
-  return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
+  return TabSwitchingBehavior::kDestroyPromptAndIgnoreRequest;
 }
 
 void EmbeddedPermissionPrompt::RecordOsMetrics(

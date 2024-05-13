@@ -1,41 +1,30 @@
 <!DOCTYPE html>
 <html>
-<script>
-  function waitForDismissEvent(id) {
-    (async () => {
-      await new Promise(resolve => {
-        document.getElementById(id).ondismiss = function (event) {
-          resolve();
-        };
-      });
-    })();
-    return true;
-  }
-
-  function waitForResolveEvent(id) {
-    (async () => {
-      await new Promise(resolve => {
-        document.getElementById(id).onresolve = function (event) {
-          resolve();
-        };
-      });
-    })();
-    return true;
-  }
-
-  function clickById(element_id) {
-    click(document.getElementById(element_id));
-  }
-
-  function click(element) {
-    element.click();
-  }
-</script>
 <body>
   <permission id="geolocation" type="geolocation">
   <permission id="microphone" type="microphone">
   <permission id="camera" type="camera">
   <permission id="invalid" type="invalid microphone">
   <permission id="camera-microphone" type="camera microphone">
+  <script>
+    document.querySelectorAll('permission').forEach(permissionElement => {
+      // Console logs are used to inform the browser test which events
+      // have been seen.
+      permissionElement.addEventListener('resolve', (event) => {
+        console.log(event.target.id + '-resolve');
+      });
+      permissionElement.addEventListener('dismiss', (event) => {
+        console.log(event.target.id + '-dismiss');
+      });
+    });
+
+    function clickById(element_id) {
+      click(document.getElementById(element_id));
+    }
+
+    function click(element) {
+      element.click();
+    }
+  </script>
 </body>
 </html>
