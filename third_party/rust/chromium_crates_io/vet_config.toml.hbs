@@ -84,19 +84,6 @@ Exemption updated to 1.0.116 in Feb 2024.
 Exemption updated to 1.0.117 in Feb 2024.
 """
 
-[[exemptions.libc]]
-version = "0.2.153"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Grandparented-in when setting up `cargo vet` in Jan 2024
-
-Unsoundness was found in 0.2.152 behind a crate feature (called \"extra_traits\")
-that is unused by Chromium.  https://crbug.com/1524111 tracks ensuring that we
-don't accidentally start depending on this feature.
-
-Exemption updated to 0.2.153 in Feb 2024.
-"""
-
 [[exemptions.memchr]]
 version = "2.7.2"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
