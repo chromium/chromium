@@ -2009,6 +2009,14 @@
      =1 {To protect your data, permissions were removed from a site you haven't visited recently}
      other {To protect your data, permissions were removed from sites you haven't visited recently}}
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_SECONDARY_LABEL" desc="'Revoked Permissions' shows websites for which permissions have been revoked. This label is the description of the module in the site settings page.">
+    {NUM_SITES, plural,
+     =1 {To protect your data, permissions were removed from a site}
+     other {To protect your data, permissions were removed from some sites}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SETTING_SUBLABEL" desc="'Revoked Permissions' shows the revoked permissions of websites. This text describes that abusive notification permissions were removed.">
+    Dangerous site. Chrome removed Notifications.
+  </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL" desc="'Unused Site Permissions' shows unused websites for which permissions have been revoked. This label is shown in a toast popup message after a user has clicked a button to acknowledge all revoked permissions.">
     {NUM_SITES, plural,
      =1 {Review complete for 1 site}

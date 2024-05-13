@@ -1158,8 +1158,18 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyCheckPermissionsTest, All) {
 #endif
 
 class SettingsSafetyHubTest : public SettingsBrowserTest {
+ protected:
+  SettingsSafetyHubTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kSafetyHub,
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation,
+        },
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubCard) {

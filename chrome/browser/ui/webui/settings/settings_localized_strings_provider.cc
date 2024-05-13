@@ -2224,6 +2224,8 @@ void AddSafetyCheckStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL},
       {"safetyCheckUnusedSitePermissionsSettingSublabel",
        IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL},
+      {"safetyHubAbusiveNotificationPermissionsSettingSublabel",
+       IDS_SETTINGS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SETTING_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
