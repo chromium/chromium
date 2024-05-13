@@ -66,10 +66,18 @@ void PasskeyService::FetchAccountState(AccountStateCallback callback) {
   MaybeFetchTrustedVaultKeys();
 }
 
+std::optional<std::vector<uint8_t>>
+PasskeyService::GetCachedSecurityDomainSecret() {
+  if (trusted_vault_keys_.empty()) {
+    return std::nullopt;
+  }
+  return trusted_vault_keys_.back();
+}
+
 void PasskeyService::UpdatePrimaryAccount() {
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (primary_account == primary_account_) {
+  if (primary_account.IsEmpty() || primary_account == primary_account_) {
     return;
   }
   primary_account_ = primary_account;
@@ -130,6 +138,8 @@ void PasskeyService::MaybeDownloadAccountState() {
 
   if (pending_account_state_callbacks_.empty() ||
       download_account_state_request_) {
+    // No outstanding requests, or there is a download pending that will satisfy
+    // them.
     return;
   }
 

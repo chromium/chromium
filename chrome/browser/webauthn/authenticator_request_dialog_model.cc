@@ -249,25 +249,29 @@ std::u16string GetMechanismDescription(
                                       base::UTF8ToUTF16(*priority_phone_name));
   }
   int message;
-  bool enclave_enabled =
+  bool gpm_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(device::kChromeOsPasskeys) ||
+#endif
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   switch (type) {
     case device::AuthenticatorType::kWinNative:
-      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
-                                : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
+                            : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
-                                : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
+                            : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
       // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
       // third party providers.
-      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
-                                : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      message = gpm_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
+                            : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case device::AuthenticatorType::kEnclave:
-      CHECK(enclave_enabled);
+    case device::AuthenticatorType::kChromeOSPasskeys:
+      CHECK(gpm_enabled);
       message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
       break;
     default:
@@ -293,6 +297,8 @@ int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
 // user ID.
 int SourcePriority(device::AuthenticatorType source) {
   switch (source) {
+    case device::AuthenticatorType::kChromeOSPasskeys:
+      return 5;
     case device::AuthenticatorType::kEnclave:
       return 4;
     case device::AuthenticatorType::kICloudKeychain:
@@ -2731,4 +2737,9 @@ void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
   PopulateMechanisms();
   model_->priority_mechanism_index = IndexOfPriorityMechanism();
   StartConditionalMediationRequest();
+}
+
+void AuthenticatorRequestDialogController::OnChromeOSGPMRequestReady() {
+  HideDialogAndDispatchToPlatformAuthenticator(
+      device::AuthenticatorType::kChromeOSPasskeys);
 }

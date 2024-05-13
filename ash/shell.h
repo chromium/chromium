@@ -173,6 +173,7 @@ class InputDeviceKeyAliasManager;
 class InputDeviceSettingsControllerImpl;
 class InputDeviceSettingsDispatcher;
 class InputDeviceTracker;
+class WebAuthNDialogController;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
 class KeyboardBacklightColorController;
@@ -601,9 +602,7 @@ class ASH_EXPORT Shell : public SessionObserver,
     return human_presence_orientation_controller_.get();
   }
   ImeControllerImpl* ime_controller() { return ime_controller_.get(); }
-  WebAuthNDialogControllerImpl* webauthn_dialog_controller() {
-    return webauthn_dialog_controller_.get();
-  }
+  WebAuthNDialogController* webauthn_dialog_controller();
   InSessionAuthDialogControllerImpl* in_session_auth_dialog_controller() {
     return in_session_auth_dialog_controller_.get();
   }

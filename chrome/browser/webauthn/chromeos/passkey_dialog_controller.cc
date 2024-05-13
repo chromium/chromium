@@ -94,7 +94,6 @@ void PasskeyDialogController::OnGPMPasskeySelected(
     std::vector<uint8_t> credential_id) {
   // FetchAccountState() should have completed before the UI was shown.
   CHECK(account_state_);
-
   switch (*account_state_) {
     case PasskeyService::AccountState::kError:
     case PasskeyService::AccountState::kEmpty:
@@ -123,7 +122,7 @@ void PasskeyDialogController::OnHavePasskeysDomainSecret() {
 }
 
 void PasskeyDialogController::StartAuthenticatorRequest() {
-  // TODO: Dispatch request to the authenticator.
+  dialog_model_->OnChromeOSGPMRequestReady();
 }
 
 }  // namespace chromeos

@@ -75,6 +75,11 @@ class PasskeyService : public KeyedService,
   // Determines the current `AccountState` for the current primary account.
   void FetchAccountState(AccountStateCallback callback);
 
+  // Returns the current security domain secret for the passkeys security domain
+  // if available locally. FetchAccountState() should be called to ensure the
+  // domain secret is available locally first.
+  std::optional<std::vector<uint8_t>> GetCachedSecurityDomainSecret();
+
  private:
   void UpdatePrimaryAccount();
   void MaybeFetchTrustedVaultKeys();

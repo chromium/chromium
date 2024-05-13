@@ -672,6 +672,10 @@ DeskProfilesDelegate* Shell::GetDeskProfilesDelegate() {
   return shell_delegate_->GetDeskProfilesDelegate();
 }
 
+WebAuthNDialogController* Shell::webauthn_dialog_controller() {
+  return webauthn_dialog_controller_.get();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Shell, private:
 
