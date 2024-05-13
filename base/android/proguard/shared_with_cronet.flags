@@ -9,12 +9,6 @@
 # Chromium code. They MUST be scoped appropriately to avoid side effects on app
 # code that we do not own.
 
-# Allow unused native methods to be removed, but prevent renaming on those that
-# are kept.
--keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class !cr_allowunused,** {
-  native <methods>;
-}
-
 # Use assumevalues block instead of assumenosideeffects block because Google3
 # proguard cannot parse assumenosideeffects blocks which overwrite return
 # value. Keep this in shared_with_cronet.flags rather than remove_logging.flags

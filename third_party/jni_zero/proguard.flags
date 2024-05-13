@@ -12,3 +12,10 @@
 -keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.jni_zero.CalledByNativeUnchecked <methods>;
 }
+
+# Allow unused native methods to be removed, but prevent renaming on those that
+# are kept.
+# TODO(crbug.com/315973491): Restrict the broad scope of this rule.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
+  native <methods>;
+}
