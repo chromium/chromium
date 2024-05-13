@@ -8,7 +8,6 @@
 
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -84,19 +83,6 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
   }
 
   return true;
-}
-
-// TODO(b/41489907): Remove this function once it's known why the binary is
-// sometimes not available.
-// static
-bool ScreenAIInstallState::VerifyLibraryAvailablity(
-    const base::FilePath& install_dir) {
-    // TODO(b/41489907): Try adding a browser test for this case.
-    bool binary_available =
-        base::PathExists(install_dir.Append(GetComponentBinaryFileName()));
-    base::UmaHistogramBoolean(
-        "Accessibility.ScreenAI.Component.BinaryAvailable", binary_available);
-    return binary_available;
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {

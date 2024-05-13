@@ -69,23 +69,8 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Screen AI Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
-  // Verifying library availability requires I/O and hence a blocking thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&screen_ai::ScreenAIInstallState::VerifyLibraryAvailablity,
-                     install_dir),
-      base::BindOnce(
-          [](base::FilePath install_dir, bool library_available) {
-            auto* state = screen_ai::ScreenAIInstallState::GetInstance();
-            if (library_available) {
-              state->SetComponentFolder(install_dir);
-            } else {
-              state->SetState(
-                  screen_ai::ScreenAIInstallState::State::kDownloadFailed);
-            }
-          },
-          install_dir));
+  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
+      install_dir);
 }
 
 bool ScreenAIComponentInstallerPolicy::VerifyInstallation(

@@ -108,7 +108,6 @@ std::unique_ptr<ComponentFiles> ComponentFiles::Load(
       files_list_file_name);
 }
 
-// TODO(https://crbug.com/41489907): Remove after the issue is fixed.
 void RecordComponentAvailablity(bool available) {
   base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Available",
                             available);

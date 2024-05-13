@@ -2539,13 +2539,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.Component.BinaryAvailable"
-    enum="BooleanSuccess" expires_after="2025-02-28">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records if binary was found after component is installed.</summary>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.Component.InstallRetries" units="count"
     expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>
