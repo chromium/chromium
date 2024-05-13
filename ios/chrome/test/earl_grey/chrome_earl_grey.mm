@@ -1247,25 +1247,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
-- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition {
-  auto verifyBlock = ^BOOL {
-    base::Value value = [ChromeEarlGrey evaluateJavaScript:javaScriptCondition];
-    DCHECK(value.is_bool());
-    return value.GetBool();
-  };
-  base::TimeDelta timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* conditionName = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", javaScriptCondition];
-  GREYCondition* condition = [GREYCondition conditionWithName:conditionName
-                                                        block:verifyBlock];
-
-  NSString* errorString =
-      [NSString stringWithFormat:@"Failed waiting for condition '%@'",
-                                 javaScriptCondition];
-  EG_TEST_HELPER_ASSERT_TRUE([condition waitWithTimeout:timeout.InSecondsF()],
-                             errorString);
-}
-
 - (void)waitUntilReadyWindowWithNumber:(int)windowNumber {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       chrome_test_util::MatchInWindowWithNumber(
@@ -1312,6 +1293,32 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase {
   [ChromeEarlGreyAppInterface addBookmarkWithSyncPassphrase:syncPassphrase];
+}
+
+#pragma mark - Javascript Utilities (EG2)
+
+- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition {
+  auto verifyBlock = ^BOOL {
+    base::Value value = [ChromeEarlGrey evaluateJavaScript:javaScriptCondition];
+    DCHECK(value.is_bool());
+    return value.GetBool();
+  };
+  base::TimeDelta timeout = base::test::ios::kWaitForActionTimeout;
+  NSString* conditionName = [NSString
+      stringWithFormat:@"Wait for JS condition: %@", javaScriptCondition];
+  GREYCondition* condition = [GREYCondition conditionWithName:conditionName
+                                                        block:verifyBlock];
+
+  NSString* errorString =
+      [NSString stringWithFormat:@"Failed waiting for condition '%@'",
+                                 javaScriptCondition];
+  EG_TEST_HELPER_ASSERT_TRUE([condition waitWithTimeout:timeout.InSecondsF()],
+                             errorString);
+}
+
+- (JavaScriptExecutionResult*)evaluateJavaScriptWithPotentialError:
+    (NSString*)javaScript {
+  return [ChromeEarlGreyAppInterface executeJavaScript:javaScript];
 }
 
 - (base::Value)evaluateJavaScript:(NSString*)javaScript {

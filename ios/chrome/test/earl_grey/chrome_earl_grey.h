@@ -19,6 +19,7 @@
 
 @class FakeSystemIdentity;
 @class ElementSelector;
+@class JavaScriptExecutionResult;
 @protocol GREYAction;
 @protocol GREYMatcher;
 
@@ -522,11 +523,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
-// Waits for the JavaScript query `javaScriptCondition` to return `boolValue`
-// YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
-// induced.
-- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
-
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for
@@ -674,15 +670,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - JavaScript Utilities (EG2)
 
+// Waits for the JavaScript query `javaScriptCondition` to return `boolValue`
+// YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
+// induced.
+// Fails if the execution causes an error.
+- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
+
 // Executes JavaScript on current WebState, and waits for either the completion
 // or timeout. If execution does not complete within a timeout a GREYAssert is
 // induced.
-
+// Fails if the execution causes an error.
 - (base::Value)evaluateJavaScript:(NSString*)javaScript [[nodiscard]];
+
+// Executes JavaScript on current WebState, and waits for either the completion
+// or timeout. If execution does not complete within a timeout a GREYAssert is
+// induced.
+- (JavaScriptExecutionResult*)evaluateJavaScriptWithPotentialError:
+    (NSString*)javaScript;
 
 // Executes JavaScript on current WebState. This function should be used in
 // place -evaluateJavaScript when the executed JavaScript's return value will
 // not be used.
+// Fails if the execution causes an error.
 - (void)evaluateJavaScriptForSideEffect:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
