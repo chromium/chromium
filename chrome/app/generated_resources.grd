@@ -11320,9 +11320,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
         This will delete the group from all devices signed into Chrome with this Google Account.
       </message>
-
       <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_UNGROUP" desc="The body text for ungrouping. Displayed in the Tab Group Deletion Dialog.">
         The tabs will remain open on this device but the group will be deleted from all devices signed into Chrome with this Google Account.
+      </message>
+
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_DELETE" desc=". Displayed in the Tab Group Deletion Dialog.">
+        This will permanently delete the group from your device.
+      </message>
+      <message name="IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_UNGROUP" desc="The body text for ungrouping. Displayed in the Tab Group Deletion Dialog.">
+        The tabs will remain open on this device but the group will be permanently deleted.
       </message>
 
       <if expr="use_titlecase">

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -25,36 +27,36 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDeletionDialogCancelButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDeletionDialogOkButtonId);
 
 namespace {
-
-// TODO(b/331254038) replace these hardcoded strings with IDS strings.
-
 // The text that shows on the checkbox.
 constexpr int kDontAskId = IDS_TAB_GROUP_DELETION_DIALOG_DONT_ASK;
 
+// Body text for all delete actions.
+constexpr int kDeleteBodySyncedId =
+    IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE;
+constexpr int kDeleteBodyNotSyncedId =
+    IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_DELETE;
+
 // For deletion, the text that shows on the dialog
 constexpr int kDeleteTitleId = IDS_TAB_GROUP_DELETION_DIALOG_TITLE_DELETE;
-constexpr int kDeleteBodyId = IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE;
 constexpr int kDeleteOkTextId = IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE;
 
 // For ungrouping, the text that shows on the dialog.
 constexpr int kUngroupTitleId = IDS_TAB_GROUP_DELETION_DIALOG_TITLE_UNGROUP;
-constexpr int kUngroupBodyId =
+constexpr int kUngroupSyncedBodyId =
     IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_UNGROUP;
+constexpr int kUngroupNotSyncedBodyId =
+    IDS_TAB_GROUP_DELETION_DIALOG_BODY_NOT_SYNCED_UNGROUP;
 constexpr int kUngroupOkTextId = IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_UNGROUP;
 
 // For closing the last tab, the text that shows on the dialog.
 constexpr int kCloseTabAndDeleteTitleId =
     IDS_TAB_GROUP_DELETION_DIALOG_TITLE_CLOSE_TAB_AND_DELETE;
-constexpr int kCloseTabAndDeleteBodyId =
-    IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE;
 constexpr int kCloseTabAndDeleteOkTextId =
     IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE;
 
 // For removing the last tab, the text that shows on the dialog.
 constexpr int kRemoveTabAndDeleteTitleId =
     IDS_TAB_GROUP_DELETION_DIALOG_TITLE_REMOVE_TAB_AND_DELETE;
-constexpr int kRemoveTabAndDeleteBodyId =
-    IDS_TAB_GROUP_DELETION_DIALOG_BODY_SYNCED_DELETE;
 constexpr int kRemoveTabAndDeleteOkTextId =
     IDS_TAB_GROUP_DELETION_DIALOG_OK_TEXT_DELETE;
 
@@ -65,27 +67,41 @@ struct DialogText {
 };
 
 // Returns the list of strings that are needed for a given dialog type.
-DialogText GetDialogText(DeletionDialogController::DialogType type) {
+DialogText GetDialogText(Profile* profile,
+                         DeletionDialogController::DialogType type) {
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+  bool is_sync_enabled = saved_tab_group_service &&
+                         saved_tab_group_service->AreSavedTabGroupsSynced();
+
   switch (type) {
     case DeletionDialogController::DialogType::DeleteSingle: {
-      return DialogText{l10n_util::GetStringUTF16(kDeleteTitleId),
-                        l10n_util::GetStringUTF16(kDeleteBodyId),
-                        l10n_util::GetStringUTF16(kDeleteOkTextId)};
+      return DialogText{
+          l10n_util::GetStringUTF16(kDeleteTitleId),
+          l10n_util::GetStringUTF16(is_sync_enabled ? kDeleteBodySyncedId
+                                                    : kDeleteBodyNotSyncedId),
+          l10n_util::GetStringUTF16(kDeleteOkTextId)};
     }
     case DeletionDialogController::DialogType::UngroupSingle: {
-      return DialogText{l10n_util::GetStringUTF16(kUngroupTitleId),
-                        l10n_util::GetStringUTF16(kUngroupBodyId),
-                        l10n_util::GetStringUTF16(kUngroupOkTextId)};
+      return DialogText{
+          l10n_util::GetStringUTF16(kUngroupTitleId),
+          l10n_util::GetStringUTF16(is_sync_enabled ? kUngroupSyncedBodyId
+                                                    : kUngroupNotSyncedBodyId),
+          l10n_util::GetStringUTF16(kUngroupOkTextId)};
     }
     case DeletionDialogController::DialogType::RemoveTabAndDelete: {
-      return DialogText{l10n_util::GetStringUTF16(kRemoveTabAndDeleteTitleId),
-                        l10n_util::GetStringUTF16(kRemoveTabAndDeleteBodyId),
-                        l10n_util::GetStringUTF16(kRemoveTabAndDeleteOkTextId)};
+      return DialogText{
+          l10n_util::GetStringUTF16(kRemoveTabAndDeleteTitleId),
+          l10n_util::GetStringUTF16(is_sync_enabled ? kDeleteBodySyncedId
+                                                    : kDeleteBodyNotSyncedId),
+          l10n_util::GetStringUTF16(kRemoveTabAndDeleteOkTextId)};
     }
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
-      return DialogText{l10n_util::GetStringUTF16(kCloseTabAndDeleteTitleId),
-                        l10n_util::GetStringUTF16(kCloseTabAndDeleteBodyId),
-                        l10n_util::GetStringUTF16(kCloseTabAndDeleteOkTextId)};
+      return DialogText{
+          l10n_util::GetStringUTF16(kCloseTabAndDeleteTitleId),
+          l10n_util::GetStringUTF16(is_sync_enabled ? kDeleteBodySyncedId
+                                                    : kDeleteBodyNotSyncedId),
+          l10n_util::GetStringUTF16(kCloseTabAndDeleteOkTextId)};
     }
   }
 }
@@ -210,7 +226,7 @@ void DeletionDialogController::OnDialogCancel() {
 
 std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
     DialogType type) {
-  DialogText strings = GetDialogText(type);
+  DialogText strings = GetDialogText(browser_->profile(), type);
 
   return ui::DialogModel::Builder()
       .SetTitle(strings.title)
@@ -227,6 +243,11 @@ std::unique_ptr<ui::DialogModel> DeletionDialogController::BuildDialogModel(
                        .SetLabel(strings.ok_text)
                        .SetEnabled(true)
                        .SetId(kDeletionDialogOkButtonId))
+      .SetCloseActionCallback(base::BindOnce(
+          [](DeletionDialogController* dialog_controller) {
+            dialog_controller->state_.reset();
+          },
+          base::Unretained(this)))
       .Build();
 }
 
