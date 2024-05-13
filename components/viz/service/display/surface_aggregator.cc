@@ -1843,7 +1843,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   // at this point). |damage_rect| has damage from all quads below the current
   // iterated quad, and can be used to determine if there's any intersection
   // with the current quad when needed.
-  for (const DrawQuad* quad : base::Reversed(resolved_pass.prewalk_quads())) {
+  for (const DrawQuad* quad : base::Reversed(render_pass.quad_list)) {
     gfx::Rect quad_damage_rect;
     gfx::Rect quad_target_space_damage_rect;
     if (quad->material == DrawQuad::Material::kSurfaceContent) {
@@ -2027,11 +2027,11 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // same frame as last aggregation and there is no damage OR there is
       // already full damage for the surface.
       if (damage_type == FrameDamageType::kFrame) {
-        auto& per_quad_damage_rect = GetOptionalDamageRectFromQuad(quad);
-        DCHECK(per_quad_damage_rect.has_value());
-        // The DrawQuad `per_quad_damage_rect` is already in the render pass
-        // coordinate space instead of quad rect coordinate space.
-        quad_target_space_damage_rect = per_quad_damage_rect.value();
+        if (auto& per_quad_damage_rect = GetOptionalDamageRectFromQuad(quad)) {
+          // The DrawQuad `per_quad_damage_rect` is already in the render pass
+          // coordinate space instead of quad rect coordinate space.
+          quad_target_space_damage_rect = per_quad_damage_rect.value();
+        }
       }
     }
 

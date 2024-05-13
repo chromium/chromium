@@ -170,13 +170,6 @@ void ResolvedFrameData::UpdateForActiveFrame(
     auto& draw_quads = fixed.draw_quads;
     draw_quads.reserve(render_pass->quad_list.size());
     for (auto* quad : render_pass->quad_list) {
-      if (render_pass->has_per_quad_damage) {
-        auto optional_damage = GetOptionalDamageRectFromQuad(quad);
-        if (optional_damage.has_value()) {
-          fixed.prewalk_quads.push_back(quad);
-        }
-      }
-
       if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
         // Check CompositorRenderPassDrawQuad refers to a render pass
         // that exists and is drawn before the current render pass.
@@ -190,9 +183,6 @@ void ResolvedFrameData::UpdateForActiveFrame(
         }
 
         ++iter->second->fixed_.embed_count;
-        fixed.prewalk_quads.push_back(quad);
-      } else if (quad->material == DrawQuad::Material::kSurfaceContent) {
-        fixed.prewalk_quads.push_back(quad);
       }
 
       draw_quads.emplace_back(*quad);

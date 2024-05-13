@@ -217,10 +217,6 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
 
   // The damage rect should not include TextureDrawQuad's damage_rect.
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), pass_damage_rect);
-
-  // The quads to prewalk should only include the TextureDrawQuad.
-  EXPECT_THAT(resolved_frame.GetRootRenderPassData().prewalk_quads(),
-              testing::ElementsAre(IsTextureQuad()));
 }
 
 TEST_F(ResolvedFrameDataTest, MarkAsUsed) {

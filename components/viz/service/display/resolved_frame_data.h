@@ -168,10 +168,6 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   const std::vector<ResolvedQuadData>& draw_quads() const {
     return fixed_.draw_quads;
   }
-  const std::vector<raw_ptr<const DrawQuad, VectorExperimental>>&
-  prewalk_quads() const {
-    return fixed_.prewalk_quads;
-  }
 
   // Returns true if the render pass is not embedded by another render pass and
   // is not the root render pass.
