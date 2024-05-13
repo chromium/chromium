@@ -10,9 +10,7 @@
 #include "ash/bubble/bubble_constants.h"
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/themed_vector_icon.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,12 +54,8 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   SetCanActivate(false);
 
   // Contents of this view.
-  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kForwardArrowIcon, ui::kColorAvatarIconIncognito,
-      kPreviewImageSize.height());
   AddChildView(
       views::Builder<views::ImageView>()
-          .SetImage(icon)
           .SetSize(kPreviewImageSize)
           .SetPreferredSize(kPreviewImageSize)
           .SetBackground(views::CreateThemedRoundedRectBackground(
