@@ -1,6 +1,9 @@
 caption: Block truncated cookies
 default: true
+deprecated: true
 desc: |-
+  Note: No site breakage has been reported since Chrome began blocking these cookies by default starting in M118, so this functionality won't be configurable (and this policy will have no effect) starting in M127.
+
   This policy provides a temporary opt-out for changes to how Chrome handles cookies set via JavaScript that contain certain control characters (NULL, carriage return, and line feed).
   Previously, the presence of any of these characters in a cookie string would cause it to be truncated but still set.
   Now, the presence of these characters will cause the whole cookie string to be ignored.
