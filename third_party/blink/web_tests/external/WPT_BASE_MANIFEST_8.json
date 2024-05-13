@@ -23043,6 +23043,19 @@
        ],
        {}
       ]
+     ],
+     "reftest_wait_0-print.html": [
+      "fec62a3cae00655a95f7bc569d2eb1f43eac6062",
+      [
+       null,
+       [
+        [
+         "/infrastructure/reftest/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     }
    },
