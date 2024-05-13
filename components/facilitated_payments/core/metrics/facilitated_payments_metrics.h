@@ -33,6 +33,13 @@ void LogGetClientTokenResult(bool result, base::TimeDelta duration);
 // valid code has been found.
 void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason);
 
+// Log the result and latency for the InitiatePayment backend endpoint.
+void LogInitiatePaymentResult(bool result, base::TimeDelta duration);
+
+// Log the result and latency for the InitiatePurchaseAction call made to the
+// payments platform (client).
+void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_

@@ -35,4 +35,22 @@ void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
       "FacilitatedPayments.Pix.PaymentNotOfferedReason", reason);
 }
 
+void LogInitiatePaymentResult(bool result, base::TimeDelta duration) {
+  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
+  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePayment.Result",
+                        result);
+  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.InitiatePayment.Latency",
+                              duration);
+}
+
+void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
+  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
+  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
+                        result);
+  base::UmaHistogramLongTimes(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency", duration);
+}
+
 }  // namespace payments::facilitated

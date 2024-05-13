@@ -61,6 +61,71 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Latency"
+    units="ms" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Latency for the InitiatePayment backend endpoint. [Frequency] Logged at most
+    once per page load. [Trigger] User selects a payment instrument from the
+    list of options shown in the {FacilitatedPaymentsType} UI.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Result"
+    enum="Boolean" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the call to the InititaePayment backend endpoint was successful
+    or not. [Frequency] Logged at most once per page load. [Trigger] User
+    selects a payment instrument from the list of options shown in the
+    {FacilitatedPaymentsType} UI.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Latency"
+    units="ms" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency for the call made to payments platform (client) which
+    faciliates the payment. [Frequency] Logged at most once per page load.
+    [Trigger] User selects a payment instrument from the list of options shown
+    in the {FacilitatedPaymentsType} UI and the backend returns the instruction
+    to trigger the purchase action flow in GMSCore.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Result"
+    enum="Boolean" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result returned for the call made to payments platform (client)
+    which facilitates the payment. [Frequency] Logged at most once per page
+    load. [Trigger] User selects a payment instrument from the list of options
+    shown in the {FacilitatedPaymentsType} UI and the backend returns the
+    instruction to trigger the purchase action flow in GMSCore.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Latency"
     units="ms" expires_after="2024-09-01">
   <owner>siashah@google.com</owner>
@@ -109,6 +174,7 @@ reviewer.
     accoridng to the renderer the main frame contains a valid payment code for
     {FacilitatedPaymentsType}.
   </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 </histograms>

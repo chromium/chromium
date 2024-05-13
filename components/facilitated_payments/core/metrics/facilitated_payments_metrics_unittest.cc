@@ -50,4 +50,34 @@ TEST(FacilitatedPaymentsMetricsTest, LogPaymentNotOfferedReason) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResult) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePaymentResult(/*result=*/true, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePurchaseActionResult(/*result=*/true, base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated
