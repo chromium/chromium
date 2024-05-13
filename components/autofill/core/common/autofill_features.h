@@ -42,6 +42,8 @@ BASE_DECLARE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbers);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDontPreserveAutofillState);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableAccountStorageForIneligibleCountries);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableAddressFieldParserNG);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSelectList);

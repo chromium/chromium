@@ -304,6 +304,10 @@ bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
 
 bool AddressDataManager::IsCountryEligibleForAccountStorage(
     std::string_view country_code) const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAccountStorageForIneligibleCountries)) {
+    return true;
+  }
   constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
                                                    "SY"};
   return !base::Contains(kUnsupportedCountries, country_code);
