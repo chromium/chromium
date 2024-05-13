@@ -1831,7 +1831,7 @@ chromium-metrics-reviews@google.com.
   <token key="ExperimentalArm">
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
-    <variant name=".Enable" summary=""/>
+    <variant name=".Enabled" summary=""/>
   </token>
   <token key="Visibility">
     <variant name="AboveTheFold" summary="above the launcher fold"/>
@@ -1858,7 +1858,7 @@ chromium-metrics-reviews@google.com.
   <token key="ExperimentalArm">
     <variant name="" summary=""/>
     <variant name=".Counterfactual" summary=""/>
-    <variant name=".Enable" summary=""/>
+    <variant name=".Enabled" summary=""/>
   </token>
   <token key="Visibility">
     <variant name="AboveTheFold" summary="above the launcher fold"/>
