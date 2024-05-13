@@ -73,21 +73,33 @@
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace arc {
 
-ArcBridgeHostImpl::ArcBridgeHostImpl(
-    ArcBridgeService* arc_bridge_service,
-    mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver)
-    : arc_bridge_service_(arc_bridge_service),
-      receiver_(this, std::move(pending_receiver)) {
+ArcBridgeHostImpl::ArcBridgeHostImpl(ArcBridgeService* arc_bridge_service)
+    : arc_bridge_service_(arc_bridge_service) {
   DCHECK(arc_bridge_service_);
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&ArcBridgeHostImpl::OnClosed, base::Unretained(this)));
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &ArcBridgeHostImpl::OnClosed, base::Unretained(this)));
+
+  // Register ArcBridgeHost to Mojo Service Manager.
+  if (!ash::mojo_service_manager::IsServiceManagerBound()) {
+    LOG(ERROR) << "mojo service manager not bounded";
+    return;
+  }
+  ash::mojo_service_manager::GetServiceManagerProxy()->Register(
+      chromeos::mojo_services::kChromiumArcBridgeHost,
+      provider_receiver_.BindNewPipeAndPassRemote());
 }
 
 ArcBridgeHostImpl::~ArcBridgeHostImpl() {
   OnClosed();
+}
+
+void ArcBridgeHostImpl::AddReceiver(
+    mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
 }
 
 void ArcBridgeHostImpl::OnAccessibilityHelperInstanceReady(
@@ -441,6 +453,13 @@ size_t ArcBridgeHostImpl::GetNumMojoChannelsForTesting() const {
   return mojo_channels_.size();
 }
 
+void ArcBridgeHostImpl::Request(
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+    mojo::ScopedMessagePipeHandle receiver) {
+  receivers_.Add(
+      this, mojo::PendingReceiver<mojom::ArcBridgeHost>(std::move(receiver)));
+}
+
 void ArcBridgeHostImpl::OnClosed() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(1) << "Mojo connection lost";
@@ -449,7 +468,7 @@ void ArcBridgeHostImpl::OnClosed() {
 
   // Close all mojo channels.
   mojo_channels_.clear();
-  receiver_.reset();
+  receivers_.Clear();
 
   arc_bridge_service_->ObserveAfterArcBridgeClosed();
 }
@@ -459,7 +478,7 @@ void ArcBridgeHostImpl::OnInstanceReady(
     ConnectionHolder<InstanceType, HostType>* holder,
     mojo::PendingRemote<InstanceType> remote) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(receiver_.is_bound());
+  DCHECK(receivers_.size());
   DCHECK(remote.is_valid());
 
   // Track |channel|'s lifetime via |mojo_channels_| so that it will be

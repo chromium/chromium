@@ -33,8 +33,9 @@ class ArcBridgeHostImplTest : public testing::Test {
     mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver;
     mojo::PendingRemote<mojom::ArcBridgeHost> pending_remote =
         pending_receiver.InitWithNewPipeAndPassRemote();
-    arc_bridge_host_impl_ = std::make_unique<ArcBridgeHostImpl>(
-        &bridge_service_, std::move(pending_receiver));
+    arc_bridge_host_impl_ =
+        std::make_unique<ArcBridgeHostImpl>(&bridge_service_);
+    arc_bridge_host_impl_->AddReceiver(std::move(pending_receiver));
     remote_.Bind(std::move(pending_remote));
   }
 

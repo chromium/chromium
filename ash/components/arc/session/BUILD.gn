@@ -62,6 +62,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus/spaced:spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory:memory",
+    "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/system",
     "//chromeos/system",
     "//components/prefs:prefs",
@@ -70,6 +71,13 @@ static_library("session") {
     "//services/accessibility/android/public/mojom",
     "//ui/display/manager",
   ]
+
+  data_deps = [ ":mojo_service_manager_policy" ]
+}
+
+copy("mojo_service_manager_policy") {
+  sources = [ "arc_bridge_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
 
 source_set("connection_holder") {

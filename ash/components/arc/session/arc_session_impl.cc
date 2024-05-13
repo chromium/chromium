@@ -194,6 +194,7 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
   // Called when Mojo connection is established or canceled.
   // In case of cancel or error, |server_pipe| is invalid.
   void OnMojoConnected(ConnectMojoCallback callback,
+                       std::unique_ptr<ArcBridgeHostImpl> host,
                        mojo::ScopedMessagePipeHandle server_pipe);
 
   // Owned by ArcServiceManager.
@@ -237,7 +238,8 @@ base::ScopedFD ArcSessionDelegateImpl::ConnectMojo(
       base::BindOnce(&ArcSessionDelegateImpl::ConnectMojoInternal,
                      std::move(socket_fd), std::move(cancel_fd)),
       base::BindOnce(&ArcSessionDelegateImpl::OnMojoConnected,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::make_unique<ArcBridgeHostImpl>(arc_bridge_service_)));
   return return_fd;
 }
 
@@ -376,6 +378,7 @@ mojo::ScopedMessagePipeHandle ArcSessionDelegateImpl::ConnectMojoInternal(
 
 void ArcSessionDelegateImpl::OnMojoConnected(
     ConnectMojoCallback callback,
+    std::unique_ptr<ArcBridgeHostImpl> host,
     mojo::ScopedMessagePipeHandle server_pipe) {
   if (!server_pipe.is_valid()) {
     LOG(ERROR) << "Invalid pipe";
@@ -383,9 +386,9 @@ void ArcSessionDelegateImpl::OnMojoConnected(
     return;
   }
 
-  std::move(callback).Run(std::make_unique<ArcBridgeHostImpl>(
-      arc_bridge_service_,
-      mojo::PendingReceiver<mojom::ArcBridgeHost>(std::move(server_pipe))));
+  host->AddReceiver(
+      mojo::PendingReceiver<mojom::ArcBridgeHost>(std::move(server_pipe)));
+  std::move(callback).Run(std::move(host));
 }
 
 }  // namespace

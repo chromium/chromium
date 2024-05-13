@@ -13,8 +13,11 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace arc {
@@ -23,6 +26,7 @@ class ArcBridgeService;
 class MojoChannelBase;
 
 // Implementation of the ArcBridgeHost.
+// The ArcBridgeHost also registers in Mojo Service Manager by default.
 // The lifetime of ArcBridgeHost mojo channel is tied to this instance.
 // Also, any ARC related Mojo channel will be closed if ArcBridgeHost Mojo
 // channel is closed on error.
@@ -31,16 +35,19 @@ class MojoChannelBase;
 // the raw pointer to the ArcBridgeService so that other services can access
 // to the pointer, and resets it on channel closing.
 // Note that ArcBridgeService must be alive while ArcBridgeHostImpl is alive.
-class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
+class ArcBridgeHostImpl
+    : public mojom::ArcBridgeHost,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
-  ArcBridgeHostImpl(
-      ArcBridgeService* arc_bridge_service,
-      mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
+  explicit ArcBridgeHostImpl(ArcBridgeService* arc_bridge_service);
 
   ArcBridgeHostImpl(const ArcBridgeHostImpl&) = delete;
   ArcBridgeHostImpl& operator=(const ArcBridgeHostImpl&) = delete;
 
   ~ArcBridgeHostImpl() override;
+
+  void AddReceiver(
+      mojo::PendingReceiver<mojom::ArcBridgeHost> pending_receiver);
 
   // ArcBridgeHost overrides.
   void OnAccessibilityHelperInstanceReady(
@@ -189,6 +196,11 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   size_t GetNumMojoChannelsForTesting() const;
 
  private:
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
+
   // Called when the bridge channel is closed. This typically only happens when
   // the ARC instance crashes.
   void OnClosed();
@@ -207,7 +219,11 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   // Owned by ArcServiceManager.
   const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
-  mojo::Receiver<mojom::ArcBridgeHost> receiver_;
+  // The mojo receiver of service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
+  // The mojo receiver set of ArcBridgeHost.
+  mojo::ReceiverSet<mojom::ArcBridgeHost> receivers_;
 
   // Put as a last member to ensure that any callback tied to the elements
   // is not invoked.
