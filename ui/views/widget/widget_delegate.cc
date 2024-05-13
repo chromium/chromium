@@ -514,10 +514,6 @@ void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
 gfx::Rect WidgetDelegate::GetDesiredWidgetBounds() {
   DCHECK(GetWidget());
 
-  if (has_desired_bounds_delegate()) {
-    return params_.desired_bounds_delegate.Run();
-  }
-
   return gfx::Rect(GetWidget()->GetWindowBoundsInScreen().origin(),
                    GetWidget()->GetContentsView()->GetPreferredSize({}));
 }

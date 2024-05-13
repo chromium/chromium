@@ -58,6 +58,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() final;
 
+  // WidgetDelegate:
+  gfx::Rect GetDesiredWidgetBounds() final;
+
   // Create and initialize the bubble Widget with proper bounds.
   static Widget* CreateBubble(
       std::unique_ptr<BubbleDialogDelegate> bubble_delegate);
@@ -451,8 +454,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void UpdateHighlightedButton(bool highlight);
 
   void SetAnchoredDialogKey();
-
-  gfx::Rect GetDesiredBubbleBounds();
 
   gfx::Insets title_margins_;
   gfx::Insets footnote_margins_;
