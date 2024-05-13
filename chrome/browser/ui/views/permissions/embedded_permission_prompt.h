@@ -106,6 +106,9 @@ class EmbeddedPermissionPrompt
 
   void RecordOsMetrics(permissions::OsScreenAction action);
 
+  void RecordPermissionActionUKM(
+      permissions::ElementAnchoredBubbleAction action);
+
   void PromptForOsPermission();
 
 #if BUILDFLAG(IS_MAC)
@@ -134,6 +137,7 @@ class EmbeddedPermissionPrompt
   std::set<ContentSettingsType> prompt_types_;
   std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
       requests_;
+  int prompt_screen_counter_for_metrics_ = 0;
 
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };

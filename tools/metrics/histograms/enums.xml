@@ -5580,6 +5580,16 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Error"/>
 </enum>
 
+<enum name="ElementAnchoredBubbleAction">
+  <int value="0" label="GRANTED"/>
+  <int value="1" label="GRANTED_ONCE"/>
+  <int value="2" label="DENIED"/>
+  <int value="3" label="OK"/>
+  <int value="4" label="DISMISSED_X_BUTTON"/>
+  <int value="5" label="DISMISSED_SCRIM"/>
+  <int value="6" label="SYSTEM_SETTINGS"/>
+</enum>
+
 <enum name="ElementAnchoredBubbleVariant">
   <int value="0" label="UNINITIALIZED"/>
   <int value="1" label="ADMINISTRATOR_GRANTED"/>
@@ -18017,6 +18027,7 @@ from previous Chrome versions.
       label="UserDisplayModeSyncStandaloneMitigation:enabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
+  <int value="-1411777757" label="WebRtcSendPacketBatch:enabled"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
   <int value="-1411459387" label="EnterprisePolicyOnSignin:enabled"/>
   <int value="-1411003295" label="disable-encrypted-media"/>
@@ -29343,6 +29354,45 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Prediction service"/>
   <int value="3" label="Default fallback"/>
   <int value="4" label="On-Device prediction model"/>
+</enum>
+
+<enum name="PermissionRequestType">
+  <int value="0" label="PERMISSION_BUBBLE_UNKNOWN"/>
+  <int value="1" label="PERMISSION_BUBBLE_MULTIPLE_AUDIO_AND_VIDEO_CAPTURE"/>
+  <int value="2" label="PERMISSION_BUBBLE_UNUSED_PERMISSION"/>
+  <int value="3" label="PERMISSION_BUBBLE_QUOTA"/>
+  <int value="4" label="PERMISSION_BUBBLE_DOWNLOAD"/>
+  <int value="5" label="PERMISSION_BUBBLE_MEDIA_STREAM"/>
+  <int value="6" label="PERMISSION_BUBBLE_REGISTER_PROTOCOL_HANDLER"/>
+  <int value="7" label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION"/>
+  <int value="8" label="PERMISSION_BUBBLE_PERMISSION_MIDI_SYSEX"/>
+  <int value="9" label="PERMISSION_BUBBLE_PERMISSION_NOTIFICATIONS"/>
+  <int value="10"
+      label="PERMISSION_BUBBLE_PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
+  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING"/>
+  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH"/>
+  <int value="13" label="PERMISSION_MEDIASTREAM_MIC"/>
+  <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
+  <int value="15" label="PERMISSION_ACCESSIBILITY_EVENTS"/>
+  <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
+  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION__REMOVED_IN_M117"/>
+  <int value="18" label="PERMISSION_PAYMENT_HANDLER"/>
+  <int value="19" label="PERMISSION_NFC"/>
+  <int value="20" label="PERMISSION_CLIPBOARD_READ_WRITE"/>
+  <int value="21" label="PERMISSION_VR"/>
+  <int value="22" label="PERMISSION_AR"/>
+  <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
+  <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
+  <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
+  <int value="31" label="PERMISSION_MIDI"/>
+  <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
+  <int value="33" label="CAPTURED_SURFACE_CONTROL"/>
+  <int value="34" label="PERMISSION_SMART_CARD"/>
+  <int value="35" label="PERMISSION_WEB_PRINTING"/>
+  <int value="36" label="PERMISSION_IDENTITY_PROVIDER"/>
+  <int value="37" label="PERMISSION_KEYBOARD_LOCK"/>
+  <int value="38" label="PERMISSION_POINTER_LOCK"/>
+  <int value="39" label="MULTIPLE_KEYBOARD_AND_POINTER_LOCK"/>
 </enum>
 
 <enum name="PermissionType">

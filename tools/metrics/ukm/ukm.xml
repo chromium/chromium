@@ -21703,6 +21703,51 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Permissions.EmbeddedPromptAction">
+  <owner>hkamila@chromium.org</owner>
+  <owner>andypaicu@chromium.org</owner>
+  <owner>permissions-dev@chromium.org</owner>
+  <summary>
+    Metrics for a user's permission actions for permission prompts triggered by
+    the user clicking on the Embedded Permission Element, logged when a
+    permission prompt is resolved.
+  </summary>
+  <metric name="Action" enum="ElementAnchoredBubbleAction">
+    <summary>
+      An enum of type ElementAnchoredBubbleAction. One of GRANTED, GRANTED_ONCE,
+      OK, DENIED, DISMISSED, DISMISSED_SCRIM, SYSTEM_SETTINGS or IGNORED.
+    </summary>
+  </metric>
+  <metric name="PermissionType" enum="PermissionRequestType">
+    <summary>
+      Represents the permission type that the prompt is for. An enum of type
+      ContentSettingsType.
+    </summary>
+  </metric>
+  <metric name="PreviousScreens">
+    <summary>
+      Represents how many screens have already been shown to the user prior to
+      the current one as part of the permission prompt. Also serves as an order
+      number. Should never be bigger than the number of screen variants. It is
+      recorded as int64_t (upper bound 10).
+    </summary>
+  </metric>
+  <metric name="ScreenPermissionType" enum="PermissionRequestType">
+    <summary>
+      Represents the permission type that current screen is for. This can
+      sometimes differ from PermissionType when the PermissionType is Multiple,
+      as some screens are designed to only be shown for one permission at a
+      time. An enum of type ContentSettingsType.
+    </summary>
+  </metric>
+  <metric name="Variant" enum="ElementAnchoredBubbleVariant">
+    <summary>
+      An enum of type ElementAnchoredBubbleVariant. The screen that the user has
+      currently taken action on.
+    </summary>
+  </metric>
+</event>
+
 <event name="PermissionUsage">
   <owner>engedy@chromium.org</owner>
   <owner>ravjit@chromium.org</owner>

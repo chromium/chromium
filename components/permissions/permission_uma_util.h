@@ -496,6 +496,34 @@ enum class PermissionChangeAction {
   kMaxValue = REMEMBER_CHECKBOX_TOGGLED,
 };
 
+// This enum backs up the 'ElementAnchoredBubbleAction' histograms enum.
+enum class ElementAnchoredBubbleAction {
+  // Site level permission was granted.
+  kGranted = 0,
+
+  // Site level permission was granted once.
+  kGrantedOnce = 1,
+
+  // Site level permission was denied.
+  kDenied = 2,
+
+  // Acknowledging the prompt informing the user a permission is managed by
+  // admin.
+  kOk = 3,
+
+  // The prompt was dismissed by the user clicking on the [X] button.
+  kDismissedXButton = 4,
+
+  // The prompt was dismissed by the user clicking outside of the prompt area.
+  kDismissedScrim = 5,
+
+  // User clicked "Open system settings" to manage OS level permission prompts.
+  kSystemSettings = 6,
+
+  // Always keep at the end.
+  kMaxValue = kSystemSettings,
+};
+
 // The reason the permission action `PermissionAction::IGNORED` was triggered.
 enum class PermissionIgnoredReason {
   // Ignore was triggered due to closure of the browser window
@@ -801,6 +829,22 @@ class PermissionUmaUtil {
       ContentSettingsType content_settings_type,
       base::Time current_time,
       HostContentSettingsMap* hcsm);
+
+  // Records UKM metrics for ContentSettingsTypes that have user facing
+  // permission prompts triggered by the user clicking on the Embedded
+  // Permission Element. The passed in `permission` must be such that
+  // PermissionUtil::IsPermission(permission) returns true.
+  static void RecordElementAnchoredPermissionPromptAction(
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          screen_requests,
+      ElementAnchoredBubbleAction action,
+      ElementAnchoredBubbleVariant variant,
+      int screen_counter,
+      const GURL& requesting_origin,
+      content::WebContents* web_contents,
+      content::BrowserContext* browser_context);
 
   // A scoped class that will check the current resolved content setting on
   // construction and report a revocation metric accordingly if the revocation

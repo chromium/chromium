@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <queue>
 #include <string>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
@@ -21,18 +22,24 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/origin.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDoneVisibleEvent);
+
+using UkmEntry = ukm::builders::Permissions_EmbeddedPromptAction;
 }  // namespace
 
 class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
@@ -65,6 +72,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   void TearDownOnMainThread() override {
@@ -142,6 +150,42 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
       tester.ExpectBucketCount(
           view_name, static_cast<base::HistogramBase::Sample>(request_type),
           count);
+    }));
+  }
+
+  auto CheckNoUkmEntriesSinceLastCheck() {
+    return Steps(Check([this]() {
+      size_t entry_count =
+          ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName).size();
+      ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+      return entry_count == 0U;
+    }));
+  }
+
+  auto CheckEntrySinceLastCheck(
+      permissions::RequestTypeForUma permission,
+      permissions::RequestTypeForUma screen_permission,
+      permissions::ElementAnchoredBubbleAction action,
+      permissions::ElementAnchoredBubbleVariant variant,
+      int screen_counter) {
+    return Steps(Do([=] {
+      auto entries = ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+      CHECK_EQ(entries.size(), 1U);
+
+      ukm_recorder_->ExpectEntryMetric(entries[0],
+                                       UkmEntry::kPermissionTypeName,
+                                       static_cast<int64_t>(permission));
+      ukm_recorder_->ExpectEntryMetric(entries[0],
+                                       UkmEntry::kScreenPermissionTypeName,
+                                       static_cast<int64_t>(screen_permission));
+      ukm_recorder_->ExpectEntryMetric(entries[0], UkmEntry::kActionName,
+                                       static_cast<int64_t>(action));
+      ukm_recorder_->ExpectEntryMetric(entries[0], UkmEntry::kVariantName,
+                                       static_cast<int64_t>(variant));
+      ukm_recorder_->ExpectEntryMetric(entries[0],
+                                       UkmEntry::kPreviousScreensName,
+                                       static_cast<int64_t>(screen_counter));
+      ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     }));
   }
 
@@ -293,6 +337,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+  // |ukm_recorder_| needs to be reset after every check so that further check
+  // functions will only check the new data.
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // Failing on Windows, though manual testing of the same flow does not reproduce
@@ -305,6 +353,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPermissionElementDialogPositioning \
   DISABLED_TestPermissionElementDialogPositioning
 #define MAYBE_TestPepcHistograms DISABLED_TestPepcHistograms
+#define MAYBE_TestPepcUkm DISABLED_TestPepcUkm
 #else
 #define MAYBE_BasicFlowMicrophone BasicFlowMicrophone
 #define MAYBE_BasicFlowCamera BasicFlowCamera
@@ -313,6 +362,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 #define MAYBE_TestPermissionElementDialogPositioning \
   TestPermissionElementDialogPositioning
 #define MAYBE_TestPepcHistograms TestPepcHistograms
+#define MAYBE_TestPepcUkm TestPepcUkm
 #endif
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowMicrophone) {
@@ -540,6 +590,80 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       }),
       // Make sure all elements have been focused as expected.
       WaitForStateChange(kWebContentsElementId, done_visible));
+}
+
+IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
+                       MAYBE_TestPepcUkm) {
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckNoUkmEntriesSinceLastCheck(),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      CheckEntrySinceLastCheck(
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
+          permissions::ElementAnchoredBubbleAction::kGranted,
+          permissions::ElementAnchoredBubbleVariant::ASK, 0),
+
+      // Now mic+camera are granted.
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId),
+      CheckEntrySinceLastCheck(
+          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
+          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
+          permissions::ElementAnchoredBubbleAction::kDenied,
+          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+
+      ClickOnPEPCElement("microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId),
+      CheckEntrySinceLastCheck(
+          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
+          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
+          permissions::ElementAnchoredBubbleAction::kOk,
+          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0),
+
+      // Mic is granted, camera is blocked. Triggering the double permission
+      // prompt will show the screen that is only for camera, while the prompt
+      // is for both.
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptPreviouslyDeniedView::kAllowThisTimeId),
+      CheckEntrySinceLastCheck(
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
+          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
+          permissions::ElementAnchoredBubbleAction::kGrantedOnce,
+          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_DENIED, 0),
+
+      // Both permissions are granted. Dismiss the prompt via clicking on the
+      // scrim.
+      ClickOnPEPCElement("camera-microphone"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      FlushEvents(), Do([&]() {
+        auto* scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                waiter.WaitIfNeededAndGet()->GetContentsView());
+        scrim_view->OnMousePressed(
+            ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+        scrim_view->OnMouseReleased(
+            ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+      }),
+      CheckEntrySinceLastCheck(
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
+          permissions::ElementAnchoredBubbleAction::kDismissedScrim,
+          permissions::ElementAnchoredBubbleVariant::PREVIOUSLY_GRANTED, 0));
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest

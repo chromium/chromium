@@ -547,6 +547,24 @@ void RecordPermissionActionUkm(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+void RecordElementAnchoredPermissionPromptActionUkm(
+    RequestTypeForUma permission,
+    RequestTypeForUma screen_permission,
+    ElementAnchoredBubbleAction action,
+    ElementAnchoredBubbleVariant variant,
+    int screen_counter,
+    std::optional<ukm::SourceId> source_id) {
+  ukm::builders::Permissions_EmbeddedPromptAction builder(source_id.value());
+
+  builder.SetVariant(static_cast<int64_t>(variant))
+      .SetAction(static_cast<int64_t>(action))
+      .SetPermissionType(static_cast<int64_t>(permission))
+      .SetScreenPermissionType(static_cast<int64_t>(screen_permission))
+      .SetPreviousScreens(std::min(kPriorCountCap, screen_counter));
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 // |full_version| represented in the format `YYYY.M.D.m`, where m is the
 // minute-of-day. Return int represented in the format `YYYYMMDD`.
 // CrowdDeny versions published before 2020 will be reported as 1.
@@ -2005,6 +2023,30 @@ PermissionUmaUtil::GetDaysSinceUnusedSitePermissionRevocation(
   }
 
   return std::nullopt;
+}
+
+// static
+void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+        screen_requests,
+    ElementAnchoredBubbleAction action,
+    ElementAnchoredBubbleVariant variant,
+    int screen_counter,
+    const GURL& requesting_origin,
+    content::WebContents* web_contents,
+    content::BrowserContext* browser_context) {
+  CHECK(requests.size());
+  CHECK(screen_requests.size());
+  auto first_request_type =
+      RequestTypeToContentSettingsType(requests[0]->request_type());
+  PermissionsClient::Get()->GetUkmSourceId(
+      first_request_type.value(), browser_context, web_contents,
+      requesting_origin,
+      base::BindOnce(&RecordElementAnchoredPermissionPromptActionUkm,
+                     GetUmaValueForRequests(requests),
+                     GetUmaValueForRequests(screen_requests), action, variant,
+                     screen_counter));
 }
 
 }  // namespace permissions
