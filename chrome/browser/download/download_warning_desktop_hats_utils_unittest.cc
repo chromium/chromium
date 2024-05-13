@@ -4,9 +4,15 @@
 
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -27,6 +33,7 @@
 namespace {
 
 using download::DownloadItem;
+using download::MockDownloadItem;
 using Fields = DownloadWarningHatsProductSpecificData::Fields;
 using ::testing::_;
 using ::testing::Eq;
@@ -42,6 +49,7 @@ constexpr char kUrl[] = "https://www.site.example/file.pdf";
 constexpr char kReferrerUrl[] = "https://www.site.example/referrer";
 constexpr char kPlaceholderPrefix[] = "Not logged";
 const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("my_file.pdf");
+constexpr base::TimeDelta kIgnoreDelay = base::Seconds(10);
 
 // Matcher that checks for the presence of a particular bits data field and
 // checks that the field value matches the given matcher.
@@ -83,43 +91,55 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
 
   void SetUp() override {
     profile_ = TestingProfile::Builder().Build();
-    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_.get(),
-                                                     nullptr);
+    item_ = SetUpMockDownloadItem();
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile_.get(), base::BindRepeating(&BuildMockHatsService)));
   }
 
-  // Sets up defaults for the mock download item. These are not necessarily
+  void TearDown() override { mock_hats_service_ = nullptr; }
+
+  std::unique_ptr<NiceMock<MockDownloadItem>> SetUpMockDownloadItem() {
+    auto item = std::make_unique<NiceMock<MockDownloadItem>>();
+    content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile_.get(),
+                                                     nullptr);
+    SetUpDefaultsForItem(item.get());
+    return item;
+  }
+
+  // Sets up defaults for the mock download item_. These are not necessarily
   // valid/consistent with the Safe Browsing state, but we just want to test
   // that the values are reflected in the PSD and don't necessarily care what
   // they are.
   // Advances the time by 7 seconds.
-  void SetUpDefaultsForItem() {
-    ON_CALL(item_, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(kUrl)));
-    ON_CALL(item_, GetReferrerUrl())
+  void SetUpDefaultsForItem(MockDownloadItem* item) {
+    ON_CALL(*item, GetURL()).WillByDefault(ReturnRefOfCopy(GURL(kUrl)));
+    ON_CALL(*item, GetReferrerUrl())
         .WillByDefault(ReturnRefOfCopy(GURL(kReferrerUrl)));
-    ON_CALL(item_, GetFileNameToReportUser())
+    ON_CALL(*item, GetFileNameToReportUser())
         .WillByDefault(Return(base::FilePath(kFilename)));
 
     // Set up the time since download started.
     base::Time start_time = base::Time::Now();
-    ON_CALL(item_, GetStartTime()).WillByDefault(Return(start_time));
+    ON_CALL(*item, GetStartTime()).WillByDefault(Return(start_time));
 
     // Add some warning action events.
     task_environment_.FastForwardBy(base::Seconds(5));
     DownloadItemWarningData::AddWarningActionEvent(
-        &item_, DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
+        item, DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
         DownloadItemWarningData::WarningAction::SHOWN);
     task_environment_.FastForwardBy(base::Seconds(1));
     DownloadItemWarningData::AddWarningActionEvent(
-        &item_, DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
+        item, DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
         DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
     task_environment_.FastForwardBy(base::Seconds(1));
     DownloadItemWarningData::AddWarningActionEvent(
-        &item_, DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
+        item, DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
         DownloadItemWarningData::WarningAction::CLOSE);
 
-    ON_CALL(item_, IsDone()).WillByDefault(Return(false));
-    ON_CALL(item_, IsDangerous()).WillByDefault(Return(true));
-    ON_CALL(item_, GetDangerType())
+    ON_CALL(*item, IsDone()).WillByDefault(Return(false));
+    ON_CALL(*item, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(*item, GetDangerType())
         .WillByDefault(
             Return(download::DownloadDangerType::
                        DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE));
@@ -132,12 +152,12 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
     tailored_verdict.add_adjustments(safe_browsing::ClientDownloadResponse::
                                          TailoredVerdict::ACCOUNT_INFO_STRING);
     safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
-        &item_, "token",
+        item, "token",
         safe_browsing::ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE,
         std::move(tailored_verdict));
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-    ON_CALL(item_, HasUserGesture()).WillByDefault(Return(true));
+    ON_CALL(*item, HasUserGesture()).WillByDefault(Return(true));
   }
 
   void ExpectDefaultPsd(const DownloadWarningHatsProductSpecificData& psd) {
@@ -192,7 +212,8 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList features_;
   std::unique_ptr<TestingProfile> profile_;
-  NiceMock<download::MockDownloadItem> item_;
+  std::unique_ptr<NiceMock<MockDownloadItem>> item_;
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
 };
 
 TEST_F(DownloadWarningDesktopHatsUtilsTest,
@@ -200,10 +221,8 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   safe_browsing::SetSafeBrowsingState(
       profile_->GetPrefs(), safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 
-  SetUpDefaultsForItem();
-
   auto psd = DownloadWarningHatsProductSpecificData::Create(
-      DownloadWarningHatsType::kDownloadBubbleBypass, &item_);
+      DownloadWarningHatsType::kDownloadBubbleBypass, item_.get());
 
   // Test the PSD fields added afterwards.
   // This shouldn't do anything because this is a download bubble trigger.
@@ -239,10 +258,8 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
-  SetUpDefaultsForItem();
-
   auto psd = DownloadWarningHatsProductSpecificData::Create(
-      DownloadWarningHatsType::kDownloadsPageHeed, &item_);
+      DownloadWarningHatsType::kDownloadsPageHeed, item_.get());
 
   // Test the PSD fields added afterwards.
   psd.AddNumPageWarnings(10);
@@ -278,10 +295,8 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
 
-  SetUpDefaultsForItem();
-
   auto psd = DownloadWarningHatsProductSpecificData::Create(
-      DownloadWarningHatsType::kDownloadBubbleIgnore, &item_);
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get());
 
   // Test the PSD fields added afterwards.
   // This shouldn't do anything because this is a download bubble trigger.
@@ -309,6 +324,127 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
 
   EXPECT_THAT(psd, BitsDataMatches(Fields::kPartialViewInteraction, true));
   EXPECT_THAT(psd, Not(StringDataMatches(Fields::kNumPageWarnings, _)));
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       DelayedDownloadWarningHatsLauncher_LaunchesSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      safe_browsing::kDownloadWarningSurvey,
+      {{safe_browsing::kDownloadWarningSurveyType.name,
+        "2" /*kDownloadBubbleIgnore*/}});
+
+  DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
+  launcher.RecordBrowserActivity();
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _));
+  task_environment_.FastForwardBy(kIgnoreDelay);
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       DelayedDownloadWarningHatsLauncher_DoesntScheduleDuplicateSurvey) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      safe_browsing::kDownloadWarningSurvey,
+      {{safe_browsing::kDownloadWarningSurveyType.name,
+        "2" /*kDownloadBubbleIgnore*/}});
+
+  DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
+  EXPECT_FALSE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       DelayedDownloadWarningHatsLauncher_MultipleSurveys) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      safe_browsing::kDownloadWarningSurvey,
+      {{safe_browsing::kDownloadWarningSurveyType.name,
+        "2" /*kDownloadBubbleIgnore*/}});
+
+  std::unique_ptr<NiceMock<MockDownloadItem>> other_item =
+      SetUpMockDownloadItem();
+  ON_CALL(*other_item, GetFileNameToReportUser())
+      .WillByDefault(
+          Return(base::FilePath(FILE_PATH_LITERAL("other_file.pdf"))));
+
+  DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
+  launcher.RecordBrowserActivity();
+  task_environment_.FastForwardBy(kIgnoreDelay / 2);
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, other_item.get()));
+  {
+    EXPECT_CALL(
+        *mock_hats_service_,
+        LaunchSurvey(
+            kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _,
+            Contains(Pair(Fields::kFilename, HasSubstr("my_file.pdf")))));
+    task_environment_.FastForwardBy(kIgnoreDelay / 2);
+  }
+  launcher.RecordBrowserActivity();
+  {
+    EXPECT_CALL(
+        *mock_hats_service_,
+        LaunchSurvey(
+            kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _,
+            Contains(Pair(Fields::kFilename, HasSubstr("other_file.pdf")))));
+    task_environment_.FastForwardBy(kIgnoreDelay / 2);
+  }
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       DelayedDownloadWarningHatsLauncher_WithholdsSurveyIfNoUserActivity) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      safe_browsing::kDownloadWarningSurvey,
+      {{safe_browsing::kDownloadWarningSurveyType.name,
+        "2" /*kDownloadBubbleIgnore*/}});
+
+  DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
+  launcher.TryScheduleTask(DownloadWarningHatsType::kDownloadBubbleIgnore,
+                           item_.get());
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _))
+      .Times(0);
+  task_environment_.FastForwardBy(2 * kIgnoreDelay);
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       DelayedDownloadWarningHatsLauncher_DeletesTaskWhenItemDeleted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      safe_browsing::kDownloadWarningSurvey,
+      {{safe_browsing::kDownloadWarningSurveyType.name,
+        "2" /*kDownloadBubbleIgnore*/}});
+
+  DelayedDownloadWarningHatsLauncher launcher{profile_.get(), kIgnoreDelay};
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
+  item_.reset();
+
+  launcher.RecordBrowserActivity();
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchSurvey(kHatsSurveyTriggerDownloadWarningBubbleIgnore, _, _, _, _))
+      .Times(0);
+  task_environment_.FastForwardBy(kIgnoreDelay);
+
+  item_ = SetUpMockDownloadItem();
+  // Trying again works because the older task was deleted.
+  EXPECT_TRUE(launcher.TryScheduleTask(
+      DownloadWarningHatsType::kDownloadBubbleIgnore, item_.get()));
 }
 
 TEST_F(DownloadWarningDesktopHatsUtilsTest,

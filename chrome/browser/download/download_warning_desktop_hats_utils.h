@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/hats/hats_service.h"
-
-namespace download {
-class DownloadItem;
-}
+#include "components/download/public/common/download_item.h"
 
 // Type of survey (corresponding to a trigger condition) that should be shown.
 // Do not renumber.
@@ -154,6 +155,120 @@ class DownloadWarningHatsProductSpecificData {
   SurveyStringData string_data_;
 };
 
+// A class that manages delayed download warning HaTS survey tasks. It can be
+// given a DownloadItem to launch a survey for in the future after some delay,
+// and these tasks can be canceled explicitly or automatically (in case of
+// the DownloadItem getting destroyed or becoming ineligible for a HaTS survey).
+// It also records the last time the user interacted with the browser, and the
+// survey is withheld if the user was (presumably) idle for the entire period of
+// the delay. (Client should inform this object of browser activity.)
+// Note: Currently this is only used for download bubble ignore triggers.
+class DelayedDownloadWarningHatsLauncher
+    : public download::DownloadItem::Observer {
+ public:
+  // A callback that allows the completion of the PSD (addition of post-Create()
+  // fields).
+  using PsdCompleter =
+      base::RepeatingCallback<void(DownloadWarningHatsProductSpecificData&)>;
+
+  // Bundles the objects used to control the task and its lifetime. Can only be
+  // used once per instance. To cancel, delete this object. The `download`
+  // and `hats_launcher` must outlive this.
+  class Task {
+   public:
+    // Creates and schedules the task.
+    Task(DelayedDownloadWarningHatsLauncher& hats_launcher,
+         download::DownloadItem* download,
+         base::OnceClosure task,
+         base::TimeDelta delay);
+
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
+
+    ~Task();
+
+   private:
+    void RunTask();
+
+    // Controls the observation of the download by the parent object.
+    base::ScopedObservation<download::DownloadItem,
+                            DelayedDownloadWarningHatsLauncher>
+        observation_;
+    // Task to show the survey.
+    base::OnceClosure task_;
+    // Used to cancel the scheduled task.
+    base::WeakPtrFactory<Task> weak_factory_{this};
+  };
+
+  // `profile` is the profile for which the HaTS surveys should be shown.
+  // `delay` is the delay that applies to all surveys launched by this object.
+  // `psd_completer` will be called with the product-specific data right before
+  // attempting to launch each survey.
+  DelayedDownloadWarningHatsLauncher(
+      Profile* profile,
+      base::TimeDelta delay,
+      PsdCompleter psd_completer = base::DoNothing());
+
+  DelayedDownloadWarningHatsLauncher(
+      const DelayedDownloadWarningHatsLauncher&) = delete;
+  DelayedDownloadWarningHatsLauncher& operator=(
+      const DelayedDownloadWarningHatsLauncher&) = delete;
+
+  ~DelayedDownloadWarningHatsLauncher() override;
+
+  // download::DownloadItem::Observer:
+  // This object is an observer of every download with an entry in `tasks_`.
+  void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
+
+  // Updates the last_activity_ time.
+  void RecordBrowserActivity();
+
+  // Schedules a survey to be shown after the delay, if the user has been active
+  // in the meantime. Does nothing if a task already exists for the download.
+  // Does nothing if the download is not eligible when scheduling. (The
+  // scheduled task will also fizzle if the download is not eligible upon
+  // execution.) Returns whether task was scheduled.
+  bool TryScheduleTask(DownloadWarningHatsType survey_type,
+                       download::DownloadItem* download);
+
+  // Cancels and removes the task for `download` from the map. Is a no-op if the
+  // download is not in the map.
+  void RemoveTaskIfAny(download::DownloadItem* download);
+
+ private:
+  // Address of a DownloadItem, derived from a DownloadItem*, but it is not to
+  // be dereferenced.
+  using TaskKey = std::uintptr_t;
+  using TasksMap = std::map<TaskKey, Task>;
+
+  // Launches the actual survey, if all preconditions are met.
+  void MaybeLaunchSurveyNow(DownloadWarningHatsType survey_type,
+                            download::DownloadItem* download);
+
+  // Returns a callback that is called to clean up after the survey succeeds or
+  // fails.
+  base::OnceClosure MakeSurveyDoneCallback(download::DownloadItem* download);
+
+  // Whether the user was active in the browser during the delay period.
+  bool WasUserActive() const;
+
+  // Profile to show the surveys for. Must outlive this.
+  const raw_ptr<Profile> profile_;
+  // How long to wait before launching the survey.
+  const base::TimeDelta delay_;
+  // Time of the most recent user interaction with the browser.
+  base::Time last_activity_;
+  // Maps DownloadItem addresses to their corresponding pending tasks.
+  TasksMap tasks_;
+  // Callback that is run to stamp the PSD with any additional fields right
+  // before attempting to launch the survey.
+  PsdCompleter psd_completer_;
+  // Needed because the cleanup callback produced by MakeSurveyDoneCallback
+  // may outlive this.
+  base::WeakPtrFactory<DelayedDownloadWarningHatsLauncher> weak_factory_{this};
+};
+
 // Returns if the download item is dangerous and not-done.
 bool CanShowDownloadWarningHatsSurvey(download::DownloadItem* download);
 
@@ -176,6 +291,8 @@ std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
 // launch the survey.
 void MaybeLaunchDownloadWarningHatsSurvey(
     Profile* profile,
-    const DownloadWarningHatsProductSpecificData& psd);
+    const DownloadWarningHatsProductSpecificData& psd,
+    base::OnceClosure success_callback = base::DoNothing(),
+    base::OnceClosure failure_callback = base::DoNothing());
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
