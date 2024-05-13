@@ -20,11 +20,9 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Size kPickerSize(320, 340);
-
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
 PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + kPickerSize.height() <=
+  return anchor_bounds.bottom() + PickerView::kMaxSize.height() <=
                  display::Screen::GetScreen()
                      ->GetDisplayMatching(anchor_bounds)
                      .work_area()
@@ -40,7 +38,7 @@ views::Widget::InitParams CreateInitParams(
   const PickerView::PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(delegate, layout_type,
                                                   trigger_event_timestamp);
-  picker_view->SetSize(kPickerSize);
+  picker_view->SetSize(PickerView::kMaxSize);
 
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;

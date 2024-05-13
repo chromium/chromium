@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -59,6 +60,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
   ~PickerView() override;
+
+  static constexpr auto kMaxSize = gfx::Size(320, 340);
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

@@ -53,7 +53,6 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Size kPickerSize(320, 340);
 constexpr int kBorderRadius = 12;
 constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
 constexpr ui::ColorId kBackgroundColor =
@@ -161,7 +160,7 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   shadow_ =
       SystemShadow::CreateShadowOnNinePatchLayerForView(this, kShadowType);
   shadow_->SetRoundedCornerRadius(kBorderRadius);
-  SetPreferredSize(kPickerSize);
+  SetPreferredSize(kMaxSize);
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -399,13 +398,13 @@ void PickerView::AddContentsViewWithSeparator(PickerLayoutType layout_type) {
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
           this, delegate_->GetAvailableCategories(),
-          delegate_->ShouldShowSuggestedResults(), kPickerSize.width()));
+          delegate_->ShouldShowSuggestedResults(), kMaxSize.width()));
 
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
-      this, kPickerSize.width(), delegate_->GetAssetFetcher()));
+      this, kMaxSize.width(), delegate_->GetAssetFetcher()));
   search_results_view_ =
       contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          this, kPickerSize.width(), delegate_->GetAssetFetcher()));
+          this, kMaxSize.width(), delegate_->GetAssetFetcher()));
   SetActivePage(zero_state_view_);
 }
 
