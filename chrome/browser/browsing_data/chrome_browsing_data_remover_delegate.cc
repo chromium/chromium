@@ -1318,8 +1318,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   //////////////////////////////////////////////////////////////////////////////
   // Remove external protocol data.
-  if (remove_mask & constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA)
+  if (remove_mask & constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA &&
+      filter_builder->GetMode() == BrowsingDataFilterBuilder::Mode::kPreserve) {
     ExternalProtocolHandler::ClearData(profile_);
+  }
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   //////////////////////////////////////////////////////////////////////////////

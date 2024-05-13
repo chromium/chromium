@@ -2005,6 +2005,20 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
                    ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
                    .empty());
 
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(test_origin);
+
+  BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
+                              constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA,
+                              std::move(filter_builder));
+
+  // This data type doesn't implement per-origin deletion so just test that
+  // nothing got removed.
+  EXPECT_FALSE(profile->GetPrefs()
+                   ->GetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+                   .empty());
+
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_EXTERNAL_PROTOCOL_DATA,
                                 false);
