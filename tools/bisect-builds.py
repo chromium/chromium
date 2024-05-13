@@ -12,6 +12,7 @@ unzipping, and opening Chromium for you. After testing the specific revision,
 it will ask you whether it is good or bad before continuing the search.
 """
 
+import base64
 import bisect
 import http.client
 import importlib
@@ -1958,6 +1959,11 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     dest='deploy_chrome_path',
                     type='str',
                     help='deploy_chrome binary path.')
+  parser.add_option('--update-script',
+                    dest='update_script',
+                    action='store_true',
+                    default=False,
+                    help='Update this script to the latest.')
 
   return parser
 
@@ -1970,6 +1976,10 @@ def ParseCommandLine(args=None):
   ]
   parser = _CreateCommandLineParser()
   opts, args = parser.parse_args(args)
+
+  if opts.update_script:
+    UpdateScript()
+
   if opts.archive is None:
     print('Error: Missing required parameter: --archive')
     parser.print_help()
@@ -2003,6 +2013,19 @@ def ParseCommandLine(args=None):
           'Do not yet support bisecting release ASAN builds.')
 
   return opts, args
+
+
+def UpdateScript():
+  script_path = sys.argv[0]
+  script_content = str(
+      base64.b64decode(
+          urllib.request.urlopen(
+              "https://chromium.googlesource.com/chromium/src/+/HEAD/"
+              "tools/bisect-builds.py?format=TEXT").read()), 'utf-8')
+  with open(script_path, "w") as f:
+    f.write(script_content)
+  print("Update successful!")
+  exit(0)
 
 
 def main():
