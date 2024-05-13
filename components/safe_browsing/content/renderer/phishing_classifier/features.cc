@@ -41,6 +41,10 @@ void FeatureMap::Clear() {
   features_.clear();
 }
 
+BASE_FEATURE(kConditionalImageResize,
+             "ConditionalImageResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionRetryLimit,
              "ClientSideDetectionRetryLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
