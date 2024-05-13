@@ -122,9 +122,14 @@ TEST_F(FollowManagementViewControllerTest, DidSelectRow) {
     scoped_feature_list_.InitWithFeatures({}, {});
     SetupMockDataSource();
 
-    id mock_interaction_menu = OCMClassMock([UIEditMenuInteraction class]);
-    OCMStub([mock_interaction_menu alloc]).andReturn(mock_interaction_menu);
-    OCMStub([mock_interaction_menu initWithDelegate:(id)(view_controller_)])
+    id mock_interaction_menu = OCMPartialMock(
+        [[UIEditMenuInteraction alloc] initWithDelegate:(id)view_controller_]);
+    id mock_interaction_menu_class =
+        OCMClassMock([UIEditMenuInteraction class]);
+    OCMStub([mock_interaction_menu_class alloc])
+        .andReturn(mock_interaction_menu);
+    OCMStub(
+        [mock_interaction_menu_class initWithDelegate:(id)(view_controller_)])
         .andReturn(mock_interaction_menu);
 
     AddViewControllerToWindow(view_controller_);
@@ -137,8 +142,8 @@ TEST_F(FollowManagementViewControllerTest, DidSelectRow) {
         [mock_interaction_menu presentEditMenuWithConfiguration:[OCMArg any]]);
     NSIndexPath* first_row = [NSIndexPath indexPathForRow:0 inSection:0];
     [view_controller_ tableView:table_view didSelectRowAtIndexPath:first_row];
+    EXPECT_OCMOCK_VERIFY(mock_interaction_menu_class);
     EXPECT_OCMOCK_VERIFY(mock_interaction_menu);
-    [mock_interaction_menu stopMocking];
   }
 }
 
