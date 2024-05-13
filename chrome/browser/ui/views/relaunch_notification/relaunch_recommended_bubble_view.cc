@@ -133,7 +133,7 @@ RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
     views::Button* anchor_button,
     base::Time detection_time,
     base::RepeatingClosure on_accept)
-    : LocationBarBubbleDelegateView(anchor_button, nullptr),
+    : LocationBarBubbleDelegateView(anchor_button, nullptr, /*autosize=*/true),
       on_accept_(std::move(on_accept)),
       relaunch_recommended_timer_(
           detection_time,
@@ -156,8 +156,6 @@ RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
 }
 
 void RelaunchRecommendedBubbleView::UpdateWindowTitle() {
+  // `UpdateWindowTitle` will `InvalidateLayout` when necessary.
   GetWidget()->UpdateWindowTitle();
-  // This might update the length of the window title (for N days). Resize the
-  // bubble to match the new preferred size.
-  SizeToContents();
 }
