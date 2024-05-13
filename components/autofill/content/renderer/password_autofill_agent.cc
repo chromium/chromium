@@ -1720,6 +1720,9 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     const std::u16string& typed_username,
     const WebInputElement& user_input,
     AutofillSuggestionTriggerSource trigger_source) {
+  base::UmaHistogramEnumeration("PasswordManager.SuggestionPopupTriggerSource",
+                                trigger_source);
+
   username_query_prefix_ = typed_username;
   auto [form, field] =
       form_util::FindFormAndFieldForFormControlElement(

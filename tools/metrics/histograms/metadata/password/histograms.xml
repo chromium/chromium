@@ -3538,6 +3538,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SuggestionPopupTriggerSource"
+    enum="AutofillSuggestionTriggerSource" expires_after="2024-11-15">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the reason that triggered password suggestions popup, excluding
+    manual fallback suggestions. Recorded at the time the popup is shown.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.APIErrorCode"
     enum="CredentialManagerAPIError" expires_after="2024-09-29">

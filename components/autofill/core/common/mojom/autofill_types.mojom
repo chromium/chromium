@@ -555,6 +555,8 @@ enum FieldActionType {
 // This then invokes `AutofillManager::OnAskForValuesToFill()` in the browser
 // process. In some cases, suggestions get updated. This happens solely in the
 // browser process.
+// Must stay in sync with AutofillSuggestionTriggerSource in
+// histograms/enums.xml. Do not reorder or remove items.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
   kUnspecified,

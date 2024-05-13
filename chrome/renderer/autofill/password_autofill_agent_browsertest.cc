@@ -2547,6 +2547,11 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester_.ExpectUniqueSample(
+      "PasswordManager.SuggestionPopupTriggerSource",
+      static_cast<int>(autofill::AutofillSuggestionTriggerSource::
+                           kFormControlElementClicked),
+      1);
   SimulateSuggestionChoice(username_element_);
   CheckSuggestions(kAliceUsername16, true);
 
