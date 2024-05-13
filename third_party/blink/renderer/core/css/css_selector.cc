@@ -299,6 +299,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollbarTrackPiece;
     case kPseudoResizer:
       return kPseudoIdResizer;
+    case kPseudoSearchText:
+      return kPseudoIdSearchText;
     case kPseudoTargetText:
       return kPseudoIdTargetText;
     case kPseudoHighlight:
@@ -330,6 +332,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoClosed:
     case kPseudoCornerPresent:
     case kPseudoCue:
+    case kPseudoCurrent:
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
@@ -502,6 +505,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"closed", CSSSelector::kPseudoClosed},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
     {"cue", CSSSelector::kPseudoWebKitCustomElement},
+    {"current", CSSSelector::kPseudoCurrent},
     {"decrement", CSSSelector::kPseudoDecrement},
     {"default", CSSSelector::kPseudoDefault},
     {"defined", CSSSelector::kPseudoDefined},
@@ -558,6 +562,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-markers", CSSSelector::kPseudoScrollMarkers},
+    {"search-text", CSSSelector::kPseudoSearchText},
     {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
     {"select-fallback-button-icon",
      CSSSelector::kPseudoSelectFallbackButtonIcon},
@@ -687,6 +692,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoSearchText ||
+       match->type == CSSSelector::kPseudoCurrent) &&
+      !RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
@@ -783,6 +794,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
+    case kPseudoSearchText:
     case kPseudoTargetText:
     case kPseudoHighlight:
     case kPseudoSpellingError:
@@ -827,6 +839,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoChecked:
     case kPseudoClosed:
     case kPseudoCornerPresent:
+    case kPseudoCurrent:
     case kPseudoDecrement:
     case kPseudoDefault:
     case kPseudoDefined:
@@ -1475,6 +1488,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoSelectFallbackButtonText:
     case kPseudoSelectFallbackDatalist:
     case kPseudoSelection:
+    case kPseudoSearchText:
     case kPseudoTargetText:
     case kPseudoHighlight:
     case kPseudoSpellingError:

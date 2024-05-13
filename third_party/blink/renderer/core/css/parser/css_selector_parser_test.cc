@@ -176,6 +176,8 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
   test::TaskEnvironment task_environment;
   const char* test_cases[] = {"::-webkit-volume-slider:hover",
                               "::selection:window-inactive",
+                              "::search-text:current",
+                              "::search-text:not(:current)",
                               "::-webkit-scrollbar:disabled",
                               "::-webkit-volume-slider:not(:hover)",
                               "::-webkit-scrollbar:not(:horizontal)",
@@ -206,6 +208,9 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
       ".class::content::before",
       "::shadow.class",
       "::selection:window-inactive::before",
+      "::search-text.class",
+      "::search-text::before",
+      "::search-text:hover",
       "::-webkit-volume-slider.class",
       "::before:not(.a)",
       "::shadow:not(::after)",

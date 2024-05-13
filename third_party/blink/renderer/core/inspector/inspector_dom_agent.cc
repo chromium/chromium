@@ -202,6 +202,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::Backdrop;
     case kPseudoIdSelection:
       return protocol::DOM::PseudoTypeEnum::Selection;
+    case kPseudoIdSearchText:
+      return protocol::DOM::PseudoTypeEnum::SearchText;
     case kPseudoIdTargetText:
       return protocol::DOM::PseudoTypeEnum::TargetText;
     case kPseudoIdSpellingError:

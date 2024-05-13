@@ -2664,6 +2664,9 @@ inline bool ComputedStyle::HasAnyHighlightPseudoElementStyles() const {
   static_assert(kPseudoIdSelection >= kFirstPublicPseudoId &&
                     kPseudoIdSelection <= kLastTrackedPublicPseudoId,
                 "kPseudoIdSelection must be public");
+  static_assert(kPseudoIdSearchText >= kFirstPublicPseudoId &&
+                    kPseudoIdSearchText <= kLastTrackedPublicPseudoId,
+                "kPseudoIdSearchText must be public");
   static_assert(kPseudoIdTargetText >= kFirstPublicPseudoId &&
                     kPseudoIdTargetText <= kLastTrackedPublicPseudoId,
                 "kPseudoIdTargetText must be public");
@@ -2678,6 +2681,7 @@ inline bool ComputedStyle::HasAnyHighlightPseudoElementStyles() const {
                 "kPseudoIdHighlight must be public");
 
   const unsigned mask = (1 << (kPseudoIdSelection - kFirstPublicPseudoId)) |
+                        (1 << (kPseudoIdSearchText - kFirstPublicPseudoId)) |
                         (1 << (kPseudoIdTargetText - kFirstPublicPseudoId)) |
                         (1 << (kPseudoIdSpellingError - kFirstPublicPseudoId)) |
                         (1 << (kPseudoIdGrammarError - kFirstPublicPseudoId)) |

@@ -3476,6 +3476,10 @@
       name: "ScrollTopLeftInterop",
       status: "stable",
     },
+    {
+      name: "SearchTextHighlightPseudo",
+      status: "test",
+    },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
     // SecurePaymentConfirmationBrowser feature), as it requires browser

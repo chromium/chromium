@@ -1111,6 +1111,8 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoViewTransitionNew:
       return pseudo_class == CSSSelector::kPseudoOnlyChild;
+    case CSSSelector::kPseudoSearchText:
+      return pseudo_class == CSSSelector::kPseudoCurrent;
     default:
       return false;
   }
