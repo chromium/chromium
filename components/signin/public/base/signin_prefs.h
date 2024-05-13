@@ -102,7 +102,7 @@ class SigninPrefs {
   // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
   int GetIntPrefForAccount(GaiaId gaia_id, std::string_view pref) const;
 
-  const raw_ref<PrefService, DanglingUntriaged> pref_service_;
+  const raw_ref<PrefService> pref_service_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_

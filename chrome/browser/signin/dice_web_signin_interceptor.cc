@@ -290,7 +290,6 @@ DiceWebSigninInterceptor::DiceWebSigninInterceptor(
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       delegate_(std::move(delegate)),
-      signin_prefs_(*profile_->GetPrefs()),
       state_(std::make_unique<ResetableState>()) {
   DCHECK(profile_);
   DCHECK(identity_manager_);
@@ -999,15 +998,16 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     SigninInterceptionResult result,
     const std::string& gaia_id) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+  SigninPrefs signin_prefs(*profile_->GetPrefs());
 
   SigninInterceptionResult processed_result = result;
   // Treat dismiss case: might turn into a decline if max dismiss count is
   // reached.
   if (processed_result == SigninInterceptionResult::kDismissed) {
     size_t dismiss_count =
-        signin_prefs_.IncrementChromeSigninInterceptionDismissCount(gaia_id);
+        signin_prefs.IncrementChromeSigninInterceptionDismissCount(gaia_id);
     if (dismiss_count >= kMaxChromeSigninInterceptionDismissCount &&
-        signin_prefs_.GetChromeSigninInterceptionUserChoice(gaia_id) !=
+        signin_prefs.GetChromeSigninInterceptionUserChoice(gaia_id) !=
             ChromeSigninUserChoice::kAlwaysAsk) {
       // Proceed with the result treated as declined since we reached the max
       // dismissal count, or the user is in the always ask mode.
@@ -1028,7 +1028,7 @@ DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
         (processed_result == SigninInterceptionResult::kAccepted)
             ? ChromeSigninUserChoice::kSignin
             : ChromeSigninUserChoice::kDoNotSignin;
-    signin_prefs_.SetChromeSigninInterceptionUserChoice(gaia_id, choice);
+    signin_prefs.SetChromeSigninInterceptionUserChoice(gaia_id, choice);
   }
 
   return processed_result;
@@ -1263,7 +1263,8 @@ void DiceWebSigninInterceptor::RecordChromeSigninNumberOfDismissesForAccount(
   base::UmaHistogramCounts100(
       base::StrCat(
           {"Signin.Intercept.ChromeSignin.DismissesBefore", action_string}),
-      signin_prefs_.GetChromeSigninInterceptionDismissCount(gaia_id));
+      SigninPrefs(*profile_->GetPrefs())
+          .GetChromeSigninInterceptionDismissCount(gaia_id));
 }
 
 bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
