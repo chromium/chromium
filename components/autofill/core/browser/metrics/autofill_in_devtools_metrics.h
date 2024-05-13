@@ -21,7 +21,8 @@ enum class AutofillInDevtoolsAvailableTestAddressesCountries {
   kMexico = 2,
   kJapan = 3,
   kIndia = 4,
-  kMaxValue = kIndia
+  kGermany = 5,
+  kMaxValue = kGermany
 };
 
 // Devtools test addresses events.
