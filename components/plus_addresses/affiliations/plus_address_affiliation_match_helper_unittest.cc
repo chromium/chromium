@@ -137,6 +137,21 @@ TEST_F(PlusAddressAffiliationMatchHelperTest,
   std::move(first_callback).Run(pls_extensions);
 }
 
+// Verifies that the list of returned values is empty if no profiles are stored.
+TEST_F(PlusAddressAffiliationMatchHelperTest, EmptyResult) {
+  FacetURI facet = FacetURI::FromCanonicalSpec("https://example.com");
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(facet);
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  EXPECT_TRUE(ExpectMatchHelperToReturnProfiles(facet, {}));
+}
+
 // Verifies that exact and PSL matches (respecting the PSL extensions list) are
 // returned.
 TEST_F(PlusAddressAffiliationMatchHelperTest, ExactAndPslMatchesTest) {
