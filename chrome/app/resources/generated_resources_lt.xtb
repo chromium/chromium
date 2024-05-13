@@ -3439,6 +3439,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3566721612727112615">Nepridėta jokių svetainių</translation>
 <translation id="3567284462585300767">Jei norite gauti ir priimti failus iš netoliese esančių žmonių, nustatykite, kad būtumėte matomi</translation>
 <translation id="356738834800832239">Slaptažodis išsaugotas</translation>
+<translation id="3568431410312984116">Leisti automatiškai atidaryti funkciją „Pagalba rašant“</translation>
 <translation id="3569382839528428029">Ar norite, kad „<ph name="APP_NAME" />“ bendrintų jūsų ekraną?</translation>
 <translation id="3569614820047645079">Mano Diske esantys failai automatiškai sinchronizuojami su „Chromebook“, kad galėtumėte juos pasiekti be interneto ryšio.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> gali redaguoti toliau nurodytus failus ir aplankus</translation>
@@ -5915,6 +5916,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5474859849784484111">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).</translation>
 <translation id="5477089831058413614">„<ph name="DEVICE_TYPE" />“ viešosios interneto prieigos taško konfigūravimas</translation>
 <translation id="5481273127572794904">Neleidžiama automatiškai atsisiųsti kelių failų</translation>
+<translation id="5481682542063333508">Siūlyti rašymo pagalbą</translation>
 <translation id="5481941284378890518">Pridėti netoliese esančius spausdintuvus</translation>
 <translation id="5482417738572414119">Prisijunkite, kad „Chrome“ galėtų siūlyti skirtukų grupes ir tvarkyti skirtukus</translation>
 <translation id="5484181871714116891">Kai ši funkcija įjungta, prieigos raktai kuriami naudojant „iCloud Keychain“ ir pasiekiami „Apple“ įrenginiuose. Kai ši funkcija išjungta, prieigos raktai kuriami „Chrome“ profilyje šiame įrenginyje.</translation>
@@ -10129,6 +10131,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="869167754614449887">„<ph name="FILE_NAME" />“ ištrintas iš atsisiuntimų istorijos</translation>
 <translation id="8692107307702113268">Slaptažodį sudaro daugiau nei 1 000 simbolių</translation>
 <translation id="8693639060656817812">Sužinokite daugiau apie Stebėjimo apsaugos pasiekiamumą</translation>
+<translation id="8693862390730570097">Neleisti automatiškai atidaryti funkcijos „Pagalba rašant“</translation>
 <translation id="8694596275649352090">Užrakinti, kai įjungiama miego būsena arba kai dangtis uždarytas</translation>
 <translation id="8695139659682234808">Pridėkite tėvų kontrolę baigę sąranką</translation>
 <translation id="8695825812785969222">Atidaryti &amp;vietą...</translation>
@@ -10719,6 +10722,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9112987648460918699">Rasti...</translation>
 <translation id="9113240369465613386">Tik nelyginiai puslapiai</translation>
 <translation id="9113469270512809735">Perjungti į neseniai uždarytus elementus</translation>
+<translation id="9113529408970052045">Funkcija „Pagalba rašant“ gali būti automatiškai atidaroma, kai svetainės teksto laukelyje galima pateikti trumpos formos turinį</translation>
 <translation id="9114663181201435112">Lengvai prisijunkite</translation>
 <translation id="9115675100829699941">&amp;Žymės</translation>
 <translation id="9115932142612197835">Šis nustatymas nepakeičia „Google“ vertėjo arba „Lens“ pasiekiamumo</translation>

@@ -3418,6 +3418,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3566721612727112615">Keine Websites hinzugefügt</translation>
 <translation id="3567284462585300767">Sichtbar werden, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="356738834800832239">Dein Passwort wurde gespeichert</translation>
+<translation id="3568431410312984116">Automatisches Öffnen von „Formuliere für mich“ zulassen</translation>
 <translation id="3569382839528428029">Soll <ph name="APP_NAME" /> deinen Bildschirm freigeben?</translation>
 <translation id="3569614820047645079">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> darf die folgenden Dateien und Ordner aufrufen</translation>
@@ -5893,6 +5894,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5474859849784484111"><ph name="MANAGER" /> erfordert, dass du dein Gerät jetzt mit dem WLAN verbindest und ein Update herunterlädst. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" />-Hotspot konfigurieren</translation>
 <translation id="5481273127572794904">Dürfen nicht automatisch mehrere Dateien herunterladen</translation>
+<translation id="5481682542063333508">Hilfe beim Formulieren anbieten</translation>
 <translation id="5481941284378890518">Drucker in der Nähe hinzufügen</translation>
 <translation id="5482417738572414119">Melde dich an, damit Chrome Tabgruppen vorschlagen kann und deine Tabs organisiert bleiben</translation>
 <translation id="5484181871714116891">Wenn diese Option aktiviert ist, werden Passkeys im iCloud-Schlüsselbund erstellt und sind auf allen deinen Apple-Geräten verfügbar. Wenn sie deaktiviert ist, werden Passkeys in deinem Chrome-Profil auf diesem Gerät erstellt.</translation>
@@ -10097,6 +10099,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="869167754614449887"><ph name="FILE_NAME" /> wurde aus dem Downloadverlauf gelöscht</translation>
 <translation id="8692107307702113268">Das Passwort enthält mehr als 1.000 Zeichen</translation>
 <translation id="8693639060656817812">Weitere Informationen zur Verfügbarkeit des Schutzes vor Tracking</translation>
+<translation id="8693862390730570097">Automatisches Öffnen von „Formuliere für mich“ nicht zulassen</translation>
 <translation id="8694596275649352090">Im Ruhemodus oder beim Zuklappen sperren</translation>
 <translation id="8695139659682234808">Jugendschutzeinstellungen nach der Einrichtung hinzufügen</translation>
 <translation id="8695825812785969222">&amp;Adresse öffnen...</translation>
@@ -10684,6 +10687,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9112987648460918699">Suchen...</translation>
 <translation id="9113240369465613386">Nur ungerade Seitenzahlen</translation>
 <translation id="9113469270512809735">Kürzlich geschlossene Elemente ein-/ausblenden</translation>
+<translation id="9113529408970052045">„Formuliere für mich“ kann automatisch geöffnet werden, wenn sich ein Textfeld auf einer Website mit Kurzinhalten füllen lässt</translation>
 <translation id="9114663181201435112">Einfach anmelden</translation>
 <translation id="9115675100829699941">&amp;Lesezeichen</translation>
 <translation id="9115932142612197835">Diese Einstellung wirkt sich nicht auf die Verfügbarkeit von Google Übersetzer oder Lens aus</translation>

@@ -1398,7 +1398,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3646643500201740985">Đo lường hiệu suất quảng cáo</translation>
 <translation id="3647286794400715637">Mỗi mục nhập chuỗi url phải chứa từ 1 đến 2 URL.</translation>
 <translation id="3650584904733503804">Xác thực thành công</translation>
-<translation id="3650594806107685466">Để đảm bảo an toàn cho thẻ của bạn, hãy nhập số CVC có trên <ph name="SIDE_OF_CARD" /></translation>
+<translation id="3650594806107685466">Để đảm bảo an toàn cho thẻ của bạn, hãy nhập mã CVC trên <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Đi bộ đường dài và Cắm trại</translation>
 <translation id="3655241534245626312">Chuyển đến phần cài đặt về quyền</translation>
 <translation id="3655670868607891010">Nếu bạn thường xuyên thấy thông báo này, hãy thử các <ph name="HELP_LINK" /> sau.</translation>
@@ -2325,6 +2325,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5470861586879999274">&amp;Làm lại chỉnh sửa</translation>
 <translation id="547963486735802022">Hãy thử chuyển các tệp lần nữa</translation>
 <translation id="5481076368049295676">Nội dung này có thể tìm cách cài đặt phần mềm nguy hiểm trên thiết bị của bạn để lấy cắp hoặc xóa thông tin. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Đề xuất hỗ trợ viết</translation>
 <translation id="54817484435770891">Thêm địa chỉ hợp lệ</translation>
 <translation id="5483838506518938965">Bạn đã hoàn tất</translation>
 <translation id="5485973315555778056">Thiết bị trên đám mây</translation>

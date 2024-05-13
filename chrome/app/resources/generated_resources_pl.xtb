@@ -486,7 +486,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1367817137674340530">Wygenerowane obrazy: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Na urządzeniu <ph name="DEVICE_TYPE" /> Linux nie jest obsługiwany. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google</translation>
-<translation id="1370384480654163477">Wyświetlaj i edytuj pliki z ostatniej wizyty w tej witrynie:</translation>
+<translation id="1370384480654163477">Wyświetlanie i edytowanie plików z ostatniej wizyty w tej witrynie:</translation>
 <translation id="1372841398847029212">Zsynchronizuj ze swoim kontem</translation>
 <translation id="1373176046406139583">Od widoczności urządzenia zależy, kto może udostępniać Ci dane, gdy ekran jest odblokowany. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Certyfikat wymagany przez sieć „<ph name="NETWORK_NAME" />” nie jest zainstalowany lub utracił ważność. Pobierz nowy certyfikat i spróbuj ponownie się połączyć.</translation>

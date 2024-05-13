@@ -463,7 +463,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1343865611738742294">Omogočanje, da aplikacije za Linux dostopajo do naprav USB. Linux si ne zapomni naprave USB, ko jo odstranite.</translation>
 <translation id="1343920184519992513">Nadaljuj prejšnjo sejo in odprti določen nabor strani</translation>
 <translation id="1344141078024003905">Predvajate zaslon. Predvajanje zaslona lahko kadar koli začasno zaustavite ali ustavite.</translation>
-<translation id="1346630054604077329">Potrdi in zaženi znova</translation>
+<translation id="1346630054604077329">Potrdi in znova zaženi</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1347256498747320987">Namestitev posodobitev in aplikacij. Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenese in namesti posodobitve ter aplikacije, ki jih zagotavljajo Google, vaš operater in proizvajalec vaše naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji. <ph name="BEGIN_LINK1" />Več o tem<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Shramba za Linux</translation>
@@ -3439,6 +3439,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3566721612727112615">Dodano ni bilo nobeno spletno mesto</translation>
 <translation id="3567284462585300767">Če želite prejeti in sprejeti datoteke od oseb okoli sebe, omogočite vidnost.</translation>
 <translation id="356738834800832239">Geslo je shranjeno</translation>
+<translation id="3568431410312984116">Dovoli samodejno odpiranje funkcije »Pomagaj mi pisati«</translation>
 <translation id="3569382839528428029">Ali  želite, da <ph name="APP_NAME" /> souporablja vaš zaslon?</translation>
 <translation id="3569614820047645079">Datoteke v Mojem disku se samodejno sinhronizirajo s Chromebookom, tako da lahko do njih dostopate brez internetne povezave.</translation>
 <translation id="3569682580018832495">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda te datoteke in mape</translation>
@@ -5915,6 +5916,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5474859849784484111">Domena <ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).</translation>
 <translation id="5477089831058413614">Konfiguriranje dostopne točke naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Ni dovoljeno samodejno prenesti več datotek</translation>
+<translation id="5481682542063333508">Ponudi pomoč pri pisanju</translation>
 <translation id="5481941284378890518">Dodajanje tiskalnikov v bližini</translation>
 <translation id="5482417738572414119">Prijavite se, če želite, da Chrome predlaga skupine zavihkov in skrbi za organizacijo zavihkov</translation>
 <translation id="5484181871714116891">Če je vklopljeno, se ključi za dostop ustvarijo v storitvi iCloud Keychain in so na voljo v napravah Apple. Če je izklopljeno, se ključi za dostop ustvarijo v profilu v Chromu v tej napravi.</translation>
@@ -9745,7 +9747,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8390392581097975659">Nameščanje programske opreme optičnega bralnika</translation>
 <translation id="8390449457866780408">Strežnik ni na voljo.</translation>
 <translation id="8391218455464584335">Vinilna plošča</translation>
-<translation id="8392726714909453725">Nastavitve storitve Izberite in poslušajte</translation>
+<translation id="8392726714909453725">Nastavitve funkcije Izberite in poslušajte</translation>
 <translation id="8393511274964623038">Ustavi vtičnik</translation>
 <translation id="839363317075970734">Podrobnosti o napravi Bluetooth</translation>
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
@@ -10130,6 +10132,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="869167754614449887">Datoteka <ph name="FILE_NAME" /> je bila izbrisana iz zgodovine prenosov</translation>
 <translation id="8692107307702113268">Geslo vsebuje več kot 1000 znakov.</translation>
 <translation id="8693639060656817812">Preberite več o razpoložljivosti zaščite pred sledenjem</translation>
+<translation id="8693862390730570097">Ne dovoli samodejnega odpiranja funkcije »Pomagaj mi pisati«</translation>
 <translation id="8694596275649352090">Zakleni v načinu pripravljenosti ali ko je pokrov zaprt</translation>
 <translation id="8695139659682234808">Dodajanje starševskega nadzora po nastavitvi</translation>
 <translation id="8695825812785969222">Odpri &amp;mesto ...</translation>
@@ -10720,6 +10723,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9112987648460918699">Iskanje ...</translation>
 <translation id="9113240369465613386">Samo lihe strani</translation>
 <translation id="9113469270512809735">Preklopi nedavno zaprte elemente</translation>
+<translation id="9113529408970052045">Funkcija »Pomagaj mi pisati« se lahko samodejno odpre, če je besedilno polje na spletnem mestu mogoče izpolniti s kratko vsebino</translation>
 <translation id="9114663181201435112">Preprosta prijava</translation>
 <translation id="9115675100829699941">&amp;Zaznamki</translation>
 <translation id="9115932142612197835">Ta nastavitev ne spremeni razpoložljivosti Google Prevajalnika ali Googla Lens</translation>

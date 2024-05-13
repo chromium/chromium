@@ -3437,6 +3437,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3566721612727112615">Engum vefsvæðum bætt við</translation>
 <translation id="3567284462585300767">Gerðu þig sýnilega(n) til að móttaka og samþykkja skrár frá fólkinu í kringum þig</translation>
 <translation id="356738834800832239">Aðgangsorðið þitt er vistað</translation>
+<translation id="3568431410312984116">Leyfa sjálfkrafa opnun á „Hjálpaðu mér að skrifa“</translation>
 <translation id="3569382839528428029">Viltu að <ph name="APP_NAME" /> deili skjánum þínum?</translation>
 <translation id="3569614820047645079">Skrárnar á drifinu þínu samstillast sjálfkrafa við Chromebook-tækið svo þú getir nálgast þær án nettengingar.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> getur skoðað eftirfarandi skrár og möppur</translation>
@@ -5913,6 +5914,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5474859849784484111"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).</translation>
 <translation id="5477089831058413614">Stilla heitan reit í <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Mega ekki sækja margar skrár sjálfkrafa</translation>
+<translation id="5481682542063333508">Býður upp á rithjálp</translation>
 <translation id="5481941284378890518">Bæta nálægum prenturum við</translation>
 <translation id="5482417738572414119">Skráðu þig inn til að láta Chrome stinga upp á flipahópum og flokka flipa</translation>
 <translation id="5484181871714116891">Þegar kveikt er á þessu eru aðgangslyklar búnir til í iCloud Keychain og eru tiltækir í öllum Apple-tækjunum þínum. Þegar slökkt er á þessu eru aðgangslyklar búnir til á Chrome-prófílnum þínum í þessu tæki.</translation>
@@ -10120,6 +10122,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="869167754614449887"><ph name="FILE_NAME" /> var eytt úr niðurhalsferli</translation>
 <translation id="8692107307702113268">Aðgangsorð er lengra en 1000 stafir</translation>
 <translation id="8693639060656817812">Nánar um tiltækileika rakningarvarnar</translation>
+<translation id="8693862390730570097">Ekki leyfa sjálfkrafa opnun á „Hjálpaðu mér að skrifa“</translation>
 <translation id="8694596275649352090">Læsa í svefnstillingu eða þegar lokið er sett niður</translation>
 <translation id="8695139659682234808">Bæta barnalæsingum við eftir uppsetningu</translation>
 <translation id="8695825812785969222">Opna staðsetningu...</translation>
@@ -10708,6 +10711,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9112987648460918699">Finna...</translation>
 <translation id="9113240369465613386">Aðeins síður með oddatölum</translation>
 <translation id="9113469270512809735">Sýna/fela atriði sem var lokað nýlega</translation>
+<translation id="9113529408970052045">„Hjálpaðu mér að skrifa“ getur opnast sjálfkrafa þegar hægt er að fylla textareit á síðu með stuttum texta</translation>
 <translation id="9114663181201435112">Auðveld innskráning</translation>
 <translation id="9115675100829699941">&amp;Bókamerki</translation>
 <translation id="9115932142612197835">Þessi stilling stjórnar ekki tiltækileika Google Translate eða Linsu</translation>

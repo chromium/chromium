@@ -3421,6 +3421,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3566721612727112615">Geen sites toegevoegd</translation>
 <translation id="3567284462585300767">Als je bestanden wilt krijgen en accepteren van mensen bij jou in de buurt, moet je zichtbaar zijn</translation>
 <translation id="356738834800832239">Je wachtwoord is opgeslagen</translation>
+<translation id="3568431410312984116">Sta toe dat Help me met schrijven automatisch wordt geopend</translation>
 <translation id="3569382839528428029">Wil je je scherm delen met <ph name="APP_NAME" />?</translation>
 <translation id="3569614820047645079">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> kan de volgende bestanden en mappen bekijken</translation>
@@ -5894,6 +5895,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" />-hotspot instellen</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
+<translation id="5481682542063333508">Hulp bij het schrijven aanbieden</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
 <translation id="5482417738572414119">Log in om Chrome tabbladgroepen te laten voorstellen en je tabbladen overzichtelijk te houden</translation>
 <translation id="5484181871714116891">Als deze optie aanstaat, worden toegangssleutels gemaakt in iCloud Sleutelhanger en zijn deze beschikbaar op je Apple-apparaten. Staat de optie uit, dan worden toegangssleutels gemaakt in je Chrome-profiel op dit apparaat.</translation>
@@ -10093,6 +10095,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="869167754614449887"><ph name="FILE_NAME" /> is verwijderd uit de downloadgeschiedenis</translation>
 <translation id="8692107307702113268">Het wachtwoord is langer dan 1000 tekens</translation>
 <translation id="8693639060656817812">Meer informatie over de beschikbaarheid van Trackingbeveiliging</translation>
+<translation id="8693862390730570097">Niet toestaan dat Help me met schrijven automatisch wordt geopend</translation>
 <translation id="8694596275649352090">Vergrendelen in de slaapstand of als de klep is gesloten</translation>
 <translation id="8695139659682234808">Ouderlijk toezicht toevoegen na het instellen</translation>
 <translation id="8695825812785969222">&amp;Locatie openen...</translation>
@@ -10681,6 +10684,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9112987648460918699">Zoek...</translation>
 <translation id="9113240369465613386">Alleen oneven pagina's</translation>
 <translation id="9113469270512809735">Schakelen tussen recent gesloten items</translation>
+<translation id="9113529408970052045">Help me met schrijven kan automatisch worden geopend als een tekstvak op een site kan worden gevuld met korte content</translation>
 <translation id="9114663181201435112">Gemakkelijk inloggen</translation>
 <translation id="9115675100829699941">&amp;Bladwijzers</translation>
 <translation id="9115932142612197835">Deze instelling heeft geen invloed op de beschikbaarheid van Google Translate of Lens</translation>

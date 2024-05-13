@@ -3432,6 +3432,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3566721612727112615">Няма добавени сайтове</translation>
 <translation id="3567284462585300767">За да получавате и приемате файлове от хора в района, направете устройството си видимо</translation>
 <translation id="356738834800832239">Паролата ви е запазена</translation>
+<translation id="3568431410312984116">Разрешаване функцията „Помощ при писане“ да се отваря автоматично</translation>
 <translation id="3569382839528428029">Искате ли <ph name="APP_NAME" /> да споделя екрана ви?</translation>
 <translation id="3569614820047645079">Файловете в „Моят диск“ се синхронизират автоматично с вашия Chromebook, за да имате достъп до тях без връзка с интернет.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> може да преглежда следните файлове и папки</translation>
@@ -5909,6 +5910,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5474859849784484111"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).</translation>
 <translation id="5477089831058413614">Конфигуриране на точката за достъп на <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Сайтове без разрешение за автоматично изтегляне на няколко файла</translation>
+<translation id="5481682542063333508">Предлагане на помощ при писане</translation>
 <translation id="5481941284378890518">Добавяне на принтери в близост</translation>
 <translation id="5482417738572414119">Влезте в профила си, за да позволите на Chrome да предлага групи раздели и да поддържа разделите ви организирани</translation>
 <translation id="5484181871714116891">Когато опцията е включена, ключовете за достъп се създават в iCloud Keychain и са налице на всичките ви устройства от Apple. Когато опцията е изключена, ключовете за достъп се създават в потребителския ви профил в Chrome на това устройство.</translation>
@@ -10117,6 +10119,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="869167754614449887">Изтрихте <ph name="FILE_NAME" /> от историята на изтеглянията</translation>
 <translation id="8692107307702113268">Паролата съдържа повече от 1000 знака</translation>
 <translation id="8693639060656817812">Научете повече за наличността на функцията за защита от проследяване</translation>
+<translation id="8693862390730570097">Забраняване функцията „Помощ при писане“ да се отваря автоматично</translation>
 <translation id="8694596275649352090">Заключване при преминаване в спящ режим или затваряне на капака</translation>
 <translation id="8695139659682234808">Добавете родителски контроли след настройването</translation>
 <translation id="8695825812785969222">Отваряне на &amp;местоположение...</translation>
@@ -10704,6 +10707,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9112987648460918699">Търсене...</translation>
 <translation id="9113240369465613386">Само нечетните страници</translation>
 <translation id="9113469270512809735">Превключване на наскоро затворените елементи</translation>
+<translation id="9113529408970052045">„Помощ при писане“ може да се отвори автоматично, когато текстово поле на даден сайт може да бъде попълнено с кратък текст</translation>
 <translation id="9114663181201435112">Лесно влизане в профила ви</translation>
 <translation id="9115675100829699941">&amp;Отметки</translation>
 <translation id="9115932142612197835">Тази настройка не променя наличността на Google Преводач и Обектив</translation>

@@ -3436,6 +3436,7 @@
 <translation id="3566721612727112615">沒有新增任何網站</translation>
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
+<translation id="3568431410312984116">允許「幫我寫」自動開啟</translation>
 <translation id="3569382839528428029">您想讓 <ph name="APP_NAME" /> 共用您的螢幕嗎？</translation>
 <translation id="3569614820047645079">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下檔案和資料夾</translation>
@@ -5908,6 +5909,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
 <translation id="5477089831058413614">設定 <ph name="DEVICE_TYPE" /> 熱點</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
+<translation id="5481682542063333508">提供撰寫協助</translation>
 <translation id="5481941284378890518">新增附近的打印機</translation>
 <translation id="5482417738572414119">登入帳戶，允許 Chrome 提供分頁群組建議及整理分頁</translation>
 <translation id="5484181871714116891">開啟後，系統會在「iCloud 鑰匙圈」中建立密鑰，方便你在 Apple 裝置上使用。關閉後，系統會在此裝置的 Chrome 設定檔中建立密鑰。</translation>
@@ -10112,6 +10114,7 @@
 <translation id="869167754614449887">已從下載記錄中刪除「<ph name="FILE_NAME" />」</translation>
 <translation id="8692107307702113268">密碼超過 1000 個字元</translation>
 <translation id="8693639060656817812">進一步了解用唔用到追蹤保護功能</translation>
+<translation id="8693862390730570097">不允許「幫我寫」自動開啟</translation>
 <translation id="8694596275649352090">在休眠或蓋上螢幕時鎖定</translation>
 <translation id="8695139659682234808">設定完成後新增家長監控設定</translation>
 <translation id="8695825812785969222">開啟位置(&amp;L)…</translation>
@@ -10699,6 +10702,7 @@
 <translation id="9112987648460918699">尋找…</translation>
 <translation id="9113240369465613386">只列印單數頁面</translation>
 <translation id="9113469270512809735">顯示/隱藏最近關閉的項目</translation>
+<translation id="9113529408970052045">當網站上的文字框可填入簡短內容時，「幫我寫」會自動開啟</translation>
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
 <translation id="9115932142612197835">此設定不會影響「Google 翻譯」或「Google 智能鏡頭」的可用性</translation>

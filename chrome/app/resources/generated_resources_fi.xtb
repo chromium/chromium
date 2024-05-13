@@ -3435,6 +3435,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3566721612727112615">Ei lisättyjä sivustoja</translation>
 <translation id="3567284462585300767">Muuta tilasi näkyväksi, jotta voit vastaanottaa ja hyväksyä tiedostoja lähelläsi olevien henkilöiden kanssa</translation>
 <translation id="356738834800832239">Salasana on tallennettu</translation>
+<translation id="3568431410312984116">Salli Apua kirjoittamiseen ‐ominaisuuden automaattinen avautuminen</translation>
 <translation id="3569382839528428029">Haluatko sovelluksen <ph name="APP_NAME" /> jakavan näyttösi?</translation>
 <translation id="3569614820047645079">Omassa Drivessa olevat tiedostot synkronoituvat Chromebookiin automaattisesti, joten voit käyttää niitä ilman internetyhteyttä.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> saa nähdä seuraavat tiedostot ja kansiot</translation>
@@ -5908,6 +5909,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5474859849784484111"><ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon nyt ja lataat päivityksen. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).</translation>
 <translation id="5477089831058413614">Määritä hotspot: <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Useiden tiedostojen automaattinen lataaminen kielletty</translation>
+<translation id="5481682542063333508">Tarjoa kirjoitusapua</translation>
 <translation id="5481941284378890518">Lisää lähellä olevia tulostimia</translation>
 <translation id="5482417738572414119">Kirjaudu sisään, niin Chrome voi ehdottaa välilehtiryhmiä ja pitää välilehdet järjestyksessä</translation>
 <translation id="5484181871714116891">Kun asetus on päällä, avainkoodit luodaan iCloud-avainnippuun ja ovat saatavilla kaikilla Apple-laitteilla. Kun asetus on pois päältä, avainkoodit luodaan tämän laitteen Chrome-profiiliin.</translation>
@@ -10114,6 +10116,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="869167754614449887"><ph name="FILE_NAME" /> on poistettu lataushistoriasta</translation>
 <translation id="8692107307702113268">Salasana sisältää yli 1000 merkkiä</translation>
 <translation id="8693639060656817812">Lue lisää Seurannan eston saatavuudesta</translation>
+<translation id="8693862390730570097">Älä salli Auta minua kirjoittamaan ‐ominaisuuden automaattista avautumista</translation>
 <translation id="8694596275649352090">Lukitse epäaktiivisena tai kannen ollessa suljettuna</translation>
 <translation id="8695139659682234808">Lisää lapsilukko käyttöönoton jälkeen</translation>
 <translation id="8695825812785969222">&amp;Avaa sijainti...</translation>
@@ -10701,6 +10704,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9112987648460918699">Hae...</translation>
 <translation id="9113240369465613386">Vain parittomat sivut</translation>
 <translation id="9113469270512809735">Äskettäin suljetut kohteet päälle/pois</translation>
+<translation id="9113529408970052045">Auta minua kirjoittamaan ‐ominaisuus voi avautua automaattisesti, kun sivuston tekstikenttä voidaan täyttää lyhyellä sisällöllä</translation>
 <translation id="9114663181201435112">Kirjaudu sisään helposti</translation>
 <translation id="9115675100829699941">&amp;Kirjanmerkit</translation>
 <translation id="9115932142612197835">Tämä asetus ei vaikuta Google Kääntäjän tai Lensin saatavuuteen</translation>

@@ -3422,6 +3422,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3566721612727112615">Aucun site ajouté</translation>
 <translation id="3567284462585300767">Vous devez être visible pour recevoir et accepter des fichiers de personnes à proximité</translation>
 <translation id="356738834800832239">Votre mot de passe est enregistré</translation>
+<translation id="3568431410312984116">Autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
 <translation id="3569382839528428029">Voulez-vous que l'application <ph name="APP_NAME" /> partage votre écran ?</translation>
 <translation id="3569614820047645079">Les fichiers dans Mon Drive sont automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> peut accéder aux fichiers et dossiers suivants :</translation>
@@ -5897,6 +5898,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5474859849784484111"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).</translation>
 <translation id="5477089831058413614">Configurer le point d'accès sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Non autorisé à télécharger automatiquement plusieurs fichiers</translation>
+<translation id="5481682542063333508">Obtenir de l'aide pour écrire</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5482417738572414119">Connectez-vous pour permettre à Chrome de vous suggérer des groupes d'onglets et d'organiser vos onglets</translation>
 <translation id="5484181871714116891">Lorsque cette option est activée, les clés d'accès sont créées dans le trousseau iCloud et disponibles sur vos appareils Apple. Lorsqu'elle est désactivée, les clés d'accès sont créées dans votre profil Chrome sur cet appareil.</translation>
@@ -10107,6 +10109,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="869167754614449887"><ph name="FILE_NAME" /> a été supprimé de l'historique des téléchargements</translation>
 <translation id="8692107307702113268">Le mot de passe contient plus de 1 000 caractères</translation>
 <translation id="8693639060656817812">En savoir plus sur la disponibilité de la Protection contre le suivi</translation>
+<translation id="8693862390730570097">Ne pas autoriser M'aider à écrire à s'ouvrir automatiquement</translation>
 <translation id="8694596275649352090">Verrouiller quand l'appareil est en veille ou que l'écran est rabattu</translation>
 <translation id="8695139659682234808">Activer le contrôle parental après la configuration</translation>
 <translation id="8695825812785969222">Ouvrir une &amp;adresse...</translation>
@@ -10695,6 +10698,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9113240369465613386">Pages impaires uniquement</translation>
 <translation id="9113469270512809735">Afficher/Masquer les éléments fermés récemment</translation>
+<translation id="9113529408970052045">M'aider à écrire peut s'ouvrir automatiquement quand une zone de texte sur un site peut être renseignée avec un contenu court</translation>
 <translation id="9114663181201435112">Connectez-vous en toute simplicité</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>
 <translation id="9115932142612197835">Ce paramètre ne modifie pas la disponibilité de Google Traduction ou Lens</translation>

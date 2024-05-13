@@ -3422,6 +3422,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3566721612727112615">Nu s-au adăugat site-uri</translation>
 <translation id="3567284462585300767">Pentru a primi și a accepta fișiere de la persoane din jur, setează dispozitivul ca vizibil</translation>
 <translation id="356738834800832239">Parola s-a salvat</translation>
+<translation id="3568431410312984116">Permite ca funcția Ajută-mă să scriu să se deschidă automat</translation>
 <translation id="3569382839528428029">Doriți ca aplicația <ph name="APP_NAME" /> să aibă acces la ecran?</translation>
 <translation id="3569614820047645079">Fișierele din Contul meu Drive se sincronizează automat cu Chromebookul, ca să le poți accesa fără conexiune la internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> poate să vadă următoarele fișiere și dosare</translation>
@@ -5897,6 +5898,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5474859849784484111"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).</translation>
 <translation id="5477089831058413614">Configurează hotspotul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nu au permisiunea de a descărca automat mai multe fișiere</translation>
+<translation id="5481682542063333508">Oferă ajutor la scriere</translation>
 <translation id="5481941284378890518">Adaugă imprimantele din apropiere</translation>
 <translation id="5482417738572414119">Conectează-te pentru a permite browserului Chrome să sugereze grupuri de file și să-ți păstreze filele organizate</translation>
 <translation id="5484181871714116891">Când opțiunea este activată, cheile de acces se creează în iCloud Keychain și sunt disponibile pe dispozitivele Apple. Când opțiunea este dezactivată, cheile de acces se creează în profilul Chrome pe acest dispozitiv.</translation>
@@ -10106,6 +10108,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="869167754614449887"><ph name="FILE_NAME" /> s-a șters din istoricul descărcărilor</translation>
 <translation id="8692107307702113268">Parola are peste 1.000 de caractere</translation>
 <translation id="8693639060656817812">Află mai multe despre disponibilitatea Protecției împotriva urmăririi</translation>
+<translation id="8693862390730570097">Nu permite ca funcția Ajută-mă să scriu să se deschidă automat</translation>
 <translation id="8694596275649352090">Blochează în modul de inactivitate sau când capacul este închis</translation>
 <translation id="8695139659682234808">Adaugă opțiuni de control parental după configurare</translation>
 <translation id="8695825812785969222">Deschide &amp;locația...</translation>
@@ -10694,6 +10697,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9112987648460918699">Caută...</translation>
 <translation id="9113240369465613386">Numai paginile cu număr impar</translation>
 <translation id="9113469270512809735">Activează / dezactivează elementele închise recent</translation>
+<translation id="9113529408970052045">Funcția Ajută-mă să scriu se poate deschide automat atunci când o casetă text de pe un site poate fi completată cu conținut scurt</translation>
 <translation id="9114663181201435112">Conectează-te cu ușurință</translation>
 <translation id="9115675100829699941">&amp;Marcaje</translation>
 <translation id="9115932142612197835">Această setare nu modifică disponibilitatea serviciilor Google Traducere sau Lens</translation>

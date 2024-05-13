@@ -3427,6 +3427,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3566721612727112615">Ühtegi saiti ei lisatud</translation>
 <translation id="3567284462585300767">Läheduses olevatelt inimestel failide saamiseks ja vastuvõtmiseks muutke seade nähtavaks</translation>
 <translation id="356738834800832239">Teie parool salvestati</translation>
+<translation id="3568431410312984116">Luba funktsioonil „Aita mul kirjutada“ automaatselt avaneda</translation>
 <translation id="3569382839528428029">Kas soovite, et rakendus <ph name="APP_NAME" /> jagaks teie ekraani?</translation>
 <translation id="3569614820047645079">Teie failid jaotises Minu ketas sünkroonitakse automaatselt teie Chromebookiga, nii et pääsete neile juurde ilma internetiühenduseta.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> saab vaadata järgmisi faile ja kaustu</translation>
@@ -5902,6 +5903,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5474859849784484111"><ph name="MANAGER" /> nõuab, et looksite kohe WiFi-ühenduse ja laadiksite alla värskenduse. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).</translation>
 <translation id="5477089831058413614">Seadme <ph name="DEVICE_TYPE" /> kuumkoha seadistamine</translation>
 <translation id="5481273127572794904">Pole lubatud automaatselt mitut faili alla laadida</translation>
+<translation id="5481682542063333508">Paku kirjutamisel abi</translation>
 <translation id="5481941284378890518">Läheduses olevate printerite lubamine</translation>
 <translation id="5482417738572414119">Logige sisse, et võimaldada Chrome'il soovitada vahelehegruppe ja hoida teie vahelehed organiseerituna</translation>
 <translation id="5484181871714116891">Kui see on sisse lülitatud, luuakse pääsuvõtmed iCloud Keychainis ja need on saadaval kõigis teie Apple'i seadmetes. Kui see on välja lülitatud, luuakse pääsuvõtmed selles seadmes teie Chrome'i profiilis.</translation>
@@ -10109,6 +10111,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="869167754614449887">Fail <ph name="FILE_NAME" /> on allalaadimiste ajaloost kustutatud</translation>
 <translation id="8692107307702113268">Parool on pikem kui 1000 tähemärki</translation>
 <translation id="8693639060656817812">Lisateave jälgimiskaitse saadavuse kohta</translation>
+<translation id="8693862390730570097">Ära luba funktsioonil „Aita mul kirjutada“ automaatselt avaneda</translation>
 <translation id="8694596275649352090">Lukusta unerežiimis või kui kaas on suletud</translation>
 <translation id="8695139659682234808">Lisage vanemlik järelevalve pärast seadistamist</translation>
 <translation id="8695825812785969222">Ava a&amp;sukoht ...</translation>
@@ -10696,6 +10699,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9112987648460918699">Otsi...</translation>
 <translation id="9113240369465613386">Ainult paarituarvulised lehed</translation>
 <translation id="9113469270512809735">Kuva/peida hiljuti suletud üksused</translation>
+<translation id="9113529408970052045">Funktsioon „Aita mul kirjutada“ saab automaatselt avaneda, kui saidil oleva tekstikasti saab lühivormis sisuga täita</translation>
 <translation id="9114663181201435112">Lihtne sisselogimine</translation>
 <translation id="9115675100829699941">&amp;Järjehoidjad</translation>
 <translation id="9115932142612197835">See seade ei muuda Google'i tõlke ega Lensi saadavust</translation>
