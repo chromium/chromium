@@ -6,8 +6,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/types/pass_key.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "components/webapps/browser/android/webapk/webapk_single_icon_hasher.h"
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,36 +22,48 @@ const int kDownloadTimeoutInMilliseconds = 60000;
 WebApkIconsHasher::WebApkIconsHasher() = default;
 WebApkIconsHasher::~WebApkIconsHasher() = default;
 
+WebApkIconsHasher::PassKey WebApkIconsHasher::PassKeyForTesting() {
+  return PassKey();
+}
+
 void WebApkIconsHasher::DownloadAndComputeMurmur2Hash(
     network::mojom::URLLoaderFactory* url_loader_factory,
     base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
-    std::map<GURL, std::unique_ptr<WebappIcon>> icons,
+    const ShortcutInfo& shortcut_info,
+    const SkBitmap& primary_icon_bitmap,
     Murmur2HashMultipleCallback callback) {
-  webapk_icons_ = std::move(icons);
+  webapk_icons_ = shortcut_info.GetWebApkIcons();
 
   auto barrier_closure = base::BarrierClosure(
       webapk_icons_.size(),
       base::BindOnce(&WebApkIconsHasher::OnAllMurmur2Hashes,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     shortcut_info.best_primary_icon_url,
+                     shortcut_info.is_primary_icon_maskable,
+                     primary_icon_bitmap));
+
   for (auto& [icon_url, webapk_icon] : webapk_icons_) {
-    // |hashes| is owned by |barrier_closure|.
-    WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-        url_loader_factory, web_contents, request_initiator,
-        kDownloadTimeoutInMilliseconds, webapk_icon.get(), barrier_closure);
+    hashers_.emplace_back(std::make_unique<WebApkSingleIconHasher>(
+        PassKey(), url_loader_factory, web_contents, request_initiator,
+        kDownloadTimeoutInMilliseconds, webapk_icon.get(), barrier_closure));
   }
 }
 
 void WebApkIconsHasher::OnAllMurmur2Hashes(
-    WebApkIconsHasher::Murmur2HashMultipleCallback callback) {
-  for (auto& [icon_url, webapk_icon] : webapk_icons_) {
-    // Return an empty map if downloading primary icon is unsuccessful.
-    if (webapk_icon->usages().contains(webapk::Image::PRIMARY_ICON) &&
-        !webapk_icon->has_unsafe_data()) {
-      std::move(callback).Run(std::map<GURL, std::unique_ptr<WebappIcon>>());
-      return;
-    }
+    WebApkIconsHasher::Murmur2HashMultipleCallback callback,
+    const GURL& primary_icon_url,
+    bool primary_icon_maskable,
+    const SkBitmap& primary_icon_bitmap) {
+  auto primary_icon_it = webapk_icons_.find(primary_icon_url);
+  if (primary_icon_it == webapk_icons_.end() ||
+      !primary_icon_it->second->has_unsafe_data()) {
+    webapk_icons_[primary_icon_url] = std::make_unique<WebappIcon>(
+        primary_icon_url, primary_icon_maskable, webapk::Image::PRIMARY_ICON);
+    WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
+        webapk_icons_[primary_icon_url].get(), primary_icon_bitmap);
   }
+  hashers_.clear();
   std::move(callback).Run(std::move(webapk_icons_));
 }
 

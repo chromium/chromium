@@ -134,12 +134,13 @@ WebApkInstaller::~WebApkInstaller() {
 void WebApkInstaller::InstallAsync(content::BrowserContext* context,
                                    content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
+                                   const SkBitmap& primary_icon,
                                    webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   // The installer will delete itself when it is done.
   WebApkInstaller* installer = new WebApkInstaller(context);
-  installer->InstallAsync(web_contents, shortcut_info, install_source,
-                          std::move(finish_callback));
+  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+                          install_source, std::move(finish_callback));
 }
 
 // static
@@ -156,10 +157,11 @@ void WebApkInstaller::InstallAsyncForTesting(
     WebApkInstaller* installer,
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
+    const SkBitmap& primary_icon,
     webapps::WebappInstallSource install_source,
     FinishCallback callback) {
-  installer->InstallAsync(web_contents, shortcut_info, install_source,
-                          std::move(callback));
+  installer->InstallAsync(web_contents, shortcut_info, primary_icon,
+                          install_source, std::move(callback));
 }
 
 // static
@@ -266,6 +268,7 @@ void WebApkInstaller::CreateJavaRef() {
 
 void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
                                    const webapps::ShortcutInfo& shortcut_info,
+                                   const SkBitmap& primary_icon,
                                    webapps::WebappInstallSource install_source,
                                    FinishCallback finish_callback) {
   install_duration_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -273,6 +276,7 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   web_contents_ = web_contents->GetWeakPtr();
   install_shortcut_info_ =
       std::make_unique<webapps::ShortcutInfo>(shortcut_info);
+  install_primary_icon_ = primary_icon;
   short_name_ = shortcut_info.short_name;
   finish_callback_ = std::move(finish_callback);
   manifest_id_ = install_shortcut_info_->manifest_id;
@@ -435,9 +439,8 @@ network::SharedURLLoaderFactory* GetURLLoaderFactory(
 void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   // We need to take the hash of the bitmap at the icon URL prior to any
   // transformations being applied to the bitmap (such as encoding/decoding
-  // the bitmap). The icon hash is used to determine whether the icon that
-  // the user sees matches the icon of a WebAPK that the WebAPK server
-  // generated for another user. (The icon can be dynamically generated.)
+  // the bitmap). The icon hash is used to determine whether an icon update is
+  // needed
   //
   // We redownload the icon in order to take the Murmur2 hash. The redownload
   // should be fast because the icon should be in the HTTP cache.
@@ -445,8 +448,8 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
   icon_hasher_ = std::make_unique<webapps::WebApkIconsHasher>();
   icon_hasher_->DownloadAndComputeMurmur2Hash(
       GetURLLoaderFactory(browser_context_), web_contents_,
-      url::Origin::Create(install_shortcut_info_->url),
-      install_shortcut_info_->GetWebApkIcons(),
+      url::Origin::Create(install_shortcut_info_->url), *install_shortcut_info_,
+      install_primary_icon_,
       base::BindOnce(&WebApkInstaller::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
 }

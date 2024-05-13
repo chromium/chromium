@@ -41,49 +41,35 @@ std::string ComputeMurmur2Hash(const std::string& raw_image_data) {
 
 }  // anonymous namespace
 
-// static
-void WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-    network::mojom::URLLoaderFactory* url_loader_factory,
-    base::WeakPtr<content::WebContents> web_contents,
-    const url::Origin& request_initiator,
-    int timeout_ms,
-    WebappIcon* webapk_icon,
-    base::OnceClosure callback) {
-  if (!webapk_icon->url().is_valid()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
-    return;
-  }
-
-  if (webapk_icon->url().SchemeIs(url::kDataScheme)) {
-    std::string mime_type, char_set, data;
-    if (net::DataURL::Parse(webapk_icon->url(), &mime_type, &char_set, &data) &&
-        !data.empty()) {
-      webapk_icon->set_hash(ComputeMurmur2Hash(data));
-      webapk_icon->SetData(std::move(data));
-    }
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
-    return;
-  }
-
-  // The icon hasher will delete itself when it is done.
-  new WebApkSingleIconHasher(url_loader_factory, std::move(web_contents),
-                       request_initiator, timeout_ms, webapk_icon,
-                       std::move(callback));
-}
-
 WebApkSingleIconHasher::WebApkSingleIconHasher(
+    base::PassKey<WebApkIconsHasher> pass_key,
     network::mojom::URLLoaderFactory* url_loader_factory,
     base::WeakPtr<content::WebContents> web_contents,
     const url::Origin& request_initiator,
     int timeout_ms,
     WebappIcon* webapk_icon,
     base::OnceClosure callback)
-    : callback_(std::move(callback)) {
+    : icon_(webapk_icon), callback_(std::move(callback)) {
   DCHECK(url_loader_factory);
 
-  icon_ = webapk_icon;
+  if (!icon_->url().is_valid()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_)));
+    return;
+  }
+
+  if (icon_->url().SchemeIs(url::kDataScheme)) {
+    std::string mime_type, char_set, data;
+    if (net::DataURL::Parse(icon_->url(), &mime_type, &char_set, &data) &&
+        !data.empty()) {
+      icon_->set_hash(ComputeMurmur2Hash(data));
+      icon_->SetData(std::move(data));
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_)));
+    return;
+  }
+
   download_timeout_timer_.Start(
       FROM_HERE, base::Milliseconds(timeout_ms),
       base::BindOnce(&WebApkSingleIconHasher::OnDownloadTimedOut,
@@ -106,7 +92,7 @@ WebApkSingleIconHasher::WebApkSingleIconHasher(
                      icon_->GetIdealSizeInPx(), timeout_ms));
 }
 
-WebApkSingleIconHasher::~WebApkSingleIconHasher() {}
+WebApkSingleIconHasher::~WebApkSingleIconHasher() = default;
 
 void WebApkSingleIconHasher::OnSimpleLoaderComplete(
     base::WeakPtr<content::WebContents> web_contents,
@@ -172,13 +158,24 @@ void WebApkSingleIconHasher::OnImageDownloaded(
     return;
   }
 
-  std::vector<unsigned char> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[0], false, &png_bytes);
-
-  icon_->SetData(std::string(png_bytes.begin(), png_bytes.end()));
-  icon_->set_hash(ComputeMurmur2Hash(*response_body));
+  SetIconDataAndHashFromSkBitmap(icon_, bitmaps[0], std::move(response_body));
 
   RunCallbackAndFinish();
+}
+
+void WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
+    WebappIcon* icon,
+    const SkBitmap& bitmap,
+    std::unique_ptr<std::string> response_body) {
+  if (bitmap.drawsNothing()) {
+    return;
+  }
+  std::vector<unsigned char> png_bytes;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes);
+
+  icon->SetData(std::string(png_bytes.begin(), png_bytes.end()));
+  icon->set_hash(
+      ComputeMurmur2Hash(response_body ? *response_body : icon->unsafe_data()));
 }
 
 void WebApkSingleIconHasher::OnDownloadTimedOut() {
@@ -188,7 +185,6 @@ void WebApkSingleIconHasher::OnDownloadTimedOut() {
 
 void WebApkSingleIconHasher::RunCallbackAndFinish() {
   std::move(callback_).Run();
-  delete this;
 }
 
 }  // namespace webapps

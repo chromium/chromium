@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/types/pass_key.h"
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,34 +34,29 @@ class WebContents;
 
 namespace webapps {
 
+class WebApkIconsHasher;
+
 // Downloads an icon and takes a Murmur2 hash of the downloaded image.
 class WebApkSingleIconHasher {
  public:
+  WebApkSingleIconHasher(base::PassKey<WebApkIconsHasher> pass_key,
+                         network::mojom::URLLoaderFactory* url_loader_factory,
+                         base::WeakPtr<content::WebContents> web_contents,
+                         const url::Origin& request_initiator,
+                         int timeout_ms,
+                         WebappIcon* webapk_icon,
+                         base::OnceClosure callback);
+  ~WebApkSingleIconHasher();
+
   WebApkSingleIconHasher(const WebApkSingleIconHasher&) = delete;
   WebApkSingleIconHasher& operator=(const WebApkSingleIconHasher&) = delete;
 
-  // Creates a self-owned WebApkSingleIconHasher instance. The instance
-  // downloads all the |icon_urls| and calls |callback| with the Murmur2 hash of
-  // the downloaded images. The hash is taken over the raw image bytes (no image
-  // encoding/decoding beforehand). |callback| is called with a std::nullopt if
-  // any image cannot not be downloaded in time (e.g. 404 HTTP error code).
-  static void DownloadAndComputeMurmur2HashWithTimeout(
-      network::mojom::URLLoaderFactory* url_loader_factory,
-      base::WeakPtr<content::WebContents> web_contents,
-      const url::Origin& request_initiator,
-      int timeout_ms,
-    WebappIcon* webapk_icon,
-    base::OnceClosure callback);
+  static void SetIconDataAndHashFromSkBitmap(
+      WebappIcon* icon,
+      const SkBitmap& bitmap,
+      std::unique_ptr<std::string> response_body = nullptr);
 
  private:
-  WebApkSingleIconHasher(network::mojom::URLLoaderFactory* url_loader_factory,
-                   base::WeakPtr<content::WebContents> web_contents,
-                   const url::Origin& request_initiator,
-                   int timeout_ms,
-    WebappIcon* webapk_icon,
-    base::OnceClosure callback);
-  ~WebApkSingleIconHasher();
-
   void OnSimpleLoaderComplete(base::WeakPtr<content::WebContents> web_contents,
                               int ideal_icon_size,
                               int timeout_ms,

@@ -75,6 +75,7 @@ class WebApkInstaller {
   static void InstallAsync(content::BrowserContext* context,
                            content::WebContents* web_contents,
                            const webapps::ShortcutInfo& shortcut_info,
+                           const SkBitmap& primary_icon,
                            webapps::WebappInstallSource install_source,
                            FinishCallback finish_callback);
 
@@ -92,6 +93,7 @@ class WebApkInstaller {
       WebApkInstaller* installer,
       content::WebContents* web_contents,
       const webapps::ShortcutInfo& shortcut_info,
+      const SkBitmap& primary_icon,
       webapps::WebappInstallSource install_source,
       FinishCallback callback);
 
@@ -159,6 +161,7 @@ class WebApkInstaller {
   // install completed or failed.
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
+                    const SkBitmap& primary_icon,
                     webapps::WebappInstallSource install_source,
                     FinishCallback finish_callback);
 
@@ -222,6 +225,8 @@ class WebApkInstaller {
   // Only available if the install was scheduled directly in chrome and not in
   // the WebApkInstallCoordinatorService.
   std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
+
+  SkBitmap install_primary_icon_;
 
   std::u16string short_name_;
 

@@ -128,7 +128,7 @@ struct ShortcutInfo {
 
   explicit ShortcutInfo(const GURL& shortcut_url);
   ShortcutInfo(const ShortcutInfo& other);
-  ~ShortcutInfo();
+  virtual ~ShortcutInfo();
 
   // Updates the info based on the given web page metadata.
   void UpdateFromWebPageMetadata(
@@ -146,7 +146,7 @@ struct ShortcutInfo {
 
   // Returns a vector of icons including |best_primary_icon_url|,
   // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty
-  std::map<GURL, std::unique_ptr<WebappIcon>> GetWebApkIcons() const;
+  virtual std::map<GURL, std::unique_ptr<WebappIcon>> GetWebApkIcons() const;
 
   GURL manifest_url;
   GURL url;

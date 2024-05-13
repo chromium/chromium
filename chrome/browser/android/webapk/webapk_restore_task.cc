@@ -120,7 +120,6 @@ void WebApkRestoreTask::Start(CompleteCallback complete_callback) {
 void WebApkRestoreTask::OnWebAppUrlLoaded(
     webapps::WebAppUrlLoaderResult result) {
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    // TODO(crbug.com/41496289): Log error;
     Install(*fallback_info_, app_icon_, FallbackReason::kLoadUrl);
     return;
   }

@@ -198,7 +198,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       web_contents()->GetWeakPtr(), url::Origin::Create(last_fetched_url_),
-      info_.GetWebApkIcons(),
+      info_, primary_icon_,
       base::BindOnce(&WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -11,6 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
+#include "components/webapps/browser/android/webapk/webapk_single_icon_hasher.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -25,22 +27,18 @@ class WebContents;
 
 namespace webapps {
 
+struct ShortcutInfo;
 class WebappIcon;
 
 // Downloads WebAPK icons and takes a Murmur2 hashes of the downloaded images.
 class WebApkIconsHasher {
  public:
-  // Result struct for holding the downloaded icon data and its hash.
-  struct Icon {
-    // The result of fetching the |icon|. This is untrusted data from the web
-    // and should not be processed or decoded by the browser process.
-    std::string unsafe_data;
-
-    // The murmur2 hash of |unsafe_data|.
-    std::string hash;
-  };
   using Murmur2HashMultipleCallback =
       base::OnceCallback<void(std::map<GURL, std::unique_ptr<WebappIcon>>)>;
+
+  using PassKey = base::PassKey<WebApkIconsHasher>;
+  static PassKey PassKeyForTesting();
+
   WebApkIconsHasher();
   ~WebApkIconsHasher();
   WebApkIconsHasher(const WebApkIconsHasher&) = delete;
@@ -55,13 +53,18 @@ class WebApkIconsHasher {
       network::mojom::URLLoaderFactory* url_loader_factory,
       base::WeakPtr<content::WebContents> web_contents,
       const url::Origin& request_initiator,
-      std::map<GURL, std::unique_ptr<WebappIcon>> icons,
+      const ShortcutInfo& shortcut_info,
+      const SkBitmap& primary_icon_bitmap,
       Murmur2HashMultipleCallback callback);
 
  private:
-  void OnAllMurmur2Hashes(Murmur2HashMultipleCallback callback);
+  void OnAllMurmur2Hashes(Murmur2HashMultipleCallback callback,
+                          const GURL& primary_icon_url,
+                          bool primary_icon_maskable,
+                          const SkBitmap& primary_icon_bitmap);
 
   std::map<GURL, std::unique_ptr<WebappIcon>> webapk_icons_;
+  std::vector<std::unique_ptr<WebApkSingleIconHasher>> hashers_;
 
   base::WeakPtrFactory<WebApkIconsHasher> weak_ptr_factory_{this};
 };

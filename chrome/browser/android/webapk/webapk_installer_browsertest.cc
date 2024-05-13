@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -115,6 +116,7 @@ class WebApkInstallerRunner {
     // WebApkInstaller owns itself.
     WebApkInstaller::InstallAsyncForTesting(
         installer.release(), web_contents, info,
+        gfx::test::CreateBitmap(1, SK_ColorRED),
         webapps::WebappInstallSource::MENU_BROWSER_TAB,
         base::BindOnce(&WebApkInstallerRunner::OnCompleted,
                        base::Unretained(this)));
@@ -385,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(WebApkInstallerBrowserTest,
   WebApkInstallerRunner runner;
   runner.RunInstallWebApk(CreateDefaultWebApkInstaller(), web_contents(),
                           shortcut_info);
-  EXPECT_EQ(webapps::WebApkInstallResult::ICON_HASHER_ERROR, runner.result());
+  EXPECT_EQ(webapps::WebApkInstallResult::SUCCESS, runner.result());
 }
 
 // Test that installation doesn't fails if fetching the bitmap at the best

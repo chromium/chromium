@@ -30,7 +30,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/sync/protocol/web_apk_specifics.pb.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/common/web_app_id.h"
@@ -143,6 +143,10 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
         webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons() &&
         webapk_specifics.icon_infos(0).purpose() ==
             sync_pb::WebApkIconInfo_Purpose_MASKABLE;
+  } else {
+    // If there is no icon url in sync data, put |start_url| as a place holder
+    // for primary icon url. Download icon will fallback to generated icon.
+    shortcut_info->best_primary_icon_url = start_url;
   }
   return shortcut_info;
 }

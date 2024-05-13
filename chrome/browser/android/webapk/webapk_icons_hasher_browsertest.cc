@@ -11,6 +11,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/storage_partition.h"
@@ -18,13 +20,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
-#include "components/webapps/browser/android/webapp_icon.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/origin.h"
 
 // Browser tests for WebApkIconHasher.
@@ -115,14 +117,15 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
 
-    std::map<GURL, std::unique_ptr<webapps::WebappIcon>> icons;
-    icons.emplace(kIconUrl, std::make_unique<webapps::WebappIcon>(kIconUrl));
+    webapps::ShortcutInfo shortcut_info(kIconUrl);
+    shortcut_info.best_primary_icon_url = kIconUrl;
 
     base::RunLoop run_loop;
     webapps::WebApkIconsHasher hasher;
     hasher.DownloadAndComputeMurmur2Hash(
         url_loader_factory.get(), web_contents->GetWeakPtr(),
-        url::Origin::Create(kIconUrl), std::move(icons),
+        url::Origin::Create(kIconUrl), shortcut_info,
+        gfx::test::CreateBitmap(1, SK_ColorRED),
         base::BindOnce(&OnGotMurmur2Hash, run_loop.QuitClosure()));
     run_loop.Run();
   }

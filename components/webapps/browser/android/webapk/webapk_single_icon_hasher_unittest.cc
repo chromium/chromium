@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/webapps/browser/android/webapk/webapk_icons_hasher.h"
 #include "components/webapps/browser/android/webapp_icon.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,9 +50,10 @@ class WebApkIconHasherRunner {
            content::WebContents* web_contents,
            const GURL& icon_url) {
     icon_ = std::make_unique<WebappIcon>(icon_url);
-    WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-        url_loader_factory, web_contents->GetWeakPtr(),
-        url::Origin::Create(icon_url),  /*timeout_ms=*/300, icon_.get(),
+    hasher_ = std::make_unique<WebApkSingleIconHasher>(
+        WebApkIconsHasher::PassKeyForTesting(), url_loader_factory,
+        web_contents->GetWeakPtr(), url::Origin::Create(icon_url),
+        /*timeout_ms=*/300, icon_.get(),
         base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
                        base::Unretained(this)));
 
@@ -76,6 +78,8 @@ class WebApkIconHasherRunner {
 
   // Holds icon data and computed hash.
   std::unique_ptr<WebappIcon> icon_;
+
+  std::unique_ptr<WebApkSingleIconHasher> hasher_;
 };
 
 }  // anonymous namespace
@@ -170,10 +174,10 @@ TEST_F(WebApkSingleIconHasherTest, SVGImage) {
                                          status);
 
   auto icon = std::make_unique<WebappIcon>(icon_url);
-  WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-      test_url_loader_factory(), web_contents()->GetWeakPtr(),
-      url::Origin::Create(icon_url),  /*timeout_ms=*/300, icon.get(),
-        base::DoNothing());
+  auto hasher = std::make_unique<WebApkSingleIconHasher>(
+      WebApkIconsHasher::PassKeyForTesting(), test_url_loader_factory(),
+      web_contents()->GetWeakPtr(), url::Origin::Create(icon_url),
+      /*timeout_ms=*/300, icon.get(), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   SkBitmap dummy_bitmap;
@@ -213,10 +217,10 @@ TEST_F(WebApkSingleIconHasherTest, WebpImage) {
                                          status);
 
   auto icon = std::make_unique<WebappIcon>(icon_url);
-  WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-      test_url_loader_factory(), web_contents()->GetWeakPtr(),
-      url::Origin::Create(icon_url),  /*timeout_ms=*/300, icon.get(),
-        base::DoNothing());
+  auto hasher = std::make_unique<WebApkSingleIconHasher>(
+      WebApkIconsHasher::PassKeyForTesting(), test_url_loader_factory(),
+      web_contents()->GetWeakPtr(), url::Origin::Create(icon_url),
+      /*timeout_ms=*/300, icon.get(), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   SkBitmap dummy_bitmap;
@@ -257,10 +261,10 @@ TEST_F(WebApkSingleIconHasherTest, Favicon) {
                                          status);
 
   auto icon = std::make_unique<WebappIcon>(icon_url);
-  WebApkSingleIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-      test_url_loader_factory(), web_contents()->GetWeakPtr(),
-      url::Origin::Create(icon_url),  /*timeout_ms=*/300, icon.get(),
-        base::DoNothing());
+  auto hasher = std::make_unique<WebApkSingleIconHasher>(
+      WebApkIconsHasher::PassKeyForTesting(), test_url_loader_factory(),
+      web_contents()->GetWeakPtr(), url::Origin::Create(icon_url),
+      /*timeout_ms=*/300, icon.get(), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
   SkBitmap dummy_bitmap;

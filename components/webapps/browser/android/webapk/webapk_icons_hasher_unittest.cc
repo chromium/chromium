@@ -29,6 +29,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -37,6 +38,27 @@ namespace {
 
 // Murmur2 hash for |icon_url| in Success test.
 const char kIconMurmur2Hash[] = "2081059568551351877";
+const char kFallbackIconMurmur2Hash[] = "16639143771325572109";
+
+struct TestShortcutInfo : public ShortcutInfo {
+ public:
+  explicit TestShortcutInfo(const GURL& url, const std::set<GURL>& icon_urls)
+      : ShortcutInfo(url), icon_urls_(icon_urls) {
+    best_primary_icon_url = *icon_urls.begin();
+  }
+  ~TestShortcutInfo() override = default;
+
+  std::map<GURL, std::unique_ptr<WebappIcon>> GetWebApkIcons() const override {
+    std::map<GURL, std::unique_ptr<WebappIcon>> webapk_icons;
+    for (auto icon_url : icon_urls_) {
+      webapk_icons.emplace(icon_url, std::make_unique<WebappIcon>(icon_url));
+    }
+    return webapk_icons;
+  }
+
+ private:
+  std::set<GURL> icon_urls_;
+};
 
 }  // anonymous namespace
 
@@ -53,16 +75,15 @@ class WebApkIconsHasherTest : public ::testing::Test {
       network::mojom::URLLoaderFactory* url_loader_factory,
       content::WebContents* web_contents,
       const std::set<GURL>& icon_urls) {
-    std::map<GURL, std::unique_ptr<WebappIcon>> webapk_icons;
-    for (auto icon_url : icon_urls) {
-      webapk_icons.emplace(icon_url, std::make_unique<WebappIcon>(icon_url));
-    }
+    auto test_shortcut_info = TestShortcutInfo(GURL("example.com"), icon_urls);
+
     std::map<GURL, std::unique_ptr<WebappIcon>> result;
     base::RunLoop run_loop;
     auto icons_hasher = std::make_unique<WebApkIconsHasher>();
     icons_hasher->DownloadAndComputeMurmur2Hash(
         url_loader_factory, web_contents->GetWeakPtr(),
-        url::Origin::Create(*icon_urls.begin()), std::move(webapk_icons),
+        url::Origin::Create(*icon_urls.begin()), test_shortcut_info,
+        gfx::test::CreateBitmap(1, SK_ColorRED),
         base::BindLambdaForTesting(
             [&](std::map<GURL, std::unique_ptr<WebappIcon>> icons) {
               ASSERT_TRUE(!icons.empty());
@@ -137,6 +158,39 @@ TEST_F(WebApkIconsHasherTest, MultipleIconUrls) {
     EXPECT_EQ(result.at(icon_url2)->hash(), "536500236142107998");
     EXPECT_FALSE(result.at(icon_url2)->unsafe_data().empty());
   }
+}
+
+TEST_F(WebApkIconsHasherTest, PrimaryIconFallbackToEncodeBitmap) {
+  std::string icon_url1_string =
+      "http://www.google.com/chrome/test/data/android/google.png";
+  base::FilePath source_path;
+  base::FilePath icon_path;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
+  icon_path = source_path.AppendASCII("components")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("webapps")
+                  .AppendASCII("bad_icon.png");
+  std::string icon_data;
+  ASSERT_TRUE(base::ReadFileToString(icon_path, &icon_data));
+  auto head = network::mojom::URLResponseHead::New();
+  std::string headers("HTTP/1.1 200 OK\nContent-type: image/png\n\n");
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "image/png";
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = icon_data.size();
+  test_url_loader_factory()->AddResponse(GURL(icon_url1_string),
+                                         std::move(head), icon_data, status);
+
+  GURL icon_url1(icon_url1_string);
+
+  auto result =
+      RunMultiple(test_url_loader_factory(), web_contents(), {icon_url1});
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result.at(icon_url1)->hash(), kFallbackIconMurmur2Hash);
+  EXPECT_TRUE(result.at(icon_url1)->has_unsafe_data());
 }
 
 }  // namespace webapps
