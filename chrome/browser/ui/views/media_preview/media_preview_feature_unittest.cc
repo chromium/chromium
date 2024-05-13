@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -22,6 +23,7 @@
 #include "url/origin.h"
 
 using blink::mojom::OriginTrialFeature;
+using media_preview_metrics::UiLocation;
 using testing::_;
 using testing::Return;
 using testing::StrictMock;
@@ -102,7 +104,7 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureDisabled) {
       blink::features::kCameraMicPreview);
   EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(_, _, _, _)).Times(0);
   EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
-      *profile_, requester_url_, embedder_url_));
+      *profile_, requester_url_, embedder_url_, UiLocation::kPageInfo));
 }
 
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledNoOriginTrial) {
@@ -118,14 +120,14 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledNoOriginTrial) {
                                   OriginTrialFeature::kMediaPreviewsOptOut, _))
       .WillOnce(Return(false));
   EXPECT_TRUE(media_preview_feature::ShouldShowMediaPreview(
-      *profile_, requester_url_, embedder_url_));
+      *profile_, requester_url_, embedder_url_, UiLocation::kPageInfo));
 }
 
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledInvalidUrls) {
   scoped_feature_list_.InitAndEnableFeature(blink::features::kCameraMicPreview);
   EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(_, _, _, _)).Times(0);
   EXPECT_TRUE(media_preview_feature::ShouldShowMediaPreview(
-      *profile_, invalid_url_, invalid_url_));
+      *profile_, invalid_url_, invalid_url_, UiLocation::kPageInfo));
 }
 
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledRequestedInOriginTrial) {
@@ -136,7 +138,7 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledRequestedInOriginTrial) {
                                   OriginTrialFeature::kMediaPreviewsOptOut, _))
       .WillOnce(Return(true));
   EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
-      *profile_, url_in_ot_, embedder_url_));
+      *profile_, url_in_ot_, embedder_url_, UiLocation::kPageInfo));
 }
 
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledEmbeddedInOriginTrial) {
@@ -152,5 +154,5 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledEmbeddedInOriginTrial) {
                                   OriginTrialFeature::kMediaPreviewsOptOut, _))
       .WillOnce(Return(true));
   EXPECT_FALSE(media_preview_feature::ShouldShowMediaPreview(
-      *profile_, requester_url_, url_in_ot_));
+      *profile_, requester_url_, url_in_ot_, UiLocation::kPageInfo));
 }

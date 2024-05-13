@@ -45,6 +45,7 @@ void RecordPreviewVideoExpectedFPS(const Context& context, int expected_fps);
 void RecordPreviewVideoActualFPS(const Context& context, int actual_fps);
 void RecordPreviewVideoFramesRenderedPercent(const Context& context,
                                              float percent);
+void RecordOriginTrialAllowed(UiLocation location, bool allowed);
 
 }  // namespace media_preview_metrics
 

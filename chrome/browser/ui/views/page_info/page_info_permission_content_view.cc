@@ -356,7 +356,8 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
 
   const GURL& site_url = web_contents->GetLastCommittedURL();
   if (!media_preview_feature::ShouldShowMediaPreview(
-          *web_contents->GetBrowserContext(), site_url, site_url)) {
+          *web_contents->GetBrowserContext(), site_url, site_url,
+          media_preview_metrics::UiLocation::kPageInfo)) {
     return;
   }
 

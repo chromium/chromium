@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/features.h"
@@ -17,7 +18,8 @@ namespace media_preview_feature {
 
 bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
                             const GURL& requesting_origin_url,
-                            const GURL& embedding_origin_url) {
+                            const GURL& embedding_origin_url,
+                            media_preview_metrics::UiLocation ui_location) {
   if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
     return false;
   }
@@ -25,6 +27,7 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
   // If we somehow get invalid or opaque origins, it's a corner case like a
   // data:, srcdoc:, or about: document that can't be part of the OT.
   if (!embedding_origin_url.is_valid() && !requesting_origin_url.is_valid()) {
+    media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
     return true;
   }
 
@@ -39,6 +42,7 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
   if (origin_trials->IsFeaturePersistedForOrigin(
           requesting_origin, requesting_origin,
           blink::mojom::OriginTrialFeature::kMediaPreviewsOptOut, now)) {
+    media_preview_metrics::RecordOriginTrialAllowed(ui_location, false);
     return false;
   }
 
@@ -46,9 +50,11 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
       origin_trials->IsFeaturePersistedForOrigin(
           embedding_origin, embedding_origin,
           blink::mojom::OriginTrialFeature::kMediaPreviewsOptOut, now)) {
+    media_preview_metrics::RecordOriginTrialAllowed(ui_location, false);
     return false;
   }
 
+  media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
   return true;
 }
 

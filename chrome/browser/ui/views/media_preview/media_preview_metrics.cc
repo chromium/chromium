@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace media_preview_metrics {
 
@@ -25,8 +26,8 @@ base::HistogramBase* GetMediaPreviewDurationHistogram(std::string name) {
       name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-std::string GetUiLocationString(const Context& context) {
-  switch (context.ui_location) {
+std::string GetUiLocationString(UiLocation location) {
+  switch (location) {
     case UiLocation::kPermissionPrompt:
       return "Permissions";
     case UiLocation::kPageInfo:
@@ -48,7 +49,8 @@ std::string GetPreviewTypeString(const Context& context) {
 // Doesn't accept a Context with PreviewType::kCameraAndMic.
 std::string GetUiLocationAndPreviewTypeString(const Context& context) {
   CHECK_NE(context.preview_type, PreviewType::kCameraAndMic);
-  return GetUiLocationString(context) + "." + GetPreviewTypeString(context);
+  return GetUiLocationString(context.ui_location) + "." +
+         GetPreviewTypeString(context);
 }
 
 std::string GetUiLocationAndPreviewTypeStringAllowingBoth(
@@ -56,7 +58,8 @@ std::string GetUiLocationAndPreviewTypeStringAllowingBoth(
   if (context.preview_type == PreviewType::kCameraAndMic) {
     CHECK_EQ(context.ui_location, UiLocation::kPermissionPrompt);
   }
-  return GetUiLocationString(context) + "." + GetPreviewTypeString(context);
+  return GetUiLocationString(context.ui_location) + "." +
+         GetPreviewTypeString(context);
 }
 
 void UmaHistogramLinearCounts(const std::string& name,
@@ -109,8 +112,9 @@ void RecordDeviceSelectionAction(
 
 void RecordPreviewCameraPixelHeight(const Context& context, int pixel_height) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name =
-      kUiPrefix + GetUiLocationString(context) + ".Camera.PixelHeight";
+  std::string metric_name = kUiPrefix +
+                            GetUiLocationString(context.ui_location) +
+                            ".Camera.PixelHeight";
   // This really has 8 buckets for 1-1080, but we have to add 2 for underflow
   // and overflow.
   UmaHistogramLinearCounts(metric_name, pixel_height, /*minimum=*/1,
@@ -119,16 +123,18 @@ void RecordPreviewCameraPixelHeight(const Context& context, int pixel_height) {
 
 void RecordPreviewVideoExpectedFPS(const Context& context, int expected_fps) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name =
-      kVideoPrefix + GetUiLocationString(context) + ".Video.ExpectedFPS";
+  std::string metric_name = kVideoPrefix +
+                            GetUiLocationString(context.ui_location) +
+                            ".Video.ExpectedFPS";
   base::UmaHistogramExactLinear(metric_name, expected_fps,
                                 /*exclusive_max=*/61);
 }
 
 void RecordPreviewVideoActualFPS(const Context& context, int actual_fps) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name =
-      kVideoPrefix + GetUiLocationString(context) + ".Video.ActualFPS";
+  std::string metric_name = kVideoPrefix +
+                            GetUiLocationString(context.ui_location) +
+                            ".Video.ActualFPS";
   base::UmaHistogramExactLinear(metric_name, actual_fps,
                                 /*exclusive_max=*/61);
 }
@@ -136,11 +142,19 @@ void RecordPreviewVideoActualFPS(const Context& context, int actual_fps) {
 void RecordPreviewVideoFramesRenderedPercent(const Context& context,
                                              float percent) {
   CHECK_EQ(context.preview_type, PreviewType::kCamera);
-  std::string metric_name =
-      kVideoPrefix + GetUiLocationString(context) + ".Video.RenderedPercent";
+  std::string metric_name = kVideoPrefix +
+                            GetUiLocationString(context.ui_location) +
+                            ".Video.RenderedPercent";
   // Convert percentage to 0-100 integer.
   int integer_percent = std::clamp(percent, /*lo=*/0.0f, /*hi=*/1.0f) * 100;
   base::UmaHistogramPercentage(metric_name, integer_percent);
+}
+
+void RecordOriginTrialAllowed(UiLocation location, bool allowed) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {kUiPrefix, GetUiLocationString(location), ".OriginTrialAllowed"}),
+      allowed);
 }
 
 }  // namespace media_preview_metrics

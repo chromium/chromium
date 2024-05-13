@@ -10,6 +10,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace media_preview_metrics {
+enum class UiLocation;
+}
+
 namespace media_preview_feature {
 
 // Returns true if camera and mic previews should be shown in the camera/mic
@@ -19,7 +23,8 @@ namespace media_preview_feature {
 // TODO(crbug.com/335672563): Pass url::Origin, not GURL for origin values.
 bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
                             const GURL& requesting_origin_url,
-                            const GURL& embedding_origin_url);
+                            const GURL& embedding_origin_url,
+                            media_preview_metrics::UiLocation ui_location);
 
 }  // namespace media_preview_feature
 

@@ -274,7 +274,8 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
   // Check this last, as it queries the origin trials service.
   if (!media_preview_feature::ShouldShowMediaPreview(
           *browser_->profile(), delegate()->GetRequestingOrigin(),
-          delegate()->GetEmbeddingOrigin())) {
+          delegate()->GetEmbeddingOrigin(),
+          media_preview_metrics::UiLocation::kPermissionPrompt)) {
     return;
   }
 
