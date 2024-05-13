@@ -61,7 +61,7 @@ void AXPlatformNode::Destroy() {
 int32_t AXPlatformNode::GetUniqueId() const {
   DCHECK(GetDelegate()) << "|GetUniqueId| must be called after |Init|.";
   return GetDelegate() ? GetDelegate()->GetUniqueId().Get()
-                       : kInvalidAXUniqueId;
+                       : AXUniqueId::kInvalidId;
 }
 
 std::string AXPlatformNode::ToString() {

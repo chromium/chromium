@@ -7,50 +7,60 @@
 
 #include <stdint.h>
 
+#include <limits>
+#include <utility>
+
 #include "base/component_export.h"
 
 namespace ui {
 
 // AXUniqueID provides IDs for accessibility objects that are guaranteed to be
-// unique for the entire Chrome instance. Instantiating the class is all that
-// is required to generate the ID, and the ID is freed when the AXUniqueID is
-// destroyed.
+// unique for the entire Chrome instance. New IDs are generated via `Create()`,
+// and the ID is freed when the instance is destroyed.
 //
-// The  unique id that's guaranteed to be a positive number. Because some
-// platforms want to negate it, we ensure the range is below the signed int max.
+// The unique id is guaranteed to be a positive number. Because some platforms
+// want to negate it, we ensure the range is below the signed int max.
 //
 // These ids must not be conflated with the int id, that comes with web node
 // data, which are only unique within their source frame.
 // TODO(accessibility) We should be able to get rid of this, because node IDs
 // are actually unique within their own OS-level window.
-class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId {
+class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId final {
  public:
-  AXUniqueId();
+  static constexpr int32_t kInvalidId = 0;
 
-  AXUniqueId(const AXUniqueId&) = delete;
-  AXUniqueId& operator=(const AXUniqueId&) = delete;
+  static AXUniqueId Create() {
+    return AXUniqueId(GetNextAXUniqueId(std::numeric_limits<int32_t>::max()));
+  }
 
-  virtual ~AXUniqueId();
+  AXUniqueId() = delete;
+  AXUniqueId(AXUniqueId&& other) noexcept
+      : id_(std::exchange(other.id_, kInvalidId)) {}
+  AXUniqueId& operator=(AXUniqueId&& other) noexcept {
+    id_ = std::exchange(other.id_, kInvalidId);
+    return *this;
+  }
+
+  ~AXUniqueId();
 
   int32_t Get() const { return id_; }
   operator int32_t() const { return id_; }
 
-  bool operator==(const AXUniqueId& other) const;
-  bool operator!=(const AXUniqueId& other) const;
+  friend bool operator==(const AXUniqueId&, const AXUniqueId&) = default;
+  friend bool operator<=>(const AXUniqueId&, const AXUniqueId&) = default;
 
- protected:
-  // Passing the max id is necessary for testing.
-  explicit AXUniqueId(const int32_t max_id);
+  static AXUniqueId CreateForTest(int32_t max_id) {
+    return AXUniqueId(GetNextAXUniqueId(max_id));
+  }
 
  private:
-  int32_t GetNextAXUniqueId(const int32_t max_id);
+  explicit AXUniqueId(int32_t id) : id_(id) {}
 
-  bool IsAssigned(int32_t) const;
+  // Returns the next available value given a max of `max_id`.
+  static int32_t GetNextAXUniqueId(int32_t max_id);
 
   int32_t id_;
 };
-
-static constexpr int32_t kInvalidAXUniqueId = 0;
 
 }  // namespace ui
 

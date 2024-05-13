@@ -240,7 +240,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // this object, if any.
   raw_ptr<AXAuraObjCache> ax_aura_obj_cache_ = nullptr;
 
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
   ui::AXNodeData custom_data_;
   base::RepeatingCallback<void(ui::AXNodeData*)> populate_data_callback_;
 

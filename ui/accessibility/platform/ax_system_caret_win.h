@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
   std::unique_ptr<AXPlatformNodeWin, deleter> caret_;
   gfx::AcceleratedWidget event_target_;
   AXNodeData data_;
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
   friend class AXPlatformNodeWin;
 };

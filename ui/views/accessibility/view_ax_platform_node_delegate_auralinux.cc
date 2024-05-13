@@ -187,7 +187,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
   // TODO(nektar): Make this into a const pointer so that it can't be set
   // outside the class's constructor.
   raw_ptr<ui::AXPlatformNode> ax_platform_node_;
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
   mutable ui::AXNodeData data_;
   std::vector<raw_ptr<Widget, VectorExperimental>> widgets_;
   base::ScopedMultiSourceObservation<Widget, WidgetObserver>

@@ -547,7 +547,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // TODO(accessibility) We should be able to get rid of this, because node IDs
   // are actually local to the renderer process, and each renderer process has
   // its own OS-level window, which is all the uniqueness we need.
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 };
 
 }  // namespace content

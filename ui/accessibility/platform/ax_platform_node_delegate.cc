@@ -572,9 +572,9 @@ bool AXPlatformNodeDelegate::IsValidRelationTarget(
     // relations reported via platform APIs.
     return false;
   }
-  DCHECK_GT(GetUniqueId(), kInvalidAXUniqueId);
+  DCHECK_GT(GetUniqueId(), AXUniqueId::kInvalidId);
   DCHECK(target);
-  DCHECK_GT(target->GetUniqueId(), kInvalidAXUniqueId);
+  DCHECK_GT(target->GetUniqueId(), AXUniqueId::kInvalidId);
   // We should ignore reflexive relations.
   return GetUniqueId() != target->GetUniqueId();
 }
@@ -586,7 +586,8 @@ std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
 }
 
 const AXUniqueId& AXPlatformNodeDelegate::GetUniqueId() const {
-  static base::NoDestructor<AXUniqueId> empty_unique_id;
+  static const base::NoDestructor<AXUniqueId> empty_unique_id(
+      AXUniqueId::Create());
   return *empty_unique_id;
 }
 

@@ -85,7 +85,7 @@ class FakeAXPlatformNodeDelegate : public AXPlatformNodeDelegate {
 
  private:
   std::optional<AXActionData> last_action_data_;
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
   ui::AXNodeData ax_node_data_ = {};
 };
 

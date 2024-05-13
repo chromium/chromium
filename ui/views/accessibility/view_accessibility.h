@@ -436,7 +436,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // See also OverrideFocus() and GetFocusedDescendant().
   raw_ptr<AXVirtualView> focused_virtual_child_;
 
-  const ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
   // Contains data that is populated by the setters in this class.
   // This member is tied to the ViewsAX project. Which is introducing a new

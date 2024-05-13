@@ -11,38 +11,42 @@
 namespace ui {
 
 TEST(AXPlatformUniqueIdTest, IdsAreUnique) {
-  AXUniqueId id1, id2;
+  AXUniqueId id1 = AXUniqueId::Create();
+  AXUniqueId id2 = AXUniqueId::Create();
   EXPECT_FALSE(id1 == id2);
   EXPECT_GT(id2.Get(), id1.Get());
 }
 
-static const int32_t kMaxId = 100;
+TEST(AXPlatformUniqueIdTest, IdsAreMovable) {
+  AXUniqueId id1 = AXUniqueId::Create();
+  auto id_value = id1.Get();
 
-class AXTestSmallBankUniqueId : public AXUniqueId {
- public:
-  AXTestSmallBankUniqueId();
+  AXUniqueId id2 = std::move(id1);
+  EXPECT_EQ(id2.Get(), id_value);
 
-  AXTestSmallBankUniqueId(const AXTestSmallBankUniqueId&) = delete;
-  AXTestSmallBankUniqueId& operator=(const AXTestSmallBankUniqueId&) = delete;
+  AXUniqueId id3(std::move(id2));
+  EXPECT_EQ(id3.Get(), id_value);
+}
 
-  ~AXTestSmallBankUniqueId() override;
+namespace {
 
- private:
-  friend class AXUniqueId;
-};
+constexpr int32_t kMaxId = 100;
 
-AXTestSmallBankUniqueId::AXTestSmallBankUniqueId() : AXUniqueId(kMaxId) {}
-AXTestSmallBankUniqueId::~AXTestSmallBankUniqueId() = default;
+AXUniqueId CreateSmallBankUniqueId() {
+  return AXUniqueId::CreateForTest(kMaxId);
+}
+
+}  // namespace
 
 TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
   // Create a bank of ids that uses up all available ids.
   // Then remove an id and replace with a new one. Since it's the only
   // slot available, the id will end up having the same value, rather than
   // starting over at 1.
-  std::unique_ptr<AXTestSmallBankUniqueId> ids[kMaxId];
+  std::unique_ptr<AXUniqueId> ids[kMaxId];
 
-  for (int i = 0; i < kMaxId; i++) {
-    ids[i] = std::make_unique<AXTestSmallBankUniqueId>();
+  for (auto& id : ids) {
+    id = std::make_unique<AXUniqueId>(CreateSmallBankUniqueId());
   }
 
   static int kIdToReplace = 10;
@@ -50,7 +54,7 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
 
   // Delete one of the ids and replace with a new one.
   ids[kIdToReplace] = nullptr;
-  ids[kIdToReplace] = std::make_unique<AXTestSmallBankUniqueId>();
+  ids[kIdToReplace] = std::make_unique<AXUniqueId>(CreateSmallBankUniqueId());
 
   // Expect that the original Id gets reused.
   EXPECT_EQ(ids[kIdToReplace]->Get(), expected_id);
@@ -61,15 +65,15 @@ TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
   std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
   // Creates and releases to fill up the internal static counter.
   for (int i = 0; i < kLargerThanMaxId; i++) {
-    ids[i] = std::make_unique<AXUniqueId>();
+    ids[i] = std::make_unique<AXUniqueId>(AXUniqueId::Create());
   }
   for (int i = 0; i < kLargerThanMaxId; i++) {
     ids[i].reset(nullptr);
   }
   // Creates an unique id whose max value is less than the internal
   // static counter.
-  std::unique_ptr<AXTestSmallBankUniqueId> unique_id =
-      std::make_unique<AXTestSmallBankUniqueId>();
+  std::unique_ptr<AXUniqueId> unique_id =
+      std::make_unique<AXUniqueId>(CreateSmallBankUniqueId());
 
   EXPECT_LE(unique_id->Get(), kMaxId);
 }

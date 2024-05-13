@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   gfx::AcceleratedWidget widget_;
   const raw_ptr<AXFragmentRootDelegateWin> delegate_;
   Microsoft::WRL::ComPtr<ui::AXFragmentRootPlatformNodeWin> platform_node_;
-  ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 };
 
 }  // namespace ui

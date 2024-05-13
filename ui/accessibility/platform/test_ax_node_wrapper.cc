@@ -892,6 +892,7 @@ const ui::AXUniqueId& TestAXNodeWrapper::GetUniqueId() const {
 TestAXNodeWrapper::TestAXNodeWrapper(AXTree* tree, AXNode* node)
     : tree_(tree),
       node_(node),
+      unique_id_(AXUniqueId::Create()),
       platform_node_(AXPlatformNode::Create(this)) {
 #if BUILDFLAG(IS_WIN)
   native_event_target_ = gfx::kMockAcceleratedWidget;
