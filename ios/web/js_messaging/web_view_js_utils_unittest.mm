@@ -7,14 +7,13 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/functional/bind.h"
-#import "base/functional/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -200,9 +199,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWithDepthCheckWKResult) {
   test_dictionary_2[obj_c_key] = test_dictionary;
 
   // Break the retain cycle so that the dictionaries are freed.
-  base::ScopedClosureRunner runner(base::BindOnce(^{
+  absl::Cleanup cycle_breaker = ^{
     [test_dictionary_2 removeAllObjects];
-  }));
+  };
 
   // Check that parsing the dictionary stopped at a depth of
   // `kMaximumParsingRecursionDepth`.
@@ -231,9 +230,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   test_array_2[0] = test_array;
 
   // Break the retain cycle so that the arrays are freed.
-  base::ScopedClosureRunner runner(base::BindOnce(^{
+  absl::Cleanup cycle_breaker = ^{
     [test_array removeAllObjects];
-  }));
+  };
 
   // Check that parsing the array stopped at a depth of
   // `kMaximumParsingRecursionDepth`.
