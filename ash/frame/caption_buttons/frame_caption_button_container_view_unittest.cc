@@ -426,8 +426,8 @@ TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   // allowed.
   auto* widget1 = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
                                    CLOSE_BUTTON_VISIBLE);
-  widget1->GetNativeWindow()->SetProperty(aura::client::kAppType,
-                                          static_cast<int>(AppType::ARC_APP));
+  widget1->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
+                                          chromeos::AppType::ARC_APP);
   FrameCaptionButtonContainerView container1(widget1);
   InitContainer(&container1);
   views::test::RunScheduledLayout(&container1);
@@ -443,8 +443,8 @@ TEST_F(FrameCaptionButtonContainerViewTest, FloatButtonVisibility) {
   // maximizing (resizing) is disallowed.
   auto* widget2 = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                    CLOSE_BUTTON_VISIBLE);
-  widget2->GetNativeWindow()->SetProperty(aura::client::kAppType,
-                                          static_cast<int>(AppType::ARC_APP));
+  widget2->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
+                                          chromeos::AppType::ARC_APP);
   FrameCaptionButtonContainerView container2(widget2);
   InitContainer(&container2);
   views::test::RunScheduledLayout(&container2);
@@ -461,8 +461,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TestFloatButtonBehavior) {
   auto* widget = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
                                   CLOSE_BUTTON_VISIBLE);
   auto* window = widget->GetNativeWindow();
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   widget->Show();
 
   FrameCaptionButtonContainerView container(widget);

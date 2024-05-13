@@ -48,9 +48,9 @@ class PipDoubleTapHandlerTest : public AshTestBase,
   std::unique_ptr<aura::Window> CreateAppWindow(
       const gfx::Rect& bounds,
       WindowStateType window_state_type) {
-    auto window = AshTestBase::CreateAppWindow(bounds, AppType::SYSTEM_APP,
-                                               kShellWindowId_DeskContainerA,
-                                               new TestWidgetDelegateAsh);
+    auto window = AshTestBase::CreateAppWindow(
+        bounds, chromeos::AppType::SYSTEM_APP, kShellWindowId_DeskContainerA,
+        new TestWidgetDelegateAsh);
 
     auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
         NonClientFrameViewAsh::Get(window.get()));

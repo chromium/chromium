@@ -4,11 +4,11 @@
 
 #include "ash/game_dashboard/game_dashboard_controller.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
@@ -36,7 +36,7 @@ class GameDashboardControllerTest : public GameDashboardTestBase {
   void CreateAppWindowAndVerifyIsGameWindowProperty(
       const char app_id[],
       bool expected_is_game,
-      AppType app_type = AppType::NON_APP) {
+      chromeos::AppType app_type = chromeos::AppType::NON_APP) {
     auto window = CreateAppWindow(app_id, app_type, gfx::Rect(5, 5, 20, 20));
     VerifyIsGameWindowProperty(window.get(), expected_is_game);
 
@@ -74,21 +74,21 @@ TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GameArcWindow) {
   // Verifies a game ARC window is a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kGameAppId, /*expected_is_game=*/true,
-      AppType::ARC_APP);
+      chromeos::AppType::ARC_APP);
 }
 
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_AllowlistedArcWindow) {
   // Verifies an allowlisted ARC window is a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kAllowlistedAppId,
-      /*expected_is_game=*/true, AppType::ARC_APP);
+      /*expected_is_game=*/true, chromeos::AppType::ARC_APP);
 }
 
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherArcWindow) {
   // Verifies a not-game ARC window is not a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(
       TestGameDashboardDelegate::kOtherAppId, /*expected_is_game=*/false,
-      AppType::ARC_APP);
+      chromeos::AppType::ARC_APP);
 }
 
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GFNWindows) {
@@ -105,8 +105,8 @@ TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherWindows) {
 
 TEST_F(GameDashboardControllerTest, GameWindowToNonGameWindow) {
   const auto window =
-      CreateAppWindow(TestGameDashboardDelegate::kGameAppId, AppType::ARC_APP,
-                      gfx::Rect(5, 5, 20, 20));
+      CreateAppWindow(TestGameDashboardDelegate::kGameAppId,
+                      chromeos::AppType::ARC_APP, gfx::Rect(5, 5, 20, 20));
   VerifyIsGameWindowProperty(window.get(), /*expected_is_game=*/true);
 
   // Update the window property where the window is no longer considered to be a

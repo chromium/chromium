@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -43,7 +42,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
@@ -655,9 +656,9 @@ bool ShouldMinimizeTopWindowOnBack() {
 
   // ARC and crostini apps will handle the back event that follows on the client
   // side and will minimize/close the window there.
-  const int app_type = window->GetProperty(aura::client::kAppType);
-  if (app_type == static_cast<int>(AppType::ARC_APP) ||
-      app_type == static_cast<int>(AppType::CROSTINI_APP)) {
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
+  if (app_type == chromeos::AppType::ARC_APP ||
+      app_type == chromeos::AppType::CROSTINI_APP) {
     return false;
   }
 

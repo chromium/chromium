@@ -2170,7 +2170,7 @@ class SnapGroupTest : public AshTestBase {
 
   std::unique_ptr<aura::Window> CreateAppWindowWithMinSize(gfx::Size min_size) {
     std::unique_ptr<aura::Window> window =
-        CreateAppWindow(gfx::Rect(800, 600), AppType::SYSTEM_APP,
+        CreateAppWindow(gfx::Rect(800, 600), chromeos::AppType::SYSTEM_APP,
                         kShellWindowId_Invalid, new TestWidgetDelegateAsh);
     auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
         NonClientFrameViewAsh::Get(window.get()));
@@ -4378,7 +4378,7 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemForNonPrimaryScreenOrientation) {
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   std::unique_ptr<aura::Window> window3 =
-      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+      CreateAppWindow(gfx::Rect(300, 300), chromeos::AppType::CHROME_APP);
   EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
 
   ToggleOverview();
@@ -5292,13 +5292,13 @@ TEST_F(SnapGroupWindowCycleTest, WindowInSnapGroupDestructionInAltTab) {
 // completion of window cycling.
 TEST_F(SnapGroupWindowCycleTest, SteppingInWindowCycleView) {
   std::unique_ptr<aura::Window> window3 =
-      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+      CreateAppWindow(gfx::Rect(300, 300), chromeos::AppType::CHROME_APP);
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(200, 200), AppType::CHROME_APP);
+      CreateAppWindow(gfx::Rect(200, 200), chromeos::AppType::CHROME_APP);
   std::unique_ptr<aura::Window> window1 =
-      CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(100, 100), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window0 =
-      CreateAppWindow(gfx::Rect(10, 10), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(10, 10), chromeos::AppType::BROWSER);
 
   SnapTwoTestWindows(window0.get(), window1.get());
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
@@ -5335,11 +5335,11 @@ TEST_F(SnapGroupWindowCycleTest, SteppingInWindowCycleView) {
 // a snap group.
 TEST_F(SnapGroupWindowCycleTest, WindowCycleItemRoundedCorners) {
   std::unique_ptr<aura::Window> window0 =
-      CreateAppWindow(gfx::Rect(100, 200), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(100, 200), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window1 =
-      CreateAppWindow(gfx::Rect(200, 300), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(200, 300), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(300, 400), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(300, 400), chromeos::AppType::BROWSER);
   SnapTwoTestWindows(window0.get(), window1.get());
 
   WindowCycleController* window_cycle_controller =
@@ -5373,11 +5373,11 @@ TEST_F(SnapGroupWindowCycleTest, WindowCycleItemRoundedCornersInPortait) {
   UpdateDisplay("600x900");
 
   std::unique_ptr<aura::Window> window0 =
-      CreateAppWindow(gfx::Rect(100, 200), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(100, 200), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window1 =
-      CreateAppWindow(gfx::Rect(200, 300), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(200, 300), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(300, 400), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(300, 400), chromeos::AppType::BROWSER);
   SnapTwoTestWindows(window0.get(), window1.get(), /*horizontal=*/false);
 
   WindowCycleController* window_cycle_controller =
@@ -5410,11 +5410,11 @@ TEST_F(SnapGroupWindowCycleTest,
             chromeos::GetDisplayCurrentOrientation(displays[0]));
 
   std::unique_ptr<aura::Window> window2 =
-      CreateAppWindow(gfx::Rect(200, 200), AppType::CHROME_APP);
+      CreateAppWindow(gfx::Rect(200, 200), chromeos::AppType::CHROME_APP);
   std::unique_ptr<aura::Window> window1 =
-      CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(100, 100), chromeos::AppType::BROWSER);
   std::unique_ptr<aura::Window> window0 =
-      CreateAppWindow(gfx::Rect(10, 10), AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(10, 10), chromeos::AppType::BROWSER);
 
   // Drag `window0` to the **top** of the screen to snap it into the
   // **secondary** position, as the display is currently oriented in secondary
@@ -5456,7 +5456,7 @@ TEST_F(SnapGroupWindowCycleTest,
 
   // Create `window3` and start testing the stepping.
   std::unique_ptr<aura::Window> window3 =
-      CreateAppWindow(gfx::Rect(300, 300), AppType::CHROME_APP);
+      CreateAppWindow(gfx::Rect(300, 300), chromeos::AppType::CHROME_APP);
   EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
 
   // Window cycle list:

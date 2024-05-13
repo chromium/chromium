@@ -11,7 +11,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"

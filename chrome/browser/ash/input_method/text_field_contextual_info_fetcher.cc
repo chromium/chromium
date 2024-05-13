@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -33,12 +33,11 @@ TextFieldContextualInfo::~TextFieldContextualInfo() = default;
 void GetTextFieldAppTypeAndKey(TextFieldContextualInfo& info) {
   aura::Window* window = ash::window_util::GetActiveWindow();
   if (!window) {
-    info.app_type = ash::AppType::NON_APP;
+    info.app_type = chromeos::AppType::NON_APP;
     return;
   }
 
-  info.app_type =
-      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+  info.app_type = window->GetProperty(chromeos::kAppTypeKey);
 
   const std::string* key = window->GetProperty(ash::kAppIDKey);
   if (key) {
@@ -50,14 +49,14 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb) {
   TextFieldContextualInfo info;
   GetTextFieldAppTypeAndKey(info);
 
-  if (info.app_type == ash::AppType::LACROS) {
+  if (info.app_type == chromeos::AppType::LACROS) {
     GetUrlForTextFieldOnLacros(base::BindOnce(
         TextFieldContextualInfoWithUrl, std::move(cb), base::OwnedRef(info)));
     return;
   }
 
   TextFieldContextualInfoWithUrl(std::move(cb), info,
-                                 info.app_type == ash::AppType::BROWSER
+                                 info.app_type == chromeos::AppType::BROWSER
                                      ? GetUrlForTextFieldOnAshChrome()
                                      : std::nullopt);
 }

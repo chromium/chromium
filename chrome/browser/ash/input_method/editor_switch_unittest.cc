@@ -21,6 +21,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
@@ -87,7 +89,7 @@ struct EditorSwitchTriggerTestCase {
   std::string url;
   std::string app_id;
   ui::TextInputType input_type;
-  ash::AppType app_type;
+  chromeos::AppType app_type;
   bool is_in_tablet_mode;
   net::NetworkChangeNotifier::ConnectionType network_status;
   bool user_pref;
@@ -105,7 +107,7 @@ using EditorSwitchAvailabilityTest =
 using EditorSwitchTriggerTest = TestWithParam<EditorSwitchTriggerTestCase>;
 
 TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
-    ash::AppType app_type,
+    chromeos::AppType app_type,
     std::string_view url,
     std::string_view app_key) {
   auto text_field_contextual_info = TextFieldContextualInfo();
@@ -210,7 +212,7 @@ INSTANTIATE_TEST_SUITE_P(
             .locale = "en-us",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-            .app_type = AppType::BROWSER,
+            .app_type = chromeos::AppType::BROWSER,
             .is_in_tablet_mode = false,
             .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
             .user_pref = true,
@@ -229,7 +231,7 @@ INSTANTIATE_TEST_SUITE_P(
             .locale = "en-us",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_PASSWORD,
-            .app_type = AppType::BROWSER,
+            .app_type = chromeos::AppType::BROWSER,
             .is_in_tablet_mode = false,
             .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
             .user_pref = true,
@@ -247,7 +249,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -264,7 +266,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -282,7 +284,7 @@ INSTANTIATE_TEST_SUITE_P(
          .url = "",
          .app_id = extension_misc::kGoogleDocsDemoAppId,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -299,7 +301,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = "https://mail.google.com/mail",
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -315,7 +317,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -332,7 +334,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::ARC_APP,
+         .app_type = chromeos::AppType::ARC_APP,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -348,7 +350,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = false,
@@ -364,7 +366,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = true,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -381,7 +383,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_NONE,
          .user_pref = true,
@@ -398,7 +400,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -416,7 +418,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -432,7 +434,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -448,7 +450,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -465,7 +467,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "fr",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -482,7 +484,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "en-us",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -499,7 +501,7 @@ INSTANTIATE_TEST_SUITE_P(
          .locale = "fr",
          .url = kAllowedTestUrl,
          .input_type = ui::TEXT_INPUT_TYPE_TEXT,
-         .app_type = AppType::BROWSER,
+         .app_type = chromeos::AppType::BROWSER,
          .is_in_tablet_mode = false,
          .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
          .user_pref = true,
@@ -643,7 +645,8 @@ TEST_P(EditorSwitchEnglishOnlyTest, EditorIsEnabledForEnglishInputMethodsOnly) {
   context.OnActivateIme(engine_id);
   context.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl, ""));
+      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
+                                        kAllowedTestUrl, ""));
   context.OnTextSelectionLengthChanged(0);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
@@ -729,7 +732,8 @@ TEST_P(EditorSwitchInternationalizeTest,
   context.OnActivateIme(engine_id);
   context.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
-      CreateFakeTextFieldContextualInfo(AppType::BROWSER, kAllowedTestUrl, ""));
+      CreateFakeTextFieldContextualInfo(chromeos::AppType::BROWSER,
+                                        kAllowedTestUrl, ""));
   context.OnTextSelectionLengthChanged(0);
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());

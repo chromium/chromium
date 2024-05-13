@@ -8,7 +8,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -23,6 +22,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
@@ -787,8 +788,8 @@ TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -862,8 +863,8 @@ TEST_F(KeyboardTest, KeyboardKey_SuppressAutoRepeat) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -961,8 +962,8 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
     void PopulateProperties(
         const Params& params,
         ui::PropertyHandler& out_properties_container) override {
-      out_properties_container.SetProperty(
-          aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+      out_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                           chromeos::AppType::ARC_APP);
     }
   };
   WMHelper::GetInstance()->RegisterAppPropertyResolver(
@@ -1601,8 +1602,8 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
-  surface->window()->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+  surface->window()->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
 
   // Register accelerator to be triggered.
   ui::TestAcceleratorTarget accelerator_target;

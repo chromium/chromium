@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_info.h"
@@ -202,13 +202,12 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   web_app::AppBrowserController* controller = browser->app_controller();
   if (controller && controller->system_app()) {
-    params.init_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::SYSTEM_APP));
+    params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                                 chromeos::AppType::SYSTEM_APP);
   } else {
     params.init_properties_container.SetProperty(
-        aura::client::kAppType,
-        static_cast<int>(is_app ? ash::AppType::CHROME_APP
-                                : ash::AppType::BROWSER));
+        chromeos::kAppTypeKey,
+        is_app ? chromeos::AppType::CHROME_APP : chromeos::AppType::BROWSER);
   }
 
   app_restore::ModifyWidgetParams(restore_id, &params);

@@ -32,6 +32,8 @@
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
@@ -71,7 +73,7 @@ class BackGestureEventHandlerTest : public AshTestBase {
     }
     AshTestBase::SetUp(std::move(delegate));
 
-    RecreateTopWindow(AppType::BROWSER);
+    RecreateTopWindow(chromeos::AppType::BROWSER);
     TabletModeControllerTestApi().EnterTabletMode();
   }
 
@@ -108,7 +110,7 @@ class BackGestureEventHandlerTest : public AshTestBase {
     Shell::Get()->back_gesture_event_handler()->OnTouchEvent(&event);
   }
 
-  void RecreateTopWindow(AppType app_type) {
+  void RecreateTopWindow(chromeos::AppType app_type) {
     top_window_ = CreateAppWindow(gfx::Rect(), app_type);
   }
 
@@ -595,7 +597,7 @@ TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
-  RecreateTopWindow(AppType::ARC_APP);
+  RecreateTopWindow(chromeos::AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(top_window());
   SendFullscreenEvent(window_state);
@@ -951,11 +953,11 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, NonResizableApp) {
 }
 
 TEST_F(BackGestureEventHandlerTestCantGoBack, NonAppAndSystemApps) {
-  RecreateTopWindow(AppType::NON_APP);
+  RecreateTopWindow(chromeos::AppType::NON_APP);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 
-  RecreateTopWindow(AppType::SYSTEM_APP);
+  RecreateTopWindow(chromeos::AppType::SYSTEM_APP);
   GenerateBackSequence();
   EXPECT_TRUE(WindowState::Get(top_window())->IsMinimized());
 }

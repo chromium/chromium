@@ -12,7 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
@@ -93,6 +92,8 @@
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -1946,8 +1947,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   app_windows.erase(
       base::ranges::remove_if(app_windows,
                               [](aura::Window* w) {
-                                return w->GetProperty(aura::client::kAppType) ==
-                                       static_cast<int>(ash::AppType::NON_APP);
+                                return w->GetProperty(chromeos::kAppTypeKey) ==
+                                       chromeos::AppType::NON_APP;
                               }),
       app_windows.end());
   ASSERT_THAT(app_windows,

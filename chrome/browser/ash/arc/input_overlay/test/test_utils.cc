@@ -5,13 +5,14 @@
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 
 #include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -29,12 +30,12 @@ std::unique_ptr<views::Widget> CreateArcWindow(
   params.bounds = bounds;
   params.context = root_window;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  // `aura::client::kAppType` property should be assigned before widget init.
+  // `chromeos::kAppTypeKey` property should be assigned before widget init.
   // It simulates the situation that
   // `AppServiceAppWindowShelfController::OnWindowInitialized()` is called
   // before `ArcInputOverlayManager::OnWindowInitialized()`;
-  params.init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                               chromeos::AppType::ARC_APP);
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->widget_delegate()->SetCanResize(true);

@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"

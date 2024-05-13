@@ -17,7 +17,6 @@
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -104,6 +103,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
@@ -3445,8 +3446,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   for (int i = 0; i < window_count; ++i) {
     windows.emplace_back(
         CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-    windows[i]->SetProperty(aura::client::kAppType,
-                            static_cast<int>(AppType::BROWSER));
+    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
 
@@ -3459,8 +3459,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
       CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
   constexpr viz::FrameSinkId new_window_id{6u, 6u};
   new_window->SetEmbedFrameSinkId(new_window_id);
-  new_window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::BROWSER));
+  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   grid->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
                    /*use_spawn_animation=*/false);
@@ -3491,8 +3490,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingLacros) {
   for (int i = 0; i < window_count; ++i) {
     windows.emplace_back(
         CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-    windows[i]->SetProperty(aura::client::kAppType,
-                            static_cast<int>(AppType::LACROS));
+    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
   for (auto& w : windows)
@@ -3509,8 +3507,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingLacros) {
       CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
   constexpr viz::FrameSinkId new_window_id{6u, 6u};
   new_window->SetEmbedFrameSinkId(new_window_id);
-  new_window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::LACROS));
+  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   grid->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
                    /*use_spawn_animation=*/false);
@@ -3545,8 +3542,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   for (int i = 0; i < window_count; ++i) {
     windows.emplace_back(
         CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-    windows[i]->SetProperty(aura::client::kAppType,
-                            static_cast<int>(AppType::ARC_APP));
+    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   }
 
   auto windows_to_throttle =
@@ -3560,8 +3556,7 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   // Add a new window to overview.
   std::unique_ptr<aura::Window> new_window(
       CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-  new_window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::ARC_APP));
+  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   windows_to_throttle.push_back(new_window.get());
   EXPECT_CALL(observer, OnThrottlingEnded());
   EXPECT_CALL(observer,

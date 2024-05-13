@@ -11,7 +11,6 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"

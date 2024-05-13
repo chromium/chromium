@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 
-#include "ash/constants/app_types.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -44,10 +45,8 @@ TEST_F(ArcActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   std::unique_ptr<aura::Window> chrome_window(
       aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 2, gfx::Rect(),
                                                nullptr));
-  arc_window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(ash::AppType::ARC_APP));
-  chrome_window->SetProperty(aura::client::kAppType,
-                             static_cast<int>(ash::AppType::BROWSER));
+  arc_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
+  chrome_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
   EXPECT_FALSE(window_observer()->active());
 

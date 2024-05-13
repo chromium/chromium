@@ -176,8 +176,8 @@ class FrameSizeButtonTest : public AshTestBase {
 
     widget_delegate_ = new TestWidgetDelegate(resizable_);
     widget_ = CreateWidget(widget_delegate_);
-    widget_->GetNativeWindow()->SetProperty(aura::client::kAppType,
-                                            static_cast<int>(AppType::BROWSER));
+    widget_->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
+                                            chromeos::AppType::BROWSER);
     window_state_ = WindowState::Get(widget_->GetNativeWindow());
 
     FrameCaptionButtonContainerView::TestApi test(

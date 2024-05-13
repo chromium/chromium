@@ -30,6 +30,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -574,8 +576,7 @@ TEST_F(TabDragDropDelegateTest, DropWithoutNewWindow) {
 TEST_F(TabDragDropDelegateTest, CancelTabDragWithFloatedWindow) {
   // Create a floated window.
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
-  source_window->SetProperty(aura::client::kAppType,
-                             static_cast<int>(AppType::BROWSER));
+  source_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(source_window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(source_window.get())->IsFloated());

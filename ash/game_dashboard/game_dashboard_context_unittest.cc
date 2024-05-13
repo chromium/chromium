@@ -260,10 +260,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
                         bool set_arc_game_controls_flags_prop = true) {
     ASSERT_FALSE(game_window_);
     ASSERT_FALSE(test_api_);
-    game_window_ = CreateAppWindow(
-        (is_arc_window ? TestGameDashboardDelegate::kGameAppId
-                       : extension_misc::kGeForceNowAppId),
-        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP), app_bounds());
+    game_window_ =
+        CreateAppWindow((is_arc_window ? TestGameDashboardDelegate::kGameAppId
+                                       : extension_misc::kGeForceNowAppId),
+                        (is_arc_window ? chromeos::AppType::ARC_APP
+                                       : chromeos::AppType::NON_APP),
+                        app_bounds());
     auto* context = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
     ASSERT_TRUE(context);
@@ -1121,9 +1123,9 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
   // Create a GFN game window that doesn't overlap with the ARC game window.
   // This allows the test to interact with both windows without having to
   // artificially activate it.
-  auto gfn_game_window =
-      CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
-                      gfx::Rect(950, 550, 400, 200));
+  auto gfn_game_window = CreateAppWindow(extension_misc::kGeForceNowAppId,
+                                         chromeos::AppType::NON_APP,
+                                         gfx::Rect(950, 550, 400, 200));
   auto* gfn_game_context =
       GameDashboardController::Get()->GetGameDashboardContext(
           gfn_game_window.get());
@@ -1481,8 +1483,8 @@ TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
   // Create a GFN game window with the toolbar displayed.
   game_dashboard_utils::SetShowToolbar(true);
   std::unique_ptr<aura::Window> gfn_game_window =
-      CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
-                      gfx::Rect(50, 50, 400, 200));
+      CreateAppWindow(extension_misc::kGeForceNowAppId,
+                      chromeos::AppType::NON_APP, gfx::Rect(50, 50, 400, 200));
   ASSERT_TRUE(gfn_game_window->HasFocus());
   auto gfn_window_test_api = GameDashboardContextTestApi(
       GameDashboardController::Get()->GetGameDashboardContext(

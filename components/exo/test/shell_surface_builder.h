@@ -8,9 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/app_types.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
+#include "chromeos/ui/base/app_types.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/shell_surface.h"
 #include "ui/gfx/buffer_types.h"
@@ -58,7 +58,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
   ShellSurfaceBuilder& SetSecurityDelegate(SecurityDelegate* security_delegate);
-  ShellSurfaceBuilder& SetAppType(ash::AppType app_type);
+  ShellSurfaceBuilder& SetAppType(chromeos::AppType app_type);
 
   // Sets parameters defined in ShellSurface.
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
@@ -109,7 +109,7 @@ class ShellSurfaceBuilder {
   std::optional<SkColor> inactive_frame_color_;
 
   raw_ptr<SecurityDelegate> security_delegate_ = nullptr;
-  ash::AppType app_type_ = ash::AppType::NON_APP;
+  chromeos::AppType app_type_ = chromeos::AppType::NON_APP;
   std::string application_id_;
   bool use_system_modal_container_ = false;
   bool system_modal_ = false;

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -53,6 +52,8 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
@@ -2728,8 +2729,7 @@ TEST_P(AppPlatformInputMetricsTest, LacrosWindowAndWebAppAndChromeApp) {
     return;
   }
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::LACROS));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
 
   const base::UnguessableToken instance_id0 = base::UnguessableToken::Create();
   const base::UnguessableToken instance_id1 = base::UnguessableToken::Create();

@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
@@ -68,7 +67,7 @@ ui::TextInputType EditorContext::input_type() {
   return input_type_;
 }
 
-ash::AppType EditorContext::app_type() {
+chromeos::AppType EditorContext::app_type() {
   return app_type_;
 }
 

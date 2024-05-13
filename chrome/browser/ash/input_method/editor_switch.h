@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 
-#include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_context.h"

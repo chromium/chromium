@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

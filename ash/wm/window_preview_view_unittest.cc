@@ -4,10 +4,11 @@
 
 #include "ash/wm/window_preview_view.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_preview_view_test_api.h"
 #include "ash/wm/window_state.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -27,8 +28,8 @@ std::unique_ptr<views::Widget> CreateTransientChild(
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect{40, 50};
   params.context = params.parent = parent_widget->GetNativeWindow();
-  params.init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(AppType::ARC_APP));
+  params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                               chromeos::AppType::ARC_APP);
   widget->Init(std::move(params));
   widget->Show();
   return widget;

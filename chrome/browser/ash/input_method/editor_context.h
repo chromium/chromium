@@ -7,8 +7,8 @@
 
 #include <optional>
 
-#include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "chromeos/ui/base/app_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_type.h"
@@ -54,7 +54,7 @@ class EditorContext {
   std::string_view active_country_code();
   std::string_view active_engine_id();
   ui::TextInputType input_type();
-  ash::AppType app_type();
+  chromeos::AppType app_type();
   std::string_view app_id();
   GURL active_url();
   size_t selected_text_length();
@@ -67,7 +67,7 @@ class EditorContext {
   std::string active_country_code_;
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
-  ash::AppType app_type_ = ash::AppType::NON_APP;
+  chromeos::AppType app_type_ = chromeos::AppType::NON_APP;
   std::string app_id_;
   GURL active_url_;
   bool tablet_mode_enabled_ = false;

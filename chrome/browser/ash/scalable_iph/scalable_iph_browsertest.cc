@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+
 #include <string_view>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -51,7 +52,6 @@
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"

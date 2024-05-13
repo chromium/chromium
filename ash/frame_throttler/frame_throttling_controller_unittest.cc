@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/functional/callback.h"
@@ -87,7 +86,7 @@ class FrameThrottlingControllerTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateTestBrowserWindow(
       const viz::FrameSinkId frame_sink_id) {
     std::unique_ptr<aura::Window> browser_window =
-        CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+        CreateAppWindow(gfx::Rect(100, 100), chromeos::AppType::BROWSER);
     browser_window->SetEmbedFrameSinkId(frame_sink_id);
     return browser_window;
   }

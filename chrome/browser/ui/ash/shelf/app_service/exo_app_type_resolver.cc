@@ -8,11 +8,11 @@
 #include <string_view>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -34,8 +34,8 @@ void UpdatePropertiesForArc(std::optional<int> task_id,
                             exo::ProtectedNativePixmapQueryDelegate*
                                 protected_native_pixmap_query_client,
                             ui::PropertyHandler& out_properties_container) {
-  out_properties_container.SetProperty(aura::client::kAppType,
-                                       static_cast<int>(ash::AppType::ARC_APP));
+  out_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                       chromeos::AppType::ARC_APP);
 
   out_properties_container.SetProperty(exo::kProtectedNativePixmapQueryDelegate,
                                        protected_native_pixmap_query_client);
@@ -74,8 +74,8 @@ void ExoAppTypeResolver::PopulateProperties(
     const Params& params,
     ui::PropertyHandler& out_properties_container) {
   if (IsLacrosAppId(params.app_id)) {
-    out_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
+    out_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                         chromeos::AppType::LACROS);
     // Lacros is trusted not to abuse window activation, so grant it a
     // non-expiring permission to activate.
     out_properties_container.SetProperty(
@@ -115,8 +115,8 @@ void ExoAppTypeResolver::PopulateProperties(
   if (ash::borealis::IsBorealisWindowId(
           params.app_id.empty() ? params.startup_id : params.app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.
-    out_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::CROSTINI_APP));
+    out_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                         chromeos::AppType::CROSTINI_APP);
 
     // Auto-maximize causes compatibility issues, and we don't need it anyway.
     out_properties_container.SetProperty(chromeos::kAutoMaximizeXdgShellEnabled,

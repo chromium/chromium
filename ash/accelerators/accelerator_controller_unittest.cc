@@ -3508,7 +3508,7 @@ TEST_F(AcceleratorControllerGameDashboardTests,
 
   // Create an ARC app window.
   std::unique_ptr<aura::Window> window =
-      CreateAppWindow(gfx::Rect(5, 5, 20, 20), AppType::ARC_APP);
+      CreateAppWindow(gfx::Rect(5, 5, 20, 20), chromeos::AppType::ARC_APP);
   window->SetProperty(kAppIDKey,
                       std::string(TestGameDashboardDelegate::kGameAppId));
   // Verify the accelerator is not processed until the game controls status is
@@ -3524,7 +3524,7 @@ TEST_F(AcceleratorControllerGameDashboardTests,
   EXPECT_FALSE(ProcessInController(accelerator));
 
   // Create a non-ARC app window.
-  window = CreateAppWindow(gfx::Rect(5, 5, 20, 20), AppType::BROWSER);
+  window = CreateAppWindow(gfx::Rect(5, 5, 20, 20), chromeos::AppType::BROWSER);
   window->SetProperty(
       kAppIDKey, std::string(TestGameDashboardDelegate::kAllowlistedAppId));
   EXPECT_TRUE(ProcessInController(accelerator));

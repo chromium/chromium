@@ -23,6 +23,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/manta/manta_service.h"
 #include "extensions/common/constants.h"
@@ -43,9 +44,9 @@ constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
     ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
     ui::TEXT_INPUT_TYPE_TEXT_AREA};
 
-constexpr AppType kAppTypeDenylist[] = {
-    AppType::ARC_APP,
-    AppType::CROSTINI_APP,
+constexpr chromeos::AppType kAppTypeDenylist[] = {
+    chromeos::AppType::ARC_APP,
+    chromeos::AppType::CROSTINI_APP,
 };
 
 const char* kWorkspaceDomainsWithPathDenylist[][2] = {
@@ -154,7 +155,7 @@ bool IsInputMethodEngineAllowed(const std::vector<std::string>& allowlist,
   return false;
 }
 
-bool IsAppTypeAllowed(AppType app_type) {
+bool IsAppTypeAllowed(chromeos::AppType app_type) {
   return !base::Contains(kAppTypeDenylist, app_type);
 }
 

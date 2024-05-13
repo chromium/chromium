@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/ash_focus_rules.h"
@@ -23,6 +22,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -245,8 +246,8 @@ WindowList MruWindowTracker::BuildAppWindowList(
     DesksMruType desks_mru_type) const {
   return BuildWindowListInternal(
       &mru_windows_, desks_mru_type, [](aura::Window* w) {
-        return w->GetProperty(aura::client::kAppType) !=
-               static_cast<int>(ash::AppType::NON_APP);
+        return w->GetProperty(chromeos::kAppTypeKey) !=
+               chromeos::AppType::NON_APP;
       });
 }
 

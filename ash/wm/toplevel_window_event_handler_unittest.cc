@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/wm/toplevel_window_event_handler.h"
-#include "base/memory/raw_ptr.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -30,9 +28,12 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -1223,8 +1224,8 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
 
     dragged_window_ = CreateTestWindow();
     non_dragged_window_ = CreateTestWindow();
-    dragged_window_->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(AppType::CHROME_APP));
+    dragged_window_->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::CHROME_APP);
   }
 
   void TearDown() override {

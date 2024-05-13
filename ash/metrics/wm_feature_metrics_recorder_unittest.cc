@@ -75,7 +75,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
       BucketsAre(base::Bucket(chromeos::WindowStateType::kDefault, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowAppType"),
-      BucketsAre(base::Bucket(AppType::SYSTEM_APP, 1)));
+      BucketsAre(base::Bucket(chromeos::AppType::SYSTEM_APP, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
       BucketsAre(base::Bucket(WindowSizeRange::kXSWidthXSHeight, 1)));
@@ -101,7 +101,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
                  base::Bucket(chromeos::WindowStateType::kDefault, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowAppType"),
-      BucketsAre(base::Bucket(AppType::SYSTEM_APP, 2)));
+      BucketsAre(base::Bucket(chromeos::AppType::SYSTEM_APP, 2)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
       BucketsAre(base::Bucket(WindowSizeRange::kLWidthLHeight, 1),

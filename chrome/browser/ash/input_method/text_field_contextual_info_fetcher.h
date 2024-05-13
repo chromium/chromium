@@ -8,11 +8,11 @@
 #include <optional>
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/ui/base/app_types.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ struct TextFieldContextualInfo {
   ~TextFieldContextualInfo();
 
   // Type of app associated with the text field.
-  ash::AppType app_type;
+  chromeos::AppType app_type;
   // Optional, key of the app associated with this text field.
   std::string app_key;
   // Optional, tab's url where this text field is.

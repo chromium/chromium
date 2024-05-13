@@ -44,9 +44,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool,
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActivateOnPointerKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAnimationsDisabledKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAppIconKey, nullptr)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kAppType, 0)
-#endif
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::SizeF, kAspectRatio, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAvatarIconKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowLayerDrawn, false)

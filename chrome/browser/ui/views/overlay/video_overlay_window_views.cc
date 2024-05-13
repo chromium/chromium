@@ -50,10 +50,11 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #endif
@@ -303,8 +304,8 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   params.delegate = new OverlayWindowWidgetDelegate();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  params.init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::BROWSER));
+  params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                               chromeos::AppType::BROWSER);
 #endif
 
   overlay_window->Init(std::move(params));

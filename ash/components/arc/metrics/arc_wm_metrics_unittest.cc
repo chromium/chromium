@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ui/base/app_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -52,7 +52,7 @@ class ArcWmMetricsTest : public ash::AshTestBase {
 };
 
 TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
-  ash::AppType app_type = ash::AppType::ARC_APP;
+  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanMaximize);
@@ -81,7 +81,7 @@ TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
-  ash::AppType app_type = ash::AppType::ARC_APP;
+  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanMinimize);
@@ -105,7 +105,7 @@ TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
 
 TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
   auto window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::ARC_APP);
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::ARC_APP);
   window->Show();
 
   base::HistogramTester histogram_tester;
@@ -121,7 +121,7 @@ TEST_F(ArcWmMetricsTest, TestWindowCloseDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowEnterTabletModeDelayMetrics) {
-  ash::AppType app_type = ash::AppType::ARC_APP;
+  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
   window->Show();
 
@@ -140,19 +140,19 @@ TEST_F(ArcWmMetricsTest, TestWindowEnterTabletModeDelayMetrics) {
 
 TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
   auto lower_window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::BROWSER);
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::BROWSER);
   lower_window->Show();
   auto upper_window =
-      CreateAppWindow(gfx::Rect(0, 0, 100, 100), ash::AppType::ARC_APP);
+      CreateAppWindow(gfx::Rect(0, 0, 100, 100), chromeos::AppType::ARC_APP);
   upper_window->Show();
 
   base::HistogramTester histogram_tester;
   const auto histogram_name_lower_window =
       ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
-          ash::AppType::BROWSER);
+          chromeos::AppType::BROWSER);
   const auto histogram_name_upper_window =
       ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
-          ash::AppType::ARC_APP);
+          chromeos::AppType::ARC_APP);
 
   histogram_tester.ExpectTotalCount(histogram_name_lower_window, 0);
   histogram_tester.ExpectTotalCount(histogram_name_upper_window, 0);
@@ -164,7 +164,7 @@ TEST_F(ArcWmMetricsTest, TestMultipleWindowsEnterTabletModeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowLeaveTabletModeDelayMetrics) {
-  ash::AppType app_type = ash::AppType::ARC_APP;
+  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
   window->Show();
 
@@ -190,7 +190,7 @@ TEST_F(ArcWmMetricsTest, TestWindowLeaveTabletModeDelayMetrics) {
 }
 
 TEST_F(ArcWmMetricsTest, TestWindowRotateDelayOnDisplayRotationMetrics) {
-  ash::AppType app_type = ash::AppType::ARC_APP;
+  chromeos::AppType app_type = chromeos::AppType::ARC_APP;
   auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
   window->Show();
 

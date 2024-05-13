@@ -13,7 +13,6 @@ component("constants") {
     "ambient_time_of_day_constants.h",
     "ambient_video.cc",
     "ambient_video.h",
-    "app_types.h",
     "ash_constants.cc",
     "ash_constants.h",
     "ash_features.cc",

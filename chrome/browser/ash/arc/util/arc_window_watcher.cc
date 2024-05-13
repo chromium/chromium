@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
-#include "base/memory/raw_ptr.h"
-
-#include "ash/constants/app_types.h"
-#include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
-#include "ui/views/widget/widget.h"
 
 #include <algorithm>
+
+#include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/window_properties.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -89,7 +89,7 @@ class Tracker : public aura::WindowObserver {
       return;
     }
 
-    if (key == aura::client::kAppType) {
+    if (key == chromeos::kAppTypeKey) {
       // Maybe it just became an ARC window.
       MaybeTagArcWindow();
     }

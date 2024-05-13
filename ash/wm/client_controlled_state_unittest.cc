@@ -40,7 +40,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -765,8 +767,7 @@ TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapMinimizeAndUnminimize) {
   UpdateDisplay("900x600");
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
 
   const WindowSnapWMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
@@ -1034,8 +1035,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapAndRotate) {
       display::test::DisplayManagerTestApi(display_manager())
           .SetFirstDisplayAsInternalDisplay();
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
   ScreenOrientationControllerTestApi orientation_test_api(
       Shell::Get()->screen_orientation_controller());
@@ -1093,8 +1093,7 @@ TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1149,8 +1148,7 @@ TEST_F(ClientControlledStateTest, ResizeToDismissSplitView) {
 TEST_F(ClientControlledStateTest, DragCaptionToSnap) {
   auto* const event_generator = GetEventGenerator();
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1229,8 +1227,7 @@ TEST_F(ClientControlledStateTest, SwapSnappedWindows) {
   UpdateDisplay("900x600");
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1280,8 +1277,7 @@ TEST_F(ClientControlledStateTest, ClamshellTabletConversionWithSnappedWindow) {
   UpdateDisplay("900x600");
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
   ASSERT_TRUE(window_state()->CanResize());
   ASSERT_TRUE(window_state()->CanSnap());
@@ -1598,8 +1594,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
   // Set screen width.
   UpdateDisplay("1200x600");
 
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
 
@@ -1670,8 +1665,7 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        LeaveSnappedStateByNewStateChange) {
   auto* const split_view_controller = SplitViewController::Get(window());
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableSnap();
 
   for (const auto new_state_type :
@@ -1697,10 +1691,9 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 }
 
 TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableFloat();
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
@@ -1753,10 +1746,9 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 
   auto* const float_controller = Shell::Get()->float_controller();
 
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableFloat();
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
@@ -1836,10 +1828,9 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   if (InTabletMode()) {
     // Resizing must be enabled in tablet mode to float.
     widget_delegate()->EnableFloat();
@@ -1907,10 +1898,9 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   if (InTabletMode()) {
     // Resizing must be enabled in tablet mode to float.
     widget_delegate()->EnableFloat();
@@ -2183,10 +2173,9 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapFloatedWindow) {
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableFloat();
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
@@ -2222,10 +2211,9 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapFloatedWindow) {
 // properly without any crash. Regression test for b/322374826.
 TEST_P(ClientControlledStateTestClamshellAndTablet,
        ReplaceFloatedWindowWithFullscreenWindow) {
-  // The AppType must be set to any except `AppType::NON_APP` (default value) to
-  // make it floatable.
-  window()->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::ARC_APP));
+  // The AppType must be set to any except `chromeos::AppType::NON_APP` (default
+  // value) to make it floatable.
+  window()->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   widget_delegate()->EnableFloat();
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
@@ -2236,15 +2224,15 @@ TEST_P(ClientControlledStateTestClamshellAndTablet,
   EXPECT_TRUE(widget()->IsFullscreen());
 
   // Create another client-controlled window.
-  auto widget2 = TestWidgetBuilder()
-                     .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
-                         desks_util::GetActiveDeskContainerId()))
-                     .SetBounds(kInitialBounds)
-                     .SetTestWidgetDelegate()
-                     .SetWindowProperty(aura::client::kAppType,
-                                        static_cast<int>(AppType::ARC_APP))
-                     .SetShow(false)
-                     .BuildOwnsNativeWidget();
+  auto widget2 =
+      TestWidgetBuilder()
+          .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
+              desks_util::GetActiveDeskContainerId()))
+          .SetBounds(kInitialBounds)
+          .SetTestWidgetDelegate()
+          .SetWindowProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP)
+          .SetShow(false)
+          .BuildOwnsNativeWidget();
   auto* const window_state2 = WindowState::Get(widget2->GetNativeWindow());
   window_state2->set_allow_set_bounds_direct(true);
   auto delegate2 = std::make_unique<TestClientControlledStateDelegate>();

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/task_manager_view.h"
+
 #include <stddef.h>
 
 #include "base/functional/callback.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
-#include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,8 +47,8 @@
 #include "ui/views/test/widget_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/app_types.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -460,9 +461,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
   chrome::ShowTaskManager(browser());
 
-  EXPECT_EQ(static_cast<int>(ash::AppType::SYSTEM_APP),
+  EXPECT_EQ(chromeos::AppType::SYSTEM_APP,
             GetView()->GetWidget()->GetNativeWindow()->GetProperty(
-                aura::client::kAppType));
+                chromeos::kAppTypeKey));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

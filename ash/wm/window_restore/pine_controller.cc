@@ -5,7 +5,6 @@
 #include "ash/wm/window_restore/pine_controller.h"
 
 #include "ash/birch/birch_model.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -38,9 +37,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -318,8 +318,8 @@ void PineController::OnWindowActivated(ActivationReason reason,
                                        aura::Window* gained_active,
                                        aura::Window* lost_active) {
   if (gained_active && window_util::IsWindowUserPositionable(gained_active) &&
-      static_cast<AppType>(gained_active->GetProperty(
-          aura::client::kAppType)) != AppType::NON_APP) {
+      gained_active->GetProperty(chromeos::kAppTypeKey) !=
+          chromeos::AppType::NON_APP) {
     pine_contents_data_.reset();
   }
 }

@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -30,7 +31,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -336,7 +336,7 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   // are fixed or identified.
   if (frame.size_in_pixels().IsEmpty()) {
     aura::Window* toplevel = root_surface_->window()->GetToplevelWindow();
-    auto app_type = toplevel->GetProperty(aura::client::kAppType);
+    auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
     const std::string* app_id = GetShellApplicationId(toplevel);
     const std::string* startup_id = GetShellStartupId(toplevel);
     auto* shell_surface = GetShellSurfaceBaseForWindow(toplevel);

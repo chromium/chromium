@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
@@ -3264,15 +3263,17 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
     // its supported/incognito type and a proper fix is made.
     if (num_unsupported_windows_ < 0) {
       num_unsupported_windows_ = 0;
-      SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "unsupported_app_type",
-                              window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_NUMBER(
+          "OG_UNSDUW", "unsupported_app_type",
+          static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "unsupported_app_id",
                                 ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();
     } else if (num_incognito_windows_ < 0) {
       num_incognito_windows_ = 0;
-      SCOPED_CRASH_KEY_NUMBER("OG_UNSDUW", "incognito_app_type",
-                              window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_NUMBER(
+          "OG_UNSDUW", "incognito_app_type",
+          static_cast<int>(window->GetProperty(chromeos::kAppTypeKey)));
       SCOPED_CRASH_KEY_STRING32("OG_UNSDUW", "incognito_app_id",
                                 ::full_restore::GetAppId(window));
       base::debug::DumpWithoutCrashing();

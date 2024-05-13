@@ -813,14 +813,15 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   std::unique_ptr<aura::Window>
       created_windows[browser_window_count + arc_window_count];
   for (int i = 0; i < browser_window_count; ++i) {
-    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
+    created_windows[i] =
+        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
     created_windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
 
   std::vector<aura::Window*> arc_windows(arc_window_count, nullptr);
   for (int i = 0; i < arc_window_count; ++i) {
     created_windows[i + browser_window_count] =
-        CreateAppWindow(gfx::Rect(), AppType::ARC_APP);
+        CreateAppWindow(gfx::Rect(), chromeos::AppType::ARC_APP);
     arc_windows[i] = created_windows[i + browser_window_count].get();
   }
 

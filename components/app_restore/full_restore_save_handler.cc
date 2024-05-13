@@ -4,7 +4,6 @@
 
 #include "components/app_restore/full_restore_save_handler.h"
 
-#include "ash/constants/app_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -37,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -95,8 +95,8 @@ void UpdateWindowBoundsForTablet(
   // `SetBoundsWMEvent` instead. Otherwise, the window bounds are updated only
   // in Chrome-side whereas ARC++ doesn’t know the changes. (See comments in
   // `TabletModeWindowState::UpdateWindowPosition`.)
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(AppType::ARC_APP)) {
+  if (window->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::ARC_APP) {
     // If any animation is requested, it will directly animate the
     // client-controlled windows for a rich animation. The client bounds change
     // will follow.
@@ -591,8 +591,8 @@ gfx::Rect FloatController::GetFloatWindowTabletBounds(aura::Window* window) {
   auto* floated_window_info =
       Shell::Get()->float_controller()->MaybeGetFloatedWindowInfo(window);
 #if DCHECK_IS_ON()
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(AppType::ARC_APP)) {
+  if (window->GetProperty(chromeos::kAppTypeKey) !=
+      chromeos::AppType::ARC_APP) {
     DCHECK(floated_window_info);
   }
 #endif
@@ -964,8 +964,8 @@ void FloatController::OnScreenRotationAnimationFinished(
   // TODO(b/278519956): Remove this workaround once ARC/Exo handle rotation
   // bounds better.
   for (auto& [window, info] : floated_window_info_map_) {
-    if (window->GetProperty(aura::client::kAppType) ==
-        static_cast<int>(AppType::ARC_APP)) {
+    if (window->GetProperty(chromeos::kAppTypeKey) ==
+        chromeos::AppType::ARC_APP) {
       const gfx::Rect bounds =
           display::Screen::GetScreen()->InTabletMode()
               ? GetFloatWindowTabletBounds(window)

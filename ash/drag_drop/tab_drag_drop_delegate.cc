@@ -4,7 +4,6 @@
 
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/tab_drag_drop_windows_hider.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -24,7 +23,8 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -66,9 +66,8 @@ constexpr char kTabDraggingInTabletModeMaxLatencyHistogram[] =
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsSourceWindowForDrag, false)
 
 bool IsLacrosWindow(const aura::Window* window) {
-  auto app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
-  return app_type == AppType::LACROS;
+  auto app_type = window->GetProperty(chromeos::kAppTypeKey);
+  return app_type == chromeos::AppType::LACROS;
 }
 
 // Returns the overview session if overview mode is active, otherwise returns

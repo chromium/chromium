@@ -6,7 +6,6 @@
 
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -18,8 +17,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -744,8 +744,8 @@ bool ScreenOrientationController::ApplyLockForWindowIfPossible(
 
   // The default orientation for all chrome browser/apps windows is
   // ANY, so use the user_locked_orientation_;
-  if (static_cast<AppType>(window->GetProperty(aura::client::kAppType)) !=
-      AppType::NON_APP) {
+  if (window->GetProperty(chromeos::kAppTypeKey) !=
+      chromeos::AppType::NON_APP) {
     LockRotationToOrientation(user_locked_orientation_);
     return true;
   }

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_prefs_delegate.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"

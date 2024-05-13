@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
@@ -22,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
+#include "chromeos/ui/base/app_types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,17 +147,15 @@ class AshTestBase : public testing::Test {
   static std::unique_ptr<views::Widget> CreateFramelessTestWidget();
 
   // Creates a widget with a visible WINDOW_TYPE_NORMAL window with the given
-  // |app_type|. If |app_type| is AppType::NON_APP, this window is considered a
-  // non-app window.
-  // If |bounds_in_screen| is empty the window is added to the primary root
-  // window, otherwise the window is added to the display matching
-  // |bounds_in_screen|. |shell_window_id| is the shell window id to give to
-  // the new window.
-  // If |delegate| is empty, a new |TestWidgetDelegate| instance will be set as
-  // this widget's delegate.
+  // |app_type|. If |app_type| is chromeos::AppType::NON_APP, this window is
+  // considered a non-app window. If |bounds_in_screen| is empty the window is
+  // added to the primary root window, otherwise the window is added to the
+  // display matching |bounds_in_screen|. |shell_window_id| is the shell window
+  // id to give to the new window. If |delegate| is empty, a new
+  // |TestWidgetDelegate| instance will be set as this widget's delegate.
   std::unique_ptr<aura::Window> CreateAppWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
-      AppType app_type = AppType::SYSTEM_APP,
+      chromeos::AppType app_type = chromeos::AppType::SYSTEM_APP,
       int shell_window_id = kShellWindowId_Invalid,
       views::WidgetDelegate* delegate = nullptr);
 

@@ -13,7 +13,6 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"

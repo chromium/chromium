@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace crostini {
@@ -24,14 +24,14 @@ bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
   }
 
   // Return true if the gained_active window is a Crostini app.
-  if (gained_active->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::CROSTINI_APP)) {
+  if (gained_active->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::CROSTINI_APP) {
     return true;
   }
 
   // Return false if the window is not a Chrome app (e.g. the browser, ARC app.)
-  if (gained_active->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::CHROME_APP)) {
+  if (gained_active->GetProperty(chromeos::kAppTypeKey) !=
+      chromeos::AppType::CHROME_APP) {
     return false;
   }
 

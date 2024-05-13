@@ -7,7 +7,6 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -69,6 +68,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -2075,8 +2076,8 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
 TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
   // Create a crostini window.
   auto crostini_window = CreateAppWindow();
-  crostini_window->SetProperty(aura::client::kAppType,
-                               static_cast<int>(AppType::CROSTINI_APP));
+  crostini_window->SetProperty(chromeos::kAppTypeKey,
+                               chromeos::AppType::CROSTINI_APP);
 
   // Create a normal window.
   auto test_window = CreateAppWindow();
@@ -3073,8 +3074,8 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
 
   // Create a crostini window.
   auto crostini_window = CreateAppWindow();
-  crostini_window->SetProperty(aura::client::kAppType,
-                               static_cast<int>(AppType::CROSTINI_APP));
+  crostini_window->SetProperty(chromeos::kAppTypeKey,
+                               chromeos::AppType::CROSTINI_APP);
 
   // Create a normal window.
   auto test_window = CreateAppWindow();

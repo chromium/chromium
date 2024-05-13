@@ -63,6 +63,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/utils/haptics_util.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -2324,7 +2326,8 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
       // we'll log some info and skip the window.
       SCOPED_CRASH_KEY_NUMBER(
           "Restack", "adw_app_type",
-          visible_on_all_desks_window->GetProperty(aura::client::kAppType));
+          static_cast<int>(
+              visible_on_all_desks_window->GetProperty(chromeos::kAppTypeKey)));
       SCOPED_CRASH_KEY_STRING32(
           "Restack", "adw_app_id",
           ::full_restore::GetAppId(visible_on_all_desks_window));

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -64,6 +63,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -1614,16 +1614,16 @@ void SplitViewController::StartResizeWithDivider(
   SCOPED_CRASH_KEY_NUMBER("b337283677", "secondary_state_type",
                           secondary_state_type);
 
-  auto primary_window_type =
-      primary_window_ ? primary_window_->GetProperty(aura::client::kAppType)
-                      : -1;
-  auto secondary_window_type =
-      secondary_window_ ? secondary_window_->GetProperty(aura::client::kAppType)
-                        : -1;
+  chromeos::AppType primary_window_type =
+      primary_window_ ? primary_window_->GetProperty(chromeos::kAppTypeKey)
+                      : chromeos::AppType::NON_APP;
+  chromeos::AppType secondary_window_type =
+      secondary_window_ ? secondary_window_->GetProperty(chromeos::kAppTypeKey)
+                        : chromeos::AppType::NON_APP;
   SCOPED_CRASH_KEY_NUMBER("b337283677", "primary_window_type",
-                          primary_window_type);
+                          static_cast<int>(primary_window_type));
   SCOPED_CRASH_KEY_NUMBER("b337283677", "secondary_window_type",
-                          secondary_window_type);
+                          static_cast<int>(secondary_window_type));
 
   CHECK(IsInOverviewSession());
   if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
@@ -2021,8 +2021,8 @@ void SplitViewController::UpdateSnappedWindowBounds(aura::Window* window) {
   DCHECK(IsWindowInSplitView(window));
   WindowState* window_state = WindowState::Get(window);
   if (InTabletMode()) {
-    if (window->GetProperty(aura::client::kAppType) ==
-        static_cast<int>(AppType::ARC_APP)) {
+    if (window->GetProperty(chromeos::kAppTypeKey) ==
+        chromeos::AppType::ARC_APP) {
       // TODO(b/264962634): Remove this workaround. Probably, we can rewrite
       // `TabletModeWindowState::UpdateWindowPosition` to include this logic.
       const gfx::Rect requested_bounds =

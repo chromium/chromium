@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/app_types.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -33,6 +32,8 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
@@ -347,8 +348,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetrics) {
   base::HistogramTester histograms;
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::ARC_APP));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
@@ -398,8 +398,7 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
   base::HistogramTester histograms;
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::ARC_APP));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);

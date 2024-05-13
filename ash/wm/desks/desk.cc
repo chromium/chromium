@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -33,6 +32,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
@@ -97,8 +98,8 @@ bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
     return false;
 
   // Only allow app windows to move to other desks.
-  return window->GetProperty(aura::client::kAppType) !=
-         static_cast<int>(AppType::NON_APP);
+  return window->GetProperty(chromeos::kAppTypeKey) !=
+         chromeos::AppType::NON_APP;
 }
 
 // Used to temporarily turn off the automatic window positioning while windows
@@ -833,8 +834,8 @@ std::vector<raw_ptr<aura::Window, VectorExperimental>> Desk::GetAllAppWindows()
   std::vector<raw_ptr<aura::Window, VectorExperimental>> app_windows;
   base::ranges::copy_if(windows_, std::back_inserter(app_windows),
                         [](aura::Window* window) {
-                          return window->GetProperty(aura::client::kAppType) !=
-                                 static_cast<int>(AppType::NON_APP);
+                          return window->GetProperty(chromeos::kAppTypeKey) !=
+                                 chromeos::AppType::NON_APP;
                         });
   // Note that floated window is also app window but needs to be handled
   // separately since it doesn't store in desk container.
@@ -932,7 +933,7 @@ void Desk::RestackAllDeskWindows() {
         // *not* on the current desk and we must not try to stack it.
         SCOPED_CRASH_KEY_NUMBER(
             "Restack", "adw_app_type",
-            adw.window->GetProperty(aura::client::kAppType));
+            static_cast<int>(adw.window->GetProperty(chromeos::kAppTypeKey)));
         SCOPED_CRASH_KEY_STRING32("Restack", "adw_app_id",
                                   full_restore::GetAppId(adw.window));
 

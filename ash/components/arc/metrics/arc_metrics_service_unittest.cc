@@ -15,7 +15,6 @@
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
-#include "ash/constants/app_types.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
@@ -25,6 +24,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
@@ -142,8 +143,8 @@ class ArcMetricsServiceTest : public testing::Test {
   void CreateFakeWindows() {
     fake_arc_window_.reset(aura::test::CreateTestWindowWithId(
         /*id=*/0, nullptr));
-    fake_arc_window_->SetProperty(aura::client::kAppType,
-                                  static_cast<int>(ash::AppType::ARC_APP));
+    fake_arc_window_->SetProperty(chromeos::kAppTypeKey,
+                                  chromeos::AppType::ARC_APP);
     fake_non_arc_window_.reset(aura::test::CreateTestWindowWithId(
         /*id=*/1, nullptr));
   }

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -26,9 +25,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -161,8 +161,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   DCHECK(browser->is_trusted_source());
 
   auto* window = browser->window()->GetNativeWindow();
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::CHROME_APP));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   window->SetProperty(kOverrideWindowIconResourceIdKey, IDR_SETTINGS_LOGO_192);
 
   for (SettingsWindowManagerObserver& observer : observers_) {

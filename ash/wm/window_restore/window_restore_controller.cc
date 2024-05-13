@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -30,6 +29,8 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -68,9 +69,10 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 // TODO(crbug.com/40163553): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
-constexpr AppType kSupportedAppTypes[5] = {
-    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP,
-    AppType::SYSTEM_APP, AppType::LACROS};
+constexpr chromeos::AppType kSupportedAppTypes[5] = {
+    chromeos::AppType::BROWSER, chromeos::AppType::CHROME_APP,
+    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP,
+    chromeos::AppType::LACROS};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user
@@ -173,12 +175,12 @@ bool WindowRestoreController::CanActivateRestoredWindow(
     return false;
 
   // Ghost windows can be activated.
-  const AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   const bool is_real_arc_window =
       window->GetProperty(app_restore::kRealArcTaskWindow);
-  if (app_type == AppType::ARC_APP && !is_real_arc_window)
+  if (app_type == chromeos::AppType::ARC_APP && !is_real_arc_window) {
     return true;
+  }
 
   auto* desk_container = window->parent();
   if (!desk_container || !desks_util::IsDeskContainer(desk_container))
@@ -511,9 +513,8 @@ void WindowRestoreController::SaveWindowImpl(
   }
 
   // Only some app types can be saved.
-  if (!base::Contains(
-          kSupportedAppTypes,
-          static_cast<AppType>(window->GetProperty(aura::client::kAppType)))) {
+  if (!base::Contains(kSupportedAppTypes,
+                      window->GetProperty(chromeos::kAppTypeKey))) {
     return;
   }
 
@@ -596,15 +597,14 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // showing. We cannot detect this, so we use a timeout to keep the window not
   // activatable for a while longer. Classic browser and lacros windows are
   // expected to call `ShowInactive()` where the browser is created.
-  const AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   // Prevent apply activation delay on ARC ghost window. It should be only apply
   // on real ARC window. Only ARC ghost window use this property.
   const bool is_real_arc_window =
       window->GetProperty(app_restore::kRealArcTaskWindow);
   const base::TimeDelta delay =
-      app_type == AppType::CHROME_APP ||
-              (app_type == AppType::ARC_APP && is_real_arc_window)
+      app_type == chromeos::AppType::CHROME_APP ||
+              (app_type == chromeos::AppType::ARC_APP && is_real_arc_window)
           ? kAllowActivationDelay
           : base::TimeDelta();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

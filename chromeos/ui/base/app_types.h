@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CONSTANTS_APP_TYPES_H_
-#define ASH_CONSTANTS_APP_TYPES_H_
+#ifndef CHROMEOS_UI_BASE_APP_TYPES_H_
+#define CHROMEOS_UI_BASE_APP_TYPES_H_
 
-namespace ash {
+namespace chromeos {
 
 // App type of the window.
 // This enum is used to control a UMA histogram buckets. If you change this
@@ -24,6 +24,6 @@ enum class AppType {
   kMaxValue = LACROS,
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_CONSTANTS_APP_TYPES_H_
+#endif  // CHROMEOS_UI_BASE_APP_TYPES_H_

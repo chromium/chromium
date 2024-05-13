@@ -10,7 +10,6 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/public/cpp/window_properties.h"
@@ -20,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -122,8 +122,7 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
     auto window = std::make_unique<aura::Window>(
         nullptr, aura::client::WINDOW_TYPE_NORMAL);
     if (is_arc) {
-      window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(ash::AppType::ARC_APP));
+      window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
     }
     window->Init(ui::LAYER_TEXTURED);
     window->Show();

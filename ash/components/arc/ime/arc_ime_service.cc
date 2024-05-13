@@ -109,8 +109,9 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
       // have to check application id of the active window to cover that case.
       // TODO(yhanada): Make IsArcAppWindow support a window of ARC++ Kiosk.
-      // Specifically, a window of ARC++ Kiosk should have ash::AppType::ARC_APP
-      // property. Please see implementation of IsArcAppWindow().
+      // Specifically, a window of ARC++ Kiosk should have
+      // chromeos::AppType::ARC_APP property. Please see implementation of
+      // IsArcAppWindow().
       if (window == active && IsArcKioskMode() &&
           GetWindowTaskId(window).has_value()) {
         return true;

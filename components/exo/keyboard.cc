@@ -6,7 +6,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -23,6 +22,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
@@ -105,12 +106,11 @@ bool ProcessAcceleratorIfReserved(Surface* surface, ui::KeyEvent* event) {
 bool IsImeSupportedSurface(Surface* surface) {
   aura::Window* window = surface->window();
   while (window) {
-    const auto app_type =
-        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    const auto app_type = window->GetProperty(chromeos::kAppTypeKey);
     switch (app_type) {
-      case ash::AppType::ARC_APP:
-      case ash::AppType::CROSTINI_APP:
-      case ash::AppType::LACROS:
+      case chromeos::AppType::ARC_APP:
+      case chromeos::AppType::CROSTINI_APP:
+      case chromeos::AppType::LACROS:
         return true;
       default:
         // Do nothing.
@@ -136,12 +136,12 @@ bool IsImeSupportedSurface(Surface* surface) {
 bool CanConsumeAshAccelerators(Surface* surface) {
   aura::Window* window = surface->window();
   for (; window; window = window->parent()) {
-    const auto app_type =
-        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    const auto app_type = window->GetProperty(chromeos::kAppTypeKey);
     // TOOD(hidehiko): get rid of this if check, after introducing capability,
     // followed by ARC/Crostini migration.
-    if (app_type == ash::AppType::LACROS)
+    if (app_type == chromeos::AppType::LACROS) {
       return surface->is_keyboard_shortcuts_inhibited();
+    }
   }
   return true;
 }

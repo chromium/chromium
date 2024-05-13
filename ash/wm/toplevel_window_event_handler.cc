@@ -4,7 +4,6 @@
 
 #include "ash/wm/toplevel_window_event_handler.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -18,6 +17,8 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -848,9 +849,9 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  auto app_type = toplevel->GetProperty(aura::client::kAppType);
-  if (app_type == static_cast<int>(AppType::BROWSER) ||
-      app_type == static_cast<int>(AppType::LACROS)) {
+  auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
+  if (app_type == chromeos::AppType::BROWSER ||
+      app_type == chromeos::AppType::LACROS) {
     return nullptr;
   }
 

@@ -4,11 +4,11 @@
 
 #include "ash/metrics/pointer_metrics_recorder.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -19,26 +19,28 @@ namespace ash {
 
 namespace {
 
-int GetDestination(views::Widget* target) {
-  if (!target)
-    return static_cast<int>(AppType::NON_APP);
+chromeos::AppType GetDestination(views::Widget* target) {
+  if (!target) {
+    return chromeos::AppType::NON_APP;
+  }
 
   aura::Window* window = target->GetNativeWindow();
   DCHECK(window);
-  int app_type = window->GetProperty(aura::client::kAppType);
+  chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   // Use "BROWSER" for Lacros Chrome's pointer metrics.
-  if (app_type == static_cast<int>(AppType::LACROS))
-    return static_cast<int>(AppType::BROWSER);
+  if (app_type == chromeos::AppType::LACROS) {
+    return chromeos::AppType::BROWSER;
+  }
   return app_type;
 }
 
-DownEventMetric2 FindCombination(int destination,
+DownEventMetric2 FindCombination(chromeos::AppType destination,
                                  DownEventSource input_type,
                                  DownEventFormFactor form_factor) {
   constexpr int kNumCombinationPerDestination =
       static_cast<int>(DownEventSource::kSourceCount) *
       static_cast<int>(DownEventFormFactor::kFormFactorCount);
-  int result = destination * kNumCombinationPerDestination +
+  int result = static_cast<int>(destination) * kNumCombinationPerDestination +
                static_cast<int>(DownEventFormFactor::kFormFactorCount) *
                    static_cast<int>(input_type) +
                static_cast<int>(form_factor);

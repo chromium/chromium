@@ -209,7 +209,7 @@ TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
 
 TEST_F(ScreenPinningControllerTest, CleanUpObserversAndDimmer) {
   // Create a window with ClientControlledState.
-  auto w = CreateAppWindow(gfx::Rect(), AppType::CHROME_APP, 0);
+  auto w = CreateAppWindow(gfx::Rect(), chromeos::AppType::CHROME_APP, 0);
   ash::WindowState* ws = ash::WindowState::Get(w.get());
   auto delegate = std::make_unique<TestClientControlledStateDelegate>();
   auto state = std::make_unique<ClientControlledState>(std::move(delegate));

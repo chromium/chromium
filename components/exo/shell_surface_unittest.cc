@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
@@ -30,6 +29,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -3761,8 +3761,8 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
 TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
   ash::FrameThrottlingController* frame_throttling_controller =
       ash::Shell::Get()->frame_throttling_controller();
-  for (auto app_type : {ash::AppType::LACROS, ash::AppType::BROWSER,
-                        ash::AppType::CROSTINI_APP}) {
+  for (auto app_type : {chromeos::AppType::LACROS, chromeos::AppType::BROWSER,
+                        chromeos::AppType::CROSTINI_APP}) {
     auto shell_surface = test::ShellSurfaceBuilder({20, 20})
                              .SetAppType(app_type)
                              .BuildShellSurface();
@@ -3772,7 +3772,7 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
 
     // Crostini should not be throttled currently.
     const auto should_throttle_set =
-        app_type != ash::AppType::CROSTINI_APP
+        app_type != chromeos::AppType::CROSTINI_APP
             ? testing::UnorderedElementsAreArray(
                   {shell_surface->GetSurfaceId().frame_sink_id()})
             : testing::UnorderedElementsAreArray<viz::FrameSinkId>({});
@@ -3780,7 +3780,7 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
                 should_throttle_set);
 
     // ash::kFrameRateThrottleKey is only set for lacros.
-    const bool should_set_property = app_type == ash::AppType::LACROS;
+    const bool should_set_property = app_type == chromeos::AppType::LACROS;
     EXPECT_EQ(should_set_property,
               window->GetProperty(ash::kFrameRateThrottleKey));
   }
@@ -3793,7 +3793,7 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRateViaControllerArc) {
   frame_throttling_controller->AddArcObserver(&observer);
 
   auto shell_surface = test::ShellSurfaceBuilder({20, 20})
-                           .SetAppType(ash::AppType::ARC_APP)
+                           .SetAppType(chromeos::AppType::ARC_APP)
                            .BuildShellSurface();
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
@@ -4562,12 +4562,12 @@ TEST_F(ShellSurfaceTest, WindowPropertyChangedNotificationWithoutRootSurface) {
 
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
-          .SetAppType(ash::AppType::LACROS)
+          .SetAppType(chromeos::AppType::LACROS)
           .BuildShellSurface();
 
   std::unique_ptr<ShellSurface> shell_surface1 =
       test::ShellSurfaceBuilder({256, 256})
-          .SetAppType(ash::AppType::LACROS)
+          .SetAppType(chromeos::AppType::LACROS)
           .BuildShellSurface();
 
   overview_controller->StartOverview(ash::OverviewStartAction::kTests);

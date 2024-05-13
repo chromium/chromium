@@ -8,7 +8,6 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/display_configuration_controller.h"
@@ -42,6 +41,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_observer.h"
@@ -4271,22 +4272,19 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   // Set up windows with portrait, landscape, and any.
   aura::Window* window_a = CreateTestWindowInShellWithId(0);
   {
-    window_a->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+    window_a->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     orientation_controller->LockOrientationForWindow(
         window_a, chromeos::OrientationType::kAny);
   }
   aura::Window* window_p = CreateTestWindowInShellWithId(0);
   {
-    window_p->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+    window_p->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     orientation_controller->LockOrientationForWindow(
         window_p, chromeos::OrientationType::kPortrait);
   }
   aura::Window* window_l = CreateTestWindowInShellWithId(0);
   {
-    window_l->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+    window_l->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     orientation_controller->LockOrientationForWindow(
         window_l, chromeos::OrientationType::kLandscape);
   }
@@ -4393,8 +4391,7 @@ TEST_F(DisplayManagerOrientationTest, UserRotationLockReverse) {
 
   // Set up windows with portrait, landscape, and any.
   aura::Window* window = CreateTestWindowInShellWithId(0);
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::CHROME_APP));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
   display::Screen* screen = display::Screen::GetScreen();
 
   // Just enabling will not save the lock.
@@ -4437,8 +4434,7 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
 
   aura::Window* window_a = CreateTestWindowInShellWithId(0);
   {
-    window_a->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+    window_a->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     orientation_controller->LockOrientationForWindow(
         window_a, chromeos::OrientationType::kAny);
   }
@@ -4453,12 +4449,10 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
   orientation_controller->OnAccelerometerUpdated(portrait_secondary);
 
   aura::Window* window_lsc = CreateTestWindowInShellWithId(1);
-  window_lsc->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+  window_lsc->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
   aura::Window* window_psc = CreateTestWindowInShellWithId(1);
-  window_psc->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::CHROME_APP));
+  window_psc->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
   orientation_controller->LockOrientationForWindow(
       window_psc, chromeos::OrientationType::kPortraitSecondary);

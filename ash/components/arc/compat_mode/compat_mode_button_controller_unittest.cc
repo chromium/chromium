@@ -9,7 +9,6 @@
 
 #include "ash/components/arc/compat_mode/resize_util.h"
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"

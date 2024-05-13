@@ -4,20 +4,20 @@
 
 #include "ash/public/cpp/app_types_util.h"
 
-#include "ash/constants/app_types.h"
-#include "ui/aura/client/aura_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 
 bool IsArcWindow(const aura::Window* window) {
-  return window && window->GetProperty(aura::client::kAppType) ==
-                       static_cast<int>(ash::AppType::ARC_APP);
+  return window && window->GetProperty(chromeos::kAppTypeKey) ==
+                       chromeos::AppType::ARC_APP;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::LACROS);
+  return window->GetProperty(chromeos::kAppTypeKey) ==
+         chromeos::AppType::LACROS;
 }
 
 }  // namespace ash

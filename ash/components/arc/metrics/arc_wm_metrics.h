@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ui/base/app_types.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -38,19 +38,22 @@ class ArcWmMetrics : public aura::EnvObserver,
   ArcWmMetrics& operator=(const ArcWmMetrics&) = delete;
   ~ArcWmMetrics() override;
 
-  static std::string GetWindowMaximizedTimeHistogramName(ash::AppType app_type);
+  static std::string GetWindowMaximizedTimeHistogramName(
+      chromeos::AppType app_type);
 
-  static std::string GetWindowMinimizedTimeHistogramName(ash::AppType app_type);
+  static std::string GetWindowMinimizedTimeHistogramName(
+      chromeos::AppType app_type);
 
   static std::string GetArcWindowClosedTimeHistogramName();
 
   static std::string GetWindowEnterTabletModeTimeHistogramName(
-      ash::AppType app_type);
+      chromeos::AppType app_type);
 
   static std::string GetWindowExitTabletModeTimeHistogramName(
-      ash::AppType app_type);
+      chromeos::AppType app_type);
 
-  static std::string GetWindowRotateTimeHistogramName(ash::AppType app_type);
+  static std::string GetWindowRotateTimeHistogramName(
+      chromeos::AppType app_type);
 
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;

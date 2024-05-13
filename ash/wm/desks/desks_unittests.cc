@@ -5144,9 +5144,11 @@ TEST_F(DesksMultiUserTest, RemoveDesks) {
   EXPECT_TRUE(win0->IsVisible());
   ActivateDesk(desk_2);
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
-  auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200), AppType::ARC_APP);
+  auto win2 =
+      CreateAppWindow(gfx::Rect(50, 50, 200, 200), chromeos::AppType::ARC_APP);
   // Non-app window.
-  auto win3 = CreateAppWindow(gfx::Rect(50, 50, 200, 200), AppType::NON_APP);
+  auto win3 =
+      CreateAppWindow(gfx::Rect(50, 50, 200, 200), chromeos::AppType::NON_APP);
   multi_user_window_manager()->SetWindowOwner(win2.get(), GetUser1AccountId());
   multi_user_window_manager()->SetWindowOwner(win1.get(), GetUser1AccountId());
   multi_user_window_manager()->SetWindowOwner(win3.get(), GetUser1AccountId());
@@ -8694,9 +8696,9 @@ TEST_P(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
 TEST_P(DesksCloseAllTest, ForceCloseWindows) {
   WindowHolder window1(CreateAppWindow());
 
-  WindowHolder window2(CreateAppWindow(gfx::Rect(), AppType::SYSTEM_APP,
-                                       ShellWindowId::kShellWindowId_Invalid,
-                                       new StuckWidgetDelegate()));
+  WindowHolder window2(CreateAppWindow(
+      gfx::Rect(), chromeos::AppType::SYSTEM_APP,
+      ShellWindowId::kShellWindowId_Invalid, new StuckWidgetDelegate()));
 
   NewDesk();
   auto* controller = DesksController::Get();
@@ -9101,9 +9103,9 @@ TEST_P(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
 // Tests that windows in CloseAll will not be unparented while they are closing
 // asynchronously.
 TEST_P(DesksCloseAllTest, ClosingWindowsHaveParent) {
-  WindowHolder window(CreateAppWindow(gfx::Rect(), AppType::SYSTEM_APP,
-                                      ShellWindowId::kShellWindowId_Invalid,
-                                      new StuckWidgetDelegate()));
+  WindowHolder window(CreateAppWindow(
+      gfx::Rect(), chromeos::AppType::SYSTEM_APP,
+      ShellWindowId::kShellWindowId_Invalid, new StuckWidgetDelegate()));
 
   NewDesk();
   auto* controller = DesksController::Get();

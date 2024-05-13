@@ -192,7 +192,7 @@ void ArcInputOverlayManager::EnsureFactoryBuilt() {
 }
 
 void ArcInputOverlayManager::OnWindowInitialized(aura::Window* new_window) {
-  // `aura::client::kAppType` property is set in
+  // `chromeos::kAppTypeKey` property is set in
   // `AppServiceAppWindowShelfController::OnWindowInitialized()`.
   // `AppServiceAppWindowShelfController::OnWindowInitialized()` is called
   // before `ArcInputOverlayManager::OnWindowInitialized()`, so we can filter

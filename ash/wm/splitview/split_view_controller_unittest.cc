@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -60,6 +59,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
@@ -3529,8 +3529,7 @@ TEST_F(SplitViewControllerTest, SnapTwoThirdPartialWindow) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
   WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY,
                                  chromeos::kTwoThirdSnapRatio);
@@ -3548,16 +3547,14 @@ TEST_F(SplitViewControllerTest, SelectWindowCannotOneThirdSnap) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
       &window_delegate1, /*id=*/-1, gfx::Rect(500, 500)));
   window_delegate1.set_minimum_size(gfx::Size(500, 500));
-  window1->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::BROWSER));
+  window1->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
   // The second window can be snapped 1/2 but not 1/3.
   aura::test::TestWindowDelegate window_delegate2;
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
       &window_delegate2, /*id=*/-1, gfx::Rect(500, 500)));
   window_delegate2.set_minimum_size(gfx::Size(400, 400));
-  window2->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::BROWSER));
+  window2->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
   // Snap `window1` 2/3 to the left.
   wm::ActivateWindow(window1.get());

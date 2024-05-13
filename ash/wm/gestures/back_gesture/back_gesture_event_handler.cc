@@ -5,7 +5,6 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -31,8 +30,8 @@
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -377,9 +376,9 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
               // For fullscreen ARC apps, show the hotseat and shelf on the
               // first back swipe, and send a back event on the second back
               // swipe. For other fullscreen apps, exit fullscreen.
-              const bool arc_app = top_window_state->window()->GetProperty(
-                                       aura::client::kAppType) ==
-                                   static_cast<int>(AppType::ARC_APP);
+              const bool arc_app =
+                  top_window_state->window()->GetProperty(
+                      chromeos::kAppTypeKey) == chromeos::AppType::ARC_APP;
               if (arc_app) {
                 // Go back to the previous page if the shelf was already shown,
                 // otherwise record as showing shelf.

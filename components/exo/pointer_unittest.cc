@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"

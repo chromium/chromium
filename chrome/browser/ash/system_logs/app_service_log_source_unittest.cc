@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/system_logs/app_service_log_source.h"
 
-#include "ash/constants/app_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"

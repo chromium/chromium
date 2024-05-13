@@ -4,14 +4,13 @@
 
 #include "chromeos/ui/frame/default_frame_header.h"
 
-#include "ash/constants/app_types.h"
 #include "base/check.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -56,8 +55,8 @@ void TileRoundRect(gfx::Canvas* canvas,
 // the window is a system web app.
 bool ShouldApplyDynamicColor(aura::Window* window) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::SYSTEM_APP);
+  return window->GetProperty(chromeos::kAppTypeKey) ==
+         chromeos::AppType::SYSTEM_APP;
 #else
   // Default frame is used for non-browser frames in Lacros. In Lacros, we
   // never need dynamic colors as we don't display SWAs. This will need to be
@@ -200,7 +199,7 @@ void DefaultFrameHeader::InitializeFrameColorMetricsHelper() {
   aura::Window* window = GetTargetWindow();
   CHECK(window);
   frame_color_metrics_helper_ = std::make_unique<FrameColorMetricsHelper>(
-      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)));
+      window->GetProperty(chromeos::kAppTypeKey));
 #endif
 }
 

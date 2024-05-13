@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"

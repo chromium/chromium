@@ -7,13 +7,14 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
@@ -301,8 +302,8 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     params.context = aura_test_helper_.GetContext();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
-    params.init_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
+    params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                                 chromeos::AppType::LACROS);
     params.init_properties_container.SetProperty(app_restore::kLacrosWindowId,
                                                  lacros_window_id);
 
@@ -326,11 +327,11 @@ class FullRestoreReadAndSaveTest : public testing::Test {
   std::unique_ptr<aura::Window> CreateWindowInfo(
       int32_t id,
       int32_t index,
-      ash::AppType app_type = ash::AppType::BROWSER,
+      chromeos::AppType app_type = chromeos::AppType::BROWSER,
       base::Uuid desk_guid = base::Uuid()) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(id, nullptr));
-    window->SetProperty(aura::client::kAppType, static_cast<int>(app_type));
+    window->SetProperty(chromeos::kAppTypeKey, app_type);
     window->SetProperty(app_restore::kWindowIdKey, id);
     app_restore::WindowInfo window_info;
     window_info.window = window.get();
@@ -344,8 +345,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       int32_t restore_window_id) {
     std::unique_ptr<aura::Window> window(
         aura::test::CreateTestWindowWithId(restore_window_id, nullptr));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::ARC_APP));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
     window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window.get());
   }
@@ -681,8 +681,8 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
   EXPECT_TRUE(task_id != task_id_map.end());
 
   // Create a window to associate with the task id.
-  std::unique_ptr<aura::Window> window =
-      CreateWindowInfo(kArcTaskId1, kActivationIndex1, ash::AppType::ARC_APP);
+  std::unique_ptr<aura::Window> window = CreateWindowInfo(
+      kArcTaskId1, kActivationIndex1, chromeos::AppType::ARC_APP);
   // Test that using ARC task id we can get the correct app id for the window.
   EXPECT_EQ(save_handler->GetAppId(window.get()), kAppId);
 
@@ -766,7 +766,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   EXPECT_FALSE(arc_check_timer->IsRunning());
 
   // Modify the window info.
-  CreateWindowInfo(kArcTaskId1, kActivationIndex1, ash::AppType::ARC_APP);
+  CreateWindowInfo(kArcTaskId1, kActivationIndex1, chromeos::AppType::ARC_APP);
   timer->FireNow();
   task_environment().RunUntilIdle();
 
@@ -1144,9 +1144,10 @@ TEST_F(FullRestoreReadAndSaveTest, PreventWindowsOnRemovingDeskFromRestoring) {
   // Create two windows. Establish that `window1` will be on the removing desk
   // and `window2` will be on the non-removing desk.
   std::unique_ptr<aura::Window> window1 = CreateWindowInfo(
-      kId1, kActivationIndex1, ash::AppType::BROWSER, kRemovingDeskGuid);
-  std::unique_ptr<aura::Window> window2 = CreateWindowInfo(
-      kId2, kActivationIndex2, ash::AppType::BROWSER, kNonRemovingDeskGuid);
+      kId1, kActivationIndex1, chromeos::AppType::BROWSER, kRemovingDeskGuid);
+  std::unique_ptr<aura::Window> window2 =
+      CreateWindowInfo(kId2, kActivationIndex2, chromeos::AppType::BROWSER,
+                       kNonRemovingDeskGuid);
 
   // Establish that the desk with `kRemovingDeskGuid` as its GUID is being
   // removed.

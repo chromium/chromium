@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/fullscreen_notification_bubble.h"
@@ -20,11 +19,11 @@
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/fullscreen/keep_fullscreen_for_url_checker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -139,8 +138,8 @@ void FullscreenController::MaybeExitFullscreenBeforeLock(
   // could be a Lacros window and it should check with Lacros whether the
   // FullscreenController should exit full screen mode.
   if (url.is_empty() &&
-      active_window_state->window()->GetProperty(aura::client::kAppType) ==
-          static_cast<int>(AppType::LACROS)) {
+      active_window_state->window()->GetProperty(chromeos::kAppTypeKey) ==
+          chromeos::AppType::LACROS) {
     auto should_exit_fullscreen_callback =
         base::BindOnce(&OnShouldExitFullscreenResult, std::move(callback));
     Shell::Get()->shell_delegate()->ShouldExitFullscreenBeforeLock(

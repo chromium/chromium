@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/public/cpp/window_properties.h"
@@ -19,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
@@ -296,8 +296,8 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     dragged_window_->AddObserver(this);
     surface_window_->RemoveObserver(this);
 
-    dragged_window_->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+    dragged_window_->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
   }
 
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {

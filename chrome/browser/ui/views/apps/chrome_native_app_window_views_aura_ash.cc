@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -28,6 +27,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -231,7 +231,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   init_params->init_properties_container.SetProperty(
       app_restore::kAppIdKey, app_window()->extension_id());
   init_params->init_properties_container.SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
+      chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
 
   app_restore::ModifyWidgetParams(restore_window_id, init_params);
 }

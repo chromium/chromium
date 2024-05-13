@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/style/icon_button.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
@@ -14,6 +13,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -81,8 +82,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   // delegate and app type set, but use the child window in tests. Arc:
   aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
       &delegate_, 0, gfx::Rect(), &container_window);
-  arc_toplevel->SetProperty(aura::client::kAppType,
-                            static_cast<int>(AppType::ARC_APP));
+  arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(IsArcWindow(arc_toplevel));
   aura::Window* arc_window =
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), arc_toplevel);
@@ -91,8 +91,8 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   // Crostini:
   aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
       &delegate_, 0, gfx::Rect(), &container_window);
-  crostini_toplevel->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(AppType::CROSTINI_APP));
+  crostini_toplevel->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::CROSTINI_APP);
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
   aura::Window* crostini_window =
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);

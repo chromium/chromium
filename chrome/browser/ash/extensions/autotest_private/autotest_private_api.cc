@@ -22,7 +22,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -176,6 +175,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/default_frame_header.h"
@@ -456,21 +456,21 @@ api::autotest_private::AppInstallSource GetAppInstallSource(
   return api::autotest_private::AppInstallSource::kNone;
 }
 
-api::autotest_private::AppWindowType GetAppWindowType(ash::AppType type) {
+api::autotest_private::AppWindowType GetAppWindowType(chromeos::AppType type) {
   switch (type) {
-    case ash::AppType::ARC_APP:
+    case chromeos::AppType::ARC_APP:
       return api::autotest_private::AppWindowType::kArcApp;
-    case ash::AppType::SYSTEM_APP:
+    case chromeos::AppType::SYSTEM_APP:
       return api::autotest_private::AppWindowType::kSystemApp;
-    case ash::AppType::CROSTINI_APP:
+    case chromeos::AppType::CROSTINI_APP:
       return api::autotest_private::AppWindowType::kCrostiniApp;
-    case ash::AppType::CHROME_APP:
+    case chromeos::AppType::CHROME_APP:
       return api::autotest_private::AppWindowType::kExtensionApp;
-    case ash::AppType::BROWSER:
+    case chromeos::AppType::BROWSER:
       return api::autotest_private::AppWindowType::kBrowser;
-    case ash::AppType::LACROS:
+    case chromeos::AppType::LACROS:
       return api::autotest_private::AppWindowType::kLacros;
-    case ash::AppType::NON_APP:
+    case chromeos::AppType::NON_APP:
       return api::autotest_private::AppWindowType::kNone;
       // TODO(oshima): Investigate if we want to have "extension" type.
   }
@@ -4566,8 +4566,8 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     api::autotest_private::AppWindowInfo window_info;
     window_info.id = window->GetId();
     window_info.name = window->GetName();
-    window_info.window_type = GetAppWindowType(
-        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)));
+    window_info.window_type =
+        GetAppWindowType(window->GetProperty(chromeos::kAppTypeKey));
     window_info.state_type =
         ToWindowStateType(window->GetProperty(chromeos::kWindowStateTypeKey));
     window_info.bounds_in_root =
@@ -4603,8 +4603,8 @@ AutotestPrivateGetAppWindowListFunction::Run() {
       }
     }
 
-    if (window->GetProperty(aura::client::kAppType) ==
-        static_cast<int>(ash::AppType::ARC_APP)) {
+    if (window->GetProperty(chromeos::kAppTypeKey) ==
+        chromeos::AppType::ARC_APP) {
       std::string* package_name = window->GetProperty(ash::kArcPackageNameKey);
       if (package_name) {
         window_info.arc_package_name = *package_name;

@@ -916,7 +916,7 @@ TEST_F(WindowCycleControllerTest, FrameThrottling) {
       {1u, 1u}, {2u, 2u}, {3u, 3u}, {4u, 4u}, {5u, 5u}};
   std::unique_ptr<aura::Window> windows[window_count];
   for (int i = 0; i < window_count; ++i) {
-    windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
+    windows[i] = CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
     windows[i]->SetEmbedFrameSinkId(ids[i]);
   }
 

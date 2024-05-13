@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -36,6 +35,8 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window_info.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/window_properties.h"
@@ -458,8 +459,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     return;
 
   // System windows are also arc apps.
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::ARC_APP));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
   if (*task_or_session_id == arc::kSystemWindowTaskId)
     return;

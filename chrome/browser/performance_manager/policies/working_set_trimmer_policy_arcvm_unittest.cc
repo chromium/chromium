@@ -15,7 +15,6 @@
 #include "ash/components/arc/test/fake_app_host.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -24,6 +23,8 @@
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/prefs/testing_pref_service.h"
@@ -271,8 +272,7 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   // Create two fake windows.
   aura::Window* arc_window = aura::test::CreateTestWindow(
       SK_ColorGREEN, 0, gfx::Rect(), &container_window);
-  arc_window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(ash::AppType::ARC_APP));
+  arc_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(ash::IsArcWindow(arc_window));
   aura::Window* chrome_window = aura::test::CreateTestWindow(
       SK_ColorRED, 0, gfx::Rect(), &container_window);

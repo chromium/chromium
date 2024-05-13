@@ -47,6 +47,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
@@ -1381,7 +1383,7 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
   // Create a window in clamshell mode without a minimum size, and larger than
   // its tablet minimum size.
   auto window =
-      CreateAppWindow(gfx::Rect(500, 500), AppType::SYSTEM_APP,
+      CreateAppWindow(gfx::Rect(500, 500), chromeos::AppType::SYSTEM_APP,
                       kShellWindowId_DeskContainerA, new TestWidgetDelegateAsh);
   auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
       NonClientFrameViewAsh::Get(window.get()));
@@ -1438,8 +1440,7 @@ TEST_F(TabletWindowFloatTest, CanBrowsersFloat) {
   aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
   // Browser windows whose minimum size is greater than the maximum allowed
@@ -1477,8 +1478,7 @@ TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
   aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -1503,8 +1503,7 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(850, 850)));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -1523,8 +1522,7 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
   window_delegate.set_minimum_size(gfx::Size(400, 400));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::BROWSER));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
   // Enter tablet mode and float `window`.

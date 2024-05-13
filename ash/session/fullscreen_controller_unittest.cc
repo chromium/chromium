@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -14,6 +13,7 @@
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,8 +94,7 @@ class FullscreenControllerTest : public FullscreenControllerTestBase,
  protected:
   void SetPropertiesForNewFullscreenWindow(aura::Window* window) override {
     if (is_lacros_window_) {
-      window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::LACROS));
+      window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
     }
   }
 
@@ -235,8 +234,7 @@ TEST_F(FullscreenControllerNotLacrosRelatedTest,
        KeepFullscreenIfNoExitPropertySet) {
   window_->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
   window_->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
-  window_->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::CROSTINI_APP));
+  window_->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CROSTINI_APP);
 
   ASSERT_TRUE(window_state_->IsFullscreen());
 

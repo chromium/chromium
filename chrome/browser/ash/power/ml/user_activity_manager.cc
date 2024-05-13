@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -30,6 +29,8 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -105,16 +106,18 @@ bool ShouldUseLacrosFeatures() {
         ash::Shell::Get()->mru_window_tracker()->BuildMruWindowList(
             ash::kActiveDesk);
     for (aura::Window* window : mru_windows) {
-      if (!window->IsVisible())
+      if (!window->IsVisible()) {
         continue;
+      }
 
-      ash::AppType app_type = static_cast<ash::AppType>(
-          window->GetProperty(aura::client::kAppType));
+      chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
 
-      if (app_type == ash::AppType::BROWSER)
+      if (app_type == chromeos::AppType::BROWSER) {
         return false;
-      if (app_type == ash::AppType::LACROS)
+      }
+      if (app_type == chromeos::AppType::LACROS) {
         return true;
+      }
     }
   }
 

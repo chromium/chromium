@@ -5,9 +5,10 @@
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 
 #include "ash/components/arc/compat_mode/arc_window_property_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -97,8 +98,8 @@ std::unique_ptr<views::Widget> CompatModeTestBase::CreateArcWidget(
   auto widget = CreateWidget(/*show=*/false);
   if (app_id)
     widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, *app_id);
-  widget->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  widget->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
+                                         chromeos::AppType::ARC_APP);
   if (show)
     widget->Show();
   return widget;

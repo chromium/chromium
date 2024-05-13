@@ -6,9 +6,10 @@
 
 #include <tuple>
 
-#include "ash/constants/app_types.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
@@ -18,7 +19,6 @@
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/display/types/display_constants.h"
 
@@ -223,7 +223,8 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetSecurityDelegate(
   return *this;
 }
 
-ShellSurfaceBuilder& ShellSurfaceBuilder::SetAppType(ash::AppType app_type) {
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetAppType(
+    chromeos::AppType app_type) {
   DCHECK(!built_);
   app_type_ = app_type;
   return *this;
@@ -379,9 +380,9 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
   SetCommonPropertiesAndCommitIfNecessary(shell_surface.get());
 
   // The widget becomes available after the first commit.
-  if (shell_surface->GetWidget() && app_type_ != ash::AppType::NON_APP) {
+  if (shell_surface->GetWidget() && app_type_ != chromeos::AppType::NON_APP) {
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-        aura::client::kAppType, static_cast<int>(app_type_));
+        chromeos::kAppTypeKey, app_type_);
   }
   return shell_surface;
 }
@@ -449,11 +450,11 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
 
   // The widget becomes available after the first commit.
   if (shell_surface->GetWidget()) {
-    CHECK(app_type_ == ash::AppType::NON_APP ||
-          app_type_ == ash::AppType::ARC_APP)
+    CHECK(app_type_ == chromeos::AppType::NON_APP ||
+          app_type_ == chromeos::AppType::ARC_APP)
         << "Incompatible app type is set for ClientControlledShellSurface.";
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+        chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   }
 
   shell_surface->SetCanMaximize(can_maximize_);

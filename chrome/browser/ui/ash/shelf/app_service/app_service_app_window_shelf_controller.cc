@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -47,6 +46,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -412,8 +412,8 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const std::string& app_id = update.AppId();
     if (GetAppType(app_id) == apps::AppType::kCrostini ||
         guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
-      window->SetProperty(aura::client::kAppType,
-                          static_cast<int>(ash::AppType::CROSTINI_APP));
+      window->SetProperty(chromeos::kAppTypeKey,
+                          chromeos::AppType::CROSTINI_APP);
     }
     window->SetProperty(ash::kAppIDKey, update.AppId());
     window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());

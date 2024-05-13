@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +26,8 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,22 +142,21 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   std::unique_ptr<aura::Window> arc_toplevel(
       aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
                                                &container_window));
-  arc_toplevel->SetProperty(aura::client::kAppType,
-                            static_cast<int>(AppType::ARC_APP));
+  arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel.get()));
 
   std::unique_ptr<aura::Window> lacros_toplevel(
       aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
                                                &container_window));
-  lacros_toplevel->SetProperty(aura::client::kAppType,
-                               static_cast<int>(AppType::LACROS));
+  lacros_toplevel->SetProperty(chromeos::kAppTypeKey,
+                               chromeos::AppType::LACROS);
   EXPECT_TRUE(security_delegate->CanLockPointer(lacros_toplevel.get()));
 
   std::unique_ptr<aura::Window> crostini_toplevel(
       aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
                                                &container_window));
-  crostini_toplevel->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(AppType::CROSTINI_APP));
+  crostini_toplevel->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::CROSTINI_APP);
   EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel.get()));
 }
 

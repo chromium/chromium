@@ -4,7 +4,6 @@
 
 #include "chromeos/ui/frame/frame_color_metrics_helper.h"
 
-#include "ash/constants/app_types.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -12,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/app_types.h"
 
 namespace {
 
@@ -28,7 +28,7 @@ constexpr base::TimeDelta kFrameColorTracingTime = base::Seconds(3);
 
 namespace chromeos {
 
-FrameColorMetricsHelper::FrameColorMetricsHelper(ash::AppType app_type)
+FrameColorMetricsHelper::FrameColorMetricsHelper(chromeos::AppType app_type)
     : app_type_(app_type) {
   StartTracing();
 }
@@ -41,22 +41,22 @@ void FrameColorMetricsHelper::UpdateFrameColorChangesCount() {
 
 // static
 std::string FrameColorMetricsHelper::GetFrameColorChangeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   std::string app_type_str_;
   switch (app_type) {
-    case ash::AppType::ARC_APP:
+    case chromeos::AppType::ARC_APP:
       app_type_str_ = kArcHistogramName;
       break;
-    case ash::AppType::BROWSER:
+    case chromeos::AppType::BROWSER:
       app_type_str_ = kBrowserHistogramName;
       break;
-    case ash::AppType::CHROME_APP:
+    case chromeos::AppType::CHROME_APP:
       app_type_str_ = kChromeAppHistogramName;
       break;
-    case ash::AppType::SYSTEM_APP:
+    case chromeos::AppType::SYSTEM_APP:
       app_type_str_ = kSystemAppHistogramName;
       break;
-    case ash::AppType::CROSTINI_APP:
+    case chromeos::AppType::CROSTINI_APP:
       app_type_str_ = kCrostiniAppHistogramName;
       break;
     default:
