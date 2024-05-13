@@ -47,13 +47,13 @@ void MockClipboardHost::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
 std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
   std::vector<std::u16string> types;
   if (!plain_text_.empty())
-    types.push_back(u"text/plain");
+    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeText));
   if (!html_text_.empty())
-    types.push_back(u"text/html");
+    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeHTML));
   if (!svg_text_.empty())
-    types.push_back(u"image/svg+xml");
+    types.push_back(base::ASCIIToUTF16(ui::kMimeTypeSvg));
   if (!png_.empty())
-    types.push_back(u"image/png");
+    types.push_back(base::ASCIIToUTF16(ui::kMimeTypePNG));
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.first));
     types.push_back(it.first);
