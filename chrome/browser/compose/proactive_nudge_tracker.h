@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace compose {
 
@@ -47,14 +49,24 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   enum class ShowState { kWaiting, kCanBeShown, kShown };
 
-  struct State {
+  class State : public base::SupportsWeakPtr<State> {
+   public:
+    State();
+    virtual ~State();
+
     autofill::FormGlobalId form;
     autofill::FieldGlobalId field;
     std::u16string initial_text_value;
+    std::optional<bool> segmentation_result = std::nullopt;
+    base::OneShotTimer timer;
+    bool timer_complete = false;
+
     ShowState show_state = ShowState::kWaiting;
   };
 
-  explicit ProactiveNudgeTracker(Delegate* delegate);
+  ProactiveNudgeTracker(
+      segmentation_platform::SegmentationPlatformService* segmentation_service,
+      Delegate* delegate);
 
   ~ProactiveNudgeTracker() override;
 
@@ -82,16 +94,25 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
                                autofill::FieldGlobalId field) override;
 
  private:
+  bool SegmentationStateIsValid();
+  void ResetState();
   void ShowTimerElapsed();
+  void GotClassificationResult(
+      base::WeakPtr<State> state,
+      const segmentation_platform::ClassificationResult& result);
+  void MaybeShowProactiveNudge();
   bool MatchesCurrentField(autofill::FormGlobalId form,
                            autofill::FieldGlobalId field);
 
-  std::optional<State> state_;
-  base::OneShotTimer timer_;
+  std::unique_ptr<State> state_;
+
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_service_;
   raw_ptr<Delegate> delegate_;
 
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};
+  base::WeakPtrFactory<ProactiveNudgeTracker> weak_ptr_factory_{this};
 };
 
 }  // namespace compose
