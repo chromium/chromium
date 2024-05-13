@@ -64,6 +64,9 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   // Called when `add_task_button_` is pressed to focus on `textfield_`.
   void OnAddTaskButtonPressed();
 
+  // Called when tasks have been fetched from the tasks provider.
+  void OnTasksFetched(const std::vector<FocusModeTask>& tasks);
+
   // If `show_selected_state` is true, it means that there is a task selected
   // by the user for a focus session, then we will show `radio_button_` and
   // `deselect_button_`, update the style of `textfield_`, and hide the

@@ -3883,6 +3883,8 @@ test("ash_unittests") {
     "system/focus_mode/focus_mode_detailed_view_unittest.cc",
     "system/focus_mode/focus_mode_feature_pod_controller_unittest.cc",
     "system/focus_mode/focus_mode_session_unittest.cc",
+    "system/focus_mode/focus_mode_task_test_utils.cc",
+    "system/focus_mode/focus_mode_task_test_utils.h",
     "system/focus_mode/focus_mode_tray_unittest.cc",
     "system/geolocation/geolocation_controller_test_util.cc",
     "system/geolocation/geolocation_controller_test_util.h",

@@ -9,10 +9,18 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "ui/base/models/list_model.h"
 
 namespace ash {
+
+namespace api {
+struct Task;
+}
+
+class TaskFetcher;
 
 // Represents a task.
 struct ASH_EXPORT FocusModeTask {
@@ -48,18 +56,22 @@ class ASH_EXPORT FocusModeTasksProvider {
   using OnTaskSavedCallback =
       base::OnceCallback<void(const FocusModeTask& task_entry)>;
 
+  using OnGetTasksCallback =
+      base::OnceCallback<void(const std::vector<FocusModeTask>& tasks)>;
+
   FocusModeTasksProvider();
   FocusModeTasksProvider(const FocusModeTasksProvider&) = delete;
   FocusModeTasksProvider& operator=(const FocusModeTasksProvider&) = delete;
   ~FocusModeTasksProvider();
 
   // Provides a sorted list of `FocusModeTask` instances that can be displayed
-  // in Focus Mode.
-  std::vector<FocusModeTask> GetSortedTaskList() const;
+  // in Focus Mode. The provided `callback` is invoked asynchronously when tasks
+  // have been fetched.
+  void GetSortedTaskList(OnGetTasksCallback callback);
 
   // Creates a new task with name `title` and adds it to `task_list_`. Returns
   // the added `FocusModeTask` in `callback`, or an empty `FocusModeTask` if an
-  // error has occurred.
+  // error has occurred. Note that this will clear the internal cache.
   void AddTask(const std::string& title, OnTaskSavedCallback callback);
 
   // Finds the task by `task_list_id` and `task_id` and updates the task title
@@ -71,22 +83,51 @@ class ASH_EXPORT FocusModeTasksProvider {
                   bool completed,
                   OnTaskSavedCallback callback);
 
+  // This kicks off a fetch of tasks from the backend.
+  void ScheduleTaskListUpdate();
+
  private:
-  // Helper function for inserting `FocusModeTask` instances into
-  // `sorted_tasks_`.
-  void InsertTask(FocusModeTask task);
+  void OnTasksFetched();
+  void OnTaskSaved(const std::string& task_list_id,
+                   const std::string& task_id,
+                   bool completed,
+                   OnTaskSavedCallback callback,
+                   const api::Task* api_task);
 
-  // ID counter for creating tasks. Start from above where IDs in
-  // `kTaskInitializationData` end to avoid conflicts.
-  // TODO(b/306271332): Create a new task.
-  int task_id_ = 10;
-
-  // Entries here are sorted in the following priority order:
-  // 1. Entries containing `Task`s which are past due.
-  // 2. Entries containing `Task`s which are due in the next 24 hours.
-  // 3. All other entries.
+  // Returns cached tasks according to this sort order:
+  // 1. Entries added/updated by the user during the lifetime of this provider.
+  // 2. Entries containing `Task`s which are past due.
+  // 3. Entries containing `Task`s which are due in the next 24 hours.
+  // 4. All other entries.
   // Entries within each group are sorted by their `Task`'s update date.
-  std::vector<FocusModeTask> sorted_tasks_;
+  std::vector<FocusModeTask> GetSortedTasksImpl();
+
+  // Cache of tasks retrieved from the API.
+  std::vector<FocusModeTask> tasks_;
+
+  // Pending UI requests to get all tasks.
+  std::vector<OnGetTasksCallback> get_tasks_requests_;
+
+  // The ID of the task list to use when creating new tasks. This will be empty
+  // until tasks have been fetched.
+  std::string task_list_for_new_task_;
+
+  // Holds a set of tasks that have been created or updated during the lifetime
+  // of the provider. These tasks are pushed to the front of the sort order.
+  base::flat_set<std::string> created_task_ids_;
+
+  // Holds a set of tasks that have been deleted during the lifetime of the
+  // provider.
+  base::flat_set<std::string> deleted_task_ids_;
+
+  // Populated when the provider is requesting tasks from the API, otherwise
+  // empty.
+  std::unique_ptr<TaskFetcher> task_fetcher_;
+
+  // The timestamp of the last task fetch.
+  base::Time task_fetch_time_;
+
+  base::WeakPtrFactory<FocusModeTasksProvider> weak_factory_{this};
 };
 
 }  // namespace ash

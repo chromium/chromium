@@ -12,6 +12,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -41,6 +42,11 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
     // normal feature testing purposes, we will intentionally set it so that the
     // pref will not be marked as using the default value.
     prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, true);
+
+    auto& tasks_client =
+        CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));
+    AddFakeTaskList(tasks_client, "default");
+    AddFakeTask(tasks_client, "default", "task1", "Task 1");
 
     CreateFakeFocusModeTile();
   }

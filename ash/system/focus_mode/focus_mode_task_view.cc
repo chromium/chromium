@@ -274,7 +274,8 @@ FocusModeTaskView::FocusModeTaskView() {
   if (has_selected_task) {
     task_title_ = base::UTF8ToUTF16(controller->selected_task_title());
   } else {
-    chip_carousel_->SetTasks(controller->tasks_provider().GetSortedTaskList());
+    controller->tasks_provider().GetSortedTaskList(base::BindOnce(
+        &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
   }
 
   UpdateStyle(/*show_selected_state=*/has_selected_task);
@@ -327,7 +328,8 @@ void FocusModeTaskView::OnClearTask() {
   // moving focus to it by tabbing from an empty text of `textfield_` to the
   // `chip_carousel_`.
   if (!chip_carousel_->GetVisible()) {
-    chip_carousel_->SetTasks(controller->tasks_provider().GetSortedTaskList());
+    controller->tasks_provider().GetSortedTaskList(base::BindOnce(
+        &FocusModeTaskView::OnTasksFetched, weak_factory_.GetWeakPtr()));
   }
   UpdateStyle(/*show_selected_state=*/false);
 }
@@ -386,6 +388,12 @@ void FocusModeTaskView::OnAddTaskButtonPressed() {
       textfield_->SetActive(true);
     }
   }
+}
+
+void FocusModeTaskView::OnTasksFetched(
+    const std::vector<FocusModeTask>& tasks) {
+  chip_carousel_->SetTasks(tasks);
+  chip_carousel_->SetVisible(!tasks.empty());
 }
 
 void FocusModeTaskView::UpdateStyle(bool show_selected_state) {

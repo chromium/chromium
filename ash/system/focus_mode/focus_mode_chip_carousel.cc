@@ -296,6 +296,10 @@ bool FocusModeChipCarousel::HasTasks() const {
   return !scroll_contents_->GetChildrenInZOrder().empty();
 }
 
+int FocusModeChipCarousel::GetTaskCountForTesting() const {
+  return scroll_contents_->GetChildrenInZOrder().size();
+}
+
 BEGIN_METADATA(FocusModeChipCarousel)
 END_METADATA
 

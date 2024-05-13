@@ -6,16 +6,13 @@
 
 #include <memory>
 
-#include "ash/api/tasks/fake_tasks_client.h"
-#include "ash/api/tasks/tasks_controller.h"
-#include "ash/api/tasks/tasks_types.h"
-#include "ash/api/tasks/test_tasks_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -192,11 +189,16 @@ TEST_F(FocusModeControllerMultiUserTest, FirstTimeUserFlow) {
 TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
   SimulateUserLogin(GetUser1AccountId());
 
-  const std::string task_id = "0";
+  const std::string task_list_id = "list1";
+  const std::string task_id = "task1";
   const std::string title = "Focus Task";
 
+  auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+  AddFakeTaskList(tasks_client, task_list_id);
+  AddFakeTask(tasks_client, task_list_id, task_id, title);
+
   FocusModeTask task;
-  task.task_list_id = "abc";
+  task.task_list_id = task_list_id;
   task.task_id = task_id;
   task.title = title;
   task.updated = base::Time::Now();

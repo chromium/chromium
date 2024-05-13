@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/api/tasks/tasks_types.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -22,6 +21,7 @@
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_feature_pod_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/model/system_tray_model.h"
@@ -32,6 +32,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -77,6 +78,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
     // pref will not be marked as using the default value.
     prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, true);
 
+    auto& tasks_client =
+        CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));
+    CreateFakeTasks(tasks_client);
+
     CreateFakeFocusModeDetailedView();
   }
 
@@ -85,6 +90,11 @@ class FocusModeDetailedViewTest : public AshTestBase {
     widget_.reset();
 
     AshTestBase::TearDown();
+  }
+
+  virtual void CreateFakeTasks(api::FakeTasksClient& tasks_client) {
+    AddFakeTaskList(tasks_client, "default");
+    AddFakeTask(tasks_client, "default", "task1", "Task 1");
   }
 
   void CreateFakeFocusModeDetailedView() {
@@ -758,6 +768,32 @@ TEST_F(FocusModeDetailedViewTest, StartSessionWithActiveTimerTextfield) {
       base::Minutes(1),
       Shell::Get()->session_controller()->GetActivePrefService()->GetTimeDelta(
           prefs::kFocusModeSessionDuration));
+}
+
+class FocusModeDetailedViewWithLotsOfTasksTest
+    : public FocusModeDetailedViewTest {
+ public:
+  void CreateFakeTasks(api::FakeTasksClient& tasks_client) override {
+    // Creates five lists, each containing two tasks.
+    for (int list_no = 0; list_no != 5; ++list_no) {
+      std::string list_id = base::StringPrintf("L%d", list_no);
+      AddFakeTaskList(tasks_client, list_id);
+
+      for (int task_no = 0; task_no != 2; ++task_no) {
+        std::string task_id = base::StringPrintf("T%d.%d", list_no, task_no);
+        AddFakeTask(tasks_client, list_id, task_id, "Title");
+      }
+    }
+  }
+};
+
+// Tests that the carousel only shows a limited number of tasks.
+TEST_F(FocusModeDetailedViewWithLotsOfTasksTest, LimitTasks) {
+  auto* task_view = GetTaskView();
+  auto* chip_carousel = task_view->chip_carousel_for_testing();
+  EXPECT_TRUE(chip_carousel->HasTasks());
+  EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 5);
+  EXPECT_TRUE(chip_carousel->GetVisible());
 }
 
 }  // namespace ash

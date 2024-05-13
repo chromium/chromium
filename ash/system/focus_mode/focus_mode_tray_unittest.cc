@@ -5,10 +5,6 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/api/tasks/fake_tasks_client.h"
-#include "ash/api/tasks/tasks_controller.h"
-#include "ash/api/tasks/tasks_types.h"
-#include "ash/api/tasks/test_tasks_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
@@ -19,6 +15,7 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -52,6 +49,11 @@ class FocusModeTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    auto& tasks_client =
+        CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));
+    AddFakeTaskList(tasks_client, "default");
+    AddFakeTask(tasks_client, "default", "task1", "Task 1");
 
     focus_mode_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();
@@ -190,8 +192,8 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeTask task;
-  task.task_list_id = "123";
-  task.task_id = "1";
+  task.task_list_id = "default";
+  task.task_id = "task1";
   task.title = "make a travel plan";
   task.updated = base::Time::Now();
 

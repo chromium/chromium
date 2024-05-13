@@ -40,6 +40,8 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
 
   // Returns whether the carousel is currently displaying any tasks.
   bool HasTasks() const;
+  // Returns the number of tasks the carousel is currently showing.
+  int GetTaskCountForTesting() const;
 
   // views::View:
   void Layout(PassKey) override;
