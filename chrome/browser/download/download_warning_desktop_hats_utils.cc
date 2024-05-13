@@ -402,7 +402,7 @@ bool DelayedDownloadWarningHatsLauncher::TryScheduleTask(
     DownloadWarningHatsType survey_type,
     download::DownloadItem* download) {
   CHECK(download);
-  TaskKey key = reinterpret_cast<TaskKey>(download);
+  TaskKey key = GetTaskKey(download);
   if (base::Contains(tasks_, key)) {
     return false;
   }
@@ -424,7 +424,16 @@ bool DelayedDownloadWarningHatsLauncher::TryScheduleTask(
 
 void DelayedDownloadWarningHatsLauncher::RemoveTaskIfAny(
     download::DownloadItem* download) {
-  TaskKey key = reinterpret_cast<TaskKey>(download);
+  RemoveTaskByKeyIfAny(GetTaskKey(download));
+}
+
+DelayedDownloadWarningHatsLauncher::TaskKey
+DelayedDownloadWarningHatsLauncher::GetTaskKey(
+    download::DownloadItem* download) {
+  return reinterpret_cast<TaskKey>(download);
+}
+
+void DelayedDownloadWarningHatsLauncher::RemoveTaskByKeyIfAny(TaskKey key) {
   tasks_.erase(key);
 }
 
@@ -456,9 +465,10 @@ base::OnceClosure DelayedDownloadWarningHatsLauncher::MakeSurveyDoneCallback(
   // through the survey). If this callback runs, then `this` must still be
   // alive, which means the DownloadItem::Observer mechanism is maintaining the
   // invariant that any download with an entry in `tasks_` must be alive.
-  // Therefore, `download` will not be dereferenced while dangling.
-  return base::BindOnce(&DelayedDownloadWarningHatsLauncher::RemoveTaskIfAny,
-                        weak_factory_.GetWeakPtr(), download);
+  // Therefore, the DownloadItem* will not be used after it is freed.
+  return base::BindOnce(
+      &DelayedDownloadWarningHatsLauncher::RemoveTaskByKeyIfAny,
+      weak_factory_.GetWeakPtr(), GetTaskKey(download));
 }
 
 bool DelayedDownloadWarningHatsLauncher::WasUserActive() const {

@@ -241,7 +241,16 @@ class DelayedDownloadWarningHatsLauncher
   // Address of a DownloadItem, derived from a DownloadItem*, but it is not to
   // be dereferenced.
   using TaskKey = std::uintptr_t;
-  using TasksMap = std::map<TaskKey, Task>;
+
+  // Returns the task key to be used for the download, which is just the
+  // address.
+  TaskKey GetTaskKey(download::DownloadItem* download);
+
+  // Cancels and removes the task from the map. Is a no-op if the key is not in
+  // the map. In particular, if the DownloadItem has been freed, its key will
+  // not be found in the map, as guaranteed by the DownloadItem::Observer
+  // mechanism.
+  void RemoveTaskByKeyIfAny(TaskKey key);
 
   // Launches the actual survey, if all preconditions are met.
   void MaybeLaunchSurveyNow(DownloadWarningHatsType survey_type,
@@ -261,7 +270,7 @@ class DelayedDownloadWarningHatsLauncher
   // Time of the most recent user interaction with the browser.
   base::Time last_activity_;
   // Maps DownloadItem addresses to their corresponding pending tasks.
-  TasksMap tasks_;
+  std::map<TaskKey, Task> tasks_;
   // Callback that is run to stamp the PSD with any additional fields right
   // before attempting to launch the survey.
   PsdCompleter psd_completer_;
