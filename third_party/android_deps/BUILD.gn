@@ -779,13 +779,6 @@ if (!limit_android_deps) {
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
     ]
-
-    # These are included locally in third_party/accessibility_test_framework.
-    jar_excluded_patterns = [
-      "com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult\$AccessibilityCheckResultType.class",
-      "com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.class",
-      "com/google/android/apps/common/testing/accessibility/framework/integrations/espresso/AccessibilityValidator*",
-    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

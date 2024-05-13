@@ -2,40 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/android/rules.gni")
+
+# We no longer need to do any modifications to the Accessibility Test
+# Framework. This is just an alias until we can migrate everyone to the target.
 java_group("accessibility_core_java") {
   testonly = true
-  deps = [
-    ":accessibility_test_framework_java",
-    "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
-  ]
-}
-
-# This is a build of accessibility_test_framework 4.0 with two locally
-# modified files. This is necessary as androidx_espresso uses
-# accessibility_test_framework 3.1, but that requires an incompatible library
-# protobuf-lite which is not compatible with protobuf-javalite.
-# Use accessibility_core_java instead of this library. Once androidx_espresso depends on
-# accessibility_test_framework 4.0 or higher, this can probably be removed.
-android_library("accessibility_test_framework_java") {
-  testonly = true
-  visibility = [ ":*" ]
-  deps = [
-    "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/android_deps:org_checkerframework_checker_qual_java",
-    "//third_party/android_deps:org_jsoup_jsoup_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
-    "//third_party/androidx:androidx_test_services_storage_java",
-    "//third_party/hamcrest:hamcrest_core_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-  ]
-  sources = [
-    "local/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.java",
-    "local/src/main/java/com/google/android/apps/common/testing/accessibility/framework/integrations/espresso/AccessibilityValidator.java",
-  ]
+  deps = [ "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java" ]
 }
