@@ -123,6 +123,7 @@ android_library("java") {
     ":settings_interface_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
+    "account_storage_notice:java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",

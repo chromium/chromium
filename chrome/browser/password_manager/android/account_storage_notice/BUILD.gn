@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+# Public API.
+static_library("account_storage_notice") {
+  public = [ "account_storage_notice.h" ]
+  sources = [
+    "account_storage_notice.cc",
+    "account_storage_notice.h",
+    "coordinator_observer.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//content/public/browser",
+    "//ui/android",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+# This target cannot be private because Java must be hooked separately from
+# the native library [1]. But it is *effectively* private: all classes are
+# package-private and only used by account_storage_notice.cc.
+#
+# [1] https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/BUILD.gn;l=3932;drc=29634f0b343c5874147170bb4b5d06d17e0be57b
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinator.java" ]
+  deps = [
+    "//components/browser_ui/settings/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+  visibility = [ "//chrome/browser/password_manager/android:java" ]
+}
+
+# Private.
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinator.java" ]
+  visibility = [ ":*" ]
+}
