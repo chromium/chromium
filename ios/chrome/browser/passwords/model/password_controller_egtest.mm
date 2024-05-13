@@ -338,7 +338,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait for the accessory icon to appear.
   WaitForKeyboardToAppear();
 
-  // Tap on a 'Suggest Password...' chip.
+  // Tap on a suggest password chip.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       performAction:grey_tap()];
 
@@ -374,11 +374,11 @@ BOOL WaitForKeyboardToAppear() {
   // Wait for the accessory icon to appear.
   WaitForKeyboardToAppear();
 
-  // Verify the 'Suggest Password...' chip is shown.
+  // Verify the suggest password chip is shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap on a 'Suggest Password...' chip.
+  // Tap on a suggest password chip.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       performAction:grey_tap()];
 
@@ -418,7 +418,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait for the accessory icon to appear.
   WaitForKeyboardToAppear();
 
-  // Verify the 'Suggest Password...' chip is not shown.
+  // Verify the suggest password chip is not shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -460,7 +460,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait for the accessory icon to appear.
   WaitForKeyboardToAppear();
 
-  // Verify the 'Suggest Password...' chip is not shown.
+  // Verify the suggest password chip is not shown.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
       assertWithMatcher:grey_notVisible()];
 }

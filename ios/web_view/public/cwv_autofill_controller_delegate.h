@@ -157,10 +157,10 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
                          leakType:(CWVPasswordLeakType)leakType
                          username:(NSString*)username;
 
-// Called when the user taps on the "Suggest password..." suggestion when trying
-// to sign up for a new account on a site. |generatedPassword| is a randomly
-// generated password that, if accepted in |decisionHandler|, will be injected
-// into the form. |decisionHandler| must be called.
+// Called when the user taps on the suggest password suggestion when
+// trying to sign up for a new account on a site. |generatedPassword| is a
+// randomly generated password that, if accepted in |decisionHandler|, will be
+// injected into the form. |decisionHandler| must be called.
 - (void)autofillController:(CWVAutofillController*)autofillController
     suggestGeneratedPassword:(NSString*)generatedPassword
              decisionHandler:(void (^)(BOOL accept))decisionHandler;

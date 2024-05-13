@@ -577,7 +577,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                        fieldIdentifier:formQuery.fieldRendererID
                              fieldType:formQuery.fieldType
                                inFrame:frame]) {
-    // Add "Suggest Password...".
     NSString* suggestPassword = GetNSString(IDS_IOS_SUGGEST_PASSWORD);
     FormSuggestion* suggestion = [FormSuggestion
         suggestionWithValue:suggestPassword

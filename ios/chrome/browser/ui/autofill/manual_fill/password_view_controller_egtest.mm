@@ -947,7 +947,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/false);
 
-  // Select a 'Suggest Password...' option.
+  // Select a suggest password option.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       performAction:grey_tap()];
 
@@ -977,11 +977,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/false);
 
-  // Verify a 'Suggest Password...' option is showing.
+  // Verify a suggest password option is showing.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Select a 'Suggest Password...' option.
+  // Select a suggest password option.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       performAction:grey_tap()];
 }
@@ -1011,7 +1011,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/false);
 
-  // Verify the 'Suggest Password...' option is not shown.
+  // Verify the suggest password option is not shown.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -1047,7 +1047,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Open the password manual fill view.
   OpenPasswordManualFillView(/*has_suggestions=*/false);
 
-  // Verify the 'Suggest Password...' option is not shown.
+  // Verify the suggest password option is not shown.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       assertWithMatcher:grey_notVisible()];
 }
