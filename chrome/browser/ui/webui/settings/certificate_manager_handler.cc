@@ -102,13 +102,9 @@ void ExportCertificatesAsync(
     export_certs.push_back(net::x509_util::CreateCryptoBuffer(cert_info->cert));
   }
 
-  // TODO(crbug.com/40928765): currently requires user to select a different
-  // export option because the default is to only save the first certificate.
-  // Should modify chrome/browser/ui/certificate_dialogs.h for a new option to
-  // make this more user-friendly.
-  ShowCertExportDialog(web_contents.get(),
-                       web_contents->GetTopLevelNativeWindow(),
-                       std::move(export_certs), "chrome_root_store_certs.pem");
+  ShowCertExportDialogSaveAll(
+      web_contents.get(), web_contents->GetTopLevelNativeWindow(),
+      std::move(export_certs), "chrome_root_store_certs.pem");
   return;
 }
 

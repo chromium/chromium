@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_CERTIFICATE_DIALOGS_H_
 #define CHROME_BROWSER_UI_CERTIFICATE_DIALOGS_H_
 
+#include "chrome/common/buildflags.h"
 #include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -39,5 +40,15 @@ void ShowCertExportDialog(content::WebContents* web_contents,
                           net::ScopedCERTCertificateList::iterator certs_begin,
                           net::ScopedCERTCertificateList::iterator certs_end);
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+// Show a dialog to save all the certs provided; certs are not necessarily part
+// of any chain.
+void ShowCertExportDialogSaveAll(
+    content::WebContents* web_contents,
+    gfx::NativeWindow parent,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+    const std::string& suggested_file_name);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #endif  // CHROME_BROWSER_UI_CERTIFICATE_DIALOGS_H_

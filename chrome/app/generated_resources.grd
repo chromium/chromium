@@ -4199,6 +4199,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
+      <message name="IDS_CERT_EXPORT_TYPE_BASE64_ALL" desc="The description of saving multiple certificates in base64 encoding.">
+        Base64-encoded ASCII, multiple certificates
+      </message>
       <message name="IDS_CERT_EXPORT_TYPE_BASE64" desc="The description of saving a single certificate in base64 encoding.">
         Base64-encoded ASCII, single certificate
       </message>
