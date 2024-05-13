@@ -311,14 +311,14 @@ const ClipboardFormatType& ClipboardFormatType::InternalSourceUrlType() {
 // static
 const ClipboardFormatType& ClipboardFormatType::ClipboardHistoryType() {
   static base::NoDestructor<ClipboardFormatType> format(
-      ::RegisterClipboardFormat(L"CanIncludeInClipboardHistory"));
+      RegisterClipboardFormatChecked(L"CanIncludeInClipboardHistory"));
   return *format;
 }
 
 // static
 const ClipboardFormatType& ClipboardFormatType::UploadCloudClipboardType() {
   static base::NoDestructor<ClipboardFormatType> format(
-      ::RegisterClipboardFormat(L"CanUploadToCloudClipboard"));
+      RegisterClipboardFormatChecked(L"CanUploadToCloudClipboard"));
   return *format;
 }
 
