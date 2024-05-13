@@ -2396,7 +2396,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2731971182069536520">Az eszköz következő újraindításakor a rendszergazda egyszeri frissítést fog végezni, amely törli a helyi adatokat.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />/<ph name="CURRENT_ELEMENT" />. extra tartalom</translation>
 <translation id="2733248615007838252">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszenek Önnek ezek a találatok.</translation>
-<translation id="2733992589856193783">Létrehozott egy azonosítókulcsot a webhelyhez. A bejelentkezéshez szüksége lesz a mobileszközére.</translation>
 <translation id="2734797989819862638">Nem másolom át</translation>
 <translation id="27349076983469322">Világos háttér</translation>
 <translation id="2735712963799620190">Ütemezés</translation>
@@ -4183,7 +4182,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4072805772816336153">Próbálja újra később</translation>
 <translation id="4074164314564067597">billentyűzet</translation>
 <translation id="407520071244661467">Átméretezés</translation>
-<translation id="407543464472585404"><ph name="NAME" /> profilja ehhez az e-mail-címhez van társítva: <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">A webhelyen letiltott hirdetések találhatók</translation>
 <translation id="4078738236287221428">Agresszív</translation>
 <translation id="4078903002989614318">Rendezési és listabeállítások</translation>
@@ -6881,7 +6879,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6163522313638838258">Összes részletes nézete...</translation>
 <translation id="6164393601566177235">Webhelyek hozzáadása</translation>
 <translation id="6164832038898943453">Nyelvek hozzáadása az automatikus fordításhoz</translation>
-<translation id="6165445202608357894">Létrehozott egy azonosítókulcsot a webhelyhez</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6165850999903769629">Mostantól a ChromeOS összes alkalmazása a saját alkalmazásablakában nyílik meg, nem pedig a Chrome-ban.</translation>
 <translation id="6166185671393271715">Jelszavak importálása a Chrome-ba</translation>
@@ -9889,6 +9886,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8427292751741042100">beágyazva bármilyen más gazdagépen</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8428271547607112339">Iskolai fiók felvétele</translation>
+<translation id="8428634594422941299">Értem</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> múlva kijelentkezteti a rendszer</translation>
 <translation id="8431190899827883166">Koppintások megjelenítése</translation>
 <translation id="843173223122814223">Létrehozhat háttereket AI segítségével</translation>

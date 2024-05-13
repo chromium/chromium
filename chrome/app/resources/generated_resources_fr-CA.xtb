@@ -2384,7 +2384,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
 <translation id="2732134891301408122">Contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">La mention J'aime indique que vous aimez ces résultats.</translation>
-<translation id="2733992589856193783">Vous avez créé une clé d'accès pour ce site. Vous avez besoin de votre appareil mobile pour vous connecter.</translation>
 <translation id="2734797989819862638">Ne pas copier</translation>
 <translation id="27349076983469322">Arrière-plan clair</translation>
 <translation id="2735712963799620190">Horaire</translation>
@@ -4176,7 +4175,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4074164314564067597">clavier</translation>
 <translation id="407520071244661467">Redimensionner</translation>
-<translation id="407543464472585404">Le profil de <ph name="NAME" /> est associé à l'adresse <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Annonces bloquées sur ce site</translation>
 <translation id="4078738236287221428">Aggressive</translation>
 <translation id="4078903002989614318">Options de tri et de liste</translation>
@@ -6872,7 +6870,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6163522313638838258">Tout développer...</translation>
 <translation id="6164393601566177235">Ajouter des sites</translation>
 <translation id="6164832038898943453">Ajouter des langues à traduire automatiquement</translation>
-<translation id="6165445202608357894">Vous avez créé une clé d'accès pour ce site</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6165850999903769629">Toutes les applications sur ChromeOS s'ouvrent désormais dans leurs propres fenêtres d'application plutôt que dans Chrome.</translation>
 <translation id="6166185671393271715">Importer les mots de passe dans Chrome</translation>
@@ -9881,6 +9878,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8427292751741042100">intégrée à n'importe quel hôte</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8428271547607112339">Ajouter un compte scolaire</translation>
+<translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous serez déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="843173223122814223">Créer des arrière-plans avec l'IA</translation>

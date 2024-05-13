@@ -35,6 +35,7 @@
  η σύζευξη. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Το Chrome OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="155168855724261758">Προσαρμόστε το Chrome</translation>
+<translation id="1551749261806528781">Για να αποθηκεύετε και να χρησιμοποιείτε τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας, συνδεθείτε στο Chrome. Αυτός ο κωδικός πρόσβασης θα αποθηκευτεί στον Λογαριασμό σας Google αφού συνδεθείτε.</translation>
 <translation id="1553358976309200471">Ενημερώστε το Chrome</translation>
 <translation id="1583073672411044740">Ο χρήστης <ph name="EXISTING_USER" /> είναι συνδεδεμένος ήδη σε αυτό το προφίλ Chrome. Με αυτόν τον τρόπο θα δημιουργηθεί ένα νέο προφίλ Chrome για το <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Το Google Chrome χρησιμοποιεί την κάμερά σας.</translation>
@@ -316,6 +317,7 @@
 <translation id="5940385492829620908">Εδώ μπορείτε να βρείτε τις ιστοσελίδες, τους σελιδοδείκτες σας και άλλα δεδομένα του Chrome.</translation>
 <translation id="5941711191222866238">Ελαχιστοποίηση</translation>
 <translation id="5941830788786076944">Ορισμός Google Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
+<translation id="5947104538377036631">Συντόμευση Chrome</translation>
 <translation id="6003112304606738118">Λήψη… Απομένουν <ph name="HOURS" /> ώρες</translation>
 <translation id="6014316319780893079">Με τα <ph name="BEGIN_LINK" />εργαλεία του Chrome<ph name="END_LINK" />, μπορείτε να περιηγείστε με ασφάλεια και να διατηρείτε τον έλεγχο</translation>
 <translation id="6022659036123304283">Προσαρμόστε το Chrome για εσάς</translation>
@@ -333,7 +335,6 @@
 <translation id="624230925347970731">Το Chrome θα κλείσει σύντομα</translation>
 <translation id="6247557882553405851">Διαχειριστής κωδικών πρόσβασης Google</translation>
 <translation id="6251759518630934363">Σας προειδοποιεί για επικίνδυνους ιστοτόπους, ακόμα και για όσους δεν γνώριζε η Google στο παρελθόν, αναλύοντας περισσότερα δεδομένα από ιστοτόπους σε σχέση με την βασική προστασία. Μπορείτε να επιλέξετε να παραβλέψετε τις ειδοποιήσεις του Chrome.</translation>
-<translation id="6273793429163604305">Λάβετε θέσεις…</translation>
 <translation id="6277547788421725101">Ο γονέας σου απενεργοποίησε την επιλογή "Άδειες για ιστοτόπους, εφαρμογές και επεκτάσεις" για το Chrome</translation>
 <translation id="627882678981830918">Προσαρμογή και έλεγχος του Chrome. Ορίστε το Chrome ως προεπιλογή.</translation>
 <translation id="6291089322031436445">Εφαρμογές Chrome Dev</translation>

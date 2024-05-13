@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2305172810646967500">أسود</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
+<translation id="2308243864813041101">‏عليك فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
 <translation id="2324354238778375592">النافذة العائمة</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">عناصر التحكّم</translation>
 <translation id="2652403576514495859">تفعيل ميزة "إملاء" أو إيقافها</translation>
 <translation id="2653659639078652383">إرسال</translation>
+<translation id="2654647726140493436">يُرجى عدم إيقاف تشغيل "<ph name="DEVICE_TYPE" />" أو فصل كابل الطاقة الخاص بجهاز "<ph name="DEVICE_TYPE" />" أثناء عملية التحديث</translation>
 <translation id="2656001153562991489">‏حصريًا لأجهزة Chromebook Plus</translation>
 <translation id="2665671725390405060">الاستماع إلى اللفظ</translation>
 <translation id="267442004702508783">تحديث</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">إعادة الكتابة</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
+<translation id="3263941347294171263">عليك فصل "<ph name="DEVICE_NAME" />" عن مصدر الطاقة ثم إعادة توصيله به لمواصلة عملية التحديث</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3275729367986477355">الصورة الرمزية</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
@@ -728,6 +731,7 @@
 <translation id="5160857336552977725">سجّل الدخول إلى <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">حالة البطارية</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
+<translation id="517075088756846356">عليك فصل كابل الطاقة الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة وإعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5180108905184566358">أشجار الباوباب</translation>
 <translation id="5180712487038406644">معبِّر</translation>
 <translation id="5190187232518914472">‏استرجِع ذكرياتك المفضّلة. ولإضافة أي ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
@@ -789,6 +793,7 @@
 <translation id="554067135846762198">الأحمر المرجاني والبني الفاتح</translation>
 <translation id="5543701552415191873">مقفَل</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">‏هذا التحديث مقدَّم من الشركة المصنّعة للجهاز الخارجي ولم تتحقّق Google منه.</translation>
 <translation id="5559898619118303662">التبديل تلقائيًا إلى المظهر الداكن عند الغروب</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> بظلال اللون <ph name="TERRAIN_COLOR" /></translation>
@@ -1080,6 +1085,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">غنية بالألوان</translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
+<translation id="7101959270679078188">يجب فتح قفل "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">اختيار عمل فني حصري مِن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">إدخال</translation>
@@ -1355,6 +1361,7 @@
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">رامين</translation>
+<translation id="8689520252402395106">‏عليك إعادة توصيل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
@@ -1362,6 +1369,7 @@
 <translation id="8725066075913043281">إعادة المحاولة</translation>
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
 <translation id="8730621377337864115">تم</translation>
+<translation id="8739555075907731077">توقَّف التحديث مؤقتًا (اكتمل بنسبة %<ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="8747900814994928677">تأكيد التغيير</translation>
 <translation id="8749478549112817787">خلفية الكاميرا</translation>
 <translation id="8755946156089753497">برج</translation>

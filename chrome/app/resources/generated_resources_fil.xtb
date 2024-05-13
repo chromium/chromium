@@ -2398,7 +2398,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2731971182069536520">Sa susunod na i-restart mo ang iyong device, magsasagawa ang administrator mo ng isang beses na pag-update na magde-delete sa iyong lokal na data.</translation>
 <translation id="2732134891301408122">Karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Nagsusumite ang thumbs up ng feedback na gusto mo ang mga resultang ito.</translation>
-<translation id="2733992589856193783">Gumawa ka ng passkey para sa site na ito. Kailangan mo ang iyong mobile device para mag-sign in.</translation>
 <translation id="2734797989819862638">Huwag kopyahin</translation>
 <translation id="27349076983469322">Maliwanag na background</translation>
 <translation id="2735712963799620190">Iskedyul</translation>
@@ -4189,7 +4188,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4072805772816336153">Subukan ulit sa ibang pagkakataon</translation>
 <translation id="4074164314564067597">keyboard</translation>
 <translation id="407520071244661467">Scale</translation>
-<translation id="407543464472585404">Naka-link ang profile ni <ph name="NAME" /> sa <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Naka-block ang mga ad sa site na ito</translation>
 <translation id="4078738236287221428">Agresibo</translation>
 <translation id="4078903002989614318">Mga opsyon sa pagbubukod-bukod at listahan</translation>
@@ -6887,7 +6885,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6163522313638838258">Palawakin lahat...</translation>
 <translation id="6164393601566177235">Magdagdag ng mga site</translation>
 <translation id="6164832038898943453">Magdagdag ng mga wikang awtomatikong isasalin</translation>
-<translation id="6165445202608357894">Gumawa ka ng passkey para sa site na ito</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6165850999903769629">Sa halip na sa Chrome, nabubuksan na sa mga sarili nitong app window ang lahat ng app sa ChromeOS.</translation>
 <translation id="6166185671393271715">Mag-import ng Mga Password sa Chrome</translation>
@@ -9898,6 +9895,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8427292751741042100">naka-embed sa anumang host</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8428271547607112339">Magdagdag ng pampaaralang account</translation>
+<translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Masa-sign out ka sa loob ng <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Ipakita ang mga pag-tap</translation>
 <translation id="843173223122814223">Gumawa ng mga background gamit ang AI</translation>

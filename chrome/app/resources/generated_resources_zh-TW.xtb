@@ -2382,7 +2382,6 @@
 <translation id="2731971182069536520">系統管理員會在你下次重新啟動裝置時執行一次性更新，而這項更新會刪除你的本機資料。</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="2733248615007838252">按讚可對這些結果給予正面評價。</translation>
-<translation id="2733992589856193783">你已為這個網站建立密碼金鑰，需要使用行動裝置登入。</translation>
 <translation id="2734797989819862638">不要複製</translation>
 <translation id="27349076983469322">淺色背景</translation>
 <translation id="2735712963799620190">設定時間</translation>
@@ -4169,7 +4168,6 @@
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4074164314564067597">鍵盤</translation>
 <translation id="407520071244661467">縮放比例</translation>
-<translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">已封鎖這個網站的廣告</translation>
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序與清單選項</translation>
@@ -4211,7 +4209,7 @@
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4103644672850109428">螢幕閱讀器、放大</translation>
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
-<translation id="4104944259562794668">你之後可以前往「設定」&gt;「安全性與隱私權」&gt;「螢幕鎖定和登入」加以啟用</translation>
+<translation id="4104944259562794668">你之後可以前往「設定」&gt;「安全性和隱私權」&gt;「螢幕鎖定和登入」加以啟用</translation>
 <translation id="4106054677122819586">現在就開始整理分頁</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4107522742068568249">前往安全檢查頁面</translation>
@@ -6861,7 +6859,6 @@
 <translation id="6163522313638838258">全部展開...</translation>
 <translation id="6164393601566177235">新增網站</translation>
 <translation id="6164832038898943453">新增要自動翻譯的語言</translation>
-<translation id="6165445202608357894">你已建立這個網站的密碼金鑰</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6165850999903769629">在 ChromeOS 上，所有應用程式現在都會在獨立應用程式視窗中開啟，不會使用 Chrome 開啟。</translation>
 <translation id="6166185671393271715">將密碼匯入 Chrome 中</translation>
@@ -9870,6 +9867,7 @@
 <translation id="8427292751741042100">嵌入任何主機</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428271547607112339">新增學校帳戶</translation>
+<translation id="8428634594422941299">我知道了</translation>
 <translation id="84297032718407999">你將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="843173223122814223">使用 AI 建立背景</translation>

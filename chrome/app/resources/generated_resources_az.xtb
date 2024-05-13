@@ -2381,7 +2381,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2731971182069536520">Növbəti dəfə cihazı yenidən başlatdığınız zaman administrator birdəfəlik güncəlləmə yerinə yetirəcək. Bu, lokal datanızı siləcək.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> əlavə məzmun</translation>
 <translation id="2733248615007838252">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir.</translation>
-<translation id="2733992589856193783">Bu sayt üçün giriş açarı yaratdınız. Mobil cihaz ilə daxil olun.</translation>
 <translation id="2734797989819862638">Kopyalamayın</translation>
 <translation id="27349076983469322">Açıq arxa fon</translation>
 <translation id="2735712963799620190">Rejim</translation>
@@ -4172,7 +4171,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4072805772816336153">Sonra yenidən sınayın</translation>
 <translation id="4074164314564067597">klaviatura</translation>
 <translation id="407520071244661467">Miqyas</translation>
-<translation id="407543464472585404"><ph name="NAME" /> adlı şəxsin profili <ph name="EMAIL" /> ilə əlaqələndirilib</translation>
 <translation id="4077917118009885966">Bu saytdakı reklamlar blok edildi</translation>
 <translation id="4078738236287221428">Aqressiv</translation>
 <translation id="4078903002989614318">Çeşidləmə və siyahı seçimləri</translation>
@@ -6864,7 +6862,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6163522313638838258">Hamısını genişləndirin...</translation>
 <translation id="6164393601566177235">Sayt əlavə edin</translation>
 <translation id="6164832038898943453">Avtomatik tərcümə etmək üçün dillər əlavə edin</translation>
-<translation id="6165445202608357894">Bu sayt üçün giriş açarı yaratdınız</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6165850999903769629">ChromeOS-dakı bütün tətbiqlər indi Chrome-da deyil, öz tətbiq pəncərələrində açılır.</translation>
 <translation id="6166185671393271715">Parolları Chrome'a import edin</translation>
@@ -9871,6 +9868,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8427292751741042100">hər hansı hosta yerləşdirilmiş</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428271547607112339">Məktəb hesabı əlavə edin</translation>
+<translation id="8428634594422941299">Anladım</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8431190899827883166">Vizual reaksiya</translation>
 <translation id="843173223122814223">Sİ ilə arxa fon yaradın</translation>

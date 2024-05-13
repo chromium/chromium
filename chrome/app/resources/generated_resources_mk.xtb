@@ -2398,7 +2398,6 @@
 <translation id="2731971182069536520">Следниот пат кога ќе го рестартирате уредот, вашиот администратор ќе изврши еднократно ажурирање што ќе ги избрише локалните податоци.</translation>
 <translation id="2732134891301408122">Дополнителни содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓаат резултативе.</translation>
-<translation id="2733992589856193783">Создадовте криптографски клуч за сајтов. За да се најавите, ќе ви треба вашиот мобилен уред.</translation>
 <translation id="2734797989819862638">Не копирај</translation>
 <translation id="27349076983469322">Светла заднина</translation>
 <translation id="2735712963799620190">Распоред</translation>
@@ -4186,7 +4185,6 @@
 <translation id="4072805772816336153">Обидете се повторно подоцна</translation>
 <translation id="4074164314564067597">тастатура</translation>
 <translation id="407520071244661467">Размер</translation>
-<translation id="407543464472585404">Профилот на <ph name="NAME" /> е поврзан со <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Рекламите се блокирани на сајтов</translation>
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4078903002989614318">Опции за подредување и наведување</translation>
@@ -6882,7 +6880,6 @@
 <translation id="6163522313638838258">Прошири сѐ...</translation>
 <translation id="6164393601566177235">Додавање сајтови</translation>
 <translation id="6164832038898943453">Додајте јазици што автоматски треба да се преведуваат</translation>
-<translation id="6165445202608357894">Создадовте криптографски клуч за сајтов</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6165850999903769629">Сега сите апликации на ChromeOS се отвораат во сопствени прозорци на апликација наместо во Chrome.</translation>
 <translation id="6166185671393271715">Увоз на лозинки во Chrome</translation>
@@ -9894,6 +9891,7 @@
 <translation id="8427292751741042100">вградено во секој хост</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8428271547607112339">Додајте училишна сметка</translation>
+<translation id="8428634594422941299">Сфатив</translation>
 <translation id="84297032718407999">Ќе ве одјавиме за <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Прикажувај допири</translation>
 <translation id="843173223122814223">Создавајте заднини со AI</translation>

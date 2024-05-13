@@ -2382,7 +2382,6 @@
 <translation id="2731971182069536520">Հաջորդ անգամ, երբ վերագործարկեք սարքը, ձեր ադմինիստրատորը մեկանգամյա թարմացում կկատարի, ինչի արդյունքում ձեր լոկալ տվյալները կջնջվեն:</translation>
 <translation id="2732134891301408122">Լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="2733248615007838252">«Լավն է» կոճակի սեղմումը դրական կարծիք է ուղարկում այս արդյունքների մասին։</translation>
-<translation id="2733992589856193783">Դուք մուտքի բանալի եք ստեղծել այս կայքի համար։ Մուտք գործելու համար պահանջվում է ձեր բջջային սարքը։</translation>
 <translation id="2734797989819862638">Չպատճենել</translation>
 <translation id="27349076983469322">Բաց ֆոն</translation>
 <translation id="2735712963799620190">Ժամանակացույց</translation>
@@ -4171,7 +4170,6 @@
 <translation id="4072805772816336153">Փորձեք ավելի ուշ</translation>
 <translation id="4074164314564067597">ստեղնաշար</translation>
 <translation id="407520071244661467">Մասշտաբ</translation>
-<translation id="407543464472585404"><ph name="NAME" />-ի պրոֆիլը կապված է <ph name="EMAIL" /> հաշվի հետ</translation>
 <translation id="4077917118009885966">Գովազդն արգելափակված է այս կայքում</translation>
 <translation id="4078738236287221428">Ագրեսիվ</translation>
 <translation id="4078903002989614318">Տեսակավորման և ցանկի ընտրանքներ</translation>
@@ -6865,7 +6863,6 @@
 <translation id="6163522313638838258">Ընդլայնել բոլորը…</translation>
 <translation id="6164393601566177235">Ինչպես կայքեր ավելացնել</translation>
 <translation id="6164832038898943453">Ավելացրեք լեզուներ՝ ավտոմատ թարգմանելու համար</translation>
-<translation id="6165445202608357894">Դուք անցակոդ եք ստեղծել այս կայքի համար</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6165850999903769629">ChromeOS-ում բոլոր հավելվածների էջերն այժմ բացվում են այդ հավելվածների պատուհաններում, այլ ոչ թէ Chrome-ում։</translation>
 <translation id="6166185671393271715">Գաղտնաբառերի ներմուծում Chrome</translation>
@@ -9873,6 +9870,7 @@
 <translation id="8427292751741042100">ներկառուցված է ցանկացած խնամորդում</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8428271547607112339">Ավելացնել ուսումնական հաշիվ</translation>
+<translation id="8428634594422941299">Պարզ է</translation>
 <translation id="84297032718407999">Դուք դուրս կգրվեք <ph name="LOGOUT_TIME_LEFT" />ից</translation>
 <translation id="8431190899827883166">Ցույց տալ հպումները</translation>
 <translation id="843173223122814223">Ստեղծեք ֆոներ արհեստական բանականության օգնությամբ</translation>

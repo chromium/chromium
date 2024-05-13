@@ -60,6 +60,7 @@
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2020032459870799438">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">選擇是否包含 Chromium 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
+<translation id="2065461321550902389">如要在所有裝置上儲存及使用密碼和其他資料，請登入 Chromium。登入後，此密碼會儲存至你的 Google 帳戶。</translation>
 <translation id="2086476982681781442">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="2088953378266246249">Chromium 如何管理根憑證的相關資訊</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>
@@ -306,7 +307,6 @@
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
 <translation id="6266342355635466082">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
-<translation id="6273793429163604305">即將就緒…</translation>
 <translation id="6281746429495226318">自訂您的 Chromium 設定檔</translation>
 <translation id="6290827346642914212">為 Chromium 設定檔命名</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能不安全，因此 Chromium 已封鎖此檔案。</translation>
@@ -314,6 +314,7 @@
 <translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項操作，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
+<translation id="6347933965114150440">Chromium 捷徑</translation>
 <translation id="6366160072964553914">由於此檔案不是常見的下載項目，可能含有危險內容，因此 Chromium 已禁止下載</translation>
 <translation id="6373523479360886564">您確定要解除安裝 Chromium 嗎？</translation>
 <translation id="6375219077595103062">新增「密碼管理工具」的捷徑</translation>

@@ -2381,7 +2381,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2731971182069536520">A próxima vez que reinicies o dispositivo, o administrador levará a cabo unha actualización única que eliminará os teus datos locais.</translation>
 <translation id="2732134891301408122">Contido extra: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Coa opción Gústame indicas que che gustan estes resultados.</translation>
-<translation id="2733992589856193783">Creaches unha clave de acceso para este sitio. Necesitas o teu dispositivo móbil para iniciar sesión.</translation>
 <translation id="2734797989819862638">Non copiar</translation>
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programación</translation>
@@ -2821,6 +2820,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3051250416341590778">Tamaño da pantalla</translation>
 <translation id="3053013834507634016">Uso da clave de certificado</translation>
 <translation id="3053273573829329829">Activar PIN de usuario</translation>
+<translation id="3053274730492362225">Sen escintileo</translation>
 <translation id="3054766768827382232">Ao desactivala, podes conseguir que os periféricos teñan un mellor rendemento, pero é posible que os teus datos persoais se usen sen permiso e queden expostos.</translation>
 <translation id="3056438898277655057">Concédelle permiso a <ph name="SPECIFIC_NAME" /> para acceder a dispositivos USB. <ph name="SPECIFIC_NAME" /> non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="3058498974290601450">Podes activar a sincronización en calquera momento na configuración</translation>
@@ -3221,6 +3221,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3393554941209044235">Análise de documentos de Chrome</translation>
 <translation id="3393582007140394275">Non se puido emitir a pantalla.</translation>
 <translation id="3394850431319394743">Permiso concedido para usar identificadores para reproducir contido protexido</translation>
+<translation id="3396442984945202128">Verificar a túa identidade</translation>
 <translation id="3396800784455899911">Ao facer clic no botón Aceptar e continuar, aceptarás o procesamento descrito anteriormente para estes servizos de Google.</translation>
 <translation id="339722927132407568">A imaxe conxélase</translation>
 <translation id="3398899528308712018">Suxestión de grupo de pestanas</translation>
@@ -3454,6 +3455,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3567168891086460374">Gardar doutro xeito</translation>
 <translation id="3567284462585300767">Fai que o teu dispositivo sexa visible para recibir e aceptar ficheiros de persoas preto de ti</translation>
 <translation id="356738834800832239">Gardouse o teu contrasinal</translation>
+<translation id="3568431410312984116">Permítese que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="3569382839528428029">Queres que <ph name="APP_NAME" /> comparta a túa pantalla?</translation>
 <translation id="3569614820047645079">Os ficheiros de A miña unidade sincronízanse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os seguintes ficheiros e cartafoles</translation>
@@ -4172,7 +4174,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4072805772816336153">Téntao de novo máis tarde</translation>
 <translation id="4074164314564067597">teclado</translation>
 <translation id="407520071244661467">Escala</translation>
-<translation id="407543464472585404">O perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Os anuncios están bloqueados neste sitio</translation>
 <translation id="4078738236287221428">Agresiva</translation>
 <translation id="4078903002989614318">Opcións de ordenación e de lista</translation>
@@ -5962,6 +5963,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5474859849784484111"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).</translation>
 <translation id="5477089831058413614">Configurar a zona wifi do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Permiso denegado para descargar automaticamente varios ficheiros</translation>
+<translation id="5481682542063333508">Ofrecer axuda para escribir</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5482417738572414119">Se inicias sesión, Chrome pode suxerir grupos de pestanas para ter as pestanas organizadas</translation>
 <translation id="5484181871714116891">Se activas esta opción, as claves de acceso crearanse no chaveiro de iCloud (iCloud Keychain) e estarán dispoñibles nos diferentes dispositivos de Apple. Se non a activas, crearanse no teu perfil de Chrome deste dispositivo.</translation>
@@ -6864,7 +6866,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6163522313638838258">Ampliar todo...</translation>
 <translation id="6164393601566177235">Engadir sitios</translation>
 <translation id="6164832038898943453">Engadir idiomas para traducilos automaticamente</translation>
-<translation id="6165445202608357894">Creaches unha clave de acceso para este sitio</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6165850999903769629">As aplicacións de ChromeOS ábrense agora na súa propia ventá en lugar de en Chrome.</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
@@ -9871,6 +9872,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8427292751741042100">páxina inserida en calquera host</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428271547607112339">Engadir conta escolar</translation>
+<translation id="8428634594422941299">De acordo</translation>
 <translation id="84297032718407999">Pecharase a túa sesión dentro de <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
@@ -10214,6 +10216,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="869167754614449887">Eliminouse <ph name="FILE_NAME" /> do historial de descargas</translation>
 <translation id="8692107307702113268">O contrasinal ten máis de 1000 caracteres</translation>
 <translation id="8693639060656817812">Máis información sobre a dispoñibilidade da protección contra o seguimento</translation>
+<translation id="8693862390730570097">Non se permite que a función Axúdame a escribir se abra automaticamente</translation>
 <translation id="8694596275649352090">Bloquear cando estea en suspensión ou cando se peche a tapa</translation>
 <translation id="8695139659682234808">Engadir controis parentais despois da configuración</translation>
 <translation id="8695825812785969222">Abrir &amp;localización...</translation>
@@ -10805,6 +10808,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9113240369465613386">Só páxinas impares</translation>
 <translation id="9113469270512809735">Ocultar ou mostrar elementos pechados recentemente</translation>
+<translation id="9113529408970052045">A función Axúdame a escribir poderá abrirse automaticamente cando haxa unha caixa de texto nun sitio que se poida completar con contido breve</translation>
 <translation id="9114663181201435112">Iniciar sesión facilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
 <translation id="9115932142612197835">Esta opción de configuración non modifica a dispoñibilidade do Tradutor de Google nin de Lens</translation>

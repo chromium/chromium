@@ -615,6 +615,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2122214041802369259">Prijs is hoog</translation>
 <translation id="2122719317867821810">Dit beleid werkt zoals bedoeld, maar ergens anders is een conflicterende waarde ingesteld die wordt overschreven door dit beleid.</translation>
 <translation id="2126374524350484896">Pdf gemaakt met:</translation>
+<translation id="2127090458081644412">Wachtwoord opgeslagen op dit apparaat</translation>
 <translation id="2130448033692577677">De gespecificeerde templates worden misschien niet toegepast omdat het beleid DnsOverHttpsMode niet is ingesteld.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Deze worden in willekeurige volgorde getoond. Je kunt de standaardwaarde altijd wijzigen.</translation>
@@ -2026,6 +2027,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4901952598169637881">Vrijetijdsschoenen</translation>
 <translation id="4905659621780993806">Je beheerder start het apparaat op <ph name="DATE" /> om <ph name="TIME" /> automatisch opnieuw op. Sla alle geopende items op voordat je apparaat opnieuw wordt opgestart.</translation>
+<translation id="4913784027728226227">Laat verifiëren dat jij het bent om dit wachtwoord op al je apparaten op te slaan en te gebruiken</translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
 <translation id="4916389289686916969">Tv-realityseries</translation>
 <translation id="4917064667437236721">Beeldcilinder</translation>
@@ -2309,6 +2311,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5470861586879999274">&amp;Opnieuw bewerken</translation>
 <translation id="547963486735802022">Probeer je bestanden opnieuw over te zetten</translation>
 <translation id="5481076368049295676">Deze content probeert mogelijk gevaarlijke software op je apparaat te installeren die je gegevens steelt of verwijdert. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Hulp bij het schrijven aanbieden</translation>
 <translation id="54817484435770891">Voeg een geldig adres toe</translation>
 <translation id="5483838506518938965">Je bent helemaal klaar</translation>
 <translation id="5485973315555778056">Cloud-apparaat</translation>
@@ -4170,7 +4173,6 @@ Aanvullende informatie:
 <translation id="9049981332609050619">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een ongeldig certificaat geretourneerd.</translation>
 <translation id="9050666287014529139">Wachtwoordzin</translation>
 <translation id="9051072642122229460">Koffie- en espressomachines</translation>
-<translation id="9051260467258969162"><ph name="BEGIN_LINK" />Log opnieuw in<ph name="END_LINK" /> en kom daarna terug naar dit tabblad om schrijfhulp te krijgen</translation>
 <translation id="9053840549256861041">We lanceren een nieuwe functie voor advertentieprivacy: advertentiemeting. Chrome deelt alleen zeer beperkte informatie tussen sites, zoals wanneer een advertentie aan jou is getoond, zodat sites de prestaties van advertenties kunnen meten.</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Het bestand is mogelijk verplaatst, bewerkt of verwijderd.</translation>

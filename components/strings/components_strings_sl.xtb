@@ -615,6 +615,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2122214041802369259">Cena je visoka</translation>
 <translation id="2122719317867821810">Ta pravilnik deluje, kot je predvideno, vendar je nekje drugje nastavljena sporna vrednost, ki jo ta pravilnik preglasi.</translation>
 <translation id="2126374524350484896">Program za pretvorbo v PDF:</translation>
+<translation id="2127090458081644412">Geslo je shranjeno v tej napravi</translation>
 <translation id="2130448033692577677">Navedenih predlog morda ne bo mogoče uporabiti, ker pravilnik DnsOverHttpsMode policy ni nastavljen.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Ti so prikazani naključno. Privzetega lahko kadar koli spremenite.</translation>
@@ -2031,6 +2032,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4901778704868714008">Shrani ...</translation>
 <translation id="4901952598169637881">Obutev za prosti čas</translation>
 <translation id="4905659621780993806">Skrbnik bo napravo samodejno znova zagnal ob <ph name="TIME" /> dne <ph name="DATE" />. Preden se naprava znova zažene, shranite odprte elemente.</translation>
+<translation id="4913784027728226227">Če želite to geslo shraniti in ga uporabljati v vseh napravah, potrdite, da ste to vi</translation>
 <translation id="4913987521957242411">Luknjanje zgoraj levo</translation>
 <translation id="4916389289686916969">Televizijski resničnostni šovi</translation>
 <translation id="4917064667437236721">Imaging Cylinder</translation>
@@ -2314,6 +2316,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5470861586879999274">&amp;Uveljavi urejanje</translation>
 <translation id="547963486735802022">Poskusite znova prenesti datoteke</translation>
 <translation id="5481076368049295676">Ta vsebina morda v napravi poskuša namestiti nevarno programsko opremo, ki ukrade ali izbriše vaše podatke. <ph name="BEGIN_LINK" />Vseeno prikaži<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Ponudi pomoč pri pisanju</translation>
 <translation id="54817484435770891">Dodajanje veljavnega naslova</translation>
 <translation id="5483838506518938965">Pripravljeni ste</translation>
 <translation id="5485973315555778056">Računalnik v oblaku</translation>
@@ -4176,8 +4179,6 @@ Dodatne podrobnosti:
 <translation id="9049981332609050619">Skušali ste dostopati do domene <ph name="DOMAIN" />, vendar je strežnik predložil neveljavno potrdilo.</translation>
 <translation id="9050666287014529139">Geslo</translation>
 <translation id="9051072642122229460">Kavni avtomati</translation>
-<translation id="9051260467258969162">Znova <ph name="BEGIN_LINK" />se prijavite<ph name="END_LINK" />, 
-    nato se vrnite na ta zavihek, če želite pomoč pri pisanju</translation>
 <translation id="9053840549256861041">Uvajamo novo funkcijo za zasebnost pri oglaševanju, ki se imenuje merjenje oglasov. Chrome deli samo zelo omejene podatke s spletnimi mesti, na primer kdaj vam je bil oglas prikazan, da bi spletnim mestom pomagal meriti uspešnost oglasov.</translation>
 <translation id="9056953843249698117">Trgovina</translation>
 <translation id="9062620674789239642">Morda je premaknjena, urejena ali izbrisana.</translation>

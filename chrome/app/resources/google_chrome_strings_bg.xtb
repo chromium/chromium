@@ -35,6 +35,7 @@
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="155168855724261758">Персонализиране на Chrome</translation>
+<translation id="1551749261806528781">Влезте в Chrome, за да запазвате и използвате паролите и още много други неща на всичките си устройства. Тази парола ще бъде запазена в профила ви в Google, след като влезете в него.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1583073672411044740">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
@@ -314,6 +315,7 @@
 <translation id="5940385492829620908">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chrome.</translation>
 <translation id="5941711191222866238">Намаляване</translation>
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
+<translation id="5947104538377036631">Пряк път към Chrome</translation>
 <translation id="6003112304606738118">Изтегля се... Оставащо време: <ph name="HOURS" /> ч</translation>
 <translation id="6014316319780893079">С помощта на <ph name="BEGIN_LINK" />инструментите от Chrome<ph name="END_LINK" /> можете да сърфирате безопасно и да запазите контрол</translation>
 <translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
@@ -331,7 +333,6 @@
 <translation id="624230925347970731">Chrome скоро ще се затвори</translation>
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6251759518630934363">Предупреждава ви за опасни сайтове, включително такива, които не са били известни на Google, като анализира повече данни от сайтовете в сравнение със стандартната защита. Можете да пропуснете предупрежденията от Chrome.</translation>
-<translation id="6273793429163604305">Започваме...</translation>
 <translation id="6277547788421725101">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chrome</translation>
 <translation id="627882678981830918">Персонализиране и контролиране на Chrome. Задаване на Chrome като браузъра ви по подразбиране.</translation>
 <translation id="6291089322031436445">Приложения за Chrome Dev</translation>

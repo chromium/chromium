@@ -2395,7 +2395,6 @@
 <translation id="2731971182069536520">మీరు మీ పరికరాన్ని పునఃప్రారంభించే తర్వాతిసారి, మీ నిర్వాహకుడు వ‌న్‌-టైమ్ అప్‌డేట్‌ను అమలు చేస్తారు, దీని వలన మీ స్థానిక డేటా తొలగించబడుతుంది.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్</translation>
 <translation id="2733248615007838252">'బాగుంది' ఆప్షన్ మీకు నచ్చిన ఫలితాలను సమర్పిస్తుంది.</translation>
-<translation id="2733992589856193783">మీరు ఈ సైట్ కోసం పాస్-కీని క్రియేట్ చేశారు. మీరు మొబైల్ పరికరంతో సైన్ ఇన్ చేయాలి.</translation>
 <translation id="2734797989819862638">కాపీ చేయవద్దు</translation>
 <translation id="27349076983469322">తేలికపాటి నేపథ్యం</translation>
 <translation id="2735712963799620190">షెడ్యూల్</translation>
@@ -4186,7 +4185,6 @@
 <translation id="4072805772816336153">తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="4074164314564067597">కీబోర్డ్</translation>
 <translation id="407520071244661467">ప్రమాణం</translation>
-<translation id="407543464472585404"><ph name="NAME" /> ప్రొఫైల్, <ph name="EMAIL" />కు లింక్ చేయబడింది</translation>
 <translation id="4077917118009885966">ఈ సైట్‌లో ప్రకటనలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="4078738236287221428">తీవ్రం</translation>
 <translation id="4078903002989614318">క్రమపద్ధతిలో అమర్చే, లిస్ట్ చేసే ఆప్షన్‌లు</translation>
@@ -6883,7 +6881,6 @@
 <translation id="6163522313638838258">అన్నీ విస్తరించు...</translation>
 <translation id="6164393601566177235">సైట్‌లను జోడించండి</translation>
 <translation id="6164832038898943453">ఆటోమేటిక్‌గా ఏ భాషలలోకి అనువదించాలో, వాటిని జోడించండి</translation>
-<translation id="6165445202608357894">మీరు ఈ సైట్ కోసం పాస్-కీని క్రియేట్ చేశారు</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6165850999903769629">ChromeOSలోని అన్ని యాప్‌లు ఇప్పుడు Chromeలో కాకుండా వాటి స్వంత యాప్ విండోలలో తెరవబడతాయి.</translation>
 <translation id="6166185671393271715">Chromeకి పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
@@ -9888,6 +9885,7 @@
 <translation id="8427292751741042100">ఏదైనా హోస్ట్‌లో పొందుపరచబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8428271547607112339">పాఠశాల ఖాతాను జోడించండి</translation>
+<translation id="8428634594422941299">అర్థమైంది</translation>
 <translation id="84297032718407999">మీరు <ph name="LOGOUT_TIME_LEFT" />లో సైన్ అవుట్ అవుతారు</translation>
 <translation id="8431190899827883166">నొక్కినవి చూపు</translation>
 <translation id="843173223122814223">AIతో బ్యాక్‌గ్రౌండ్‌లను క్రియేట్ చేయండి</translation>

@@ -2387,7 +2387,6 @@
 <translation id="2731971182069536520">في المرة القادمة التي يتم فيها إعادة تشغيل الجهاز، سيُجري مشرفك تحديثًا لمرة واحدة، ما سيؤدي إلى حذف البيانات المحلية.</translation>
 <translation id="2732134891301408122">المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">يمكنك النقر على زر الإعجاب إذا أعجبتك هذه النتائج.</translation>
-<translation id="2733992589856193783">أنشأت مفتاح مرور لهذا الموقع الإلكتروني. يجب استخدام جهازك الجوّال لتسجيل الدخول.</translation>
 <translation id="2734797989819862638">عدم النسخ</translation>
 <translation id="27349076983469322">خلفية فاتحة</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
@@ -2827,6 +2826,7 @@
 <translation id="3051250416341590778">حجم شاشة العرض</translation>
 <translation id="3053013834507634016">استخدام مفتاح الشهادة</translation>
 <translation id="3053273573829329829">تفعيل رقم التعريف الشخصي للمستخدم</translation>
+<translation id="3053274730492362225">عدم تشغيل الوميض</translation>
 <translation id="3054766768827382232">إنّ إيقاف هذه الميزة يمكن أن يساعد على تحسين مستوى أداء الأجهزة الملحقة، ولكنّه قد يتسبب في الوصول إليها بشكل غير مصرّح به٬ ما قد يؤدي إلى الكشف عن بياناتك الشخصية.</translation>
 <translation id="3056438898277655057">‏امنح "<ph name="SPECIFIC_NAME" />" الإذن بالوصول إلى أجهزة USB. لن يكون بإمكان "<ph name="SPECIFIC_NAME" />" تذكّر بيانات جهاز USB بعد نزعه.</translation>
 <translation id="3058498974290601450">يمكنك تفعيل المزامنة في أي وقت في الإعدادات.</translation>
@@ -3227,6 +3227,7 @@
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3393582007140394275">يتعذّر بثّ الشاشة.</translation>
 <translation id="3394850431319394743">المواقع الإلكترونية التي يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
+<translation id="3396442984945202128">إثبات هويتك</translation>
 <translation id="3396800784455899911">‏بالنقر على الزر "قبول ومتابعة"، فأنت توافق على المعالجة الموضّحة أعلاه لخدمات Google هذه.</translation>
 <translation id="339722927132407568">يتوقف</translation>
 <translation id="3398899528308712018">اقتراح مجموعة علامات تبويب</translation>
@@ -3460,6 +3461,7 @@
 <translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
 <translation id="3567284462585300767">لاستلام الملفات وقبولها من الأشخاص من حولك، يجب إظهار جهازك.</translation>
 <translation id="356738834800832239">تم حفظ كلمة المرور</translation>
+<translation id="3568431410312984116">السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
 <translation id="3569382839528428029">هل تريد من <ph name="APP_NAME" /> مشاركة شاشتك؟</translation>
 <translation id="3569614820047645079">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
@@ -4173,7 +4175,6 @@
 <translation id="4072805772816336153">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4074164314564067597">لوحة المفاتيح</translation>
 <translation id="407520071244661467">تغيير الحجم</translation>
-<translation id="407543464472585404">تم ربط ملف <ph name="NAME" /> الشخصي بعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="4077917118009885966">حظر الإعلانات على هذا الموقع</translation>
 <translation id="4078738236287221428">حادّ</translation>
 <translation id="4078903002989614318">خيارات الترتيب والقوائم</translation>
@@ -5964,6 +5965,7 @@
 <translation id="5474859849784484111">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث أو التنزيل من خلال اتصال يفرض تكلفة استخدام ( قد يتم تحصيل رسوم).</translation>
 <translation id="5477089831058413614">ضبط نقطة اتصال <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">المواقع الإلكترونية التي لا يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
+<translation id="5481682542063333508">عرض مساعدة في الكتابة</translation>
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
 <translation id="5482417738572414119">‏يجب تسجيل الدخول للسماح لمتصفّح Chrome باقتراح مجموعات لإضافة علامات تبويب إليها وتنظيمها.</translation>
 <translation id="5484181871714116891">‏عندما يكون هذا الخيار مفعَّلاً، يتم إنشاء مفاتيح المرور في iCloud Keychain، وتكون متاحة على جميع أجهزة Apple الخاصة بك. وعندما يكون هذا الخيار غير مفعَّل، يتم إنشاء مفاتيح المرور في ملفك الشخصي على Chrome على هذا الجهاز.</translation>
@@ -6869,7 +6871,6 @@
 <translation id="6163522313638838258">توسيع الكل...</translation>
 <translation id="6164393601566177235">إضافة المواقع الإلكترونية</translation>
 <translation id="6164832038898943453">إضافة اللغات إلى قائمة "لغات أريد ترجمتها تلقائيًا"</translation>
-<translation id="6165445202608357894">أنشأت مفتاح مرور لهذا الموقع الإلكتروني</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6165850999903769629">‏يتم الآن فتح جميع التطبيقات في نوافذها الخاصة بدلاً من نوافذ Chrome على نظام التشغيل ChromeOS.</translation>
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
@@ -9887,6 +9888,7 @@
 <translation id="8427292751741042100">مضمن في أي مضيف</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8428271547607112339">إضافة حساب المؤسسة التعليمية</translation>
+<translation id="8428634594422941299">حسنًا</translation>
 <translation id="84297032718407999">سيتم تسجيل خروجك خلال <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">عرض النقرات</translation>
 <translation id="843173223122814223">إنشاء خلفيات باستخدام الذكاء الاصطناعي</translation>
@@ -10230,6 +10232,7 @@
 <translation id="869167754614449887">تم حذف <ph name="FILE_NAME" /> من سجلّ التنزيل.</translation>
 <translation id="8692107307702113268">عدد أحرف كلمة المرور يزيد عن 1,000 حرف.</translation>
 <translation id="8693639060656817812">مزيد من المعلومات عن مدى توفّر ميزة "الحماية من التتبّع"</translation>
+<translation id="8693862390730570097">عدم السماح بفتح ميزة "ساعدني في الكتابة" تلقائيًا</translation>
 <translation id="8694596275649352090">قفل الجهاز عند دخوله وضع السكون أو عند إغلاق غطاء الجهاز</translation>
 <translation id="8695139659682234808">إضافة أدوات رقابة الأهل بعد الانتهاء من الإعداد</translation>
 <translation id="8695825812785969222">فتح ال&amp;موقع...</translation>
@@ -10825,6 +10828,7 @@
 <translation id="9112987648460918699">بحث...</translation>
 <translation id="9113240369465613386">الصفحات الفردية فقط</translation>
 <translation id="9113469270512809735">إخفاء/عرض العناصر المُغلَقة مؤخرًا</translation>
+<translation id="9113529408970052045">يمكن فتح ميزة "ساعدني في الكتابة" تلقائيًا عندما يحتوي مربّع نص في موقع إلكتروني على محتوى قصير</translation>
 <translation id="9114663181201435112">تسجيل الدخول بسهولة</translation>
 <translation id="9115675100829699941">إ&amp;شارات مرجعية</translation>
 <translation id="9115932142612197835">‏لا يغيّر هذا الإعداد مدى توفّر ميزتَيْ "ترجمة Google" أو "عدسة Google".</translation>

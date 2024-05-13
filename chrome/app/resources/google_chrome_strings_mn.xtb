@@ -37,6 +37,7 @@
 хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="155168855724261758">Chrome-оо өөрчлөх</translation>
+<translation id="1551749261806528781">Нууц үг хадгалж, ашиглах болон бусад зүйлийг бүх төхөөрөмж дээрээ хийхийн тулд Chrome-д нэвтэрнэ үү. Таныг нэвтэрсний дараа энэ нууц үгийг Google Бүртгэлд тань хадгална.</translation>
 <translation id="1553358976309200471">Chrome-г шинэчлэх</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> Chrome-н энэ профайлд аль хэдийн нэвтэрсэн байна. Энэ нь <ph name="USER_EMAIL_ADDRESS" />-д Chrome-н шинэ профайл үүсгэнэ</translation>
 <translation id="1587223624401073077">Google Chrome нь таны камерыг ашиглаж байна.</translation>
@@ -320,6 +321,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5940385492829620908">Таны веб, хавчуурга, болон Chrome-ийн бусад зүйлс энд хадгалагддаг.</translation>
 <translation id="5941711191222866238">Багасгах</translation>
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
+<translation id="5947104538377036631">Chrome-н товчлол</translation>
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-н хэрэгслийн<ph name="END_LINK" /> тусламжтайгаар та аюулгүй үзэх болон хяналтыг гартаа байлгах боломжтой</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
@@ -337,7 +339,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="624230925347970731">Chrome-г удахгүй хаана</translation>
 <translation id="6247557882553405851">Google-н Нууц үгний менежер</translation>
 <translation id="6251759518630934363">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
-<translation id="6273793429163604305">Бэлдээрэй...</translation>
 <translation id="6277547788421725101">Таны эцэг эх Chrome-н "Сайт, апп болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна</translation>
 <translation id="627882678981830918">Chrome-г өөрчилж, хянана уу. Chrome-г өгөгдмөлөөрөө тохируулна уу.</translation>
 <translation id="6291089322031436445">Chrome Dev Апп</translation>

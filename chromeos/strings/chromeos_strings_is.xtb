@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">Engin mynd tiltæk. Opnaðu <ph name="LINK" /> til að bæta við myndum</translation>
 <translation id="2305172810646967500">Svartur</translation>
 <translation id="2307344026739914387">Nota núverandi lyklasett</translation>
+<translation id="2308243864813041101">Taktu USB-snúru <ph name="DEVICE_NAME" /> úr sambandi til að halda uppfærsluferlinu áfram</translation>
 <translation id="2320295602967756579">Virkja ljóst þema</translation>
 <translation id="2323506179655536734">SLEPPT</translation>
 <translation id="2324354238778375592">Fljótandi</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">Stýringar</translation>
 <translation id="2652403576514495859">kveikja eða slökkva á raddinnslætti</translation>
 <translation id="2653659639078652383">Senda</translation>
+<translation id="2654647726140493436">Ekki slökkva á <ph name="DEVICE_TYPE" /> eða taka rafmagnssnúru <ph name="DEVICE_TYPE" /> úr sambandi á meðan uppfærslan er í gangi</translation>
 <translation id="2656001153562991489">Aðeins fyrir Chromebook Plus</translation>
 <translation id="2665671725390405060">Hlusta á framburð</translation>
 <translation id="267442004702508783">endurnýja</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">Endurskrif</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
 <translation id="324961752321393509">Stjórnandinn leyfir ekki að þessu forriti sé lokað</translation>
+<translation id="3263941347294171263">Taktu <ph name="DEVICE_NAME" /> úr sambandi og settu það aftur í samband til að halda uppfærsluferlinu áfram</translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3275729367986477355">Notandamynd</translation>
 <translation id="3283504360622356314">{0,plural, =1{Breyta skrá}one{Breyta skrám}other{Breyta skrám}}</translation>
@@ -728,6 +731,7 @@
 <translation id="5160857336552977725">Skráðu þig inn í <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
+<translation id="517075088756846356">Taktu rafmagnssnúru <ph name="DEVICE_NAME" /> úr sambandi og settu hana aftur í samband til að halda uppfærsluferlinu áfram</translation>
 <translation id="5180108905184566358">apabrauðstrjám</translation>
 <translation id="5180712487038406644">Tjáningarríkur</translation>
 <translation id="5190187232518914472">Upplifðu uppáhaldsstundirnar aftur. Opnaðu <ph name="LINK_BEGIN" />Google-myndir<ph name="LINK_END" /> til að bæta við eða breyta albúmum.</translation>
@@ -789,6 +793,7 @@
 <translation id="554067135846762198">rauðbleikum og gulbrúnum lit</translation>
 <translation id="5543701552415191873">læst</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Utanaðkomandi framleiðandi tækis lætur þessa uppfærslu í té og hún hefur ekki verið staðfest af Google.</translation>
 <translation id="5559898619118303662">Skipta sjálfkrafa yfir í dökkt þema við sólarlag</translation>
 <translation id="556042886152191864">Hnappur</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> í <ph name="TERRAIN_COLOR" /></translation>
@@ -1080,6 +1085,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">mörgum litum</translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
+<translation id="7101959270679078188">Taktu <ph name="DEVICE_NAME" /> úr lás til að halda uppfærsluferlinu áfram</translation>
 <translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Velja sérstök <ph name="PRODUCT_NAME" />-listaverk</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -1355,6 +1361,7 @@
 <translation id="8675354002693747642">PSK-lykill</translation>
 <translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google-myndum<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
+<translation id="8689520252402395106">Settu <ph name="DEVICE_NAME" /> aftur inn til að halda uppfærsluferlinu áfram</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
@@ -1362,6 +1369,7 @@
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8726019395068607495">Stöðvað – hlíf er opin</translation>
 <translation id="8730621377337864115">Lokið</translation>
+<translation id="8739555075907731077">Gera hlé (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="8747900814994928677">Staðfesta breytingu</translation>
 <translation id="8749478549112817787">Bakgrunnur myndavélar</translation>
 <translation id="8755946156089753497">turn</translation>

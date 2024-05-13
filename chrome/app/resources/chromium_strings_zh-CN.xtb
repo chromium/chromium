@@ -58,6 +58,7 @@
 <translation id="2018879682492276940">安装失败。请重试。</translation>
 <translation id="2020032459870799438">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
+<translation id="2065461321550902389">如需在您的所有设备上保存和使用密码等信息，请登录 Chromium。登录后，该密码将保存到您的 Google 账号。</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="2088953378266246249">与 Chromium 如何管理其根证书有关的信息</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
@@ -304,7 +305,6 @@
 <translation id="6248213926982192922">将 Chromium 设置为默认浏览器</translation>
 <translation id="6266342355635466082">Chromium 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
-<translation id="6273793429163604305">即将就绪…</translation>
 <translation id="6281746429495226318">自定义您的 Chromium 个人资料</translation>
 <translation id="6290827346642914212">请为您的 Chromium 个人资料命名</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能存在危险，因此 Chromium 已将其拦截。</translation>
@@ -312,6 +312,7 @@
 <translation id="6327105987658262776">没有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在执行另一项操作，请稍后重试。</translation>
 <translation id="6334986366598267305">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chromium。</translation>
+<translation id="6347933965114150440">Chromium 快捷方式</translation>
 <translation id="6366160072964553914">Chromium 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="6373523479360886564">确定要卸载 Chromium 吗？</translation>
 <translation id="6375219077595103062">添加密码管理工具快捷方式</translation>

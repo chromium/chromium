@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">Pilte pole saadaval. Fotode lisamiseks minge saidile <ph name="LINK" /></translation>
 <translation id="2305172810646967500">must</translation>
 <translation id="2307344026739914387">Kasuta praegust võtmepaari</translation>
+<translation id="2308243864813041101">Eemaldage seadme <ph name="DEVICE_NAME" /> USB-kaabel, et värskendamist jätkata</translation>
 <translation id="2320295602967756579">Heleda teema lubamine</translation>
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
 <translation id="2324354238778375592">Hõljukaken</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">Nupud</translation>
 <translation id="2652403576514495859">dikteerimise lubamine või sisse-/väljalülitamine</translation>
 <translation id="2653659639078652383">Esita</translation>
+<translation id="2654647726140493436">Ärge lülitage seadet <ph name="DEVICE_TYPE" /> värskendamise ajal välja ega eemaldage seadme <ph name="DEVICE_TYPE" /> toitekaablit</translation>
 <translation id="2656001153562991489">Ainult Chromebook Plusis</translation>
 <translation id="2665671725390405060">Kuula hääldust</translation>
 <translation id="267442004702508783">värskendab</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">Ümberkirjutamine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="324961752321393509">Teie administraator ei luba seda rakendust sulgeda</translation>
+<translation id="3263941347294171263">Katkestage seadme <ph name="DEVICE_NAME" /> ühendus ja ühendage see uuesti, et värskendamist jätkata</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
 <translation id="3275729367986477355">Avatari pilt</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muuda faili}other{Muuda faile}}</translation>
@@ -728,6 +731,7 @@
 <translation id="5160857336552977725">Logige sisse seadmesse <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
+<translation id="517075088756846356">Eemaldage seadme <ph name="DEVICE_NAME" /> toitekaabel ja ühendage see uuesti, et värskendamist jätkata</translation>
 <translation id="5180108905184566358">ahvileivapuud</translation>
 <translation id="5180712487038406644">Ilmekas</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -789,6 +793,7 @@
 <translation id="554067135846762198">korallroosa ja helepruun</translation>
 <translation id="5543701552415191873">lukus</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Selle värskenduse esitas eraldiseisev seadmetootja ja Google pole seda kinnitanud.</translation>
 <translation id="5559898619118303662">Päikeseloojangul automaatselt tumedale teemale lülitumine</translation>
 <translation id="556042886152191864">Nupp</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_COLOR" /> toonides <ph name="TERRAIN_FEATURE" /></translation>
@@ -1080,6 +1085,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">värviline</translation>
 <translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
+<translation id="7101959270679078188">Avage <ph name="DEVICE_NAME" />, et värskendamist jätkata</translation>
 <translation id="7103252855940681301">Seade <ph name="INDEX" />/<ph name="COUNT" /> nimega <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Vali seadme <ph name="PRODUCT_NAME" /> eksklusiivne kujundus</translation>
 <translation id="7108668606237948702">sisestusklahv</translation>
@@ -1355,6 +1361,7 @@
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="8677859815076891398">Albumeid pole. Looge album teenuses <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
+<translation id="8689520252402395106">Ühendage uuesti seadme <ph name="DEVICE_NAME" /> USB-kaabel, et värskendamist jätkata</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Kasutage selle funktsiooni haldamiseks vasak- või paremnooleklahvi.</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
@@ -1362,6 +1369,7 @@
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8739555075907731077">Peatatud (<ph name="PERCENTAGE_VALUE" />% lõpetatud)</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>
 <translation id="8749478549112817787">Kaamera taust</translation>
 <translation id="8755946156089753497">torn</translation>

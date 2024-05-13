@@ -34,6 +34,7 @@
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="155168855724261758">Настроить Chrome под себя</translation>
+<translation id="1551749261806528781">Чтобы сохранять пароли и другую информацию для использования на всех своих устройствах, войдите в Chrome. Затем этот пароль будет сохранен в аккаунте Google.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
@@ -311,6 +312,7 @@
 <translation id="5940385492829620908">Все веб-страницы, закладки и другие данные Chrome можно найти здесь.</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
+<translation id="5947104538377036631">Ярлык Chrome</translation>
 <translation id="6003112304606738118">Скачивание… Осталось: <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Инструменты Chrome<ph name="END_LINK" /> защищают ваши данные при работе в интернете</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
@@ -328,7 +330,6 @@
 <translation id="624230925347970731">Chrome скоро будет закрыт</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6251759518630934363">Предупреждает об опасных сайтах, даже если раньше они были неизвестны Google. При этом анализируется больше данных по сравнению со стандартной защитой. Вы можете пропускать такие уведомления Chrome.</translation>
-<translation id="6273793429163604305">Подготовка…</translation>
 <translation id="6277547788421725101">Родители отключили в Chrome параметр "Разрешения для сайтов, приложений и расширений".</translation>
 <translation id="627882678981830918">Настройка Chrome и управление им. Сделайте Chrome браузером по умолчанию.</translation>
 <translation id="6291089322031436445">Приложения Chrome для разработчиков</translation>

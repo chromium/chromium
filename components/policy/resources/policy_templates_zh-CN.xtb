@@ -7811,6 +7811,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="719398790886719721">停用对 Linux 虚拟机的 root 访问权限</translation>
 <translation id="7194407337890404814">默认搜索服务提供商名称</translation>
+<translation id="7196336906814426783">此政策设定了一系列每周间隔时间来安排自动暂停时间表。当间隔时间开始时，<ph name="PRODUCT_OS_NAME" /> 设备会进入暂停模式，并在间隔时间结束时唤醒。
+
+不支持间隔时间重叠的时间表。如果此政策包含任何两个重叠的间隔时间，则不会产生任何效果。
+
+<ph name="PRODUCT_OS_NAME" /> 设备将使用系统时区来应用这些间隔时间。
+
+重要提示：如果此政策设置的时间表与其他电源管理设置（例如 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />）冲突，则可能无法按预期生效。请确保已配置好这些设置，使已安排的暂停间隔时间生效。</translation>
 <translation id="7198134478421755850">扩展程序</translation>
 <translation id="7199304109870655950">在 Chrome 远程桌面主机中配置远程访问选项。
 

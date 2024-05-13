@@ -2084,7 +2084,7 @@
 <translation id="2495141202137516054">‏מ-Drive</translation>
 <translation id="2495524171012645395">מתכונים שצפית בהם לאחרונה</translation>
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
-<translation id="2497229222757901769">מהירות עכבר</translation>
+<translation id="2497229222757901769">מהירות העכבר</translation>
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
 <translation id="2498539833203011245">מזעור</translation>
 <translation id="2498765460639677199">ענק</translation>
@@ -2347,7 +2347,7 @@
 <translation id="270414148003105978">רשתות סלולריות</translation>
 <translation id="2704184184447774363">‏חתימה על מסמכים של Microsoft</translation>
 <translation id="2704606927547763573">הועתק</translation>
-<translation id="270516211545221798">מהירות לוח מגע</translation>
+<translation id="270516211545221798">מהירות לוח המגע</translation>
 <translation id="2705736684557713153">גוללים לתחתית המסך ומפעילים את האפשרות 'שיתוף אינטרנט מיידי בין מכשירים', אם היא מופיעה. אם היא לא מופיעה, הכול מוכן.</translation>
 <translation id="2707024448553392710">הורדת הרכיב מתבצעת</translation>
 <translation id="270921614578699633">מעל לממוצע</translation>
@@ -2395,7 +2395,6 @@
 <translation id="2731971182069536520">בפעם הבאה שהמכשיר יופעל מחדש, מנהל המערכת יבצע עדכון חד-פעמי שימחק את הנתונים המקומיים.</translation>
 <translation id="2732134891301408122">תוכן נוסף של <ph name="CURRENT_ELEMENT" /> מתוך <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה.</translation>
-<translation id="2733992589856193783">יצרת מפתח גישה לאתר הזה. נדרש מכשיר נייד כדי להיכנס לחשבון.</translation>
 <translation id="2734797989819862638">לא להעתיק</translation>
 <translation id="27349076983469322">רקע בהיר</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
@@ -4179,7 +4178,6 @@
 <translation id="4072805772816336153">יש לנסות שוב מאוחר יותר</translation>
 <translation id="4074164314564067597">מקלדת</translation>
 <translation id="407520071244661467">שינוי קנה מידה</translation>
-<translation id="407543464472585404">הפרופיל של <ph name="NAME" /> מקושר אל <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">מודעות חסומות באתר הזה</translation>
 <translation id="4078738236287221428">תמיד</translation>
 <translation id="4078903002989614318">אפשרויות למיון ולרשימה</translation>
@@ -6872,7 +6870,6 @@
 <translation id="6163522313638838258">הרחבת הכול...</translation>
 <translation id="6164393601566177235">הוספת אתרים</translation>
 <translation id="6164832038898943453">הוספת שפות שיתורגמו באופן אוטומטי</translation>
-<translation id="6165445202608357894">יצרת מפתח גישה לאתר הזה</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6165850999903769629">‏עכשיו, כל האפליקציות ב-ChromeOS נפתחות בחלונות נפרדים של אפליקציות במקום ב-Chrome.</translation>
 <translation id="6166185671393271715">‏ייבוא סיסמאות אל Chrome</translation>
@@ -8125,7 +8122,7 @@
 <translation id="7134098520442464001">הקטנת טקסט</translation>
 <translation id="7134951043985383439">בוצעה הורדה של קובץ מסוכן</translation>
 <translation id="7135729336746831607">‏האם להפעיל את Bluetooth?</translation>
-<translation id="7136694880210472378">הפיכה לברירת מחדל</translation>
+<translation id="7136694880210472378">הגדרה כברירת מחדל</translation>
 <translation id="7137771508221868414">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי אתרים ואפליקציות מותקנות</translation>
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7139627972753429585">המיקרופון בשימוש על ידי <ph name="APP_NAME" /></translation>
@@ -9878,6 +9875,7 @@
 <translation id="8427292751741042100">מוטמע במארח כלשהו</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428271547607112339">הוספת חשבון בית ספרי</translation>
+<translation id="8428634594422941299">הבנתי</translation>
 <translation id="84297032718407999">בעוד <ph name="LOGOUT_TIME_LEFT" /> תבוצע יציאה מהחשבון</translation>
 <translation id="8431190899827883166">הצגת הקשות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>

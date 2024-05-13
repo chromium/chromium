@@ -2382,7 +2382,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2731971182069536520">La prossima volta che riavvii il dispositivo, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali.</translation>
 <translation id="2732134891301408122">Contenuti aggiuntivi <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Mi piace invia un feedback negativo relativo a questi risultati.</translation>
-<translation id="2733992589856193783">Hai creato una passkey per questo sito. Ti serve il tuo dispositivo mobile per accedere.</translation>
 <translation id="2734797989819862638">Non copiare</translation>
 <translation id="27349076983469322">Sfondo chiaro</translation>
 <translation id="2735712963799620190">Pianificazione</translation>
@@ -4172,7 +4171,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4072805772816336153">Riprova più tardi</translation>
 <translation id="4074164314564067597">Tastiera</translation>
 <translation id="407520071244661467">Scala</translation>
-<translation id="407543464472585404">Il profilo di <ph name="NAME" /> è collegato a <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Annunci bloccati su questo sito</translation>
 <translation id="4078738236287221428">Forzata</translation>
 <translation id="4078903002989614318">Opzioni per ordinamento ed elenchi</translation>
@@ -6866,7 +6864,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6163522313638838258">Espandi tutto...</translation>
 <translation id="6164393601566177235">Aggiungi siti</translation>
 <translation id="6164832038898943453">Aggiungi lingue da tradurre automaticamente</translation>
-<translation id="6165445202608357894">Hai creato una passkey per questo sito</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6165850999903769629">Tutte le app su ChromeOS ora si aprono nelle rispettive finestre invece che in Chrome.</translation>
 <translation id="6166185671393271715">Importa le password in Chrome</translation>
@@ -9875,6 +9872,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8427292751741042100">incorporata su qualsiasi host</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8428271547607112339">Aggiungi account della scuola</translation>
+<translation id="8428634594422941299">Ok</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="843173223122814223">Crea sfondi con l'IA</translation>

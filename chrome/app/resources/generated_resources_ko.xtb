@@ -2399,7 +2399,6 @@
 <translation id="2731971182069536520">다음번에 기기를 다시 시작하면 관리자가 일회성 업데이트를 실행하여 로컬 데이터가 삭제됩니다.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠</translation>
 <translation id="2733248615007838252">좋아요를 누르면 이러한 결과가 마음에 든다는 의견이 제출됩니다.</translation>
-<translation id="2733992589856193783">이 사이트의 패스키를 생성했습니다. 로그인하려면 휴대기기가 필요합니다.</translation>
 <translation id="2734797989819862638">복사 안함</translation>
 <translation id="27349076983469322">밝은 배경</translation>
 <translation id="2735712963799620190">일정</translation>
@@ -4190,7 +4189,6 @@
 <translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="4074164314564067597">키보드</translation>
 <translation id="407520071244661467">배율</translation>
-<translation id="407543464472585404"><ph name="NAME" />님의 프로필이 <ph name="EMAIL" />에 연결되었습니다.</translation>
 <translation id="4077917118009885966">이 사이트의 광고가 차단됨</translation>
 <translation id="4078738236287221428">강한 규칙</translation>
 <translation id="4078903002989614318">정렬 및 목록 옵션</translation>
@@ -4521,7 +4519,7 @@
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
 <translation id="4341905082470253054">TPM 상태 확인 중...</translation>
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
-<translation id="4342417854108207000">기기의 파일 또는 폴더 수정이 허용되지 않음</translation>
+<translation id="4342417854108207000">기기의 파일 또는 폴더 수정이 허용됨</translation>
 <translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
 <translation id="4343283008857332996">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
@@ -6886,7 +6884,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6163522313638838258">모두 펼치기...</translation>
 <translation id="6164393601566177235">사이트 추가</translation>
 <translation id="6164832038898943453">자동 번역할 언어 추가</translation>
-<translation id="6165445202608357894">이 사이트의 패스키를 생성했습니다</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6165850999903769629">이제 ChromeOS의 모든 앱은 Chrome이 아닌 자체 앱 창에서 열립니다.</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
@@ -9895,6 +9892,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8427292751741042100">모든 호스트에 삽입됨</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8428271547607112339">학교 계정 추가</translation>
+<translation id="8428634594422941299">확인</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>

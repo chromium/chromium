@@ -246,7 +246,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1175131936083782305">Tu administrador ha inhabilitado esta función.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
 <translation id="1175914831232945926">Dígitos</translation>
-<translation id="1176471985365269981">No pueden editar archivos ni carpetas en tu dispositivo</translation>
+<translation id="1176471985365269981">No tienen permiso para editar archivos ni carpetas en tu dispositivo</translation>
 <translation id="1177073277575830464">Se ha completado la configuración rápida de Android. Continúa con la configuración en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Puedes conectarte a cualquier red móvil apta desde la configuración</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -492,7 +492,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1367817137674340530"><ph name="COUNT" /> imágenes generadas</translation>
 <translation id="1368603372088757436">Linux no es compatible con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google</translation>
-<translation id="1370384480654163477">Consulta y edita archivos desde la última vez que visitaste este sitio:</translation>
+<translation id="1370384480654163477">Consultar y editar archivos desde la última vez que visitaste este sitio:</translation>
 <translation id="1372841398847029212">Sincronizar con tu cuenta</translation>
 <translation id="1373176046406139583">La visibilidad de tu dispositivo determina quién puede compartir archivos contigo mientras tu pantalla está desbloqueada. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">El certificado requerido por la red "<ph name="NETWORK_NAME" />" no está instalado o ya no es válido. Consigue un nuevo certificado y prueba a conectarte de nuevo.</translation>
@@ -902,7 +902,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1647408325348388858">¿Abrir y editar <ph name="FILE_NAME" /> en esta aplicación web?</translation>
 <translation id="1647986356840967552">Página anterior</translation>
 <translation id="1648439345221797326">Ctrl + Mayús + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="1648528859488547844">Usar redes móviles o Wi‑Fi para determinar la ubicación</translation>
+<translation id="1648528859488547844">Usar redes móviles o Wi-Fi para determinar la ubicación</translation>
 <translation id="164936512206786300">Desemparejar dispositivo Bluetooth</translation>
 <translation id="1650407365859096313">Se abre en una pestaña nueva (el permiso es <ph name="PERMISSION_STATE" />)</translation>
 <translation id="1650801028905250434">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Puedes cambiar esta opción en cualquier momento en Ajustes &gt; Archivos.</translation>
@@ -2383,7 +2383,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2731971182069536520">La próxima vez que reinicies tu dispositivo, tu administrador realizará una actualización única que eliminará tus datos locales.</translation>
 <translation id="2732134891301408122">Contenido adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Me gusta indica que te han gustado estos resultados.</translation>
-<translation id="2733992589856193783">Has creado una llave de acceso para este sitio. Necesitas tu dispositivo móvil para iniciar sesión.</translation>
 <translation id="2734797989819862638">No copiar</translation>
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programar</translation>
@@ -4169,7 +4168,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4072805772816336153">Inténtalo de nuevo más tarde</translation>
 <translation id="4074164314564067597">teclado</translation>
 <translation id="407520071244661467">Escala</translation>
-<translation id="407543464472585404">El perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Los anuncios están bloqueados en este sitio web</translation>
 <translation id="4078738236287221428">Forzada</translation>
 <translation id="4078903002989614318">Opciones para ordenar y de lista</translation>
@@ -4502,7 +4500,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4341577178275615435">Para activar o desactivar la navegación por cursor de texto, usa la tecla F7</translation>
 <translation id="4341905082470253054">Comprobando estado del TPM...</translation>
 <translation id="434198521554309404">Rápido. Seguro. Sencillo.</translation>
-<translation id="4342417854108207000">Tiene permiso para editar archivos y carpetas de tu dispositivo</translation>
+<translation id="4342417854108207000">Tienen permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="4343250402091037179">Para buscar en un sitio o parte de Chrome en concreto, escribe su atajo en la barra de direcciones y, después, pulsa tu atajo de teclado preferido.</translation>
 <translation id="4343283008857332996">Se permite el acceso a la cámara a aplicaciones, sitios web con el permiso de cámara y servicios del sistema. Para usar la cámara, puede que tengas que reiniciar la aplicación o actualizar la página.</translation>
 <translation id="4345457680916430965">&amp;Abrir en <ph name="APP" /></translation>
@@ -5611,7 +5609,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5198430103906431024">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="5199729219167945352">Experimentos</translation>
 <translation id="5200680225062692606">Touch ID está bloqueado. Para continuar, introduce tu contraseña.</translation>
-<translation id="5203035663139409780">Puede editar archivos o carpetas de tu dispositivo</translation>
+<translation id="5203035663139409780">Pueden editar archivos o carpetas de tu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Haz clic para ver la extensión}other{Haz clic para ver las extensiones}}</translation>
 <translation id="5204673965307125349">Realiza un powerwash e inténtalo de nuevo.</translation>
 <translation id="5204967432542742771">Escribe tu contraseña</translation>
@@ -6865,7 +6863,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6163522313638838258">Ampliar todo...</translation>
 <translation id="6164393601566177235">Añadir sitios</translation>
 <translation id="6164832038898943453">Añadir idiomas para traducirlos automáticamente</translation>
-<translation id="6165445202608357894">Has creado una llave de acceso para este sitio</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6165850999903769629">Todas las aplicaciones de ChromeOS ahora se abren en sus propias ventanas de aplicaciones en lugar de en Chrome.</translation>
 <translation id="6166185671393271715">Importar contraseñas a Chrome</translation>
@@ -9874,6 +9871,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8427292751741042100">insertado en otro host</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428271547607112339">Añadir cuenta de centro educativo</translation>
+<translation id="8428634594422941299">Entendido</translation>
 <translation id="84297032718407999">Tu sesión se cerrará en <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Mostrar toques</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>

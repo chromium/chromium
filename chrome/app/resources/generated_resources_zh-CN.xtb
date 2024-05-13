@@ -2374,7 +2374,6 @@
 <translation id="2731971182069536520">当您下次重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。</translation>
 <translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="2733248615007838252">选择“我喜欢”，会提交您喜欢这些搜索结果的反馈。</translation>
-<translation id="2733992589856193783">您已为此网站创建了一个通行密钥。您需要使用移动设备才能登录。</translation>
 <translation id="2734797989819862638">请勿复制</translation>
 <translation id="27349076983469322">浅色背景</translation>
 <translation id="2735712963799620190">排定时间</translation>
@@ -2814,6 +2813,7 @@
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
+<translation id="3053274730492362225">不闪烁</translation>
 <translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
 <translation id="3056438898277655057">授权 <ph name="SPECIFIC_NAME" /> 访问 USB 设备。<ph name="SPECIFIC_NAME" /> 不会记住已被拔出的 USB 设备。</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
@@ -3214,6 +3214,7 @@
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3393582007140394275">无法投放屏幕。</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
+<translation id="3396442984945202128">验证身份</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="339722927132407568">卡顿</translation>
 <translation id="3398899528308712018">标签页分组建议</translation>
@@ -3447,6 +3448,7 @@
 <translation id="3567168891086460374">换一种方式保存</translation>
 <translation id="3567284462585300767">若要与附近的人互发文件，请将您的设备设为对他人可见</translation>
 <translation id="356738834800832239">您的密码已保存</translation>
+<translation id="3568431410312984116">允许自动打开“帮我写”功能</translation>
 <translation id="3569382839528428029">您允许 <ph name="APP_NAME" /> 共享您的屏幕吗？</translation>
 <translation id="3569614820047645079">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> 可查看以下文件和文件夹</translation>
@@ -4161,7 +4163,6 @@
 <translation id="4072805772816336153">请稍后重试</translation>
 <translation id="4074164314564067597">键盘</translation>
 <translation id="407520071244661467">缩放</translation>
-<translation id="407543464472585404"><ph name="NAME" />的个人资料已关联到 <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">已拦截此网站上的广告</translation>
 <translation id="4078738236287221428">激进</translation>
 <translation id="4078903002989614318">排序和列表选项</translation>
@@ -5952,6 +5953,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5477089831058413614">配置 <ph name="DEVICE_TYPE" /> 热点</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
+<translation id="5481682542063333508">提供写作帮助</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5482417738572414119">登录账号，以便 Chrome 提供标签页分组建议并使标签页井然有序</translation>
 <translation id="5484181871714116891">当此选项处于开启状态时，通行密钥会在 iCloud 钥匙串中创建，并可在各部 Apple 设备上使用。当此选项处于关闭状态时，通行密钥会在该设备上您的 Chrome 个人资料中创建。</translation>
@@ -6854,7 +6856,6 @@
 <translation id="6163522313638838258">全部展开...</translation>
 <translation id="6164393601566177235">添加网站</translation>
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
-<translation id="6165445202608357894">您已为此网站创建了一个通行密钥</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6165850999903769629">现在，ChromeOS 上的所有应用均在各自的应用窗口中打开，而不是在 Chrome 中打开。</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
@@ -9863,6 +9864,7 @@
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428271547607112339">添加学校账号</translation>
+<translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="843173223122814223">利用 AI 创建背景</translation>
@@ -10206,6 +10208,7 @@
 <translation id="869167754614449887">“<ph name="FILE_NAME" />”已从下载记录中删除</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
 <translation id="8693639060656817812">详细了解“跟踪保护”功能的适用范围</translation>
+<translation id="8693862390730570097">不允许自动打开“帮我写”功能</translation>
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>
 <translation id="8695825812785969222">打开位置(&amp;L)...</translation>
@@ -10797,6 +10800,7 @@
 <translation id="9112987648460918699">查找...</translation>
 <translation id="9113240369465613386">仅限页码为奇数的页面</translation>
 <translation id="9113469270512809735">显示/隐藏最近关闭的项</translation>
+<translation id="9113529408970052045">当网站上的文本框可以填充简短内容时，“帮我写”功能会自动打开</translation>
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>
 <translation id="9115932142612197835">此设置不会影响谷歌翻译或智能镜头的可用性</translation>

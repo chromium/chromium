@@ -8020,6 +8020,13 @@ Lưu ý: Nếu bạn đang dùng chính sách này để hệ thống tự độ
       Để biết thông tin chi tiết về mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Tắt quyền truy cập gốc vào các máy ảo Linux</translation>
 <translation id="7194407337890404814">Tên nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
+<translation id="7196336906814426783">Chính sách này thiết lập một loạt các khoảng thời gian hằng tuần để lên lịch tạm ngưng tự động. Khi một khoảng thời gian bắt đầu, thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ chuyển sang chế độ tạm ngưng và hoạt động lại khi khoảng thời gian này kết thúc.
+
+Không hỗ trợ lịch biểu có khoảng thời gian chồng chéo. Chính sách này sẽ không có hiệu lực nếu có hai khoảng thời gian chồng chéo bất kỳ.
+
+Thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng múi giờ hệ thống để áp dụng các khoảng thời gian này.
+
+Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không diễn ra theo dự kiến nếu xung đột với các chế độ cài đặt quản lý nguồn khác, chẳng hạn như <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Hãy đảm bảo bạn đã định cấu hình các chế độ cài đặt này để khoảng thời gian tạm ngưng đã lên lịch có hiệu lực.</translation>
 <translation id="7198134478421755850">Tiện ích</translation>
 <translation id="7199304109870655950">Định cấu hình tùy chọn truy cập từ xa trên máy chủ Chrome Remote Desktop.
 

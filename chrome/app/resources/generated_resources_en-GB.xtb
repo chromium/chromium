@@ -2397,7 +2397,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2731971182069536520">The next time that you restart your device, your administrator will perform a one-off update that will delete your local data.</translation>
 <translation id="2732134891301408122">Extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Thumbs up submits feedback that you like these results.</translation>
-<translation id="2733992589856193783">You created a passkey for this site. You need your mobile device to sign in.</translation>
 <translation id="2734797989819862638">Don't copy</translation>
 <translation id="27349076983469322">Light background</translation>
 <translation id="2735712963799620190">Schedule</translation>
@@ -4188,7 +4187,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4072805772816336153">Try again later</translation>
 <translation id="4074164314564067597">keyboard</translation>
 <translation id="407520071244661467">Scale</translation>
-<translation id="407543464472585404"><ph name="NAME" />'s profile is linked to <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Ads blocked on this site</translation>
 <translation id="4078738236287221428">Aggressive</translation>
 <translation id="4078903002989614318">Sorting and list options</translation>
@@ -6886,7 +6884,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6163522313638838258">Expand all...</translation>
 <translation id="6164393601566177235">Add sites</translation>
 <translation id="6164832038898943453">Add languages to automatically translate</translation>
-<translation id="6165445202608357894">You created a passkey for this site.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6165850999903769629">All apps on ChromeOS now open in their own app windows instead of in Chrome.</translation>
 <translation id="6166185671393271715">Import Passwords To Chrome</translation>
@@ -9895,6 +9892,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8427292751741042100">embedded on any host</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8428271547607112339">Add school account</translation>
+<translation id="8428634594422941299">Got it</translation>
 <translation id="84297032718407999">You'll be signed out in <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
 <translation id="843173223122814223">Create backgrounds with AI</translation>

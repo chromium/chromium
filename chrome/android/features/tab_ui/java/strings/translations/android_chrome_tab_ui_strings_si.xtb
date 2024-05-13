@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{ඔබට <ph name="TABS_COUNT_ONE" /> සංරක්ෂිත පටිත්තක් ඇත}one{ඔබට සංරක්ෂිත පටිති <ph name="TABS_COUNT_MANY" />ක් ඇත}other{ඔබට සංරක්ෂිත පටිති <ph name="TABS_COUNT_MANY" />ක් ඇත}}</translation>
 <translation id="3194464645767632461">ඇගයීම</translation>
 <translation id="3291470810748040983">විවෘත ටැබයක අඩු මිලක් ඇති විට ඔබට ඇඟවීමක් ලැබෙනු ඇත</translation>
+<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> පටිති සමූහය සඳහා සමූහ ක්‍රියා මෙනු පටිත්ත විවෘත කරන්න</translation>
 <translation id="3328308545011660196">යෝජනාව: පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="3547352561153509682">මෙය <ph name="USER_EMAIL" /> වෙත පුරන ලද සියලුම උපාංගවලින් සමූහය මකයි</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

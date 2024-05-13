@@ -36,6 +36,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
  l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="155168855724261758">Personnaliser Chrome</translation>
+<translation id="1551749261806528781">Pour enregistrer et utiliser des mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google une fois que vous vous serez connecté.</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1583073672411044740">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Votre webcam est en cours d'utilisation dans Google Chrome.</translation>
@@ -319,6 +320,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5940385492829620908">Votre contenu Web, vos favoris et toutes vos données Chrome sont conservés ici.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
+<translation id="5947104538377036631">Raccourci Chrome</translation>
 <translation id="6003112304606738118">Téléchargement… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6014316319780893079">Avec les <ph name="BEGIN_LINK" />outils de Chrome<ph name="END_LINK" />, vous pouvez naviguer de façon sécurisée et garder le contrôle</translation>
 <translation id="6022659036123304283">Personnalisez Chrome</translation>
@@ -336,7 +338,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6251759518630934363">Vous avertit en cas de sites dangereux, y compris ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
-<translation id="6273793429163604305">À vos marques...</translation>
 <translation id="6277547788421725101">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chrome</translation>
 <translation id="627882678981830918">Personnaliser et contrôler Chrome. Définir Chrome comme navigateur par défaut.</translation>
 <translation id="6291089322031436445">Applications Chrome pour les développeurs</translation>

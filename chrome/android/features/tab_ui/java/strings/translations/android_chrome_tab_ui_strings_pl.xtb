@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Masz <ph name="TABS_COUNT_ONE" /> zarchiwizowaną kartę}few{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowane karty}many{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowanych kart}other{Masz <ph name="TABS_COUNT_MANY" /> zarchiwizowanej karty}}</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Otrzymasz alert, gdy cena na otwartej karcie będzie niższa</translation>
+<translation id="3322827343001922122">Otwórz menu czynności grupy kart <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
 <translation id="3547352561153509682">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

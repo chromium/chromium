@@ -2383,7 +2383,6 @@
 <translation id="2731971182069536520">Пры наступным перазапуску прылады адміністратар выканае разавае абнаўленне, пры якім выдаляцца вашы лакальныя даныя.</translation>
 <translation id="2732134891301408122">Дадатковае змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Калі націснуць кнопку "Падабаецца", будзе адпраўлены водгук аб тым, што вам спадабаліся гэтыя вынікі.</translation>
-<translation id="2733992589856193783">Вы стварылі ключ доступу для гэтага сайта. Для ўваходу на сайт вам патрабуецца ваша мабільная прылада.</translation>
 <translation id="2734797989819862638">Не капіраваць</translation>
 <translation id="27349076983469322">Светлы фон</translation>
 <translation id="2735712963799620190">Расклад</translation>
@@ -4169,7 +4168,6 @@
 <translation id="4072805772816336153">Паўтарыце спробу пазней</translation>
 <translation id="4074164314564067597">клавіятура</translation>
 <translation id="407520071244661467">Маштаб</translation>
-<translation id="407543464472585404">Профіль карыстальніка <ph name="NAME" /> звязаны з адрасам электроннай пошты <ph name="EMAIL" /></translation>
 <translation id="4077917118009885966">Рэклама заблакіравана на гэтым сайце</translation>
 <translation id="4078738236287221428">Дзейная</translation>
 <translation id="4078903002989614318">Параметры сартавання і спісу</translation>
@@ -6863,7 +6861,6 @@
 <translation id="6163522313638838258">Разгарнуць усе...</translation>
 <translation id="6164393601566177235">Дадайце сайты</translation>
 <translation id="6164832038898943453">Дадаць мовы для аўтаматычнага перакладу</translation>
-<translation id="6165445202608357894">Вы стварылі ключ доступу для гэтага сайта</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6165850999903769629">Усе праграмы для ChromeOS цяпер адкрываюцца ва ўласных вокнах, а не ў Chrome.</translation>
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
@@ -9876,6 +9873,7 @@
 <translation id="8427292751741042100">убудаваны на любым хосце</translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8428271547607112339">Дадаць навучальны ўліковы запіс</translation>
+<translation id="8428634594422941299">Зразумела</translation>
 <translation id="84297032718407999">Выхад будзе выкананы праз <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Паказ дотыкаў</translation>
 <translation id="843173223122814223">Стварайце фоны з дапамогай AI</translation>

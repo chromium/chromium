@@ -2382,7 +2382,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2731971182069536520">Gailua berrabiarazten duzun hurrengo aldian, administratzaileak erabilera bakarreko eguneratze bat egingo du eta, haren ondorioz, gailuan dituzun datu guztiak ezabatuko dira.</translation>
 <translation id="2732134891301408122"><ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
 <translation id="2733248615007838252">"Gustatu zait" sakatuta, emaitza hauek gustatu zaizkizula esaten duen ohar bat bidaliko da.</translation>
-<translation id="2733992589856193783">Webgune honetarako sarbide-gako bat sortu duzu. Saioa hasteko, gailu mugikorra behar duzu.</translation>
 <translation id="2734797989819862638">Ez kopiatu</translation>
 <translation id="27349076983469322">Atzeko plano argia</translation>
 <translation id="2735712963799620190">Programazioa</translation>
@@ -4170,7 +4169,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4072805772816336153">Saiatu berriro geroago</translation>
 <translation id="4074164314564067597">teklatua</translation>
 <translation id="407520071244661467">Eskala</translation>
-<translation id="407543464472585404"><ph name="NAME" /> erabiltzailearen profila <ph name="EMAIL" /> helbidearekin dago lotuta</translation>
 <translation id="4077917118009885966">Iragarkiak blokeatu egin dira webgune honetan</translation>
 <translation id="4078738236287221428">Neurriz gainekoa</translation>
 <translation id="4078903002989614318">Ordenaren eta zerrenden aukerak</translation>
@@ -6862,7 +6860,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6163522313638838258">Zabaldu guztiak…</translation>
 <translation id="6164393601566177235">Gehitu webguneak</translation>
 <translation id="6164832038898943453">Gehitu automatikoki itzuli behar diren hizkuntzak</translation>
-<translation id="6165445202608357894">Webgune honetarako sarbide-gako bat sortu duzu</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6165850999903769629">Orain, ChromeOS-eko aplikazio guztiak beren leihoetan irekitzen dira, eta ez Chrome-n.</translation>
 <translation id="6166185671393271715">Inportatu pasahitzak Chrome-ra</translation>
@@ -9868,6 +9865,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8427292751741042100">edozein ostalaritan kapsulatuta</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428271547607112339">Gehitu ikastetxeko kontua</translation>
+<translation id="8428634594422941299">Ados</translation>
 <translation id="84297032718407999">Saioa amaituko egingo da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan</translation>
 <translation id="8431190899827883166">Erakutsi sakatutakoa</translation>
 <translation id="843173223122814223">Sortu atzeko planoak AA bidez</translation>

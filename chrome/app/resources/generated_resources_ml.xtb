@@ -2381,7 +2381,6 @@
 <translation id="2731971182069536520">അടുത്ത തവണ നിങ്ങളുടെ ഉപകരണം റീസ്‌റ്റാർട്ട് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ ലോക്കൽ ഡാറ്റ ഇല്ലാതാക്കുന്ന ഒരു ഒറ്റത്തവണ അപ്ഡേറ്റ് അഡ്‌മിൻ നിർവ്വഹിക്കും.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം</translation>
 <translation id="2733248615007838252">തംബ്‌സ് അപ്പ് നൽകുന്നത് നിങ്ങൾക്ക് ഈ ഫലങ്ങൾ ഇഷ്ടമായെന്ന ഫീഡ്ബാക്ക് സമർപ്പിക്കുന്നു.</translation>
-<translation id="2733992589856193783">ഈ സൈറ്റിനായി നിങ്ങൾ ഒരു പാസ്‌കീ സൃഷ്‌ടിച്ചു. സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ മൊബൈൽ ആവശ്യമാണ്.</translation>
 <translation id="2734797989819862638">പകർത്തരുത്</translation>
 <translation id="27349076983469322">ലൈറ്റ് പശ്ചാത്തലം</translation>
 <translation id="2735712963799620190">ഷെഡ്യൂള്‍‌</translation>
@@ -4171,7 +4170,6 @@
 <translation id="4072805772816336153">പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="4074164314564067597">കീബോർഡ്</translation>
 <translation id="407520071244661467">സ്കെയിൽ</translation>
-<translation id="407543464472585404"><ph name="NAME" /> എന്നയാളുടെ പ്രൊഫൈൽ <ph name="EMAIL" /> എന്നതിലേക്ക് ലിങ്ക് ചെയ്തു</translation>
 <translation id="4077917118009885966">ഈ സൈറ്റിലെ ‌പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="4078738236287221428">അഗ്രസ്സീവ്</translation>
 <translation id="4078903002989614318">അടുക്കുന്നതിന്റെയും ലിസ്റ്റ് ചെയ്യുന്നതിന്റെയും ഓപ്ഷനുകൾ</translation>
@@ -6868,7 +6866,6 @@
 <translation id="6163522313638838258">എല്ലാം വികസിപ്പിക്കുക...</translation>
 <translation id="6164393601566177235">സൈറ്റുകൾ ചേർക്കുക</translation>
 <translation id="6164832038898943453">സ്വയമേവ വിവർത്തനം ചെയ്യാൻ ഭാഷകൾ ചേർക്കുക</translation>
-<translation id="6165445202608357894">ഈ സൈറ്റിനായി നിങ്ങൾ ഒരു പാസ്‌കീ സൃഷ്‌ടിച്ചു</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6165850999903769629">ChromeOS-ലെ എല്ലാ ആപ്പുകളും ഇപ്പോൾ Chrome-ന് പകരം അവയുടേതായ ആപ്പ് വിൻഡോകളിൽ തുറക്കുന്നു.</translation>
 <translation id="6166185671393271715">Chrome-ലേക്ക് പാസ്‌വേഡുകൾ ഇമ്പോർട്ടുചെയ്യുക</translation>
@@ -9876,6 +9873,7 @@
 <translation id="8427292751741042100">എല്ലാ ഹോസ്‌റ്റിലും ഉൾപ്പെടുത്തി</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8428271547607112339">സ്‌കൂൾ അക്കൗണ്ട് ചേർക്കുക</translation>
+<translation id="8428634594422941299">മനസ്സിലായി</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" />-നുള്ളിൽ നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും</translation>
 <translation id="8431190899827883166">ഷോ ടാപ്‌സ്</translation>
 <translation id="843173223122814223">AI ഉപയോഗിച്ച് പശ്ചാത്തലങ്ങൾ സൃഷ്‌ടിക്കൂ</translation>
