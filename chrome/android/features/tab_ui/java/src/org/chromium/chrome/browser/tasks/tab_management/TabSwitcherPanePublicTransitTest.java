@@ -61,7 +61,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testSwitchTabModel_ScrollToSelectedTab() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = null;
@@ -96,7 +96,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testTabListEditor_EnterAndExit() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewTab();
 
@@ -113,7 +113,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testEmptyStateView() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();

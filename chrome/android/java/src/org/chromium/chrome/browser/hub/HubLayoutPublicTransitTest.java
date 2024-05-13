@@ -57,7 +57,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
@@ -69,7 +69,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
@@ -83,7 +83,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
@@ -97,7 +97,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testChangeTabSwitcherPanes() {
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         IncognitoNewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
@@ -124,7 +124,7 @@ public class HubLayoutPublicTransitTest {
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.setForTesting(0);
 
-        PageStation page = mInitialStateRule.startOnBlankPageBatched();
+        PageStation page = mInitialStateRule.startOnBlankPage();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         NewTabPageStation newTabPage = appMenu.openNewTab();

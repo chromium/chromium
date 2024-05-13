@@ -27,7 +27,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link PageStation}
      */
-    public WebPageStation startOnBlankPage() {
+    public WebPageStation startOnBlankPageNonBatched() {
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
@@ -42,8 +42,8 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link PageStation}
      */
-    public PageStation startOnBlankPageBatched(BatchedPublicTransitRule<PageStation> batchedRule) {
-        return startBatched(batchedRule, this::startOnBlankPage);
+    public PageStation startOnBlankPage(BatchedPublicTransitRule<PageStation> batchedRule) {
+        return startBatched(batchedRule, this::startOnBlankPageNonBatched);
     }
 
     private <T extends Station> T startBatched(

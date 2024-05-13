@@ -69,7 +69,7 @@ public class PopupPTTest {
 
     @Before
     public void setUp() {
-        mEntryPage = mInitialStateRule.startOnBlankPageBatched();
+        mEntryPage = mInitialStateRule.startOnBlankPage();
     }
 
     @After

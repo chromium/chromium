@@ -53,7 +53,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenNewTab() {
         NewTabPageStation newTabPage =
-                mInitialStateRule.startOnBlankPageBatched().openRegularTabAppMenu().openNewTab();
+                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
 
         assertEquals(2, sActivityTestRule.tabsCount(/* incognito= */ false));
         assertEquals(0, sActivityTestRule.tabsCount(/* incognito= */ true));
@@ -65,10 +65,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testOpenNewIncognitoTab() {
         IncognitoNewTabPageStation newIncognitoTabPage =
-                mInitialStateRule
-                        .startOnBlankPageBatched()
-                        .openRegularTabAppMenu()
-                        .openNewIncognitoTab();
+                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ true));
@@ -79,7 +76,7 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testOpenSettings() {
-        WebPageStation pageStation = mInitialStateRule.startOnBlankPageBatched();
+        WebPageStation pageStation = mInitialStateRule.startOnBlankPage();
         Tab tab = pageStation.getLoadedTab();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
@@ -102,7 +99,7 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testNewTabPageRegularAppMenuItems() {
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPageBatched();
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
         NewTabPageStation newTabPage = blankPage.openRegularTabAppMenu().openNewTab();
         NewTabPageRegularAppMenuFacility menu = newTabPage.openAppMenu();
 
@@ -121,10 +118,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testNewTabPageIncognitoAppMenuItems() {
         IncognitoNewTabPageStation incognitoNewTabPage =
-                mInitialStateRule
-                        .startOnBlankPageBatched()
-                        .openRegularTabAppMenu()
-                        .openNewIncognitoTab();
+                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
         NewTabPageIncognitoAppMenuFacility menu = incognitoNewTabPage.openAppMenu();
 
         verifyPresentItems(menu);
@@ -142,7 +136,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     @RequiresRestart
     public void testWebPageRegularAppMenuItems() {
-        WebPageStation blankPage = mInitialStateRule.startOnBlankPageBatched();
+        WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
         WebPageRegularAppMenuFacility menu = blankPage.openRegularTabAppMenu();
 
         verifyPresentItems(menu);
@@ -160,10 +154,7 @@ public class TabbedAppMenuPTTest {
     @LargeTest
     public void testWebPageIncognitoAppMenuItems() {
         IncognitoNewTabPageStation incognitoNtp =
-                mInitialStateRule
-                        .startOnBlankPageBatched()
-                        .openRegularTabAppMenu()
-                        .openNewIncognitoTab();
+                mInitialStateRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
         WebPageStation pageOne =
                 incognitoNtp.loadPageProgramatically(

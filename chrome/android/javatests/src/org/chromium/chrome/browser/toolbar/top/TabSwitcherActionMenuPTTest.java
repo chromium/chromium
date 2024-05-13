@@ -55,7 +55,7 @@ public class TabSwitcherActionMenuPTTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testCloseTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
@@ -69,7 +69,7 @@ public class TabSwitcherActionMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         // Opening a new tab should display it on the screen.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
@@ -83,7 +83,7 @@ public class TabSwitcherActionMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewIncognitoTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         // Opening a new incognito tab should display it on the screen.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
@@ -99,7 +99,7 @@ public class TabSwitcherActionMenuPTTest {
     @LargeTest
     @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();
@@ -131,7 +131,7 @@ public class TabSwitcherActionMenuPTTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testCloseTab_hubEnabled() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
@@ -146,7 +146,7 @@ public class TabSwitcherActionMenuPTTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
     public void testClosingAllRegularTabs_DoNotFinishActivity_hubEnabled() {
-        PageStation page = mTransitEntryPoints.startOnBlankPage();
+        PageStation page = mTransitEntryPoints.startOnBlankPageNonBatched();
 
         PageAppMenuFacility appMenu = page.openGenericAppMenu();
         page = appMenu.openNewIncognitoTab();

@@ -42,7 +42,7 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      *
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
-    public WebPageStation startOnBlankPageBatched() {
+    public WebPageStation startOnBlankPage() {
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
