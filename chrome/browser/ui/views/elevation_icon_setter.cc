@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/elevation_icon_setter.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -49,8 +48,7 @@ SkBitmap GetElevationIcon() {
 
 // ElevationIconSetter --------------------------------------------------------
 
-ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
-                                         base::OnceClosure callback)
+ElevationIconSetter::ElevationIconSetter(views::LabelButton* button)
     : button_(button) {
 #if BUILDFLAG(IS_WIN)
   base::ThreadPool::CreateCOMSTATaskRunner(
@@ -58,15 +56,14 @@ ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
       ->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetElevationIcon),
           base::BindOnce(&ElevationIconSetter::SetButtonIcon,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
+                         weak_factory_.GetWeakPtr()));
 #endif
 }
 
 ElevationIconSetter::~ElevationIconSetter() {
 }
 
-void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
-                                        const SkBitmap& icon) {
+void ElevationIconSetter::SetButtonIcon(const SkBitmap& icon) {
   if (!icon.isNull()) {
     float device_scale_factor = 1.0f;
 #if BUILDFLAG(IS_WIN)
@@ -78,10 +75,5 @@ void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromImageSkia(
             gfx::ImageSkia::CreateFromBitmap(icon, device_scale_factor)));
-    button_->SizeToPreferredSize();
-    if (button_->parent())
-      button_->parent()->DeprecatedLayoutImmediately();
-    if (!callback.is_null())
-      std::move(callback).Run();
   }
 }

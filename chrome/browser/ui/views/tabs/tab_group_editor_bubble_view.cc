@@ -149,7 +149,6 @@ views::Widget* TabGroupEditorBubbleView::Show(
   tab_group_editor_bubble_view->GetBubbleFrameView()
       ->SetPreferredArrowAdjustment(
           views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  tab_group_editor_bubble_view->SizeToContents();
   widget->Show();
   return widget;
 }
@@ -225,14 +224,17 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     views::View* anchor_view,
     std::optional<gfx::Rect> anchor_rect,
     bool stop_context_menu_propagation)
-    : browser_(browser),
+    : BubbleDialogDelegateView(anchor_view,
+                               views::BubbleBorder::Arrow::TOP_LEFT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
+      browser_(browser),
       group_(group),
       title_field_controller_(this),
       use_set_anchor_rect_(anchor_rect) {
   // |anchor_view| should always be defined as it will be used to source the
   // |anchor_widget_|.
   DCHECK(anchor_view);
-  SetAnchorView(anchor_view);
   if (anchor_rect) {
     SetAnchorRect(anchor_rect.value());
   }

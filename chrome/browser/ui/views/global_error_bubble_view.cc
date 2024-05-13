@@ -57,7 +57,10 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
     views::BubbleBorder::Arrow arrow,
     Browser* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error)
-    : BubbleDialogDelegateView(anchor_view, arrow),
+    : BubbleDialogDelegateView(anchor_view,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               /*autosize=*/true),
       error_(error) {
   // error_ is a WeakPtr, but it's always non-null during construction.
   DCHECK(error_);
@@ -121,9 +124,7 @@ void GlobalErrorBubbleView::Init() {
 void GlobalErrorBubbleView::OnWidgetInitialized() {
   views::LabelButton* ok_button = GetOkButton();
   if (ok_button && error_ && error_->ShouldAddElevationIconToAcceptButton()) {
-    elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
-        ok_button, base::BindOnce(&GlobalErrorBubbleView::SizeToContents,
-                                  base::Unretained(this)));
+    elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(ok_button);
   }
 }
 

@@ -752,7 +752,8 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   // 2. Create the bubble / background which will hold the overflow menu.
   // TODO(dljames): Set the background color to match the current theme.
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      overflow_button_, views::BubbleBorder::TOP_LEFT);
+      overflow_button_, views::BubbleBorder::TOP_LEFT,
+      views::BubbleBorder::DIALOG_SHADOW, true);
   bubble_delegate->set_fixed_width(200);
   bubble_delegate->set_margins(gfx::Insets());
   bubble_delegate->set_adjust_if_offscreen(true);
@@ -808,8 +809,6 @@ void SavedTabGroupBar::UpdateOverflowMenu() {
   if (overflow_menu_->GetWidget()) {
     if (overflow_menu_->children().empty()) {
       overflow_menu_->GetWidget()->Close();
-    } else {
-      bubble_delegate_->SizeToContents();
     }
   }
 }

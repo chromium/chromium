@@ -277,7 +277,10 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : content::WebContentsObserver(web_contents),
-      BubbleDialogDelegateView(anchor_view, arrow),
+      BubbleDialogDelegateView(anchor_view,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
       content_setting_bubble_model_(std::move(content_setting_bubble_model)) {
   // Although other code in this class treats content_setting_bubble_model_ as
   // though it's optional, in fact it can only become null if
@@ -328,13 +331,11 @@ void ContentSettingBubbleContents::OnListItemAdded(
     const ContentSettingBubbleModel::ListItem& item) {
   DCHECK(list_item_container_);
   list_item_container_->AddItem(item);
-  SizeToContents();
 }
 
 void ContentSettingBubbleContents::OnListItemRemovedAt(int index) {
   DCHECK(list_item_container_);
   list_item_container_->RemoveRowAtIndex(index);
-  SizeToContents();
 }
 
 int ContentSettingBubbleContents::GetSelectedRadioOption() {
