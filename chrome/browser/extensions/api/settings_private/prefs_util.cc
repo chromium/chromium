@@ -473,6 +473,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
           settings_api::PrefType::kBoolean;
   (*s_allowlist)[prefs::kEnableProactiveNudge] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[prefs::kProactiveNudgeDisabledSitesWithTime] =
+      settings_api::PrefType::kDictionary;
 
   // Clear browsing data settings.
   (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistory] =
