@@ -207,7 +207,9 @@ public class SectionHeaderView extends LinearLayout {
                 updateTabLayoutHeaderWidth(false);
                 mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
                 mTabLayout.setBackgroundResource(
-                        R.drawable.header_title_section_tab_background_polished);
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                                ? R.drawable.header_title_section_tab_background
+                                : R.drawable.header_title_section_tab_background_polished);
             }
         }
 
