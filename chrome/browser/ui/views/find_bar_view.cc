@@ -18,14 +18,17 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -46,6 +49,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
@@ -186,82 +190,144 @@ FindBarView::FindBarView(FindBarHost* host) {
       features::IsChromeRefresh2023() ? vector_button : gfx::Insets();
   textfield_hover_padding.set_top_bottom(0, 0);
 
-  views::Builder<FindBarView>(this)
-      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-      .SetInsideBorderInsets(gfx::Insets(
-          layout_provider->GetInsetsMetric(INSETS_TOAST) - horizontal_margin))
-      .SetHost(host)
-      .SetFlipCanvasOnPaintForRTLUI(true)
-      .SetProperty(views::kElementIdentifierKey, kElementId)
-      .AddChildren(
-          views::Builder<views::Textfield>()
-              .CopyAddressTo(&find_text_)
-              .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
-              .SetBorder(views::CreateEmptyBorder(textfield_hover_padding))
-              .SetDefaultWidthInChars(30)
-              .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
-              .SetMinimumWidthInChars(1)
-              .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
-              .SetProperty(views::kElementIdentifierKey, kTextField)
-              .SetProperty(views::kMarginsKey, toast_control_vertical_margin +
-                                                   horizontal_margin -
-                                                   textfield_hover_padding)
-              .SetController(this),
-          views::Builder<FindBarMatchCountLabel>()
-              .CopyAddressTo(&match_count_text_)
-              .SetCanProcessEventsWithinSubtree(false)
-              .SetProperty(
-                  views::kMarginsKey,
-                  gfx::Insets(toast_label_vertical_margin + horizontal_margin)),
-          views::Builder<views::Separator>()
-              .CopyAddressTo(&separator_)
-              .SetCanProcessEventsWithinSubtree(false)
-              .SetColorId(ui::kColorSeparator)
-              .SetProperty(
-                  views::kMarginsKey,
-                  gfx::Insets(horizontal_margin +
-                              (features::IsChromeRefresh2023()
-                                   ? chrome_refresh_separator_vertical_margin
-                                   : toast_control_vertical_margin))),
-          views::Builder<views::ImageButton>()
-              .CopyAddressTo(&find_previous_button_)
-              .SetAccessibleName(
-                  l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
-              .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
-              .SetProperty(views::kElementIdentifierKey,
-                           kPreviousButtonElementId)
-              .SetTooltipText(
-                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
-              .SetCallback(base::BindRepeating(&FindBarView::FindNext,
-                                               base::Unretained(this), true))
-              .SetProperty(views::kMarginsKey, image_button_margins),
-          views::Builder<views::ImageButton>()
-              .CopyAddressTo(&find_next_button_)
-              .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
-              .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
-              .SetProperty(views::kElementIdentifierKey, kNextButtonElementId)
-              .SetTooltipText(
-                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
-              .SetCallback(base::BindRepeating(&FindBarView::FindNext,
-                                               base::Unretained(this), false))
-              .SetProperty(views::kMarginsKey, image_button_margins),
-          views::Builder<views::ImageButton>()
-              .CopyAddressTo(&close_button_)
-              .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
-              .SetProperty(views::kElementIdentifierKey, kCloseButtonElementId)
-              .SetTooltipText(
-                  l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
-              .SetAnimationDuration(base::TimeDelta())
-              .SetCallback(base::BindRepeating(&FindBarView::EndFindSession,
-                                               base::Unretained(this)))
-              .SetProperty(views::kMarginsKey, image_button_margins))
-      .BuildChildren();
+  auto main_container =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .AddChildren(
+              views::Builder<views::Textfield>()
+                  .CopyAddressTo(&find_text_)
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_ACCNAME_FIND))
+                  .SetBorder(views::CreateEmptyBorder(textfield_hover_padding))
+                  .SetDefaultWidthInChars(30)
+                  .SetID(VIEW_ID_FIND_IN_PAGE_TEXT_FIELD)
+                  .SetMinimumWidthInChars(1)
+                  .SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF)
+                  .SetProperty(views::kElementIdentifierKey, kTextField)
+                  .SetProperty(views::kMarginsKey,
+                               toast_control_vertical_margin +
+                                   horizontal_margin - textfield_hover_padding)
+                  .SetController(this),
+              views::Builder<FindBarMatchCountLabel>()
+                  .CopyAddressTo(&match_count_text_)
+                  .SetCanProcessEventsWithinSubtree(false)
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets(toast_label_vertical_margin +
+                                           horizontal_margin)),
+              views::Builder<views::Separator>()
+                  .CopyAddressTo(&separator_)
+                  .SetCanProcessEventsWithinSubtree(false)
+                  .SetColorId(ui::kColorSeparator)
+                  .SetProperty(
+                      views::kMarginsKey,
+                      gfx::Insets(
+                          horizontal_margin +
+                          (features::IsChromeRefresh2023()
+                               ? chrome_refresh_separator_vertical_margin
+                               : toast_control_vertical_margin))),
+              views::Builder<views::ImageButton>()
+                  .CopyAddressTo(&find_previous_button_)
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_ACCNAME_PREVIOUS))
+                  .SetID(VIEW_ID_FIND_IN_PAGE_PREVIOUS_BUTTON)
+                  .SetProperty(views::kElementIdentifierKey,
+                               kPreviousButtonElementId)
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP))
+                  .SetCallback(base::BindRepeating(
+                      &FindBarView::FindNext, base::Unretained(this), true))
+                  .SetProperty(views::kMarginsKey, image_button_margins),
+              views::Builder<views::ImageButton>()
+                  .CopyAddressTo(&find_next_button_)
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_ACCNAME_NEXT))
+                  .SetID(VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON)
+                  .SetProperty(views::kElementIdentifierKey,
+                               kNextButtonElementId)
+                  .SetTooltipText(
+                      l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_NEXT_TOOLTIP))
+                  .SetCallback(base::BindRepeating(
+                      &FindBarView::FindNext, base::Unretained(this), false))
+                  .SetProperty(views::kMarginsKey, image_button_margins),
+              views::Builder<views::ImageButton>()
+                  .CopyAddressTo(&close_button_)
+                  .SetID(VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON)
+                  .SetProperty(views::kElementIdentifierKey,
+                               kCloseButtonElementId)
+                  .SetTooltipText(
+                      l10n_util::GetStringUTF16(IDS_FIND_IN_PAGE_CLOSE_TOOLTIP))
+                  .SetAnimationDuration(base::TimeDelta())
+                  .SetCallback(base::BindRepeating(&FindBarView::EndFindSession,
+                                                   base::Unretained(this)))
+                  .SetProperty(views::kMarginsKey, image_button_margins))
+          .Build();
+
+  main_container->SetFlexForView(find_text_, 1, true);
+
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  // TODO(pbos): Ideally the separator below would not get inset. If this were
+  // implemented as a BubbleDialogDelegate, the MdTextButton conditionally added
+  // below would probably go into a SetFooterView(). It's Really Weird that the
+  // FindBarView has a BubbleBorder itself. In short we should consider that
+  // maybe this FindBarView should be a more "standard"
+  // BubbleDialogDelegate(View) and then use SetFooterView + have the bubble
+  // machinery own the border.
+  SetInsideBorderInsets(gfx::Insets(
+      layout_provider->GetInsetsMetric(INSETS_TOAST) - horizontal_margin));
+  SetHost(host);
+  SetFlipCanvasOnPaintForRTLUI(true);
+  SetProperty(views::kElementIdentifierKey, kElementId);
+  AddChildView(std::move(main_container));
+
+  if (LensOverlayController::IsEnabled(host->browser_view()->GetProfile())) {
+    const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+        vector_icons::kSearchIcon;
+#endif
+
+    AddChildView(views::Builder<views::Separator>()
+                     .SetOrientation(views::Separator::Orientation::kHorizontal)
+                     .Build());
+    AddChildView(
+        views::Builder<views::MdTextButton>()
+            .SetText(
+                l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY))
+            .SetCallback(base::BindRepeating(
+                [](FindBarView* find_bar) {
+                  FindBarController* const find_bar_controller =
+                      find_bar->find_bar_host_->GetFindBarController();
+                  content::WebContents* const web_contents =
+                      find_bar_controller->web_contents();
+                  LensOverlayController* const controller =
+                      LensOverlayController::GetController(web_contents);
+                  CHECK(controller);
+
+                  controller->ShowUI(
+                      LensOverlayController::InvocationSource::kFindInPage);
+                  UserEducationService::MaybeNotifyPromoFeatureUsed(
+                      web_contents->GetBrowserContext(),
+                      lens::features::kLensOverlay);
+                  find_bar_controller->EndFindSession(
+                      find_in_page::SelectionAction::kClear,
+                      find_in_page::ResultAction::kClear);
+                },
+                base::Unretained(this)))
+            .SetStyle(ui::ButtonStyle::kTonal)
+            .SetImageModel(views::Button::STATE_NORMAL,
+                           ui::ImageModel::FromVectorIcon(icon))
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets(toast_label_vertical_margin + horizontal_margin))
+            .Build());
+  }
+
   if (features::IsChromeRefresh2023()) {
     find_text_->SetFontList(
         views::Textfield::GetDefaultFontList().DeriveWithWeight(
             gfx::Font::Weight::MEDIUM));
   }
-  SetFlexForView(find_text_, 1, true);
   SetCommonButtonAttributes(find_previous_button_);
   SetCommonButtonAttributes(find_next_button_);
   SetCommonButtonAttributes(close_button_);
