@@ -2563,6 +2563,31 @@ TEST_P(IndexedHostContentSettingsMapTest, ShutdownDuringExpirationAsanTest) {
   FastForwardTime(ttl);
 }
 
+TEST_P(IndexedHostContentSettingsMapTest, TrackingProtectionMetrics) {
+  const ContentSettingsType type = ContentSettingsType::TRACKING_PROTECTION;
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("https://example1.com"), type,
+      CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("https://example2.com"), type,
+      CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("https://example3.com"), type,
+      CONTENT_SETTING_ALLOW);
+
+  base::HistogramTester t;
+  auto map2 = base::MakeRefCounted<HostContentSettingsMap>(
+      profile.GetPrefs(), false, true, true, true);
+  map2->ShutdownOnUIThread();
+  t.ExpectUniqueSample(
+      "ContentSettings.RegularProfile.Exceptions.tracking-protection", 3, 1);
+}
+
 // File access is not implemented on Android. Luckily we don't need it for DevTools.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_P(IndexedHostContentSettingsMapTest, DevToolsFileAccess) {

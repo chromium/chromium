@@ -826,6 +826,8 @@ chromium-metrics-reviews@google.com.
     <variant name="storage-access" summary="Storage Access exceptions"/>
     <variant name="subresource-filter" summary="Subresource filter exceptions"/>
     <variant name="subresource-filter-data" summary="Subresource filter data"/>
+    <variant name="tracking-protection"
+        summary="Tracking Protection exceptions"/>
     <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
     <variant name="webid-active-session" summary="FedCM Active Session"/>
     <variant name="webid-request" summary="FedCM Request"/>

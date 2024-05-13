@@ -821,6 +821,8 @@ chromium-metrics-reviews@google.com.
       name="ContentSettings.RegularProfile.Exceptions.storage-access"/>
   <affected-histogram
       name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
+  <affected-histogram
+      name="ContentSettings.RegularProfile.Exceptions.tracking-protection"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ContentSuggestionCategory" separator=".">

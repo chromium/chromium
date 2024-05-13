@@ -218,6 +218,7 @@ enum class FlashPermissions {
 // is an affected histogram under the "ContentSetting" suffix.
 bool ShouldCollectFineGrainedExceptionHistograms(ContentSettingsType type) {
   switch (type) {
+    case ContentSettingsType::TRACKING_PROTECTION:
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::ADS:
