@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_danger_prompt.h"
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom-forward.h"
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -116,6 +117,12 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   // Conveys danger acceptance from the DownloadDangerPrompt to the
   // DownloadItem.
   void DangerPromptDone(int download_id, DownloadDangerPrompt::Action action);
+
+  // Launches a HaTS survey for a download warning that is heeded, bypassed, or
+  // ignored (if all preconditions are met).
+  void MaybeTriggerDownloadWarningHatsSurvey(
+      download::DownloadItem* item,
+      DownloadWarningHatsType survey_type);
 
   // Returns true if the records of any downloaded items are allowed (and able)
   // to be deleted.

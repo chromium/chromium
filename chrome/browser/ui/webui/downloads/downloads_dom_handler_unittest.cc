@@ -41,6 +41,7 @@ using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 
 const char kTestDangerousDownloadUrl[] = "http://evildownload.com";
+const char kTestDangerousDownloadReferrerUrl[] = "http://referrer.test";
 
 class TestDownloadsDOMHandler : public DownloadsDOMHandler {
  public:
@@ -195,6 +196,8 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
     EXPECT_CALL(dangerous_download_, IsDone()).WillRepeatedly(Return(false));
     EXPECT_CALL(dangerous_download_, GetURL())
         .WillRepeatedly(ReturnRef(download_url_));
+    EXPECT_CALL(dangerous_download_, GetReferrerUrl())
+        .WillRepeatedly(ReturnRef(referrer_url_));
     ON_CALL(dangerous_download_, GetTargetFilePath())
         .WillByDefault(
             ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("foo.pdf"))));
@@ -225,6 +228,7 @@ class DownloadsDOMHandlerWithFakeSafeBrowsingTest
   raw_ptr<TestingBrowserProcess> browser_process_;
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   GURL download_url_ = GURL(kTestDangerousDownloadUrl);
+  GURL referrer_url_ = GURL(kTestDangerousDownloadReferrerUrl);
   testing::NiceMock<download::MockDownloadItem> dangerous_download_;
 };
 

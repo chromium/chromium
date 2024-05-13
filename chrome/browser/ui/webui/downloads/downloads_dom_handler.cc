@@ -32,6 +32,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_query.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -327,6 +328,8 @@ void DownloadsDOMHandler::SaveSuspiciousRequiringGesture(
   } else if (file->IsDangerous()) {
     MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
                             WarningAction::PROCEED);
+    MaybeTriggerDownloadWarningHatsSurvey(
+        file, DownloadWarningHatsType::kDownloadsPageBypass);
     MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOADS_PAGE,
                                   WarningAction::PROCEED);
 
@@ -373,6 +376,8 @@ void DownloadsDOMHandler::SaveDangerousFromPromptRequiringGesture(
 
   MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
                           WarningAction::PROCEED);
+  MaybeTriggerDownloadWarningHatsSurvey(
+      file, DownloadWarningHatsType::kDownloadsPageBypass);
   MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOAD_PROMPT,
                                 WarningAction::PROCEED);
 
@@ -403,6 +408,8 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   if (download && !download->IsDone() && download->IsDangerous()) {
     MaybeReportBypassAction(download, WarningSurface::DOWNLOADS_PAGE,
                             WarningAction::DISCARD);
+    MaybeTriggerDownloadWarningHatsSurvey(
+        download, DownloadWarningHatsType::kDownloadsPageHeed);
     MaybeTriggerTrustSafetySurvey(download, WarningSurface::DOWNLOADS_PAGE,
                                   WarningAction::DISCARD);
   }
@@ -649,6 +656,10 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_BYPASS_DEEP_SCAN);
   download::DownloadItem* download = GetDownloadByStringId(id);
   if (download) {
+    if (CanShowDownloadWarningHatsSurvey(download)) {
+      MaybeTriggerDownloadWarningHatsSurvey(
+          download, DownloadWarningHatsType::kDownloadsPageBypass);
+    }
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
     // Under ImprovedDownloadPageWarnings, the button says "Download suspicious
@@ -808,6 +819,23 @@ void DownloadsDOMHandler::DangerPromptDone(
   RecordDownloadsPageValidatedHistogram(item);
 
   item->ValidateDangerousDownload();
+}
+
+void DownloadsDOMHandler::MaybeTriggerDownloadWarningHatsSurvey(
+    download::DownloadItem* item,
+    DownloadWarningHatsType survey_type) {
+  CHECK(CanShowDownloadWarningHatsSurvey(item));
+
+  content::DownloadManager* manager = GetMainNotifierManager();
+  Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+
+  auto psd = DownloadWarningHatsProductSpecificData::Create(survey_type, item);
+  psd.AddNumPageWarnings(list_tracker_.NumDangerousItemsSent());
+
+  MaybeLaunchDownloadWarningHatsSurvey(profile, psd);
 }
 
 bool DownloadsDOMHandler::IsDeletingHistoryAllowed() {
