@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -3015,8 +3016,8 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
 
   if (font_shm_size > 0) {
     // Deserialize fonts before raster.
-    volatile char* font_buffer_memory =
-        GetSharedMemoryAs<char*>(font_shm_id, font_shm_offset, font_shm_size);
+    volatile uint8_t* font_buffer_memory = GetSharedMemoryAs<uint8_t*>(
+        font_shm_id, font_shm_offset, font_shm_size);
     if (!font_buffer_memory) {
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
                          "Can not read font buffer.");

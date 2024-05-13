@@ -25,7 +25,7 @@ namespace gpu {
 namespace {
 class Deserializer {
  public:
-  Deserializer(const volatile char* memory, uint32_t memory_size)
+  Deserializer(const volatile uint8_t* memory, uint32_t memory_size)
       : memory_(memory), memory_size_(memory_size) {}
   ~Deserializer() = default;
 
@@ -35,7 +35,7 @@ class Deserializer {
     if (!AlignMemory(sizeof(T), alignof(T)))
       return false;
 
-    *val = *reinterpret_cast<const T*>(const_cast<const char*>(memory_));
+    memcpy(val, const_cast<const uint8_t*>(memory_), sizeof(T));
 
     memory_ += sizeof(T);
     bytes_read_ += sizeof(T);
@@ -65,8 +65,7 @@ class Deserializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(std::has_single_bit(alignment));
 
-    size_t memory = reinterpret_cast<size_t>(memory_);
-    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
+    size_t padding = base::bits::AlignUp(memory_, alignment) - memory_;
 
     base::CheckedNumeric<uint32_t> checked_padded_size = bytes_read_;
     checked_padded_size += padding;
@@ -82,7 +81,7 @@ class Deserializer {
     return true;
   }
 
-  const volatile char* memory_;
+  const volatile uint8_t* memory_;
   uint32_t memory_size_;
   uint32_t bytes_read_ = 0u;
 };
@@ -173,7 +172,7 @@ void ServiceFontManager::Destroy() {
 }
 
 bool ServiceFontManager::Deserialize(
-    const volatile char* memory,
+    const volatile uint8_t* memory,
     uint32_t memory_size,
     std::vector<SkDiscardableHandleId>* locked_handles) {
   base::ReleasableAutoLock hold(&lock_);

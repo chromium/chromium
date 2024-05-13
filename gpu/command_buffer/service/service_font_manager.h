@@ -30,7 +30,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
   ServiceFontManager(Client* client, bool disable_oopr_debug_crash_dump);
   void Destroy();
 
-  bool Deserialize(const volatile char* memory,
+  bool Deserialize(const volatile uint8_t* memory,
                    uint32_t memory_size,
                    std::vector<SkDiscardableHandleId>* locked_handles);
   bool Unlock(const std::vector<SkDiscardableHandleId>& handles);
