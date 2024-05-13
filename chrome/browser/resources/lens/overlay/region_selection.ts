@@ -192,6 +192,22 @@ export class RegionSelectionElement extends PolymerElement {
   private getNormalizedCenterRotatedBoxFromTap(gesture: GestureEvent):
       CenterRotatedBox {
     const parentRect = this.getBoundingClientRect();
+    // If the parent is smaller than our defined tap region, we should just send
+    // the entire screenshot.
+    if (parentRect.width < this.tapRegionWidth ||
+        parentRect.height < this.tapRegionHeight) {
+      return {
+        box: {
+          x: 0.5,
+          y: 0.5,
+          width: 1,
+          height: 1,
+        },
+        rotation: 0,
+        coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+      };
+    }
+
 
     const normalizedWidth = this.tapRegionWidth / parentRect.width;
     const normalizedHeight = this.tapRegionHeight / parentRect.height;
@@ -267,6 +283,17 @@ export class RegionSelectionElement extends PolymerElement {
   private getPostSelectionRegionFromTap(gesture: GestureEvent):
       PostSelectionBoundingBox {
     const parentRect = this.getBoundingClientRect();
+    // If the parent is smaller than our defined tap region, we should just send
+    // the entire screenshot.
+    if (parentRect.width < this.tapRegionWidth ||
+        parentRect.height < this.tapRegionHeight) {
+      return {
+        top: 0,
+        left: 0,
+        width: 1,
+        height: 1,
+      };
+    }
 
     const normalizedWidth = this.tapRegionWidth / parentRect.width;
     const normalizedHeight = this.tapRegionHeight / parentRect.height;

@@ -111,6 +111,32 @@ suite('ManualRegionSelection', function() {
     await assertClickSendsRequest(pointInOverlay, expectedRect);
   });
 
+  test('ClickShowsRegionOverlayBiggerThanTapRegion', async () => {
+    selectionOverlayElement.$.backgroundImage.style.display = 'block';
+    selectionOverlayElement.$.backgroundImage.style.width = '100px';
+    selectionOverlayElement.$.backgroundImage.style.height = '100px';
+    await waitAfterNextRender(selectionOverlayElement);
+
+    const imageBounds = getImageBoundingRect(selectionOverlayElement);
+    const pointInOverlay = {
+      x: imageBounds.left,
+      y: imageBounds.top,
+    };
+
+    // The expected rect should be the entire canvas.
+    const expectedRect: CenterRotatedBox = {
+      box: {
+        x: 0.5,
+        y: 0.5,
+        width: 1,
+        height: 1,
+      },
+      rotation: 0,
+      coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
+    };
+    await assertClickSendsRequest(pointInOverlay, expectedRect);
+  });
+
   test('ClickShowsRegionWithCenterClampedToRegionWidthTopLeft', async () => {
     const imageBounds = getImageBoundingRect(selectionOverlayElement);
     const pointInOverlay = {
