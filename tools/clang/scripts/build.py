@@ -1029,6 +1029,11 @@ def main():
     EnsureDirExists(LLVM_INSTRUMENTED_DIR)
     os.chdir(LLVM_INSTRUMENTED_DIR)
 
+    # Disable -Wbackend-plugin for PGO builds as these warnings are harmless
+    # (https://llvm.org/docs/HowToBuildWithPGO.html#building-clang-with-pgo)
+    cflags += ['-Wno-backend-plugin']
+    cxxflags += ['-Wno-backend-plugin']
+
     instrument_args = base_cmake_args + [
         '-DLLVM_ENABLE_PROJECTS=clang',
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
