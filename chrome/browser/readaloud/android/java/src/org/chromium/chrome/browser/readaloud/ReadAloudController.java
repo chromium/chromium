@@ -208,6 +208,7 @@ public class ReadAloudController
                 boolean useOffsetInParagraph,
                 @Nullable Boolean shouldPlayOverride,
                 long dateModified) {
+            assert !GURL.isEmptyOrInvalid(tab.getUrl());
             mTab = tab;
             mData = data;
             mDateModified = dateModified;
@@ -238,8 +239,13 @@ public class ReadAloudController
         PlaybackData getPlaybackData() {
             return mData;
         }
+
         /** Apply the saved playback state. */
         void restore() {
+            if (GURL.isEmptyOrInvalid(mTab.getUrl())) {
+                assert false;
+                return;
+            }
             maybeInitializePlaybackHooks();
             createTabPlayback(mTab, mDateModified, Entrypoint.RESTORED_PLAYBACK)
                     .then(
@@ -359,6 +365,10 @@ public class ReadAloudController
             new ReadAloudReadabilityHooks.ReadabilityCallback() {
                 @Override
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
+                    if (url.isEmpty() || url == null) {
+                        assert false;
+                        return;
+                    }
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordServerReadabilityResult(isReadable);
@@ -448,10 +458,7 @@ public class ReadAloudController
                         @Override
                         public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
                             Log.d(TAG, "onLoadStarted");
-                            if (tab != null
-                                    && tab.getUrl() != null
-                                    && tab.getUrl().isValid()
-                                    && toDifferentDocument) {
+                            if (tab != null && toDifferentDocument) {
                                 maybeHandleTabReload(tab, tab.getUrl());
                                 maybeStopPlayback(tab);
                             }
@@ -478,21 +485,11 @@ public class ReadAloudController
 
                         @Override
                         public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                            if (tab != null) {
+                            if (tab != null && !GURL.isEmptyOrInvalid(tab.getUrl())) {
                                 PostTask.postDelayedTask(
                                         TaskTraits.UI_DEFAULT,
                                         () -> maybeCheckReadability(tab.getUrl()),
                                         READABILITY_DELAY);
-                            }
-                        }
-
-                        @Override
-                        public void onRestoreCompleted(Tab tab) {
-                            if (tab != null && tab.getUrl() != null) {
-                                Log.d(
-                                        TAG,
-                                        "onRestoreCompleted called for "
-                                                + tab.getUrl().getPossiblyInvalidSpec());
                             }
                         }
 
@@ -504,7 +501,7 @@ public class ReadAloudController
                             // url and then the destination url. Because of that we should not use
                             // this method to trigger readability.
                             super.onTabSelected(tab);
-                            if (tab != null && tab.getUrl() != null) {
+                            if (tab != null && !GURL.isEmptyOrInvalid(tab.getUrl())) {
                                 if (mPausedForIncognito) {
                                     mPausedForIncognito = false;
                                     if (mPlayback != null) {
@@ -643,17 +640,19 @@ public class ReadAloudController
     }
 
     /**
-     * Checks if URL is supported by Read Aloud before sending a readability request.
-     * Read Aloud won't be supported on the following URLs:
-     * - pages without an HTTP(S) scheme
-     * - myaccount.google.com and myactivity.google.com
-     * - www.google.com/...
-     *   - Based on standards.google/processes/domains/domain-guidelines-by-use-case,
-     *     www.google.com/... is reserved for Search features and content.
+     * Checks if URL is supported by Read Aloud before sending a readability request. Read Aloud
+     * won't be supported on the following URLs:
+     *
+     * <ul>
+     *   <li>pages without an HTTP(S) scheme
+     *   <li>myaccount.google.com and myactivity.google.com
+     *   <li>www.google.com/...
+     *   <li>Based on standards.google/processes/domains/domain-guidelines-by-use-case,
+     *       www.google.com/... is reserved for Search features and content.
+     * </ul>
      */
     public boolean isURLReadAloudSupported(GURL url) {
-        return url.isValid()
-                && !url.isEmpty()
+        return !GURL.isEmptyOrInvalid(url)
                 && (url.getScheme().equals(UrlConstants.HTTP_SCHEME)
                         || url.getScheme().equals(UrlConstants.HTTPS_SCHEME))
                 && !url.getSpec().startsWith(UrlConstants.GOOGLE_ACCOUNT_HOME_URL)
@@ -676,14 +675,14 @@ public class ReadAloudController
         // If we don't have a valid Profile, playback won't work.
         // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
         if (tab == null
-                || tab.getUrl() == null
+                || GURL.isEmptyOrInvalid(tab.getUrl())
                 || tab.getWebContents() == null
                 || mProfileSupplier.get() == null
                 || !mProfileSupplier.get().isNativeInitialized()) {
             return false;
         }
 
-        if (isTabLanguageSupported(tab) && isAvailable() && tab.getUrl().isValid()) {
+        if (isTabLanguageSupported(tab) && isAvailable()) {
             int sanitizedUrlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
             if (hasUnexpiredReadabilityInfo(sanitizedUrlHash)) {
                 Boolean isReadable = mReadabilityMap.get(sanitizedUrlHash);
@@ -775,7 +774,7 @@ public class ReadAloudController
     }
 
     private Promise<Long> extractDateModified(Tab tab) {
-        assert tab.getUrl().isValid();
+        assert !GURL.isEmptyOrInvalid(tab.getUrl());
         maybeInitializePlaybackHooks();
         if (mExtractor == null) {
             mExtractor = mPlaybackHooks.createExtractor();
@@ -796,7 +795,7 @@ public class ReadAloudController
 
     private Promise<Playback> createTabPlayback(
             Tab tab, long dateModified, @Entrypoint int entrypoint) {
-        assert tab.getUrl().isValid();
+        assert !GURL.isEmptyOrInvalid(tab.getUrl());
         // only start a new playback if different URL or no active playback for that url
         if (mCurrentlyPlayingTab != null && tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {
             var promise = new Promise<Playback>();
@@ -877,7 +876,7 @@ public class ReadAloudController
      * highlighting.
      */
     public boolean timepointsSupported(Tab tab) {
-        if (isAvailable() && tab.getUrl().isValid()) {
+        if (isAvailable() && !GURL.isEmptyOrInvalid(tab.getUrl())) {
             int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
             Boolean timepointsSuported = mTimepointsSupportedMap.get(urlHash);
             return timepointsSuported == null ? false : timepointsSuported;
@@ -1002,16 +1001,14 @@ public class ReadAloudController
     }
 
     private void maybeHandleTabReload(Tab tab, GURL newUrl) {
-        if (mHighlighter != null
-                && tab.getUrl() != null
-                && tab.getUrl().getSpec().equals(newUrl.getSpec())) {
+        assert tab.getUrl().getSpec().equals(newUrl.getSpec());
+        if (mHighlighter != null && !GURL.isEmptyOrInvalid(tab.getUrl())) {
             mHighlighter.handleTabReloaded(tab);
         }
     }
 
     private GURL stripUserData(GURL in) {
-        if (!in.isValid()
-                || in.isEmpty()
+        if (GURL.isEmptyOrInvalid(in)
                 || (in.getUsername().isEmpty() && in.getPassword().isEmpty())) {
             return in;
         }
@@ -1038,14 +1035,14 @@ public class ReadAloudController
         return getLanguage(language);
     }
 
-    /** A utinilty function doing null checks. */
+    /** A utility function doing null checks. */
     boolean isTranslated(Tab tab) {
         return tab.getWebContents() == null
                 ? false
                 : TranslateBridge.isPageTranslated(tab.getWebContents());
     }
 
-    /** Is language string includes locale, strip it */
+    /** If language string includes locale, strip it */
     private String getLanguage(String language) {
         if (language.contains("-")) {
             return language.split("-")[0];
@@ -1128,6 +1125,7 @@ public class ReadAloudController
         mSelectedVoiceId.set(voice.getVoiceId());
 
         if (mCurrentlyPlayingTab != null && mPlayback != null) {
+            assert !GURL.isEmptyOrInvalid(mCurrentlyPlayingTab.getUrl());
             RestoreState state =
                     new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback();
@@ -1338,13 +1336,13 @@ public class ReadAloudController
 
     @Override
     public void onApplicationStateChange(@ApplicationState int newState) {
-
         boolean isScreenOnAndUnlocked =
                 DeviceConditions.isCurrentlyScreenOnAndUnlocked(mActivity.getApplicationContext());
         // stop any playback if user left Chrome while screen is on and unlocked
         if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
                 && (isScreenOnAndUnlocked || mOnUserLeaveHint)) {
             if (mCurrentlyPlayingTab != null) {
+                assert !GURL.isEmptyOrInvalid(mCurrentlyPlayingTab.getUrl());
                 mStateToRestoreOnBringingToForeground =
                         new RestoreState(
                                 mCurrentlyPlayingTab,
@@ -1363,7 +1361,6 @@ public class ReadAloudController
             mOnUserLeaveHint = false;
         }
         if (mPlayerCoordinator != null) {
-
             if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES && !isScreenOnAndUnlocked) {
                 mPlayerCoordinator.onScreenStatusChanged(/* isLocked= */ true);
             } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
