@@ -591,6 +591,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability.{ModelExecutionFeature}"
+    enum="OnDeviceModelAdaptationAvailability" expires_after="2024-09-15">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the availability of adaptation model for {ModelExecutionFeature}.
+    Recorded each time an update to the base model or the foundation model is
+    triggered.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceAddContextResult.{ModelExecutionFeature}"
     enum="OptimizationGuideOnDeviceAddContextResult" expires_after="2024-09-29">
   <owner>sky@chromium.org</owner>

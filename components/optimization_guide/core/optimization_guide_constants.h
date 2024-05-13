@@ -72,6 +72,12 @@ extern const base::FilePath::CharType kTsDataFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kTsSpModelFile[];
 
+// Files expected to be in the on device model adaptation bundle.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kOnDeviceModelAdaptationModelFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kOnDeviceModelAdaptationWeightsFile[];
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_CONSTANTS_H_

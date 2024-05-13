@@ -127,7 +127,8 @@ class ModelExecutionManagerTest : public testing::Test {
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, local_state_.get(),
         identity_test_env_.identity_manager(), service_controller_,
-        &model_provider_, &optimization_guide_logger_, nullptr);
+        &model_provider_, /*on_device_component_state_manager=*/nullptr,
+        &optimization_guide_logger_, nullptr);
   }
 
   bool SimulateResponse(const std::string& content,

@@ -35,6 +35,8 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
+class OnDeviceModelComponentStateManager;
+class OnDeviceModelAdaptationLoader;
 class OnDeviceModelServiceController;
 class OptimizationGuideModelProvider;
 
@@ -47,6 +49,8 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
       scoped_refptr<OnDeviceModelServiceController>
           on_device_model_service_controller,
       OptimizationGuideModelProvider* model_provider,
+      base::WeakPtr<OnDeviceModelComponentStateManager>
+          on_device_component_state_manager,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service);
@@ -116,6 +120,11 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Map from feature to its model adaptation loader. Present only for features
+  // that require model adaptation.
+  const std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader>
+      model_adaptation_loaders_;
 
   // The model provider to observe for updates to auxiliary models.
   raw_ptr<OptimizationGuideModelProvider> model_provider_;

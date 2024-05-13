@@ -333,14 +333,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return test_controller_->model_adaptation_controllers_;
   }
 
-  void SetModelAdaptationAssetPathsForTesting(
-      ModelBasedCapabilityKey feature,
-      const on_device_model::AdaptationAssetPaths& asset_paths) {
-    test_controller_
-        ->model_adaptation_assets_[ToModelExecutionFeatureProto(feature)] =
-        asset_paths;
-  }
-
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
  protected:
@@ -449,11 +441,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   Initialize({.config = config_compose, .config2 = config_test});
 
-  SetModelAdaptationAssetPathsForTesting(
+  test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
-      on_device_model::AdaptationAssetPaths());
-  SetModelAdaptationAssetPathsForTesting(
-      ModelBasedCapabilityKey::kTest, on_device_model::AdaptationAssetPaths());
+      std::make_unique<on_device_model::AdaptationAssetPaths>());
+  test_controller_->MaybeUpdateModelAdaptation(
+      ModelBasedCapabilityKey::kTest,
+      std::make_unique<on_device_model::AdaptationAssetPaths>());
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),

@@ -371,6 +371,30 @@ enum class ModelRemoteDisconnectReason {
   kModelLoadFailed,
 };
 
+enum class OnDeviceModelAdaptationAvailability {
+  // Adaptation model was available.
+  kAvailable = 0,
+
+  // Base model was not available.
+  kBaseModelUnavailable = 1,
+
+  // Base model spec was invalid, so adaptation model cannot be fetched.
+  kBaseModelSpecInvalid = 2,
+
+  // Adaptation model was not available.
+  kAdaptationModelUnavailable = 3,
+
+  // The received adaptation model was invalid.
+  kAdaptationModelInvalid = 4,
+
+  // The received adaptation model was incompatible with the base model.
+  kAdaptationModelIncompatible = 5,
+
+  // This must be kept in sync with OnDeviceModelAdaptationAvailability in
+  // optimization/enums.xml.
+  kMaxValue = kAdaptationModelIncompatible,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

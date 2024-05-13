@@ -210,6 +210,7 @@ void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                   std::nullopt)));
 }
+
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 OnDeviceModelServiceController::GetOrCreateModelRemote(
     ModelBasedCapabilityKey feature,
@@ -297,6 +298,21 @@ void OnDeviceModelServiceController::UpdateModel(
   model_adaptation_controllers_.clear();
   base_model_remote_.reset();
   model_metadata_ = std::move(model_metadata);
+}
+
+void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
+    ModelBasedCapabilityKey feature,
+    std::unique_ptr<on_device_model::AdaptationAssetPaths> adaptations_assets) {
+  if (!adaptations_assets) {
+    model_adaptation_assets_.erase(ToModelExecutionFeatureProto(feature));
+  } else {
+    model_adaptation_assets_[ToModelExecutionFeatureProto(feature)] =
+        *adaptations_assets;
+  }
+  auto it = model_adaptation_controllers_.find(feature);
+  if (it != model_adaptation_controllers_.end()) {
+    model_adaptation_controllers_.erase(it);
+  }
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(

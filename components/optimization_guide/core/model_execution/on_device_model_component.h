@@ -185,6 +185,8 @@ class OnDeviceModelComponentState {
   }
 
  private:
+  friend class OnDeviceModelAdaptationLoaderTest;
+
   OnDeviceModelComponentState();
   friend class OnDeviceModelComponentStateManager;
 
@@ -192,6 +194,7 @@ class OnDeviceModelComponentState {
   base::Version component_version_;
   std::optional<OnDeviceBaseModelSpec> model_spec_;
 };
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_COMPONENT_H_

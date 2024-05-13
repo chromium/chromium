@@ -457,6 +457,7 @@ void OptimizationGuideKeyedService::Initialize() {
               url_loader_factory, g_browser_process->local_state(),
               IdentityManagerFactory::GetForProfile(profile),
               std::move(service_controller), this,
+              on_device_component_manager_->GetWeakPtr(),
               optimization_guide_logger_.get(),
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()

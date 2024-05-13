@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
 namespace features {
@@ -56,6 +57,10 @@ bool IsOnDeviceModelEnabled(ModelBasedCapabilityKey feature);
 
 // Returns whether on-device model adaptation is enabled for the given feature.
 bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature);
+
+// Returns the opt target to use for fetching model adaptations for `feature`.
+proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
+    ModelBasedCapabilityKey feature);
 
 }  // namespace internal
 }  // namespace features

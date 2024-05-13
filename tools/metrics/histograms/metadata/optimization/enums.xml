@@ -84,6 +84,20 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="[Deprecated] Host Model Features"/>
 </enum>
 
+<enum name="OnDeviceModelAdaptationAvailability">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Adaptation model was available"/>
+  <int value="2" label="Base model was not available"/>
+  <int value="3"
+      label="Base model spec was invalid, so adaptation model cannot be
+             fetched"/>
+  <int value="4" label="Adaptation model was not available"/>
+  <int value="5" label="The recieved adaptation model was invalid"/>
+  <int value="6"
+      label="The received adaptation model was incompatible with the base
+             model"/>
+</enum>
+
 <enum name="OnDeviceModelLoadResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

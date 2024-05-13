@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "feature_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -115,9 +116,19 @@ class OnDeviceModelServiceController
   // Updates the main execution model.
   void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
 
+  // Updates the model adaptation for the feature.
+  void MaybeUpdateModelAdaptation(
+      ModelBasedCapabilityKey feature,
+      std::unique_ptr<on_device_model::AdaptationAssetPaths>
+          adaptations_assets);
+
   // Called when the model adaptation remote is disconnected.
   void OnModelAdaptationRemoteDisconnected(ModelBasedCapabilityKey feature,
                                            ModelRemoteDisconnectReason reason);
+
+  base::WeakPtr<OnDeviceModelServiceController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   virtual ~OnDeviceModelServiceController();

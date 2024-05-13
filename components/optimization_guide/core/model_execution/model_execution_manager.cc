@@ -12,8 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -110,6 +112,31 @@ void NoOpExecuteRemoteFn(
       nullptr);
 }
 
+std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader>
+GetRequiredModelAdaptationLoaders(
+    OptimizationGuideModelProvider* model_provider,
+    base::WeakPtr<OnDeviceModelComponentStateManager>
+        on_device_component_state_manager,
+    base::WeakPtr<OnDeviceModelServiceController>
+        on_device_model_service_controller) {
+  std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader> loaders;
+  for (const auto user_visible_feature : kAllUserVisibleFeatureKeys) {
+    const auto feature = ToModelBasedCapabilityKey(user_visible_feature);
+    if (!features::internal::IsOnDeviceModelEnabled(feature) ||
+        !features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
+      continue;
+    }
+    loaders.emplace(
+        std::piecewise_construct, std::forward_as_tuple(feature),
+        std::forward_as_tuple(
+            feature, model_provider, on_device_component_state_manager,
+            base::BindRepeating(
+                &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
+                on_device_model_service_controller, feature)));
+  }
+  return loaders;
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -122,6 +149,8 @@ ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
     OptimizationGuideModelProvider* model_provider,
+    base::WeakPtr<OnDeviceModelComponentStateManager>
+        on_device_component_state_manager,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service)
@@ -133,6 +162,12 @@ ModelExecutionManager::ModelExecutionManager(
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
+      model_adaptation_loaders_(GetRequiredModelAdaptationLoaders(
+          model_provider,
+          on_device_component_state_manager,
+          on_device_model_service_controller
+              ? on_device_model_service_controller->GetWeakPtr()
+              : nullptr)),
       model_provider_(model_provider),
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {

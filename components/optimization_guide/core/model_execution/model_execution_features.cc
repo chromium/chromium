@@ -127,6 +127,21 @@ bool IsOnDeviceModelAdaptationEnabled(ModelBasedCapabilityKey feature) {
   }
 }
 
+proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
+    ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+      return proto::OPTIMIZATION_TARGET_COMPOSE;
+    case ModelBasedCapabilityKey::kTest:
+      return proto::OPTIMIZATION_TARGET_MODEL_VALIDATION;
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTextSafety:
+      NOTREACHED();
+  }
+  return proto::OPTIMIZATION_TARGET_UNKNOWN;
+}
+
 }  // namespace internal
 
 }  // namespace features
