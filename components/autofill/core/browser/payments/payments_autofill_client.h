@@ -24,6 +24,7 @@ class CreditCard;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class Iban;
+class CreditCardRiskBasedAuthenticator;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
@@ -210,6 +211,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the CreditCardOtpAuthenticator owned by the client. This function will
   // return a nullptr on iOS WebView.
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
+
+  // Gets the RiskBasedAuthenticator owned by the client. This function will
+  // return a nullptr on iOS WebView.
+  virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
 };
 
 }  // namespace payments

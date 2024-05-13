@@ -113,7 +113,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
-  CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -280,7 +279,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::unique_ptr<payments::ChromePaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;

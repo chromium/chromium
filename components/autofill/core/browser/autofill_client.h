@@ -84,7 +84,6 @@ class AutofillSuggestionDelegate;
 class AutofillProfile;
 class CreditCard;
 enum class CreditCardFetchResult;
-class CreditCardRiskBasedAuthenticator;
 class FormDataImporter;
 class Iban;
 class IbanAccessManager;
@@ -412,9 +411,6 @@ class AutofillClient {
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).
   virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
-
-  // Can be null on unsupported platforms.
-  virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

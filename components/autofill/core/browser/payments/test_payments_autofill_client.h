@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 
 namespace autofill {
@@ -72,6 +73,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
+  TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -120,6 +122,11 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void set_otp_authenticator(
       std::unique_ptr<CreditCardOtpAuthenticator> authenticator);
 
+  bool risk_based_authentication_invoked() {
+    return risk_based_authenticator_ &&
+           risk_based_authenticator_->authenticate_invoked();
+  }
+
  private:
   const raw_ref<AutofillClient> client_;
 
@@ -164,6 +171,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
+
+  std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
+      risk_based_authenticator_;
 };
 
 }  // namespace payments

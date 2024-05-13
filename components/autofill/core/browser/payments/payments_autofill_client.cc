@@ -113,4 +113,9 @@ CreditCardOtpAuthenticator* PaymentsAutofillClient::GetOtpAuthenticator() {
   return nullptr;
 }
 
+CreditCardRiskBasedAuthenticator*
+PaymentsAutofillClient::GetRiskBasedAuthenticator() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

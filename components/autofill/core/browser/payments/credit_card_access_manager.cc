@@ -1154,10 +1154,15 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
         AutofillProgressDialogType::kServerCardUnmaskProgressDialog,
         /*cancel_callback=*/base::BindOnce(
             &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
-            client_->GetRiskBasedAuthenticator()->AsWeakPtr()));
+            client_->GetPaymentsAutofillClient()
+                ->GetRiskBasedAuthenticator()
+                ->AsWeakPtr()));
 
-    client_->GetRiskBasedAuthenticator()->Authenticate(
-        *card_, weak_ptr_factory_.GetWeakPtr());
+    // TODO(crbug.com/1375748): Reduce the number of calls to
+    // `client_->GetPaymentsAutofillClient()`.
+    client_->GetPaymentsAutofillClient()
+        ->GetRiskBasedAuthenticator()
+        ->Authenticate(*card_, weak_ptr_factory_.GetWeakPtr());
     // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
     // Further delegation will be handled in
     // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.
@@ -1213,8 +1218,9 @@ void CreditCardAccessManager::FetchVirtualCard() {
       AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
       base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
-  client_->GetRiskBasedAuthenticator()->Authenticate(
-      *card_, weak_ptr_factory_.GetWeakPtr());
+  client_->GetPaymentsAutofillClient()
+      ->GetRiskBasedAuthenticator()
+      ->Authenticate(*card_, weak_ptr_factory_.GetWeakPtr());
 }
 
 void CreditCardAccessManager::FetchLocalOrFullServerCard() {

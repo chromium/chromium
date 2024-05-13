@@ -23,7 +23,6 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
-#import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
@@ -149,15 +148,6 @@ PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {
 AutocompleteHistoryManager*
 ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
-}
-
-CreditCardRiskBasedAuthenticator*
-ChromeAutofillClientIOS::GetRiskBasedAuthenticator() {
-  if (!risk_based_authenticator_) {
-    risk_based_authenticator_ =
-        std::make_unique<CreditCardRiskBasedAuthenticator>(this);
-  }
-  return risk_based_authenticator_.get();
 }
 
 PrefService* ChromeAutofillClientIOS::GetPrefs() {

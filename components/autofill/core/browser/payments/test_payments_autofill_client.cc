@@ -138,6 +138,15 @@ CreditCardOtpAuthenticator* TestPaymentsAutofillClient::GetOtpAuthenticator() {
   return otp_authenticator_.get();
 }
 
+TestCreditCardRiskBasedAuthenticator*
+TestPaymentsAutofillClient::GetRiskBasedAuthenticator() {
+  if (!risk_based_authenticator_) {
+    risk_based_authenticator_ =
+        std::make_unique<TestCreditCardRiskBasedAuthenticator>(&client_.get());
+  }
+  return risk_based_authenticator_.get();
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);

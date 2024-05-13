@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -369,6 +370,15 @@ ChromePaymentsAutofillClient::GetOtpAuthenticator() {
         std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
   }
   return otp_authenticator_.get();
+}
+
+CreditCardRiskBasedAuthenticator*
+ChromePaymentsAutofillClient::GetRiskBasedAuthenticator() {
+  if (!risk_based_authenticator_) {
+    risk_based_authenticator_ =
+        std::make_unique<CreditCardRiskBasedAuthenticator>(&client_.get());
+  }
+  return risk_based_authenticator_.get();
 }
 
 #if BUILDFLAG(IS_ANDROID)

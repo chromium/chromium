@@ -91,10 +91,6 @@ MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
 }
 
-CreditCardRiskBasedAuthenticator* AutofillClient::GetRiskBasedAuthenticator() {
-  return nullptr;
-}
-
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }

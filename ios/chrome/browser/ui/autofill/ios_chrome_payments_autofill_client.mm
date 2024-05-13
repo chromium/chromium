@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -203,6 +204,15 @@ IOSChromePaymentsAutofillClient::GetOtpAuthenticator() {
         std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
   }
   return otp_authenticator_.get();
+}
+
+CreditCardRiskBasedAuthenticator*
+IOSChromePaymentsAutofillClient::GetRiskBasedAuthenticator() {
+  if (!risk_based_authenticator_) {
+    risk_based_authenticator_ =
+        std::make_unique<CreditCardRiskBasedAuthenticator>(&client_.get());
+  }
+  return risk_based_authenticator_.get();
 }
 
 }  // namespace autofill::payments

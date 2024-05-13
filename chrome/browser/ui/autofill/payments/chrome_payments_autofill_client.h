@@ -29,6 +29,7 @@ class CardUnmaskOtpInputDialogControllerImpl;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class ContentAutofillClient;
+class CreditCardRiskBasedAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class VirtualCardEnrollmentManager;
@@ -111,6 +112,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
+  CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -165,6 +167,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
+
+  std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
 
   std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
       card_unmask_authentication_selection_controller_;

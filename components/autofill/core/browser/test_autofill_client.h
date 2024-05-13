@@ -33,13 +33,11 @@
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
@@ -153,14 +151,6 @@ class TestAutofillClientTemplate : public T {
 
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
     return &mock_merchant_promo_code_manager_;
-  }
-
-  TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override {
-    if (!risk_based_authenticator_) {
-      risk_based_authenticator_ =
-          std::make_unique<TestCreditCardRiskBasedAuthenticator>(this);
-    }
-    return risk_based_authenticator_.get();
   }
 
   PrefService* GetPrefs() override {
@@ -594,11 +584,6 @@ class TestAutofillClientTemplate : public T {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
-  bool risk_based_authentication_invoked() {
-    return risk_based_authenticator_ &&
-           risk_based_authenticator_->authenticate_invoked();
-  }
-
   AutofillClient::SaveCreditCardOptions get_save_credit_card_options() {
     return save_credit_card_options_.value();
   }
@@ -706,9 +691,6 @@ class TestAutofillClientTemplate : public T {
       payments_autofill_client_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-
-  std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
-      risk_based_authenticator_;
 
   GURL form_origin_{"https://example.test"};
   ukm::SourceId source_id_ = -1;
