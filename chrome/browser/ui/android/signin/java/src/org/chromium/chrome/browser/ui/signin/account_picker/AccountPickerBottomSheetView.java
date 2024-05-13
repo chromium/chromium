@@ -5,25 +5,35 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithLeading;
 
@@ -168,7 +178,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
         ExistingAccountRowViewBinder.bindAccountView(
                 accountProfileData, mSelectedAccountView, /* isCurrentlySelected= */ true);
-
+        // The layout is updated in this place instead of the view's constructor since native is not
+        // guaranteed to be initialized when the view is created (e.g. bottom sheet should be able
+        // to show with a loading state during native initialization in the new sign-in flow), so
+        // we may not be able to check the flag's value there.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            revampSelectedAccountView();
+        }
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         continueButton.setText(
                 SigninUtils.getContinueAsButtonText(view.getContext(), accountProfileData));
@@ -316,5 +333,32 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         if (viewFlipper.getChildAt(viewState).getId() != expectedChildId) {
             throw new IllegalArgumentException("Match failed with ViewState:" + viewState);
         }
+    }
+
+    // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
+    private void revampSelectedAccountView() {
+        Context context = mSelectedAccountView.getContext();
+        mSelectedAccountView.setBackground(
+                AppCompatResources.getDrawable(
+                        context, R.drawable.existing_account_row_background));
+        int padding = ViewUtils.dpToPx(context, 16);
+        mSelectedAccountView.setPadding(padding, padding, padding, padding);
+        int horizontalMargin = ViewUtils.dpToPx(context, 24);
+        int bottomMargin = ViewUtils.dpToPx(context, 16);
+        MarginLayoutParams params = (MarginLayoutParams) mSelectedAccountView.getLayoutParams();
+        params.setMargins(
+                /* left= */ horizontalMargin,
+                /* top= */ 0,
+                /* right= */ horizontalMargin,
+                /* bottom= */ bottomMargin);
+
+        ImageView expandIcon =
+                mSelectedAccountView.findViewById(R.id.account_picker_selected_account_expand_icon);
+        expandIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
+        ColorStateList colorStateList =
+                ColorStateList.valueOf(
+                        MaterialColors.getColor(
+                                mSelectedAccountView, R.attr.colorOnSurfaceVariant));
+        ImageViewCompat.setImageTintList(expandIcon, colorStateList);
     }
 }

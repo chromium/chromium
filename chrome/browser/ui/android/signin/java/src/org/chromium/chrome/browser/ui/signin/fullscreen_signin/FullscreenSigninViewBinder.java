@@ -4,18 +4,28 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.method.LinkMovementMethod;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
+import com.google.android.material.color.MaterialColors;
+
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.ExistingAccountRowViewBinder;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -24,8 +34,8 @@ class FullscreenSigninViewBinder {
     static void bind(PropertyModel model, FullscreenSigninView view, PropertyKey propertyKey) {
         if (propertyKey == FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED) {
             view.getContinueButtonView()
-                    .setOnClickListener(model
-                            .get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED));
+                    .setOnClickListener(
+                            model.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED));
         } else if (propertyKey == FullscreenSigninProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView()
                     .setOnClickListener(model.get(FullscreenSigninProperties.ON_DISMISS_CLICKED));
@@ -57,6 +67,10 @@ class FullscreenSigninViewBinder {
                 // this case.
                 initialLoadProgressSpinner.animate().alpha(1.0f).setStartDelay(500);
             } else {
+                // Native needs to be ready before feature flag can be checked. Therefore the flag
+                // guarded layout update is done once the initial loading spinner disappears, since
+                // native is initialized at this point.
+                revampSelectedAccountViewIfNecessary(view.getSelectedAccountView());
                 TransitionManager.beginDelayedTransition(view);
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
@@ -199,6 +213,33 @@ class FullscreenSigninViewBinder {
         view.getSigninProgressSpinner()
                 .setVisibility(showSigninProgressSpinner ? View.VISIBLE : View.GONE);
         view.getSigninProgressText().setVisibility(showSigningInText ? View.VISIBLE : View.GONE);
+    }
+
+    // TODO(b/40944124): Move the layout configurations to the xml file after UNO is launched.
+    public static void revampSelectedAccountViewIfNecessary(View accountPickerView) {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            Context context = accountPickerView.getContext();
+            accountPickerView.setBackground(
+                    AppCompatResources.getDrawable(
+                            context, R.drawable.existing_account_row_background));
+
+            int padding = ViewUtils.dpToPx(context, 16);
+            accountPickerView.setPadding(padding, padding, padding, padding);
+            int margin = ViewUtils.dpToPx(context, 24);
+            MarginLayoutParams params = (MarginLayoutParams) accountPickerView.getLayoutParams();
+            params.setMargins(
+                    /* left= */ margin, /* top= */ 0, /* right= */ margin, /* bottom= */ margin);
+
+            ImageView moreArrow =
+                    accountPickerView.findViewById(R.id.signin_fre_selected_account_expand_icon);
+            moreArrow.setImageResource(R.drawable.ic_expand_more_black_24dp);
+            ColorStateList colorStateList =
+                    ColorStateList.valueOf(
+                            MaterialColors.getColor(
+                                    accountPickerView, R.attr.colorOnSurfaceVariant));
+            ImageViewCompat.setImageTintList(moreArrow, colorStateList);
+        }
     }
 
     private FullscreenSigninViewBinder() {}

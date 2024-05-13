@@ -115,6 +115,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/ic_account_child_20dp.png",
     "java/res/drawable-xxxhdpi/ic_account_child_20dp.png",
     "java/res/drawable/chrome_sync_logo.xml",
+    "java/res/drawable/existing_account_row_background.xml",
     "java/res/drawable/history_sync_illustration.xml",
     "java/res/drawable/ic_expand_more_in_circle_24dp.xml",
     "java/res/layout/account_picker_bottom_sheet_continue_button.xml",

@@ -24,7 +24,7 @@ found in the LICENSE file.
         android:id="@+id/account_picker_selected_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
+        android:foreground="?attr/selectableItemBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_marginTop="8dp"
@@ -36,6 +36,7 @@ found in the LICENSE file.
         <include layout="@layout/account_row" />
 
         <ImageView
+            android:id="@+id/account_picker_selected_account_expand_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
