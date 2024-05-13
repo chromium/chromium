@@ -846,6 +846,28 @@ TEST_F(ChromeComposeClientTest,
   ASSERT_EQ(ukm_entries.size(), 0UL);
 }
 
+TEST_F(ChromeComposeClientTest, TestProactiveNudgeMSBBDisabled) {
+  SetPrefsForComposeMSBBState(false);
+  autofill::FormData form_data;
+  form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+  form_data.fields = {autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+
+  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  selected_field_data.origin =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  // Will fail because MSBB is not set
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB, 1);
+}
+
 TEST_F(ChromeComposeClientTest, TestComposeShouldTriggerSavedStateNudgeUKM) {
   autofill::FormData form_data;
   form_data.url = GetPageUrl();

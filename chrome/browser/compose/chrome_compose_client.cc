@@ -509,7 +509,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, pref_service_,
       translate_manager, ongoing_session,
       top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url,
-      trigger_source);
+      trigger_source, GetMSBBStateFromPrefs());
 
   // Record ukm only if the proactive nudge shows or is disabled by the flag.
   if (!ongoing_session &&

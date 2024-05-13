@@ -76,7 +76,8 @@ class ComposeEnabling {
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin,
       GURL url,
-      autofill::AutofillSuggestionTriggerSource trigger_source);
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      bool is_msbb_enabled);
   bool ShouldTriggerContextMenu(Profile* profile,
                                 translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,
@@ -100,7 +101,8 @@ class ComposeEnabling {
       translate::TranslateManager* translate_manager,
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin,
-      GURL url);
+      GURL url,
+      bool is_msbb_enabled);
   base::expected<void, compose::ComposeNudgeDenyReason>
   ShouldTriggerSavedStatePopup(
       autofill::AutofillSuggestionTriggerSource trigger_source);
