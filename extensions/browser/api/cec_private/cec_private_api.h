@@ -5,14 +5,17 @@
 #ifndef EXTENSIONS_BROWSER_API_CEC_PRIVATE_CEC_PRIVATE_API_H_
 #define EXTENSIONS_BROWSER_API_CEC_PRIVATE_CEC_PRIVATE_API_H_
 
+#include <memory>
 #include <vector>
 
-#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/common/api/cec_private.h"
 
 namespace extensions {
 namespace api {
+
+class CecPrivateDelegate;
 
 class CecPrivateFunction : public ExtensionFunction {
  public:
@@ -24,6 +27,11 @@ class CecPrivateFunction : public ExtensionFunction {
  protected:
   ~CecPrivateFunction() override;
   bool PreRunValidation(std::string* error) override;
+  std::unique_ptr<CecPrivateDelegate> delegate_;
+
+  // Callback to forward CecPrivateDelegate void(void) callback resolutions
+  // up to the api caller.
+  void RespondWithNoArguments(void);
 };
 
 class CecPrivateSendStandByFunction : public CecPrivateFunction {
@@ -74,7 +82,7 @@ class CecPrivateQueryDisplayCecPowerStateFunction : public CecPrivateFunction {
 
  private:
   void HandlePowerStates(
-      const std::vector<ash::CecServiceClient::PowerState>& power_states);
+      const std::vector<cec_private::DisplayCecPowerState>& power_states);
 };
 
 }  // namespace api

@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/notreached.h"
-#include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
+#include "base/functional/callback_helpers.h"
+#include "extensions/browser/api/cec_private/cec_private_delegate.h"
 #include "extensions/common/api/cec_private.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
@@ -17,41 +17,13 @@ namespace {
 const char kKioskOnlyError[] =
     "Only kiosk enabled extensions are allowed to use this function.";
 
-extensions::api::cec_private::DisplayCecPowerState
-ConvertCecServiceClientPowerState(
-    ash::CecServiceClient::PowerState power_state) {
-  switch (power_state) {
-    case ash::CecServiceClient::PowerState::kError:
-      return extensions::api::cec_private::DisplayCecPowerState::kError;
-    case ash::CecServiceClient::PowerState::kAdapterNotConfigured:
-      return extensions::api::cec_private::DisplayCecPowerState::
-          kAdapterNotConfigured;
-    case ash::CecServiceClient::PowerState::kNoDevice:
-      return extensions::api::cec_private::DisplayCecPowerState::kNoDevice;
-    case ash::CecServiceClient::PowerState::kOn:
-      return extensions::api::cec_private::DisplayCecPowerState::kOn;
-    case ash::CecServiceClient::PowerState::kStandBy:
-      return extensions::api::cec_private::DisplayCecPowerState::kStandby;
-    case ash::CecServiceClient::PowerState::kTransitioningToOn:
-      return extensions::api::cec_private::DisplayCecPowerState::
-          kTransitioningToOn;
-    case ash::CecServiceClient::PowerState::kTransitioningToStandBy:
-      return extensions::api::cec_private::DisplayCecPowerState::
-          kTransitioningToStandby;
-    case ash::CecServiceClient::PowerState::kUnknown:
-      return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
-  }
-
-  NOTREACHED();
-  return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
-}
-
 }  // namespace
 
 namespace extensions {
 namespace api {
 
-CecPrivateFunction::CecPrivateFunction() = default;
+CecPrivateFunction::CecPrivateFunction()
+    : delegate_(CecPrivateDelegate::CreateInstance()) {}
 
 CecPrivateFunction::~CecPrivateFunction() = default;
 
@@ -67,13 +39,18 @@ bool CecPrivateFunction::PreRunValidation(std::string* error) {
   return false;
 }
 
+void CecPrivateFunction::RespondWithNoArguments(void) {
+  Respond(NoArguments());
+}
+
 CecPrivateSendStandByFunction::CecPrivateSendStandByFunction() = default;
 
 CecPrivateSendStandByFunction::~CecPrivateSendStandByFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendStandByFunction::Run() {
-  ash::CecServiceClient::Get()->SendStandBy();
-  return RespondNow(NoArguments());
+  delegate_->SendStandBy(base::BindOnce(
+      &CecPrivateSendStandByFunction::RespondWithNoArguments, this));
+  return RespondLater();
 }
 
 CecPrivateSendWakeUpFunction::CecPrivateSendWakeUpFunction() = default;
@@ -81,8 +58,9 @@ CecPrivateSendWakeUpFunction::CecPrivateSendWakeUpFunction() = default;
 CecPrivateSendWakeUpFunction::~CecPrivateSendWakeUpFunction() = default;
 
 ExtensionFunction::ResponseAction CecPrivateSendWakeUpFunction::Run() {
-  ash::CecServiceClient::Get()->SendWakeUp();
-  return RespondNow(NoArguments());
+  delegate_->SendWakeUp(base::BindOnce(
+      &CecPrivateSendWakeUpFunction::RespondWithNoArguments, this));
+  return RespondLater();
 }
 
 CecPrivateQueryDisplayCecPowerStateFunction::
@@ -93,21 +71,15 @@ CecPrivateQueryDisplayCecPowerStateFunction::
 
 ExtensionFunction::ResponseAction
 CecPrivateQueryDisplayCecPowerStateFunction::Run() {
-  ash::CecServiceClient::Get()->QueryDisplayCecPowerState(base::BindOnce(
+  delegate_->QueryDisplayCecPowerState(base::BindOnce(
       &CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates, this));
   return RespondLater();
 }
 
 void CecPrivateQueryDisplayCecPowerStateFunction::HandlePowerStates(
-    const std::vector<ash::CecServiceClient::PowerState>& power_states) {
-  std::vector<cec_private::DisplayCecPowerState> result_power_states;
-
-  for (const ash::CecServiceClient::PowerState& state : power_states) {
-    result_power_states.push_back(ConvertCecServiceClientPowerState(state));
-  }
-
-  Respond(ArgumentList(cec_private::QueryDisplayCecPowerState::Results::Create(
-      result_power_states)));
+    const std::vector<cec_private::DisplayCecPowerState>& power_states) {
+  Respond(ArgumentList(
+      cec_private::QueryDisplayCecPowerState::Results::Create(power_states)));
 }
 
 }  // namespace api
