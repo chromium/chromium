@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +68,7 @@ public class AppThemeColorProviderUnitTest {
     @Test
     public void appStartsInUnfocusedDesktopWindow() {
         // Initialize.
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
         when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(true);
         initThemeColorProvider();
 
@@ -106,8 +104,9 @@ public class AppThemeColorProviderUnitTest {
         var tint = ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
 
         assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
-        assertNull(
-                "Activity focus tint should not be set.",
+        assertEquals(
+                "Activity focus tint is not correct.",
+                tint,
                 mAppThemeColorProvider.getActivityFocusTint());
 
         // Assume that the activity gained focus.
@@ -115,11 +114,12 @@ public class AppThemeColorProviderUnitTest {
 
         // Verify.
         assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
-        assertNull(
-                "Activity focus tint should not be set.",
+        assertEquals(
+                "Activity focus tint is not correct.",
+                tint,
                 mAppThemeColorProvider.getActivityFocusTint());
 
-        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+        verify(mTintObserver).onTintChanged(tint, tint, brandedColorScheme);
     }
 
     @Test

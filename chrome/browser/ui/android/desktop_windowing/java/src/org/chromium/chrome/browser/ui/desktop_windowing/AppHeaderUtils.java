@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
@@ -55,6 +56,8 @@ public class AppHeaderUtils {
         int NUM_ENTRIES = 3;
     }
 
+    private static Boolean sIsAppInDesktopWindowForTesting;
+
     /**
      * Determines whether the currently starting activity is focused, based on the {@link
      * ActivityLifecycleDispatcher} instance associated with it. Note that this method is intended
@@ -78,6 +81,7 @@ public class AppHeaderUtils {
      */
     public static boolean isAppInDesktopWindow(
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+        if (sIsAppInDesktopWindowForTesting != null) return sIsAppInDesktopWindowForTesting;
         if (desktopWindowStateProvider == null) return false;
         var appHeaderState = desktopWindowStateProvider.getAppHeaderState();
 
@@ -120,5 +124,15 @@ public class AppHeaderUtils {
         }
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName, state, DesktopWindowModeState.NUM_ENTRIES);
+    }
+
+    /**
+     * Sets the desktop windowing mode for tests.
+     *
+     * @param isAppInDesktopWindow Whether desktop windowing mode is activated.
+     */
+    public static void setAppInDesktopWindowForTesting(boolean isAppInDesktopWindow) {
+        sIsAppInDesktopWindowForTesting = isAppInDesktopWindow;
+        ResettersForTesting.register(() -> sIsAppInDesktopWindowForTesting = null);
     }
 }

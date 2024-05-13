@@ -301,6 +301,9 @@ public class StripLayoutHelperManagerTest {
     @Test
     public void testGetBackgroundColor_ActivityStartsInUnfocusedDesktopWindow() {
         // Assume that the app starts in an unfocused desktop window.
+        var appHeaderState =
+                new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(appHeaderState);
         when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(true);
         initializeTest();
 

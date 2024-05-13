@@ -198,8 +198,7 @@ public class StripLayoutHelperManager
     // Desktop windowing mode constants.
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
-     * the desktop windowing mode, and will typically always be true unless the current activity is
-     * in an unfocused desktop window.
+     * the desktop windowing mode, to determine the tab strip background color.
      */
     private boolean mIsTopResumedActivity;
 
@@ -836,8 +835,7 @@ public class StripLayoutHelperManager
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
-        if (!mIsLayoutOptimizationsEnabled
-                || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
+        if (!mIsLayoutOptimizationsEnabled) return;
         mIsTopResumedActivity = isTopResumedActivity;
         mUpdateHost.requestUpdate();
     }
@@ -1261,8 +1259,10 @@ public class StripLayoutHelperManager
     }
 
     public @ColorInt int getBackgroundColor() {
-        return TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
-                mContext, mIsIncognito, mIsTopResumedActivity);
+        return AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
+                ? TabUiThemeUtil.getTabStripBackgroundColorForActivityState(
+                        mContext, mIsIncognito, mIsTopResumedActivity)
+                : TabUiThemeUtil.getTabStripBackgroundColor(mContext, mIsIncognito);
     }
 
     /**

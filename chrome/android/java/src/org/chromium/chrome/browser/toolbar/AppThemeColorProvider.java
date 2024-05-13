@@ -54,8 +54,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
 
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
-     * the desktop windowing mode, and will typically always be true unless the current activity is
-     * in an unfocused desktop window.
+     * the desktop windowing mode, to determine the tint for the toolbar icons.
      */
     private boolean mIsTopResumedActivity;
 
@@ -156,7 +155,6 @@ public class AppThemeColorProvider extends ThemeColorProvider
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
-        if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) return;
         mIsTopResumedActivity = isTopResumedActivity;
         updateTheme();
     }
@@ -165,6 +163,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
             Context context, @BrandedColorScheme int brandedColorScheme) {
         var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
         return mActivityLifecycleDispatcher == null
+                        || !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
                 ? iconTint
                 : ThemeUtils.getThemedToolbarIconTintForActivityState(
                         context, brandedColorScheme, mIsTopResumedActivity);
