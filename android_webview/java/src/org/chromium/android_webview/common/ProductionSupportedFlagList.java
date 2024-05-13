@@ -986,6 +986,9 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.METRICS_TRACING_CALCULATION_REDUCTION,
                 "Reduces Renderer event latency attribution to only during tracing."),
         Flag.baseFeature(BlinkFeatures.STREAMLINE_RENDERER_INIT),
+        Flag.baseFeature(
+                BlinkFeatures.STATIC_ANIMATION_OPTIMIZATION,
+                "Optimize handling of static properties during animations."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
