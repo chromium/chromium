@@ -87,6 +87,13 @@ class VIEWS_EXPORT WidgetDelegate
     // this WidgetDelegate is used to initialize a Widget.
     std::optional<View*> initially_focused_view;
 
+    // This is used by modal dialogs to override and constrain desired bounds
+    // calculations.
+    // TODO(pbos): Consider if we could express bounds constraints in views and
+    // keep them in sync rather than constrained_window owning the calculation
+    // here. Considering this wasn't very expedient at the time.
+    base::RepeatingCallback<gfx::Rect()> desired_bounds_delegate;
+
     // The widget's internal name, used to identify it in window-state
     // restoration (if this widget participates in that) and in debugging
     // contexts. Never displayed to the user, and not translated.
@@ -340,7 +347,7 @@ class VIEWS_EXPORT WidgetDelegate
   // Called when the widget wants to resize itself.
   // Default origin is the widget origin.
   // Default size is the ContentsView's PreferredSize.
-  virtual gfx::Rect GetDesiredWidgetBounds();
+  gfx::Rect GetDesiredWidgetBounds();
 
   // Setters for data parameters of the WidgetDelegate. If you use these
   // setters, there is no need to override the corresponding virtual getters.
@@ -414,6 +421,14 @@ class VIEWS_EXPORT WidgetDelegate
 
   void set_internal_name(std::string name) { params_.internal_name = name; }
   std::string internal_name() const { return params_.internal_name; }
+
+  bool has_desired_bounds_delegate() const {
+    return static_cast<bool>(params_.desired_bounds_delegate);
+  }
+  void set_desired_bounds_delegate(
+      base::RepeatingCallback<gfx::Rect()> desired_bounds_delegate) {
+    params_.desired_bounds_delegate = std::move(desired_bounds_delegate);
+  }
 
  private:
   // We're using a vector of OnceClosures instead of a OnceCallbackList because
