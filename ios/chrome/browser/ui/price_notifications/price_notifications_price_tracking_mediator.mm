@@ -570,6 +570,8 @@ using PriceNotificationItems =
             : self.bookmarkModel->mobile_node();
     if (!defaultFolder) {
       // Cannot track URL: the user is likely signed out.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(completionHandler, false));
       return;
     }
     bookmark = self.bookmarkModel->AddURL(defaultFolder,
