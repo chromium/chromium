@@ -92,10 +92,10 @@ void TouchObserverHud::OnDisplayMetricsChanged(const display::Display& display,
   widget_->SetSize(display.size());
 }
 
-void TouchObserverHud::OnDisplayModeChanged(
+void TouchObserverHud::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& outputs) {
-  // Clear touch HUD for any change in display mode (single, dual extended, dual
-  // mirrored, ...).
+  // Clear touch HUD for any change in display state (single, dual extended,
+  // dual mirrored, ...).
   Clear();
 }
 

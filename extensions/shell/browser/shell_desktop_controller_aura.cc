@@ -229,7 +229,7 @@ void ShellDesktopControllerAura::PowerButtonEventReceived(
   }
 }
 
-void ShellDesktopControllerAura::OnDisplayModeChanged(
+void ShellDesktopControllerAura::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& displays) {
   for (const display::DisplaySnapshot* display_mode : displays) {
     if (!display_mode->current_mode())

@@ -136,7 +136,7 @@ class ASH_EXPORT PowerButtonController
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // display::DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
 
   // chromeos::PowerManagerClient::Observer:

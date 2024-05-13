@@ -285,7 +285,7 @@ bool DisplayColorManager::SetDisplayColorTemperatureAdjustment(
   return configurator_->SetColorMatrix(display_id, matrix_buffer_);
 }
 
-void DisplayColorManager::OnDisplayModeChanged(
+void DisplayColorManager::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   size_t displays_with_ctm_support_count = 0;
   for (const display::DisplaySnapshot* state : display_states) {

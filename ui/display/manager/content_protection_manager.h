@@ -150,10 +150,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                                   Task::Status status);
 
   // DisplayConfigurator::Observer overrides:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const DisplayConfigurator::DisplayStateList&) override;
-  void OnDisplayModeChangeFailed(const DisplayConfigurator::DisplayStateList&,
-                                 MultipleDisplayState) override;
+  void OnDisplayConfigurationChangeFailed(
+      const DisplayConfigurator::DisplayStateList&,
+      MultipleDisplayState) override;
 
   bool HasExternalDisplaysWithContentProtection() const;
 

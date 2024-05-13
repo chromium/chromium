@@ -348,7 +348,7 @@ void PowerButtonController::CancelPowerButtonEvent() {
   StopTimersAndDismissMenu();
 }
 
-void PowerButtonController::OnDisplayModeChanged(
+void PowerButtonController::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   bool internal_display_off = false;
   bool external_display_on = false;
@@ -405,7 +405,7 @@ void PowerButtonController::SuspendDone(base::TimeDelta sleep_duration) {
 
 void PowerButtonController::OnLoginStatusChanged(LoginStatus status) {
   // Destroy |menu_widget_| on login status change to reset the content of the
-  // menu since the menu items change if login stauts changed.
+  // menu since the menu items change if login status changed.
   menu_widget_.reset();
 }
 

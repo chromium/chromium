@@ -1278,7 +1278,7 @@ class NightLightCrtcTest : public NightLightTest {
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
     display_change_observer_->GetStateForDisplayIds(
         native_display_delegate_->GetOutputs());
-    display_change_observer_->OnDisplayModeChanged(
+    display_change_observer_->OnDisplayConfigurationChanged(
         native_display_delegate_->GetOutputs());
   }
 
@@ -1812,7 +1812,7 @@ class AmbientEQTest : public NightLightTest {
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
     display_change_observer_->GetStateForDisplayIds(
         native_display_delegate_->GetOutputs());
-    display_change_observer_->OnDisplayModeChanged(
+    display_change_observer_->OnDisplayConfigurationChanged(
         native_display_delegate_->GetOutputs());
   }
 

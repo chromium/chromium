@@ -70,9 +70,9 @@ class ASH_EXPORT DisplayColorManager
       const display::ColorTemperatureAdjustment& cta);
 
   // display::DisplayConfigurator::Observer
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
-  void OnDisplayModeChangeFailed(
+  void OnDisplayConfigurationChangeFailed(
       const display::DisplayConfigurator::DisplayStateList& displays,
       display::MultipleDisplayState failed_new_state) override {}
 

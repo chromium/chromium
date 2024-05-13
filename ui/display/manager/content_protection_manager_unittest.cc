@@ -106,7 +106,7 @@ class ContentProtectionManagerTest : public testing::Test {
   }
 
   void TriggerDisplayConfiguration() {
-    manager_.OnDisplayModeChanged(layout_manager_.GetDisplayStates());
+    manager_.OnDisplayConfigurationChanged(layout_manager_.GetDisplayStates());
   }
 
   bool TriggerDisplaySecurityTimeout() {

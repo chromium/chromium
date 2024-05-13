@@ -1719,7 +1719,7 @@ void DisplayManager::SetMirrorMode(
     MultipleDisplayState new_state =
         enabled ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
                 : MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
-    display_configurator_->SetDisplayMode(new_state);
+    display_configurator_->SetMultipleDisplayState(new_state);
     return;
   }
   multi_display_mode_ =

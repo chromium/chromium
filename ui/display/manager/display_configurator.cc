@@ -886,11 +886,12 @@ void DisplayConfigurator::SetDisplayPower(
   SetDisplayPowerInternal(*requested_power_state_, flags, std::move(callback));
 }
 
-void DisplayConfigurator::SetDisplayMode(MultipleDisplayState new_state) {
+void DisplayConfigurator::SetMultipleDisplayState(
+    MultipleDisplayState new_state) {
   if (configurator_disabled())
     return;
 
-  VLOG(1) << "SetDisplayMode: state="
+  VLOG(1) << "SetMultipleDisplayState: state="
           << MultipleDisplayStateToString(new_state);
   if (current_display_state_ == new_state) {
     // Cancel software mirroring if the state is moving from
@@ -1149,10 +1150,11 @@ void DisplayConfigurator::NotifyDisplayStateObservers(
     MultipleDisplayState attempted_state) {
   if (success) {
     for (Observer& observer : observers_)
-      observer.OnDisplayModeChanged(cached_displays_);
+      observer.OnDisplayConfigurationChanged(cached_displays_);
   } else {
     for (Observer& observer : observers_)
-      observer.OnDisplayModeChangeFailed(cached_displays_, attempted_state);
+      observer.OnDisplayConfigurationChangeFailed(cached_displays_,
+                                                  attempted_state);
   }
 }
 

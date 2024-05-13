@@ -855,14 +855,16 @@ TEST_F(RefreshRateControllerTest,
 
   EXPECT_CALL(*native_display_delegate_,
               GetSeamlessRefreshRates(kDisplayId, testing::_));
-  controller_->OnDisplayModeChanged(SnapshotsToDisplayStateList(snapshots));
+  controller_->OnDisplayConfigurationChanged(
+      SnapshotsToDisplayStateList(snapshots));
 
   // When the internal display is turned off, it will have no mode set.
   snapshots[0]->set_current_mode(nullptr);
   EXPECT_CALL(*native_display_delegate_,
               GetSeamlessRefreshRates(testing::_, testing::_))
       .Times(0);
-  controller_->OnDisplayModeChanged(SnapshotsToDisplayStateList(snapshots));
+  controller_->OnDisplayConfigurationChanged(
+      SnapshotsToDisplayStateList(snapshots));
 }
 
 TEST_F(RefreshRateControllerTest, RequestSeamlessRefreshRatesMultipleDisplays) {
@@ -880,7 +882,8 @@ TEST_F(RefreshRateControllerTest, RequestSeamlessRefreshRatesMultipleDisplays) {
               GetSeamlessRefreshRates(kInternalDisplayId, testing::_));
   EXPECT_CALL(*native_display_delegate_,
               GetSeamlessRefreshRates(kExternalDisplayId, testing::_));
-  controller_->OnDisplayModeChanged(SnapshotsToDisplayStateList(snapshots));
+  controller_->OnDisplayConfigurationChanged(
+      SnapshotsToDisplayStateList(snapshots));
 }
 
 TEST_F(RefreshRateControllerTest, SeamlessRefreshRatesChanged) {
@@ -926,7 +929,7 @@ TEST_F(RefreshRateControllerTest, SeamlessRefreshRatesChanged) {
 
   // Notify the controller of a configuration change to request updated seamless
   // refresh rates and update the refresh rate override.
-  controller_->OnDisplayModeChanged(display_list);
+  controller_->OnDisplayConfigurationChanged(display_list);
 
   // Expect the new state to be 60Hz.
   {

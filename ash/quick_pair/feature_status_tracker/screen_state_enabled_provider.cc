@@ -24,7 +24,7 @@ ScreenStateEnabledProvider::ScreenStateEnabledProvider() {
 
 ScreenStateEnabledProvider::~ScreenStateEnabledProvider() = default;
 
-void ScreenStateEnabledProvider::OnDisplayModeChanged(
+void ScreenStateEnabledProvider::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   for (const display::DisplaySnapshot* state : display_states) {
     // If a display has current_mode, then it is (1) an external monitor or (2)

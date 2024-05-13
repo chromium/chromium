@@ -53,7 +53,7 @@ class ASH_EXPORT RefreshRateController
                                uint32_t changed_metrics) override;
 
   // DisplayConfigurator::Observer implementation.
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& displays) override;
 
   // DisplayPerformanceModeController::Observer:

@@ -442,7 +442,7 @@ TEST_F(LockStateControllerTest, LegacyHonorPowerButtonInDockedMode) {
   SendBrightnessChange(0, kUserCause);
   internal_display->set_current_mode(nullptr);
   external_display->set_current_mode(nullptr);
-  power_button_controller_->OnDisplayModeChanged(outputs);
+  power_button_controller_->OnDisplayConfigurationChanged(outputs);
   PressPowerButton();
   EXPECT_FALSE(power_button_test_api_->IsMenuOpened());
   ReleasePowerButton();
@@ -451,7 +451,7 @@ TEST_F(LockStateControllerTest, LegacyHonorPowerButtonInDockedMode) {
   // on (indicating either docked mode or the user having manually decreased the
   // brightness to 0%), the power button should still be handled.
   external_display->set_current_mode(external_display->modes().back().get());
-  power_button_controller_->OnDisplayModeChanged(outputs);
+  power_button_controller_->OnDisplayConfigurationChanged(outputs);
   PressPowerButton();
   EXPECT_TRUE(power_button_test_api_->IsMenuOpened());
   ReleasePowerButton();
@@ -688,7 +688,7 @@ TEST_P(LockStateControllerAnimationTest, RequestShutdownFromLockScreen) {
   EXPECT_EQ(1, NumShutdownRequests());
 }
 
-// Test that historgram of time delta was recorded if a previous shutdown was
+// Test that histogram of time delta was recorded if a previous shutdown was
 // initiated from login/lock screen.
 TEST_F(LockStateControllerTest, RequestShutdownFromLoginScreenThenRestart) {
   Initialize(ButtonType::NORMAL, LoginStatus::NOT_LOGGED_IN);
@@ -739,7 +739,7 @@ TEST_F(LockStateControllerTest, RequestShutdownFromLockScreenThenRestart) {
   histograms().ExpectTotalCount(kShelfShutdownConfirmationHistogramName, 1);
 }
 
-// Test that historgram of time delta was not recorded if a previous shutdown
+// Test that histogram of time delta was not recorded if a previous shutdown
 // was not initiated from login/lock screen.
 TEST_F(LockStateControllerTest, LegacyShowMenuAndShutDownThenRestart) {
   Initialize(ButtonType::LEGACY, LoginStatus::USER);

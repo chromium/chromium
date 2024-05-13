@@ -123,7 +123,7 @@ BootingAnimationController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void BootingAnimationController::OnDisplayModeChanged(
+void BootingAnimationController::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& displays) {
   if (!is_gpu_ready_) {
     return;
@@ -207,7 +207,7 @@ void BootingAnimationController::IgnoreGpuReadiness() {
   if (IsDeviceReady()) {
     return;
   }
-  LOG(ERROR) << "Ignore the readinees of the GPU and play the animation.";
+  LOG(ERROR) << "Ignore the readiness of the GPU and play the animation.";
 
   is_gpu_ready_ = true;
   scoped_display_configurator_observer_.Reset();

@@ -71,7 +71,7 @@ class ASH_EXPORT TouchObserverHud
                                uint32_t metrics) override;
 
   // display::DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
 
   // WindowTreeHostManager::Observer:

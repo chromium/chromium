@@ -95,7 +95,7 @@ class ShellDesktopControllerAura
   void PowerButtonEventReceived(bool down, base::TimeTicks timestamp) override;
 
   // display::DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& displays) override;
 #endif
 

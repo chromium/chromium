@@ -94,13 +94,13 @@ class TestObserver : public DisplayConfigurator::Observer {
   }
 
   // DisplayConfigurator::Observer overrides:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const DisplayConfigurator::DisplayStateList& outputs) override {
     num_changes_++;
     latest_outputs_ = outputs;
   }
 
-  void OnDisplayModeChangeFailed(
+  void OnDisplayConfigurationChangeFailed(
       const DisplayConfigurator::DisplayStateList& outputs,
       MultipleDisplayState failed_new_state) override {
     num_failures_++;
@@ -505,7 +505,7 @@ TEST_F(DisplayConfiguratorTest, ConnectSecondOutput) {
   EXPECT_EQ(1, observer_.num_changes());
 
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(
       JoinActions(
           kTestModesetStr,
@@ -550,7 +550,7 @@ TEST_F(DisplayConfiguratorTest, ConnectSecondOutput) {
   EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
 
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
             configurator_.display_state());
@@ -560,14 +560,14 @@ TEST_F(DisplayConfiguratorTest, ConnectSecondOutput) {
 
   // Setting MULTIPLE_DISPLAY_STATE_DUAL_MIRROR should try to reconfigure.
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
   EXPECT_FALSE(mirroring_controller_.SoftwareMirroringEnabled());
   EXPECT_EQ(1, observer_.num_changes());
 
   // Set back to software mirror mode.
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED,
             configurator_.display_state());
@@ -952,37 +952,37 @@ TEST_F(DisplayConfiguratorTest, InvalidMultipleDisplayStates) {
   Init(false);
   configurator_.ForceInitialConfigure();
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_HEADLESS);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_HEADLESS);
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_EQ(0, observer_.num_failures());
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_SINGLE);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_SINGLE);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_EQ(3, observer_.num_failures());
 
   UpdateOutputs(1, true);
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_HEADLESS);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_HEADLESS);
   EXPECT_EQ(0, observer_.num_changes());
   EXPECT_EQ(1, observer_.num_failures());
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_SINGLE);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_SINGLE);
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_EQ(1, observer_.num_failures());
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(1, observer_.num_changes());
   EXPECT_EQ(3, observer_.num_failures());
 
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   UpdateOutputs(2, true);
   observer_.Reset();
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_HEADLESS);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_SINGLE);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_HEADLESS);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_SINGLE);
   EXPECT_EQ(0, observer_.num_changes());
   EXPECT_EQ(2, observer_.num_failures());
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(2, observer_.num_changes());
   EXPECT_EQ(2, observer_.num_failures());
 }
@@ -1114,7 +1114,7 @@ TEST_F(DisplayConfiguratorTest, DoNotConfigureWithSuspendedDisplays) {
             log_->GetActionsAndClear());
 
   UpdateOutputs(2, false);
-  configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+  configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(
       JoinActions(
           kTestModesetStr,
@@ -2763,7 +2763,7 @@ class DisplayConfiguratorMultiMirroringTest : public DisplayConfiguratorTest {
     UpdateOutputs(3, true);
     log_->GetActionsAndClear();
     observer_.Reset();
-    configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+    configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
     EXPECT_EQ(
         JoinActions(kTestModesetStr,
                     GetCrtcActions(
@@ -2787,7 +2787,7 @@ class DisplayConfiguratorMultiMirroringTest : public DisplayConfiguratorTest {
     UpdateOutputs(3, true);
     log_->GetActionsAndClear();
     observer_.Reset();
-    configurator_.SetDisplayMode(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
+    configurator_.SetMultipleDisplayState(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
     EXPECT_EQ(kNoActions, log_->GetActionsAndClear());
     EXPECT_TRUE(mirroring_controller_.SoftwareMirroringEnabled());
     EXPECT_EQ(1, observer_.num_changes());

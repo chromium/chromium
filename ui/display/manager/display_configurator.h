@@ -63,16 +63,17 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
    public:
     virtual ~Observer() = default;
 
-    // Called after the display mode has been changed. |display| contains the
-    // just-applied configuration. Note that the X server is no longer grabbed
-    // when this method is called, so the actual configuration could've changed
-    // already.
-    virtual void OnDisplayModeChanged(const DisplayStateList& displays) {}
+    // Called after the display configuration has been changed. |display|
+    // contains the just-applied configuration. Note that the X server is no
+    // longer grabbed when this method is called, so the actual configuration
+    // could've changed already.
+    virtual void OnDisplayConfigurationChanged(
+        const DisplayStateList& displays) {}
 
-    // Called after a display mode change attempt failed. |displays| contains
-    // displays that are detected when failed.
-    // |failed_new_state| is the new state which the system failed to enter.
-    virtual void OnDisplayModeChangeFailed(
+    // Called after a display configuration change attempt failed. |displays|
+    // contains displays that are detected when failed. |failed_new_state| is
+    // the new state which the system failed to enter.
+    virtual void OnDisplayConfigurationChangeFailed(
         const DisplayStateList& displays,
         MultipleDisplayState failed_new_state) {}
 
@@ -246,10 +247,10 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
                        int flags,
                        ConfigurationCallback callback);
 
-  // Force switching the display mode to |new_state|. Returns false if
+  // Force switching the display state to |new_state|. Returns false if
   // switching failed (possibly because |new_state| is invalid for the
   // current set of connected displays).
-  void SetDisplayMode(MultipleDisplayState new_state);
+  void SetMultipleDisplayState(MultipleDisplayState new_state);
 
   // Request a description of the refresh rates to which the display can support
   // a configuration without a full modeset.

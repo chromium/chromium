@@ -52,7 +52,7 @@ RefreshRateController::RefreshRateController(
       display_performance_mode_controller_->AddObserver(this);
   // Ensure initial states are calculated.
   UpdateStates();
-  OnDisplayModeChanged(display_configurator->cached_displays());
+  OnDisplayConfigurationChanged(display_configurator->cached_displays());
 }
 
 RefreshRateController::~RefreshRateController() {
@@ -83,7 +83,7 @@ void RefreshRateController::OnWindowAddedToRootWindow(aura::Window* window) {
   UpdateStates();
 }
 
-void RefreshRateController::OnDisplayModeChanged(
+void RefreshRateController::OnDisplayConfigurationChanged(
     const DisplayStateList& displays) {
   for (const display::DisplaySnapshot* snapshot : displays) {
     if (!snapshot->current_mode()) {

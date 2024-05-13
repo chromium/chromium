@@ -221,7 +221,7 @@ bool DisplayChangeObserver::GetSelectedModeForDisplayId(
   return display_manager_->GetSelectedModeForDisplayId(display_id, out_mode);
 }
 
-void DisplayChangeObserver::OnDisplayModeChanged(
+void DisplayChangeObserver::OnDisplayConfigurationChanged(
     const DisplayConfigurator::DisplayStateList& display_states) {
   UpdateInternalDisplay(display_states);
 
@@ -243,14 +243,14 @@ void DisplayChangeObserver::OnDisplayModeChanged(
   ui::UserActivityDetector::Get()->OnDisplayPowerChanging();
 }
 
-void DisplayChangeObserver::OnDisplayModeChangeFailed(
+void DisplayChangeObserver::OnDisplayConfigurationChangeFailed(
     const DisplayConfigurator::DisplayStateList& displays,
     MultipleDisplayState failed_new_state) {
   // If display configuration failed during startup, simply update the display
   // manager with detected displays. If no display is detected, it will
   // create a pseudo display.
   if (display_manager_->GetNumDisplays() == 0)
-    OnDisplayModeChanged(displays);
+    OnDisplayConfigurationChanged(displays);
 }
 
 void DisplayChangeObserver::OnInputDeviceConfigurationChanged(
@@ -264,7 +264,7 @@ void DisplayChangeObserver::OnInputDeviceConfigurationChanged(
     const auto& cached_displays =
         display_manager_->configurator()->cached_displays();
     if (!cached_displays.empty())
-      OnDisplayModeChanged(cached_displays);
+      OnDisplayConfigurationChanged(cached_displays);
   }
 }
 

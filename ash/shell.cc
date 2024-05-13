@@ -1006,7 +1006,7 @@ Shell::~Shell() {
   ScreenAsh::CreateScreenForShutdown();
   display_configuration_controller_.reset();
 
-  // Needs to be destructed before `ime_controler_`.
+  // Needs to be destructed before `ime_controller_`.
   keyboard_backlight_color_controller_.reset();
   rgb_keyboard_manager_.reset();
 
@@ -1068,7 +1068,7 @@ Shell::~Shell() {
   // |window_tree_host_manager_|.
   clipboard_history_controller_.reset();
 
-  // Should be destroyed after `clipbaord_history_controller_` and
+  // Should be destroyed after `clipboard_history_controller_` and
   // `autozoom_controller_` since they will destruct `SystemNudgeController`.
   system_nudge_pause_manager_.reset();
 
@@ -1426,7 +1426,7 @@ void Shell::Init(
         shell_delegate_->CreateGameDashboardDelegate());
   }
 
-  // `SnapGroupController` has dependencies on `OverviweController` and
+  // `SnapGroupController` has dependencies on `OverviewController` and
   // `TabletModeController`.
   if (features::IsSnapGroupEnabled()) {
     snap_group_controller_ = std::make_unique<SnapGroupController>();
@@ -1549,7 +1549,7 @@ void Shell::Init(
   power_button_controller_ = std::make_unique<PowerButtonController>(
       backlights_forced_off_setter_.get());
   // Pass the initial display state to PowerButtonController.
-  power_button_controller_->OnDisplayModeChanged(
+  power_button_controller_->OnDisplayConfigurationChanged(
       display_configurator()->cached_displays());
 
   drag_drop_controller_ = std::make_unique<DragDropController>();

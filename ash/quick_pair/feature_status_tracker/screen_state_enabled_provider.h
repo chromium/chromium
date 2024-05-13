@@ -21,7 +21,7 @@ class ScreenStateEnabledProvider
   ~ScreenStateEnabledProvider() override;
 
   // display::DisplayConfigurator::Observer
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& display_states)
       override;
 

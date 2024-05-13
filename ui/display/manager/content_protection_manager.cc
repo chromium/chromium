@@ -228,12 +228,12 @@ void ContentProtectionManager::OnContentProtectionApplied(
     DequeueTask();
 }
 
-void ContentProtectionManager::OnDisplayModeChanged(
+void ContentProtectionManager::OnDisplayConfigurationChanged(
     const DisplayConfigurator::DisplayStateList&) {
   KillTasks();
 }
 
-void ContentProtectionManager::OnDisplayModeChangeFailed(
+void ContentProtectionManager::OnDisplayConfigurationChangeFailed(
     const DisplayConfigurator::DisplayStateList&,
     MultipleDisplayState) {
   KillTasks();

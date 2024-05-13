@@ -54,14 +54,14 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
   bool GetSelectedModeForDisplayId(int64_t display_id,
                                    ManagedDisplayMode* out_mode) const override;
 
-  // Overriden from DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  // Overridden from DisplayConfigurator::Observer:
+  void OnDisplayConfigurationChanged(
       const DisplayConfigurator::DisplayStateList& outputs) override;
-  void OnDisplayModeChangeFailed(
+  void OnDisplayConfigurationChangeFailed(
       const DisplayConfigurator::DisplayStateList& displays,
       MultipleDisplayState failed_new_state) override;
 
-  // Overriden from ui::InputDeviceEventObserver:
+  // Overridden from ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
   // Static methods exposed for testing.
