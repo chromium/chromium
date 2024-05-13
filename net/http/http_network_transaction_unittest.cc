@@ -32,7 +32,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -14099,7 +14098,6 @@ TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaHttpsProxy) {
 // Test that an HTTPS Proxy cannot redirect a CONNECT request for subresources.
 TEST_P(HttpNetworkTransactionTest,
        RedirectOfHttpsConnectSubresourceViaHttpsProxy) {
-  base::HistogramTester histograms;
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
           "HTTPS proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -14146,7 +14144,6 @@ TEST_P(HttpNetworkTransactionTest,
 // request for main frames.
 TEST_P(HttpNetworkTransactionTest,
        RedirectOfHttpsConnectViaAutoDetectedHttpsProxy) {
-  base::HistogramTester histograms;
   session_deps_.proxy_resolution_service = ConfiguredProxyResolutionService::
       CreateFixedFromAutoDetectedPacResultForTest("HTTPS proxy:70",
                                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -14193,7 +14190,6 @@ TEST_P(HttpNetworkTransactionTest,
 // Tests that an HTTPS (SPDY) Proxy's cannot redirect a CONNECT request for main
 // frames.
 TEST_P(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaSpdyProxy) {
-  base::HistogramTester histograms;
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -27591,7 +27587,7 @@ TEST_P(HttpNetworkTransactionTest,
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  auto kIpProtectionDirectChain =
+  const auto kIpProtectionDirectChain =
       ProxyChain::ForIpProtection(std::vector<ProxyServer>());
 
   session_deps_.proxy_resolution_service =
