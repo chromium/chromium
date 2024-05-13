@@ -472,6 +472,7 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
 
   CacheFileContext& ctx = it->second;
   if (result == base::File::FILE_OK) {
+    size_.total_bytes_on_disk += length;
     ctx.set_bytes_on_disk(offset + length);
     ctx.set_accessed_time(base::Time::Now());
 
@@ -597,6 +598,18 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
     }
   }
   return cached_file_paths;
+}
+
+const ContentCache::SizeInfo ContentCacheImpl::GetSize() const {
+  return size_;
+}
+
+void ContentCacheImpl::SetMaxBytesOnDisk(int64_t max_bytes_on_disk) {
+  size_.max_bytes_on_disk = max_bytes_on_disk;
+}
+
+base::WeakPtr<ContentCache> ContentCacheImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash::file_system_provider

@@ -6494,6 +6494,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/smbprovider",
     "//chromeos/ash/components/dbus/smbprovider:proto",
     "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/dbus/spaced:spaced_proto",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/dbus/system_proxy",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",

@@ -65,6 +65,11 @@ class ContentCacheImpl : public ContentCache {
 
   void RemoveItems(RemovedItemStatsCallback callback) override;
 
+  const SizeInfo GetSize() const override;
+  void SetMaxBytesOnDisk(int64_t max_bytes_on_disk) override;
+
+  base::WeakPtr<ContentCache> GetWeakPtr() override;
+
  private:
   void OnBytesRead(
       const base::FilePath& file_path,
@@ -147,6 +152,8 @@ class ContentCacheImpl : public ContentCache {
   size_t evicted_cache_items_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   OnItemEvictedCallback on_item_evicted_callback_;
   base::OnceCallbackList<void(RemovedItemStats)> on_removed_callbacks_;
+
+  SizeInfo size_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };

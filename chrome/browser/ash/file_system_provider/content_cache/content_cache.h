@@ -96,6 +96,19 @@ class ContentCache {
   // removal is already in progress, the callback will be queued to be called
   // with the current stats of the in progress removal.
   virtual void RemoveItems(RemovedItemStatsCallback callback) = 0;
+
+  // A struct of size information pertaining to this cache instance.
+  struct SizeInfo {
+    int64_t max_bytes_on_disk = 0;
+    int64_t total_bytes_on_disk = 0;
+  };
+
+  // Helper methods to get and set size information.
+  virtual const SizeInfo GetSize() const = 0;
+  virtual void SetMaxBytesOnDisk(int64_t max_bytes_on_disk) = 0;
+
+  // Returns a `base::WeakPtr`.
+  virtual base::WeakPtr<ContentCache> GetWeakPtr() = 0;
 };
 
 }  // namespace ash::file_system_provider
