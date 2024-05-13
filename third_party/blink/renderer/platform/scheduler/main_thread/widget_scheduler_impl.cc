@@ -97,10 +97,6 @@ void WidgetSchedulerImpl::DidHandleInputEventOnMainThread(
                                                           result);
 }
 
-void WidgetSchedulerImpl::DidAnimateForInputOnCompositorThread() {
-  main_thread_scheduler_->DidAnimateForInputOnCompositorThread();
-}
-
 void WidgetSchedulerImpl::DidRunBeginMainFrame() {}
 
 void WidgetSchedulerImpl::SetHidden(bool hidden) {

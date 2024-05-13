@@ -91,10 +91,6 @@ class PLATFORM_EXPORT WidgetScheduler
       const WebInputEvent& web_input_event,
       WebInputEventResult result) = 0;
 
-  // Tells the scheduler that the system is displaying an input animation (e.g.
-  // a fling). Called by the compositor (impl) thread.
-  virtual void DidAnimateForInputOnCompositorThread() = 0;
-
   // Tells the scheduler that the main thread processed a BeginMainFrame task
   // from its queue. Note that DidRunBeginMainFrame will be called
   // unconditionally, even if BeginMainFrame early-returns without committing

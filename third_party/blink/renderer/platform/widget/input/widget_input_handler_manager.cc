@@ -381,10 +381,6 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
       ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), element_id));
 }
 
-void WidgetInputHandlerManager::DidAnimateForInput() {
-  widget_scheduler_->DidAnimateForInputOnCompositorThread();
-}
-
 void WidgetInputHandlerManager::DidStartScrollingViewport() {
   mojom::blink::WidgetInputHandlerHost* host = GetWidgetInputHandlerHost();
   if (!host)

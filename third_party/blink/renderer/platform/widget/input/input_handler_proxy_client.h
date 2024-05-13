@@ -12,7 +12,6 @@ class InputHandlerProxyClient {
  public:
   // Called just before the InputHandlerProxy shuts down.
   virtual void WillShutdown() = 0;
-  virtual void DidAnimateForInput() = 0;
   virtual void DidStartScrollingViewport() = 0;
   virtual void SetAllowedTouchAction(cc::TouchAction touch_action) = 0;
   virtual bool AllowsScrollResampling() = 0;

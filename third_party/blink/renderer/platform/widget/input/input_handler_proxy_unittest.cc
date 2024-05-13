@@ -286,24 +286,9 @@ class MockInputHandlerProxyClient : public InputHandlerProxyClient {
                     const gfx::Vector2dF& current_fling_velocity,
                     const gfx::PointF& causal_event_viewport_point,
                     const cc::OverscrollBehavior& overscroll_behavior));
-  void DidAnimateForInput() override {}
   void DidStartScrollingViewport() override {}
   MOCK_METHOD1(SetAllowedTouchAction, void(cc::TouchAction touch_action));
   bool AllowsScrollResampling() override { return true; }
-};
-
-class MockInputHandlerProxyClientWithDidAnimateForInput
-    : public MockInputHandlerProxyClient {
- public:
-  MockInputHandlerProxyClientWithDidAnimateForInput() {}
-  MockInputHandlerProxyClientWithDidAnimateForInput(
-      const MockInputHandlerProxyClientWithDidAnimateForInput&) = delete;
-  MockInputHandlerProxyClientWithDidAnimateForInput& operator=(
-      const MockInputHandlerProxyClientWithDidAnimateForInput&) = delete;
-
-  ~MockInputHandlerProxyClientWithDidAnimateForInput() override {}
-
-  MOCK_METHOD0(DidAnimateForInput, void());
 };
 
 WebTouchPoint CreateWebTouchPoint(WebTouchPoint::State state,

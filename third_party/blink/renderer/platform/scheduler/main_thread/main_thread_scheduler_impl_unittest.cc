@@ -1352,21 +1352,6 @@ TEST_F(
   EXPECT_EQ(UseCase::kTouchstart, CurrentUseCase());
 }
 
-TEST_F(MainThreadSchedulerImplTest, TestCompositorPolicy_DidAnimateForInput) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "I1 D1 C1 D2 C2");
-
-  scheduler_->DidAnimateForInputOnCompositorThread();
-  // Note DidAnimateForInputOnCompositorThread does not by itself trigger a
-  // policy update.
-  EXPECT_EQ(UseCase::kCompositorGesture,
-            ForceUpdatePolicyAndGetCurrentUseCase());
-  EnableIdleTasks();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order, testing::ElementsAre("D1", "D2", "C1", "C2", "I1"));
-  EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
-}
-
 TEST_F(MainThreadSchedulerImplTest, Navigation_ResetsTaskCostEstimations) {
   Vector<String> run_order;
 
@@ -1402,7 +1387,6 @@ TEST_F(MainThreadSchedulerImplTest, TestTouchstartPolicy_Compositor) {
   // Animation or meta events like TapDown/FlingCancel shouldn't affect the
   // priority.
   run_order.clear();
-  scheduler_->DidAnimateForInputOnCompositorThread();
   scheduler_->DidHandleInputEventOnCompositorThread(
       FakeInputEvent(blink::WebInputEvent::Type::kGestureFlingCancel),
       InputEventState::EVENT_CONSUMED_BY_COMPOSITOR);
@@ -2543,21 +2527,6 @@ TEST_F(MainThreadSchedulerImplTest, DenyLongIdleDuringTouchStart) {
   now += base::Milliseconds(500);
   EXPECT_FALSE(idle_delegate->CanEnterLongIdlePeriod(now, &next_time_to_check));
   EXPECT_GE(next_time_to_check, base::TimeDelta());
-}
-
-TEST_F(MainThreadSchedulerImplTest,
-       TestCompositorPolicy_TouchStartDuringFling) {
-  scheduler_->DidAnimateForInputOnCompositorThread();
-  // Note DidAnimateForInputOnCompositorThread does not by itself trigger a
-  // policy update.
-  EXPECT_EQ(UseCase::kCompositorGesture,
-            ForceUpdatePolicyAndGetCurrentUseCase());
-
-  // Make sure TouchStart causes a policy change.
-  scheduler_->DidHandleInputEventOnCompositorThread(
-      FakeTouchEvent(blink::WebInputEvent::Type::kTouchStart),
-      InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD);
-  EXPECT_EQ(UseCase::kTouchstart, ForceUpdatePolicyAndGetCurrentUseCase());
 }
 
 TEST_F(MainThreadSchedulerImplTest, SYNCHRONIZED_GESTURE_CompositingExpensive) {

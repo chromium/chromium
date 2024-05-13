@@ -237,7 +237,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       const WebInputEventAttribution& web_input_event_attribution);
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
                                        WebInputEventResult result);
-  void DidAnimateForInputOnCompositorThread();
 
   // Use a separate task runner so that IPC tasks are not logged via the same
   // task queue that executes them. Otherwise this would result in an infinite
@@ -514,10 +513,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // renderer has been hidden, before going to sleep for good.
   static const int kEndIdleWhenHiddenDelayMillis = 10000;
 
-  // The time we should stay in a priority-escalated mode after a call to
-  // DidAnimateForInputOnCompositorThread().
-  static const int kFlingEscalationLimitMillis = 100;
-
   // Schedules an immediate PolicyUpdate, if there isn't one already pending and
   // sets |policy_may_need_update_|. Note |any_thread_lock_| must be
   // locked.
@@ -789,7 +784,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     PendingUserInput::Monitor pending_input_monitor;
     base::TimeTicks last_idle_period_end_time;
-    base::TimeTicks fling_compositor_escalation_deadline;
     UserModel user_model;
     TraceableState<bool, TracingCategory::kInfo> awaiting_touch_start_response;
     TraceableState<bool, TracingCategory::kInfo> in_idle_period;

@@ -1196,14 +1196,6 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnCompositorThread(
   UpdateForInputEventOnCompositorThread(web_input_event, event_state);
 }
 
-void MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread() {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
-               "MainThreadSchedulerImpl::DidAnimateForInputOnCompositorThread");
-  base::AutoLock lock(any_thread_lock_);
-  any_thread().fling_compositor_escalation_deadline =
-      helper_.NowTicks() + base::Milliseconds(kFlingEscalationLimitMillis);
-}
-
 void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
     const blink::WebInputEvent& web_input_event,
     WidgetScheduler::InputEventState input_event_state) {
@@ -1271,9 +1263,6 @@ void MainThreadSchedulerImpl::UpdateForInputEventOnCompositorThread(
       break;
 
     case blink::WebInputEvent::Type::kGestureFlingCancel:
-      any_thread().fling_compositor_escalation_deadline = base::TimeTicks();
-      break;
-
     case blink::WebInputEvent::Type::kGestureTapDown:
     case blink::WebInputEvent::Type::kGestureShowPress:
     case blink::WebInputEvent::Type::kGestureScrollEnd:
@@ -1652,14 +1641,7 @@ UseCase MainThreadSchedulerImpl::ComputeCurrentUseCase(
     base::TimeTicks now,
     base::TimeDelta* expected_use_case_duration) const {
   any_thread_lock_.AssertAcquired();
-  // Special case for flings. This is needed because we don't get notification
-  // of a fling ending (although we do for cancellation).
-  if (any_thread().fling_compositor_escalation_deadline > now &&
-      !any_thread().awaiting_touch_start_response) {
-    *expected_use_case_duration =
-        any_thread().fling_compositor_escalation_deadline - now;
-    return UseCase::kCompositorGesture;
-  }
+
   // Above all else we want to be responsive to user input.
   *expected_use_case_duration =
       any_thread().user_model.TimeLeftInUserGesture(now);
@@ -1838,10 +1820,6 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add("renderer_backgrounded",
            main_thread_only().renderer_backgrounded.get());
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
-  dict.Add(
-      "fling_compositor_escalation_deadline",
-      (any_thread().fling_compositor_escalation_deadline - base::TimeTicks())
-          .InMillisecondsF());
   dict.Add("last_idle_period_end_time",
            (any_thread().last_idle_period_end_time - base::TimeTicks())
                .InMillisecondsF());

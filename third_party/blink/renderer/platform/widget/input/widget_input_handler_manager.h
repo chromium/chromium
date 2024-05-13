@@ -111,7 +111,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
-  void DidAnimateForInput() override;
   void DidStartScrollingViewport() override;
   void SetAllowedTouchAction(cc::TouchAction touch_action) override;
   bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
