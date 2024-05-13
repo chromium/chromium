@@ -1,2 +1,3 @@
 Tests element requestFullscreen.
-Entered fullscreen mode: fullscreen-div
+Seen page zoom and fullscreen element: fullscreen-div
+Seen page un-zoom

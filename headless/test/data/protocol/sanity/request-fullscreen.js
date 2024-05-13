@@ -8,44 +8,40 @@
         <div id="fullscreen-div">The element.</div>
       </body>
       <script>
-        function toggleFullscreen() {
+        function enterFullscreen() {
           const element = document.getElementById("fullscreen-div");
-          if (!document.fullscreenElement) {
+          return new Promise(resolve => {
+            element.addEventListener("fullscreenchange", () => {
+              if (document.fullscreenElement) {
+                resolve(document.fullscreenElement.id);
+              }
+            });
             element.requestFullscreen();
-          } else {
-            document.exitFullscreen();
           }
-        }
+        )}
 
-        function fullscreenchanged(event) {
-          if (document.fullscreenElement) {
-            console.log("Entered fullscreen mode: "
-                + document.fullscreenElement.id);
-          }
+        function exitFullscreen() {
+          document.exitFullscreen();
         }
-
-        document.getElementById("fullscreen-div")
-          .addEventListener("fullscreenchange", fullscreenchanged);
       </script>
       </html>
   `;
   const {session, dp} =
       await testRunner.startHTML(html, 'Tests element requestFullscreen.');
 
-  await dp.Runtime.enable();
-
-  dp.Runtime.onConsoleAPICalled(data => {
-    const text = data.params.args[0].value;
-    testRunner.log(text);
-  });
-
   await dp.Page.enable();
 
-  session.evaluateAsyncWithUserGesture('window.toggleFullscreen();');
-  await dp.Page.onceFrameResized();
+  const [entered_fullscreen] = await Promise.all([
+    session.evaluateAsyncWithUserGesture('window.enterFullscreen();'),
+    dp.Page.onceFrameResized()
+  ]);
 
-  session.evaluateAsyncWithUserGesture('window.toggleFullscreen();');
+  testRunner.log(
+      'Seen page zoom and fullscreen element: ' + entered_fullscreen);
+
+  session.evaluateAsyncWithUserGesture('window.exitFullscreen();');
   await dp.Page.onceFrameResized();
+  testRunner.log('Seen page un-zoom');
 
   testRunner.completeTest();
 })
