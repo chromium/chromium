@@ -93,7 +93,7 @@ void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
   }
 }
 
-void VisitedURLRankingServiceImpl::RankVisitAggregates(
+void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
     const Config& config,
     std::vector<URLVisitAggregate> visits,
     RankVisitAggregatesCallback callback) {

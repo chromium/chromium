@@ -36,9 +36,9 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   // VisitedURLRankingService::
   void FetchURLVisitAggregates(const FetchOptions& options,
                                GetURLVisitAggregatesCallback callback) override;
-  void RankVisitAggregates(const Config& config,
-                           std::vector<URLVisitAggregate> visits,
-                           RankVisitAggregatesCallback callback) override;
+  void RankURLVisitAggregates(const Config& config,
+                              std::vector<URLVisitAggregate> visits,
+                              RankVisitAggregatesCallback callback) override;
 
  private:
   // Callback invoked when the various fetcher instances have completed.

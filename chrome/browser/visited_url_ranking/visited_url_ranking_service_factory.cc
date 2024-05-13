@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -32,6 +33,11 @@
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.h"
+#endif
 
 namespace visited_url_ranking {
 
@@ -68,8 +74,19 @@ std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
+  if (profile->IsOffTheRecord()) {
+    return nullptr;
+  }
 
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  data_fetchers.emplace(
+      Fetcher::kTabModel,
+      std::make_unique<visited_url_ranking::DesktopTabModelURLVisitDataFetcher>(
+          profile));
+#endif
+
   sync_sessions::SessionSyncService* sss =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
   if (sss) {

@@ -42,12 +42,13 @@ enum class ResultStatus {
 //     if(status == ResultStatus::kSuccess) {
 //       // Client logic placeholder (e.g. filtering, caching, etc.).
 //       Config config = {.key = kTabResumptionRankerKey};
-//       GetService()->RankVisits(config, std::move(visits),
+//       GetService()->RankURLVisitAggregates(config, std::move(visits),
 //           std::move(on_rank_callback));
 //     }
 //   }, std::move(on_rank_callback));
-//   GetService()->Fetch(CreateTabResumptionDefaultFetchOptions(),
-//     std::move(on_fetch_callback))
+//   GetService()->FetchURLVisitAggregates(
+//       CreateTabResumptionDefaultFetchOptions(),
+//       std::move(on_fetch_callback));
 //
 class VisitedURLRankingService : public KeyedService {
  public:
@@ -67,9 +68,9 @@ class VisitedURLRankingService : public KeyedService {
       base::OnceCallback<void(ResultStatus, std::vector<URLVisitAggregate>)>;
   // Ranks a collection of `URLVisitAggregate` objects based on a
   // client specified strategy.
-  virtual void RankVisitAggregates(const Config& config,
-                                   std::vector<URLVisitAggregate> visits,
-                                   RankVisitAggregatesCallback callback) = 0;
+  virtual void RankURLVisitAggregates(const Config& config,
+                                      std::vector<URLVisitAggregate> visits,
+                                      RankVisitAggregatesCallback callback) = 0;
 };
 
 }  // namespace visited_url_ranking

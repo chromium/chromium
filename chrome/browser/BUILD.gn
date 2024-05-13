@@ -1977,6 +1977,8 @@ static_library("browser") {
       "user_education/user_education_service.h",
       "user_education/user_education_service_factory.cc",
       "user_education/user_education_service_factory.h",
+      "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.cc",
+      "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.h",
       "webapps/webapps_client_desktop.cc",
       "webapps/webapps_client_desktop.h",
     ]
