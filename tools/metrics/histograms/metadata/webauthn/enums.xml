@@ -273,6 +273,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Succeeded"/>
   <int value="1" label="SetForegroundWindow failed"/>
   <int value="2" label="Window not found"/>
+  <int value="3" label="Polling cancelled before finding window"/>
 </enum>
 
 <enum name="WindowsKeyCredentialManagerSupportResults">

@@ -18,6 +18,7 @@
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -52,53 +53,106 @@ namespace crypto {
 
 namespace {
 
-// Values to report the results of attempts to bring the Windows Hello
-// user verification dialog to the foreground.
-// Do not delete or reorder entries, this must be kept in sync with the
-// corresponding metrics enum.
-enum class ForegroundHelloDialogResult {
-  kSucceeded = 0,
-  kForegroundingFailed = 1,
-  kWindowNotFound = 2,
-
-  kMaxValue = 2,
-};
-
-void RecordForegroundingOutcome(ForegroundHelloDialogResult result) {
-  base::UmaHistogramEnumeration(
-      "WebAuthentication.Windows.ForegroundedWindowsHelloDialog", result);
-}
-
 // Due to a Windows bug (http://task.ms/49689617), the system UI for
 // KeyCredentialManager appears under all other windows, at least when invoked
 // from a Win32 app. Therefore this code polls the visible windows and
 // foregrounds the correct window when it appears.
-void BringHelloDialogToFront(int iteration = 0) {
-  constexpr int kMaxIterations = 40;
-  if (iteration > kMaxIterations) {
-    RecordForegroundingOutcome(ForegroundHelloDialogResult::kWindowNotFound);
-    return;
+class HelloDialogForegrounder
+    : public base::RefCountedThreadSafe<HelloDialogForegrounder> {
+ public:
+  HelloDialogForegrounder() = default;
+  HelloDialogForegrounder(const HelloDialogForegrounder&) = delete;
+  HelloDialogForegrounder& operator=(const HelloDialogForegrounder&) = delete;
+
+  void Start() {
+    CHECK_EQ(state_, State::kNotStarted);
+    state_ = State::kPollingForFirstAppearance;
+    BringHelloDialogToFront(/*iteration=*/0);
   }
 
-  constexpr wchar_t kTargetWindowName[] = L"Windows Security";
-  constexpr wchar_t kTargetClassName[] = L"Credential Dialog Xaml Host";
-  if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
-    base::UmaHistogramExactLinear(
-        "WebAuthentication.Windows.FindHelloDialogIterationCount", iteration,
-        /*exclusive_max=*/kMaxIterations + 1);
-    if (SetForegroundWindow(hwnd)) {
-      RecordForegroundingOutcome(ForegroundHelloDialogResult::kSucceeded);
-    } else {
-      RecordForegroundingOutcome(
-          ForegroundHelloDialogResult::kForegroundingFailed);
-    }
-    return;
+  void Stop() { stopping_.Set(); }
+
+ private:
+  friend class base::RefCountedThreadSafe<HelloDialogForegrounder>;
+  ~HelloDialogForegrounder() = default;
+
+  // Values to report the results of attempts to bring the Windows Hello
+  // user verification dialog to the foreground.
+  // Do not delete or reorder entries, this must be kept in sync with the
+  // corresponding metrics enum.
+  enum class ForegroundHelloDialogResult {
+    kSucceeded = 0,
+    kForegroundingFailed = 1,
+    kWindowNotFound = 2,
+    kAbortedWithoutFindingWindow = 3,
+
+    kMaxValue = 3,
+  };
+
+  enum class State {
+    kNotStarted,
+    kPollingForFirstAppearance,
+    kPollingForAuthRetry,
+  };
+
+  void RecordForegroundingOutcome(ForegroundHelloDialogResult result) {
+    base::UmaHistogramEnumeration(
+        "WebAuthentication.Windows.ForegroundedWindowsHelloDialog", result);
   }
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(BringHelloDialogToFront, iteration + 1),
-      base::Milliseconds(100));
-}
+
+  void BringHelloDialogToFront(int iteration) {
+    int interval = 100;
+
+    if (stopping_.IsSet()) {
+      if (state_ == State::kPollingForFirstAppearance) {
+        // In State::kPollingForAuthRetry, success has already been reported.
+        RecordForegroundingOutcome(
+            ForegroundHelloDialogResult::kAbortedWithoutFindingWindow);
+      }
+      return;
+    }
+
+    constexpr wchar_t kTargetWindowName[] = L"Windows Security";
+    constexpr wchar_t kTargetClassName[] = L"Credential Dialog Xaml Host";
+    if (state_ == State::kPollingForFirstAppearance) {
+      constexpr int kMaxIterations = 40;
+      if (iteration > kMaxIterations) {
+        RecordForegroundingOutcome(
+            ForegroundHelloDialogResult::kWindowNotFound);
+        return;
+      }
+
+      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+        base::UmaHistogramExactLinear(
+            "WebAuthentication.Windows.FindHelloDialogIterationCount",
+            iteration,
+            /*exclusive_max=*/kMaxIterations + 1);
+        if (SetForegroundWindow(hwnd)) {
+          RecordForegroundingOutcome(ForegroundHelloDialogResult::kSucceeded);
+        } else {
+          RecordForegroundingOutcome(
+              ForegroundHelloDialogResult::kForegroundingFailed);
+        }
+        state_ = State::kPollingForAuthRetry;
+      }
+    } else {
+      CHECK_EQ(state_, State::kPollingForAuthRetry);
+      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+        SetForegroundWindow(hwnd);
+      }
+      interval = 500;
+    }
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+        base::BindOnce(&HelloDialogForegrounder::BringHelloDialogToFront,
+                       base::WrapRefCounted<HelloDialogForegrounder>(this),
+                       iteration + 1),
+        base::Milliseconds(interval));
+  }
+
+  State state_ = State::kNotStarted;
+  base::AtomicFlag stopping_;
+};
 
 enum KeyCredentialManagerAvailability {
   kUnknown = 0,
@@ -127,7 +181,10 @@ SplitOnceCallbackIntoThree(base::OnceCallback<void(Args...)> callback) {
 
 void OnSigningSuccess(
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    scoped_refptr<HelloDialogForegrounder> foregrounder,
     ComPtr<IKeyCredentialOperationResult> sign_result) {
+  foregrounder->Stop();
+
   KeyCredentialStatus status;
   HRESULT hr = sign_result->get_Status(&status);
   if (FAILED(hr) || status != KeyCredentialStatus_Success) {
@@ -162,7 +219,9 @@ void OnSigningSuccess(
 
 void OnSigningError(
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    scoped_refptr<HelloDialogForegrounder> foregrounder,
     HRESULT hr) {
+  foregrounder->Stop();
   LOG(ERROR) << FormatError("Failed to sign with user-verifying signature", hr);
   std::move(callback).Run(std::nullopt);
 }
@@ -189,12 +248,14 @@ void SignInternal(
     return;
   }
 
+  auto foregrounder = base::MakeRefCounted<HelloDialogForegrounder>();
   auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
       sign_result.Get(),
-      base::BindOnce(&OnSigningSuccess,
-                     std::move(std::get<0>(callback_splits))),
-      base::BindOnce(&OnSigningError, std::move(std::get<1>(callback_splits))));
+      base::BindOnce(&OnSigningSuccess, std::move(std::get<0>(callback_splits)),
+                     foregrounder),
+      base::BindOnce(&OnSigningError, std::move(std::get<1>(callback_splits)),
+                     foregrounder));
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: Call to PostAsyncHandlers failed",
                               hr);
@@ -202,7 +263,7 @@ void SignInternal(
     return;
   }
 
-  BringHelloDialogToFront();
+  foregrounder->Start();
 }
 
 class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
@@ -254,7 +315,12 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
 void OnKeyCreationCompletionSuccess(
     base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
     std::string key_name,
+    scoped_refptr<HelloDialogForegrounder> foregrounder,
     ComPtr<IKeyCredentialRetrievalResult> key_result) {
+  if (foregrounder) {
+    foregrounder->Stop();
+  }
+
   KeyCredentialStatus status;
   HRESULT hr = key_result->get_Status(&status);
   if (FAILED(hr)) {
@@ -284,7 +350,11 @@ void OnKeyCreationCompletionSuccess(
 
 void OnKeyCreationCompletionError(
     base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
+    scoped_refptr<HelloDialogForegrounder> foregrounder,
     HRESULT hr) {
+  if (foregrounder) {
+    foregrounder->Stop();
+  }
   LOG(ERROR) << FormatError("Failed to obtain user-verifying key from system",
                             hr);
   std::move(callback).Run(nullptr);
@@ -309,7 +379,6 @@ void GenerateUserVerifyingSigningKeyInternal(
     std::move(callback).Run(nullptr);
     return;
   }
-
   ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>> create_result;
   hr = factory->RequestCreateAsync(
       key_name.get(),
@@ -324,14 +393,15 @@ void GenerateUserVerifyingSigningKeyInternal(
     return;
   }
 
+  auto foregrounder = base::MakeRefCounted<HelloDialogForegrounder>();
   auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
       create_result.Get(),
       base::BindOnce(&OnKeyCreationCompletionSuccess,
                      std::move(std::get<0>(callback_splits)),
-                     std::move(key_label)),
+                     std::move(key_label), foregrounder),
       base::BindOnce(&OnKeyCreationCompletionError,
-                     std::move(std::get<1>(callback_splits))));
+                     std::move(std::get<1>(callback_splits)), foregrounder));
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "GenerateUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers "
@@ -341,7 +411,7 @@ void GenerateUserVerifyingSigningKeyInternal(
     return;
   }
 
-  BringHelloDialogToFront();
+  foregrounder->Start();
 }
 
 void GetUserVerifyingSigningKeyInternal(
@@ -378,9 +448,11 @@ void GetUserVerifyingSigningKeyInternal(
       open_result.Get(),
       base::BindOnce(&OnKeyCreationCompletionSuccess,
                      std::move(std::get<0>(callback_splits)),
-                     std::move(key_label)),
+                     std::move(key_label),
+                     /*HelloDialogForegrounder=*/nullptr),
       base::BindOnce(&OnKeyCreationCompletionError,
-                     std::move(std::get<1>(callback_splits))));
+                     std::move(std::get<1>(callback_splits)),
+                     /*HelloDialogForegrounder=*/nullptr));
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError(
         "GetUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers failed",
