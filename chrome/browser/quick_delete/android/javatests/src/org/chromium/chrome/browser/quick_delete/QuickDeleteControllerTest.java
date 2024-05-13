@@ -227,9 +227,12 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
-                        QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Privacy.QuickDelete.TabsEnabled", true)
+                        .expectIntRecord(
+                                QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED)
+                        .build();
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -401,6 +404,9 @@ public class QuickDeleteControllerTest {
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     public void testQuickDeleteTabsNotClosed_WithMultiInstance() {
         MultiWindowUtils.setInstanceCountForTesting(3);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Privacy.QuickDelete.TabsEnabled", false);
+
         mActivityTestRule.loadUrl("https://www.google.com/");
         assertEquals(1, mActivity.getCurrentTabModel().getCount());
 
@@ -408,5 +414,6 @@ public class QuickDeleteControllerTest {
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
         assertEquals(1, mActivity.getCurrentTabModel().getCount());
+        histogramWatcher.assertExpected();
     }
 }

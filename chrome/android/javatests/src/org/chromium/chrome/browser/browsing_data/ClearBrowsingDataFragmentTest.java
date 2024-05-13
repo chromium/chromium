@@ -802,6 +802,9 @@ public class ClearBrowsingDataFragmentTest {
     })
     public void testTabsCheckbox_SingleInstance_withQuickDeleteV2Enabled() {
         MultiWindowUtils.setInstanceCountForTesting(1);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.ClearBrowsingData.TabsEnabled", true);
 
         ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
@@ -811,6 +814,7 @@ public class ClearBrowsingDataFragmentTest {
 
         assertNotNull(checkboxPreference);
         assertTrue(checkboxPreference.isEnabled());
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -821,6 +825,9 @@ public class ClearBrowsingDataFragmentTest {
     })
     public void testTabsCheckbox_MultiInstance_withQuickDeleteV2Enabled() {
         MultiWindowUtils.setInstanceCountForTesting(3);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.ClearBrowsingData.TabsEnabled", false);
 
         ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
@@ -834,6 +841,7 @@ public class ClearBrowsingDataFragmentTest {
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.clear_tabs_disabled_summary),
                 checkboxPreference.getSummary());
+        histogramWatcher.assertExpected();
     }
 
     @Test

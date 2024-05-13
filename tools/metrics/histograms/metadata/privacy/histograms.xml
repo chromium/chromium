@@ -126,6 +126,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.ClearBrowsingData.TabsEnabled" enum="BooleanEnabled"
+    expires_after="2024-12-31">
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Tracks whether the tabs deletion is disabled in Clear Browsing Data due to
+    the user having multiple windows.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.ClearOnExitSyncEvent" enum="ClearOnExitSyncEvent"
     expires_after="M103">
   <owner>sauski@google.com</owner>
@@ -433,10 +443,21 @@ reviewer.
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
     expires_after="2024-11-03">
   <owner>fsenra@google.com</owner>
-  <owner>zalmashni@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Tracks interactions with the Quick Delete feature, including the entry
     points and the dialog.
+  </summary>
+</histogram>
+
+<histogram name="Privacy.QuickDelete.TabsEnabled" enum="BooleanEnabled"
+    expires_after="2024-12-31">
+  <owner>zalmashni@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Tracks whether the tabs deletion is disabled in the Quick delete dialog due
+    to the user having multiple windows.
   </summary>
 </histogram>
 

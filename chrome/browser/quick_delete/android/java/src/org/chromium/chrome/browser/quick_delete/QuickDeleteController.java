@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -159,6 +160,9 @@ public class QuickDeleteController {
 
     private void onBrowsingDataDeletionFinished(
             @TimePeriod int timePeriod, boolean isTabClosureDisabled) {
+        RecordHistogram.recordBooleanHistogram(
+                "Privacy.QuickDelete.TabsEnabled", !isTabClosureDisabled);
+
         // Ensure that no in-product help is triggered during tab closure and the post-deletion
         // experience.
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);

@@ -636,10 +636,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             // Disable tabs closure if the user is in multi-window mode.
             // TODO(b/333036591): Remove this check once tab closure works properly across
             // multi-instances.
-            if (option == DialogOption.CLEAR_TABS && isInMultiWindowMode()) {
-                enabled = false;
-                browsingDataBridge.setBrowsingDataDeletionPreference(
-                        getDataType(DialogOption.CLEAR_TABS), ClearBrowsingDataTab.ADVANCED, false);
+            if (option == DialogOption.CLEAR_TABS) {
+                enabled = !isInMultiWindowMode();
+                RecordHistogram.recordBooleanHistogram(
+                        "Privacy.ClearBrowsingData.TabsEnabled", enabled);
             }
 
             mItems[i] =
@@ -649,7 +649,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                             option,
                             (ClearBrowsingDataCheckBoxPreference)
                                     findPreference(getPreferenceKey(option)),
-                            isOptionSelectedByDefault(option),
+                            enabled && isOptionSelectedByDefault(option),
                             enabled);
         }
 
