@@ -70,19 +70,26 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     // a non-optional kPageBorderBox child, and up to 16 optional kPageMargin
     // children (up to three for each of the four page edges, and one for each
     // corner). This is the outermost part of what the spec refers to as "page
-    // box".
+    // box". It is sized with respect to the destination paper size (if any),
+    // not necessarily what @page size dictates. Responsible for painting any
+    // @page background, which should cover then entire page container.
     // See https://drafts.csswg.org/css-page-3/#page-model
     kPageContainer,
     // The border box of a page. Used by printing. This is the innermost part of
-    // what the spec refers to as "page box". This fragment includes a
-    // non-optional kPageArea child.
+    // what the spec refers to as "page box". It is sized with respect to any
+    // given @page size when possible, and also honors scaling from print
+    // settings, and automatic shrink scaling to fit wide content (rather than
+    // overflowing). Responsible for painting any @page borders and outlines,
+    // and the document background (typically specified on BODY or the document
+    // root), which should cover the entire page border box. This fragment
+    // includes a non-optional kPageArea child.
     // See https://drafts.csswg.org/css-page-3/#page-model
     kPageBorderBox,
     // A page area fragment. Used by printing. This is a fragmentainer, into
     // which document contents flow and get fragmented. It is sized with respect
     // to any given @page size when possible, and also honors scaling from print
     // settings, and automatic shrink scaling to fit wide content (rather than
-    // overflowing).
+    // overflowing). Painting it may entail scaling it down to fit on paper.
     kPageArea,
     kAtomicInline,
     kFloating,

@@ -3648,15 +3648,25 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
 
 void PaintPropertyTreeBuilder::UpdateForPageBorderBox(
     const PhysicalBoxFragment& page_container) {
+  const PhysicalBoxFragment& page_border_box = *pre_paint_info_->box_fragment;
+  DCHECK_EQ(page_border_box.GetBoxType(), PhysicalFragment::kPageBorderBox);
+
   // Since the page border box fragment is responsible for @page borders and
   // other decorations, in addition to the document background, it needs to be
   // in the coordinate system of paginated layout.
   float scale = TargetScaleForPage(page_container);
 
-  gfx::Transform matrix;
+  PhysicalRect target_content_rect = page_border_box.ContentRect();
+  // Scale to the coordinate system of the target (e.g. paper).
+  target_content_rect.Scale(scale);
+  // The offset, on the other hand, is already in the coordinate system of
+  // the target.
+  PhysicalOffset page_border_box_offset = pre_paint_info_->paint_offset;
+  target_content_rect.offset += page_border_box_offset;
+  gfx::Transform matrix =
+      gfx::Transform::MakeTranslation(gfx::Vector2dF(page_border_box_offset));
   matrix.Scale(scale);
-  TransformPaintPropertyNode::State transform_state;
-  transform_state.transform_and_origin = {matrix, gfx::Point3F()};
+  TransformPaintPropertyNode::State transform_state{{matrix}};
 
   PaintPropertyTreeBuilderFragmentContext& fragment_context =
       context_.fragment_context;

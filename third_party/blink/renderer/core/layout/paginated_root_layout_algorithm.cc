@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/page_border_box_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/page_container_layout_algorithm.h"
@@ -133,10 +132,11 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
   //
   // https://drafts.csswg.org/css-page-3/#page-model
   FragmentGeometry geometry;
+  BoxStrut margins;
   LogicalSize page_containing_block_size =
       DesiredPageContainingBlockSize(document, *page_container_style);
   ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
-                         &geometry);
+                         &geometry, &margins);
 
   // Check if the resulting page area size is usable.
   LogicalSize desired_page_area_size =
@@ -156,28 +156,17 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
     page_containing_block_size =
         DesiredPageContainingBlockSize(document, *page_container_style);
     ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
-                           &geometry);
+                           &geometry, &margins);
   }
 
-  // TODO(mstensho): This should include page margins, once Blink gains control
-  // over that area. For now the size here coincides with the size of the page
-  // border box, since margins aren't part of layout yet.
-  LogicalSize page_container_size =
-      geometry.border_box_size *
-      document.GetLayoutView()->PaginationScaleFactor();
-  // Round up to the nearest integer. Although layout itself could have handled
-  // subpixels just fine, the paint code cannot without bleeding across page
-  // boundaries. The printing code (outside Blink) also rounds up. It's
-  // important that all pieces of the machinery agree on which way to round, or
-  // we risk clipping away a pixel or so at the edges. The reason for rounding
-  // up (rather than down, or to the closest integer) is so that any box that
-  // starts exactly at the beginning of a page, and uses a block-size exactly
-  // equal to that of the page area (before rounding) will actually fit on one
-  // page.
-  page_container_size.inline_size =
-      LayoutUnit(page_container_size.inline_size.Ceil());
-  page_container_size.block_size =
-      LayoutUnit(page_container_size.block_size.Ceil());
+  // Convert from border box size to margin box size, and use that to calculate
+  // the final page container size. If the destination is a printer, i.e. so
+  // that there's a given paper size, the resulting size will be that of the
+  // paper, honoring the orientation implied by the margin box size. If the
+  // destination is PDF, on the other hand, no fitting will be required.
+  LogicalSize margin_box_size(geometry.border_box_size + margins);
+  LogicalSize page_container_size = FittedPageContainerSize(
+      document, page_container_node.Style(), margin_box_size);
 
   ConstraintSpaceBuilder space_builder(
       parent_space, page_container_style->GetWritingDirection(),

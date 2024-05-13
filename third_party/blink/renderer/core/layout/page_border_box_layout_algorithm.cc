@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 
@@ -47,8 +48,20 @@ const LayoutResult* PageBorderBoxLayoutAlgorithm::Layout() {
 
   const auto& page = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   fragmentainer_break_token_ = page.GetBreakToken();
-  container_builder_.AddResult(*result, LogicalOffset(),
-                               /*margins=*/std::nullopt);
+
+  // The page box is sized to fit the destination paper (if the destination is
+  // an actual printer, and not PDF). Fragmented page content, on the other
+  // hand, lives in a "stitched" coordinate system, potentially with a different
+  // scale factor than the page border box, where all page areas have been
+  // stitched together in the block direction, in order to allow overflowing
+  // content on one page appear on another page (e.g. relative positioning or
+  // tall monolithic content). Set the physical offset of the page area to 0,0,
+  // so that we don't have to add work-arounds to ignore it on the paint side.
+  WritingModeConverter converter(GetConstraintSpace().GetWritingDirection(),
+                                 container_builder_.Size());
+  LogicalOffset origin = converter.ToLogical(
+      PhysicalOffset(), result->GetPhysicalFragment().Size());
+  container_builder_.AddResult(*result, origin, /*margins=*/std::nullopt);
 
   return container_builder_.ToBoxFragment();
 }

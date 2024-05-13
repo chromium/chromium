@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 
+#include "printing/mojom/print.mojom-blink.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -25,9 +26,46 @@ namespace blink {
 
 namespace {
 
+bool ShouldCenterPageOnPaper(const WebPrintParams& params) {
+  if (params.print_scaling_option ==
+      printing::mojom::blink::PrintScalingOption::kCenterShrinkToFitPaper) {
+    return true;
+  }
+  DCHECK(params.print_scaling_option ==
+         printing::mojom::blink::PrintScalingOption::kSourceSize);
+  return false;
+}
+
 PhysicalSize PageBoxDefaultSize(const Document& document) {
   const WebPrintParams& params = document.GetFrame()->GetPrintParams();
   return PhysicalSize::FromSizeFRound(params.default_page_description.size);
+}
+
+LogicalSize PageBoxDefaultSizeWithSourceOrientation(const Document& document,
+                                                    const ComputedStyle& style,
+                                                    LogicalSize layout_size) {
+  DCHECK(ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams()));
+  LogicalSize target_size =
+      PageBoxDefaultSize(document).ConvertToLogical(style.GetWritingMode());
+  if (layout_size.inline_size != layout_size.block_size &&
+      (target_size.inline_size > target_size.block_size) !=
+          (layout_size.inline_size > layout_size.block_size)) {
+    // Match orientation requested / implied by CSS.
+    std::swap(target_size.inline_size, target_size.block_size);
+  }
+  return target_size;
+}
+
+float TargetShrinkScaleFactor(LogicalSize target_size,
+                              LogicalSize source_size) {
+  if (source_size.IsEmpty()) {
+    return 1.0f;
+  }
+  float inline_scale =
+      target_size.inline_size.ToFloat() / source_size.inline_size.ToFloat();
+  float block_scale =
+      target_size.block_size.ToFloat() / source_size.block_size.ToFloat();
+  return std::min(1.0f, std::min(inline_scale, block_scale));
 }
 
 wtf_size_t PageNumberFromPageArea(const PhysicalBoxFragment& page_area) {
@@ -192,7 +230,75 @@ float TargetScaleForPage(const PhysicalBoxFragment& page_container) {
   // Print parameters may set a scale factor, and layout may also use a larger
   // viewport size in order to fit more unbreakable content in the inline
   // direction.
-  return 1.f / layout_view.PaginationScaleFactor();
+  float layout_scale = 1.f / layout_view.PaginationScaleFactor();
+  if (!ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams())) {
+    return layout_scale;
+  }
+
+  // The source margin box size isn't stored anywhere, so it needs to be
+  // recomputed now.
+  BlockNode page_node(To<LayoutBox>(page_container.GetMutableLayoutObject()));
+  const ComputedStyle& style = page_node.Style();
+  FragmentGeometry geometry;
+  BoxStrut margins;
+  ResolvePageBoxGeometry(page_node,
+                         DesiredPageContainingBlockSize(document, style),
+                         &geometry, &margins);
+  LogicalSize source_size = geometry.border_box_size + margins;
+  LogicalSize target_size =
+      page_container.Size().ConvertToLogical(style.GetWritingMode());
+
+  return layout_scale * TargetShrinkScaleFactor(target_size, source_size);
+}
+
+LogicalSize FittedPageContainerSize(const Document& document,
+                                    const ComputedStyle& style,
+                                    LogicalSize source_margin_box_size) {
+  if (!ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams())) {
+    return source_margin_box_size;
+  }
+
+  // The target page size is fixed. This happens when printing to an actual
+  // printer, whose page size is obviously confined to the size of the paper
+  // sheets in the printer. Only honor orientation.
+  return PageBoxDefaultSizeWithSourceOrientation(document, style,
+                                                 source_margin_box_size);
+}
+
+LogicalRect TargetPageBorderBoxLogicalRect(
+    const Document& document,
+    const ComputedStyle& style,
+    const LogicalSize& source_margin_box_size,
+    const BoxStrut& margins) {
+  LogicalSize source_border_box_size(
+      source_margin_box_size.inline_size - margins.InlineSum(),
+      source_margin_box_size.block_size - margins.BlockSum());
+  LogicalRect rect(LogicalOffset(margins.inline_start, margins.block_start),
+                   source_border_box_size);
+
+  if (!ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams())) {
+    return rect;
+  }
+
+  LogicalSize target_size = PageBoxDefaultSizeWithSourceOrientation(
+      document, style, source_margin_box_size);
+
+  float scale = TargetShrinkScaleFactor(target_size, source_margin_box_size);
+
+  rect.offset.inline_offset =
+      LayoutUnit(rect.offset.inline_offset.ToFloat() * scale +
+                 (target_size.inline_size.ToFloat() -
+                  source_margin_box_size.inline_size.ToFloat() * scale) /
+                     2);
+  rect.offset.block_offset =
+      LayoutUnit(rect.offset.block_offset.ToFloat() * scale +
+                 (target_size.block_size.ToFloat() -
+                  source_margin_box_size.block_size.ToFloat() * scale) /
+                     2);
+  rect.size.inline_size = LayoutUnit(rect.size.inline_size.ToFloat() * scale);
+  rect.size.block_size = LayoutUnit(rect.size.block_size.ToFloat() * scale);
+
+  return rect;
 }
 
 wtf_size_t PageCount(const LayoutView& view) {
@@ -335,22 +441,13 @@ WebPrintPageDescription GetPageDescriptionFromLayout(const Document& document,
   const PhysicalBoxFragment& page_container =
       *GetPageContainer(*document.GetLayoutView(), page_number);
   const ComputedStyle& style = page_container.Style();
+  const PhysicalFragmentLink& border_box = GetPageBorderBoxLink(page_container);
+  float scale = TargetScaleForPage(page_container);
+  PhysicalRect page_border_box_rect(border_box.offset,
+                                    border_box->Size() * scale);
 
-  // TODO(mstensho): Once the margins are represented in the page fragments, we
-  // won't need to re-resolve geometry here. Instead we can read out the correct
-  // offsets and sizes from the page fragments.
-  LogicalSize page_containing_block_size =
-      DesiredPageContainingBlockSize(document, style);
-  FragmentGeometry geometry;
-  BoxStrut margins;
-  ResolvePageBoxGeometry(
-      BlockNode(To<LayoutBox>(page_container.GetMutableLayoutObject())),
-      page_containing_block_size, &geometry, &margins);
-  LogicalSize margin_box_size = geometry.border_box_size + margins;
-  WebPrintPageDescription description(
-      gfx::SizeF(ToPhysicalSize(margin_box_size, style.GetWritingMode())));
-  PhysicalBoxStrut insets =
-      margins.ConvertToPhysical(style.GetWritingDirection());
+  PhysicalBoxStrut insets(page_container.Size(), page_border_box_rect);
+  WebPrintPageDescription description(gfx::SizeF(page_container.Size()));
   description.margin_top = insets.top.ToFloat();
   description.margin_right = insets.right.ToFloat();
   description.margin_bottom = insets.bottom.ToFloat();

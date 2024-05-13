@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -44,6 +45,13 @@ std::ostream& operator<<(std::ostream& stream, const LineBoxStrut& value) {
                 << ") Line: (" << value.line_over << " " << value.line_under
                 << ") ";
 }
+
+PhysicalBoxStrut::PhysicalBoxStrut(const PhysicalSize& outer_size,
+                                   const PhysicalRect& inner_rect)
+    : top(inner_rect.offset.top),
+      right(outer_size.width - inner_rect.Right()),
+      bottom(outer_size.height - inner_rect.Bottom()),
+      left(inner_rect.offset.left) {}
 
 PhysicalBoxStrut& PhysicalBoxStrut::Unite(const PhysicalBoxStrut& other) {
   top = std::max(top, other.top);

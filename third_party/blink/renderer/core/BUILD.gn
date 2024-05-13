@@ -367,6 +367,7 @@ component("core") {
     "//mojo/public/cpp/bindings:bindings",
     "//mojo/public/cpp/system",
     "//printing/buildflags",
+    "//printing/mojom:mojom_blink",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",

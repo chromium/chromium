@@ -21,10 +21,9 @@ struct PageAreaLayoutParams;
 // 16 "margin boxes" per page, to hold things like author-generated headers and
 // footers).
 //
-// TODO(mstensho): Add support for @page margins and properties. Inside a page
-// container there will be @page margins, borders and padding, and the "content
-// box" inside defines the page area, into which fragmented document content
-// flows.
+// Inside a page container there are @page margins, borders and padding, and the
+// "content box" inside defines the page area, into which fragmented document
+// content flows.
 //
 // See https://drafts.csswg.org/css-page-3/#page-model
 //
@@ -32,6 +31,11 @@ struct PageAreaLayoutParams;
 // create two fragments. The page container is the outermost one. In addition to
 // any "page margin boxes", the page container contains the other part that
 // comprisies the "page box", namely the page border box.
+//
+// If the destination is an actual printer (and not PDF), The size of the page
+// container will always match the selected paper size (whatever @page size
+// dictates will be honored by layout, but then scaled down and centered to fit
+// on paper).
 class CORE_EXPORT PageContainerLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:

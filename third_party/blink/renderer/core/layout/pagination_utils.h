@@ -19,6 +19,7 @@ class LayoutView;
 class PhysicalBoxFragment;
 struct BoxStrut;
 struct FragmentGeometry;
+struct LogicalRect;
 struct PhysicalFragmentLink;
 struct PhysicalRect;
 struct WebPrintPageDescription;
@@ -52,6 +53,23 @@ PhysicalSize CalculateInitialContainingBlockSizeForPagination(Document&);
 // in the inline direction. Additionally, if the target is actual paper, it may
 // be necessary to scale everything down to fit within the given paper size.
 float TargetScaleForPage(const PhysicalBoxFragment& page_container);
+
+// Fit the page margin-box size to paper / printable area, if needed. The input
+// size is the desired page box size (from print parameters and @page
+// properties). The output size will be the same if not fitting to paper. If
+// fitting to paper, it will be paper size, but still honoring the orientation
+// of the desired page box size.
+LogicalSize FittedPageContainerSize(const Document& document,
+                                    const ComputedStyle& style,
+                                    LogicalSize source_margin_box_size);
+
+// Calculate the page border-box rectangle in the target coordinate system
+// (which fits on paper, if needed).
+LogicalRect TargetPageBorderBoxLogicalRect(
+    const Document& document,
+    const ComputedStyle& page_style,
+    const LogicalSize& source_margin_box_size,
+    const BoxStrut& margins);
 
 // Return the total number of pages. Only to be called on a document that has
 // been laid out for pagination.
@@ -91,6 +109,13 @@ float CalculateOverflowShrinkForPrinting(const LayoutView&,
 
 // Populate and return a WebPrintPageDescription structure for a given page
 // based on layout and style.
+///
+// If fitting to paper size is enabled (i.e. when using a printer and not just
+// generating a PDF), the page box size returned will be the paper size (not
+// whatever @page says), and the returned margins may be scaled down, if the
+// page box was scaled down as part of the fitting. Such scaling and fitting may
+// introduce additional spacing between the page box (container) edge and the
+// page border box. This will be included in the margin values.
 WebPrintPageDescription GetPageDescriptionFromLayout(const Document&,
                                                      wtf_size_t page_number);
 

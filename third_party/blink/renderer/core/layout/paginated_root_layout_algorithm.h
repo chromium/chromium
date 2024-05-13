@@ -33,11 +33,6 @@ struct PageAreaLayoutParams;
 // document contents flow. The document root (e.g. <html>) and all descendants
 // will be placed inside the page area fragmentainers.
 //
-// TODO(mstensho): The desired fragment structure for pagination has been
-// plumbed as described above, but support for additional @page properties
-// hasn't been implemented yet. The example below therefore still doesn't match
-// reality.
-//
 // Example:
 //
 //   <!DOCTYPE html>
@@ -63,6 +58,36 @@ struct PageAreaLayoutParams;
 //           HTML              0,0    480x108
 //             BODY            8,0    464x100
 //               DIV id="b"    0,0    464x100
+//
+// A page area can be seen as the content box of a page box, although its offset
+// doesn't reflect that (there's a 10px page border, but the offset is still
+// 0,0). A page area fragment (and its entire subtree, which represents some of
+// the document contents) lives in a different coordinate system than the rest.
+//
+// The page container fragments are sized and positioned with respect to the
+// destination output size. If printing to an actual printer, there's a given
+// physical paper size, and no @page size can change that fact (the output may
+// need to be scaled and/or centered on paper). The page border box and page
+// area, on the other hand, live in the coordinate system established by layout,
+// which honors @page size, input scale factor from print settings, and
+// additionally any shrink factor calculated by layout (if some content is too
+// wide to fit the page size, the layout viewport may be enlarged to prevent it
+// from overflowing (as much), an thus there needs to be an additional scale
+// factor to shrink it back down to the destination size).
+//
+// Note that, although the page border box is in the coordinate system of layout
+// as far as scaling is concerned, the page border box *offset* is in the
+// destination coordinate system. Example: The paper size is 816x1056 (US
+// Letter). Input scale factor is 2. Margins are 50px on each side. The size of
+// the page container becomes 816x1056. The offset to the page border box
+// becomes 50,50. The size of the page border box (and page area) becomes
+// 358x478 - subtract margins from 816x1056, then divide by 2 (the inverse scale
+// factor used by layout).
+//
+// When painted, the page areas are "stitched" together in the block direction,
+// so that content that overflows from one page correctly overflows into the
+// other pages, rather than being lost. Overflowing content may for instance be
+// tall monolithic content, or transformed elements.
 //
 // See also https://drafts.csswg.org/css-page-3/#page-model
 class CORE_EXPORT PaginatedRootLayoutAlgorithm

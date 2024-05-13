@@ -396,13 +396,7 @@ class ChromePrintContext : public PrintContext {
           GetFrame()->GetDocument()->GetPageDescription(page_index);
 
       AffineTransform transform;
-      // The transform offset should be in integers, or everything will look
-      // blurry. The value is also rounded to the nearest integer (not ceil /
-      // floor), to better match what it would look like if the same offset were
-      // applied from within the document contents (e.g. margin / padding on a
-      // regular DIV). Some tests depend on this.
-      transform.Translate(std::round(description.margin_left),
-                          current_height + std::round(description.margin_top));
+      transform.Translate(0, current_height);
 
       if (description.orientation == PageOrientation::kUpright) {
         current_height += description.size.height() + 1;

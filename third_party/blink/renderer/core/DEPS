@@ -71,6 +71,7 @@ include_rules = [
     "+mojo/public/mojom/base",
     "+net/base/net_errors.h",
     "+net/http/http_status_code.h",
+    "+printing/mojom/print.mojom-blink.h",
     "+services/device/public/mojom/device_posture_provider.mojom-blink-forward.h",
     "+services/device/public/mojom/device_posture_provider.mojom-blink.h",
     "+services/device/public/mojom/wake_lock.mojom-blink.h",
