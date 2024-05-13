@@ -230,8 +230,8 @@ chrome.tts.getVoices = function(callback) {};
 chrome.tts.onEvent;
 
 /**
- * Called when the list of voices that would be returned by getVoices has
- * changed.
+ * Called when the list of $(ref:tts.TtsVoice) that would be returned by
+ * getVoices has changed.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/tts#event-onVoicesChanged
  */
