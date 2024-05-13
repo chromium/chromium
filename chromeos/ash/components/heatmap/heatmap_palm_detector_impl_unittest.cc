@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -30,7 +31,8 @@ class HeatmapPalmDetectorImplTest : public testing::Test {
 
     detector_ = std::make_unique<HeatmapPalmDetectorImpl>();
     EXPECT_FALSE(detector_->IsReady());
-    detector_->Start(HeatmapPalmDetectorImpl::ModelId::kRex, "/dev/hidraw0");
+    detector_->Start(HeatmapPalmDetectorImpl::ModelId::kRex, "/dev/hidraw0",
+                     std::nullopt);
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(detector_->IsReady());
   }

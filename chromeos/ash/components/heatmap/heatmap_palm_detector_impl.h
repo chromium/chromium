@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HEATMAP_HEATMAP_PALM_DETECTOR_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_HEATMAP_HEATMAP_PALM_DETECTOR_IMPL_H_
 
+#include <optional>
 #include <queue>
 #include <unordered_set>
 
@@ -28,7 +29,9 @@ class HeatmapPalmDetectorImpl
   ~HeatmapPalmDetectorImpl() override;
 
   // ui::HeatmapPalmDetector:
-  void Start(ModelId model_id, std::string_view hidraw_path) override;
+  void Start(ModelId model_id,
+             std::string_view hidraw_path,
+             std::optional<CropHeatmap> crop_heatmap) override;
   bool IsPalm(int tracking_id) const override;
   bool IsReady() const override;
   void AddTouchRecord(base::Time timestamp,
@@ -48,6 +51,7 @@ class HeatmapPalmDetectorImpl
 
   bool is_ready_ = false;
 
+  std::optional<CropHeatmap> crop_heatmap_;
   ModelId model_id_;
   std::string hidraw_path_;
 

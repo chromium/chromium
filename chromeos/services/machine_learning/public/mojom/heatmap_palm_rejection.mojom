@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 4
 
 // Datatypes and interfaces of heatmap palm rejection API.
 
@@ -21,6 +21,11 @@ module chromeos.machine_learning.mojom;
 import "mojo/public/mojom/base/time.mojom";
 
 // Enum indicates the result of LoadHeatmapPalmRejection in mlservice.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep this enum in sync with
+// MachineLearningServiceLoadHeatmapPalmRejectionResult in
+// tools/metrics/histograms/metadata/cros_ml/enums.xml.
 [Stable, Extensible]
 enum LoadHeatmapPalmRejectionResult {
   // The service was loaded successfully.
@@ -33,6 +38,10 @@ enum LoadHeatmapPalmRejectionResult {
   CREATE_GRAPH_EXECUTOR_ERROR = 3,
   // Failed to open the hidraw device.
   OPEN_DEVICE_ERROR = 4,
+  // Failed to create a watcher for the hidraw device.
+  [MinVersion=2] WATCH_DEVICE_ERROR = 5,
+  // The device does not support heatmap.
+  [MinVersion=2] FEATURE_NOT_SUPPORTED_ERROR = 6,
 };
 
 // Configs to set up heatmap palm rejection service.
@@ -48,6 +57,8 @@ struct HeatmapPalmRejectionConfig {
   uint32 output_node;
   // The threshold to decide whether the TF model result indicates a palm.
   [MinVersion=1] double palm_threshold;
+  // Optional crop that should be applied to the heatmap when provided.
+  [MinVersion=3] CropHeatmap? crop_heatmap;
 };
 
 // The result of processing a frame of heatmap data.
@@ -65,4 +76,21 @@ struct HeatmapProcessedEvent {
 interface HeatmapPalmRejectionClient {
   // This is how the client receives heatmap palm rejection results;
   OnHeatmapProcessedEvent@0(HeatmapProcessedEvent event);
+};
+
+// Crop configuration to be applied to the heatmap. Accepts any valid values
+// however a value of zero is obviously a no-op. Additionally, values that crop
+// beyond the width or height of the heatmap will be treated as no-op. These
+// values are human provided configuration values based on observed heatmap
+// dimensions and the expected input shape to the ML model.
+[Stable]
+struct CropHeatmap {
+  // Number of rows of data to crop from the bottom.
+  uint8 bottom_crop;
+  // Number of columns of data to crop from the left.
+  uint8 left_crop;
+  // Number of columns of data to crop from the right.
+  uint8 right_crop;
+  // Number of rows of data to crop from the top.
+  uint8 top_crop;
 };

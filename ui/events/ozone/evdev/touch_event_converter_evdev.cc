@@ -13,6 +13,7 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <queue>
 
 #include "base/command_line.h"
@@ -116,6 +117,7 @@ struct SupportedHidrawDevice {
   uint16_t vendor_id;
   uint16_t product_id;
   ui::HeatmapPalmDetector::ModelId model_id;
+  std::optional<ui::HeatmapPalmDetector::CropHeatmap> crop_heatmap;
 };
 
 // Returns a list of supported hidraw spi devices.
@@ -126,12 +128,14 @@ std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
           .vendor_id = 0x04F3,
           .product_id = 0x4222,
           .model_id = ui::HeatmapPalmDetector::ModelId::kRex,
+          .crop_heatmap = std::nullopt,
       },
       {
           .name = "hid-hxtp 4858:1002",
           .vendor_id = 0x4858,
           .product_id = 0x1002,
           .model_id = ui::HeatmapPalmDetector::ModelId::kGeralt,
+          .crop_heatmap = std::nullopt,
       },
   };
 }
@@ -158,6 +162,24 @@ base::FilePath GetHidrawPath(const base::FilePath& root_path) {
                               base::FileEnumerator::DIRECTORIES)
       .Next();
 }
+
+std::optional<ui::HeatmapPalmDetector::CropHeatmap> GetCropHeatmap(
+    const ui::EventDeviceInfo& info) {
+  // Stylus devices have no heatmap and thus no cropping.
+  if (info.HasKeyEvent(BTN_TOOL_PEN)) {
+    return std::nullopt;
+  }
+  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
+      GetSupportedHidrawDevices();
+  for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
+    if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
+        info.product_id() == device.product_id) {
+      return device.crop_heatmap;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 namespace ui {
@@ -361,7 +383,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
           GetHidrawPath(hidraw_device_dir).BaseName());
       auto* palm_detector = HeatmapPalmDetector::GetInstance();
       if (palm_detector) {
-        palm_detector->Start(hidraw_model_id, hidraw_device_path.value());
+        palm_detector->Start(hidraw_model_id, hidraw_device_path.value(),
+                             GetCropHeatmap(info));
       }
     }
   }

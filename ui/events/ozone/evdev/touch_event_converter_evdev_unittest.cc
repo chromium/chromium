@@ -207,7 +207,9 @@ class FakeHeatmapPalmDetector : public HeatmapPalmDetector {
  public:
   FakeHeatmapPalmDetector() { palm_tracking_ids_.clear(); }
 
-  void Start(ModelId model_id, std::string_view hidraw_path) override {}
+  void Start(ModelId model_id,
+             std::string_view hidraw_path,
+             std::optional<CropHeatmap> crop_heatmap) override {}
 
   bool IsPalm(int tracking_id) const override {
     return palm_tracking_ids_.find(tracking_id) != palm_tracking_ids_.end();

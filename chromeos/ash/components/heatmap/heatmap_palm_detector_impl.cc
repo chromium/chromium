@@ -60,7 +60,9 @@ HeatmapPalmDetectorImpl::HeatmapPalmDetectorImpl()
 HeatmapPalmDetectorImpl::~HeatmapPalmDetectorImpl() = default;
 
 void HeatmapPalmDetectorImpl::Start(ModelId model_id,
-                                    std::string_view hidraw_path) {
+                                    std::string_view hidraw_path,
+                                    std::optional<CropHeatmap> crop_heatmap) {
+  crop_heatmap_ = crop_heatmap;
   model_id_ = model_id;
   hidraw_path_ = hidraw_path;
   const MetadataMap model_metadata = GetHeatmapModelMetadata();
@@ -77,6 +79,17 @@ void HeatmapPalmDetectorImpl::Start(ModelId model_id,
   config->output_node = metadata_lookup->second.output_node;
   config->palm_threshold = metadata_lookup->second.palm_threshold;
   config->heatmap_hidraw_device = hidraw_path;
+
+  if (crop_heatmap) {
+    if (!config->crop_heatmap) {
+      config->crop_heatmap =
+          ::chromeos::machine_learning::mojom::CropHeatmap::New();
+    }
+    config->crop_heatmap->bottom_crop = crop_heatmap->bottom_crop;
+    config->crop_heatmap->left_crop = crop_heatmap->left_crop;
+    config->crop_heatmap->right_crop = crop_heatmap->right_crop;
+    config->crop_heatmap->top_crop = crop_heatmap->top_crop;
+  }
 
   if (!ml_service_) {
     chromeos::machine_learning::ServiceConnection::GetInstance()
@@ -100,7 +113,8 @@ void HeatmapPalmDetectorImpl::OnConnectionError() {
   delay_timer_.Start(
       FROM_HERE, reconnect_delay_,
       base::BindOnce(&HeatmapPalmDetectorImpl::Start,
-                     weak_factory_.GetWeakPtr(), model_id_, hidraw_path_));
+                     weak_factory_.GetWeakPtr(), model_id_,
+                     hidraw_path_, crop_heatmap_));
   if (reconnect_delay_ <
       kReconnectMaxDelay) {  // exponential backoff with max limit
     reconnect_delay_ *= 2;
