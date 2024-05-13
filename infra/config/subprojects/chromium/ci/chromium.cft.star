@@ -25,11 +25,14 @@ ci.defaults.set(
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
-def builder_spec(*, target_platform, build_config, is_arm64 = False):
+def builder_spec(*, target_platform, build_config, is_arm64 = False, additional_configs = None):
+    additional_configs = additional_configs or []
+    if is_arm64:
+        additional_configs.append("arm64")
     return builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["arm64"] if is_arm64 else None,
+            apply_configs = additional_configs,
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -50,6 +53,11 @@ ci.builder(
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.MAC,
+        additional_configs = [
+            # This is necessary due to this builder running the
+            # telemetry_perf_unittests suite.
+            "chromium_with_telemetry_dependencies",
+        ],
     ),
     cores = None,
     os = os.MAC_DEFAULT,
@@ -78,6 +86,11 @@ ci.builder(
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.LINUX,
+        additional_configs = [
+            # This is necessary due to this builder running the
+            # telemetry_perf_unittests suite.
+            "chromium_with_telemetry_dependencies",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -91,6 +104,11 @@ ci.builder(
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.WIN,
+        additional_configs = [
+            # This is necessary due to this builder running the
+            # telemetry_perf_unittests suite.
+            "chromium_with_telemetry_dependencies",
+        ],
     ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
