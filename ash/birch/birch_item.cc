@@ -111,6 +111,7 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
     : BirchItem(title, GetSubtitle(start_time, end_time, all_day_event)),
       start_time_(start_time),
       end_time_(end_time),
+      all_day_event_(all_day_event),
       calendar_url_(calendar_url),
       conference_url_(conference_url),
       event_id_(event_id) {

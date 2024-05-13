@@ -120,6 +120,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
 
   const base::Time& start_time() const { return start_time_; }
   const base::Time& end_time() const { return end_time_; }
+  bool all_day_event() const { return all_day_event_; }
   const GURL& calendar_url() const { return calendar_url_; }
   const GURL& conference_url() const { return conference_url_; }
   const std::string& event_id() const { return event_id_; }
@@ -139,6 +140,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
 
   base::Time start_time_;
   base::Time end_time_;
+  bool all_day_event_;
   // Link to the event in the Google Calendar UI.
   GURL calendar_url_;
   // Video conferencing URL (e.g. Google Meet).

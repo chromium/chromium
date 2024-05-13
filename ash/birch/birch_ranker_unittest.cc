@@ -183,6 +183,59 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
   EXPECT_FLOAT_EQ(items[0].ranking(), 9.f);
 }
 
+TEST(BirchRankerTest, RankCalendarItems_AllDayEvent) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 3 PM.
+  base::Time now = TimeFromString("22 Feb 2024 15:00 UTC");
+  BirchRanker ranker(now);
+
+  // Create an ongoing event (2 PM to 4 PM).
+  BirchCalendarItem item0(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 14:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/false);
+
+  // Create an all-day event for today.
+  BirchCalendarItem item1(
+      u"All Day",
+      /*start_time=*/TimeFromString("22 Feb 2024 00:00 UTC"),
+      /*end_time=*/TimeFromString("23 Feb 2024 00:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/true);
+
+  // Create an all-day event for tomorrow.
+  BirchCalendarItem item2(
+      u"All Day",
+      /*start_time=*/TimeFromString("23 Feb 2024 00:00 UTC"),
+      /*end_time=*/TimeFromString("24 Feb 2024 00:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/true);
+  std::vector<BirchCalendarItem> items = {item2, item1, item0};
+
+  ranker.RankCalendarItems(&items);
+
+  ASSERT_EQ(3u, items.size());
+
+  // The events are sorted by start time so today's all day event is first. It
+  // has low priority.
+  EXPECT_FLOAT_EQ(items[0].ranking(), 36.f);
+
+  // The non-all-day ongoing event has higher priority.
+  EXPECT_FLOAT_EQ(items[1].ranking(), 9.f);
+
+  // The all-day event for tomorrow is not ranked.
+  EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
+}
+
 TEST(BirchRankerTest, RankAttachmentItems_Morning) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 

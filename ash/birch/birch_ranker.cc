@@ -37,7 +37,14 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
   bool found_tomorrow_event = false;
 
   for (BirchCalendarItem& item : *items) {
-    // Ongoing events have priority in the morning.
+    // All-day events have low priority. We only show all-day events from today
+    // (e.g. ongoing all-day events).
+    if (item.all_day_event() && IsOngoingEvent(item)) {
+      item.set_ranking(36.f);
+      continue;
+    }
+
+    // Non-all-day ongoing events have priority in the morning.
     if (is_morning && IsOngoingEvent(item)) {
       item.set_ranking(6.f);
       continue;
@@ -50,7 +57,7 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
       continue;
     }
 
-    // Ongoing events have medium priority all day.
+    // Non-all-day ongoing events have medium priority all day.
     if (IsOngoingEvent(item)) {
       item.set_ranking(9.f);
       continue;
