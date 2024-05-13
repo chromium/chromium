@@ -90,9 +90,9 @@ struct IdentityProviderRequestOptions {
   // is not sent to the provider, but rather used by the user agent.
   string domain_hint;
 
-  // The scope of the federated identity request: name/email/photo or
-  // custom ones (e.g. "access to calendar", "access to social graph", etc).
-  array<string> scope;
+  // Profile fields that the RP is requesting access for, such as "name",
+  // "email" or "picture".
+  array<string>? fields;
 
   // Additional parameters that the relying party can send to the IdP after
   // the user's permission has been gathered.

@@ -1150,9 +1150,9 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
-            // Asserts that the scope and params parameters
+            // Asserts that the fields and params parameters
             // were passed correctly to the id assertion endpoint.
-            content += "scope=name+email+picture&";
+            content += "fields=name,email,picture&";
             content += "param_%3F+gets+://=%26+escaped+!&";
             content += "param_foo=bar&";
             content += "param_hello=world";
@@ -1186,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
                        BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
-                scope: [
+                fields: [
                   'name',
                   'email',
                   'picture',
@@ -1227,14 +1227,14 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
-            content += "scope=calendar.readonly";
+            content += "fields=locale";
 
             EXPECT_EQ(request.content, content);
 
             auto response = std::make_unique<BasicHttpResponse>();
             response->set_code(net::HTTP_OK);
             response->set_content_type("text/json");
-            // scope=calendar.readonly was requested, so need to
+            // fields=locale was requested, so need to
             // return a continuation url instead of a token.
             auto body = R"({"continue_on": ")" + url + R"("})";
             response->set_content(body);
@@ -1298,8 +1298,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
                        BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
-                scope: [
-                  'calendar.readonly'
+                fields: [
+                  'locale'
                 ],
               }]
             }

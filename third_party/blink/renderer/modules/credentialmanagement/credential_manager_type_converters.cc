@@ -869,8 +869,8 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
 
   // We do not need to check whether authz is enabled because the bindings
   // code will check that for us due to the RuntimeEnabled= flag in the IDL.
-  if (options.hasScope()) {
-    mojo_options->scope = options.scope();
+  if (options.hasFields()) {
+    mojo_options->fields = options.fields();
   }
   if (options.hasParams()) {
     HashMap<String, String> params;

@@ -232,7 +232,7 @@ struct IdentityProviderParameters {
   const char* nonce;
   const char* login_hint;
   const char* domain_hint;
-  std::vector<std::string> scope;
+  std::optional<std::vector<std::string>> fields;
   base::flat_map<std::string, std::string> params;
 };
 
@@ -1058,7 +1058,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       options->nonce = identity_provider.nonce;
       options->login_hint = identity_provider.login_hint;
       options->domain_hint = identity_provider.domain_hint;
-      options->scope = std::move(identity_provider.scope);
+      options->fields = std::move(identity_provider.fields);
       options->params = std::move(identity_provider.params);
       idp_ptrs.push_back(std::move(options));
     }
@@ -1547,8 +1547,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return options;
   }
 
-  blink::mojom::IdentityProviderRequestOptionsPtr NewIDPWithScopes(
-      const std::vector<std::string>& scopes) {
+  blink::mojom::IdentityProviderRequestOptionsPtr NewIDPWithFields(
+      const std::optional<std::vector<std::string>>& fields) {
     blink::mojom::IdentityProviderRequestOptionsPtr options =
         blink::mojom::IdentityProviderRequestOptions::New();
     blink::mojom::IdentityProviderConfigPtr config =
@@ -1556,14 +1556,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     config->config_url = GURL(kProviderUrlFull);
     config->client_id = "";
     options->config = std::move(config);
-    options->scope = scopes;
+    options->fields = fields;
     return options;
   }
 
-  // Helper to call ShouldMediateAuthzFor with the desired scopes.
-  bool ShouldMediateAuthz(const std::vector<std::string>& scopes) {
+  // Helper to call ShouldMediateAuthzFor with the desired fields.
+  bool ShouldMediateAuthz(const std::vector<std::string>& fields) {
     return federated_auth_request_impl_->ShouldMediateAuthzFor(
-        *NewIDPWithScopes(scopes));
+        *NewIDPWithFields(fields));
   }
 
   void SimulateLoginToIdP(std::string login_url = kIdpLoginUrl) {
@@ -5629,16 +5629,16 @@ TEST_F(FederatedAuthRequestImplTest, IdTokenInvalidContentType) {
   CheckAllFedCmSessionIDs();
 }
 
-// Test that the implementation ignores the scope parameter when AuthZ is
+// Test that the implementation ignores the fields parameter when AuthZ is
 // disabled.
 TEST_F(FederatedAuthRequestImplTest, ScopeGetsIgnoredWhenAuthzIsDisabled) {
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].scope = {"calendar.readonly"};
+  parameters.identity_providers[0].fields = {"non_default_field"};
 
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
 
-  // We expect the metadata file to be fetched when scopes are passed
-  // but the AuthZ is disabled.
+  // We expect the metadata file to be fetched when fields is []
+  // but AuthZ is disabled.
   EXPECT_TRUE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
 }
 
@@ -5649,7 +5649,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestNoPopUpWindow) {
   list.InitAndEnableFeature(features::kFedCmAuthz);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].scope = {"calendar.readonly"};
+  parameters.identity_providers[0].fields = {"non_default_field"};
 
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
 
@@ -5670,7 +5670,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   list.InitAndEnableFeature(features::kFedCmAuthz);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].scope = {"calendar.readonly"};
+  parameters.identity_providers[0].fields = {"non_default_field"};
 
   MockConfiguration config = kConfigurationValid;
   // Expect an access token to be produced, rather the typical idtoken.
@@ -5789,7 +5789,7 @@ TEST_F(FederatedAuthRequestImplTest,
   list.InitAndEnableFeature(features::kFedCmAuthz);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].scope = {"calendar.readonly"};
+  parameters.identity_providers[0].fields = {"non_default_field"};
 
   MockConfiguration config = kConfigurationValid;
 
@@ -5842,7 +5842,7 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParametersAndScopes) {
   list.InitAndEnableFeature(features::kFedCmAuthz);
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].scope = {"calendar.readonly"};
+  parameters.identity_providers[0].fields = {"non_default_field"};
   parameters.identity_providers[0].params = {{"foo", "bar"}};
 
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
@@ -6037,33 +6037,29 @@ TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {
 TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
-  // A completely unknown oauth scope is being requested.
-  EXPECT_FALSE(ShouldMediateAuthz({"calendar.readonly"}));
-  // Just the email scope is being requested.
-  EXPECT_FALSE(ShouldMediateAuthz({"email"}));
-  // Just the email scope and the name scope are being requested.
-  EXPECT_FALSE(ShouldMediateAuthz({"email", "address"}));
-  // Just the email, picture and name scopes are being requested.
-  EXPECT_FALSE(ShouldMediateAuthz({"email", "address", "phone"}));
-  // When the basic profile scope is passed in addition to others.
-  EXPECT_FALSE(ShouldMediateAuthz({"profile", "email", "calendar.readonly"}));
+  // An unknown field is being requested.
+  EXPECT_FALSE(ShouldMediateAuthz({"phone"}));
+  // Nothing is requested.
+  EXPECT_FALSE(ShouldMediateAuthz({}));
 }
 
 TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthz) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAuthz);
-  // When scope isn't passed, we default to the basic profile authorization
-  // permission.
-  EXPECT_TRUE(ShouldMediateAuthz({}));
-  // When the basic profile authorization scope is passed explicitly.
-  EXPECT_TRUE(ShouldMediateAuthz({"profile", "email"}));
+  // When no fields are passed, we use the default.
+  EXPECT_TRUE(federated_auth_request_impl_->ShouldMediateAuthzFor(
+      *NewIDPWithFields(std::nullopt)));
+  // When the default fields are explicitly passed, we should mediate.
+  EXPECT_TRUE(ShouldMediateAuthz({"name", "email", "picture"}));
+  // When a superset of the default fields is passed, we should mediate.
+  EXPECT_TRUE(
+      ShouldMediateAuthz({"name", "email", "picture", "locale", "phone"}));
 }
 
-TEST_F(FederatedAuthRequestImplTest,
-       ShouldNotMediateAuthzWithoutFeatureEnabled) {
+TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthzWithoutFeatureEnabled) {
   // Assert that we always mediate the authorization when the kFedCmAuthz
   // is not enabled.
-  EXPECT_TRUE(ShouldMediateAuthz({"profile", "email"}));
+  EXPECT_TRUE(ShouldMediateAuthz({"locale"}));
 }
 
 class FederatedAuthRequestImplNewTabTest : public FederatedAuthRequestImplTest {

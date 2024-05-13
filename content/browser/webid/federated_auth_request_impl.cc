@@ -88,16 +88,20 @@ static constexpr double kRejectionLogNormalMu = 8.6;
 static constexpr double kRejectionLogNormalSigma = 1.4;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+static constexpr char kDefaultFieldName[] = "name";
+static constexpr char kDefaultFieldEmail[] = "email";
+static constexpr char kDefaultFieldPicture[] = "picture";
+
 std::string ComputeUrlEncodedTokenPostData(
     RenderFrameHost& render_frame_host,
     const url::Origin& idp_origin,
     const std::string& client_id,
     const std::string& nonce,
     const std::string& account_id,
-    bool disclosure_text_shown,
     bool is_auto_reauthn,
     const RpMode& rp_mode,
-    const std::vector<std::string>& scope,
+    const std::optional<std::vector<std::string>>& fields,
+    const std::vector<std::string>& disclosure_shown_for,
     const base::flat_map<std::string, std::string>& params) {
   std::string query;
   if (!client_id.empty()) {
@@ -124,7 +128,7 @@ std::string ComputeUrlEncodedTokenPostData(
   // disclosure text is not necessary. This field indicates in the request
   // whether the user has been shown such disclosure text.
   std::string disclosure_text_shown_param =
-      disclosure_text_shown ? "true" : "false";
+      disclosure_shown_for.empty() ? "false" : "true";
   if (!query.empty()) {
     query += "&";
   }
@@ -153,22 +157,26 @@ std::string ComputeUrlEncodedTokenPostData(
   }
 
   if (webid::IsFedCmAuthzEnabled(render_frame_host, idp_origin)) {
-    // We keep the scope and response_type parameters consistenct with the OIDC
-    // spec [1] to the extent that we can:
-    //
-    // - They are an arrays of strings, separated by spaces
-    // - We use the singular (e.g. "scope") as opposed to the plural
-    //   (e.g. "scopes")
-    //
-    // We do, however, use a different escaping character for spaces: "+"
-    // rather than the "%20" to make it consitent with the other
-    // parameters in the FedCM spec.
-    //
-    // [1] https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
-    if (!scope.empty()) {
-      query += "&scope=" + base::EscapeUrlEncodedData(
-                               base::JoinString(scope, " "), /*use_plus=*/true);
+    std::vector<std::string> fields_to_use;
+    if (fields) {
+      fields_to_use = *fields;
+    } else {
+      fields_to_use = {kDefaultFieldName, kDefaultFieldEmail,
+                       kDefaultFieldPicture};
     }
+    if (!fields_to_use.empty()) {
+      query += "&fields=" +
+               base::EscapeUrlEncodedData(base::JoinString(fields_to_use, ","),
+                                          /*use_plus=*/true);
+    }
+
+    if (!disclosure_shown_for.empty()) {
+      query += "&disclosure_shown_for=" +
+               base::EscapeUrlEncodedData(
+                   base::JoinString(disclosure_shown_for, ","),
+                   /*use_plus=*/true);
+    }
+
     for (const auto& pair : params) {
       query += "&param_" +
                base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) + "=" +
@@ -1266,6 +1274,33 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
           /*should_delay_callback=*/rp_mode_ == RpMode::kWidget);
       continue;
     }
+
+    const auto& fields = get_info_it->second.provider->fields;
+    if (fields && !fields->empty()) {
+      // If one of the default fields is present, all three must be present
+      // for now. We may relax this requirement in the future based on IDP
+      // opt-in, so we do this check here (as opposed to in RequestToken)
+      // so that the timing of the promise rejection and the network
+      // requests do not change if/when we do that.
+      // We only reject in this limited circumstance (and allow unknown
+      // fields) for forward compatibility.
+      bool contains_name = base::Contains(*fields, kDefaultFieldName);
+      bool contains_email = base::Contains(*fields, kDefaultFieldEmail);
+      bool contains_picture = base::Contains(*fields, kDefaultFieldPicture);
+      if (contains_name || contains_email || contains_picture) {
+        if (!(contains_name && contains_email && contains_picture)) {
+          render_frame_host().AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "Invalid fields specified");
+          CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                   TokenStatus::kRpPageNotVisible,
+                                   /*token_error=*/std::nullopt,
+                                   /*should_delay_callback=*/false);
+          return;
+        }
+      }
+    }
+
     // The login url should be valid unless IdP login status API is disabled.
     if (idp_info->metadata.idp_login_url.is_valid()) {
       idp_login_infos_[idp_info->metadata.idp_login_url] = {
@@ -1366,14 +1401,6 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
   OnFetchDataForIdpSucceeded(std::move(idp_info), accounts, client_metadata);
 }
 
-bool HasScope(const std::vector<std::string>& scope, std::string name) {
-  auto it = std::find(std::begin(scope), std::end(scope), name);
-  if (it == std::end(scope)) {
-    return false;
-  }
-  return true;
-}
-
 bool FederatedAuthRequestImpl::ShouldMediateAuthzFor(
     const blink::mojom::IdentityProviderRequestOptions& provider) {
   url::Origin idp_origin = url::Origin::Create(provider.config->config_url);
@@ -1381,18 +1408,24 @@ bool FederatedAuthRequestImpl::ShouldMediateAuthzFor(
     return true;
   }
 
-  const auto& scope = provider.scope;
-  if (scope.size() == 0) {
-    // If "scope" is not passed, defaults the parameter to
-    // ["sub", "name", "email" and "picture"].
+  const auto& fields = provider.fields;
+  if (!fields) {
+    // If "fields" is not passed, defaults the parameter to
+    // ["name", "email" and "picture"].
     return true;
   }
 
-  if (scope.size() == 2) {
-    return HasScope(scope, "profile") && HasScope(scope, "email");
+  // If fields is explicitly empty, we should not mediate.
+  if (fields->empty()) {
+    return false;
   }
 
-  return false;
+  // Otherwise, mediate if the default fields are present.
+  // We verify in OnAllConfigAndWellKnownFetched that if one of the default
+  // fields is present, all three of them are.
+  // Even if additional fields are specified, we will only mediate the default
+  // ones.
+  return base::Contains(*fields, "name");
 }
 
 bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
@@ -2165,15 +2198,20 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
         weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
   }
 
+  std::vector<std::string> disclosure_shown_for;
+  if (!is_sign_in && idp_info.data->request_permission) {
+    disclosure_shown_for = {"name", "email", "picture"};
+  }
+
   CHECK(idp_info.data);
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
       ComputeUrlEncodedTokenPostData(
           render_frame_host(), idp_origin, idp_info.provider->config->client_id,
           idp_info.provider->nonce, account_id,
-          !is_sign_in && idp_info.data->request_permission,
           identity_selection_type_ != kExplicit, rp_mode_,
-          idp_info.provider->scope, idp_info.provider->params),
+          idp_info.provider->fields, disclosure_shown_for,
+          idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()),

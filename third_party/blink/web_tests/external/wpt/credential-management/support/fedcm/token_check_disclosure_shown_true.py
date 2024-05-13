@@ -7,10 +7,10 @@ def main(request, response):
     return request_error
 
   nonce = request.POST.get(b"nonce") or b""
-  if request.POST.get(b"disclosure_text_shown") != b"false":
-    return (560, [], "disclosure_text_shown is not false")
-  if request.POST.get(b"disclosure_shown_for") is not None:
-    return (561, [], "disclosure_shown_for is not None")
+  if request.POST.get(b"disclosure_text_shown") != b"true":
+    return (560, [], "disclosure_text_shown is not true")
+  if request.POST.get(b"disclosure_shown_for") != b"name,email,picture":
+    return (561, [], "disclosure_shown_for is not name,email,picture")
   fields = request.POST.get(b"fields") or b""
   if fields != nonce:
     return (562, [], "fields does not match nonce")
