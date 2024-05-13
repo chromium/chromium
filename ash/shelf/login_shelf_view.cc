@@ -39,7 +39,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -47,6 +46,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -645,13 +645,11 @@ void LoginShelfView::SetButtonVisible(ButtonId button_id, bool visible) {
 
 void LoginShelfView::UpdateUi() {
   // Make sure observers are notified.
-  base::ScopedClosureRunner fire_observer(base::BindOnce(
-      [](LoginShelfView* self) {
-        if (self->test_ui_update_delegate()) {
-          self->test_ui_update_delegate()->OnUiUpdate();
-        }
-      },
-      base::Unretained(this)));
+  absl::Cleanup fire_observer = [this] {
+    if (test_ui_update_delegate()) {
+      test_ui_update_delegate()->OnUiUpdate();
+    }
+  };
 
   SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();

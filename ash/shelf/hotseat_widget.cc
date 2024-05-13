@@ -25,12 +25,11 @@
 #include "ash/utility/forest_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -554,9 +553,10 @@ void HotseatWidget::DelegateView::Init(
 
 void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
   // Update highlight border after updating the visibility of shadow.
-  base::ScopedClosureRunner update_highlight_border(
-      base::BindOnce(&DelegateView::UpdateHighlightBorder,
-                     base::Unretained(this), /*update_corner_radius=*/false));
+  absl::Cleanup update_highlight_border = [this] {
+    UpdateHighlightBorder(
+        /*update_corner_radius=*/false);
+  };
 
   if (!HotseatWidget::ShouldShowHotseatBackground()) {
     translucent_background_->SetVisible(false);
