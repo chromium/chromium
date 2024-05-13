@@ -116,7 +116,8 @@ def main():
                                    RUST_TOOLCHAIN_PACKAGE_NAME),
                       'w:xz',
                       preset=9 | lzma.PRESET_EXTREME) as tar:
-        tar.add(RUST_TOOLCHAIN_OUT_DIR, arcname='rust-toolchain')
+        for f in sorted(os.listdir(RUST_TOOLCHAIN_OUT_DIR)):
+            tar.add(os.path.join(RUST_TOOLCHAIN_OUT_DIR, f), arcname=f)
 
     os.chdir(THIRD_PARTY_DIR)
     MaybeUpload(args.upload, args.bucket, RUST_TOOLCHAIN_PACKAGE_NAME,
