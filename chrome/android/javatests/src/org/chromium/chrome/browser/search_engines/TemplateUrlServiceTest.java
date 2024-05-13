@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.search_engines;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+
 import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
@@ -12,12 +15,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineAdapter;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -36,11 +42,14 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /** Tests for Chrome on Android's usage of the TemplateUrlService API. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TemplateUrlServiceTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Rule public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
 
     private static final String QUERY_PARAMETER = "q";
     private static final String QUERY_VALUE = "cat";
@@ -290,7 +299,8 @@ public class TemplateUrlServiceTest {
     @Test
     @SmallTest
     @Feature({"SearchEngines"})
-    public void testSetPlayAPISearchEngine_UpdateExisting() {
+    @Features.DisableFeatures(ChromeFeatureList.PERSISTENT_SEARCH_ENGINE_CHOICE_IMPORT)
+    public void testSetPlayAPISearchEngine_UpdateExisting_NoPersistentImport() {
         waitForTemplateUrlServiceToLoad();
 
         // Add regular search engine. It will be used to test conflict with Play API search engine.
@@ -340,6 +350,70 @@ public class TemplateUrlServiceTest {
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SearchEngines"})
+    @Features.EnableFeatures(ChromeFeatureList.PERSISTENT_SEARCH_ENGINE_CHOICE_IMPORT)
+    public void testSetPlayAPISearchEngine_UpdateExisting() {
+        waitForTemplateUrlServiceToLoad();
+
+        // Add regular search engine. It will be used to test conflict with Play API search engine.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTemplateUrlService.addSearchEngineForTesting("keyword1", 0);
+                });
+
+        // Adding Play API search engine with the same keyword should succeed.
+        Assert.assertTrue(
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        "SearchEngine1",
+                        "keyword1",
+                        PLAY_API_SEARCH_URL,
+                        PLAY_API_SUGGEST_URL,
+                        PLAY_API_FAVICON_URL,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true));
+
+        TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
+        Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
+        Assert.assertTrue(defaultSearchEngine.getIsPrepopulated());
+        Assert.assertEquals(PLAY_API_SEARCH_URL, defaultSearchEngine.getURL());
+
+        // Adding Play API search engine again should replace the previous one.
+        String otherSearchUrl = "https://other.play.search.engine?q={searchTerms}";
+        Assert.assertTrue(
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        "SearchEngine2",
+                        "keyword2",
+                        otherSearchUrl,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true));
+
+        defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
+        Assert.assertEquals("keyword2", defaultSearchEngine.getKeyword());
+        Assert.assertTrue(defaultSearchEngine.getIsPrepopulated());
+        Assert.assertEquals(otherSearchUrl, defaultSearchEngine.getURL());
+        Assert.assertThat(
+                getSearchEngines(mTemplateUrlService).stream()
+                        .map(TemplateUrl::getKeyword)
+                        .collect(Collectors.toList()),
+                not(hasItem("keyword1")));
     }
 
     @Test

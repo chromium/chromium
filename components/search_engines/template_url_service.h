@@ -320,24 +320,31 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // engine.
   void SetIsActiveTemplateURL(TemplateURL* url, bool is_active);
 
-  // Creates a TemplateURL for |keyword| marked with created_from_play_api().
-  // Returns the newly created engine.
-  //
-  // This method must NOT be called multiple times for the same |keyword|,
-  // because that would create duplicate engines. Caller is responsible for
-  // verifying there are no existing |keyword| created_from_play_api() engines.
-  TemplateURL* CreatePlayAPISearchEngine(
-      const std::u16string& title,
+#if BUILDFLAG(IS_ANDROID)
+  // Creates a `TemplateURLData` from the provided raw data, and marks it as
+  // coming from an Play / Android OS-level search engine choice screen.
+  static TemplateURLData CreatePlayAPITemplateURLData(
       const std::u16string& keyword,
+      const std::u16string& name,
       const std::string& search_url,
-      const std::string& suggestions_url,
-      const std::string& favicon_url,
-      const std::string& new_tab_url,
-      const std::string& image_url,
-      const std::string& image_url_post_params,
-      const std::string& image_translate_url,
-      const std::string& image_translate_source_language_param_key,
-      const std::string& image_translate_target_language_param_key);
+      const std::string& suggest_url = std::string(),
+      const std::string& favicon_url = std::string(),
+      const std::string& new_tab_url = std::string(),
+      const std::string& image_url = std::string(),
+      const std::string& image_url_post_params = std::string(),
+      const std::string& image_translate_url = std::string(),
+      const std::string& image_translate_source_language_param_key =
+          std::string(),
+      const std::string& image_translate_target_language_param_key =
+          std::string());
+
+  // Register a new search provider from `new_play_api_turl_data` and sets
+  // it as the default search provider.
+  //
+  // If there is already existing search provider that was created from Play,
+  // it will be removed.
+  bool ResetPlayAPISearchEngine(const TemplateURLData& new_play_api_turl_data);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Updates any search providers matching |potential_search_url| with the new
   // favicon location |favicon_url|.

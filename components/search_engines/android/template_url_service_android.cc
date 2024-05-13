@@ -17,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +26,7 @@
 #include "components/search_engines/android/jni_headers/TemplateUrlService_jni.h"
 #include "components/search_engines/android/template_url_android.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -36,6 +39,76 @@
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+
+namespace {
+TemplateURLData CreatePlayAPITemplateURLData(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jstring>& jname,
+    const base::android::JavaParamRef<jstring>& jkeyword,
+    const base::android::JavaParamRef<jstring>& jsearch_url,
+    const base::android::JavaParamRef<jstring>& jsuggest_url,
+    const base::android::JavaParamRef<jstring>& jfavicon_url,
+    const base::android::JavaParamRef<jstring>& jnew_tab_url,
+    const base::android::JavaParamRef<jstring>& jimage_url,
+    const base::android::JavaParamRef<jstring>& jimage_url_post_params,
+    const base::android::JavaParamRef<jstring>& jimage_translate_url,
+    const base::android::JavaParamRef<jstring>&
+        jimage_translate_source_language_param_key,
+    const base::android::JavaParamRef<jstring>&
+        jimage_translate_target_language_param_key) {
+  std::u16string keyword =
+      base::android::ConvertJavaStringToUTF16(env, jkeyword);
+  std::u16string name = base::android::ConvertJavaStringToUTF16(env, jname);
+  std::string search_url = base::android::ConvertJavaStringToUTF8(jsearch_url);
+  std::string suggest_url;
+  if (jsuggest_url) {
+    suggest_url = base::android::ConvertJavaStringToUTF8(jsuggest_url);
+  }
+  std::string favicon_url;
+  if (jfavicon_url) {
+    favicon_url = base::android::ConvertJavaStringToUTF8(jfavicon_url);
+  }
+  std::string new_tab_url;
+  if (jnew_tab_url) {
+    new_tab_url = base::android::ConvertJavaStringToUTF8(jnew_tab_url);
+  }
+  std::string image_url;
+  if (jimage_url) {
+    image_url = base::android::ConvertJavaStringToUTF8(jimage_url);
+  }
+  std::string image_url_post_params;
+  if (jimage_url_post_params) {
+    image_url_post_params =
+        base::android::ConvertJavaStringToUTF8(jimage_url_post_params);
+  }
+  std::string image_translate_url;
+  if (jimage_translate_url) {
+    image_translate_url =
+        base::android::ConvertJavaStringToUTF8(jimage_translate_url);
+  }
+  std::string image_translate_source_language_param_key;
+  if (jimage_translate_source_language_param_key) {
+    image_translate_source_language_param_key =
+        base::android::ConvertJavaStringToUTF8(
+            jimage_translate_source_language_param_key);
+  }
+  std::string image_translate_target_language_param_key;
+  if (jimage_translate_target_language_param_key) {
+    image_translate_target_language_param_key =
+        base::android::ConvertJavaStringToUTF8(
+            jimage_translate_target_language_param_key);
+  }
+
+  return TemplateURLService::CreatePlayAPITemplateURLData(
+      keyword, name, search_url, suggest_url, favicon_url, new_tab_url,
+      image_url, image_url_post_params, image_translate_url,
+      image_translate_source_language_param_key,
+      image_translate_target_language_param_key
+
+  );
+}
+}  // namespace
 
 TemplateUrlServiceAndroid::TemplateUrlServiceAndroid(
     TemplateURLService* template_url_service)
@@ -330,70 +403,60 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     const base::android::JavaParamRef<jstring>&
         jimage_translate_target_language_param_key,
     jboolean set_as_default) {
+  // The function is scheduled to run only when the service is loaded, see
+  // `TemplateUrlService#runWhenLoaded()`.
+  CHECK(template_url_service_->loaded(), base::NotFatalUntil::M128);
+
   // Check if there is already a search engine created from Play API.
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service_->GetTemplateURLs();
-  auto existing_play_api_turl =
+  TemplateURL* existing_play_api_turl = nullptr;
+  auto found =
       base::ranges::find_if(template_urls, &TemplateURL::created_from_play_api);
-  if (existing_play_api_turl != template_urls.cend()) {
+  if (found != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
-    TemplateURL* turl = *existing_play_api_turl;
-    if (turl->safe_for_autoreplace()) {
-      template_url_service_->ResetTemplateURL(turl, turl->short_name(),
-                                              turl->keyword(), turl->url());
+    existing_play_api_turl = *found;
+    if (existing_play_api_turl->safe_for_autoreplace()) {
+      template_url_service_->ResetTemplateURL(
+          existing_play_api_turl, existing_play_api_turl->short_name(),
+          existing_play_api_turl->keyword(), existing_play_api_turl->url());
     }
-    return false;
+
+    // Only one search engine can be marked as coming from Play at a time.
+    // When the feature is off, we don't re-import, so this has to be the same
+    // as the original, that might have had an issue being persisted.
+    if (!base::FeatureList::IsEnabled(
+            switches::kPersistentSearchEngineChoiceImport)) {
+      return false;
+    }
   }
 
-  std::u16string keyword =
-      base::android::ConvertJavaStringToUTF16(env, jkeyword);
-  std::u16string name = base::android::ConvertJavaStringToUTF16(env, jname);
-  std::string search_url = base::android::ConvertJavaStringToUTF8(jsearch_url);
-  std::string suggest_url;
-  if (jsuggest_url) {
-    suggest_url = base::android::ConvertJavaStringToUTF8(jsuggest_url);
-  }
-  std::string favicon_url;
-  if (jfavicon_url) {
-    favicon_url = base::android::ConvertJavaStringToUTF8(jfavicon_url);
-  }
-  std::string new_tab_url;
-  if (jnew_tab_url) {
-    new_tab_url = base::android::ConvertJavaStringToUTF8(jnew_tab_url);
-  }
-  std::string image_url;
-  if (jimage_url) {
-    image_url = base::android::ConvertJavaStringToUTF8(jimage_url);
-  }
-  std::string image_url_post_params;
-  if (jimage_url_post_params) {
-    image_url_post_params =
-        base::android::ConvertJavaStringToUTF8(jimage_url_post_params);
-  }
-  std::string image_translate_url;
-  if (jimage_translate_url) {
-    image_translate_url =
-        base::android::ConvertJavaStringToUTF8(jimage_translate_url);
-  }
-  std::string image_translate_source_language_param_key;
-  if (jimage_translate_source_language_param_key) {
-    image_translate_source_language_param_key =
-        base::android::ConvertJavaStringToUTF8(
-            jimage_translate_source_language_param_key);
-  }
-  std::string image_translate_target_language_param_key;
-  if (jimage_translate_target_language_param_key) {
-    image_translate_target_language_param_key =
-        base::android::ConvertJavaStringToUTF8(
-            jimage_translate_target_language_param_key);
+  TemplateURLData new_play_api_turl_data = CreatePlayAPITemplateURLData(
+      env, obj, jname, jkeyword, jsearch_url, jsuggest_url, jfavicon_url,
+      jnew_tab_url, jimage_url, jimage_url_post_params, jimage_translate_url,
+      jimage_translate_source_language_param_key,
+      jimage_translate_target_language_param_key);
+
+  if (base::FeatureList::IsEnabled(
+          switches::kPersistentSearchEngineChoiceImport)) {
+    // The "re-apply" flow that calls this without setting the engine as default
+    // is not supported when the re-import feature is enabled. So we can always
+    // force the default to be the incoming data without having to figure out
+    // another fallback default using some other logic when removing the old
+    // play api engine.
+    // TODO(b/339012617): Remove when cleaning up the feature.
+    CHECK(set_as_default);
+
+    return template_url_service_->ResetPlayAPISearchEngine(
+        new_play_api_turl_data);
   }
 
-  TemplateURL* t_url = template_url_service_->CreatePlayAPISearchEngine(
-      name, keyword, search_url, suggest_url, favicon_url, new_tab_url,
-      image_url, image_url_post_params, image_translate_url,
-      image_translate_source_language_param_key,
-      image_translate_target_language_param_key);
+  CHECK(!existing_play_api_turl);
+
+  // Add the new one and set it as default
+  TemplateURL* t_url = template_url_service_->Add(
+      std::make_unique<TemplateURL>(new_play_api_turl_data));
 
   // CanMakeDefault() will prevent us from taking over a policy or extension
   // defined default search engine.

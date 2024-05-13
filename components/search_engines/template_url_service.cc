@@ -28,6 +28,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -947,11 +949,13 @@ void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
       BuiltinEngineType::KEYWORD_MODE_ENGINE_TYPE_MAX);
 }
 
-TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
-    const std::u16string& title,
+#if BUILDFLAG(IS_ANDROID)
+// static
+TemplateURLData TemplateURLService::CreatePlayAPITemplateURLData(
     const std::u16string& keyword,
+    const std::u16string& name,
     const std::string& search_url,
-    const std::string& suggestions_url,
+    const std::string& suggest_url,
     const std::string& favicon_url,
     const std::string& new_tab_url,
     const std::string& image_url,
@@ -959,20 +963,11 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
     const std::string& image_translate_url,
     const std::string& image_translate_source_language_param_key,
     const std::string& image_translate_target_language_param_key) {
-  // It's the caller's responsibility to check that there are no existing
-  // Play API for engine, but still CHECK this to avoid polluting the database.
-  // Currently, we never update Play API engine data. If we ever want to do
-  // that, we need to change how this method behaves.
-  const auto match_range = keyword_to_turl_.equal_range(keyword);
-  for (auto it = match_range.first; it != match_range.second; ++it) {
-    CHECK(!it->second->created_from_play_api());
-  }
-
   TemplateURLData data;
-  data.SetShortName(title);
+  data.SetShortName(name);
   data.SetKeyword(keyword);
   data.SetURL(search_url);
-  data.suggestions_url = suggestions_url;
+  data.suggestions_url = suggest_url;
   data.favicon_url = GURL(favicon_url);
   data.new_tab_url = new_tab_url;
   data.image_url = image_url;
@@ -987,12 +982,101 @@ TemplateURL* TemplateURLService::CreatePlayAPISearchEngine(
   // auto-replaceable by an auto-generated engine as the user browses.
   data.safe_for_autoreplace = false;
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
-
-  // The Play API search engine is not guaranteed to be the best engine for
-  // |keyword|, if there are user-defined, extension, or policy engines.
-  // In practice on Android, this rarely happens, as there is only policy.
-  return Add(std::make_unique<TemplateURL>(data));
+  return data;
 }
+
+bool TemplateURLService::ResetPlayAPISearchEngine(
+    const TemplateURLData& new_play_api_turl_data) {
+  CHECK(loaded());
+  CHECK(new_play_api_turl_data.created_from_play_api);
+
+  auto new_play_api_turl =
+      std::make_unique<TemplateURL>(new_play_api_turl_data);
+
+  SCOPED_CRASH_KEY_NUMBER("ResetPlayAPISearchEngine", "OldDspSource",
+                          default_search_provider_source_);
+  SCOPED_CRASH_KEY_STRING64(
+      "ResetPlayAPISearchEngine", "OldDspKw",
+      default_search_provider_
+          ? base::UTF16ToUTF8(default_search_provider_->keyword())
+          : "<null>");
+  std::u16string old_play_keyword;
+
+  Scoper scoper{this};
+
+  // Part 1. Add the new play engine
+  // Can fail if there is an old play engine or if there is a better engine
+  // matching the new keyword.
+
+  // 1.A) The Play API search engine is not guaranteed to be the best engine for
+  // `keyword`, if there are user-defined, extension, or policy engines that can
+  // take precedence. In practice on Android, this rarely happens, as only
+  // policy engines are possible.
+  const auto match_range =
+      keyword_to_turl_.equal_range(new_play_api_turl->keyword());
+  for (auto it = match_range.first; it != match_range.second; ++it) {
+    TemplateURL* same_keyword_engine = it->second;
+    if (same_keyword_engine->created_from_play_api()) {
+      // We will look into replacing this one below, don't consider it a blocker
+      // yet.
+      continue;
+    }
+
+    if (same_keyword_engine->IsBetterThanConflictingEngine(
+            new_play_api_turl.get())) {
+      // We won't be able to add the new search engine at all.
+      return false;
+    }
+  }
+
+  // 1.B) We can only have 1 Play API engine at a time. we have to remove the
+  // old one, if it exits. If it's the current default, we'll have to remove it
+  // first.
+  auto found = base::ranges::find_if(template_urls_,
+                                     &TemplateURL::created_from_play_api);
+  if (found != template_urls_.cend()) {
+    // There is already an old Play API engine. To proceed we'll need to remove
+    // it.
+    TemplateURL* old_play_api_engine = found->get();
+    old_play_keyword = old_play_api_engine->keyword();
+    if (old_play_api_engine == default_search_provider_) {
+      // The DSE can't be removed from the loaded engines. We need to clear the
+      // DSE first. The old Play API engine should be replaceable, since having
+      // it as DSE means that we don't have a policy-enforced engine, and we
+      // know that the incoming engine otherwise meets the criteria to be to be
+      // set as DSE.
+      CHECK(CanMakeDefault(new_play_api_turl.get()), base::NotFatalUntil::M129);
+
+      // Clearing the member is OK here, we just have to make sure it is
+      // re-populated by the time `scoper` is cleared.
+      default_search_provider_ = nullptr;
+    }
+
+    Remove(old_play_api_engine);
+  }
+
+  SCOPED_CRASH_KEY_STRING64("ResetPlayAPISearchEngine", "OldPlayKw",
+                            base::UTF16ToUTF8(old_play_keyword));
+
+  TemplateURL* new_play_api_turl_ptr = Add(std::move(new_play_api_turl));
+
+  // Adding the engine should be successful, we already checked for blockers
+  // above.
+  CHECK(new_play_api_turl_ptr, base::NotFatalUntil::M129);
+
+  // Part 2: Set as DSE.
+  // It is still possible that policies control the DSE, so ensure we don't
+  // break that.
+  if (CanMakeDefault(new_play_api_turl_ptr)) {
+    SetUserSelectedDefaultSearchProvider(
+        new_play_api_turl_ptr,
+        search_engines::ChoiceMadeLocation::kChoiceScreen);
+  }
+
+  CHECK(default_search_provider_, base::NotFatalUntil::M132);
+  return true;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void TemplateURLService::UpdateProviderFavicons(
     const GURL& potential_search_url,

@@ -169,6 +169,8 @@ static_library("test_support") {
   public_deps = [
     ":search_engines",
     "//base",
+    "//base/test:test_support",
+    "//components/country_codes",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]

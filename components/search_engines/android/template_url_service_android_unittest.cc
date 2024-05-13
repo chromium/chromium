@@ -19,6 +19,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
+#include "components/search_engines/template_url_service_test_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,30 +45,18 @@ void ConfigureFeatureState(base::test::ScopedFeatureList& scoped_feature_list,
 }  // namespace
 
 class TemplateUrlServiceAndroidUnitTest
-    : public testing::Test,
+    : public LoadedTemplateURLServiceUnitTestBase,
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     ConfigureFeatureState(feature_list_, IsSearchEngineChoiceEnabled());
 
-    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
-    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
-    DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
-
-    search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(
-            pref_service_);
+    LoadedTemplateURLServiceUnitTestBase::SetUp();
 
     env_ = base::android::AttachCurrentThread();
 
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        &pref_service_, search_engine_choice_service_.get(),
-        std::make_unique<SearchTermsData>(),
-        /*web_data_service=*/nullptr,
-        /*client=*/nullptr, base::RepeatingClosure());
-
-    template_url_service_android_ = std::make_unique<TemplateUrlServiceAndroid>(
-        template_url_service_.get());
+    template_url_service_android_ =
+        std::make_unique<TemplateUrlServiceAndroid>(&template_url_service());
   }
 
   bool IsSearchEngineChoiceEnabled() const { return GetParam(); }
@@ -89,25 +78,15 @@ class TemplateUrlServiceAndroidUnitTest
 
   JNIEnv* env() { return env_; }
 
-  TemplateURLService& template_url_service() {
-    return *template_url_service_.get();
-  }
-
   TemplateUrlServiceAndroid& template_url_service_android() {
     return *template_url_service_android_.get();
   }
 
-  PrefService& pref_service() { return pref_service_; }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
 
   raw_ptr<JNIEnv> env_ = nullptr;
 
-  std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 };
 
