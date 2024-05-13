@@ -26,6 +26,11 @@ struct InlineItemResultRubyColumn
   // A list of ruby-position values.  The size of this list must be same as
   // annotation_line_list.
   Vector<RubyPosition, 1> position_list;
+
+  // This is true if a ruby column is split into multiple segments by line
+  // breaking, and this InlineItemResult represents the second or later
+  // segment.
+  bool is_continuation = false;
 };
 
 }  // namespace blink

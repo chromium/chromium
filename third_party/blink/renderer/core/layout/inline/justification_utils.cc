@@ -46,9 +46,13 @@ String BuildJustificationText(const String& text_content,
       }
       if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
           item_result.ruby_column) {
-        line_text_builder.Append(StringView(text_content,
-                                            item_result.item->StartOffset(),
-                                            item_result.item->Length()));
+        // No need to add k*IsolateCharacter for kOpenRubyColumn if
+        // is_continuation is true. It is not followed by `base_line` results.
+        if (!item_result.ruby_column->is_continuation) {
+          line_text_builder.Append(StringView(text_content,
+                                              item_result.item->StartOffset(),
+                                              item_result.item->Length()));
+        }
         // Add the ruby-base results only if the ruby-base is wider than its
         // ruby-text. Shorter ruby-bases don't participate in the justification
         // for the whole line.

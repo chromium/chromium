@@ -296,7 +296,8 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
 
   // If not, rebuild the box states for the break token.
   box_states_ = context_->ResetBoxStates();
-  LogicalLineBuilder(Node(), GetConstraintSpace(), box_states_, context_)
+  LogicalLineBuilder(Node(), GetConstraintSpace(), nullptr, box_states_,
+                     context_)
       .RebuildBoxStates(line_info, 0u, break_token->StartItemIndex());
 }
 
@@ -328,7 +329,7 @@ void InlineLayoutAlgorithm::CheckBoxStates(const LineInfo& line_info) const {
     return;
   }
   InlineLayoutStateStack rebuilt;
-  LogicalLineBuilder(Node(), GetConstraintSpace(), &rebuilt, context_)
+  LogicalLineBuilder(Node(), GetConstraintSpace(), nullptr, &rebuilt, context_)
       .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
   rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), baseline_type_,
@@ -365,8 +366,8 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // Clear the current line without releasing the buffer.
   line_container->Shrink();
 
-  LogicalLineBuilder line_builder(Node(), GetConstraintSpace(), box_states_,
-                                  context_);
+  LogicalLineBuilder line_builder(Node(), GetConstraintSpace(), GetBreakToken(),
+                                  box_states_, context_);
   line_builder.CreateLine(line_info, line_box, this);
 
   const LayoutUnit hang_width = line_info->HangWidth();

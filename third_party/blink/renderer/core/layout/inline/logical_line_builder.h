@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class InlineBreakToken;
 class InlineChildLayoutContext;
 class InlineLayoutAlgorithm;
 class InlineLayoutStateStack;
@@ -26,6 +27,7 @@ class LogicalLineBuilder {
  public:
   LogicalLineBuilder(InlineNode node,
                      const ConstraintSpace& constraint_space,
+                     const InlineBreakToken* break_token,
                      InlineLayoutStateStack* state_stack,
                      InlineChildLayoutContext* context);
 
@@ -99,6 +101,7 @@ class LogicalLineBuilder {
 
   InlineNode node_;
   const ConstraintSpace& constraint_space_;
+  const InlineBreakToken* break_token_;
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
   const FontBaseline baseline_type_;
