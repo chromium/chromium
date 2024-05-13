@@ -444,11 +444,12 @@ void SetUpForWidevine(base::CommandLine& command_line) {
                                    bundled_dir.AsUTF8Unsafe());
   }
 
-  base::FilePath component_updated_dir;
-  if (base::PathService::Get(chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM,
-                             &component_updated_dir)) {
-    command_line.AppendSwitchASCII(switches::kCrosWidevineComponentUpdatedDir,
-                                   component_updated_dir.AsUTF8Unsafe());
+  base::FilePath component_updated_hint_file;
+  if (base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
+                             &component_updated_hint_file)) {
+    command_line.AppendSwitchASCII(
+        switches::kCrosWidevineComponentUpdatedHintFile,
+        component_updated_hint_file.AsUTF8Unsafe());
   }
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)

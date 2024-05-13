@@ -327,7 +327,7 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       switches::kEnableResourcesFileSharing,
       switches::kCrosWidevineBundledDir,
-      switches::kCrosWidevineComponentUpdatedDir,
+      switches::kCrosWidevineComponentUpdatedHintFile,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),

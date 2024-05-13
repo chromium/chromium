@@ -98,7 +98,7 @@ MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
 MEDIA_EXPORT extern const char kAllowRAInDevMode[];
 MEDIA_EXPORT extern const char kCrosWidevineBundledDir[];
-MEDIA_EXPORT extern const char kCrosWidevineComponentUpdatedDir[];
+MEDIA_EXPORT extern const char kCrosWidevineComponentUpdatedHintFile[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {

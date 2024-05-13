@@ -247,8 +247,8 @@ const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
 // the directories used for the Widevine CDM (the bundled CDM and the Component
 // Updated CDM).
 const char kCrosWidevineBundledDir[] = "cros-bundled-widevine";
-const char kCrosWidevineComponentUpdatedDir[] =
-    "cros-component-updated-widevine";
+const char kCrosWidevineComponentUpdatedHintFile[] =
+    "cros-component-updated-widevine-hint-file";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace autoplay {
