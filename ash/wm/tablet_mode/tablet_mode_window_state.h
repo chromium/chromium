@@ -11,6 +11,7 @@
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace gfx {
 class Rect;
@@ -35,7 +36,7 @@ class TabletModeWindowState : public WindowState::State {
   // |creator::WindowStateDestroyed()| to inform that the window mode was
   // reverted to the old window manager.
   TabletModeWindowState(aura::Window* window,
-                        TabletModeWindowManager* creator,
+                        base::WeakPtr<TabletModeWindowManager> creator,
                         bool snap,
                         bool animate_bounds_on_attach,
                         bool entering_tablet_mode);
@@ -119,8 +120,9 @@ class TabletModeWindowState : public WindowState::State {
   // The window whose WindowState owns this instance.
   raw_ptr<aura::Window> window_;
 
-  // The creator which needs to be informed when this state goes away.
-  raw_ptr<TabletModeWindowManager> creator_;
+  // The creator which needs to be informed when this state goes away. Use a
+  // weak ptr since `creator_` can be destroyed before `this`.
+  base::WeakPtr<TabletModeWindowManager> const creator_;
 
   // The state type to be established in AttachState(), unless
   // previous_state->GetType() is MAXIMIZED, MINIMIZED, FULLSCREEN, PINNED, or

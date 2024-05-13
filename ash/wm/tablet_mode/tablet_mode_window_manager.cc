@@ -740,9 +740,9 @@ void TabletModeWindowManager::TrackWindow(aura::Window* window,
   // Create and remember a tablet mode state which will attach itself to the
   // provided state object.
   window_state_map_.emplace(
-      window,
-      new TabletModeWindowState(window, this, snap, animate_bounds_on_attach,
-                                entering_tablet_mode));
+      window, new TabletModeWindowState(window, weak_ptr_factory_.GetWeakPtr(),
+                                        snap, animate_bounds_on_attach,
+                                        entering_tablet_mode));
 }
 
 void TabletModeWindowManager::ForgetWindow(aura::Window* window,
