@@ -13,7 +13,6 @@
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display_observer.h"
@@ -210,10 +209,8 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // is used when determining the range for selection performed via shift-click.
   raw_ptr<HoldingSpaceItemView, DanglingUntriaged> selected_range_start_ =
       nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION HoldingSpaceItemView* selected_range_end_ = nullptr;
 
+  raw_ptr<HoldingSpaceItemView> selected_range_end_ = nullptr;
   // Dictates how UI should represent holding space item views' selected states
   // to the user based on device state and `selection_size_`.
   SelectionUi selection_ui_;
