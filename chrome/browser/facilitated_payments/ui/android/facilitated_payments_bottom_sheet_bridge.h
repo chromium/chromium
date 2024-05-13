@@ -27,9 +27,9 @@ class FacilitatedPaymentsBottomSheetBridge {
   FacilitatedPaymentsBottomSheetBridge& operator=(
       const FacilitatedPaymentsBottomSheetBridge&) = delete;
 
-  ~FacilitatedPaymentsBottomSheetBridge();
+  virtual ~FacilitatedPaymentsBottomSheetBridge();
 
-  bool RequestShowContent(content::WebContents* web_contents);
+  virtual bool RequestShowContent(content::WebContents* web_contents);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;

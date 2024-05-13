@@ -5,6 +5,7 @@
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
@@ -60,7 +61,15 @@ ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
-  return false;
+#if BUILDFLAG(IS_ANDROID)
+  return facilitated_payments_controller_.Show(
+      std::make_unique<
+          payments::facilitated::FacilitatedPaymentsBottomSheetBridge>(),
+      &GetWebContents());
+#else
+  // Facilitated Payments is not supported on Desktop.
+  NOTREACHED_NORETURN();
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeFacilitatedPaymentsClient);

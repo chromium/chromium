@@ -8,6 +8,8 @@ static_library("android") {
   sources = [
     "facilitated_payments_bottom_sheet_bridge.cc",
     "facilitated_payments_bottom_sheet_bridge.h",
+    "facilitated_payments_controller.cc",
+    "facilitated_payments_controller.h",
   ]
 
   deps = [
@@ -20,7 +22,10 @@ static_library("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "facilitated_payments_bottom_sheet_bridge_unittest.cc" ]
+  sources = [
+    "facilitated_payments_bottom_sheet_bridge_unittest.cc",
+    "facilitated_payments_controller_unittest.cc",
+  ]
 
   deps = [
     ":android",
