@@ -38,7 +38,8 @@ extern const char kLifetimeKey[];
 // Key of the revoked chooser permissions in the |UnusedSitePermissions| object.
 extern const char kSafetyHubChooserPermissionsData[];
 
-// State that a top card in the Safety Hub page can be in.
+// State that a top card in the Safety Hub page can be in. This enum should
+// remain sorted from the "worst" state (warning) to the "best" state (safe).
 // Should be kept in sync with the corresponding enum in
 // chrome/browser/resources/settings/safety_hub/safety_hub_browser_proxy.ts
 enum class SafetyHubCardState {

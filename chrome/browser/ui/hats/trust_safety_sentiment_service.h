@@ -283,6 +283,10 @@ class TrustSafetySentimentService
   void MaybeTriggerPasswordProtectionSurvey(PasswordProtectionUIType ui_type,
                                             PasswordProtectionUIAction action);
 
+  // Returns the product specific data related to surveys triggered for Safety
+  // Hub.
+  std::map<std::string, bool> GetSafetyHubProductSpecificData();
+
   const raw_ptr<Profile> profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;

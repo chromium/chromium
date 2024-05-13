@@ -173,6 +173,7 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
     (*it)->Dismiss();
   }
   notification_to_show->Show();
+  last_shown_module_ = notification_to_show->GetModuleType();
 
   // The information related to showing the notification needs to be persisted
   // as well.
@@ -274,4 +275,9 @@ void SafetyHubMenuNotificationService::DismissActiveNotificationOfModule(
   if (notification->IsCurrentlyActive()) {
     notification->Dismiss();
   }
+}
+
+std::optional<safety_hub::SafetyHubModuleType>
+SafetyHubMenuNotificationService::GetLastShownNotificationModule() const {
+  return last_shown_module_;
 }

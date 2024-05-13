@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
 #include <map>
+#include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -13,6 +14,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/safety_hub/card_data_helper.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -672,6 +676,46 @@ void TrustSafetySentimentService::MaybeTriggerPasswordProtectionSurvey(
     phished_password_change_state_.reset();
   }
   TriggerOccurred(FeatureArea::kPasswordProtectionUI, product_specific_data);
+}
+
+std::map<std::string, bool>
+TrustSafetySentimentService::GetSafetyHubProductSpecificData() {
+  std::map<std::string, bool> product_specific_data;
+  auto* notification_service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_);
+  std::optional<safety_hub::SafetyHubModuleType> last_module =
+      notification_service->GetLastShownNotificationModule();
+
+  const std::vector<std::pair<safety_hub::SafetyHubModuleType, std::string>>
+      modules = {
+          {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
+          {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
+           "notification permissions"},
+          {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
+          {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
+           "unused site permissions"},
+          {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe browsing"},
+      };
+  for (const auto& module : modules) {
+    product_specific_data["Is notification module " + std::get<1>(module)] =
+        last_module.has_value() && last_module.value() == std::get<0>(module);
+  }
+
+  safety_hub::SafetyHubCardState card_state =
+      safety_hub::GetOverallState(profile_);
+  const std::vector<std::pair<safety_hub::SafetyHubCardState, std::string>>
+      states = {
+          {safety_hub::SafetyHubCardState::kSafe, "safe"},
+          {safety_hub::SafetyHubCardState::kInfo, "info"},
+          {safety_hub::SafetyHubCardState::kWeak, "weak"},
+          {safety_hub::SafetyHubCardState::kWarning, "warning"},
+      };
+  for (const auto& state : states) {
+    product_specific_data["Global state is " + std::get<1>(state)] =
+        card_state == std::get<0>(state);
+  }
+
+  return product_specific_data;
 }
 
 // static

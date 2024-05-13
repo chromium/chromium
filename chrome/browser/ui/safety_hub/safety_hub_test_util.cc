@@ -7,15 +7,18 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 
 namespace {
 
@@ -82,6 +85,9 @@ static extensions::CWSInfoService::CWSInfo cws_info_no_trigger{
 }  // namespace
 
 namespace safety_hub_test_util {
+
+using password_manager::BulkLeakCheckService;
+using password_manager::TestPasswordStore;
 
 MockCWSInfoService::MockCWSInfoService(Profile* profile)
     : extensions::CWSInfoService(profile) {}
@@ -217,6 +223,42 @@ void AcknowledgeSafetyCheckExtensions(const std::string& name,
                                       Profile* profile) {
   extensions::ExtensionPrefs::Get(profile)->UpdateExtensionPref(
       name, "ack_safety_check_warning", base::Value(true));
+}
+
+BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
+    signin::IdentityManager* identity_manager,
+    Profile* profile) {
+  return static_cast<BulkLeakCheckService*>(
+      BulkLeakCheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile, base::BindLambdaForTesting([identity_manager](
+                                                  content::BrowserContext*) {
+            return std::unique_ptr<
+                KeyedService>(std::make_unique<BulkLeakCheckService>(
+                identity_manager,
+                base::MakeRefCounted<network::TestSharedURLLoaderFactory>()));
+          })));
+}
+
+password_manager::PasswordForm MakeForm(std::u16string_view username,
+                                        std::u16string_view password,
+                                        const std::string origin,
+                                        bool is_leaked) {
+  password_manager::PasswordForm form;
+  form.username_value = username;
+  form.password_value = password;
+  form.signon_realm = origin;
+  form.url = GURL(origin);
+
+  if (is_leaked) {
+    // Credential issues for weak and reused are detected automatically and
+    // don't need to be specified explicitly.
+    form.password_issues.insert_or_assign(
+        password_manager::InsecureType::kLeaked,
+        password_manager::InsecurityMetadata(
+            base::Time::Now(), password_manager::IsMuted(false),
+            password_manager::TriggerBackendNotification(false)));
+  }
+  return form;
 }
 
 }  // namespace safety_hub_test_util

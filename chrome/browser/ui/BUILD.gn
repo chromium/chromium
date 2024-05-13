@@ -1422,6 +1422,8 @@ static_library("ui") {
       "sad_tab_types.h",
       "safety_hub/abusive_notification_permissions_manager.cc",
       "safety_hub/abusive_notification_permissions_manager.h",
+      "safety_hub/card_data_helper.cc",
+      "safety_hub/card_data_helper.h",
       "safety_hub/extensions_result.cc",
       "safety_hub/extensions_result.h",
       "safety_hub/menu_notification.cc",

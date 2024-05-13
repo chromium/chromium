@@ -402,9 +402,18 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PasswordOverride) {
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
+  EXPECT_FALSE(menu_notification_service()
+                   ->GetLastShownNotificationModule()
+                   .has_value());
   AdvanceClockBy(base::Days(1));
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::SAFE_BROWSING);
 
   // A leaked password warning should override the safe browsing notification.
   SetMockCredentialEntry(origin, true);
@@ -413,12 +422,27 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PasswordOverride) {
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION, 1,
       notification.value().label);
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
 
   // Fixing the leaked password will clear notification. Because the safe
   // browsing notification was dismissed, it will not be shown either.
   SetMockCredentialEntry(origin, false, true);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
+
+  // The last shown menu notification remains the same even when it has been
+  // dismissed.
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, PasswordTrigger) {
@@ -447,11 +471,24 @@ TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification.value().label);
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
-  // When all notifications are dismissed, there should be no more notification.
+  // When all notifications are dismissed, there should be no more notification
+  // but the last shown notification remains the same.
   menu_notification_service()->DismissActiveNotification();
   EXPECT_FALSE(
       menu_notification_service()->GetNotificationToShow().has_value());
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
   // Create mock password menu notification.
   const std::string& kOrigin = "https://www.example.com";
@@ -461,10 +498,22 @@ TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION, 1,
       notification.value().label);
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
 
   // The notification should no longer appear after it has been dismissed.
   menu_notification_service()->DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType::PASSWORDS);
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
 }

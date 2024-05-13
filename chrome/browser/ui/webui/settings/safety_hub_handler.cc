@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
@@ -111,34 +112,6 @@ PermissionsData GetUnusedSitePermissionsFromDict(
   permissions_data.constraints.set_lifetime(lifetime);
 
   return permissions_data;
-}
-
-// Returns the state of Safe Browsing setting.
-SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
-  // TODO(crbug.com/40267370): Use SafeBrowsingResult from Safety Hub instead.
-  if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service))
-    return SafeBrowsingState::kEnabledEnhanced;
-  if (safe_browsing::IsSafeBrowsingEnabled(*pref_service))
-    return SafeBrowsingState::kEnabledStandard;
-  if (safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service))
-    return SafeBrowsingState::kDisabledByAdmin;
-  if (safe_browsing::IsSafeBrowsingExtensionControlled(*pref_service))
-    return SafeBrowsingState::kDisabledByExtension;
-  return SafeBrowsingState::kDisabledByUser;
-}
-
-base::Value::Dict CardDataToValue(int header_id,
-                                  int subheader_id,
-                                  SafetyHubCardState card_state) {
-  base::Value::Dict sb_card_info;
-
-  sb_card_info.Set(safety_hub::kCardHeaderKey,
-                   l10n_util::GetStringUTF16(header_id));
-  sb_card_info.Set(safety_hub::kCardSubheaderKey,
-                   l10n_util::GetStringUTF16(subheader_id));
-  sb_card_info.Set(safety_hub::kCardStateKey, static_cast<int>(card_state));
-
-  return sb_card_info;
 }
 
 // Returns true if the card dict indicates there is something actionable for the
@@ -466,7 +439,8 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, GetSafeBrowsingCardData());
+  ResolveJavascriptCallback(callback_id,
+                            safety_hub::GetSafeBrowsingCardData(profile_));
 }
 
 void SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview(
@@ -477,45 +451,6 @@ void SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview(
                             base::Value(GetNumberOfExtensionsThatNeedReview()));
 }
 
-base::Value::Dict SafetyHubHandler::GetSafeBrowsingCardData() {
-  SafeBrowsingState result = GetSafeBrowsingState(profile_->GetPrefs());
-
-  base::Value::Dict sb_card_info;
-
-  switch (result) {
-    case SafeBrowsingState::kEnabledEnhanced:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
-                          SafetyHubCardState::kSafe);
-      break;
-    case SafeBrowsingState::kEnabledStandard:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
-                          SafetyHubCardState::kSafe);
-      break;
-    case SafeBrowsingState::kDisabledByAdmin:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
-                          SafetyHubCardState::kInfo);
-      break;
-    case SafeBrowsingState::kDisabledByExtension:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
-                          SafetyHubCardState::kInfo);
-      break;
-    default:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
-                          SafetyHubCardState::kWarning);
-  }
-  return sb_card_info;
-}
-
 void SafetyHubHandler::HandleGetPasswordCardData(
     const base::Value::List& args) {
   AllowJavascript();
@@ -523,19 +458,8 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetPasswordCardData()));
-}
-
-base::Value::Dict SafetyHubHandler::GetPasswordCardData() {
-  PasswordStatusCheckService* service =
-      PasswordStatusCheckServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
-                                           signin::ConsentLevel::kSignin);
-
-  return service->GetPasswordCardData(signed_in);
+  ResolveJavascriptCallback(
+      callback_id, base::Value(safety_hub::GetPasswordCardData(profile_)));
 }
 
 void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
@@ -544,32 +468,8 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetVersionCardData()));
-}
-
-base::Value::Dict SafetyHubHandler::GetVersionCardData() {
-  base::Value::Dict result;
-  switch (g_browser_process->GetBuildState()->update_type()) {
-    case BuildState::UpdateType::kNone:
-      result.Set(safety_hub::kCardHeaderKey,
-                 l10n_util::GetStringUTF16(
-                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED));
-      result.Set(safety_hub::kCardSubheaderKey,
-                 VersionUI::GetAnnotatedVersionStringForUi());
-      result.Set(safety_hub::kCardStateKey,
-                 static_cast<int>(SafetyHubCardState::kSafe));
-      break;
-    case BuildState::UpdateType::kNormalUpdate:
-    // kEnterpriseRollback and kChannelSwitchRollback are fairly rare state,
-    // they will be handled same as there is waiting updates.
-    case BuildState::UpdateType::kEnterpriseRollback:
-    case BuildState::UpdateType::kChannelSwitchRollback:
-      result = CardDataToValue(
-          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART,
-          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART,
-          SafetyHubCardState::kWarning);
-  }
-  return result;
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(safety_hub::GetVersionCardData()));
 }
 
 void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
@@ -644,15 +544,15 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   std::set<SafetyHubModule> modules;
 
   // Passwords module
-  if (CardHasRecommendations(GetPasswordCardData())) {
+  if (CardHasRecommendations(safety_hub::GetPasswordCardData(profile_))) {
     modules.insert(SafetyHubModule::kPasswords);
   }
   // Version module
-  if (CardHasRecommendations(GetVersionCardData())) {
+  if (CardHasRecommendations(safety_hub::GetVersionCardData())) {
     modules.insert(SafetyHubModule::kVersion);
   }
   // SafeBrowsing module
-  if (CardHasRecommendations(GetSafeBrowsingCardData())) {
+  if (CardHasRecommendations(safety_hub::GetSafeBrowsingCardData(profile_))) {
     modules.insert(SafetyHubModule::kSafeBrowsing);
   }
   // Extensions module

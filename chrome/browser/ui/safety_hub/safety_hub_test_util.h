@@ -74,6 +74,19 @@ void RemoveExtension(const std::string& name,
 void AcknowledgeSafetyCheckExtensions(const std::string& name,
                                       Profile* profile);
 
+// Creates the service used for bulk leak checks.
+password_manager::BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
+    signin::IdentityManager* identity_manager,
+    Profile* profile);
+
+// Creates a form for the password manager with a given username, password and
+// origin. If |is_leaked| is set to |true|, the password will be considered a
+// leaked password.
+password_manager::PasswordForm MakeForm(base::StringPiece16 username,
+                                        base::StringPiece16 password,
+                                        std::string origin,
+                                        bool is_leaked = false);
+
 }  // namespace safety_hub_test_util
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_

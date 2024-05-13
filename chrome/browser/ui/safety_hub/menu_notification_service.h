@@ -91,6 +91,10 @@ class SafetyHubMenuNotificationService : public KeyedService {
   void DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType module);
 
+  // Returns the module of the notification that was last displayed to the user.
+  std::optional<safety_hub::SafetyHubModuleType>
+  GetLastShownNotificationModule() const;
+
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
       safety_hub::SafetyHubModuleType service_type);
@@ -146,6 +150,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
   // Registrar to record the pref changes to Safe Browsing.
   PrefChangeRegistrar registrar_;
+
+  // The module of the last notification that has been shown.
+  std::optional<safety_hub::SafetyHubModuleType> last_shown_module_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_
