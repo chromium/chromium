@@ -37,19 +37,36 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
       return nullptr;
   };
 
-  if (!navigation_request.IsInMainFrame() &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kViewTransitionOnNavigationForIframes)) {
-    return nullptr;
+  RenderFrameHostImpl* old_rfh =
+      navigation_request.frame_tree_node()->current_frame_host();
+
+  if (!navigation_request.IsInMainFrame()) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kViewTransitionOnNavigationForIframes)) {
+      return nullptr;
+    }
+
+    // We will not have a RFH if this navigation is not committing a new
+    // Document.
+    auto* new_rfh = navigation_request.GetRenderFrameHost();
+    if (!new_rfh) {
+      return nullptr;
+    }
+
+    // We don't have paint holding support for navigations from in-process to
+    // out-of-process iframes (or vice versa). Since ViewTransition requires
+    // paint holding, disable them for such navigations. This should be
+    // extremely rare for same-origin navigations.
+    if (old_rfh->is_local_root() != new_rfh->is_local_root()) {
+      return nullptr;
+    }
   }
 
   if (!navigation_request.ShouldDispatchPageSwapEvent()) {
     return nullptr;
   }
 
-  RenderFrameHostImpl* rfh =
-      navigation_request.frame_tree_node()->current_frame_host();
-  if (ViewTransitionOptInState::GetOrCreateForCurrentDocument(rfh)
+  if (ViewTransitionOptInState::GetOrCreateForCurrentDocument(old_rfh)
           ->same_origin_opt_in() ==
       blink::mojom::ViewTransitionSameOriginOptIn::kDisabled) {
     return nullptr;
@@ -59,7 +76,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
-  const url::Origin& current_request_origin = rfh->GetLastCommittedOrigin();
+  const url::Origin& current_request_origin = old_rfh->GetLastCommittedOrigin();
   const url::Origin& new_request_origin =
       navigation_request.is_running_potential_prerender_activation_checks()
           ? navigation_request.GetTentativeOriginAtRequestTime()
