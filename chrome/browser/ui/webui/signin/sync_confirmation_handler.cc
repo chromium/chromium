@@ -342,6 +342,7 @@ void SyncConfirmationHandler::OnScreenModeChanged(
 
 void SyncConfirmationHandler::OnDeadline() {
   if (!screen_mode_notified_) {
+    AllowJavascript();
     OnScreenModeChanged(SyncConfirmationScreenMode::kRestricted);
   }
 }
