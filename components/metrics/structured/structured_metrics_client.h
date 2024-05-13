@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_CLIENT_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-
+#include "build/buildflag.h"
 #include "components/metrics/structured/event.h"
 
 namespace metrics::structured {
@@ -16,7 +17,7 @@ namespace metrics::structured {
 //
 // It allows a delegate to be set to control the recording logic as different
 // embedders have different requirements (ie ash vs lacros).
-class StructuredMetricsClient {
+class COMPONENT_EXPORT(METRICS_STRUCTURED) StructuredMetricsClient {
  public:
   class RecordingDelegate {
    public:
@@ -33,12 +34,23 @@ class StructuredMetricsClient {
   StructuredMetricsClient& operator=(const StructuredMetricsClient& client) =
       delete;
 
+// Windows errors out with dllexport class cannot be applied to member of
+// dllexport class.
+#if BUILDFLAG(IS_WIN)
   // Provides access to global StructuredMetricsClient instance to record
   // metrics. This is typically used in the codegen.
   static StructuredMetricsClient* Get();
 
   // Records |event| using singleton from Get().
   static void Record(Event&& event);
+#else
+  // Provides access to global StructuredMetricsClient instance to record
+  // metrics. This is typically used in the codegen.
+  static COMPONENT_EXPORT(METRICS_STRUCTURED) StructuredMetricsClient* Get();
+
+  // Records |event| using singleton from Get().
+  static COMPONENT_EXPORT(METRICS_STRUCTURED) void Record(Event&& event);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes

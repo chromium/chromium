@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 
@@ -18,7 +19,7 @@ class TextInputClient;
 namespace ash {
 
 // Records metrics for a session of using Picker.
-class PickerSessionMetrics {
+class ASH_EXPORT PickerSessionMetrics {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

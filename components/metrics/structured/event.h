@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/metrics/structured/enums.h"
@@ -23,7 +24,7 @@ namespace metrics::structured {
 // Event to be built and sent by StructuredMetrics clients. Builder
 // classes will be codegen'd from metrics definitions in structured.xml, but
 // clients may choose to use this class directly to build Events.
-class Event {
+class COMPONENT_EXPORT(METRICS_STRUCTURED) Event {
  public:
   // There should be a 1-1 mapping between MetricType and the mojom enums.
   //
@@ -40,7 +41,7 @@ class Event {
   };
 
   // Holds the value and the type of the metric encoded.
-  struct MetricValue {
+  struct COMPONENT_EXPORT(METRICS_STRUCTURED) MetricValue {
     MetricValue() = default;
     MetricValue(MetricType type, base::Value value);
 
@@ -55,7 +56,7 @@ class Event {
   };
 
   // Special metadata if event is a sequence project.
-  struct EventSequenceMetadata {
+  struct COMPONENT_EXPORT(METRICS_STRUCTURED) EventSequenceMetadata {
     explicit EventSequenceMetadata(int reset_counter);
     ~EventSequenceMetadata();
 

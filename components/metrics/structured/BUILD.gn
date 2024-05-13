@@ -9,7 +9,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 # Structured metrics is subcomponent of UMA that gathers and reports structured
 # events with several attached metrics.
-static_library("structured") {
+source_set("structured") {
   sources = [
     "key_data_prefs_delegate.cc",
     "key_data_prefs_delegate.h",
@@ -55,7 +55,7 @@ static_library("structured") {
 }
 
 if (is_chromeos_ash) {
-  static_library("external_metrics") {
+  source_set("external_metrics") {
     sources = [
       "external_metrics.cc",
       "external_metrics.h",
@@ -69,7 +69,10 @@ if (is_chromeos_ash) {
   }
 }
 
-static_library("events") {
+component("events") {
+  output_name = "metrics_structured"
+  defines = [ "IS_METRICS_STRUCTURED_IMPL" ]
+
   sources = [
     "enums.h",
     "event.cc",
@@ -77,7 +80,10 @@ static_library("events") {
     "structured_metrics_client.cc",
     "structured_metrics_client.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+  ]
 }
 
 proto_library("proto") {
@@ -96,7 +102,7 @@ proto_library("proto") {
   link_deps = [ "//third_party/metrics_proto" ]
 }
 
-# Sources used by all static libraries in this BUILD file.
+# Sources used by all source sets in this BUILD file.
 source_set("common") {
   sources = [
     "delegating_events_processor.cc",
@@ -123,7 +129,7 @@ source_set("common") {
   ]
 }
 
-static_library("structured_metrics_features") {
+source_set("structured_metrics_features") {
   sources = [
     "structured_metrics_features.cc",
     "structured_metrics_features.h",
@@ -161,9 +167,8 @@ action("gen_structured_events") {
 }
 
 # TODO(b/309122738): Generate the events by platform.
-static_library("structured_events") {
+source_set("structured_events") {
   sources = get_target_outputs(":gen_structured_events")
-
   public_deps = [
     ":events",
     "//components/metrics/structured/buildflags",
@@ -212,7 +217,7 @@ action("gen_structured_metrics_validator") {
   }
 }
 
-static_library("structured_metrics_validator") {
+source_set("structured_metrics_validator") {
   sources = get_target_outputs(":gen_structured_metrics_validator") + [
               "event_validator.cc",
               "event_validator.h",
@@ -228,7 +233,7 @@ static_library("structured_metrics_validator") {
   ]
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
   sources = [
     "test/test_event_storage.cc",
@@ -240,6 +245,7 @@ static_library("test_support") {
     "test/test_structured_metrics_recorder.cc",
     "test/test_structured_metrics_recorder.h",
   ]
+
   deps = [
     ":structured",
     ":structured_metrics_validator",

@@ -111,12 +111,10 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   bool IsReadyToRecord() const override { return true; }
 };
 
-}  // namespace
-
-class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
+class TestSMRecorder : public StructuredMetricsRecorder {
  public:
-  TestStructuredMetricsRecorder(const base::FilePath& device_key_path,
-                                const base::FilePath& profile_key_path)
+  TestSMRecorder(const base::FilePath& device_key_path,
+                 const base::FilePath& profile_key_path)
       : StructuredMetricsRecorder(
             std::make_unique<TestKeyDataProvider>(device_key_path,
                                                   profile_key_path),
@@ -125,8 +123,6 @@ class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
         static_cast<TestKeyDataProvider*>(key_data_provider());
   }
 
-  using StructuredMetricsRecorder::StructuredMetricsRecorder;
-
   void OnProfileAdded(const base::FilePath& profile_path) {
     test_key_data_provider_->OnProfileAdded(profile_path);
   }
@@ -134,6 +130,8 @@ class TestStructuredMetricsRecorder : public StructuredMetricsRecorder {
  private:
   raw_ptr<TestKeyDataProvider> test_key_data_provider_;
 };
+
+}  // namespace
 
 class StructuredMetricsRecorderTest : public testing::Test {
  protected:
@@ -235,8 +233,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // user logging in.
   void Init() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ =
+        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -249,8 +247,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Enables recording without adding a profile.
   void InitWithoutLogin() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ =
+        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -259,8 +257,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Sets up StructuredMetricsRecorder.
   void InitWithoutEnabling() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
-        device_key_path_, profile_key_path_);
+    recorder_ =
+        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
   }
 
   bool is_initialized() { return recorder_->IsInitialized(); }
@@ -295,7 +293,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestStructuredMetricsRecorder> recorder_;
+  std::unique_ptr<TestSMRecorder> recorder_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
