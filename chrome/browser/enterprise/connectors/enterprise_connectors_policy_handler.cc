@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/enterprise_connectors_policy_handler.h"
 
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"

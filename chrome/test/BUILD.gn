@@ -3977,6 +3977,7 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/analysis:features",
           "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/enterprise/buildflags",
+          "//components/enterprise/connectors",
         ]
       }
       if (is_win || is_linux || is_mac || is_chromeos_ash) {
@@ -3984,12 +3985,12 @@ if (!is_android) {
 
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust:features",
-          "//chrome/browser/enterprise/connectors/device_trust:prefs",
           "//chrome/browser/enterprise/connectors/device_trust/common",
           "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
           "//components/device_signals/test:test_support",
+          "//components/enterprise/connectors",
         ]
       }
 
@@ -9839,7 +9840,6 @@ test("unit_tests") {
 
     deps += [
       "../browser/enterprise/connectors/device_trust:features",
-      "../browser/enterprise/connectors/device_trust:prefs",
       "../browser/enterprise/connectors/device_trust:test_support",
       "../browser/enterprise/connectors/device_trust/attestation/common",
       "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
@@ -9854,6 +9854,7 @@ test("unit_tests") {
       "//components/device_signals/core/common",
       "//components/device_signals/core/common:features",
       "//components/device_signals/core/common:unit_tests",
+      "//components/enterprise/connectors",
       "//services/data_decoder/public/cpp:test_support",
     ]
   }

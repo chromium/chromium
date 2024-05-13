@@ -7,12 +7,12 @@
 #include "base/command_line.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/channel_info.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/enterprise/connectors/connectors_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 

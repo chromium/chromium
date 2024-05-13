@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -50,4 +50,4 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_

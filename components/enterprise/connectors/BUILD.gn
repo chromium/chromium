@@ -8,11 +8,22 @@ assert(enterprise_content_analysis)
 
 source_set("connectors") {
   sources = [
+    "connectors_prefs.cc",
+    "connectors_prefs.h",
+    "device_trust/prefs.cc",
+    "device_trust/prefs.h",
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
 }
 
 source_set("unit_tests") {

@@ -10,14 +10,6 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
-source_set("prefs") {
-  sources = [ "prefs.cc" ]
-
-  public = [ "prefs.h" ]
-
-  deps = [ "//components/prefs" ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -39,7 +31,7 @@ source_set("test_support") {
 
   deps = [
     ":features",
-    ":prefs",
+    "//components/enterprise/connectors",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
