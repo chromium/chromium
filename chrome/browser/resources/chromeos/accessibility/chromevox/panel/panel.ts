@@ -632,7 +632,6 @@ export class Panel implements PanelInterface {
     this.tutorial_ = tutorialElement;
 
     // Add listeners. These are custom events fired from custom components.
-    const backgroundPage = chrome.extension.getBackgroundPage();
 
     const elementInPage = $('chromevox-tutorial');
     if (!elementInPage) {
@@ -662,11 +661,11 @@ export class Panel implements PanelInterface {
     });
     elementInPage.addEventListener('requestearcon', evt => {
       const earconId = (evt as CustomEvent).detail.earconId;
-      backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
+      BackgroundBridge.Earcons.playEarcon(earconId);
     });
     elementInPage.addEventListener('cancelearcon', evt => {
       const earconId = (evt as CustomEvent).detail.earconId;
-      backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
+      BackgroundBridge.Earcons.cancelEarcon(earconId);
     });
     elementInPage.addEventListener('readyfortesting', () => {
       this.tutorialReadyForTesting_ ||= true;
