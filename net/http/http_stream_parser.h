@@ -21,15 +21,16 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/base/upload_data_stream.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
 
 namespace net {
 
 class DrainableIOBuffer;
 class GrowableIOBuffer;
 class HttpChunkedDecoder;
-struct HttpRequestInfo;
 class HttpRequestHeaders;
 class HttpResponseInfo;
 class IOBuffer;
@@ -49,9 +50,14 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   //
   // It is not safe to call into the HttpStreamParser after destroying the
   // |stream_socket|.
+  //
+  // `upload_data_stream` must remain valid until the SendRequest() callback is
+  // invoked or the HttpStreamParser has been destroyed.
   HttpStreamParser(StreamSocket* stream_socket,
                    bool connection_is_reused,
-                   const HttpRequestInfo* request,
+                   const GURL& url,
+                   const std::string& method,
+                   UploadDataStream* upload_data_stream,
                    GrowableIOBuffer* read_buffer,
                    const NetLogWithSource& net_log);
 
@@ -95,6 +101,9 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
 
   // Called when stream is closed.
   void OnConnectionClose();
+
+  const GURL& url() { return url_; }
+  const std::string& method() { return method_; }
 
   int64_t received_bytes() const { return received_bytes_; }
 
@@ -210,8 +219,11 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // Next state of the request, when the current one completes.
   State io_state_ = STATE_NONE;
 
-  // Null when read state machine is invoked.
-  raw_ptr<const HttpRequestInfo> request_;
+  const GURL url_;
+  const std::string method_;
+
+  // Only non-null while writing the request headers and body.
+  raw_ptr<UploadDataStream> upload_data_stream_;
 
   // The request header data.  May include a merged request body.
   scoped_refptr<DrainableIOBuffer> request_headers_;

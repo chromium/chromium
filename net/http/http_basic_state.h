@@ -85,9 +85,6 @@ class NET_EXPORT_PRIVATE HttpBasicState {
 
   const bool is_for_get_to_http_proxy_;
 
-  GURL url_;
-  std::string request_method_;
-
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 };
 

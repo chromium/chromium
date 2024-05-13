@@ -34,12 +34,11 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
                                 RequestPriority priority,
                                 const NetLogWithSource& net_log) {
   DCHECK(!parser_.get());
-  url_ = request_info->url;
   traffic_annotation_ = request_info->traffic_annotation;
-  request_method_ = request_info->method;
   parser_ = std::make_unique<HttpStreamParser>(
-      connection_->socket(), connection_->is_reused(), request_info,
-      read_buf_.get(), net_log);
+      connection_->socket(), connection_->is_reused(), request_info->url,
+      request_info->method, request_info->upload_data_stream, read_buf_.get(),
+      net_log);
 }
 
 std::unique_ptr<ClientSocketHandle> HttpBasicState::ReleaseConnection() {
@@ -56,14 +55,14 @@ std::string HttpBasicState::GenerateRequestLine() const {
   static const char kSuffix[] = " HTTP/1.1\r\n";
   const size_t kSuffixLen = std::size(kSuffix) - 1;
   const std::string path = is_for_get_to_http_proxy_
-                               ? HttpUtil::SpecForRequest(url_)
-                               : url_.PathForRequest();
+                               ? HttpUtil::SpecForRequest(parser_->url())
+                               : parser_->url().PathForRequest();
   // Don't use StringPrintf for concatenation because it is very inefficient.
   std::string request_line;
   const size_t expected_size =
-      request_method_.size() + 1 + path.size() + kSuffixLen;
+      parser_->method().size() + 1 + path.size() + kSuffixLen;
   request_line.reserve(expected_size);
-  request_line.append(request_method_);
+  request_line.append(parser_->method());
   request_line.append(1, ' ');
   request_line.append(path);
   request_line.append(kSuffix, kSuffixLen);
