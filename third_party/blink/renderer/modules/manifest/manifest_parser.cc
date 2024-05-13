@@ -2322,7 +2322,8 @@ std::optional<RGBA32> ManifestParser::ParseDarkColorOverride(
       continue;
     }
 
-    auto tokens = CSSTokenizer(media_query.value()).TokenizeToEOF();
+    CSSTokenizer tokenizer(media_query.value());
+    auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     while (!range.AtEnd()) {
       if (range.Peek().GetType() == kIdentToken &&
