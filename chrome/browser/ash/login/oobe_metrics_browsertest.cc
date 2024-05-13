@@ -173,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PageSkipped) {
   ValidateEventRecorded(page_skipped_event);
 }
 
-IN_PROC_BROWSER_TEST_F(OobeMetricsTest, SignInEvents) {
+// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, DISABLED_SignInEvents) {
   // `login_manager_mixin_.LoginAsNewRegularUser()` can not be used in this test
   // since a simulation of login steps are required to get Sign-in events
   // recorded.
