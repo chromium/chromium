@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
+#include "components/android_autofill/browser/android_form_event_logger.h"
 
 #include "base/containers/enum_set.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,42 +18,42 @@ using base::UmaHistogramBoolean;
 
 namespace autofill {
 
-FormEventLoggerWeblayerAndroid::FormEventLoggerWeblayerAndroid(
+AndroidFormEventLogger::AndroidFormEventLogger(
     const std::string& form_type_name)
     : form_type_name_(form_type_name) {}
 
-FormEventLoggerWeblayerAndroid::~FormEventLoggerWeblayerAndroid() {
+AndroidFormEventLogger::~AndroidFormEventLogger() {
   RecordFunnelAndKeyMetrics();
 }
 
-void FormEventLoggerWeblayerAndroid::OnDidParseForm() {
+void AndroidFormEventLogger::OnDidParseForm() {
   has_parsed_form_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::OnDidInteractWithAutofillableForm() {
+void AndroidFormEventLogger::OnDidInteractWithAutofillableForm() {
   has_logged_interacted_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::OnDidFillSuggestion() {
+void AndroidFormEventLogger::OnDidFillSuggestion() {
   has_logged_suggestion_filled_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::OnWillSubmitForm() {
+void AndroidFormEventLogger::OnWillSubmitForm() {
   if (!has_logged_interacted_) {
     return;
   }
   has_logged_will_submit_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::OnTypedIntoNonFilledField() {
+void AndroidFormEventLogger::OnTypedIntoNonFilledField() {
   has_logged_typed_into_non_filled_field_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::OnEditedAutofilledField() {
+void AndroidFormEventLogger::OnEditedAutofilledField() {
   has_logged_edited_autofilled_field_ = true;
 }
 
-void FormEventLoggerWeblayerAndroid::RecordFunnelAndKeyMetrics() {
+void AndroidFormEventLogger::RecordFunnelAndKeyMetrics() {
   UmaHistogramBoolean("Autofill.WebView.Funnel.ParsedAsType." + form_type_name_,
                       has_parsed_form_);
   // Log chronological funnel.

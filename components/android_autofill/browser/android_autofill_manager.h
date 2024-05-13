@@ -20,7 +20,7 @@
 namespace autofill {
 
 class AutofillProvider;
-class FormEventLoggerWeblayerAndroid;
+class AndroidFormEventLogger;
 
 // This class forwards AutofillManager calls to AutofillProvider.
 class AndroidAutofillManager : public AutofillManager,
@@ -119,22 +119,20 @@ class AndroidAutofillManager : public AutofillManager,
   void StartNewLoggingSession();
 
   // Returns logger associated with the passed-in `form` and `field`.
-  FormEventLoggerWeblayerAndroid* GetEventFormLogger(
-      const FormData& form,
-      const FormFieldData& field);
+  AndroidFormEventLogger* GetEventFormLogger(const FormData& form,
+                                             const FormFieldData& field);
 
   // Returns logger associated with the passed-in `field_type_group`.
-  FormEventLoggerWeblayerAndroid* GetEventFormLogger(
-      FieldTypeGroup field_type_group);
+  AndroidFormEventLogger* GetEventFormLogger(FieldTypeGroup field_type_group);
 
   // Returns logger associated with the passed-in `form_type`.
-  FormEventLoggerWeblayerAndroid* GetEventFormLogger(FormType form_type);
+  AndroidFormEventLogger* GetEventFormLogger(FormType form_type);
 
   // The forms that have received server predictions.
   base::flat_set<FormGlobalId> forms_with_server_predictions_;
-  std::unique_ptr<FormEventLoggerWeblayerAndroid> address_logger_;
-  std::unique_ptr<FormEventLoggerWeblayerAndroid> payments_logger_;
-  std::unique_ptr<FormEventLoggerWeblayerAndroid> password_logger_;
+  std::unique_ptr<AndroidFormEventLogger> address_logger_;
+  std::unique_ptr<AndroidFormEventLogger> payments_logger_;
+  std::unique_ptr<AndroidFormEventLogger> password_logger_;
 
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       autofill_manager_observation{this};

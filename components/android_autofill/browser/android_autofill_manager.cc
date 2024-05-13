@@ -12,8 +12,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "components/android_autofill/browser/android_form_event_logger.h"
 #include "components/android_autofill/browser/autofill_provider.h"
-#include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/render_frame_host.h"
@@ -220,25 +220,23 @@ void AndroidAutofillManager::FillOrPreviewForm(
 }
 
 void AndroidAutofillManager::StartNewLoggingSession() {
-  address_logger_ = std::make_unique<FormEventLoggerWeblayerAndroid>("Address");
-  payments_logger_ =
-      std::make_unique<FormEventLoggerWeblayerAndroid>("CreditCard");
-  password_logger_ =
-      std::make_unique<FormEventLoggerWeblayerAndroid>("Password");
+  address_logger_ = std::make_unique<AndroidFormEventLogger>("Address");
+  payments_logger_ = std::make_unique<AndroidFormEventLogger>("CreditCard");
+  password_logger_ = std::make_unique<AndroidFormEventLogger>("Password");
 }
 
-FormEventLoggerWeblayerAndroid* AndroidAutofillManager::GetEventFormLogger(
+AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     const FormData& form,
     const FormFieldData& field) {
   return GetEventFormLogger(ComputeFieldTypeGroupForField(form, field));
 }
 
-FormEventLoggerWeblayerAndroid* AndroidAutofillManager::GetEventFormLogger(
+AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     FieldTypeGroup group) {
   return GetEventFormLogger(FieldTypeGroupToFormType(group));
 }
 
-FormEventLoggerWeblayerAndroid* AndroidAutofillManager::GetEventFormLogger(
+AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     FormType form_type) {
   switch (form_type) {
     case FormType::kAddressForm:

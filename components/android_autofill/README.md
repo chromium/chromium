@@ -5,7 +5,7 @@ Autofill providers, such as the
 [Android Autofill framework](https://developer.android.com/guide/topics/text/autofill).
 
 It is used exclusively by the [`//android_webview`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/)
-embedder (and some deprecated uses inside of Weblayer).
+embedder.
 
 # High-level architecture
 

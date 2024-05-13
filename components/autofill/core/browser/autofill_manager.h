@@ -52,7 +52,7 @@ class TouchToFillDelegateAndroidImpl;
 // implementation in browser side to interact with AutofillDriver.
 //
 // AutofillManager has two implementations:
-// - AndroidAutofillManager for WebView and WebLayer,
+// - AndroidAutofillManager for WebView,
 // - BrowserAutofillManager for Chrome.
 //
 // It is owned by the AutofillDriver.

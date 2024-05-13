@@ -129,10 +129,10 @@ static_library("browser") {
   sources = [
     "android_autofill_manager.cc",
     "android_autofill_manager.h",
+    "android_form_event_logger.cc",
+    "android_form_event_logger.h",
     "autofill_provider.cc",
     "autofill_provider.h",
-    "form_event_logger_weblayer_android.cc",
-    "form_event_logger_weblayer_android.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [

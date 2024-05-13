@@ -844,7 +844,7 @@ void AutofillAgent::ClearPreviewedForm() {
   if (last_queried_element.IsNull()) {
     return;
   }
-  // `password_generation_agent_` can be null in android_webview & weblayer.
+  // `password_generation_agent_` can be null in WebView.
   // TODO(b/326213028): Clear fields previewed by `PasswordGenerationAgent`
   // directly using `PasswordGenerationAgent`.
   if (password_generation_agent_) {
