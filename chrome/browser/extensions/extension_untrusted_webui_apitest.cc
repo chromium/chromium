@@ -122,14 +122,15 @@ class ExtensionUntrustedWebUITest : public ExtensionApiTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ExtensionUntrustedWebUITest, SanityCheckAvailableAPIs) {
-  RunTestOnApiTestPage("sanity_check_available_apis.js");
+IN_PROC_BROWSER_TEST_F(ExtensionUntrustedWebUITest,
+                       ConfidenceCheckAvailableAPIs) {
+  RunTestOnApiTestPage("confidence_check_available_apis.js");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionUntrustedWebUITest,
-                       SanityCheckAvailableAPIsReadAnything) {
+                       ConfidenceCheckAvailableAPIsReadAnything) {
   ASSERT_TRUE(RunTestOnReadAnythingPage(
-      "sanity_check_available_apis_read_anything.js"));
+      "confidence_check_available_apis_read_anything.js"));
 }
 
 // Tests that we can call a function that send a message to the browser and

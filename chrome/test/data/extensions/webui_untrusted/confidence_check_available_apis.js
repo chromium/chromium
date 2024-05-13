@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // out/Debug/browser_tests \
-//    --gtest_filter=ExtensionUntrustedWebUITest.SanityCheckAvailableAPIs
+//    --gtest_filter=ExtensionUntrustedWebUITest.ConfidenceCheckAvailableAPIs
 
 // There should be a limited number of chrome.* APIs available to untrusted
-// WebUIs. Sanity check them here.
+// WebUIs. Confidence check them here.
 //
 // NOTE: Of course, update this list if/when more APIs are made available.
 

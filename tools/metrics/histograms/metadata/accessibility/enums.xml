@@ -1373,6 +1373,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Theme change"/>
   <int value="3" label="Line height change"/>
   <int value="4" label="Letter spacing change"/>
+  <int value="5" label="Links enabled change"/>
 </enum>
 
 <enum name="ReadAnythingSpeechError">
