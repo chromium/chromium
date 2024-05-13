@@ -41,6 +41,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationEligibilityType">
+  <int value="0" label="Content Notification Top of Feed Promo is enabled."/>
+  <int value="1" label="Content Notification Provisional is enabled."/>
+  <int value="2" label="Content Notification Set Up List Promo is enabled."/>
+  <int value="3" label="Content Notification Top of Feed Promo is registered."/>
+  <int value="4" label="Content Notification Provisional is registered."/>
+  <int value="5" label="Content Notification Set Up List Promo is registered."/>
+</enum>
+
 <enum name="ContentNotificationPromoProvisionalEntrypoint">
   <int value="0" label="Promo dismissed from close button."/>
   <int value="1" label="Promo shown threshold exceeded."/>

@@ -153,6 +153,17 @@ chromium-metrics-reviews@google.com.
   <summary>The status of the push notifications client for Content.</summary>
 </histogram>
 
+<histogram name="ContentNotifications.EligibilityType"
+    enum="ContentNotificationEligibilityType" expires_after="2024-12-20">
+  <owner>tinazwang@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The Type of elegibility for a given user for the Content Notifications
+    feature. Includes details about what UI entrypoint type the user is elegible
+    for as well as whether they are in the control group for that entrypoint.
+  </summary>
+</histogram>
+
 <histogram name="ContentNotifications.OpenURLAction.HasURL" enum="Boolean"
     expires_after="2024-10-10">
   <owner>guiperez@google.com</owner>
