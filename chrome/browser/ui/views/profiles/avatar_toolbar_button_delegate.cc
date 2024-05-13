@@ -1187,7 +1187,10 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kShowIdentityName:
-      text = GetShortProfileName();
+      text = switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+                 ? l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                              GetShortProfileName())
+                 : GetShortProfileName();
       break;
     case ButtonState::kExplicitTextShowing: {
       const internal::ExplicitStateProvider* explicit_state =

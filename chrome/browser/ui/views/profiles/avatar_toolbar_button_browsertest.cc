@@ -550,6 +550,17 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 }
 #endif
 
+class AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin
+    : public base::test::WithFeatureOverride,
+      public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin()
+      : base::test::WithFeatureOverride(
+            switches::kExplicitBrowserSigninUIOnDesktop) {}
+
+  bool is_explicit_browser_signin() const { return IsParamFeatureEnabled(); }
+};
+
 // TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
 // TODO(b/331746545): Check windows issues with time duration/delays.
 #if BUILDFLAG(IS_WIN)
@@ -557,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 #else
 #define MAYBE_ShowNameOnSignin_ThenSync ShowNameOnSignin_ThenSync
 #endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
                        MAYBE_ShowNameOnSignin_ThenSync) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
@@ -570,9 +581,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // The button is in a waiting for image state, the name is not yet displayed.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 
-  // The name will only show when the image is loaded.
+  // The greeting will only show when the image is loaded.
   AddSignedInImage(account_info.account_id);
-  EXPECT_EQ(avatar_button->GetText(), name);
+  EXPECT_EQ(avatar_button->GetText(),
+            is_explicit_browser_signin()
+                ? l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name)
+                : name);
 
   observer.WaitForShowNameEnded();
   // Once the name is not shown anymore, we expect no text.
@@ -590,7 +604,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 #else
 #define MAYBE_ShowNameOnSync ShowNameOnSync
 #endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
+                       MAYBE_ShowNameOnSync) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -602,9 +617,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
   // The button is in a waiting for image state, the name is not yet displayed.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 
-  // The name will only show when the image is loaded.
+  // The greeting will only show when the image is loaded.
   AddSignedInImage(account_info.account_id);
-  EXPECT_EQ(avatar_button->GetText(), name);
+  EXPECT_EQ(avatar_button->GetText(),
+            is_explicit_browser_signin()
+                ? l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name)
+                : name);
 
   observer.WaitForShowNameEnded();
   // Once the name is not shown anymore, we expect no text.
@@ -614,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
 // Check www.crbug.com/331499330: This test makes sure that no states attempt to
 // request an update during their construction. But rather do so after all the
 // states are created and the view is added to the Widget.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin,
                        DISABLED_OpenNewBrowserWhileNameIsShown) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
@@ -630,9 +648,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // The button is in a waiting for image state, the name is not yet displayed.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 
-  // The name will only show when the image is loaded.
+  // The greeting will only show when the image is loaded.
   AddSignedInImage(account_info.account_id);
-  EXPECT_EQ(avatar_button->GetText(), name);
+  EXPECT_EQ(avatar_button->GetText(),
+            is_explicit_browser_signin()
+                ? l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name)
+                : name);
 
   ASSERT_TRUE(GetIdentityManager()->AreRefreshTokensLoaded());
   // Increase the text duration length to accommodate for the browser creation
@@ -645,6 +666,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   // Name is expected to be shown while it is still shown on the first browser.
   EXPECT_EQ(new_avatar_button->GetText(), name);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AvatarToolbarButtonBrowserTestWithExplicitBrowserSignin);
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        DISABLED_ShowNameDoesNotAppearOnNewBrowserIfNotShowing) {
