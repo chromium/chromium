@@ -102,7 +102,7 @@ public class AppHeaderCoordinatorBrowserTest {
         Resources res = mActivityTestRule.getActivity().getResources();
         int tabStripHeight = res.getDimensionPixelSize(R.dimen.tab_strip_height);
         int reservedStripTopPadding =
-                res.getDimensionPixelOffset(R.dimen.tab_strip_reserved_top_padding);
+                res.getDimensionPixelSize(R.dimen.tab_strip_reserved_top_padding);
         mTestAppHeaderHeight = tabStripHeight + reservedStripTopPadding;
     }
 

@@ -45,9 +45,11 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
@@ -82,6 +84,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Rule public Features.JUnitProcessor mFeatures = new JUnitProcessor();
 
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Mock private ControlContainer mControlContainer;
     @Mock private ViewResourceAdapter mViewResourceAdapter;
     @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
@@ -91,8 +94,6 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
-    // private TestDesktopWindowStateProvider mDesktopWindowStateProvider =
-    //         new TestDesktopWindowStateProvider();
     private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestObserver mObserver;
     private int mReservedTopPadding;
@@ -130,9 +131,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         doAnswer(invocationOnMock -> mTopControlsContentOffset)
                 .when(mBrowserControlsVisibilityManager)
                 .getContentOffset();
-        doReturn(true)
+        doReturn(mVisibilityDelegate)
                 .when(mBrowserControlsVisibilityManager)
-                .shouldAnimateBrowserControlsHeightChanges();
+                .getBrowserVisibilityDelegate();
+        doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
 
         // Setup other mocks.
         doAnswer((arg) -> mAppHeaderState).when(mDesktopWindowStateProvider).getAppHeaderState();
@@ -193,11 +195,16 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void hideTabStripWithAnimationDisabled() {
-        // Simulate top controls size change from browser.
-        doReturn(false)
-                .when(mBrowserControlsVisibilityManager)
-                .shouldAnimateBrowserControlsHeightChanges();
+    public void hideTabStripWithForceBrowserControlShown() {
+        doReturn(BrowserControlsState.SHOWN).when(mVisibilityDelegate).get();
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
+        assertTabStripHeightForMargins(0);
+        assertObservedHeight(0);
+    }
+
+    @Test
+    public void hideTabStripWithForceBrowserControlHidden() {
+        doReturn(BrowserControlsState.HIDDEN).when(mVisibilityDelegate).get();
         setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -301,12 +308,19 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "w320dp")
-    public void showTabStripWithAnimationDisabled() {
+    public void showTabStripWithBrowserControlForceShown() {
         settleTransitionDuringInitForNarrowWindow();
-        // Simulate top controls size change from browser.
-        doReturn(false)
-                .when(mBrowserControlsVisibilityManager)
-                .shouldAnimateBrowserControlsHeightChanges();
+        doReturn(BrowserControlsState.SHOWN).when(mVisibilityDelegate).get();
+        setDeviceWidthDp(600);
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+        assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
+    }
+
+    @Test
+    @Config(qualifiers = "w320dp")
+    public void showTabStripWithBrowserControlForceHidden() {
+        settleTransitionDuringInitForNarrowWindow();
+        doReturn(BrowserControlsState.HIDDEN).when(mVisibilityDelegate).get();
         setDeviceWidthDp(600);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
