@@ -52,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(ArcIntegrationTest, CreateWindow) {
       arc_mixin().LaunchAndWaitForWindow(kPackage, kActivity);
   ASSERT_NE(window, nullptr);
 
-  int window_app_type = window->GetProperty(chromeos::kAppTypeKey);
+  chromeos::AppType window_app_type =
+      window->GetProperty(chromeos::kAppTypeKey);
   EXPECT_EQ(window_app_type, chromeos::AppType::ARC_APP);
 }
