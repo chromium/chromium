@@ -926,6 +926,10 @@ omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
   if (type == AutocompleteMatchType::HISTORY_CLUSTER)
     return omnibox::GROUP_HISTORY_CLUSTER;
 
+  if (type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+    return omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
+  }
+
   return omnibox::GROUP_OTHER_NAVS;
 }
 
@@ -1446,11 +1450,6 @@ int AutocompleteMatch::GetSortingOrder() const {
   if (omnibox_feature_configs::ShortcutBoosting::Get().group_with_searches &&
       shortcut_boosted) {
     return 2;
-  }
-  // IPH message always appears at the bottom of the Omnibox, after all other
-  // suggestions.
-  if (type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    return 5;
   }
   return 4;
 }

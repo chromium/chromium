@@ -416,8 +416,18 @@ void AutocompleteResult::SortAndCull(
             NOTREACHED();
         }
       } else if (omnibox::IsNTPPage(page_classification)) {
-        sections.push_back(
-            std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
+        // IPH is shown for NTP ZPS in the Omnibox only.  If it is shown, reduce
+        // the limit of the normal NTP ZPS Section to make room for the IPH.
+        bool add_iph_section =
+            OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+            page_classification != OmniboxEventProto::NTP_REALBOX;
+        sections.push_back(std::make_unique<DesktopNTPZpsSection>(
+            suggestion_groups_map_, add_iph_section ? 7u : 8u));
+        if (add_iph_section) {
+          sections.push_back(std::make_unique<DesktopNTPZpsIPHSection>(
+              suggestion_groups_map_));
+        }
+
         // Allow secondary zero-prefix suggestions in the NTP realbox or the
         // WebUI omnibox popup.
         // TODO(crbug.com/40062053): Disallow secondary zps in the WebUI omnibox

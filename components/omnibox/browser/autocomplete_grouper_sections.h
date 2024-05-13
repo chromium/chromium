@@ -138,12 +138,22 @@ class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
 };
 
 // Section expressing the Desktop ZPS limits and grouping for the NTP.
-// - up to 8 suggestions total.
+// - up to 8 suggestions total or 7 total if the ZPS IPH is enabled (the 8th
+// suggestion being the IPH).
 //  - up to 8 personalized suggestions.
 //  - up to 8 trending search suggestions.
 class DesktopNTPZpsSection : public ZpsSection {
  public:
-  explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
+                                size_t limit);
+};
+
+// Section expressing the Desktop ZPS limits and grouping for the IPH suggestion
+// on the NTP.
+// - Up to 1 IPH suggestion total
+class DesktopNTPZpsIPHSection : public ZpsSection {
+ public:
+  explicit DesktopNTPZpsIPHSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the Desktop secondary ZPS limits and grouping for the NTP.

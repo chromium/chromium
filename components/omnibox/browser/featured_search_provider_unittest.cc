@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -141,6 +142,9 @@ TEST_F(FeaturedSearchProviderTest, NonAtPrefix) {
 }
 
 TEST_F(FeaturedSearchProviderTest, DoesNotSupportMatchesOnFocus) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(omnibox::kStarterPackIPH);
+
   AutocompleteInput input(u"@tabs", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
@@ -293,5 +297,33 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
       {kFeaturedKeyword1, {kFeaturedUrl1}},
   };
 
+  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+}
+
+TEST_F(FeaturedSearchProviderTest, ZeroSuggestIPHSuggestion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kStarterPackIPH);
+
+  // "Focus" omnibox with zero input to put us in Zero suggest mode.
+  AutocompleteInput input;
+  input.set_focus_type(metrics::INTERACTION_FOCUS);
+
+  // Run the provider, there should be one match of type `NULL_RESULT_MESSAGE`.
+  provider_->Start(input, false);
+  ACMatches matches = provider_->matches();
+  EXPECT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches[0].type, AutocompleteMatchType::NULL_RESULT_MESSAGE);
+
+  // Not in ZPS, the IPH should not be provided.
+  input.set_focus_type(metrics::INTERACTION_DEFAULT);
+  provider_->Start(input, false);
+  matches = provider_->matches();
+  EXPECT_EQ(matches.size(), 0u);
+
+  // "@" state - Confirm expected starter pack is still shown but no ZPS.
+  AddStarterPackEntriesToTemplateUrlService();
+  TestData typing_scheme_cases[] = {
+      // Typing '@' should give all the starter pack suggestions, and no IPH.
+      {u"@", {kBookmarksUrl, kAskGoogleUrl, kHistoryUrl, kTabsUrl}}};
   RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }

@@ -47,19 +47,23 @@ FeaturedSearchProvider::FeaturedSearchProvider(
 void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
   matches_.clear();
+
+  // In zero suggest, show an informational IPH message.  All other
+  // FeaturedSearchProvider suggestions require a non-empty input, so it's safe
+  // to return early in zps.
+  if (input.IsZeroSuggest()) {
+    if (OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
+      AddIPHMatch();
+    }
+    return;
+  }
+
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
     return;
   }
 
   DoStarterPackAutocompletion(input);
-
-  // TODO(crbug.com/333762301): Implement smarter triggering for the IPH match.
-  //  As is, the IPH message will always be displayed. This might make sense to
-  //  move to the ZPS provider.
-  if (OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
-    AddIPHMatch();
-  }
 }
 
 FeaturedSearchProvider::~FeaturedSearchProvider() = default;

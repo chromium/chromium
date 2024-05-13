@@ -216,11 +216,20 @@ AndroidWebZpsSection::AndroidWebZpsSection(
           group_configs) {}
 
 DesktopNTPZpsSection::DesktopNTPZpsSection(
-    omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
+    omnibox::GroupConfigMap& group_configs,
+    size_t limit)
+    : ZpsSection(limit,
                  {
                      {8, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
                      {8, omnibox::GROUP_TRENDS},
+                 },
+                 group_configs) {}
+
+DesktopNTPZpsIPHSection::DesktopNTPZpsIPHSection(
+    omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(1,
+                 {
+                     {1, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP},
                  },
                  group_configs) {}
 
