@@ -326,7 +326,7 @@ TetherNotificationPresenter::CreateNotification(
           base::BindRepeating(
               &TetherNotificationPresenter::OnNotificationClosed,
               weak_ptr_factory_.GetWeakPtr(), id)));
-  notification->set_small_image(gfx::Image(small_image));
+  notification->SetSmallImage(gfx::Image(small_image));
   if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
     notification->set_never_timeout(true);
   }

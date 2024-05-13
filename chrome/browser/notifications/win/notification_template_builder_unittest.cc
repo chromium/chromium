@@ -371,7 +371,7 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
 
   notification.set_icon(
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(icon)));
-  notification.set_image(gfx::Image::CreateFrom1xBitmap(icon));
+  notification.SetImage(gfx::Image::CreateFrom1xBitmap(icon));
 
   std::vector<message_center::ButtonInfo> buttons;
   message_center::ButtonInfo button(u"Button1");

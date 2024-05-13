@@ -358,7 +358,7 @@ void NotificationDisplayClient::AddOrUpdate(
 
   if (const gfx::ImageSkia& image = display_metadata.image;
       !image.isNull() && !image.size().IsEmpty()) {
-    notification.set_image(GetNotificationImage(image));
+    notification.SetImage(GetNotificationImage(image));
     notification.set_image_path(display_metadata.file_path);
   }
 

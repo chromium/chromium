@@ -5169,6 +5169,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.ImageMemorySizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification images on the 1.0 scale factor.
+    Emitted when setting a notification's image.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
     expires_after="2024-11-03">
   <owner>leandre@chromium.org</owner>
@@ -5188,6 +5198,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a notification is removed due to the number of notifications
     reaching the limit.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.SmallImageMemorySizeInKB" units="KB"
+    expires_after="2024-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the memory size in KB of notification small images on the 1.0 scale
+    factor. Emitted when setting a notification's small image.
   </summary>
 </histogram>
 

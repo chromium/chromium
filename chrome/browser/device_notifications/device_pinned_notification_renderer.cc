@@ -126,8 +126,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
                                  notification_id),
 #endif
       data, std::move(delegate));
-  notification->set_small_image(
-      gfx::Image(device_system_tray_icon_->GetIcon()));
+  notification->SetSmallImage(gfx::Image(device_system_tray_icon_->GetIcon()));
   notification->set_pinned(true);
   // Set to low priority so it doesn't create a popup.
   notification->set_priority(message_center::LOW_PRIORITY);

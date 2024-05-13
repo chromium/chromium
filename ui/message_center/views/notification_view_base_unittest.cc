@@ -226,8 +226,8 @@ NotificationViewBaseTest::CreateSimpleNotificationWithRichData(
       ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(),
       NotifierId(NotifierType::APPLICATION, "extension_id"), data, delegate_);
-  notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
-  notification->set_image(gfx::test::CreateImage(320, 240));
+  notification->SetSmallImage(gfx::test::CreateImage(/*size=*/16));
+  notification->SetImage(gfx::test::CreateImage(320, 240));
 
   return notification;
 }
@@ -362,7 +362,7 @@ TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
   EXPECT_NE(nullptr, notification_view()->image_container_view_);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_image(gfx::Image());
+  notification->SetImage(gfx::Image());
   notification->set_title(std::u16string());
   notification->set_message(std::u16string());
   notification->set_icon(ui::ImageModel());
@@ -887,7 +887,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
 TEST_F(NotificationViewBaseTest, NotificationWithoutIcon) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_icon(ui::ImageModel());
-  notification->set_image(gfx::Image());
+  notification->SetImage(gfx::Image());
   UpdateNotificationViews(*notification);
 
   // If the notification has no icon, |icon_view_| shouldn't be created.
@@ -906,7 +906,7 @@ TEST_F(NotificationViewBaseTest, UpdateAddingIcon) {
   // Create a notification without an icon.
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_icon(ui::ImageModel());
-  notification->set_image(gfx::Image());
+  notification->SetImage(gfx::Image());
   UpdateNotificationViews(*notification);
 
   // Update the notification, adding an icon.
@@ -1137,8 +1137,8 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
       u"message",
       ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(), notifier_id, data, delegate_);
-  notification->set_small_image(gfx::Image::CreateFrom1xBitmap(small_bitmap));
-  notification->set_image(gfx::test::CreateImage(320, 240));
+  notification->SetSmallImage(gfx::Image::CreateFrom1xBitmap(small_bitmap));
+  notification->SetImage(gfx::test::CreateImage(320, 240));
 
   notification->set_origin_url(web_app_url);
 

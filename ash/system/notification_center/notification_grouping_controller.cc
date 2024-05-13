@@ -298,7 +298,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
         parent_notification.delegate()->GetDelegateForParentCopy());
   }
   copy->set_vector_small_image(parent_notification.parent_vector_small_image());
-  copy->set_small_image(parent_notification.small_image());
+  copy->SetSmallImage(parent_notification.small_image());
 
   if (parent_notification.accent_color_id().has_value()) {
     copy->set_accent_color_id(parent_notification.accent_color_id().value());

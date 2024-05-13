@@ -225,10 +225,10 @@ class AshNotificationViewTestBase : public AshTestBase,
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, delegate_);
-    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
+    notification->SetSmallImage(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(gfx::test::CreateImage(320, 240));
+      notification->SetImage(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(
@@ -257,10 +257,10 @@ class AshNotificationViewTestBase : public AshTestBase,
         ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
         u"display source", GURL(u"http://test-url.com"), notifier_id,
         rich_notification_data, delegate_);
-    notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
+    notification->SetSmallImage(gfx::test::CreateImage(/*size=*/16));
 
     if (has_image) {
-      notification->set_image(gfx::test::CreateImage(320, 240));
+      notification->SetImage(gfx::test::CreateImage(320, 240));
     }
 
     message_center::MessageCenter::Get()->AddNotification(

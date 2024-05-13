@@ -64,7 +64,7 @@ class NotificationBuilder {
   Notification GetResult() { return notification_; }
 
   NotificationBuilder& SetImage(const gfx::Image& image) {
-    notification_.set_image(image);
+    notification_.SetImage(image);
     return *this;
   }
 

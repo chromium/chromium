@@ -511,17 +511,17 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
 
   if (!notification_resources.image.drawsNothing()) {
     notification.set_type(message_center::NOTIFICATION_TYPE_IMAGE);
-    notification.set_image(
+    notification.SetImage(
         gfx::Image::CreateFrom1xBitmap(notification_resources.image));
   }
 
   if (web_app_icon_and_title && !web_app_icon_and_title->icon.isNull())
-    notification.set_small_image(gfx::Image(web_app_icon_and_title->icon));
+    notification.SetSmallImage(gfx::Image(web_app_icon_and_title->icon));
 
   // TODO(peter): Handle different screen densities instead of always using the
   // 1x bitmap - crbug.com/585815.
   if (!notification_resources.badge.isNull()) {
-    notification.set_small_image(
+    notification.SetSmallImage(
         gfx::Image::CreateFrom1xBitmap(notification_resources.badge));
   }
 

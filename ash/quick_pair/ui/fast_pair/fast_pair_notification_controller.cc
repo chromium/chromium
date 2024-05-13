@@ -194,7 +194,7 @@ void FastPairNotificationController::ShowErrorNotification(
   error_notification->set_delegate(base::MakeRefCounted<NotificationDelegate>(
       /*on_primary_click=*/launch_bluetooth_pairing,
       /*on_close=*/std::move(on_close)));
-  error_notification->set_image(device_image);
+  error_notification->SetImage(device_image);
 
   message_center_->AddNotification(std::move(error_notification));
 }
@@ -243,7 +243,7 @@ void FastPairNotificationController::ShowUserDiscoveryNotification(
           /*expire_notification_timer=*/&expire_notification_timer_);
 
   discovery_notification->set_delegate(notification_delegate);
-  discovery_notification->set_image(device_image);
+  discovery_notification->SetImage(device_image);
 
   // Start timer for how long to show the notification before removing the
   // notification. After the timeout period, we will remove the notification
@@ -286,7 +286,7 @@ void FastPairNotificationController::ShowGuestDiscoveryNotification(
           /*expire_notification_timer=*/&expire_notification_timer_);
 
   discovery_notification->set_delegate(notification_delegate);
-  discovery_notification->set_image(device_image);
+  discovery_notification->SetImage(device_image);
 
   // Start timer for how long to show the notification before removing the
   // notification. After the timeout period, we will remove the notification
@@ -331,7 +331,7 @@ void FastPairNotificationController::ShowSubsequentDiscoveryNotification(
           /*expire_notification_timer=*/&expire_notification_timer_);
 
   discovery_notification->set_delegate(notification_delegate);
-  discovery_notification->set_image(device_image);
+  discovery_notification->SetImage(device_image);
 
   // Start timer for how long to show the notification before removing the
   // notification. After the timeout period, we will remove the notification
@@ -368,7 +368,7 @@ void FastPairNotificationController::ShowApplicationAvailableNotification(
       base::MakeRefCounted<NotificationDelegate>(
           /*on_primary_click=*/download_app_callback,
           /*on_close=*/std::move(on_close)));
-  application_available_notification->set_image(device_image);
+  application_available_notification->SetImage(device_image);
 
   message_center_->AddNotification(
       std::move(application_available_notification));
@@ -398,7 +398,7 @@ void FastPairNotificationController::ShowApplicationInstalledNotification(
       base::MakeRefCounted<NotificationDelegate>(
           /*on_primary_click=*/launch_app_callback,
           /*on_close=*/std::move(on_close)));
-  application_installed_notification->set_image(device_image);
+  application_installed_notification->SetImage(device_image);
 
   message_center_->AddNotification(
       std::move(application_installed_notification));
@@ -428,7 +428,7 @@ void FastPairNotificationController::ShowPairingNotification(
       /*on_close=*/std::move(on_close)));
   pairing_notification->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   pairing_notification->set_progress(kInfiniteLoadingProgressValue);
-  pairing_notification->set_image(device_image);
+  pairing_notification->SetImage(device_image);
   pairing_notification->set_pinned(true);
 
   message_center_->AddNotification(std::move(pairing_notification));
@@ -465,7 +465,7 @@ void FastPairNotificationController::ShowAssociateAccount(
           /*expire_notification_timer=*/&expire_notification_timer_);
 
   associate_account_notification->set_delegate(notification_delegate);
-  associate_account_notification->set_image(device_image);
+  associate_account_notification->SetImage(device_image);
 
   // Start timer for how long to show the notification before removing the
   // notification. After the timeout period, we will remove the notification

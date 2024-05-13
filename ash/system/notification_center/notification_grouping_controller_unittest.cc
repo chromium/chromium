@@ -395,7 +395,7 @@ TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   notification->set_accent_color_id(ui::kColorAshSystemUIMenuIcon);
   notification->set_accent_color(SK_ColorRED);
   notification->set_parent_vector_small_image(icon);
-  notification->set_small_image(small_image);
+  notification->SetSmallImage(small_image);
   notification->set_display_source(display_source0);
   message_center->AddNotification(std::move(notification));
 

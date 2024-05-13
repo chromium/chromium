@@ -9,6 +9,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -17,11 +18,39 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/metrics/histogram_functions.h"
+#endif  // IS_CHROMEOS_ASH
+
 namespace message_center {
 
 namespace {
 
 unsigned g_next_serial_number = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Histograms ------------------------------------------------------------------
+
+constexpr char kNotificationImageMemorySizeHistogram[] =
+    "Ash.Notification.ImageMemorySizeInKB";
+
+constexpr char kNotificationSmallImageMemorySizeHistogram[] =
+    "Ash.Notification.SmallImageMemorySizeInKB";
+
+// Helpers ---------------------------------------------------------------------
+
+// Returns the byte size of `image` on the 1.0 scale factor, based on the
+// assumption that the color mode is RGBA.
+// NOTE: We avoid using `gfx::Image::AsBitmap()` to reduce cost.
+int CalculateImageByteSize(const gfx::Image& image) {
+  constexpr int kBytesPerPixel = 4;
+  return image.IsEmpty() ? 0 : image.Width() * image.Height() * kBytesPerPixel;
+}
+
+#endif  // IS_CHROMEOS_ASH
+
+// Helpers ---------------------------------------------------------------------
 
 const gfx::ImageSkia CreateSolidColorImage(int width,
                                            int height,
@@ -130,10 +159,10 @@ std::unique_ptr<Notification> Notification::DeepCopy(
       std::make_unique<Notification>(notification);
   notification_copy->set_icon(ui::ImageModel::FromImageSkia(
       notification_copy->icon().Rasterize(color_provider)));
-  notification_copy->set_image(include_body_image
-                                   ? DeepCopyImage(notification_copy->image())
-                                   : gfx::Image());
-  notification_copy->set_small_image(
+  notification_copy->SetImage(include_body_image
+                                  ? DeepCopyImage(notification_copy->image())
+                                  : gfx::Image());
+  notification_copy->SetSmallImage(
       include_small_image ? DeepCopyImage(notification_copy->small_image())
                           : gfx::Image());
   for (size_t i = 0; i < notification_copy->buttons().size(); i++) {
@@ -146,8 +175,9 @@ std::unique_ptr<Notification> Notification::DeepCopy(
 }
 
 void Notification::SetButtonIcon(size_t index, const gfx::Image& icon) {
-  if (index >= optional_fields_.buttons.size())
+  if (index >= optional_fields_.buttons.size()) {
     return;
+  }
   optional_fields_.buttons[index].icon = icon;
 }
 
@@ -181,17 +211,39 @@ bool Notification::UseOriginAsContextMessage() const {
          origin_url_.SchemeIsHTTPOrHTTPS();
 }
 
+void Notification::SetImage(const gfx::Image& image) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Record the memory size of `image` in KB.
+  base::UmaHistogramMemoryKB(kNotificationImageMemorySizeHistogram,
+                             CalculateImageByteSize(image) / 1024);
+#endif  // IS_CHROMEOS_ASH
+
+  optional_fields_.image = image;
+}
+
+void Notification::SetSmallImage(const gfx::Image& image) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Record the memory size of `image` in KB.
+  base::UmaHistogramMemoryKB(kNotificationSmallImageMemorySizeHistogram,
+                             CalculateImageByteSize(image) / 1024);
+#endif  // IS_CHROMEOS_ASH
+
+  optional_fields_.small_image = image;
+}
+
 gfx::Image Notification::GenerateMaskedSmallIcon(
     int dip_size,
     SkColor mask_color,
     SkColor background_color,
     SkColor foreground_color) const {
-  if (!vector_small_image().is_empty())
+  if (!vector_small_image().is_empty()) {
     return gfx::Image(
         gfx::CreateVectorIcon(vector_small_image(), dip_size, mask_color));
+  }
 
-  if (small_image().IsEmpty())
+  if (small_image().IsEmpty()) {
     return gfx::Image();
+  }
 
   // If |vector_small_image| is not available, fallback to raster based
   // masking and resizing.

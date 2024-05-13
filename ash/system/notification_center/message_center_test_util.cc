@@ -29,7 +29,7 @@ std::unique_ptr<message_center::Notification> CreateSimpleNotification(
       new message_center::NotificationDelegate());
 
   if (has_image) {
-    notification->set_image(gfx::test::CreateImage(320, 300));
+    notification->SetImage(gfx::test::CreateImage(320, 300));
   }
   return notification;
 }

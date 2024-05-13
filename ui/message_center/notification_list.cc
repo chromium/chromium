@@ -204,7 +204,7 @@ bool NotificationList::SetNotificationImage(const std::string& notification_id,
   if (iter == notifications_.end()) {
     return false;
   }
-  iter->first->set_image(image);
+  iter->first->SetImage(image);
   return true;
 }
 

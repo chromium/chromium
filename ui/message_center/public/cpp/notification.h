@@ -439,7 +439,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   void set_icon(const ui::ImageModel& icon) { icon_ = icon; }
 
   const gfx::Image& image() const { return optional_fields_.image; }
-  void set_image(const gfx::Image& image) { optional_fields_.image = image; }
+  void SetImage(const gfx::Image& image);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void set_image_path(const base::FilePath& image_path) {
@@ -448,9 +448,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 #endif
 
   const gfx::Image& small_image() const { return optional_fields_.small_image; }
-  void set_small_image(const gfx::Image& image) {
-    optional_fields_.small_image = image;
-  }
+  void SetSmallImage(const gfx::Image& image);
 
   bool small_image_needs_additional_masking() const {
     return optional_fields_.small_image_needs_additional_masking;
