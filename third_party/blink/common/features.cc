@@ -1383,6 +1383,9 @@ const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
 const base::FeatureParam<double> kLCPPFontURLPredictorThresholdInMbps{
     &kLCPPFontURLPredictor, "lcpp_font_prefetch_threshold", -1};
 
+const base::FeatureParam<std::string> kLCPPFontURLPredictorExcludedHosts{
+    &kLCPPFontURLPredictor, "lcpp_font_prefetch_excluded_hosts", ""};
+
 BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -860,6 +860,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kLCPPFontURLPredictorThresholdInMbps;
 
+// A list of hosts to be excluded from the LCPPFontURLPredictor feature.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kLCPPFontURLPredictorExcludedHosts;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPLazyLoadImagePreload);
 
 // The type of preloading for LCP images which are loaded lazily.

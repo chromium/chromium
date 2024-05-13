@@ -901,8 +901,12 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
 class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
  public:
   LCPCriticalPathPredictorBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kLCPCriticalPathPredictor}, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kLCPCriticalPathPredictor, {}},
+         {blink::features::kLCPPFontURLPredictor,
+          {{blink::features::kLCPPFontURLPredictorExcludedHosts.name,
+            "exclude.test,exclude2.test"}}}},
+        {});
   }
 
   std::vector<std::string> ExpectLcpElementLocatorsPrediction(
@@ -939,6 +943,19 @@ class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")))
         << from_here.ToString();
     lcp_element_waiter.Wait();
+  }
+
+  std::vector<std::string> GetLCPPFonts(const GURL& url) {
+    auto lcpp_stat =
+        loading_predictor()->resource_prefetch_predictor()->GetLcppStat(url);
+    if (!lcpp_stat) {
+      return std::vector<std::string>();
+    }
+    std::vector<std::string> fonts;
+    for (const auto& it : lcpp_stat->fetched_font_url_stat().main_buckets()) {
+      fonts.push_back(it.first);
+    }
+    return fonts;
   }
 
  private:
@@ -1007,6 +1024,37 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest,
   ExpectLcpElementLocatorsPrediction(FROM_HERE, kUrlC,
                                      /*expected_locator_count=*/0);
   EXPECT_EQ(locator_for_a, locators_6[1]);
+}
+
+IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest, LearnLCPPFont) {
+  const GURL kUrlA =
+      embedded_test_server()->GetURL("p.com", "/predictors/lcpp_font.html");
+  const GURL kFontUrlA =
+      embedded_test_server()->GetURL("p.com", "/predictors/font.ttf");
+  const GURL kUrlB = embedded_test_server()->GetURL(
+      "exclude.test", "/predictors/lcpp_font.html");
+  const GURL kUrlC = embedded_test_server()->GetURL(
+      "exclude2.test", "/predictors/lcpp_font.html");
+
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlA));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
+
+  std::vector<std::string> expected;
+  expected.push_back(kFontUrlA.spec());
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlA);
+  EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
+
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlB);
+  EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
+
+  NavigateAndWaitForLcpElement(FROM_HERE, kUrlC);
+  EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
+  EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
 }
 
 enum class NetworkIsolationKeyMode {

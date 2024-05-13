@@ -6,6 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
@@ -644,6 +646,14 @@ LcppStat* GetLcppStatToUpdate(const LoadingPredictorConfig& config,
   return &lcpp_stat_map[first_level_path];
 }
 
+bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
+  static const base::NoDestructor<base::flat_set<std::string>> excluded_hosts(
+      base::SplitString(
+          blink::features::kLCPPFontURLPredictorExcludedHosts.Get(), ",",
+          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  return base::Contains(*excluded_hosts, url.host());
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -974,6 +984,11 @@ bool LcppDataMap::LearnLcpp(const GURL& url, const LcppDataInputs& inputs) {
     }
     data_updated |=
         UpdateLcppStatWithLcppDataInputs(config_, inputs, *lcpp_stat);
+    if (IsLCPPFontPrefetchExcludedHost(url) &&
+        lcpp_stat->has_fetched_font_url_stat()) {
+      lcpp_stat->clear_fetched_font_url_stat();
+      data_updated = true;
+    }
     DCHECK(IsValidLcppStat(*lcpp_stat));
   }
   if (data_updated) {
