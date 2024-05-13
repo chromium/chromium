@@ -77,7 +77,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
         if (suggestion.getAnswerTemplate() != null) {
-            details = RichAnswerText.from(mContext, suggestion.getAnswerTemplate());
+            details =
+                    RichAnswerText.from(
+                            mContext, suggestion.getAnswerTemplate(), suggestionTextColorReversal);
         } else {
             details =
                     AnswerTextNewLayout.from(

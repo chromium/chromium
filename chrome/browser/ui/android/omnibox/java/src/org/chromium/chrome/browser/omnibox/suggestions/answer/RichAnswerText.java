@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
+import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
@@ -32,7 +33,7 @@ class RichAnswerText implements AnswerText {
 
     private final Context mContext;
     private final boolean mIsAnswerLine;
-
+    private final boolean mReverseStockTextColor;
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
     @AnswerType private final int mAnswerType;
@@ -54,7 +55,9 @@ class RichAnswerText implements AnswerText {
 
     /** Construct an array of two AnswerText instances for the given RichAnswerTemplate. */
     static AnswerText[] from(
-            @NonNull Context context, @NonNull RichAnswerTemplate richAnswerTemplate) {
+            @NonNull Context context,
+            @NonNull RichAnswerTemplate richAnswerTemplate,
+            boolean reverseStockTextColor) {
         RichAnswerText[] result = new RichAnswerText[2];
 
         int answerType = richAnswerTemplate.getAnswerType().getNumber();
@@ -64,13 +67,15 @@ class RichAnswerText implements AnswerText {
                             context,
                             richAnswerTemplate.getAnswers(0).getHeadline(),
                             answerType,
-                            /* isAnswerLine= */ true);
+                            /* isAnswerLine= */ true,
+                            reverseStockTextColor);
             result[1] =
                     new RichAnswerText(
                             context,
                             richAnswerTemplate.getAnswers(0).getSubhead(),
                             answerType,
-                            /* isAnswerLine= */ false);
+                            /* isAnswerLine= */ false,
+                            reverseStockTextColor);
             result[0].mMaxLines = 1;
         } else {
             // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
@@ -79,13 +84,15 @@ class RichAnswerText implements AnswerText {
                             context,
                             richAnswerTemplate.getAnswers(0).getSubhead(),
                             answerType,
-                            /* isAnswerLine= */ true);
+                            /* isAnswerLine= */ true,
+                            reverseStockTextColor);
             result[1] =
                     new RichAnswerText(
                             context,
                             richAnswerTemplate.getAnswers(0).getHeadline(),
                             answerType,
-                            /* isAnswerLine= */ false);
+                            /* isAnswerLine= */ false,
+                            reverseStockTextColor);
             result[1].mMaxLines = 1;
             if (answerType == AnswerType.TRANSLATION) {
                 result[0].mMaxLines = 3;
@@ -105,10 +112,12 @@ class RichAnswerText implements AnswerText {
             Context context,
             FormattedString formattedString,
             int answerType,
-            boolean isAnswerLine) {
+            boolean isAnswerLine,
+            boolean reverseStockTextColor) {
         mContext = context;
         mAnswerType = answerType;
         mIsAnswerLine = isAnswerLine;
+        mReverseStockTextColor = reverseStockTextColor;
         mText = processFormattedString(formattedString);
         mAccessibilityDescription = mText.toString();
     }
@@ -152,7 +161,8 @@ class RichAnswerText implements AnswerText {
     private MetricAffectingSpan getAppearanceForText(
             FormattedStringFragment formattedStringFragment) {
         return mIsAnswerLine
-                ? getAppearanceForAnswerText(mContext, formattedStringFragment, mAnswerType)
+                ? getAppearanceForAnswerText(
+                        mContext, formattedStringFragment, mAnswerType, mReverseStockTextColor)
                 : getAppearanceForQueryText();
     }
 
@@ -167,24 +177,30 @@ class RichAnswerText implements AnswerText {
     static MetricAffectingSpan getAppearanceForAnswerText(
             Context context,
             FormattedStringFragment formattedStringFragment,
-            @AnswerType int answerType) {
+            @AnswerType int answerType,
+            boolean reverseStockTextColor) {
         if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
             return new TextAppearanceSpan(
                     context,
                     org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextLarge_Primary);
         }
 
-        // TODO(b/327497146): handle color reversal when original data source is json; proto backend
+        // TODO(b/327497146): skip color reversal when original data source is proto backend, which
         // should handle color reversal server side.
-        return switch (formattedStringFragment.getColor()) {
-            case COLOR_ON_SURFACE_POSITIVE -> new TextAppearanceSpan(
-                    context,
-                    org.chromium.chrome.browser.omnibox.R.style
-                            .TextAppearance_OmniboxAnswerDescriptionPositiveSmall);
-            case COLOR_ON_SURFACE_NEGATIVE -> new TextAppearanceSpan(
-                    context,
-                    org.chromium.chrome.browser.omnibox.R.style
-                            .TextAppearance_OmniboxAnswerDescriptionNegativeSmall);
+        ColorType colorType = formattedStringFragment.getColor();
+        return switch (colorType) {
+            case COLOR_ON_SURFACE_POSITIVE, COLOR_ON_SURFACE_NEGATIVE -> {
+                boolean wantPositiveColor = (colorType == ColorType.COLOR_ON_SURFACE_POSITIVE);
+                // Swap positive/negative colors if applicable for current locale.
+                wantPositiveColor ^= reverseStockTextColor;
+                int styleResource =
+                        wantPositiveColor
+                                ? org.chromium.chrome.browser.omnibox.R.style
+                                        .TextAppearance_OmniboxAnswerDescriptionPositiveSmall
+                                : org.chromium.chrome.browser.omnibox.R.style
+                                        .TextAppearance_OmniboxAnswerDescriptionNegativeSmall;
+                yield new TextAppearanceSpan(context, styleResource);
+            }
             default -> new TextAppearanceSpan(
                     context,
                     org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextLarge_Primary);

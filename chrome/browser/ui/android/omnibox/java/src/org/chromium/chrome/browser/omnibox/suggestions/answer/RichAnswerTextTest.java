@@ -84,13 +84,14 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate);
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
         Assert.assertEquals(texts[0].getAccessibilityDescription(), "define adroit • /əˈdroit/");
         Assert.assertEquals(
                 texts[1].getAccessibilityDescription(),
                 "clever or skillful in using the hands or mind.");
+
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
@@ -141,7 +142,7 @@ public class RichAnswerTextTest {
                                         .setSubhead(positiveSubhead))
                         .build();
 
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate);
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
         // A11y descriptions are reverse of visual ordering.
         Assert.assertEquals(
                 texts[0].getAccessibilityDescription(), "goog stock GOOG(NASDAQ), 3:22 PM EDT");
@@ -188,7 +189,7 @@ public class RichAnswerTextTest {
                                         .setSubhead(negativeSubhead))
                         .build();
 
-        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate);
+        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, false);
         primaryText = texts[0].getText();
 
         Assert.assertEquals(primaryText.toString(), "100.00 -1.00");
@@ -198,6 +199,83 @@ public class RichAnswerTextTest {
         Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
         Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
         Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testFinanceAnswer_withColorReversal() {
+        FormattedString headline =
+                FormattedString.newBuilder()
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("goog stock GOOG(NASDAQ), 3:22 PM EDT"))
+                        .build();
+        FormattedString positiveSubhead =
+                FormattedString.newBuilder()
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("100.00"))
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("+1.00")
+                                        .setColor(ColorType.COLOR_ON_SURFACE_POSITIVE))
+                        .build();
+
+        RichAnswerTemplate richAnswerTemplate =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(AnswerType.FINANCE)
+                        .addAnswers(
+                                0,
+                                AnswerData.newBuilder()
+                                        .setHeadline(headline)
+                                        .setSubhead(positiveSubhead))
+                        .build();
+
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, true);
+        SpannableStringBuilder primaryText = texts[0].getText();
+
+        Assert.assertEquals(primaryText.toString(), "100.00 +1.00");
+        TextAppearanceSpan[] textAppearanceSpans =
+                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 2);
+        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mRedText.getTextSize());
+        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mRedText.getTextColor());
+
+        FormattedString negativeSubhead =
+                FormattedString.newBuilder()
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("100.00"))
+                        .addFragments(
+                                FormattedStringFragment.newBuilder()
+                                        .setStartIndex(0)
+                                        .setText("-1.00")
+                                        .setColor(ColorType.COLOR_ON_SURFACE_NEGATIVE))
+                        .build();
+
+        RichAnswerTemplate negativeRichAnswerTemplate =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(AnswerType.FINANCE)
+                        .addAnswers(
+                                0,
+                                AnswerData.newBuilder()
+                                        .setHeadline(headline)
+                                        .setSubhead(negativeSubhead))
+                        .build();
+
+        texts = RichAnswerText.from(mContext, negativeRichAnswerTemplate, true);
+        primaryText = texts[0].getText();
+
+        Assert.assertEquals(primaryText.toString(), "100.00 -1.00");
+        textAppearanceSpans =
+                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 2);
+        Assert.assertEquals(textAppearanceSpans[1].getTextSize(), mGreenText.getTextSize());
+        Assert.assertEquals(textAppearanceSpans[1].getTextColor(), mGreenText.getTextColor());
     }
 
     @Test
@@ -226,9 +304,10 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate);
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
         Assert.assertEquals(texts[0].getMaxLines(), 1);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
+
         SpannableStringBuilder primaryText = texts[0].getText();
         SpannableStringBuilder secondaryText = texts[1].getText();
 
@@ -271,7 +350,7 @@ public class RichAnswerTextTest {
                                 AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
                         .build();
 
-        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate);
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
         Assert.assertEquals(texts[0].getMaxLines(), 3);
         Assert.assertEquals(texts[1].getMaxLines(), 1);
     }
