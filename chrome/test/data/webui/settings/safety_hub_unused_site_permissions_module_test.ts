@@ -12,8 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsSafetyHubUnusedSitePermissionsModuleElement, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import type {SettingsRoutes} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -29,7 +28,6 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsSafetyHubUnusedSitePermissionsModuleElement;
-  let testRoutes: SettingsRoutes;
 
   const permissions = [
     ContentSettingsTypes.GEOLOCATION,
@@ -114,7 +112,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('settings-safety-hub-unused-site-permissions');
-    Router.getInstance().navigateTo(testRoutes.SAFETY_HUB);
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
@@ -187,10 +185,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     pluralString = new TestPluralStringProxy();
     SettingsPluralStringProxyImpl.setInstance(pluralString);
-    testRoutes = {
-      SAFETY_HUB: routes.SAFETY_HUB,
-    } as unknown as SettingsRoutes;
-    Router.resetInstanceForTesting(new Router(routes));
+    resetRouterForTesting();
     await createPage();
     metricsBrowserProxy.reset();
     assertInitialUi();

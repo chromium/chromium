@@ -235,7 +235,6 @@ export class Router {
     return routerInstance;
   }
 
-  /** @param instance */
   static setInstance(instance: Router) {
     assert(!routerInstance);
     routerInstance = instance;
