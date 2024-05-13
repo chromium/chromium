@@ -204,7 +204,8 @@ public class TileRenderer {
         updateIcon(tile, setupDelegate);
         updateContentDescription(tile, tileView);
 
-        TileGroup.TileInteractionDelegate delegate = setupDelegate.createInteractionDelegate(tile);
+        TileGroup.TileInteractionDelegate delegate =
+                setupDelegate.createInteractionDelegate(tile, tileView);
         if (tile.getSource() == TileSource.HOMEPAGE) {
             delegate.setOnClickRunnable(
                     () -> {

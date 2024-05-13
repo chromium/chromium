@@ -126,7 +126,7 @@ public class TileRendererTest {
         doReturn(mTileSetupCallback).when(mTileSetupDelegate).createIconLoadCallback(any());
         doReturn(mTileInteractionDelegate)
                 .when(mTileSetupDelegate)
-                .createInteractionDelegate(any());
+                .createInteractionDelegate(any(), any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
     }
 

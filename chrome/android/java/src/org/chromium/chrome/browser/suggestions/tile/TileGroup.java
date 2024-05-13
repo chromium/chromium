@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.annotation.SuppressLint;
 import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
@@ -16,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -104,7 +108,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         /**
          * Returns a delegate that will handle user interactions with the view created for the tile.
          */
-        TileInteractionDelegate createInteractionDelegate(Tile tile);
+        TileInteractionDelegate createInteractionDelegate(Tile tile, View view);
 
         /**
          * Returns a callback to be invoked when the icon for the provided tile is loaded. It will
@@ -207,8 +211,8 @@ public class TileGroup implements MostVisitedSites.Observer {
     private final TileSetupDelegate mTileSetupDelegate =
             new TileSetupDelegate() {
                 @Override
-                public TileInteractionDelegate createInteractionDelegate(Tile tile) {
-                    return new TileInteractionDelegateImpl(tile.getData());
+                public TileInteractionDelegate createInteractionDelegate(Tile tile, View view) {
+                    return new TileInteractionDelegateImpl(tile.getData(), view);
                 }
 
                 @Override
@@ -490,23 +494,53 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     private class TileInteractionDelegateImpl
-            implements TileInteractionDelegate, ContextMenuManager.Delegate {
+            implements TileInteractionDelegate, ContextMenuManager.Delegate, View.OnTouchListener {
         private final SiteSuggestion mSuggestion;
         private Runnable mOnClickRunnable;
         private Runnable mOnRemoveRunnable;
+        private Long mTouchTimer;
 
-        public TileInteractionDelegateImpl(SiteSuggestion suggestion) {
+        private void maybeRecordTouchDuration(boolean taken) {
+            if (mTouchTimer == null) return;
+
+            long duration = TimeUtils.elapsedRealtimeMillis() - mTouchTimer;
+            mTouchTimer = null;
+            RecordHistogram.recordLongTimesHistogram(
+                    taken
+                            ? "Prerender.Experimental.NewTabPage.TouchDuration.Taken"
+                            : "Prerender.Experimental.NewTabPage.TouchDuration.NotTaken",
+                    duration);
+        }
+
+        public TileInteractionDelegateImpl(SiteSuggestion suggestion, View view) {
             mSuggestion = suggestion;
+            view.setOnTouchListener(TileInteractionDelegateImpl.this);
         }
 
         @Override
         public void onClick(View view) {
+            maybeRecordTouchDuration(true);
+            if (mSuggestion == null) return;
+
             Tile tile = findTile(mSuggestion);
             if (tile == null) return;
 
             SuggestionsMetrics.recordTileTapped();
             if (mOnClickRunnable != null) mOnClickRunnable.run();
             mTileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, tile);
+        }
+
+        @Override
+        @SuppressLint("ClickableViewAccessibility")
+        public boolean onTouch(View view, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                mTouchTimer = TimeUtils.elapsedRealtimeMillis();
+            }
+            if (event.getAction() == MotionEvent.ACTION_CANCEL) {
+                maybeRecordTouchDuration(false);
+            }
+
+            return false;
         }
 
         @Override
