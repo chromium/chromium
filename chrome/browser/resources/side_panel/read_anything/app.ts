@@ -1910,8 +1910,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   restoreSettingsFromPrefs() {
     if (this.isReadAloudEnabled_) {
       this.updateSpeechRate_(chrome.readingMode.speechRate);
-      this.selectPreferredVoice_();
+      // We need to restore enabled languages prior to selecting the preferred
+      // voice to ensure we have the right voices available.
       this.restoreEnabledLanguagesFromPref_();
+      this.selectPreferredVoice_();
     }
     this.updateLineSpacing_(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
@@ -1997,8 +1999,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const selectedVoice = this.getVoices()
                               .filter(voice => voice.name === storedVoiceName);
-
-    this.selectedVoice = selectedVoice ? selectedVoice[0] : this.defaultVoice();
+    this.selectedVoice = selectedVoice && (selectedVoice.length > 0) ?
+        selectedVoice[0] :
+        this.defaultVoice();
   }
 
   private onLineSpacingChange_(event: CustomEvent<{data: number}>) {

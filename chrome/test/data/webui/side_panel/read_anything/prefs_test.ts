@@ -121,6 +121,15 @@ suite('PrefsTest', () => {
         assertEquals(selectedVoice(), otherVoice);
       });
 
+      test('to a default voice if the stored voice is invalid', () => {
+        // @ts-ignore
+        chrome.readingMode.getStoredVoice = () => 'Matt';
+        // @ts-ignore
+        app.enabledLanguagesInPref = [langForDefaultVoice];
+        app.restoreSettingsFromPrefs();
+        assertEquals(selectedVoice(), defaultVoice);
+      });
+
       suite('when there is no stored voice for this language', () => {
         setup(() => {
           chrome.readingMode.getStoredVoice = () => '';
@@ -134,11 +143,15 @@ suite('PrefsTest', () => {
           test('to the current voice if there is one', () => {
             // @ts-ignore
             app.selectedVoice = otherVoice;
+            // @ts-ignore
+            app.enabledLanguagesInPref = [otherVoice.lang];
             app.restoreSettingsFromPrefs();
             assertEquals(selectedVoice(), otherVoice);
           });
 
           test('to the device default if there\'s no current voice', () => {
+            // @ts-ignore
+            app.enabledLanguagesInPref = [langForDefaultVoice, otherVoice.lang];
             app.restoreSettingsFromPrefs();
             assertEquals(selectedVoice(), defaultVoice);
           });
