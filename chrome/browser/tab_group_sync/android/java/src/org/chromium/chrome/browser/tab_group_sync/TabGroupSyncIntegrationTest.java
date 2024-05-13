@@ -40,6 +40,7 @@ import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SavedTabGroupSpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroupTab;
 import org.chromium.components.sync.protocol.SyncEntity;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,11 +81,20 @@ public class TabGroupSyncIntegrationTest {
     private static final String GUID_9 = "8bcbca67-c1b7-40c7-b421-eb7e2db99a9b";
     private static final String GUID_10 = "b453ae62-3568-4d7b-8d18-0be58f43b337";
 
+    private static final String TEST_URL1 = "/chrome/test/data/simple.html";
+    private static final String TEST_URL2 = "/chrome/test/data/title2.html";
+    private static final String TEST_URL3 = "/chrome/test/data/title3.html";
+    private static final String TEST_URL4 = "/chrome/test/data/iframe.html";
+    private static final String TAB_TITLE_1 = "OK";
+    private static final String TAB_TITLE_2 = "Title Of Awesomeness";
+    private static final String TAB_TITLE_3 = "Title Of More Awesomeness";
+    private static final String TAB_TITLE_4 = "iframe test";
+
     // Create individual tabs
-    TabInfo mTab1 = new TabInfo("Physics", "http://physics.com", 1);
-    TabInfo mTab2 = new TabInfo("Chemistry", "http://chemistry.com", 2);
-    TabInfo mTab3 = new TabInfo("Algebra", "http://algebra.com", 1);
-    TabInfo mTab4 = new TabInfo("Calculus", "http://calculus.com", 2);
+    private TabInfo mTab1;
+    private TabInfo mTab2;
+    private TabInfo mTab3;
+    private TabInfo mTab4;
     GroupInfo mGroup1 =
             new GroupInfo("Science Group", SavedTabGroupColor.SAVED_TAB_GROUP_COLOR_CYAN);
 
@@ -100,6 +110,7 @@ public class TabGroupSyncIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
+        setUpUrlConstants();
         ChromeFeatureList.sAndroidTabGroupStableIds.setForTesting(true);
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setSelectedTypes(true, null);
@@ -112,6 +123,17 @@ public class TabGroupSyncIntegrationTest {
         mCurrentGuidIndex = 0;
         mGroup1.tabs.clear();
         mGroup2.tabs.clear();
+    }
+
+    private void setUpUrlConstants() {
+        mTab1 = new TabInfo(TAB_TITLE_1, getUrl(TEST_URL1), 1);
+        mTab2 = new TabInfo(TAB_TITLE_2, getUrl(TEST_URL2), 2);
+        mTab3 = new TabInfo(TAB_TITLE_3, getUrl(TEST_URL3), 1);
+        mTab4 = new TabInfo(TAB_TITLE_4, getUrl(TEST_URL4), 2);
+    }
+
+    private String getUrl(String url) {
+        return mSyncTestRule.getTestServer().getURL(url);
     }
 
     @Test
@@ -426,13 +448,9 @@ public class TabGroupSyncIntegrationTest {
     }
 
     public void verifyTabInfo(Tab actualTab, TabInfo expectedTab) {
-        // TODO(shaktisahu): Tab title will be verified after the lazy loading is fixed.
-        // Assert.assertEquals("Tab title does not match", expectedTab.title, actualTab.getTitle());
-        // TODO(shaktisahu): Can we turn off network and get the correct URLs? i.e. don't make
-        // https://somthing to https://www.something.com
-        // Assert.assertEquals(
-        //         "Tab URL does not match", new GURL(expectedTab.url), actualTab.getOriginalUrl());
-        // TODO(shaktisahu): Verify the tab position as well.
+        Assert.assertEquals("Tab title does not match", expectedTab.title, actualTab.getTitle());
+        Assert.assertEquals(
+                "Tab URL does not match", new GURL(expectedTab.url), actualTab.getOriginalUrl());
     }
 
     private GroupInfo[] createGroupInfos(GroupInfo[] groups, TabInfo[][] tabs) {
