@@ -4,5 +4,6 @@ include_rules = [
   "+content/public/common",
   "+content/public/renderer",
   "+components/embedder_support",
+  "+components/performance_manager/embedder",
   "+components/version_info",
 ]

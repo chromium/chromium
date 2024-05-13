@@ -26,6 +26,8 @@ class IOSContentBrowserClient : public content::ContentBrowserClient {
   std::string GetUserAgentBasedOnPolicy(
       content::BrowserContext* context) override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
+  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
+      content::WebContents* web_contents) override;
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* rfh,
