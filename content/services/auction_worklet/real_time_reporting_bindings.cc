@@ -116,7 +116,7 @@ void RealTimeReportingBindings::AttachToContext(
 
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
-  v8::Local<v8::Object> debugging = v8::Object::New(isolate);
+  v8::Local<v8::Object> real_time_reporting = v8::Object::New(isolate);
 
   v8::Local<v8::FunctionTemplate> real_time_histogram_template =
       v8::FunctionTemplate::New(
@@ -127,14 +127,14 @@ void RealTimeReportingBindings::AttachToContext(
           isolate, &RealTimeReportingBindings::ContributeOnWorkletLatency,
           v8_this);
 
-  debugging
+  real_time_reporting
       ->Set(
           context,
           v8_helper_->CreateStringFromLiteral("contributeToRealTimeHistogram"),
           real_time_histogram_template->GetFunction(context).ToLocalChecked())
       .Check();
 
-  debugging
+  real_time_reporting
       ->Set(context,
             v8_helper_->CreateStringFromLiteral("contributeOnWorkletLatency"),
             worklet_latency_template->GetFunction(context).ToLocalChecked())
@@ -142,7 +142,7 @@ void RealTimeReportingBindings::AttachToContext(
 
   context->Global()
       ->Set(context, v8_helper_->CreateStringFromLiteral("realTimeReporting"),
-            debugging)
+            real_time_reporting)
       .Check();
 }
 
