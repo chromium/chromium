@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
@@ -112,6 +113,7 @@ class RenderViewContextMenu
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitFullscreenMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
 
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
@@ -431,6 +433,14 @@ class RenderViewContextMenu
       supervised_user::FilteringBehavior filtering_behavior,
       supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
+
+  // Opens the Lens overlay to search a region defined by the given bounds of
+  // the view and the image to be searched.
+  void OpenLensOverlayWithBounds(
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
+      const gfx::Rect& view_bounds,
+      const gfx::Rect& image_bounds);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Shows the standalone clipboard history menu. `event_flags` describes the

@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -829,6 +830,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kExitFullscreenMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kComposeMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kRegionSearchItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kSearchForImageItem);
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -2023,10 +2026,14 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     return;
   }
 
+  const int search_for_image_idc = GetSearchForImageIdc();
   menu_model_.AddItem(
-      GetSearchForImageIdc(),
+      search_for_image_idc,
       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
                                  provider->short_name()));
+  const int command_index =
+      menu_model_.GetIndexOfCommandId(search_for_image_idc).value();
+  menu_model_.SetElementIdentifierAt(command_index, kSearchForImageItem);
 
   if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
     menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
@@ -4232,13 +4239,46 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
   lens::RecordAmbientSearchQuery(
       lens::AmbientSearchEntryPoint::
           CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
-  core_tab_helper->SearchWithLens(
-      render_frame_host, params().src_url,
-      is_image_translate
-          ? lens::EntryPoint::
-                CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM
-          : lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-      is_image_translate);
+
+  if (LensOverlayController::IsEnabled(GetProfile()) &&
+      lens::features::UseLensOverlayForImageSearch()) {
+    auto view_bounds = render_frame_host->GetView()->GetViewBounds();
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame;
+    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+        &chrome_render_frame);
+    // Bind the InterfacePtr into the callback so that it's kept alive until
+    // there's either a connection error or a response.
+    auto* frame = chrome_render_frame.get();
+
+    frame->RequestBoundsForContextNodeDiagnostic(
+        base::BindOnce(&RenderViewContextMenu::OpenLensOverlayWithBounds,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       std::move(chrome_render_frame), view_bounds));
+  } else {
+    core_tab_helper->SearchWithLens(
+        render_frame_host, params().src_url,
+        is_image_translate
+            ? lens::EntryPoint::
+                  CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM
+            : lens::EntryPoint::
+                  CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
+        is_image_translate);
+  }
+}
+
+void RenderViewContextMenu::OpenLensOverlayWithBounds(
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame,
+    const gfx::Rect& view_bounds,
+    const gfx::Rect& image_bounds) {
+  LensOverlayController* const controller =
+      LensOverlayController::GetController(source_web_contents_);
+  CHECK(controller);
+  controller->ShowUIWithPendingRegion(
+      LensOverlayController::InvocationSource::kContentAreaContextMenuPage,
+      lens::GetCenterRotatedBoxFromViewAndImageBounds(view_bounds,
+                                                      image_bounds));
 }
 
 void RenderViewContextMenu::ExecAddANote() {

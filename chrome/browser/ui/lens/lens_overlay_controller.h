@@ -130,6 +130,10 @@ class LensOverlayController : public LensSearchboxClient,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
 
+  // Sets a region to search after the overlay loads, then calls ShowUI().
+  void ShowUIWithPendingRegion(InvocationSource invocation_source,
+                               lens::mojom::CenterRotatedBoxPtr region);
+
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
@@ -594,6 +598,9 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
+
+  // Pending region to search after the overlay loads.
+  lens::mojom::CenterRotatedBoxPtr pending_region_;
 
   // Thumbnail URI referencing the data defined by the user image selection on
   // the overlay. If the user hasn't made any selection or has made a text

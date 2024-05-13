@@ -141,6 +141,11 @@ const lens::mojom::OverlayObjectPtr kTestOverlayObject =
     lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
 const lens::mojom::TextPtr kTestText =
     lens::mojom::Text::New(lens::mojom::TextLayout::New(), "es");
+const lens::mojom::CenterRotatedBoxPtr kTestRegion =
+    lens::mojom::CenterRotatedBox::New(
+        gfx::RectF(0.1, 0.1, 0.8, 0.8),
+        0.1,
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized);
 
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
@@ -710,6 +715,38 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_results_opened_);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       ShowSidePanelWithPendingRegion) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUIWithPendingRegion(InvocationSource::kAppMenu,
+                                      kTestRegion->Clone());
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify region was passed to WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_EQ(kTestRegion,
+            fake_controller->fake_overlay_page_.post_region_selection_);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {

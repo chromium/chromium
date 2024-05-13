@@ -86,6 +86,9 @@ const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
 
+const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
+    &kLensOverlay, "use-for-image-search", true};
+
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
     "https://lensfrontend-pa.googleapis.com/v1/crupload"};
@@ -326,6 +329,10 @@ int GetLensOverlayTapRegionHeight() {
 
 int GetLensOverlayTapRegionWidth() {
   return kLensOverlayTapRegionWidth.Get();
+}
+
+bool UseLensOverlayForImageSearch() {
+  return kUseLensOverlayForImageSearch.Get();
 }
 
 }  // namespace lens::features

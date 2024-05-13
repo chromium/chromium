@@ -160,4 +160,40 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
   return image_crop;
 }
 
+lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromViewAndImageBounds(
+    const gfx::Rect& view_bounds,
+    const gfx::Rect& image_bounds) {
+  float left = static_cast<float>(image_bounds.x()) / view_bounds.width();
+  float right = static_cast<float>(image_bounds.x() + image_bounds.width()) /
+                view_bounds.width();
+  float top = static_cast<float>(image_bounds.y()) / view_bounds.height();
+  float bottom = static_cast<float>(image_bounds.y() + image_bounds.height()) /
+                 view_bounds.height();
+
+  // Clip to remain inside view bounds.
+  if (left < 0) {
+    left = 0;
+  }
+  if (right > 1) {
+    right = 1;
+  }
+  if (top < 0) {
+    top = 0;
+  }
+  if (bottom > 1) {
+    bottom = 1;
+  }
+
+  float width = right - left;
+  float height = bottom - top;
+  float x = (left + right) / 2;
+  float y = (top + bottom) / 2;
+
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(x, y, width, height);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  return region;
+}
+
 }  // namespace lens

@@ -47,7 +47,7 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   // The data URI of the screenshot passed from C++.
-  private screenshotDataUri: string;
+  private screenshotDataUri: string = '';
   // Whether the close button should be hidden.
   private closeButtonHidden: boolean = false;
   // Whether the image has finished rendering.
@@ -126,6 +126,13 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onScreenshotRendered() {
     this.isImageRendered = true;
+  }
+  private getSelectionOverlayClass(screenshotDataUri: string): string {
+    if (!screenshotDataUri || !screenshotDataUri.length) {
+      return 'hidden';
+    } else {
+      return '';
+    }
   }
 }
 

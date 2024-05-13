@@ -305,6 +305,12 @@ extern int GetLensOverlayTapRegionHeight();
 // rather than drags.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayTapRegionWidth();
+
+// Returns whether to enable the image context menu extrypoint for Lens
+// Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseLensOverlayForImageSearch();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

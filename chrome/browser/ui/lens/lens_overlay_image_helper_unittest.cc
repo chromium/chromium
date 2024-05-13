@@ -315,4 +315,35 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(expected_output, image_crop->image().image_content());
 }
 
+TEST_F(LensOverlayImageHelperTest, GetCenterRotatedBoxFromViewAndImageBounds) {
+  gfx::Rect view_bounds(10, 20, 200, 100);
+  gfx::Rect image_bounds(125, 25, 50, 50);
+
+  auto result =
+      GetCenterRotatedBoxFromViewAndImageBounds(view_bounds, image_bounds);
+
+  ASSERT_EQ(0.75, result->box.x());
+  ASSERT_EQ(0.5, result->box.y());
+  ASSERT_EQ(0.25, result->box.width());
+  ASSERT_EQ(0.5, result->box.height());
+  ASSERT_EQ(lens::mojom::CenterRotatedBox_CoordinateType::kNormalized,
+            result->coordinate_type);
+}
+
+TEST_F(LensOverlayImageHelperTest,
+       GetCenterRotatedBoxFromViewAndImageBoundsClipsWhenImageOutOfView) {
+  gfx::Rect view_bounds(10, 20, 200, 100);
+  gfx::Rect image_bounds(-50, 50, 150, 100);
+
+  auto result =
+      GetCenterRotatedBoxFromViewAndImageBounds(view_bounds, image_bounds);
+
+  ASSERT_EQ(0.25, result->box.x());
+  ASSERT_EQ(0.75, result->box.y());
+  ASSERT_EQ(0.5, result->box.width());
+  ASSERT_EQ(0.5, result->box.height());
+  ASSERT_EQ(lens::mojom::CenterRotatedBox_CoordinateType::kNormalized,
+            result->coordinate_type);
+}
+
 }  // namespace lens

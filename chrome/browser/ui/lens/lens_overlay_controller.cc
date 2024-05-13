@@ -229,6 +229,13 @@ bool LensOverlayController::IsEnabled(Profile* profile) {
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 
+void LensOverlayController::ShowUIWithPendingRegion(
+    InvocationSource invocation_source,
+    lens::mojom::CenterRotatedBoxPtr region) {
+  pending_region_ = std::move(region);
+  ShowUI(invocation_source);
+}
+
 void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
@@ -382,6 +389,9 @@ void LensOverlayController::BindOverlay(
     lens_overlay_query_controller_->StartQueryFlow(
         initialization_data_->current_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_);
+  }
+  if (pending_region_) {
+    IssueLensRequest(std::move(pending_region_));
   }
 }
 
@@ -797,6 +807,7 @@ void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
   thumbnail_uri_.clear();
+  pending_region_.reset();
 
   state_ = State::kOff;
 
@@ -812,6 +823,8 @@ void LensOverlayController::OnBackgroundUnblurred(
 
 void LensOverlayController::InitializeOverlayUI(
     const OverlayInitializationData& init_data) {
+  // This should only contain LensPage mojo calls and should not affect
+  // `state_`.
   CHECK(page_);
   page_->ScreenshotDataUriReceived(init_data.current_screenshot_data_uri_);
   if (!init_data.objects_.empty()) {
@@ -819,6 +832,9 @@ void LensOverlayController::InitializeOverlayUI(
   }
   if (init_data.text_) {
     SendText(init_data.text_->Clone());
+  }
+  if (pending_region_) {
+    page_->SetPostRegionSelection(pending_region_->Clone());
   }
 }
 

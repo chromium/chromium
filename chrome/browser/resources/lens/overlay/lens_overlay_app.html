@@ -4,6 +4,10 @@
     width: 100%;
   }
 
+  .hidden {
+    display: none;
+  }
+
   #backgroundScrim {
     background-color: #151C264D;
     inset: 0;
@@ -46,11 +50,10 @@
     on-screenshot-rendered="onScreenshotRendered">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>
-  <!-- Do not render selection overlay if data URI is empty. -->
-  <template is="dom-if" if="[[screenshotDataUri.length]]">
-    <lens-selection-overlay
-        screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
-  </template>
+  <lens-selection-overlay
+      screenshot-data-uri="[[screenshotDataUri]]"
+      class$="[[getSelectionOverlayClass(screenshotDataUri)]]">
+  </lens-selection-overlay>
   <initial-toast id="initialToast"></initial-toast>
   <div id="buttonContainer">
     <cr-icon-button id="feedbackButton" class="action-button"

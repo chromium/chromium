@@ -29,6 +29,7 @@
 namespace {
 
 constexpr char kDocumentWithNamedElement[] = "/select.html";
+constexpr char kDocumentWithImage[] = "/test_visual.html";
 
 class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
  public:
@@ -97,6 +98,38 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         FlushEvents(),  // Required to fully render the menu before selection.
 
         SelectMenuItem(RenderViewContextMenu::kRegionSearchItem));
+  }
+
+  InteractiveTestApi::MultiStep OpenLensOverlayFromImage() {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithImage);
+
+    // In kDocumentWithImage.
+    const DeepQuery kPathToImg{
+        "img",
+    };
+
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                        kFirstPaintState);
+    return Steps(
+        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+        EnsurePresent(kActiveTab, kPathToImg),
+        // TODO(https://crbug.com/331859922): This functionality should be built
+        // into test framework.
+        PollState(kFirstPaintState,
+                  [this]() {
+                    return browser()
+                        ->tab_strip_model()
+                        ->GetActiveTab()
+                        ->contents()
+                        ->CompletedFirstVisuallyNonEmptyPaint();
+                  }),
+        WaitForState(kFirstPaintState, true),
+        MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+        WaitForShow(RenderViewContextMenu::kSearchForImageItem),
+        FlushEvents(),  // Required to fully render the menu before selection.
+
+        SelectMenuItem(RenderViewContextMenu::kSearchForImageItem));
   }
 
  private:
@@ -192,6 +225,46 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
                           DragMouseTo(off_center_point))),
 
       // The drag should have opened the side panel with the results frame.
+      InAnyContext(Steps(
+          FlushEvents(),
+          InstrumentNonTabWebView(
+              kOverlaySidePanelWebViewId,
+              LensOverlayController::kOverlaySidePanelWebViewId),
+          FlushEvents(),
+          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User right-clicks an image and opens lens overlay.
+//  (3) Side panel opens with results.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SearchForImage) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  const DeepQuery kPathToResultsFrame{
+      "lens-side-panel-app",
+      "#results",
+  };
+
+  RunTestSequence(
+      OpenLensOverlayFromImage(),
+
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
+
+      // The side panel should open with the results frame.
       InAnyContext(Steps(
           FlushEvents(),
           InstrumentNonTabWebView(
