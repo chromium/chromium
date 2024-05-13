@@ -56,7 +56,8 @@ KioskAppLaunchError::Error LoginFailureToKioskLaunchError(
     case AuthFailure::USERNAME_HASH_FAILED:
       return KioskAppLaunchError::Error::kUnableToRetrieveHash;
     default:
-      NOTREACHED();
+      LOG(ERROR) << "KIOSK launch error because of AuthFailure::FailureReason: "
+                 << error.reason();
       return KioskAppLaunchError::Error::kUnableToMount;
   }
 }
