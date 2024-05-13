@@ -24,12 +24,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 const unsigned int kPageSize = getpagesize();
 
@@ -506,8 +505,7 @@ int main(int argc, char** argv) {
       return EXIT_FAILURE;
     }
 
-    base::ScopedClosureRunner auto_resume_processes(
-        base::BindOnce(&KillAll, pids, SIGCONT));
+    absl::Cleanup auto_resume_processes = [&pids] { KillAll(pids, SIGCONT); };
     KillAll(pids, SIGSTOP);
     for (std::vector<pid_t>::const_iterator it = pids.begin(); it != pids.end();
          ++it) {

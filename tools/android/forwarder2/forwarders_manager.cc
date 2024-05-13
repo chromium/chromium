@@ -13,11 +13,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "tools/android/forwarder2/forwarder.h"
 #include "tools/android/forwarder2/socket.h"
 
@@ -101,9 +101,9 @@ void ForwardersManager::WaitForEventsOnInternalThread() {
   if (must_shutdown && forwarders_.empty())
     return;
 
-  base::ScopedClosureRunner wait_for_events_soon(
-      base::BindOnce(&ForwardersManager::WaitForEventsOnInternalThreadSoon,
-                     base::Unretained(this)));
+  absl::Cleanup wait_for_events_soon = [this] {
+    WaitForEventsOnInternalThreadSoon();
+  };
 
   if (FD_ISSET(wakeup_notifier_.receiver_fd(), &read_fds)) {
     // Note that the events on FDs other than the wakeup notifier one, if any,
