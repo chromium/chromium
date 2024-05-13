@@ -193,9 +193,11 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK(gmb);
 
     gfx::Size size = gmb->GetSize();
-    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_images[media::VideoFrame::kMaxPlanes];
     auto video_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        frame.frame_info->visible_rect, size, std::move(gmb), mailbox_holders,
+        frame.frame_info->visible_rect, size, std::move(gmb), shared_images,
+        gpu::SyncToken(), /*texture_target=*/0,
         base::BindOnce([](const gpu::SyncToken& token,
                           std::unique_ptr<gfx::GpuMemoryBuffer> gmb) {}),
         frame.frame_info->timestamp);

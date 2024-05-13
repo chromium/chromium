@@ -231,25 +231,25 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
           std::move(dx_handle), natural_size, gfx::BufferFormat::BGRA_8888,
           gfx::BufferUsage::GPU_READ, base::NullCallback(), nullptr, nullptr);
 
-  // The VideoFrame object requires a 4 array mailbox holder because some
+  // The VideoFrame object requires an array of 4 shared images because some
   // formats can have 4 separate planes that can have 4 different GPU
   // memories and even though in our case we are using only the first plane we
-  // still need to provide the video frame creation with a 4 array mailbox
-  // holder.
-  gpu::MailboxHolder holder[media::VideoFrame::kMaxPlanes];
-  auto client_shared_image = sii->CreateSharedImage(
+  // still need to provide the video frame creation with a 4 array.
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images[media::VideoFrame::kMaxPlanes];
+  shared_images[0] = sii->CreateSharedImage(
       {viz::SinglePlaneFormat::kBGRA_8888, natural_size, gfx::ColorSpace(),
        usage, "DCOMPTextureWrapperImpl"},
       gmb->CloneHandle());
-  CHECK(client_shared_image);
-  gpu::Mailbox mailbox = client_shared_image->mailbox();
+  CHECK(shared_images[0]);
+  gpu::Mailbox mailbox = shared_images[0]->mailbox();
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-  holder[0] = gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D);
 
   scoped_refptr<media::VideoFrame> video_frame_texture =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          gfx::Rect(natural_size), natural_size, std::move(gmb), holder,
-          base::NullCallback(), base::TimeDelta::Min());
+          gfx::Rect(natural_size), natural_size, std::move(gmb), shared_images,
+          sync_token, GL_TEXTURE_2D, base::NullCallback(),
+          base::TimeDelta::Min());
   video_frame_texture->metadata().wants_promotion_hint = true;
   video_frame_texture->metadata().allow_overlay = true;
 
@@ -257,7 +257,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       media_task_runner_,
       base::BindOnce(&DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction,
                      weak_factory_.GetWeakPtr(), sync_token,
-                     std::move(client_shared_image)),
+                     std::move(shared_images[0])),
       FROM_HERE));
 
   std::move(create_video_frame_cb).Run(video_frame_texture, mailbox);
