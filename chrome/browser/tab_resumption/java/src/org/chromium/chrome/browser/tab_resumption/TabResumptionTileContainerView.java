@@ -114,7 +114,13 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         (TabResumptionTileView)
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
                 allTilesTexts +=
-                        loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
+                        loadTileTexts(
+                                        entry,
+                                        bundle.referenceTimeMs,
+                                        isSingle,
+                                        tileView,
+                                        useSalientImage)
+                                + ". ";
                 loadTileUrlImage(entry, urlImageProvider, tileView, isSingle, useSalientImage);
                 bindSuggestionClickCallback(tileView, suggestionClickCallbacks, entry, clickInfo);
                 addView(tileView);
@@ -129,7 +135,8 @@ public class TabResumptionTileContainerView extends LinearLayout {
             SuggestionEntry entry,
             long referenceTimeMs,
             boolean isSingle,
-            TabResumptionTileView tileView) {
+            TabResumptionTileView tileView,
+            boolean useSalientImage) {
         Resources res = getContext().getResources();
         String recencyString =
                 TabResumptionModuleUtils.getRecencyString(
@@ -149,14 +156,30 @@ public class TabResumptionTileContainerView extends LinearLayout {
             return preInfoText + ", " + entry.title + ", " + postInfoText;
         }
 
-        String infoText =
-                isLocal
-                        ? res.getString(
-                                R.string.tab_resumption_module_multi_info_local, recencyString)
-                        : res.getString(
-                                R.string.tab_resumption_module_multi_info,
-                                recencyString,
-                                entry.sourceName);
+        String infoText;
+        String domainUrl = TabResumptionModuleUtils.getDomainUrl(entry.url);
+        if (isLocal) {
+            infoText =
+                    useSalientImage
+                            ? res.getString(
+                                    R.string.tab_resumption_module_multi_info_local_with_url,
+                                    domainUrl,
+                                    recencyString)
+                            : res.getString(
+                                    R.string.tab_resumption_module_multi_info_local, recencyString);
+        } else {
+            infoText =
+                    useSalientImage
+                            ? res.getString(
+                                    R.string.tab_resumption_module_multi_info_with_url,
+                                    domainUrl,
+                                    recencyString,
+                                    entry.sourceName)
+                            : res.getString(
+                                    R.string.tab_resumption_module_multi_info,
+                                    recencyString,
+                                    entry.sourceName);
+        }
         tileView.setSuggestionTextsMulti(entry.title, infoText);
         return entry.title + ", " + infoText;
     }
