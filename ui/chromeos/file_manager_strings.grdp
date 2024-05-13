@@ -1383,10 +1383,10 @@
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_CRX" desc="Message shown when a user tries to open a *.crx file, which we don't handle in the Files app.">
     We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK">&lt;a target='_blank' href='https://support.google.com/chrome_webstore/answer/2664769?p=crx_warning&amp;rd=1'&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the crostini container.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE" desc="Message title shown when a user shares the root of a volume such as 'This Chromebook' with the Crostini container.">
     Share folder with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the crostini container.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI" desc="Confirmation message shown when a user shares the root of a volume such as 'This Chromebook' with the Crostini container.">
     Give Linux apps permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the crostini container.">
@@ -1398,10 +1398,10 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the crostini container.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Linux
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the Parallels.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume such as 'This Chromebook' with Parallels.">
     Share folder with Parallels Desktop
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with Parallels." >
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares the root of a volume such as 'This Chromebook' with Parallels." >
     Give Parallels Desktop permission to access files in the <ph name="FOLDER_NAME">$1<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with Parallels.">
@@ -1413,10 +1413,10 @@
   <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with Parallels.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Parallels Desktop
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta.">
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume such as 'This Chromebook' with the VM type codenamed Bruschetta.">
     Share folder with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta" >
+  <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA" desc="Confirmation message shown when a user shares the root of a volume such as 'This Chromebook' with the VM type codenamed Bruschetta." >
     Give <ph name="VM_NAME">$1<ex>MyVm</ex></ph> permission to access files in the <ph name="FOLDER_NAME">$2<ex>Downloads</ex></ph> folder
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the VM type codenamed Bruschetta.">
