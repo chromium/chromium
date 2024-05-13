@@ -1664,9 +1664,8 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs camera permission to create a 3D map of your surroundings
         </message>
-        <!-- TODO(https://crbug.com/331489777)-->
         <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to mixed reality capabilities, but Chrome is missing the Android scene understanding and hand tracking permission.">
-          Chrome needs scene understanding and hand tracking permission to start an immersive session
+          Chrome needs permission to map your surroundings and track your hands
         </message>
         <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
           Chrome needs camera permission for this site
