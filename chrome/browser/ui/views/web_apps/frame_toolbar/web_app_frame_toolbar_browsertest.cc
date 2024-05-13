@@ -2049,8 +2049,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test to ensure crbug.com/1513330 won't reproduce.
-// TODO(b/41492287, b/336264927): Flaky on Linux and Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(b/41492287, b/336264927): Flaky on Linux, Mac, and Lacros.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_WindowSetResizableDoesntBlockMoveToAndMoveByApis \
   DISABLED_WindowSetResizableDoesntBlockMoveToAndMoveByApis
 #else
