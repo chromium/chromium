@@ -171,10 +171,6 @@ tast_disabled_tests_from_lacros_all = [
 ]
 
 if (!is_official_build) {
-  # b/315373487 the team working on the fix on CrOS side
-  tast_disabled_tests_from_chrome_all +=
-      [ "ui.ChromeCrashLoopV2.crashpad_mock_consent@jacuzzi" ]
-
   # b/322444880 Should be fixed by the next LKGM uprev.
   tast_disabled_tests_from_chrome_all += [ "terminal.SSH@octopus" ]
 
