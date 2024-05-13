@@ -182,7 +182,7 @@ void P2PSocketClientImpl::DataReceived(
   if (delegate_) {
     for (auto& packet : packets) {
       delegate_->OnDataReceived(packet->socket_address, packet->data,
-                                packet->timestamp);
+                                packet->timestamp, packet->ecn);
     }
   }
 }

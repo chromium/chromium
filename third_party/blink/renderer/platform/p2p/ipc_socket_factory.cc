@@ -156,7 +156,8 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   void OnError() override;
   void OnDataReceived(const net::IPEndPoint& address,
                       base::span<const uint8_t> data,
-                      const base::TimeTicks& timestamp) override;
+                      const base::TimeTicks& timestamp,
+                      rtc::EcnMarking ecn) override;
 
  private:
   static void DoCreateSocket(
@@ -691,7 +692,8 @@ void IpcPacketSocket::OnError() {
 
 void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
                                      base::span<const uint8_t> data,
-                                     const base::TimeTicks& timestamp) {
+                                     const base::TimeTicks& timestamp,
+                                     rtc::EcnMarking ecn) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   rtc::SocketAddress address_lj;
@@ -710,7 +712,8 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
   }
   NotifyPacketReceived(rtc::ReceivedPacket(
       data, address_lj,
-      webrtc::Timestamp::Micros(timestamp.since_origin().InMicroseconds())));
+      webrtc::Timestamp::Micros(timestamp.since_origin().InMicroseconds()),
+      ecn));
 }
 
 AsyncDnsAddressResolverImpl::AsyncDnsAddressResolverImpl(

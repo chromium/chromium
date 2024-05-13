@@ -247,7 +247,8 @@ bool P2PSocketTcpBase::OnPacket(base::span<const uint8_t> data) {
 
   auto packet = mojom::P2PReceivedPacket::New(
       data, remote_address_.ip_address,
-      base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
+      base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()),
+      rtc::EcnMarking::kNotEct);
 
   std::vector<mojom::P2PReceivedPacketPtr> received_packets;
   received_packets.push_back(std::move(packet));

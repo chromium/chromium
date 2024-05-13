@@ -741,6 +741,10 @@ mojom("url_loader_base") {
             mojom = "network.mojom.P2PSocketType"
             cpp = "::network::P2PSocketType"
           },
+          {
+            mojom = "network.mojom.EcnMarking"
+            cpp = "::rtc::EcnMarking"
+          },
         ]
         traits_headers = [ "//services/network/public/cpp/p2p_param_traits.h" ]
         traits_public_deps =
