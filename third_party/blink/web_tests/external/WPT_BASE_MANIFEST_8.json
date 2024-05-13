@@ -21128,6 +21128,19 @@
        {}
       ]
      ],
+     "page-box-004-print.html": [
+      "91ea66090da1bbe822c3612361543d210daf2f7d",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-004-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-left-right-001-print.html": [
       "044696fcca27ec7ebe18edab3053dfbb65af6bbc",
       [
@@ -21239,6 +21252,32 @@
        [
         [
          "/css/css-page/page-margin-007-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-margin-auto-negative-print.tentative.html": [
+      "452056a1003e7b9d7a56601e72683d3d6f60f2a0",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-margin-auto-negative-print-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-margin-auto-print.html": [
+      "1c94ec4e4980cb3a8297920a94b82d24b837975c",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-margin-auto-print-ref.html",
          "=="
         ]
        ],
@@ -22236,6 +22275,32 @@
        [
         [
          "/css/css-page/page-size-012-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-size-013-print.html": [
+      "5768e2d54cb08871755db09c5babf5fa9846b67b",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-size-013-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-size-014-print.html": [
+      "f224bafaa87a1fd84c2ed5166f830b7f5f0c98d4",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-size-014-print-ref.html",
          "=="
         ]
        ],
@@ -169705,7 +169770,7 @@
       ]
      ],
      "pseudo-first-line.html": [
-      "180420d98a4d94d5efd84cee8c83309fa060ffdb",
+      "6be0a8b20a8ced882403ff788ed78d641edde5ce",
       [
        null,
        [
@@ -272033,7 +272098,7 @@
       },
       "the-select-element": {
        "select-1-block-size-001-ref.html": [
-        "3834281dd83cd0e604fc27dd66dcaa3fb12287ff",
+        "3d30c2bd9d0a105595ca6b1c75448fcdb801b101",
         [
          null,
          [
@@ -327443,6 +327508,10 @@
       "e1ee4ab5d148662f6ea6af9f906caed7e821b207",
       []
      ],
+     "page-box-004-print-ref.html": [
+      "ab2fda9afb6443e0b2da05813f41bfc0edc17f98",
+      []
+     ],
      "page-left-right-001-print-ref.html": [
       "1eb011bed8a0dde4a65494d54fc2e2bd9a042080",
       []
@@ -327477,6 +327546,14 @@
      ],
      "page-margin-007-print-ref.html": [
       "20d16df19de9dc0ad95f5b17344cd21210983c18",
+      []
+     ],
+     "page-margin-auto-negative-print-ref.tentative.html": [
+      "9e816c12fb7ddcd94cdfaf1e910f6146e70c05c6",
+      []
+     ],
+     "page-margin-auto-print-ref.html": [
+      "d7fda4ab6d9919370898450f0e3ee79c65db1a6b",
       []
      ],
      "page-margin-negative-print-ref.tentative.html": [
@@ -327749,6 +327826,14 @@
      ],
      "page-size-012-print-ref.html": [
       "e85e5f078508ca299255ea8270dd1519115019a1",
+      []
+     ],
+     "page-size-013-print-ref.html": [
+      "23c93e5c47a9c8cc7fe8545a97920c961d7d31a8",
+      []
+     ],
+     "page-size-014-print-ref.html": [
+      "23c93e5c47a9c8cc7fe8545a97920c961d7d31a8",
       []
      ],
      "page-visibility-hidden-001-print-ref.html": [
@@ -329694,7 +329779,7 @@
       ]
      },
      "pseudo-first-line-ref.html": [
-      "55c96fb2d3c45e680549c8b500ecaf28d297c311",
+      "db20b5032757e178fa4ec3a5a650dfc1dadfb28c",
       []
      ],
      "reference": {
@@ -369238,7 +369323,7 @@
       },
       "the-select-element": {
        "select-1-block-size-001-ref-2.html": [
-        "385c2a75d427dde8ef0ba71cc777f298027423b9",
+        "52461231862cfc998ccdb7ce9423d54b59d9e17e",
         []
        ],
        "select-1-block-size-ref.html": [
@@ -457323,6 +457408,13 @@
       ]
      },
      "text-box-trim": {
+      "inheritance.html": [
+       "a37a40e976da17c1fb7f7326d91141db434bcf59",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-box-edge-computed.html": [
        "50a963297ce430fd0b6c81db1f76e73a3c8aa36e",
        [
@@ -723664,7 +723756,7 @@
          ]
         ],
         "get_realms.py": [
-         "4dfce5ab494b6a69550d00120e0a13b737877b9d",
+         "6e57e7266f09aa9a336c95fbccf6e287276fcff2",
          [
           null,
           {}
