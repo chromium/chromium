@@ -91,9 +91,7 @@ static const int kOddSizeOffset = 3;
 static const int kStandardWidth = 320;
 static const int kStandardHeight = 240;
 
-class FakeWebMediaPlayerDelegate
-    : public WebMediaPlayerDelegate,
-      public base::SupportsWeakPtr<FakeWebMediaPlayerDelegate> {
+class FakeWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
  public:
   FakeWebMediaPlayerDelegate() {}
 

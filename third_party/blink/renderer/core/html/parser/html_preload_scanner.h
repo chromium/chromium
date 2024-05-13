@@ -183,8 +183,7 @@ class TokenPreloadScanner {
   element_locator::TokenStreamMatcher lcp_element_matcher_;
 };
 
-class CORE_EXPORT HTMLPreloadScanner
-    : public base::SupportsWeakPtr<HTMLPreloadScanner> {
+class CORE_EXPORT HTMLPreloadScanner final {
   USING_FAST_MALLOC(HTMLPreloadScanner);
 
  public:
@@ -237,6 +236,10 @@ class CORE_EXPORT HTMLPreloadScanner
 
   static bool IsSkipPreloadScanEnabled(const Document* document);
 
+  base::WeakPtr<HTMLPreloadScanner> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
@@ -245,6 +248,7 @@ class CORE_EXPORT HTMLPreloadScanner
       script_token_scanner_;
   TakePreloadFn take_preload_;
   bool skip_preload_scanning_;
+  base::WeakPtrFactory<HTMLPreloadScanner> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
