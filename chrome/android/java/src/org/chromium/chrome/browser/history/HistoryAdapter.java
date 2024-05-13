@@ -471,8 +471,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         context, R.string.android_app_history_open_full_other_forms);
             }
         } else {
-            text = getPrivacyDisclaimerClickableSpanString(
-                    context, R.string.android_history_other_forms_of_history);
+            int res =
+                    HistoryManager.isAppSpecificHistoryEnabled()
+                            ? R.string.android_history_from_other_apps_other_forms_of_history
+                            : R.string.android_history_other_forms_of_history;
+            text = getPrivacyDisclaimerClickableSpanString(context, res);
         }
         mPrivacyDisclaimerTextView.setText(text);
     }
