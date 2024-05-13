@@ -467,38 +467,45 @@ void CookieSettings::AugmentInclusionStatus(
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieInclusionStatus& out_status) const {
   if (IsCookieAllowed(cookie, setting_with_metadata)) {
-    if (is_third_party_request && ShouldApply3pcdRelatedReasons(cookie)) {
-      if (ShouldBlockThirdPartyCookies()) {
-        out_status.MaybeSetExemptionReason(GetExemptionReason(
-            setting_with_metadata.third_party_cookie_allow_mechanism()));
-      } else if (!setting_with_metadata.is_explicit_setting()) {
-        // The cookie should be allowed by default to have this warning
-        // reason.
-        out_status.AddWarningReason(
-            net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
-      }
+    if (!is_third_party_request || !ShouldApply3pcdRelatedReasons(cookie)) {
+      return;
     }
-  } else {
-    if (is_third_party_request && IsThirdPartyPhaseoutEnabled() &&
-        !setting_with_metadata.is_explicit_setting() &&
-        setting_with_metadata.allow_partitioned_cookies()) {
-      if (ShouldApply3pcdRelatedReasons(cookie)) {
-        // This cookie is blocked due to 3PCD.
-        out_status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
-
-        if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
-          out_status.AddExclusionReason(
-              net::CookieInclusionStatus::
-                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
-        }
-      }
-    } else {
-      // The cookie is blocked, but not by 3PCD.
-      out_status.AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+    if (ShouldBlockThirdPartyCookies()) {
+      out_status.MaybeSetExemptionReason(GetExemptionReason(
+          setting_with_metadata.third_party_cookie_allow_mechanism()));
+      return;
     }
+    if (!setting_with_metadata.is_explicit_setting()) {
+      // The cookie should be allowed by default to have this warning
+      // reason.
+      out_status.AddWarningReason(
+          net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT);
+    }
+    return;
   }
+
+  // The cookie is blocked.
+
+  if (is_third_party_request && IsThirdPartyPhaseoutEnabled() &&
+      !setting_with_metadata.is_explicit_setting() &&
+      setting_with_metadata.allow_partitioned_cookies()) {
+    // This cookie is blocked due to 3PCD.
+    if (!ShouldApply3pcdRelatedReasons(cookie)) {
+      return;
+    }
+    out_status.AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+
+    if (first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+      out_status.AddExclusionReason(
+          net::CookieInclusionStatus::
+              EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+    }
+    return;
+  }
+  // The cookie is blocked, but not by 3PCD.
+  out_status.AddExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
 }
 
 }  // namespace network
