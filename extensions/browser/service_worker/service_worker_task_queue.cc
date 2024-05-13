@@ -65,16 +65,6 @@ ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 // Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
 
-// ServiceWorkerRegistration state of an activated extension.
-enum class RegistrationState {
-  // Not registered.
-  kNotRegistered,
-  // Registration is inflight.
-  kPending,
-  // Registration is complete.
-  kRegistered,
-};
-
 // Browser process worker state of an activated extension.
 enum class BrowserState {
   // Initial state, not started.
@@ -150,7 +140,6 @@ class ServiceWorkerTaskQueue::WorkerState {
  private:
   friend class ServiceWorkerTaskQueue;
 
-  RegistrationState registration_state_ = RegistrationState::kNotRegistered;
   BrowserState browser_state_ = BrowserState::kInitial;
   RendererState renderer_state_ = RendererState::kInitial;
 
@@ -466,7 +455,7 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   bool needs_start_worker = tasks.empty();
   tasks.push_back(std::move(task));
 
-  if (worker_state->registration_state_ != RegistrationState::kRegistered) {
+  if (!base::Contains(worker_registered_, context_id)) {
     // If the worker hasn't finished registration, wait for it to complete. The
     // worker can't be started until a registration is found for it in the
     // //content layer. `DidRegisterServiceWorker()` will start the worker to
@@ -492,7 +481,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   const SequencedContextId context_id = {extension_id, browser_context_,
                                          activation_token};
   DCHECK(!base::Contains(worker_state_map_, context_id));
-  WorkerState& worker_state = worker_state_map_[context_id];
+  worker_state_map_.try_emplace(context_id);
 
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension->id());
@@ -507,13 +496,12 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
                                          !service_worker_already_registered);
   }
 
+  DCHECK(!base::Contains(worker_registered_, context_id));
   if (service_worker_already_registered) {
-    worker_state.registration_state_ = RegistrationState::kRegistered;
+    worker_registered_.insert(context_id);
     VerifyRegistration(service_worker_context, context_id, extension->url());
     return;
   }
-
-  worker_state.registration_state_ = RegistrationState::kPending;
 
   RegisterServiceWorker(RegistrationReason::REGISTER_ON_EXTENSION_LOAD,
                         context_id, *extension);
@@ -572,6 +560,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   // TODO(lazyboy): Run orphaned tasks with nullptr ContextInfo.
   worker_state->pending_tasks_.clear();
   worker_state_map_.erase(context_id);
+  worker_registered_.erase(context_id);
 
   // Erase any registrations that might still have been pending being fully
   // stored.
@@ -644,7 +633,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   DCHECK(worker_state);
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.RegistrationStatus", success);
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
     UMA_HISTOGRAM_BOOLEAN(
@@ -674,7 +663,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.RegistrationTime",
                       base::Time::Now() - start_time);
 
-  worker_state->registration_state_ = RegistrationState::kRegistered;
+  worker_registered_.insert(context_id);
+
   pending_registrations_.emplace(extension->id(),
                                  *GetCurrentActivationToken(extension->id()));
 

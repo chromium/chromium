@@ -334,6 +334,12 @@ class ServiceWorkerTaskQueue
   // expected for that registration.
   std::map<ExtensionId, base::UnguessableToken> pending_registrations_;
 
+  // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`
+  // or could we used `ExtensionId` instead?
+  // The activated extensions that have workers that are registered with the
+  // //content layer.
+  std::set<SequencedContextId> worker_registered_;
+
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
 };
 
