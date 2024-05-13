@@ -137,6 +137,16 @@ std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
           .model_id = ui::HeatmapPalmDetector::ModelId::kGeralt,
           .crop_heatmap = std::nullopt,
       },
+      {
+          .name = "hid-hxtp 4858:1003",
+          .vendor_id = 0x4858,
+          .product_id = 0x1003,
+          .model_id = ui::HeatmapPalmDetector::ModelId::kGeralt,
+          .crop_heatmap = std::optional<ui::HeatmapPalmDetector::CropHeatmap>({
+              .left_crop = 1,
+              .right_crop = 1,
+          }),
+      },
   };
 }
 
