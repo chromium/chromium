@@ -462,13 +462,28 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return false;
   }
 
-  // Native <img> create extra child nodes to hold alt text, which are not
-  // allowed as children. Note: images can have image map children, but these
-  // are moved from the <map> descendants and are not descendants of the image.
-  // See AXNodeObject::AddImageMapChildren().
-  if (node->IsInUserAgentShadowRoot() &&
-      IsA<HTMLImageElement>(node->OwnerShadowHost())) {
-    return false;
+  if (node->IsInUserAgentShadowRoot()) {
+    // Native <img> create extra child nodes to hold alt text, which are not
+    // allowed as children. Note: images can have image map children, but these
+    // are moved from the <map> descendants and are not descendants of the
+    // image. See AXNodeObject::AddImageMapChildren().
+    if (IsA<HTMLImageElement>(node->OwnerShadowHost())) {
+      return false;
+    }
+    // aria-hidden subtrees can safely be pruned when it's in a UA shadow root.
+    // Make an exception for file input, which needs to gather its name from
+    // aria-hidden contents.
+    if (const Element* element = DynamicTo<Element>(node)) {
+      if (element->FastGetAttribute(html_names::kAriaHiddenAttr) == "true") {
+        if (auto* input =
+                DynamicTo<HTMLInputElement>(element->OwnerShadowHost())) {
+          if (input->FormControlType() == FormControlType::kInputFile) {
+            return true;
+          }
+        }
+        return false;
+      }
+    }
   }
 
   // All other non-slot user agent shadow nodes are relevant.
