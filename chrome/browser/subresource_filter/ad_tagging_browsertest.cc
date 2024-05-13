@@ -988,6 +988,19 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   EXPECT_EQ(waiter->current_complete_ad_resources(), 3);
 }
 
+// Regression test for crbug.com/336753737.
+IN_PROC_BROWSER_TEST_F(
+    AdTaggingBrowserTest,
+    SameDocumentHistoryNavigationAbortedByParentHistoryNavigation) {
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ad_tagging/abort_regression.html");
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+
+  // We should not crash in this line.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+}
+
 class AdClickMetricsBrowserTest : public AdTaggingBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

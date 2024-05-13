@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.onload = () => {
+    // Don't block on async function completing.
+    (async function () {
+      // Wait so that the initial top-level navigation is completely committed.
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      // Set up history entries.
+      await iframe.contentWindow.navigation.navigate("#").finished;
+      await navigation.navigate("#").finished;
+
+      // Prevent the top-level frame from finishing its navigation too quickly.
+      navigation.onnavigate = e => e.preventDefault();
+
+      // Undo the iframe navigation; this also undoes the top-frame navigation.
+      iframe.contentWindow.navigation.back();
+    })();
+  }
+</script>
+</head>
+
+<body>
+  <iframe id="iframe" src="blank.html"></iframe>
+</body>
+
+</html>

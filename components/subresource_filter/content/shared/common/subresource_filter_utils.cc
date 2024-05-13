@@ -34,12 +34,14 @@ bool IsSubresourceFilterRoot(content::RenderFrameHost* rfh) {
 }
 
 content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh) {
+  CHECK(rfh);
+
   // This only "breaks out" from fenced frames since the desired behavior in
   // other nested frame trees (e.g. portals) isn't clear. Otherwise we could
   // just use GetOutermostMainFrame.
   while (rfh->IsNestedWithinFencedFrame()) {
     rfh = rfh->GetMainFrame()->GetParentOrOuterDocument();
-    DCHECK(rfh);
+    CHECK(rfh);
   }
 
   return rfh->GetPage();
