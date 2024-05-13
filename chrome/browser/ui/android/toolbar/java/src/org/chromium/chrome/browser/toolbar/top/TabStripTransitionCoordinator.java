@@ -392,7 +392,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         // Update the min size for the control container. This is needed one-layout-before browser
         // controls start changing its height, as it assumed a fixed size control container during
         // transition. See b/324178484.
-        int maxHeight = calculateTabStripHeight() + mToolbarLayout.getMeasuredHeight();
+        View toolbarHairline = controlContainerView().findViewById(R.id.toolbar_hairline);
+        int maxHeight =
+                calculateTabStripHeight()
+                        + mToolbarLayout.getMeasuredHeight()
+                        + toolbarHairline.getMeasuredHeight();
         controlContainerView().setMinimumHeight(maxHeight);
 
         // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
@@ -619,8 +623,13 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mHandler.post(
                 mCallbackController.makeCancelable(
                         () -> {
+                            View toolbarHairline =
+                                    controlContainerView().findViewById(R.id.toolbar_hairline);
                             controlContainerView()
-                                    .setMinimumHeight(mToolbarLayout.getHeight() + mTabStripHeight);
+                                    .setMinimumHeight(
+                                            mToolbarLayout.getHeight()
+                                                    + mTabStripHeight
+                                                    + toolbarHairline.getHeight());
                             ViewUtils.requestLayout(
                                     controlContainerView(),
                                     "TabStripTransitionCoordinator.remeasureControlContainer");
