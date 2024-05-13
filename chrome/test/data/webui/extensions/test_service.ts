@@ -34,6 +34,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteItem',
       'deleteItems',
       'dismissSafetyHubExtensionsMenuNotification',
+      'dismissMv2DeprecationWarning',
       'dismissMv2DeprecationWarningForExtension',
       'uninstallItem',
       'downloadActivities',
@@ -116,6 +117,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       isDeveloperModeControlledByPolicy: false,
       isIncognitoAvailable: false,
       isChildAccount: false,
+      isMv2DeprecationWarningDismissed: false,
     });
   }
 
@@ -398,5 +400,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   dismissMv2DeprecationWarningForExtension(id: string) {
     this.methodCalled('dismissMv2DeprecationWarningForExtension', id);
+  }
+
+  dismissMv2DeprecationWarning() {
+    this.methodCalled('dismissMv2DeprecationWarning');
   }
 }

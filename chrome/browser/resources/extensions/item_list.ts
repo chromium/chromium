@@ -40,6 +40,11 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         value: false,
       },
 
+      isMv2DeprecationWarningDismissed: {
+        type: Boolean,
+        notify: true,
+      },
+
       filter: {
         type: String,
       },
@@ -85,7 +90,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
        */
       showMv2DeprecationPanel_: {
         type: Boolean,
-        computed: 'computeShowMv2DeprecationPanel_(mv2DeprecatedExtensions_)',
+        computed: 'computeShowMv2DeprecationPanel_(' +
+            'isMv2DeprecationWarningDismissed, mv2DeprecatedExtensions_)',
       },
 
       hasSafetyCheckTriggeringExtension_: {
@@ -99,6 +105,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   extensions: chrome.developerPrivate.ExtensionInfo[];
   delegate: ItemDelegate;
   inDevMode: boolean;
+  isMv2DeprecationWarningDismissed: boolean;
   filter: string;
   private computedFilter_: string;
   private maxColumns_: number;
@@ -202,10 +209,13 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Returns whether the manifest v2 deprecation panel should be visible.
    */
   private computeShowMv2DeprecationPanel_(): boolean {
-    // Panel is visible iff it should be enabled and at least one extension is
-    // affected by the MV2 deprecation.
+    // Panel is visible iff it should be enabled, hasn't been dismissed by the
+    // user and at least one extension is affected by the MV2 deprecation.
+    // Note: deprecated extensions may not be initialized at construction, thus
+    // we check for their existence.
     return loadTimeData.getBoolean('MV2DeprecationPanelEnabled') &&
-        this.mv2DeprecatedExtensions_.length !== 0;
+        !this.isMv2DeprecationWarningDismissed &&
+        this.mv2DeprecatedExtensions_?.length !== 0;
   }
 
   private shouldShowEmptyItemsMessage_() {

@@ -468,6 +468,9 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
   info->can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
           ->HasAllowlistedExtension();
+  info->is_mv2_deprecation_warning_dismissed =
+      ManifestV2ExperimentManager::Get(profile)
+          ->DidUserAcknowledgeWarningGlobally();
   return info;
 }
 
@@ -519,6 +522,10 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   // callback on destruction.
   pref_change_registrar_.Add(
       prefs::kExtensionsUIDeveloperMode,
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      kMV2DeprecationWarningAcknowledgedGloballyPref.name,
       base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
                           base::Unretained(this)));
 }
@@ -1048,6 +1055,11 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     }
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
+  }
+
+  if (update.is_mv2_deprecation_warning_dismissed.value_or(false)) {
+    ManifestV2ExperimentManager::Get(browser_context())
+        ->MarkWarningAsAcknowledgedGlobally();
   }
 
   return RespondNow(NoArguments());

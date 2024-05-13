@@ -122,6 +122,11 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
         value: () => loadTimeData.getBoolean('inDevMode'),
       },
 
+      isMv2DeprecationWarningDismissed: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('MV2DeprecationPanelDismissed'),
+      },
+
       showActivityLog: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showActivityLog'),
@@ -223,6 +228,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   canLoadUnpacked: boolean;
   delegate: Service;
   inDevMode: boolean;
+  isMv2DeprecationWarningDismissed: boolean;
   showActivityLog: boolean;
   enableEnhancedSiteControls: boolean;
   devModeControlledByPolicy: boolean;
@@ -293,6 +299,8 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
               profileInfo.isDeveloperModeControlledByPolicy;
           this.inDevMode = profileInfo.inDeveloperMode;
           this.canLoadUnpacked = profileInfo.canLoadUnpacked;
+          this.isMv2DeprecationWarningDismissed =
+              profileInfo.isMv2DeprecationWarningDismissed;
         };
     service.getProfileStateChangedTarget().addListener(onProfileStateChanged);
     service.getProfileConfiguration().then(onProfileStateChanged);

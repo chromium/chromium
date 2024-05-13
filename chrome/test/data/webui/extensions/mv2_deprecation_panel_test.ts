@@ -70,6 +70,20 @@ suite('ExtensionsMV2DeprecationPanel', function() {
   });
 
   test(
+      'dismiss button triggers the warning dismissal when clicked',
+      async function() {
+        const dismissButton =
+            panelElement.shadowRoot!.querySelector<CrButtonElement>(
+                '.header-button');
+        assertTrue(!!dismissButton);
+
+        dismissButton.click();
+        await mockDelegate.whenCalled('dismissMv2DeprecationWarning');
+        assertEquals(
+            1, mockDelegate.getCallCount('dismissMv2DeprecationWarning'));
+      });
+
+  test(
       'find alternative button is visible if extension has recommendations' +
           'url, and opens url when clicked',
       async function() {

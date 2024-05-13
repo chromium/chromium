@@ -452,10 +452,13 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
 
-  MV2ExperimentStage mv2_exp_stage =
-      ManifestV2ExperimentManager::Get(profile)->GetCurrentExperimentStage();
+  auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
   source->AddBoolean("MV2DeprecationPanelEnabled",
-                     mv2_exp_stage == MV2ExperimentStage::kWarning);
+                     mv2_experiment_manager->GetCurrentExperimentStage() ==
+                         MV2ExperimentStage::kWarning);
+  source->AddBoolean(
+      "MV2DeprecationPanelDismissed",
+      mv2_experiment_manager->DidUserAcknowledgeWarningGlobally());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(

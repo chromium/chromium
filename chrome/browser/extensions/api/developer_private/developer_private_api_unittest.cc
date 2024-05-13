@@ -3219,4 +3219,22 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeWarning(extension->id()));
 }
 
+TEST_F(DeveloperPrivateApiWithMV2DeprecationUnitTest,
+       TestAcknowledgingWarningGlobally) {
+  ManifestV2ExperimentManager* experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeWarningGlobally());
+
+  auto update_profile_function = base::MakeRefCounted<
+      api::DeveloperPrivateUpdateProfileConfigurationFunction>();
+  update_profile_function->set_source_context_type(mojom::ContextType::kWebUi);
+
+  base::Value::List args;
+  args.Append(
+      base::Value::Dict().Set("isMv2DeprecationWarningDismissed", true));
+  EXPECT_TRUE(RunFunction(update_profile_function, args));
+
+  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeWarningGlobally());
+}
+
 }  // namespace extensions

@@ -291,6 +291,7 @@ namespace developerPrivate {
     boolean isDeveloperModeControlledByPolicy;
     boolean isIncognitoAvailable;
     boolean isChildAccount;
+    boolean isMv2DeprecationWarningDismissed;
   };
 
   // DEPRECATED: Prefer ExtensionInfo.
@@ -350,6 +351,7 @@ namespace developerPrivate {
 
   dictionary ProfileConfigurationUpdate {
     boolean? inDeveloperMode;
+    boolean? isMv2DeprecationWarningDismissed;
   };
 
   dictionary ExtensionCommandUpdate {

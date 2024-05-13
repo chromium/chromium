@@ -18,6 +18,7 @@ import type {ItemDelegate} from './item.js';
 import {getTemplate} from './mv2_deprecation_panel.html.js';
 
 export interface Mv2DeprecationPanelDelegate {
+  dismissMv2DeprecationWarning(): void;
   dismissMv2DeprecationWarningForExtension(id: string): void;
 }
 
@@ -93,6 +94,13 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
    */
   private getSubtitleString_(): TrustedHTML {
     return sanitizeInnerHtml(this.subtitleString_);
+  }
+
+  /**
+   * Triggers the panel dismissal when the dismiss button is clicked.
+   */
+  private onDismissButtonClick_() {
+    this.delegate.dismissMv2DeprecationWarning();
   }
 
   /**
