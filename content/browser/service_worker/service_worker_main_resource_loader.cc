@@ -913,9 +913,13 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   DCHECK(version->GetMainScriptResponse());
   response_head_->ssl_info = version->GetMainScriptResponse()->ssl_info;
 
-  CHECK(version->policy_container_host());
-  response_head_->client_address_space =
-      version->policy_container_host()->ip_address_space();
+  CHECK(version->policy_container_host(), base::NotFatalUntil::M129);
+  // TODO(https://crbug.com/339200481): Find out why some ServiceWorker versions
+  // have null policy container host.
+  if (version->policy_container_host()) {
+    response_head_->client_address_space =
+        version->policy_container_host()->ip_address_space();
+  }
 
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
