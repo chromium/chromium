@@ -231,6 +231,8 @@ def _ParseOptions():
   options.input_paths = action_helpers.parse_gn_list(options.input_paths)
   options.extra_mapping_output_paths = action_helpers.parse_gn_list(
       options.extra_mapping_output_paths)
+  if os.environ.get('R8_VERBOSE') == '1':
+    options.verbose = True
 
   if options.feature_names:
     if 'base' not in options.feature_names:
@@ -405,7 +407,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     cmd += sorted(base_context.input_jars)
 
-    if options.verbose or os.environ.get('R8_VERBOSE') == '1':
+    if options.verbose:
       stderr_filter = None
     else:
       filters = list(dex.DEFAULT_IGNORE_WARNINGS)
@@ -456,20 +458,20 @@ def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
   build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
 
 
-def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
-                            dump_inputs, error_title):
+def _CheckForMissingSymbols(options, dex_files, error_title):
   cmd = build_utils.JavaCmd()
 
-  if dump_inputs:
+  if options.dump_inputs:
     cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
 
   cmd += [
-      '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
+      '-cp', options.r8_path,
+      'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
       '--check'
   ]
 
-  for path in classpath:
+  for path in options.classpath:
     cmd += ['--lib', path]
   for path in dex_files:
     cmd += ['--source', path]
@@ -536,10 +538,12 @@ out/Release/apks/YourApk.apk > dex.txt
     return stderr
 
   try:
+    if options.verbose:
+      stderr_filter = None
     build_utils.CheckOutput(cmd,
                             print_stdout=True,
                             stderr_filter=stderr_filter,
-                            fail_on_output=warnings_as_errors)
+                            fail_on_output=options.warnings_as_errors)
   except build_utils.CalledProcessError as e:
     # Do not output command line because it is massive and makes the actual
     # error message hard to find.
@@ -666,9 +670,7 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
   error_title = 'DEX contains references to non-existent symbols after R8.'
   dex_files = sorted(c.final_output_path
                      for c in split_contexts_by_name.values())
-  if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                             options.warnings_as_errors, options.dump_inputs,
-                             error_title):
+  if _CheckForMissingSymbols(options, dex_files, error_title):
     # Failed but didn't raise due to warnings_as_errors=False
     return
 
@@ -682,9 +684,7 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
     # run 3 of them (all, base, base+chrome).
     # We could run them concurrently, to shave off 5-6 seconds, but would need
     # to make sure that the order is maintained.
-    if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                               options.warnings_as_errors, options.dump_inputs,
-                               error_title):
+    if _CheckForMissingSymbols(options, dex_files, error_title):
       # Failed but didn't raise due to warnings_as_errors=False
       return
 
