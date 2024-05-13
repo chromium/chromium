@@ -8,9 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -161,13 +163,14 @@ std::unique_ptr<base::Value> DecodeIntegerValue(google::protobuf::int64 value) {
 }
 
 std::unique_ptr<base::Value> DecodeConnectionType(int value) {
-  const std::map<int, std::string> kConnectionTypes = {
-      {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET,
-       shill::kTypeEthernet},
-      {em::AutoUpdateSettingsProto::CONNECTION_TYPE_WIFI, shill::kTypeWifi},
-      {em::AutoUpdateSettingsProto::CONNECTION_TYPE_CELLULAR,
-       shill::kTypeCellular},
-  };
+  static constexpr auto kConnectionTypes =
+      base::MakeFixedFlatMap<int, std::string_view>({
+          {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET,
+           shill::kTypeEthernet},
+          {em::AutoUpdateSettingsProto::CONNECTION_TYPE_WIFI, shill::kTypeWifi},
+          {em::AutoUpdateSettingsProto::CONNECTION_TYPE_CELLULAR,
+           shill::kTypeCellular},
+      });
   const auto iter = kConnectionTypes.find(value);
   if (iter == kConnectionTypes.end()) {
     return nullptr;
