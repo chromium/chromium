@@ -50,6 +50,12 @@ using base::android::JavaParamRef;
 
 namespace {
 
+// The cache expiration time for IsAccountManaged(), i.e. the maximum time
+// interval between two calls to IsAccountManaged() where the second may return
+// the cached outcome of the first (for the same user).
+constexpr base::TimeDelta kIsAccountManagedCacheExpirationTime =
+    base::Minutes(1);
+
 // A BrowsingDataRemover::Observer that clears Profile data and then invokes
 // a callback and deletes itself. It can be configured to delete all data
 // (for enterprise users) or only Google's service workers (for all users).
@@ -206,6 +212,14 @@ jboolean SigninManagerAndroid::IsForceSigninEnabled(JNIEnv* env) {
   return force_browser_signin_.GetValue();
 }
 
+// static
+bool SigninManagerAndroid::MatchesCachedIsAccountManagedEntry(
+    const CachedIsAccountManaged& cached_entry,
+    const CoreAccountInfo& account) {
+  return cached_entry.gaia_id == account.gaia &&
+         cached_entry.expiration_time > base::Time::Now();
+}
+
 void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
   VLOG(1) << "::OnSigninAllowedPrefChanged() " << IsSigninAllowed();
   Java_SigninManagerImpl_onSigninAllowedByPolicyChanged(
@@ -293,6 +307,15 @@ void SigninManagerAndroid::IsAccountManaged(
   CoreAccountInfo account = ConvertFromJavaCoreAccountInfo(env, j_account_info);
   base::android::ScopedJavaGlobalRef<jobject> callback(env, j_callback);
 
+  if (cached_is_account_managed_.has_value() &&
+      MatchesCachedIsAccountManagedEntry(*cached_is_account_managed_,
+                                         account)) {
+    // Cache hit, return cached value without issuing any request.
+    bool is_managed = cached_is_account_managed_->is_account_managed;
+    base::android::RunBooleanCallbackAndroid(callback, is_managed);
+    return;
+  }
+
   if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp) &&
       base::FeatureList::IsEnabled(switches::kEnterprisePolicyOnSignin)) {
     // Force seed the account, since requesting management status would require
@@ -306,17 +329,27 @@ void SigninManagerAndroid::IsAccountManaged(
   }
 
   RegisterPolicyWithAccount(
-      account, base::BindOnce(
-                   [](base::android::ScopedJavaGlobalRef<jobject> callback,
-                      base::Time start_time,
-                      const std::optional<ManagementCredentials>& credentials) {
-                     UMA_HISTOGRAM_MEDIUM_TIMES(
-                         "Signin.Android.IsAccountManagedDuration",
-                         (base::Time::Now() - start_time));
-                     base::android::RunBooleanCallbackAndroid(
-                         callback, credentials.has_value());
-                   },
-                   callback, start_time));
+      account,
+      base::BindOnce(
+          &SigninManagerAndroid::OnPolicyRegisterDoneForIsAccountManaged,
+          weak_factory_.GetWeakPtr(), account, std::move(callback),
+          start_time));
+}
+
+void SigninManagerAndroid::OnPolicyRegisterDoneForIsAccountManaged(
+    const CoreAccountInfo& account,
+    base::android::ScopedJavaGlobalRef<jobject> callback,
+    base::Time start_time,
+    const std::optional<ManagementCredentials>& credentials) {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Signin.Android.IsAccountManagedDuration",
+                             (base::Time::Now() - start_time));
+
+  bool is_managed = credentials.has_value();
+  // Cache result in case IsAccountManaged() is invoked again for the same user.
+  cached_is_account_managed_.emplace(
+      account.gaia, is_managed,
+      base::Time::Now() + kIsAccountManagedCacheExpirationTime);
+  base::android::RunBooleanCallbackAndroid(callback, is_managed);
 }
 
 base::android::ScopedJavaLocalRef<jstring>
