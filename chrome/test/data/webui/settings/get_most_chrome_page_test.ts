@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrExpandButtonElement, IronCollapseElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
 import {GetTheMostOutOfChromeUserAction} from 'chrome://settings/lazy_load.js';
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
-import {buildRouter, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, Router, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -30,7 +30,7 @@ suite('GetMostChromePage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
-    Router.resetInstanceForTesting(buildRouter());
+    resetRouterForTesting();
     routes = Router.getInstance().getRoutes();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

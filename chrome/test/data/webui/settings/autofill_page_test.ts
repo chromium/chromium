@@ -8,7 +8,7 @@ import type {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundle
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {buildRouter, Router} from 'chrome://settings/settings.js';
+import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -298,7 +298,7 @@ suite('PasswordsUITest', function() {
   });
 
   test('Clicking Password Manager item', async function() {
-    Router.resetInstanceForTesting(buildRouter());
+    resetRouterForTesting();
 
     const autofillSection = createAutofillPageSection();
     assertTrue(autofillSection.$.passwordManagerButton.external);

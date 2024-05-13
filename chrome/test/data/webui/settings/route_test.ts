@@ -4,8 +4,8 @@
 
 // clang-format off
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
-import {buildRouter, loadTimeData, Route, Router, routes, setPageVisibilityForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {resetRouterForTesting, buildRouter, loadTimeData, Route, Router, routes, setPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
@@ -314,6 +314,17 @@ suite('Basic', function() {
         assertEquals(
             'chrome://settings/languages', routes.LANGUAGES.getAbsolutePath());
       });
+
+  test('resetRouterForTesting updates routes', function() {
+    resetRouterForTesting();
+    const routesLocal1 = Router.getInstance().getRoutes();
+    assertEquals(routes, routesLocal1);
+
+    resetRouterForTesting();
+    const routesLocal2 = Router.getInstance().getRoutes();
+    assertNotEquals(routesLocal1, routesLocal2);
+    assertEquals(routes, routesLocal2);
+  });
 });
 
 suite('DynamicParameters', function() {
@@ -369,7 +380,7 @@ suite('SafetyHubReachable', function() {
 
   setup(function() {
     loadTimeData.overrideValues({enableSafetyHub: true});
-    Router.resetInstanceForTesting(buildRouter());
+    resetRouterForTesting();
 
     routes = Router.getInstance().getRoutes();
     Router.getInstance().navigateTo(routes.BASIC);
@@ -399,7 +410,7 @@ suite('SafetyHubNotReachable', function() {
 
   setup(function() {
     loadTimeData.overrideValues({enableSafetyHub: false});
-    Router.resetInstanceForTesting(buildRouter());
+    resetRouterForTesting();
 
     routes = Router.getInstance().getRoutes();
   });
