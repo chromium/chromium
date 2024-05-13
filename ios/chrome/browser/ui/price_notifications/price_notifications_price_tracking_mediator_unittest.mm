@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/commerce/core/price_tracking_utils.h"
@@ -83,7 +84,11 @@ const bookmarks::BookmarkNode* PrepareSubscription(
   const bookmarks::BookmarkNode* product =
       commerce::AddProductBookmark(bookmark_model, base::UTF8ToUTF16(title),
                                    GURL(kTestUrl), kClusterId, true);
-  const bookmarks::BookmarkNode* default_folder = bookmark_model->mobile_node();
+  const bookmarks::BookmarkNode* default_folder =
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)
+          ? bookmark_model->account_mobile_node()
+          : bookmark_model->mobile_node();
   bookmark_model->AddURL(default_folder, default_folder->children().size(),
                          base::UTF8ToUTF16(title), GURL(kTestUrl));
   shopping_service->SetSubscribeCallbackValue(true);
@@ -112,9 +117,19 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 
 }  // namespace
 
-class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
+class PriceNotificationsPriceTrackingMediatorTest
+    : public PlatformTest,
+      public testing::WithParamInterface<bool> {
  public:
   PriceNotificationsPriceTrackingMediatorTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          syncer::kEnableBookmarkFoldersForAccountStorage);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          syncer::kEnableBookmarkFoldersForAccountStorage);
+    }
+
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
@@ -155,13 +170,14 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
       bookmark_model_ = ios::BookmarkModelFactory::
           GetModelForBrowserStateIfUnificationEnabledOrDie(
               test_chrome_browser_state.get());
+      bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+      bookmark_model_->CreateAccountPermanentFolders();
     } else {
       bookmark_model_ = ios::AccountBookmarkModelFactory::
           GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
               test_chrome_browser_state.get());
+      bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     }
-
-    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
@@ -182,6 +198,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<Browser> browser_;
   PriceNotificationsPriceTrackingMediator* mediator_;
@@ -198,7 +215,7 @@ class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
       [[TestPriceInsightsConsumer alloc] init];
 };
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        TrackableItemIsEmptyWhenUserIsViewingProductWebpageAndProduct) {
   PrepareSubscription(shopping_service_, true);
   mediator_.consumer = consumer_;
@@ -213,7 +230,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   EXPECT_EQ(consumer_.isCurrentlyTrackingVisibleProduct, YES);
 }
 
-TEST_F(
+TEST_P(
     PriceNotificationsPriceTrackingMediatorTest,
     TrackableItemExistsWhenUserUntracksProductFromWebpageIsCurrentlyViewing) {
   commerce::ProductInfo product_info;
@@ -232,7 +249,10 @@ TEST_F(
 
   consumer_.didExecuteAction = NO;
   const bookmarks::BookmarkNode* default_folder =
-      bookmark_model_->mobile_node();
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)
+          ? bookmark_model_->account_mobile_node()
+          : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),
                           base::UTF8ToUTF16(product_info.title),
                           GURL(kTestUrl));
@@ -253,7 +273,7 @@ TEST_F(
   EXPECT_EQ(consumer_.trackableItem.title, product.title);
 }
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        SuccessfullyTrackedProductURLFromPriceInsights) {
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
@@ -273,7 +293,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       }));
 }
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        PresentAlertWhenTrackingIsUnsuccessfulFromPriceInsights) {
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
@@ -295,7 +315,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       }));
 }
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        SuccessfullyUntrackedProductURLFromPriceInsights) {
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
@@ -304,7 +324,10 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   optional_product_info.emplace(product_info);
 
   const bookmarks::BookmarkNode* default_folder =
-      bookmark_model_->mobile_node();
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)
+          ? bookmark_model_->account_mobile_node()
+          : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),
                           base::UTF8ToUTF16(product_info.title),
                           GURL(kTestUrl));
@@ -322,7 +345,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       }));
 }
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        PresentAlertWhenUntrackingIsUnsuccessfulFromPriceInsights) {
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
@@ -331,7 +354,10 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
   optional_product_info.emplace(product_info);
 
   const bookmarks::BookmarkNode* default_folder =
-      bookmark_model_->mobile_node();
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)
+          ? bookmark_model_->account_mobile_node()
+          : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),
                           base::UTF8ToUTF16(product_info.title),
                           GURL(kTestUrl));
@@ -350,7 +376,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
       }));
 }
 
-TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+TEST_P(PriceNotificationsPriceTrackingMediatorTest,
        NavigateToWebPageUponUserRequestsFromPriceInsights) {
   price_insights_consumer_.didNavigateToWebpage = NO;
   mediator_.priceInsightsConsumer = price_insights_consumer_;
@@ -362,3 +388,7 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
         return price_insights_consumer_.didNavigateToWebpage;
       }));
 }
+
+INSTANTIATE_TEST_SUITE_P(UnifiedBookmarkModel,
+                         PriceNotificationsPriceTrackingMediatorTest,
+                         testing::Bool());
