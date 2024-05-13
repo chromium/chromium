@@ -39,6 +39,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -845,9 +846,9 @@ void CaptureModeCameraController::RefreshCameraPreview() {
   // is created or destroyed. The reason to trigger
   // `RunPostRefreshCameraPreview` at the exit of this function is we should
   // wait for camera preview's creation or destruction to be finished.
-  base::ScopedClosureRunner deferred_runner(
-      base::BindOnce(&CaptureModeCameraController::RunPostRefreshCameraPreview,
-                     weak_ptr_factory_.GetWeakPtr(), was_visible_before));
+  absl::Cleanup deferred_runner = [this, was_visible_before] {
+    RunPostRefreshCameraPreview(was_visible_before);
+  };
 
   const CameraInfo* camera_info = nullptr;
   if (selected_camera_.is_valid()) {

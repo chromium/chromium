@@ -43,10 +43,10 @@
 #include "ash/wm/window_dimmer.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
@@ -1254,23 +1254,17 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // We create an owned heap-allocated boolean to pass it to `deferred_runner`
-  // and hold a pointer to the boolean to be able to change its value to control
-  // whether the deferred runner should call `MaybeUpdateCaptureUisOpacity` or
-  // not.
-  auto should_update_opacity = std::make_unique<bool>(false);
-  auto* should_update_opacity_ptr = should_update_opacity.get();
+  bool should_update_opacity = false;
 
   // Run at the exit of this function to update opacity of capture UIs when
-  // necessary.
-  base::ScopedClosureRunner deferred_runner(base::BindOnce(
-      [](base::WeakPtr<CaptureModeSession> session,
-         std::unique_ptr<bool> should_update_opacity) {
-        if (*should_update_opacity && session) {
-          session->MaybeUpdateCaptureUisOpacity();
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(should_update_opacity)));
+  // necessary. Captures `this` as a WeakPtr since the session might end and be
+  // destroyed, e.g. if the escape key was pressed.
+  absl::Cleanup deferred_runner = [session = weak_ptr_factory_.GetWeakPtr(),
+                                   &should_update_opacity] {
+    if (session && should_update_opacity) {
+      session->MaybeUpdateCaptureUisOpacity();
+    }
+  };
 
   auto* capture_source_view = capture_mode_bar_view_->GetCaptureSourceView();
   const bool is_in_count_down = IsInCountDownAnimation();
@@ -1278,7 +1272,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   switch (key_code) {
     case ui::VKEY_ESCAPE: {
       event->StopPropagation();
-      *should_update_opacity_ptr = true;
+      should_update_opacity = true;
 
       // We only dismiss the settings / recording type menus or clear the focus
       // on ESC key if the count down is not in progress.
@@ -1308,7 +1302,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
           ignore_view = capture_source_view->fullscreen_toggle_button();
         }
         if (focus_cycler_->MaybeActivateFocusedView(ignore_view)) {
-          *should_update_opacity_ptr = true;
+          should_update_opacity = true;
           return;
         }
 
@@ -1331,7 +1325,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
         ignore_view = capture_source_view->region_toggle_button();
       }
       if (focus_cycler_->MaybeActivateFocusedView(ignore_view)) {
-        *should_update_opacity_ptr = true;
+        should_update_opacity = true;
         return;
       }
 
@@ -1358,7 +1352,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
         event->StopPropagation();
         event->SetHandled();
         focus_cycler_->AdvanceFocus(/*reverse=*/event->IsShiftDown());
-        *should_update_opacity_ptr = true;
+        should_update_opacity = true;
       }
       return;
     }
@@ -1856,10 +1850,14 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       ShouldPassEventToCameraPreview(event);
 
   // From here on, no matter where the function exists, the cursor must be
-  // updated at the end.
-  base::ScopedClosureRunner deferred_cursor_updater(base::BindOnce(
-      &CaptureModeSession::UpdateCursor, weak_ptr_factory_.GetWeakPtr(),
-      screen_location, is_touch));
+  // updated at the end. Capture `this` as a WeakPtr since performing capture
+  // may end up deleting `this`.
+  absl::Cleanup deferred_cursor_updater =
+      [session = weak_ptr_factory_.GetWeakPtr(), screen_location, is_touch] {
+        if (session) {
+          session->UpdateCursor(screen_location, is_touch);
+        }
+      };
 
   if (should_pass_located_event_to_camera_preview_) {
     DCHECK(!controller_->is_recording_in_progress());
@@ -2049,10 +2047,14 @@ void CaptureModeSession::OnLocatedEventPressed(
   // update the capture region. The reason we want to run it at the exit of this
   // function is if `is_selecting_region_` is false, we want
   // `fine_tune_position_` to be updated first since it can affect whether we
-  // should hide camera preview or not.
-  base::ScopedClosureRunner deferred_runner(
-      base::BindOnce(&CaptureModeSession::MaybeUpdateCameraPreviewBounds,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // should hide camera preview or not. Captures `this` by WeakPtr since
+  // pressing escape while dragging a capture region will end the session and
+  // delete `this`.
+  absl::Cleanup deferred_runner = [session = weak_ptr_factory_.GetWeakPtr()] {
+    if (session) {
+      session->MaybeUpdateCameraPreviewBounds();
+    }
+  };
 
   if (is_selecting_region_)
     return;
@@ -2160,12 +2162,17 @@ void CaptureModeSession::OnLocatedEventReleased(
   // exit of this function is if `is_selecting_region_` is true, we want to wait
   // until the capture label is updated since capture label's opacity may need
   // to be updated based on if it's overlapped with camera preview or not.
-  base::ScopedClosureRunner deferred_runner(
-      base::BindOnce(&CaptureModeSession::MaybeUpdateCameraPreviewBounds,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Captures `this` by WeakPtr since pressing escape while dragging a capture
+  // region will end the session and delete `this`.
+  absl::Cleanup deferred_runner = [session = weak_ptr_factory_.GetWeakPtr()] {
+    if (session) {
+      session->MaybeUpdateCameraPreviewBounds();
+    }
+  };
 
-  if (!is_selecting_region_)
+  if (!is_selecting_region_) {
     return;
+  }
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
