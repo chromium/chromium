@@ -548,6 +548,7 @@ allowed_hosts = [
   'chromium-style-perftest',
   'chromium-telemetry',
   'chromium-webrtc-resources',
+  'perfetto',
 ]
 
 deps = {
