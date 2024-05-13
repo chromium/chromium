@@ -205,10 +205,12 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     }
   }
 
-  if (!IsTriggeredOnIbanField(manager_->FindCachedFormById(form.global_id()),
-                              field)) {
-    // TODO(b/309163888): Revisit how to log IBAN related metrics.
-    if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
+  if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
+    if (IsTriggeredOnIbanField(manager_->FindCachedFormById(form.global_id()),
+                               field)) {
+      base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome,
+                                    dry_run.outcome);
+    } else {
       base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
                                     dry_run.outcome);
     }

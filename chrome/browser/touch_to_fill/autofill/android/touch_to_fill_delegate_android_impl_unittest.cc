@@ -258,6 +258,11 @@ class TouchToFillDelegateAndroidImplPaymentMethodUnitTest
   }
 
   bool IsCreditCard() const { return GetParam(); }
+
+  std::string GetTriggerOutcomeHistogramName() {
+    return IsCreditCard() ? kUmaTouchToFillCreditCardTriggerOutcome
+                          : kUmaTouchToFillIbanTriggerOutcome;
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -354,6 +359,73 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));
 }
 
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillPaymentMethodSucceeds) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  EXPECT_CALL(*browser_autofill_manager_, DidShowSuggestions);
+  TryToShowTouchToFill(/*expected_success=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsForPaymentMethodIfWasShown) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+  touch_to_fill_delegate_->HideTouchToFill();
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectBucketCount(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kShownBefore, 1);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsForPaymentMethodIfFieldIsNotFocusable) {
+  form_.fields[0].set_is_focusable(false);
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsForPaymentMethodIfFieldHasValue) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  form_.fields[0].set_value(u"Initial value");
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsForPaymentMethodIfNoPaymentMethodsOnFile) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  autofill_client_.GetPersonalDataManager()->ClearAllLocalData();
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 1);
+}
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsIfCanNotShowUi) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  EXPECT_CALL(*browser_autofill_manager_, CanShowAutofillUi)
+      .WillRepeatedly(Return(false));
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      GetTriggerOutcomeHistogramName(),
+      TouchToFillPaymentMethodTriggerOutcome::kCannotShowAutofillUi, 1);
+}
+
 class TouchToFillDelegateAndroidImplCreditCardUnitTest
     : public TouchToFillDelegateAndroidImplUnitTest {
  public:
@@ -373,73 +445,6 @@ class TouchToFillDelegateAndroidImplCreditCardUnitTest
     ConfigureForCreditCards(test::GetCreditCard());
   }
 };
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillPaymentMethodSucceeds) {
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  EXPECT_CALL(*browser_autofill_manager_, DidShowSuggestions);
-  TryToShowTouchToFill(/*expected_success=*/true);
-  histogram_tester_.ExpectUniqueSample(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillFailsForPaymentMethodIfWasShown) {
-  TryToShowTouchToFill(/*expected_success=*/true);
-  touch_to_fill_delegate_->HideTouchToFill();
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectBucketCount(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kShownBefore, 1);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillFailsForPaymentMethodIfFieldIsNotFocusable) {
-  form_.fields[0].set_is_focusable(false);
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectUniqueSample(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillFailsForPaymentMethodIfFieldHasValue) {
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  form_.fields[0].set_value(u"Initial value");
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectUniqueSample(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillFailsForPaymentMethodIfNoPaymentMethodsOnFile) {
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  autofill_client_.GetPersonalDataManager()->ClearAllLocalData();
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectUniqueSample(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 1);
-}
-
-TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
-       TryToShowTouchToFillFailsIfCanNotShowUi) {
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  EXPECT_CALL(*browser_autofill_manager_, CanShowAutofillUi)
-      .WillRepeatedly(Return(false));
-
-  TryToShowTouchToFill(/*expected_success=*/false);
-  histogram_tester_.ExpectUniqueSample(
-      kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillPaymentMethodTriggerOutcome::kCannotShowAutofillUi, 1);
-}
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsForIncompleteForm) {
