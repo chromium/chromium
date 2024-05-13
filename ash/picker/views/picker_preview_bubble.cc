@@ -56,8 +56,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   // Contents of this view.
   AddChildView(
       views::Builder<views::ImageView>()
-          .SetSize(kPreviewImageSize)
-          .SetPreferredSize(kPreviewImageSize)
+          .SetImageSize(kPreviewImageSize)
           .SetBackground(views::CreateThemedRoundedRectBackground(
               cros_tokens::kCrosSysSeparator, kPreviewBackgroundBorderRadius))
           .Build());
