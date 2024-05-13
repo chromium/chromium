@@ -1000,8 +1000,8 @@ void ServiceWorkerVersion::OnControlleeNavigationCommitted(
 void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
     const std::string& client_uuid) {
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(base::Contains(controllee_map_, client_uuid));
-  DCHECK(!base::Contains(bfcached_controllee_map_, client_uuid));
+  CHECK(base::Contains(controllee_map_, client_uuid));
+  CHECK(!base::Contains(bfcached_controllee_map_, client_uuid));
   bfcached_controllee_map_[client_uuid] = controllee_map_[client_uuid];
   RemoveControllee(client_uuid);
 }
@@ -1039,7 +1039,7 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
 void ServiceWorkerVersion::RemoveControlleeFromBackForwardCacheMap(
     const std::string& client_uuid) {
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(base::Contains(bfcached_controllee_map_, client_uuid));
+  CHECK(base::Contains(bfcached_controllee_map_, client_uuid));
   bfcached_controllee_map_.erase(client_uuid);
 }
 
