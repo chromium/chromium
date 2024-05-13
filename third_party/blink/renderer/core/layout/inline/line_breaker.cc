@@ -451,12 +451,12 @@ LineBreaker::LineBreaker(InlineNode node,
                            node.IsStickyImagesQuirkForContentSize()),
       use_faster_min_content_(
           RuntimeEnabledFeatures::FasterMinContentEnabled()),
-      items_data_(node.ItemsData(use_first_line_style_)),
-      end_item_index_(items_data_.items.size()),
+      items_data_(&node.ItemsData(use_first_line_style_)),
+      end_item_index_(items_data_->items.size()),
       text_content_(
           !sticky_images_quirk_
-              ? items_data_.text_content
-              : InlineNode::TextContentForStickyImagesQuirk(items_data_)),
+              ? items_data_->text_content
+              : InlineNode::TextContentForStickyImagesQuirk(*items_data_)),
       constraint_space_(space),
       exclusion_space_(exclusion_space),
       break_token_(break_token),
@@ -517,7 +517,7 @@ LineBreaker::LineBreaker(InlineNode node,
   current_ = break_token->Start();
   break_iterator_.SetStartOffset(current_.text_offset);
   is_after_forced_break_ = break_token->IsForcedBreak();
-  items_data_.AssertOffset(current_);
+  items_data_->AssertOffset(current_);
   SetCurrentStyle(*line_initial_style);
 }
 
@@ -543,7 +543,7 @@ void LineBreaker::SetBreakAt(const LineBreakPoint& offset) {
 inline InlineItemResult* LineBreaker::AddItem(const InlineItem& item,
                                               unsigned end_offset,
                                               LineInfo* line_info) {
-  DCHECK_EQ(&item, &items_data_.items[current_.item_index]);
+  DCHECK_EQ(&item, &items_data_->items[current_.item_index]);
   DCHECK_GE(current_.text_offset, item.StartOffset());
   DCHECK_GE(end_offset, current_.text_offset);
   DCHECK_LE(end_offset, item.EndOffset());
@@ -645,7 +645,7 @@ void LineBreaker::RecalcClonedBoxDecorations() {
 
   // Compute which tags are not closed at |current_.item_index|.
   InlineItemsData::OpenTagItems open_items;
-  items_data_.GetOpenTagItems(0u, current_.item_index, &open_items);
+  items_data_->GetOpenTagItems(0u, current_.item_index, &open_items);
 
   for (const InlineItem* item : open_items) {
     if (item->Style()->BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
@@ -758,7 +758,14 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   const InlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.empty());
 
-  if (!current_.IsZero()) {
+  if (parent_breaker_) {
+    previous_line_had_forced_break_ =
+        parent_breaker_->previous_line_had_forced_break_;
+    is_after_forced_break_ = parent_breaker_->is_after_forced_break_;
+    is_first_formatted_line_ = parent_breaker_->is_first_formatted_line_;
+    use_first_line_style_ = parent_breaker_->use_first_line_style_;
+    items_data_ = parent_breaker_->items_data_;
+  } else if (!current_.IsZero()) {
     // We're past the first line
     previous_line_had_forced_break_ = is_after_forced_break_;
     is_after_forced_break_ = false;
@@ -768,7 +775,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
 
   line_info->SetStart(current_);
   line_info->SetIsFirstFormattedLine(is_first_formatted_line_);
-  line_info->SetLineStyle(node_, items_data_, use_first_line_style_);
+  line_info->SetLineStyle(node_, *items_data_, use_first_line_style_);
 
   DCHECK(!line_info->TextIndent());
   if (is_first_formatted_line_) {
@@ -2031,15 +2038,15 @@ const ShapeResult* LineBreaker::ShapeText(const InlineItem& item,
                                           unsigned end,
                                           ShapeOptions options) {
   ShapeResult* shape_result = nullptr;
-  if (!items_data_.segments) {
+  if (!items_data_->segments) {
     RunSegmenter::RunSegmenterRange segment_range =
         InlineItemSegment::UnpackSegmentData(start, end, item.SegmentData());
     shape_result = shaper_.Shape(&item.Style()->GetFont(), item.Direction(),
                                  start, end, segment_range, options);
   } else {
-    shape_result = items_data_.segments->ShapeText(
+    shape_result = items_data_->segments->ShapeText(
         &shaper_, &item.Style()->GetFont(), item.Direction(), start, end,
-        base::checked_cast<unsigned>(&item - items_data_.items.begin()),
+        base::checked_cast<unsigned>(&item - items_data_->items.begin()),
         options);
   }
   if (UNLIKELY(spacing_.HasSpacing()))
@@ -2522,7 +2529,7 @@ void LineBreaker::RewindTrailingOpenTags(LineInfo* line_info) {
         ResetRewindLoopDetector();
         Rewind(end_index, line_info);
         current_ = end;
-        items_data_.AssertOffset(current_.item_index, current_.text_offset);
+        items_data_->AssertOffset(current_.item_index, current_.text_offset);
       }
       break;
     }
@@ -3272,7 +3279,7 @@ LineInfo LineBreaker::CreateSubLineInfo(
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
   sub_line_breaker.disallow_auto_wrap_ = disallow_auto_wrap;
   sub_line_breaker.SetInputRange(start, end_item_index,
-                                 initial_whitespace_state);
+                                 initial_whitespace_state, this);
   // OverrideAvailableWidth() prevents HandleFloat() from updating
   // available_width_.
   sub_line_breaker.OverrideAvailableWidth(limit);
@@ -3828,7 +3835,7 @@ void LineBreaker::HandleOverflow(LineInfo* line_info) {
                 available_width + width_to_rewind + item_result->inline_size;
             DCHECK_EQ(position_, line_info->ComputeWidth());
             current_ = item_result->End();
-            items_data_.AssertOffset(current_);
+            items_data_->AssertOffset(current_);
             HandleTrailingSpaces(item, line_info);
             return;
           }
@@ -4306,11 +4313,13 @@ void LineBreaker::MoveToNextOf(const InlineItemResult& item_result) {
 
 void LineBreaker::SetInputRange(InlineItemTextIndex start,
                                 wtf_size_t end_item_index,
-                                WhitespaceState initial_whitespace_state) {
+                                WhitespaceState initial_whitespace_state,
+                                const LineBreaker* parent) {
   DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   current_ = start;
   end_item_index_ = end_item_index;
   initial_whitespace_ = initial_whitespace_state;
+  parent_breaker_ = parent;
 }
 
 const InlineBreakToken* LineBreaker::CreateBreakToken(
