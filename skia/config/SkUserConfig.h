@@ -235,6 +235,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_DONT_PAD_LAYER_IMAGES
 
+#define GRAPHITE_USE_APPROX_FIT_FOR_FILTERS
+
 /* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
    is not called), Skia will prefer precision over performance when computing
    reciprocals and inverse-square roots.
