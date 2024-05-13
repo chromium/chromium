@@ -280,6 +280,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
       FidoDiscoveryFactory* fido_discovery_factory,
       const base::flat_set<FidoTransportProtocol>& available_transports);
 
+  FidoRequestHandlerBase(
+      FidoDiscoveryFactory* fido_discovery_factory,
+      std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
+      const base::flat_set<FidoTransportProtocol>& available_transports);
+
   FidoRequestHandlerBase(const FidoRequestHandlerBase&) = delete;
   FidoRequestHandlerBase& operator=(const FidoRequestHandlerBase&) = delete;
 
@@ -344,6 +349,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   void InitDiscoveries(
       FidoDiscoveryFactory* fido_discovery_factory,
+      std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
       base::flat_set<FidoTransportProtocol> available_transports,
       bool consider_enclave);
 

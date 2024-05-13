@@ -360,6 +360,7 @@ bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
 
 GetAssertionRequestHandler::GetAssertionRequestHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
+    std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
     const base::flat_set<FidoTransportProtocol>& supported_transports,
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
@@ -367,6 +368,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
     CompletionCallback completion_callback)
     : FidoRequestHandlerBase(
           fido_discovery_factory,
+          std::move(additional_discoveries),
           base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
               supported_transports,
               GetTransportsAllowedByRP(request))),

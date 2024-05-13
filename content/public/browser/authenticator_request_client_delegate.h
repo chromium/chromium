@@ -366,6 +366,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   virtual void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity);
 
+  // Returns a list of `FidoDiscoveryBase` instances that can instantiate an
+  // embedder-specific platform authenticator for handling WebAuthn requests.
+  // The discoveries' `transport()` must be `FidoTransportProtocol::kInternal`.
+  virtual std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+  CreatePlatformDiscoveries();
+
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo data) override;

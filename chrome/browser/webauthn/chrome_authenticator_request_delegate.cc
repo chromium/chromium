@@ -840,6 +840,11 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
                                                    std::move(callback));
 }
 
+std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+ChromeAuthenticatorRequestDelegate::CreatePlatformDiscoveries() {
+  return {};
+}
+
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
     const std::string& rp_id,

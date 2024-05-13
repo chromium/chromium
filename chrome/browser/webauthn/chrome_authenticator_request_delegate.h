@@ -222,6 +222,8 @@ class ChromeAuthenticatorRequestDelegate
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity) override;
+  std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+  CreatePlatformDiscoveries() override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(

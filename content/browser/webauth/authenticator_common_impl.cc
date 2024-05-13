@@ -660,9 +660,13 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
           UsesDiscoverableCreds(*req_state_->make_credential_options),
           is_uvpaa_override_);
 
+  auto platform_discoveries =
+      discovery_factory()->IsTestOverride()
+          ? std::vector<std::unique_ptr<device::FidoDiscoveryBase>>()
+          : req_state_->request_delegate->CreatePlatformDiscoveries();
   req_state_->request_handler =
       std::make_unique<device::MakeCredentialRequestHandler>(
-          discovery_factory(), transports,
+          discovery_factory(), std::move(platform_discoveries), transports,
           *req_state_->ctap_make_credential_request,
           *req_state_->make_credential_options,
           base::BindOnce(&AuthenticatorCommonImpl::OnRegisterResponse,
@@ -715,8 +719,13 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
           UsesDiscoverableCreds(*req_state_->ctap_get_assertion_request),
           is_uvpaa_override_);
 
+  auto platform_discoveries =
+      discovery_factory()->IsTestOverride()
+          ? std::vector<std::unique_ptr<device::FidoDiscoveryBase>>()
+          : req_state_->request_delegate->CreatePlatformDiscoveries();
   auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
-      discovery_factory(), transports, *req_state_->ctap_get_assertion_request,
+      discovery_factory(), std::move(platform_discoveries), transports,
+      *req_state_->ctap_get_assertion_request,
       *req_state_->ctap_get_assertion_options, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));

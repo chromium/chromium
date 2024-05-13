@@ -122,8 +122,9 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
     ForgeDiscoveries();
 
     auto handler = std::make_unique<GetAssertionRequestHandler>(
-        fake_discovery_factory_.get(), supported_transports_,
-        std::move(request), CtapGetAssertionOptions(),
+        fake_discovery_factory_.get(),
+        std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
+        supported_transports_, std::move(request), CtapGetAssertionOptions(),
         /*allow_skipping_pin_touch=*/true, get_assertion_cb_.callback());
     return handler;
   }
@@ -899,6 +900,7 @@ TEST(GetAssertionRequestHandlerTest, IncorrectTransportType) {
   TestGetAssertionRequestCallback cb;
   auto request_handler = std::make_unique<GetAssertionRequestHandler>(
       &virtual_device_factory,
+      std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
       base::flat_set<FidoTransportProtocol>(
           {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
       std::move(request), CtapGetAssertionOptions(),
@@ -971,6 +973,7 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
             test_data::kTestGetAssertionCredentialId))};
     auto handler = std::make_unique<GetAssertionRequestHandler>(
         &fido_discovery_factory,
+        std::vector<std::unique_ptr<FidoDiscoveryBase>>(),
         base::flat_set<FidoTransportProtocol>(
             {FidoTransportProtocol::kUsbHumanInterfaceDevice}),
         std::move(request), CtapGetAssertionOptions(),

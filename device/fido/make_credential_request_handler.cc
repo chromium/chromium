@@ -383,6 +383,7 @@ UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
 
 MakeCredentialRequestHandler::MakeCredentialRequestHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
+    std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
     const base::flat_set<FidoTransportProtocol>& supported_transports,
     CtapMakeCredentialRequest request,
     const MakeCredentialOptions& options,
@@ -425,7 +426,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
 #endif
 
   InitDiscoveries(
-      fido_discovery_factory,
+      fido_discovery_factory, std::move(additional_discoveries),
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
           supported_transports, allowed_transports),
       request.authenticator_attachment !=

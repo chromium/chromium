@@ -119,13 +119,23 @@ FidoRequestHandlerBase::FidoRequestHandlerBase()
 FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoDiscoveryFactory* fido_discovery_factory,
     const base::flat_set<FidoTransportProtocol>& available_transports)
+    : device::FidoRequestHandlerBase(fido_discovery_factory,
+                                     /*additional_discoveries=*/{},
+                                     available_transports) {}
+
+FidoRequestHandlerBase::FidoRequestHandlerBase(
+    FidoDiscoveryFactory* fido_discovery_factory,
+    std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
+    const base::flat_set<FidoTransportProtocol>& available_transports)
     : FidoRequestHandlerBase() {
-  InitDiscoveries(fido_discovery_factory, available_transports,
+  InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
+                  available_transports,
                   /*consider_enclave=*/true);
 }
 
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
+    std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
     base::flat_set<FidoTransportProtocol> available_transports,
     bool consider_enclave) {
 #if BUILDFLAG(IS_WIN)
@@ -179,6 +189,18 @@ void FidoRequestHandlerBase::InitDiscoveries(
       discovery->set_observer(this);
       discoveries_.emplace_back(std::move(discovery));
     }
+  }
+
+  // `additional_discoveries` are injected by
+  // AuthenticatorRequestClientDelegate.
+  for (auto& discovery : additional_discoveries) {
+    // TODO: Make this work better for non-standard discoveries like Windows,
+    // which currently pretends to be `kInternal`.
+    if (!base::Contains(available_transports, discovery->transport())) {
+      continue;
+    }
+    discovery->set_observer(this);
+    discoveries_.emplace_back(std::move(discovery));
   }
 
   if (consider_enclave) {

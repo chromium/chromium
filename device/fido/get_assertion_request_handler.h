@@ -18,6 +18,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -67,6 +68,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   GetAssertionRequestHandler(
       FidoDiscoveryFactory* fido_discovery_factory,
+      std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       CtapGetAssertionRequest request_parameter,
       CtapGetAssertionOptions request_options,

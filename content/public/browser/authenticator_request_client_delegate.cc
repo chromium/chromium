@@ -205,6 +205,11 @@ void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(
 void AuthenticatorRequestClientDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity&) {}
 
+std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+AuthenticatorRequestClientDelegate::CreatePlatformDiscoveries() {
+  return {};
+}
+
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
 
