@@ -2700,10 +2700,10 @@ crbug.com/1500120 [ Win11-arm64 ] external/wpt/webnn/* [ Skip ]
 [ Mac13-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/where.https.any.worker.html?gpu [ Skip ]
 
 # WebNN feature work in-progress.
-crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
-crbug.com/1472888 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
-crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
-crbug.com/1472888 [ Linux ] virtual/webnn-service-without-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
+crbug.com/40278771 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?gpu [ Skip ]
+crbug.com/40278771 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?gpu [ Skip ]
+crbug.com/40278771 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.html?cpu [ Skip ]
+crbug.com/40278771 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/buffer.https.any.worker.html?cpu [ Skip ]
 
 ######## Unload Deprecation
 # This is for tests in the "unload-allowed" virtual suite that
