@@ -219,6 +219,7 @@ chromium-metrics-reviews@google.com.
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>
+    <variant name="ProductSpecifications"/>
     <variant name="PWAInstall"/>
     <variant name="QRCodeGenerator"/>
     <variant name="ReadAnything"/>

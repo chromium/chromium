@@ -222,6 +222,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
   <int value="27" label="Read Anything"/>
+  <int value="28" label="Product Specifications"/>
 </enum>
 
 <enum name="PageActionPageEvent">
