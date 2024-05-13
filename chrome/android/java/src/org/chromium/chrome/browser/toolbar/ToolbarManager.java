@@ -33,6 +33,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -78,6 +80,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
+import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
@@ -2122,10 +2125,22 @@ public class ToolbarManager
 
     /**
      * Triggered when the URL input field has gained or lost focus.
+     *
      * @param hasFocus Whether the URL field has gained focus.
      */
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
+        // Detect and report Omnibox sessions originating from CCT if Search in CCT is disabled.
+        // This is important to reduce CCT ActivityType bleeding into Chrome Browser.
+        if (!ChromeFeatureList.sSearchInCCT.isEnabled()
+                && UmaActivityObserver.getCurrentActivityType() == ActivityType.CUSTOM_TAB) {
+            // TODO(b/339910285): Remove this once bleeding is negligile or eliminated completely.
+            JavaExceptionReporter.reportException(
+                    new Exception(
+                            "NOT A CRASH: Unexpected ActivityType reported by"
+                                    + " UmaActivityObserver"));
+        }
+
         mToolbar.onUrlFocusChange(hasFocus);
 
         if (mLayoutStateProvider != null
