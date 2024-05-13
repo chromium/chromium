@@ -153,6 +153,10 @@ std::string CardNetworkToIconResourceIdString(const std::string& network) {
     return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_UNIONPAY"
                          : "chrome://theme/IDR_AUTOFILL_CC_UNIONPAY";
   }
+  if (network == autofill::kVerveCard) {
+    return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VERVE"
+                         : "chrome://theme/IDR_AUTOFILL_CC_VERVE";
+  }
   if (network == autofill::kVisaCard) {
     return metadata_icon ? "chrome://theme/IDR_AUTOFILL_METADATA_CC_VISA"
                          : "chrome://theme/IDR_AUTOFILL_CC_VISA";

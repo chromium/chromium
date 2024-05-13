@@ -87,6 +87,9 @@
   <message name="IDS_AUTOFILL_CC_UNION_PAY" desc="China UnionPay credit card name.">
     China UnionPay
   </message>
+  <message name="IDS_AUTOFILL_CC_VERVE" desc="Verve credit card name.">
+    Verve
+  </message>
   <message name="IDS_AUTOFILL_CC_VISA" desc="Visa credit card name.">
     Visa
   </message>

@@ -54,6 +54,8 @@ const PaymentRequestData kPaymentRequestData[]{
     {autofill::kTroyCard, "troy", IDR_AUTOFILL_CC_TROY, IDS_AUTOFILL_CC_TROY},
     {autofill::kUnionPay, "unionpay", IDR_AUTOFILL_CC_UNIONPAY,
      IDS_AUTOFILL_CC_UNION_PAY},
+    {autofill::kVerveCard, "verve", IDR_AUTOFILL_CC_VERVE,
+     IDS_AUTOFILL_CC_VERVE},
     {autofill::kVisaCard, "visa", IDR_AUTOFILL_CC_VISA, IDS_AUTOFILL_CC_VISA},
 };
 
@@ -76,6 +78,8 @@ const PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
      IDS_AUTOFILL_CC_TROY},
     {autofill::kUnionPay, "unionpay", IDR_AUTOFILL_METADATA_CC_UNIONPAY,
      IDS_AUTOFILL_CC_UNION_PAY},
+    {autofill::kVerveCard, "verve", IDR_AUTOFILL_METADATA_CC_VERVE,
+     IDS_AUTOFILL_CC_VERVE},
     {autofill::kVisaCard, "visa", IDR_AUTOFILL_METADATA_CC_VISA,
      IDS_AUTOFILL_CC_VISA},
 };

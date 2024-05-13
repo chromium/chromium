@@ -1041,6 +1041,8 @@ TEST(CreditCardTest, Compare) {
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableVerveCardSupport};
   EXPECT_EQ(IDR_AUTOFILL_CC_AMEX,
             CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
   EXPECT_EQ(IDR_AUTOFILL_CC_DINERS,
@@ -1059,12 +1061,17 @@ TEST(CreditCardTest, IconResourceId) {
             CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
   EXPECT_EQ(IDR_AUTOFILL_CC_UNIONPAY,
             CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay));
+  EXPECT_EQ(IDR_AUTOFILL_CC_VERVE,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardVerve));
   EXPECT_EQ(IDR_AUTOFILL_CC_VISA,
             CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
 }
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableVerveCardSupport};
+
   EXPECT_EQ(IDR_AUTOFILL_CC_AMEX,
             CreditCard::IconResourceId(kAmericanExpressCard));
   EXPECT_EQ(IDR_AUTOFILL_CC_DINERS, CreditCard::IconResourceId(kDinersCard));
@@ -1077,6 +1084,7 @@ TEST(CreditCardTest, IconResourceIdFromString) {
   EXPECT_EQ(IDR_AUTOFILL_CC_MIR, CreditCard::IconResourceId(kMirCard));
   EXPECT_EQ(IDR_AUTOFILL_CC_TROY, CreditCard::IconResourceId(kTroyCard));
   EXPECT_EQ(IDR_AUTOFILL_CC_UNIONPAY, CreditCard::IconResourceId(kUnionPay));
+  EXPECT_EQ(IDR_AUTOFILL_CC_VERVE, CreditCard::IconResourceId(kVerveCard));
   EXPECT_EQ(IDR_AUTOFILL_CC_VISA, CreditCard::IconResourceId(kVisaCard));
 }
 

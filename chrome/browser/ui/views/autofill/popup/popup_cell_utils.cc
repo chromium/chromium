@@ -99,6 +99,8 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
     case Suggestion::Icon::kCardUnionPay:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
+    case Suggestion::Icon::kCardVerve:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VERVE);
     case Suggestion::Icon::kCardVisa:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
     // Other networks.
@@ -234,6 +236,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewFromIcon(
     case Suggestion::Icon::kCardMir:
     case Suggestion::Icon::kCardTroy:
     case Suggestion::Icon::kCardUnionPay:
+    case Suggestion::Icon::kCardVerve:
     case Suggestion::Icon::kCardVisa:
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);

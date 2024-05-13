@@ -10,6 +10,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_MASTERCARD" file="autofill/mastercard.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_MIR" file="autofill/mir.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_UNIONPAY" file="autofill/unionpay.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_VERVE" file="autofill/verve.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_VISA" file="autofill/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_TROY" file="autofill/troy.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_IBAN" file="autofill/iban.png" />
@@ -24,6 +25,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_MASTERCARD" file="autofill/metadata/mastercard.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_MIR" file="autofill/metadata/mir.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_UNIONPAY" file="autofill/metadata/unionpay.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VERVE" file="autofill/metadata/verve.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VISA" file="autofill/metadata/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_TROY" file="autofill/metadata/troy.png" />
   <if expr="_google_chrome">

@@ -114,6 +114,7 @@ struct Suggestion {
     kCardMir,
     kCardTroy,
     kCardUnionPay,
+    kCardVerve,
     kCardVisa,
     kIban,
   };

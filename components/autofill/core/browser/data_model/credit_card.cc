@@ -80,6 +80,9 @@ std::u16string NetworkForFill(const std::string& network) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
   if (network == kUnionPay)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
+  if (network == kVerveCard) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VERVE);
+  }
   if (network == kVisaCard)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
 
@@ -147,6 +150,10 @@ Suggestion::Icon ConvertCardNetworkIntoIcon(std::string_view network) {
   }
   if (network == kUnionPay) {
     return Suggestion::Icon::kCardUnionPay;
+  }
+  if (network == kVerveCard &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableVerveCardSupport)) {
+    return Suggestion::Icon::kCardVerve;
   }
   if (network == kVisaCard) {
     return Suggestion::Icon::kCardVisa;
@@ -283,6 +290,8 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardUnionPay:
       return get_icon(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
                       IDR_AUTOFILL_CC_UNIONPAY);
+    case Suggestion::Icon::kCardVerve:
+      return get_icon(IDR_AUTOFILL_METADATA_CC_VERVE, IDR_AUTOFILL_CC_VERVE);
     case Suggestion::Icon::kCardVisa:
       return get_icon(IDR_AUTOFILL_METADATA_CC_VISA, IDR_AUTOFILL_CC_VISA);
     case Suggestion::Icon::kCardGeneric:
