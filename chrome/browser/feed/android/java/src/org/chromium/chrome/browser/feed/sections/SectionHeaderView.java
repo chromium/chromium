@@ -219,7 +219,11 @@ public class SectionHeaderView extends LinearLayout {
             MarginLayoutParams contentMarginLayoutParams =
                     (MarginLayoutParams) mContent.getLayoutParams();
             contentMarginLayoutParams.topMargin =
-                    getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
+                    getResources()
+                            .getDimensionPixelSize(
+                                    ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                                            ? R.dimen.feed_containment_feed_header_top_margin
+                                            : R.dimen.feed_header_top_margin);
 
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMenuView.getLayoutParams();

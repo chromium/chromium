@@ -14,6 +14,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -1153,6 +1154,27 @@ public class FeedStream implements Stream {
                     // We intentionially don't add the spacer back in. The spacer has a key
                     // SPACER_KEY, not a slice id.
                 }
+            }
+
+            // Adds a special view at the end to provide the bottom margin. We can't do it with
+            // the bottom margin added to the container because that would cause the bottom margin
+            // be always visible since the beginning.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
+                TextView bottomGapView = new TextView(mActivity);
+                ViewGroup.LayoutParams bottomGapParams =
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                mActivity
+                                        .getResources()
+                                        .getDimensionPixelSize(R.dimen.feed_containment_margin));
+                bottomGapView.setLayoutParams(bottomGapParams);
+                FeedListContentManager.NativeViewContent bottomGapViewContent =
+                        new FeedListContentManager.NativeViewContent(
+                                0,
+                                "BottomGap" + bottomGapView.hashCode(),
+                                bottomGapView,
+                                /* isFullSpan= */ true);
+                newContentList.add(bottomGapViewContent);
             }
 
             updateContentsInPlace(newContentList);

@@ -24,6 +24,7 @@ feed_deps = [
 ]
 
 feed_java_sources = [
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedItemDecoration.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceMediator.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HasContentListener.java",
@@ -34,6 +35,7 @@ feed_java_sources = [
 feed_srcjar_deps = []
 
 feed_junit_test_java_sources = [
+  "junit/src/org/chromium/chrome/browser/feed/FeedItemDecorationTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
 ]

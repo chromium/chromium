@@ -162,6 +162,7 @@ public class FeedStreamTest {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
         overrides.put(ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT, true);
+        overrides.put(ChromeFeatureList.FEED_CONTAINMENT, false);
         FeatureList.setTestFeatures(overrides);
     }
 

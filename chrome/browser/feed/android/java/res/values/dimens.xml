@@ -54,6 +54,11 @@ found in the LICENSE file.
     <dimen name="feed_header_top_margin">16dp</dimen>
     <dimen name="feed_header_title_view_margin_start">4dp</dimen>
 
+    <!-- Feed containment. -->
+    <dimen name="feed_containment_margin">16dp</dimen>
+    <dimen name="feed_containment_horizontal_padding">16dp</dimen>
+    <dimen name="feed_containment_feed_header_top_margin">8dp</dimen>
+
     <!-- Feed unread dot dimens -->
     <dimen name="feed_badge_radius">2.5dp</dimen>
     <dimen name="feed_badge_hoffset">-1dp</dimen>
