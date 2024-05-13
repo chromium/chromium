@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
@@ -16,12 +20,22 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context) {
+          return commerce::MockShoppingService::Build();
+        }));
+    profile_ = profile_builder.Build();
+    Browser::CreateParams params(profile_.get(), true);
+    params.window = &browser_window_;
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
-    tab_strip_model_ =
-        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, &profile_);
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &tab_strip_model_delegate_, profile_.get());
     entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
-            tab_strip_model_.get());
+            browser_.get());
     locked_expansion_view_ = std::make_unique<views::View>();
     button_ = std::make_unique<ProductSpecificationsButton>(
         tab_strip_controller_.get(), tab_strip_model_.get(),
@@ -33,7 +47,9 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
   void ShowButton() { button_->Show(); }
 
  protected:
-  TestingProfile profile_;
+  TestBrowserWindow browser_window_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<Browser> browser_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
   std::unique_ptr<TabStripModel> tab_strip_model_;

@@ -56,7 +56,7 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   if (browser->is_type_normal()) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
-            browser->tab_strip_model());
+            browser);
   }
 }
 

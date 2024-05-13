@@ -7,14 +7,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/commerce/core/commerce_types.h"
 #include "content/public/browser/web_contents.h"
 
+class Browser;
+
 namespace commerce {
 
 class ShoppingService;
+class ProductSpecificationsService;
 
 class ProductSpecificationsEntryPointController : public TabStripModelObserver {
  public:
@@ -26,8 +28,7 @@ class ProductSpecificationsEntryPointController : public TabStripModelObserver {
     virtual void ShowEntryPointWithTitle(const std::string title) {}
   };
 
-  explicit ProductSpecificationsEntryPointController(
-      TabStripModel* tab_strip_model);
+  explicit ProductSpecificationsEntryPointController(Browser* browser);
   ~ProductSpecificationsEntryPointController() override;
 
   // TabStripModelObserver:
@@ -61,8 +62,9 @@ class ProductSpecificationsEntryPointController : public TabStripModelObserver {
  private:
   // Info of the entry point that is currently showing, when available.
   std::optional<EntryPointInfo> current_entry_point_info_;
-  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
+  raw_ptr<ProductSpecificationsService> product_specifications_service_;
   base::ObserverList<Observer> observers_;
 };
 }  // namespace commerce

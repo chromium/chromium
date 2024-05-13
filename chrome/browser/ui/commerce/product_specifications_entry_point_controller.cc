@@ -6,18 +6,27 @@
 
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/shopping_service.h"
 
 namespace commerce {
+// TODO(b/340252809): No need to have browser as a dependency.
 ProductSpecificationsEntryPointController::
-    ProductSpecificationsEntryPointController(TabStripModel* tab_strip_model)
-    : tab_strip_model_(tab_strip_model),
-      shopping_service_(ShoppingServiceFactory::GetForBrowserContext(
-          tab_strip_model->profile())) {
-  CHECK(tab_strip_model_);
-  tab_strip_model_->AddObserver(this);
+    ProductSpecificationsEntryPointController(Browser* browser)
+    : browser_(browser),
+      shopping_service_(
+          ShoppingServiceFactory::GetForBrowserContext(browser->profile())) {
+  CHECK(browser_);
+  browser->tab_strip_model()->AddObserver(this);
+  if (shopping_service_) {
+    product_specifications_service_ =
+        shopping_service_->GetProductSpecificationsService();
+  }
 }
 
 ProductSpecificationsEntryPointController::
@@ -56,8 +65,21 @@ void ProductSpecificationsEntryPointController::RemoveObserver(
 }
 
 void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
-  // TODO(b/325661685): Add implementation to trigger product specification
-  // experience.
+  if (!current_entry_point_info_.has_value()) {
+    return;
+  }
+  DCHECK(product_specifications_service_);
+  std::vector<GURL> urls(
+      current_entry_point_info_->similar_candidate_products_urls.begin(),
+      current_entry_point_info_->similar_candidate_products_urls.end());
+  const std::optional<ProductSpecificationsSet> set =
+      product_specifications_service_->AddProductSpecificationsSet(
+          current_entry_point_info_->title, std::move(urls));
+  if (set.has_value()) {
+    chrome::AddTabAt(browser_,
+                     commerce::GetProductSpecsTabUrlForID(set->uuid()),
+                     browser_->tab_strip_model()->count(), true, std::nullopt);
+  }
 }
 
 void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {

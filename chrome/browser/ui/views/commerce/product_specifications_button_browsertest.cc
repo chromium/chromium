@@ -29,9 +29,8 @@
 class MockProductSpecificationsEntryPointController
     : public commerce::ProductSpecificationsEntryPointController {
  public:
-  explicit MockProductSpecificationsEntryPointController(
-      TabStripModel* tab_strip_model)
-      : commerce::ProductSpecificationsEntryPointController(tab_strip_model) {}
+  explicit MockProductSpecificationsEntryPointController(Browser* browser)
+      : commerce::ProductSpecificationsEntryPointController(browser) {}
   ~MockProductSpecificationsEntryPointController() override = default;
 
   MOCK_METHOD(void, OnEntryPointExecuted, (), (override));
@@ -48,7 +47,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     controller_ =
         std::make_unique<MockProductSpecificationsEntryPointController>(
-            browser()->tab_strip_model());
+            browser());
     product_specifications_button()->SetEntryPointControllerForTesting(
         controller_.get());
   }
