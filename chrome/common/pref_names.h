@@ -4114,10 +4114,12 @@ inline constexpr char kCADistrustedCertificates[] =
 inline constexpr char kCAHintCertificates[] =
     "certificates.ca_hint_certificates";
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether to use user-added certificates that are in the
 // platform trust stores.
 inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
+#endif
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 // Integer value controlling whether to show any enterprise badging on a managed

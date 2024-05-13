@@ -255,8 +255,10 @@ void UpdateCertVerifierInstanceParams(
   instance_params->additional_distrusted_spkis =
       additional_certificates->distrusted_spkis;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   instance_params->include_system_trust_store =
       additional_certificates->include_system_trust_store;
+#endif
 
   for (const auto& cert_with_constraints_mojo :
        additional_certificates->trust_anchors_with_additional_constraints) {

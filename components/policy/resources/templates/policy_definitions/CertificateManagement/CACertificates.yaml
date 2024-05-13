@@ -26,5 +26,6 @@ future_on:
 - chrome.mac
 - chrome.win
 - android
+- chrome_os
 tags: []
 type: list

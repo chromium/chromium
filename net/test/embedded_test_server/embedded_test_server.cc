@@ -411,17 +411,29 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
-
-  std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCertFile(
-      certs_dir.AppendASCII("root_ca_cert.pem"));
-
   auto now = base::Time::Now();
+
+  std::unique_ptr<CertBuilder> root;
+  switch (cert_config_.root) {
+    case RootType::kTestRootCa:
+      root = CertBuilder::FromStaticCertFile(
+          certs_dir.AppendASCII("root_ca_cert.pem"));
+      break;
+    case RootType::kUniqueRoot:
+      root = std::make_unique<CertBuilder>(nullptr, nullptr);
+      root->SetValidity(now - base::Days(100), now + base::Days(1000));
+      root->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+      root->SetKeyUsages(
+          {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN, bssl::KEY_USAGE_BIT_CRL_SIGN});
+      break;
+  }
+
   // Will be nullptr if cert_config_.intermediate == kNone.
   std::unique_ptr<CertBuilder> intermediate;
   std::unique_ptr<CertBuilder> leaf;
 
   if (cert_config_.intermediate != IntermediateType::kNone) {
-    intermediate = std::make_unique<CertBuilder>(nullptr, static_root.get());
+    intermediate = std::make_unique<CertBuilder>(nullptr, root.get());
     intermediate->SetValidity(now - base::Days(100), now + base::Days(1000));
     intermediate->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
     intermediate->SetKeyUsages(
@@ -429,7 +441,7 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
 
     leaf = std::make_unique<CertBuilder>(nullptr, intermediate.get());
   } else {
-    leaf = std::make_unique<CertBuilder>(nullptr, static_root.get());
+    leaf = std::make_unique<CertBuilder>(nullptr, root.get());
   }
   std::vector<GURL> leaf_ca_issuers_urls;
   std::vector<GURL> leaf_ocsp_urls;
@@ -529,6 +541,8 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   if (intermediate) {
     intermediate_ = intermediate->GetX509Certificate();
   }
+
+  root_ = root->GetX509Certificate();
 
   private_key_ = bssl::UpRef(leaf->GetKey());
 
@@ -852,6 +866,11 @@ scoped_refptr<X509Certificate> EmbeddedTestServer::GetGeneratedIntermediate() {
   DCHECK(is_using_ssl_);
   DCHECK(!UsingStaticCert());
   return intermediate_;
+}
+
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetRoot() {
+  DCHECK(is_using_ssl_);
+  return root_;
 }
 
 void EmbeddedTestServer::ServeFilesFromDirectory(

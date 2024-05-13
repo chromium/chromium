@@ -158,10 +158,12 @@ class NET_EXPORT CertVerifyProc
     //  Additional SPKIs to consider as distrusted during path validation.
     std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
 
+#if !BUILDFLAG(IS_CHROMEOS)
     // If true, use the user-added certs in the system trust store for path
     // validation.
     // This only has an impact if the Chrome Root Store is being used.
     bool include_system_trust_store = true;
+#endif
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

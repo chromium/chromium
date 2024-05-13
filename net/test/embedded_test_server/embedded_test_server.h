@@ -174,6 +174,15 @@ class EmbeddedTestServer {
     CERT_AUTO,
   };
 
+  enum class RootType {
+    // The standard test_root_ca.pem certificate will be used, which should be
+    // trusted by default. (See `RegisterTestCerts`.)
+    kTestRootCa,
+    // A new CA certificate will be generated at runtime. The generated
+    // certificate chain will not be trusted unless the test itself trusts it.
+    kUniqueRoot,
+  };
+
   enum class IntermediateType {
     // Generated cert is issued directly by the CA.
     kNone,
@@ -280,6 +289,10 @@ class EmbeddedTestServer {
     ~ServerCertificateConfig();
     ServerCertificateConfig& operator=(const ServerCertificateConfig&);
     ServerCertificateConfig& operator=(ServerCertificateConfig&&);
+
+    // Configure what root CA certificate should be used to issue the generated
+    // certificate chain.
+    RootType root = RootType::kTestRootCa;
 
     // Configure whether the generated certificate chain should include an
     // intermediate, and if so, how it is delivered to the client.
@@ -465,9 +478,13 @@ class EmbeddedTestServer {
   scoped_refptr<X509Certificate> GetCertificate();
 
   // Returns any generated intermediates that the server may be using. May
-  // return null if no intermediate is generated. Must not be called before
+  // return null if no intermediate is generated.  Must not be called before
   // InitializeAndListen().
   scoped_refptr<X509Certificate> GetGeneratedIntermediate();
+
+  // Returns the root certificate that issued the certificate the server is
+  // using.  Must not be called before InitializeAndListen().
+  scoped_refptr<X509Certificate> GetRoot();
 
   // Registers request handler which serves files from |directory|.
   // For instance, a request to "/foo.html" is served by "foo.html" under
@@ -623,6 +640,7 @@ class EmbeddedTestServer {
   scoped_refptr<X509Certificate> x509_cert_;
   // May be null if no intermediate is generated.
   scoped_refptr<X509Certificate> intermediate_;
+  scoped_refptr<X509Certificate> root_;
   bssl::UniquePtr<EVP_PKEY> private_key_;
   base::flat_map<std::string, std::string> alps_accept_ch_;
   std::unique_ptr<SSLServerContext> context_;

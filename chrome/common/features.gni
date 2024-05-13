@@ -42,10 +42,12 @@ declare_args() {
   # * CertificateManagement/CACertificatesWithConstraints.yaml
   # * CertificateManagement/CADistrustedCertificates.yaml
   # * CertificateManagement/CAHintCertificates.yaml
-  # * CertificateManagement/CAPlatformIntegrationEnabled.yaml
+  # * CertificateManagement/CAPlatformIntegrationEnabled.yaml (The
+  # CAPlatformIntegrationEnabled policy is not available on ChromeOS as there
+  # is no "platform" certificate store to integrate with.)
   #
   chrome_certificate_policies_supported =
-      is_mac || is_win || is_linux || is_android
+      is_mac || is_win || is_linux || is_android || is_chromeos
 
   # Platforms for which Chrome supports a certificate management UI that
   # shows the Chrome Root Store. This is specific to the v2 UI that is

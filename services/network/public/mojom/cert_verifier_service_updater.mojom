@@ -36,6 +36,7 @@ struct AdditionalCertificates {
   array<array<uint8>> distrusted_spkis;
 
   // If true, use user-added certs in the system trust store.
+  [EnableIfNot=is_chromeos]
   bool include_system_trust_store = true;
 };
 

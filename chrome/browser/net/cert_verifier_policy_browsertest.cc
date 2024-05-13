@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -34,6 +35,10 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "components/onc/onc_constants.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
@@ -744,4 +749,110 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that when certificates are simultaneously added to both the ONC policy
+// and the new CACertificates/CAHintCertificates policies, that they are both
+// honored.
+class CertVerifierServiceNewAndOncCertificatePoliciesTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool add_cert_to_policy() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceNewAndOncCertificatePoliciesTest,
+                       TestBothPoliciesSetSimultaneously) {
+  net::EmbeddedTestServer test_server_for_onc_policy{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer test_server_for_new_policy{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  // Configure both test servers to serve chains with unique roots and with
+  // an intermediate that is not sent by the testserver nor available via
+  // AIA. Neither server should be trusted unless its intermediate is
+  // supplied as a hint via policy and its root is trusted via policy.
+  net::EmbeddedTestServer::ServerCertificateConfig test_cert_config;
+  test_cert_config.intermediate =
+      net::EmbeddedTestServer::IntermediateType::kMissing;
+  test_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+  test_server_for_onc_policy.SetSSLConfig(test_cert_config);
+  test_server_for_new_policy.SetSSLConfig(test_cert_config);
+  test_server_for_onc_policy.ServeFilesFromSourceDirectory("chrome/test/data");
+  test_server_for_new_policy.ServeFilesFromSourceDirectory("chrome/test/data");
+
+  ASSERT_TRUE(test_server_for_onc_policy.Start());
+  ASSERT_TRUE(test_server_for_new_policy.Start());
+
+  if (add_cert_to_policy()) {
+    std::string onc_root_pem;
+    std::string onc_hint_pem;
+    ASSERT_TRUE(net::X509Certificate::GetPEMEncoded(
+        test_server_for_onc_policy.GetRoot()->cert_buffer(), &onc_root_pem));
+    ASSERT_TRUE(net::X509Certificate::GetPEMEncoded(
+        test_server_for_onc_policy.GetGeneratedIntermediate()->cert_buffer(),
+        &onc_hint_pem));
+
+    auto onc_ca_cert =
+        base::Value::Dict()
+            .Set(onc::certificate::kGUID, base::Value("guid_root"))
+            .Set(onc::certificate::kType, onc::certificate::kAuthority)
+            .Set(onc::certificate::kX509, onc_root_pem)
+            .Set(onc::certificate::kTrustBits,
+                 base::Value::List().Append(onc::certificate::kWeb));
+
+    auto onc_hint_cert =
+        base::Value::Dict()
+            .Set(onc::certificate::kGUID, base::Value("guid_hint"))
+            .Set(onc::certificate::kType, onc::certificate::kAuthority)
+            .Set(onc::certificate::kX509, onc_hint_pem);
+
+    auto onc_certificates = base::Value::List()
+                                .Append(std::move(onc_ca_cert))
+                                .Append(std::move(onc_hint_cert));
+
+    auto onc_policy = base::Value::Dict()
+                          .Set(onc::toplevel_config::kCertificates,
+                               std::move(onc_certificates))
+                          .Set(onc::toplevel_config::kType,
+                               onc::toplevel_config::kUnencryptedConfiguration);
+
+    std::string onc_policy_json;
+    ASSERT_TRUE(base::JSONWriter::Write(onc_policy, &onc_policy_json));
+
+    auto new_ca_certs = base::Value::List().Append(
+        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+            test_server_for_new_policy.GetRoot()->cert_buffer())));
+
+    auto new_hint_certs = base::Value::List().Append(
+        base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+            test_server_for_new_policy.GetGeneratedIntermediate()
+                ->cert_buffer())));
+
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kOpenNetworkConfiguration,
+              std::make_optional(base::Value(std::move(onc_policy_json))));
+    SetPolicy(&policies, policy::key::kCACertificates,
+              std::make_optional(base::Value(std::move(new_ca_certs))));
+    SetPolicy(&policies, policy::key::kCAHintCertificates,
+              std::make_optional(base::Value(std::move(new_hint_certs))));
+    UpdateProviderPolicy(policies);
+  }
+
+  ASSERT_TRUE(
+      NavigateToUrl(test_server_for_onc_policy.GetURL("/simple.html"), this));
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+
+  ASSERT_TRUE(
+      NavigateToUrl(test_server_for_new_policy.GetURL("/simple.html"), this));
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceNewAndOncCertificatePoliciesTest,
+                         ::testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)

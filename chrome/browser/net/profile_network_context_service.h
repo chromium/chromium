@@ -25,6 +25,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
@@ -77,7 +78,9 @@ class ProfileNetworkContextService
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  // Update all of the profile_'s CertVerifierServices with certificates from
+  // enterprise policies.
   void UpdateAdditionalCertificates();
 #endif
 
@@ -152,14 +155,11 @@ class ProfileNetworkContextService
   void ScheduleUpdateCTPolicy();
 
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
-  // Get the current certificate policies from preferences.
-  cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy();
-
-  // Update the certificate policy for all of the profile_'s
-  // CertVerifierServices.
-  void UpdateCertificatePolicy();
-
   void ScheduleUpdateCertificatePolicy();
+
+  // Get the current certificate policies from preferences.
+  cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy(
+      const base::FilePath& storage_partition_path);
 #endif
 
   bool ShouldSplitAuthCacheByNetworkIsolationKey() const;
@@ -182,12 +182,6 @@ class ProfileNetworkContextService
   // Returns the path for a given storage partition.
   base::FilePath GetPartitionPath(
       const base::FilePath& relative_partition_path);
-
-  // Populates |network_context_params| with initial additional server and
-  // authority certificates for |relative_partition_path|.
-  void PopulateInitialAdditionalCerts(
-      const base::FilePath& relative_partition_path,
-      cert_verifier::mojom::CertVerifierCreationParams* creation_params);
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
