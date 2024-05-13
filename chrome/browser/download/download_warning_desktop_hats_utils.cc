@@ -20,6 +20,8 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
@@ -174,6 +176,7 @@ DownloadWarningHatsProductSpecificData::Create(
     DownloadWarningHatsType survey_type,
     download::DownloadItem* download_item) {
   CHECK(download_item);
+  CHECK(CanShowDownloadWarningHatsSurvey(download_item));
 
   DownloadWarningHatsProductSpecificData psd{survey_type};
 
@@ -336,6 +339,11 @@ DownloadWarningHatsProductSpecificData::GetStringDataFields(
   return fields;
 }
 
+bool CanShowDownloadWarningHatsSurvey(download::DownloadItem* download) {
+  CHECK(download);
+  return download->IsDangerous() && !download->IsDone();
+}
+
 std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
     DownloadWarningHatsType survey_type) {
   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadWarningSurvey)) {
@@ -371,5 +379,23 @@ std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
       return kHatsSurveyTriggerDownloadWarningPageHeed;
     case DownloadWarningHatsType::kDownloadsPageIgnore:
       return kHatsSurveyTriggerDownloadWarningPageIgnore;
+  }
+}
+
+void MaybeLaunchDownloadWarningHatsSurvey(
+    Profile* profile,
+    const DownloadWarningHatsProductSpecificData& psd) {
+  std::optional<std::string> trigger =
+      MaybeGetDownloadWarningHatsTrigger(psd.survey_type());
+  if (!trigger) {
+    return;
+  }
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (hats_service) {
+    hats_service->LaunchSurvey(*trigger, /*success_callback=*/base::DoNothing(),
+                               /*failure_callback=*/base::DoNothing(),
+                               psd.bits_data(), psd.string_data());
   }
 }

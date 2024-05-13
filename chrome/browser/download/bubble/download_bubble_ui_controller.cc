@@ -23,6 +23,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -256,7 +257,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
           : DownloadItemWarningData::WarningAction::DISCARD;
   switch (command) {
     case DownloadCommands::KEEP:
-    case DownloadCommands::DISCARD:
+    case DownloadCommands::DISCARD: {
       if (safe_browsing::IsSafeBrowsingSurveysEnabled(*profile_->GetPrefs())) {
         TrustSafetySentimentService* trust_safety_sentiment_service =
             TrustSafetySentimentServiceFactory::GetForProfile(profile_);
@@ -265,10 +266,24 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
               warning_surface, warning_action);
         }
       }
-      DownloadItemWarningData::AddWarningActionEvent(
-          model->GetDownloadItem(), warning_surface, warning_action);
+      download::DownloadItem* item = model->GetDownloadItem();
+      DownloadItemWarningData::AddWarningActionEvent(item, warning_surface,
+                                                     warning_action);
+      // Launch a HaTS survey. Note this needs to come before the command is
+      // executed, as that may change the state of the DownloadItem.
+      if (item && CanShowDownloadWarningHatsSurvey(item)) {
+        DownloadWarningHatsType survey_type =
+            command == DownloadCommands::KEEP
+                ? DownloadWarningHatsType::kDownloadBubbleBypass
+                : DownloadWarningHatsType::kDownloadBubbleHeed;
+        auto psd =
+            DownloadWarningHatsProductSpecificData::Create(survey_type, item);
+        psd.AddPartialViewInteraction(last_primary_view_was_partial());
+        MaybeLaunchDownloadWarningHatsSurvey(profile_, psd);
+      }
       commands.ExecuteCommand(command);
       break;
+    }
     case DownloadCommands::REVIEW:
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
@@ -280,12 +295,22 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       model->SetActionedOn(true);
       commands.ExecuteCommand(command);
       break;
-    case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::BYPASS_DEEP_SCANNING: {
+      download::DownloadItem* item = model->GetDownloadItem();
       DownloadItemWarningData::AddWarningActionEvent(
-          model->GetDownloadItem(), warning_surface,
+          item, warning_surface,
           DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN);
+      // Launch a HaTS survey. Note this needs to come before the command is
+      // executed, as that may change the state of the DownloadItem.
+      if (item && CanShowDownloadWarningHatsSurvey(item)) {
+        auto psd = DownloadWarningHatsProductSpecificData::Create(
+            DownloadWarningHatsType::kDownloadBubbleBypass, item);
+        psd.AddPartialViewInteraction(last_primary_view_was_partial());
+        MaybeLaunchDownloadWarningHatsSurvey(profile_, psd);
+      }
       commands.ExecuteCommand(command);
       break;
+    }
     case DownloadCommands::LEARN_MORE_SCANNING:
     case DownloadCommands::LEARN_MORE_DOWNLOAD_BLOCKED:
       DownloadItemWarningData::AddWarningActionEvent(

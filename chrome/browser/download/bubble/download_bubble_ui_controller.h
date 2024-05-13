@@ -75,6 +75,7 @@ class DownloadBubbleUIController {
   virtual std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
 
   // Process button press on the bubble.
+  // May launch a HaTS survey if the action applies to a download warning.
   // TODO(chlily): `is_main_view` should be named `is_primary_view`. It
   // distinguishes the primary page from the (security) subpage, not the main vs
   // partial flavors of the primary view.

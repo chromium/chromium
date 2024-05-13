@@ -117,6 +117,8 @@ class DownloadWarningDesktopHatsUtilsTest : public ::testing::Test {
         &item_, DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE,
         DownloadItemWarningData::WarningAction::CLOSE);
 
+    ON_CALL(item_, IsDone()).WillByDefault(Return(false));
+    ON_CALL(item_, IsDangerous()).WillByDefault(Return(true));
     ON_CALL(item_, GetDangerType())
         .WillByDefault(
             Return(download::DownloadDangerType::

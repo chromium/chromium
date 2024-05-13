@@ -106,6 +106,7 @@ class DownloadWarningHatsProductSpecificData {
   // Returns a ProductSpecificData with some basic PSD values filled in.
   // This only fills in certain fields derivable from the DownloadItem and the
   // profile. Other fields may need to be supplied by the caller directly.
+  // Note: Caller must ensure that the DownloadItem is dangerous and not done.
   static DownloadWarningHatsProductSpecificData Create(
       DownloadWarningHatsType survey_type,
       download::DownloadItem* download_item);
@@ -130,6 +131,8 @@ class DownloadWarningHatsProductSpecificData {
   const SurveyBitsData& bits_data() const { return bits_data_; }
   const SurveyStringData& string_data() const { return string_data_; }
 
+  DownloadWarningHatsType survey_type() const { return survey_type_; }
+
   DownloadWarningHatsProductSpecificData(
       const DownloadWarningHatsProductSpecificData&);
   DownloadWarningHatsProductSpecificData& operator=(
@@ -151,10 +154,28 @@ class DownloadWarningHatsProductSpecificData {
   SurveyStringData string_data_;
 };
 
+// Returns if the download item is dangerous and not-done.
+bool CanShowDownloadWarningHatsSurvey(download::DownloadItem* download);
+
 // Returns the HaTS trigger string for the survey_type, if the user is eligible
 // for that type of survey (according to the fieldtrial config). If the user
 // is not eligible, or there is a configuration error, this returns nullopt.
 std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
     DownloadWarningHatsType survey_type);
+
+// Launches a HaTS survey using the desktop HaTS service, if all preconditions
+// are met. The `psd` object encapsulates the data for the survey, including the
+// triggering survey type. `profile` is the profile for which the survey should
+// be launched. Note that it is potentially different from the profile under
+// which the download was made (in the case of OTR profiles which may care about
+// downloads made in their original profile), so it needs to be passed and
+// cannot be derived from the DownloadItem. However, when `profile` is OTR and
+// differs from the DownloadItem's Profile, a HaTS survey won't be shown anyway
+// because HaTS surveys are not shown for OTR profiles, so everything is fine
+// as long as we pass the correct `profile` for which we are attempting to
+// launch the survey.
+void MaybeLaunchDownloadWarningHatsSurvey(
+    Profile* profile,
+    const DownloadWarningHatsProductSpecificData& psd);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
