@@ -33089,6 +33089,8 @@ Called by update_net_error_codes.py.-->
   <int value="61" label="UMA_AUTO_TRANSLATE"/>
   <int value="63" label="UMA_CLEAR_BROWSING_DATA"/>
   <int value="64" label="UMA_SIGN_OUT"/>
+  <int value="65" label="UMA_TAB_GROUP_DELETE_UNDO"/>
+  <int value="66" label="UMA_SINGLE_TAB_GROUP_DELETE_UNDO"/>
 </enum>
 
 <enum name="SnapshotItemId">

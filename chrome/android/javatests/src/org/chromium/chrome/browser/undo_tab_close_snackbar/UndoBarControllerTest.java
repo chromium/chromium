@@ -16,9 +16,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -29,24 +33,34 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for the UndoBarController. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS})
 public class UndoBarControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private SnackbarManager mSnackbarManager;
     private TabModel mTabModel;
+    private TabGroupModelFilter mTabGroupModelFilter;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
-        mTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
+        mTabGroupModelFilter =
+                (TabGroupModelFilter)
+                        mActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getTabModelFilter(false);
+        mTabModel = mTabGroupModelFilter.getTabModel();
     }
 
     @Test
@@ -133,6 +147,240 @@ public class UndoBarControllerTest {
 
         Assert.assertNull(getCurrentSnackbar());
         Assert.assertEquals(0, mTabModel.getCount());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testDeleteTabGroup_Undo_SyncDisabled() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ false);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("2 tabs closed", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testDeleteTabGroup_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ false);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("2 tabs deleted", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testDeleteSingleTabGroup_Undo() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.createSingleTabGroup(
+                            mTabModel.getTabAt(0), /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(1, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(mTabModel.getTabAt(0)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ false);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("1 tab deleted", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(1, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testDeleteTabGroup_WithOtherTab_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(3, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(
+                                    mTabModel.getTabAt(0),
+                                    mTabModel.getTabAt(1),
+                                    mTabModel.getTabAt(2)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ false);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("3 tabs closed", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(3, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testPartialDeleteTabGroup_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(
+                                    mTabModel.getTabAt(0),
+                                    mTabModel.getTabAt(1),
+                                    mTabModel.getTabAt(2)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(3, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ false);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("2 tabs closed", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(1, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(3, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testHideTabGroup_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                });
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ true);
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("2 tabs closed", getSnackbarText());
+        Assert.assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        Assert.assertNull(getCurrentSnackbar());
+        Assert.assertEquals(2, mTabModel.getCount());
+        Assert.assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
     }
 
     @Test
