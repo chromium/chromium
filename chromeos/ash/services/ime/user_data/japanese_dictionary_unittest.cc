@@ -342,5 +342,19 @@ TEST(JapaneseDictionaryTest, MakeMojomJapaneseDictionary) {
   EXPECT_EQ(result, expected);
 }
 
+TEST(JapaneseDictionaryTest, MakeProtoJpDictEntry) {
+  JapaneseDictionary::Entry result =
+      MakeProtoJpDictEntry(*JapaneseDictionaryEntry::New(
+          /*key=*/"firstName", /*value=*/"value",
+          /*pos_type=*/JpPosType::kFirstName,
+          /*comment=*/"notes"));
+
+  EXPECT_EQ(result.key(), "firstName");
+  EXPECT_EQ(result.value(), "value");
+  EXPECT_EQ(result.pos(), JapaneseDictionary::FIRST_NAME);
+  EXPECT_EQ(result.comment(), "notes");
+}
+
 }  // namespace
 }  // namespace ash::ime
+                        

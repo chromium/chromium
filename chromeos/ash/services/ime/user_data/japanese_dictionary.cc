@@ -12,61 +12,97 @@ namespace ash::ime {
 namespace {
 using chromeos_input::JapaneseDictionary;
 
-constexpr auto kPosTypes = base::MakeFixedFlatMap<JapaneseDictionary::PosType,
-                                                  mojom::JpPosType>({
-    {JapaneseDictionary::NO_POS, mojom::JpPosType::kNoPos},
-    {JapaneseDictionary::NOUN, mojom::JpPosType::kNoun},
-    {JapaneseDictionary::ABBREVIATION, mojom::JpPosType::kAbbreviation},
-    {JapaneseDictionary::SUGGESTION_ONLY, mojom::JpPosType::kSuggestionOnly},
-    {JapaneseDictionary::PROPER_NOUN, mojom::JpPosType::kProperNoun},
-    {JapaneseDictionary::PERSONAL_NAME, mojom::JpPosType::kPersonalName},
-    {JapaneseDictionary::FAMILY_NAME, mojom::JpPosType::kFamilyName},
-    {JapaneseDictionary::FIRST_NAME, mojom::JpPosType::kFirstName},
-    {JapaneseDictionary::ORGANIZATION_NAME,
-     mojom::JpPosType::kOrganizationName},
-    {JapaneseDictionary::PLACE_NAME, mojom::JpPosType::kPlaceName},
-    {JapaneseDictionary::SA_IRREGULAR_CONJUGATION_NOUN,
-     mojom::JpPosType::kSaIrregularConjugationNoun},
-    {JapaneseDictionary::ADJECTIVE_VERBAL_NOUN,
-     mojom::JpPosType::kAdjectiveVerbalNoun},
-    {JapaneseDictionary::NUMBER, mojom::JpPosType::kNumber},
-    {JapaneseDictionary::ALPHABET, mojom::JpPosType::kAlphabet},
-    {JapaneseDictionary::SYMBOL, mojom::JpPosType::kSymbol},
-    {JapaneseDictionary::EMOTICON, mojom::JpPosType::kEmoticon},
-    {JapaneseDictionary::ADVERB, mojom::JpPosType::kAdverb},
-    {JapaneseDictionary::PRENOUN_ADJECTIVAL,
-     mojom::JpPosType::kPrenounAdjectival},
-    {JapaneseDictionary::CONJUNCTION, mojom::JpPosType::kConjunction},
-    {JapaneseDictionary::INTERJECTION, mojom::JpPosType::kInterjection},
-    {JapaneseDictionary::PREFIX, mojom::JpPosType::kPrefix},
-    {JapaneseDictionary::COUNTER_SUFFIX, mojom::JpPosType::kCounterSuffix},
-    {JapaneseDictionary::GENERIC_SUFFIX, mojom::JpPosType::kGenericSuffix},
-    {JapaneseDictionary::PERSON_NAME_SUFFIX,
-     mojom::JpPosType::kPersonNameSuffix},
-    {JapaneseDictionary::PLACE_NAME_SUFFIX, mojom::JpPosType::kPlaceNameSuffix},
-    {JapaneseDictionary::WA_GROUP1_VERB, mojom::JpPosType::kWaGroup1Verb},
-    {JapaneseDictionary::KA_GROUP1_VERB, mojom::JpPosType::kKaGroup1Verb},
-    {JapaneseDictionary::SA_GROUP1_VERB, mojom::JpPosType::kSaGroup1Verb},
-    {JapaneseDictionary::TA_GROUP1_VERB, mojom::JpPosType::kTaGroup1Verb},
-    {JapaneseDictionary::NA_GROUP1_VERB, mojom::JpPosType::kNaGroup1Verb},
-    {JapaneseDictionary::MA_GROUP1_VERB, mojom::JpPosType::kMaGroup1Verb},
-    {JapaneseDictionary::RA_GROUP1_VERB, mojom::JpPosType::kRaGroup1Verb},
-    {JapaneseDictionary::GA_GROUP1_VERB, mojom::JpPosType::kGaGroup1Verb},
-    {JapaneseDictionary::BA_GROUP1_VERB, mojom::JpPosType::kBaGroup1Verb},
-    {JapaneseDictionary::HA_GROUP1_VERB, mojom::JpPosType::kHaGroup1Verb},
-    {JapaneseDictionary::GROUP2_VERB, mojom::JpPosType::kGroup2Verb},
-    {JapaneseDictionary::KURU_GROUP3_VERB, mojom::JpPosType::kKuruGroup3Verb},
-    {JapaneseDictionary::SURU_GROUP3_VERB, mojom::JpPosType::kSuruGroup3Verb},
-    {JapaneseDictionary::ZURU_GROUP3_VERB, mojom::JpPosType::kZuruGroup3Verb},
-    {JapaneseDictionary::RU_GROUP3_VERB, mojom::JpPosType::kRuGroup3Verb},
-    {JapaneseDictionary::ADJECTIVE, mojom::JpPosType::kAdjective},
-    {JapaneseDictionary::SENTENCE_ENDING_PARTICLE,
-     mojom::JpPosType::kSentenceEndingParticle},
-    {JapaneseDictionary::PUNCTUATION, mojom::JpPosType::kPunctuation},
-    {JapaneseDictionary::FREE_STANDING_WORD,
-     mojom::JpPosType::kFreeStandingWord},
-    {JapaneseDictionary::SUPPRESSION_WORD, mojom::JpPosType::kSuppressionWord},
-});
+struct PosTypePair {
+  JapaneseDictionary::PosType proto;
+  mojom::JpPosType mojom;
+};
+
+constexpr std::array<PosTypePair, 45> kPosTypes = {{
+    {.proto = JapaneseDictionary::NO_POS, .mojom = mojom::JpPosType::kNoPos},
+    {.proto = JapaneseDictionary::NOUN, .mojom = mojom::JpPosType::kNoun},
+    {.proto = JapaneseDictionary::ABBREVIATION,
+     .mojom = mojom::JpPosType::kAbbreviation},
+    {.proto = JapaneseDictionary::SUGGESTION_ONLY,
+     .mojom = mojom::JpPosType::kSuggestionOnly},
+    {.proto = JapaneseDictionary::PROPER_NOUN,
+     .mojom = mojom::JpPosType::kProperNoun},
+    {.proto = JapaneseDictionary::PERSONAL_NAME,
+     .mojom = mojom::JpPosType::kPersonalName},
+    {.proto = JapaneseDictionary::FAMILY_NAME,
+     .mojom = mojom::JpPosType::kFamilyName},
+    {.proto = JapaneseDictionary::FIRST_NAME,
+     .mojom = mojom::JpPosType::kFirstName},
+    {.proto = JapaneseDictionary::ORGANIZATION_NAME,
+     .mojom = mojom::JpPosType::kOrganizationName},
+    {.proto = JapaneseDictionary::PLACE_NAME,
+     .mojom = mojom::JpPosType::kPlaceName},
+    {.proto = JapaneseDictionary::SA_IRREGULAR_CONJUGATION_NOUN,
+     .mojom = mojom::JpPosType::kSaIrregularConjugationNoun},
+    {.proto = JapaneseDictionary::ADJECTIVE_VERBAL_NOUN,
+     .mojom = mojom::JpPosType::kAdjectiveVerbalNoun},
+    {.proto = JapaneseDictionary::NUMBER, .mojom = mojom::JpPosType::kNumber},
+    {.proto = JapaneseDictionary::ALPHABET,
+     .mojom = mojom::JpPosType::kAlphabet},
+    {.proto = JapaneseDictionary::SYMBOL, .mojom = mojom::JpPosType::kSymbol},
+    {.proto = JapaneseDictionary::EMOTICON,
+     .mojom = mojom::JpPosType::kEmoticon},
+    {.proto = JapaneseDictionary::ADVERB, .mojom = mojom::JpPosType::kAdverb},
+    {.proto = JapaneseDictionary::PRENOUN_ADJECTIVAL,
+     .mojom = mojom::JpPosType::kPrenounAdjectival},
+    {.proto = JapaneseDictionary::CONJUNCTION,
+     .mojom = mojom::JpPosType::kConjunction},
+    {.proto = JapaneseDictionary::INTERJECTION,
+     .mojom = mojom::JpPosType::kInterjection},
+    {.proto = JapaneseDictionary::PREFIX, .mojom = mojom::JpPosType::kPrefix},
+    {.proto = JapaneseDictionary::COUNTER_SUFFIX,
+     .mojom = mojom::JpPosType::kCounterSuffix},
+    {.proto = JapaneseDictionary::GENERIC_SUFFIX,
+     .mojom = mojom::JpPosType::kGenericSuffix},
+    {.proto = JapaneseDictionary::PERSON_NAME_SUFFIX,
+     .mojom = mojom::JpPosType::kPersonNameSuffix},
+    {.proto = JapaneseDictionary::PLACE_NAME_SUFFIX,
+     .mojom = mojom::JpPosType::kPlaceNameSuffix},
+    {.proto = JapaneseDictionary::WA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kWaGroup1Verb},
+    {.proto = JapaneseDictionary::KA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kKaGroup1Verb},
+    {.proto = JapaneseDictionary::SA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kSaGroup1Verb},
+    {.proto = JapaneseDictionary::TA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kTaGroup1Verb},
+    {.proto = JapaneseDictionary::NA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kNaGroup1Verb},
+    {.proto = JapaneseDictionary::MA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kMaGroup1Verb},
+    {.proto = JapaneseDictionary::RA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kRaGroup1Verb},
+    {.proto = JapaneseDictionary::GA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kGaGroup1Verb},
+    {.proto = JapaneseDictionary::BA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kBaGroup1Verb},
+    {.proto = JapaneseDictionary::HA_GROUP1_VERB,
+     .mojom = mojom::JpPosType::kHaGroup1Verb},
+    {.proto = JapaneseDictionary::GROUP2_VERB,
+     .mojom = mojom::JpPosType::kGroup2Verb},
+    {.proto = JapaneseDictionary::KURU_GROUP3_VERB,
+     .mojom = mojom::JpPosType::kKuruGroup3Verb},
+    {.proto = JapaneseDictionary::SURU_GROUP3_VERB,
+     .mojom = mojom::JpPosType::kSuruGroup3Verb},
+    {.proto = JapaneseDictionary::ZURU_GROUP3_VERB,
+     .mojom = mojom::JpPosType::kZuruGroup3Verb},
+    {.proto = JapaneseDictionary::RU_GROUP3_VERB,
+     .mojom = mojom::JpPosType::kRuGroup3Verb},
+    {.proto = JapaneseDictionary::ADJECTIVE,
+     .mojom = mojom::JpPosType::kAdjective},
+    {.proto = JapaneseDictionary::SENTENCE_ENDING_PARTICLE,
+     .mojom = mojom::JpPosType::kSentenceEndingParticle},
+    {.proto = JapaneseDictionary::PUNCTUATION,
+     .mojom = mojom::JpPosType::kPunctuation},
+    {.proto = JapaneseDictionary::FREE_STANDING_WORD,
+     .mojom = mojom::JpPosType::kFreeStandingWord},
+    {.proto = JapaneseDictionary::SUPPRESSION_WORD,
+     .mojom = mojom::JpPosType::kSuppressionWord},
+}};
 
 mojom::JapaneseDictionaryEntryPtr MakeEntry(
     chromeos_input::JapaneseDictionary::Entry proto) {
@@ -77,9 +113,14 @@ mojom::JapaneseDictionaryEntryPtr MakeEntry(
   entry->value = proto.value();
   entry->comment = proto.comment();
 
-  if (const auto& it = kPosTypes.find(proto.pos()); it != kPosTypes.end()) {
-    entry->pos = it->second;
+  const auto& it = std::find_if(
+      kPosTypes.begin(), kPosTypes.end(),
+      [&proto](const PosTypePair& val) { return val.proto == proto.pos(); });
+
+  if (it != kPosTypes.end()) {
+    entry->pos = it->mojom;
   }
+
   return entry;
 }
 
@@ -94,6 +135,25 @@ mojom::JapaneseDictionaryPtr MakeMojomJapaneseDictionary(
        proto.entries()) {
     result->entries.push_back(MakeEntry(entry));
   }
+  return result;
+}
+
+chromeos_input::JapaneseDictionary::Entry MakeProtoJpDictEntry(
+    const mojom::JapaneseDictionaryEntry& mojom_entry) {
+  chromeos_input::JapaneseDictionary::Entry result;
+  result.set_key(mojom_entry.key);
+  result.set_value(mojom_entry.value);
+  result.set_comment(mojom_entry.comment);
+
+  const auto& it = std::find_if(kPosTypes.begin(), kPosTypes.end(),
+                                [&mojom_entry](const PosTypePair& val) {
+                                  return val.mojom == mojom_entry.pos;
+                                });
+
+  if (it != kPosTypes.end()) {
+    result.set_pos(it->proto);
+  }
+
   return result;
 }
 
