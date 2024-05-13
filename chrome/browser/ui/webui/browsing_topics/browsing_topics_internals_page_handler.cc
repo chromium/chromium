@@ -89,10 +89,17 @@ void BrowsingTopicsInternalsPageHandler::GetModelInfo(
     return;
   }
 
-  browsing_topics_service->GetAnnotator()->NotifyWhenModelAvailable(
-      base::BindOnce(
-          &BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto* annotator = browsing_topics_service->GetAnnotator();
+  if (!annotator) {
+    std::move(callback).Run(browsing_topics::mojom::WebUIGetModelInfoResult::
+                                NewOverrideStatusMessage(
+                                    "BrowsingTopicsService is shutting down."));
+    return;
+  }
+
+  annotator->NotifyWhenModelAvailable(base::BindOnce(
+      &BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BrowsingTopicsInternalsPageHandler::ClassifyHosts(
@@ -112,8 +119,13 @@ void BrowsingTopicsInternalsPageHandler::ClassifyHosts(
     std::move(callback).Run({});
     return;
   }
+  auto* annotator = browsing_topics_service->GetAnnotator();
+  if (!annotator) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  browsing_topics_service->GetAnnotator()->BatchAnnotate(
+  annotator->BatchAnnotate(
       base::BindOnce(
           &BrowsingTopicsInternalsPageHandler::OnGetTopicsForHostsCompleted,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -126,8 +138,16 @@ void BrowsingTopicsInternalsPageHandler::OnGetModelInfoCompleted(
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
   DCHECK(browsing_topics_service);
 
+  auto* annotator = browsing_topics_service->GetAnnotator();
+  if (!annotator) {
+    std::move(callback).Run(browsing_topics::mojom::WebUIGetModelInfoResult::
+                                NewOverrideStatusMessage(
+                                    "BrowsingTopicsService is shutting down."));
+    return;
+  }
+
   std::optional<optimization_guide::ModelInfo> model_info =
-      browsing_topics_service->GetAnnotator()->GetBrowsingTopicsModelInfo();
+      annotator->GetBrowsingTopicsModelInfo();
 
   if (!model_info) {
     std::move(callback).Run(browsing_topics::mojom::WebUIGetModelInfoResult::

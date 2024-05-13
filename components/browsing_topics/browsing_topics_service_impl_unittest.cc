@@ -2851,4 +2851,46 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
             GetHashedDomain("c.com"));
 }
 
+TEST_F(BrowsingTopicsServiceImplTest, MethodsFailGracefullyAfterShutdown) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime1));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  browsing_topics_service_->Shutdown();
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+  EXPECT_TRUE(result.empty());
+
+  base::test::TestFuture<mojom::WebUIGetBrowsingTopicsStateResultPtr> future1;
+  browsing_topics_service_->GetBrowsingTopicsStateForWebUi(
+      /*calculate_now=*/false, future1.GetCallback());
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_EQ(future1.Take()->get_override_status_message(),
+            "BrowsingTopicsService is shutting down.");
+
+  EXPECT_TRUE(browsing_topics_service_->GetTopTopicsForDisplay().empty());
+
+  browsing_topics_service_->ClearTopic(
+      privacy_sandbox::CanonicalTopic(Topic(7), /*taxonomy_version=*/1));
+
+  browsing_topics_service_->ClearTopicsDataForOrigin(
+      url::Origin::Create(GURL("https://b.com")));
+
+  browsing_topics_service_->ClearAllTopicsData();
+}
+
 }  // namespace browsing_topics

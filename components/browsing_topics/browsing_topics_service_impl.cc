@@ -381,6 +381,10 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   DCHECK(topics.empty());
   DCHECK(get_topics || observe);
 
+  if (is_shutting_down_) {
+    return false;
+  }
+
   RecordBrowsingTopicsApiActionTypeMetrics(caller_source, get_topics, observe);
 
   if (!browsing_topics_state_loaded_) {
@@ -505,6 +509,7 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
 int BrowsingTopicsServiceImpl::NumVersionsInEpochs(
     const url::Origin& main_frame_origin) const {
   CHECK(browsing_topics_state_loaded_);
+  CHECK(!is_shutting_down_);
   CHECK(privacy_sandbox_settings_->IsTopicsAllowed());
 
   std::string main_frame_domain =
@@ -531,6 +536,13 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
     std::move(callback).Run(
         mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
             "State loading hasn't finished. Please retry shortly."));
+    return;
+  }
+
+  if (is_shutting_down_) {
+    std::move(callback).Run(
+        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
+            "BrowsingTopicsService is shutting down."));
     return;
   }
 
@@ -562,7 +574,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
 
 std::vector<privacy_sandbox::CanonicalTopic>
 BrowsingTopicsServiceImpl::GetTopTopicsForDisplay() const {
-  if (!browsing_topics_state_loaded_) {
+  if (!browsing_topics_state_loaded_ || is_shutting_down_) {
     return {};
   }
 
@@ -599,7 +611,7 @@ Annotator* BrowsingTopicsServiceImpl::GetAnnotator() {
 
 void BrowsingTopicsServiceImpl::ClearTopic(
     const privacy_sandbox::CanonicalTopic& canonical_topic) {
-  if (!browsing_topics_state_loaded_) {
+  if (!browsing_topics_state_loaded_ || is_shutting_down_) {
     return;
   }
 
@@ -608,7 +620,7 @@ void BrowsingTopicsServiceImpl::ClearTopic(
 
 void BrowsingTopicsServiceImpl::ClearTopicsDataForOrigin(
     const url::Origin& origin) {
-  if (!browsing_topics_state_loaded_) {
+  if (!browsing_topics_state_loaded_ || is_shutting_down_) {
     return;
   }
 
@@ -625,7 +637,7 @@ void BrowsingTopicsServiceImpl::ClearTopicsDataForOrigin(
 }
 
 void BrowsingTopicsServiceImpl::ClearAllTopicsData() {
-  if (!browsing_topics_state_loaded_) {
+  if (!browsing_topics_state_loaded_ || is_shutting_down_) {
     return;
   }
 
@@ -644,6 +656,7 @@ BrowsingTopicsServiceImpl::CreateCalculator(
     int previous_timeout_count,
     base::Time session_start_time,
     BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
+  CHECK(!is_shutting_down_);
   return std::make_unique<BrowsingTopicsCalculator>(
       privacy_sandbox_settings, history_service, site_data_manager, annotator,
       epochs, is_manually_triggered, previous_timeout_count, session_start_time,
@@ -676,6 +689,10 @@ void BrowsingTopicsServiceImpl::CalculateBrowsingTopics(
 
   DCHECK(!topics_calculator_);
 
+  if (is_shutting_down_) {
+    return;
+  }
+
   // `this` owns `topics_calculator_` so `topics_calculator_` should not invoke
   // the callback once it's destroyed.
   topics_calculator_ = CreateCalculator(
@@ -692,6 +709,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
   CHECK(browsing_topics_state_loaded_);
   CHECK(topics_calculator_);
   CHECK(!schedule_calculate_timer_.IsRunning());
+  CHECK(!is_shutting_down_);
 
   const std::optional<CalculatorResultStatus>& status =
       epoch_topics.calculator_result_status();
@@ -767,6 +785,9 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
 
 void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
   DCHECK(!browsing_topics_state_loaded_);
+  if (is_shutting_down_) {
+    return;
+  }
   browsing_topics_state_loaded_ = true;
 
   base::Time browsing_topics_data_sccessible_since =
@@ -795,11 +816,23 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
 }
 
 void BrowsingTopicsServiceImpl::Shutdown() {
+  is_shutting_down_ = true;
+  // Reset `topics_calculator_` if it's set because it holds a raw_ptr to
+  // `privacy_sandbox_settings_` and `history_service_`.
+  if (topics_calculator_) {
+    topics_calculator_.reset();
+  }
+  // Reset `annotator_` because it holds a raw_ptr to the
+  // the per-profile `OptimizationGuideKeyedService`.
+  annotator_.reset();
   privacy_sandbox_settings_observation_.Reset();
   history_service_observation_.Reset();
+  privacy_sandbox_settings_ = nullptr;
+  history_service_ = nullptr;
 }
 
 void BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated() {
+  CHECK(!is_shutting_down_);
   if (!browsing_topics_state_loaded_) {
     return;
   }
@@ -825,6 +858,7 @@ void BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated() {
 void BrowsingTopicsServiceImpl::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
+  CHECK(!is_shutting_down_);
   if (!browsing_topics_state_loaded_) {
     return;
   }
@@ -873,6 +907,13 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUiHelper(
     std::map<HashedDomain, std::string> hashed_to_unhashed_context_domains) {
   DCHECK(browsing_topics_state_loaded_);
   DCHECK(!topics_calculator_);
+
+  if (is_shutting_down_) {
+    std::move(callback).Run(
+        mojom::WebUIGetBrowsingTopicsStateResult::NewOverrideStatusMessage(
+            "BrowsingTopicsService is shutting down."));
+    return;
+  }
 
   auto webui_state = mojom::WebUIBrowsingTopicsState::New();
 
