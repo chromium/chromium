@@ -778,7 +778,7 @@ source_set("browser_tests") {
   if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_apitest_chromeos.cc",
-      "api/cec_private/cec_private_apitest.cc",
+      "api/cec_private/cec_private_ash_apitest.cc",
       "api/media_perception_private/media_perception_private_apitest.cc",
       "api/virtual_keyboard/virtual_keyboard_apitest.cc",
     ]
@@ -798,6 +798,14 @@ source_set("browser_tests") {
       "//chromeos/dbus/power:power_manager_proto",
       "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
       "//extensions/common:mojom",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "api/cec_private/cec_private_lacros_apitest.cc" ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
     ]
   }
 }

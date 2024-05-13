@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Private API for HDMI CEC functionality.
-[platforms=("chromeos")]
+[platforms=("chromeos", "lacros")]
 namespace cecPrivate {
 
   enum DisplayCecPowerState {

@@ -177,7 +177,7 @@
   "cecPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk"],
     "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/824667#c15
