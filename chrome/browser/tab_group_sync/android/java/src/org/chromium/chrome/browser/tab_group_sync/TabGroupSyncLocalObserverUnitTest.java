@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -169,7 +168,7 @@ public class TabGroupSyncLocalObserverUnitTest {
                         eq(LOCAL_TAB_GROUP_ID_1),
                         eq(TAB_ID_1),
                         eq(TabGroupSyncUtils.UNSAVEABLE_TAB_TITLE),
-                        eq(new GURL(UrlConstants.NTP_URL)),
+                        eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
                         anyInt());
     }
 

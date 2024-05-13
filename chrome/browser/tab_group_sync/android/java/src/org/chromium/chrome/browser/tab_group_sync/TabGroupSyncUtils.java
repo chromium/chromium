@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import android.text.TextUtils;
 import android.util.Pair;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
@@ -12,10 +15,13 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 /** Utility methods for tab group sync. */
 public final class TabGroupSyncUtils {
+    // The URL written to sync when the local URL isn't in a syncable format, i.e. HTTP or HTTPS.
+    public static final GURL UNSAVEABLE_URL_OVERRIDE = new GURL(UrlConstants.NTP_NON_NATIVE_URL);
     public static final String UNSAVEABLE_TAB_TITLE = "Unsavable tab";
 
     /**
@@ -51,9 +57,24 @@ public final class TabGroupSyncUtils {
     /** Utility method to filter out URLs not suitable for tab group sync. */
     public static Pair<GURL, String> getFilteredUrlAndTitle(GURL url, String title) {
         assert url != null;
-        if (UrlUtilities.isHttpOrHttps(url) || UrlUtilities.isNtpUrl(url)) {
+        if (isSavableUrl(url)) {
             return new Pair<>(url, title);
+        } else {
+            return new Pair<>(UNSAVEABLE_URL_OVERRIDE, UNSAVEABLE_TAB_TITLE);
         }
-        return new Pair<>(new GURL(UrlConstants.NTP_URL), UNSAVEABLE_TAB_TITLE);
+    }
+
+    /** Utility method to determine if a URL can be synced or not. */
+    public static boolean isSavableUrl(GURL url) {
+        return UrlUtilities.isHttpOrHttps(url) || isNtpOrAboutBlankUrl(url.getValidSpecOrEmpty());
+    }
+
+    @VisibleForTesting
+    static boolean isNtpOrAboutBlankUrl(String url) {
+        return TextUtils.equals(url, UrlConstants.NTP_URL)
+                || TextUtils.equals(url, UrlConstants.NTP_NON_NATIVE_URL)
+                || TextUtils.equals(url, UrlConstants.NTP_ABOUT_URL)
+                || TextUtils.equals(url, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
+                || TextUtils.equals(url, ContentUrlConstants.ABOUT_BLANK_URL);
     }
 }

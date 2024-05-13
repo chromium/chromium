@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
@@ -59,6 +60,10 @@ public class LocalTabGroupMutationHelperUnitTest {
     private static final int ROOT_ID_2 = 2;
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 = new LocalTabGroupId(TOKEN_2);
+    private static final String TAB_TITLE_1 = "Tab Title 1";
+    private static final GURL TAB_URL_1 = new GURL("https://url1.com");
+    private static final GURL TAB_URL_2 = new GURL("https://url2.com");
+    private static final GURL UNSYNCABLE_URL_1 = new GURL("chrome://flags");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
@@ -91,6 +96,9 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
         mTab2 = prepareTab(TAB_ID_2, ROOT_ID_2);
+        when(mTab1.getUrl()).thenReturn(TAB_URL_1);
+        when(mTab1.getTitle()).thenReturn(TAB_TITLE_1);
+        when(mTab2.getUrl()).thenReturn(TAB_URL_2);
     }
 
     @After
@@ -197,12 +205,17 @@ public class LocalTabGroupMutationHelperUnitTest {
     }
 
     @Test
-    public void testUpdateTabGroup_UpdateExistingTab() {
+    public void testUpdateTabGroup_UpdateExistingTab_Navigate() {
         // One local group with one tab syncing.
         addOneTab();
+
         // One saved group with one tabs mapped to the local tab.
         SavedTabGroup savedTabGroup =
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = TAB_URL_2;
+        savedTab.title = TAB_TITLE_1;
+
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
         verify(mTabCreationDelegate, never())
@@ -211,6 +224,62 @@ public class LocalTabGroupMutationHelperUnitTest {
                 .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
         verify(mTabModel, never()).closeMultipleTabs(anyList(), eq(false));
+        verify(mTabCreationDelegate, times(1))
+                .navigateToUrl(any(), eq(TAB_URL_2), eq(TAB_TITLE_1), eq(false));
+    }
+
+    @Test
+    public void testUpdateTabGroup_UpdateExistingTab_SkipNavigateSameUrl() {
+        // One local group with one tab syncing.
+        addOneTab();
+
+        // One saved group with one tabs mapped to the local tab. It has same URl as existing.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = TAB_URL_1;
+
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+
+        verify(mTabCreationDelegate, never())
+                .createBackgroundTab(any(), anyString(), any(), anyInt());
+        verify(mTabCreationDelegate, never())
+                .navigateToUrl(any(), any(), anyString(), anyBoolean());
+    }
+
+    @Test
+    public void testUpdateTabGroup_UpdateExistingTab_UnsyncableUrlAreNotClobberedWithNTPUrl() {
+        // One local group with one tab syncing.
+        addOneTab();
+        when(mTab1.getUrl()).thenReturn(UNSYNCABLE_URL_1);
+
+        // One saved group with one tabs mapped to the local tab.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE;
+
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+        verify(mTabCreationDelegate, never())
+                .navigateToUrl(any(), any(), anyString(), anyBoolean());
+    }
+
+    @Test
+    public void
+            testUpdateTabGroup_UpdateExistingTab_UnsyncableUrlAreOverwrittenWithValidNonNTPUrl() {
+        // One local group with one tab syncing.
+        addOneTab();
+        when(mTab1.getUrl()).thenReturn(UNSYNCABLE_URL_1);
+
+        // One saved group with one tabs mapped to the local tab.
+        SavedTabGroup savedTabGroup =
+                createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
+        SavedTabGroupTab savedTab = savedTabGroup.savedTabs.get(0);
+        savedTab.url = TAB_URL_2;
+
+        mLocalMutationHelper.updateTabGroup(savedTabGroup);
+        verify(mTabCreationDelegate, times(1))
+                .navigateToUrl(any(), eq(TAB_URL_2), anyString(), eq(false));
     }
 
     @Test

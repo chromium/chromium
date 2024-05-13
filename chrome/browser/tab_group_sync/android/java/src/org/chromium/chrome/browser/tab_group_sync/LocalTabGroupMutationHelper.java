@@ -242,13 +242,24 @@ public class LocalTabGroupMutationHelper {
     }
 
     private void maybeNavigateToUrl(Tab tab, GURL url, String title) {
+        GURL localUrl = tab.getUrl();
+        GURL syncUrl = url;
+
         // If the tab is already at the correct URL, don't do anything.
-        if (url.equals(tab.getUrl())) return;
+        if (localUrl.equals(syncUrl)) return;
+
+        // If the tab has a non-syncable URL, don't override it if sync is trying to override it
+        // with a default override. We allow local state to differ from sync in this case,
+        // especially since we want to honor the local URL after restarts.
+        boolean isLocalUrlSyncable = TabGroupSyncUtils.isSavableUrl(localUrl);
+        if (!isLocalUrlSyncable && syncUrl.equals(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE)) {
+            return;
+        }
 
         boolean isCurrentTab =
                 getTabModel().getCurrentTabSupplier().get() != null
                         && getTabModel().getCurrentTabSupplier().get().getId() == tab.getId();
-        mTabCreationDelegate.navigateToUrl(tab, url, title, isCurrentTab);
+        mTabCreationDelegate.navigateToUrl(tab, syncUrl, title, isCurrentTab);
     }
 
     private Tab getLocalTabInGroup(Integer tabId, int rootId) {
