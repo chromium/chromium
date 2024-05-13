@@ -70,6 +70,8 @@ class UnitTestTestSuite::UnitTestEventListener
     SetBrowserClientForTesting(content_clients_->content_browser_client.get());
     SetUtilityClientForTesting(content_clients_->content_utility_client.get());
 
+    browser_accessibility_state_ = BrowserAccessibilityStateImpl::Create();
+
     if (first_test_start_callback_)
       std::move(first_test_start_callback_).Run();
   }
@@ -79,6 +81,8 @@ class UnitTestTestSuite::UnitTestEventListener
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
+    browser_accessibility_state_.reset();
+
     // Don't call SetUtilityClientForTesting or SetBrowserClientForTesting since
     // if a test overrode ContentClient it might already be deleted and setting
     // these pointers on it would result in a UAF.
@@ -107,6 +111,7 @@ class UnitTestTestSuite::UnitTestEventListener
       test_network_connection_tracker_;
   std::unique_ptr<NotificationServiceImpl> notification_service_;
   std::unique_ptr<UnitTestTestSuite::ContentClients> content_clients_;
+  std::unique_ptr<BrowserAccessibilityStateImpl> browser_accessibility_state_;
 };
 
 UnitTestTestSuite::ContentClients::ContentClients() = default;
@@ -155,7 +160,6 @@ UnitTestTestSuite::UnitTestTestSuite(
 
   DCHECK(test_suite);
   test_host_resolver_ = std::make_unique<TestHostResolver>();
-  browser_accessibility_state_ = BrowserAccessibilityStateImpl::Create();
   g_test_suite = this;
 }
 

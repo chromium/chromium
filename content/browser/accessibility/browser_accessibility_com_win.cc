@@ -23,8 +23,6 @@
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_localization_util.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -112,17 +110,8 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appName(BSTR* app_name) {
 
   if (!app_name)
     return E_INVALIDARG;
-
-  // GetProduct() returns a string like "Chrome/aa.bb.cc.dd", split out
-  // the part before the "/".
-  std::vector<std::string> product_components =
-      base::SplitString(GetContentClient()->browser()->GetProduct(), "/",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  // |GetProduct| will return an empty string if we are running the content
-  // shell instead of Chrome.
-  if (product_components.size() != 2)
-    return E_FAIL;
-  *app_name = SysAllocString(base::UTF8ToWide(product_components[0]).c_str());
+  *app_name = SysAllocString(
+      base::UTF8ToWide(ui::AXPlatform::GetInstance().product_name()).c_str());
   DCHECK(*app_name);
   return *app_name ? S_OK : E_FAIL;
 }
@@ -134,17 +123,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appVersion(BSTR* app_version) {
   if (!app_version)
     return E_INVALIDARG;
 
-  // GetProduct() returns a string like "Chrome/aa.bb.cc.dd", split out
-  // the part after the "/".
-  std::vector<std::string> product_components =
-      base::SplitString(GetContentClient()->browser()->GetProduct(), "/",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  // |GetProduct| will return an empty string if we are running the content
-  // shell instead of Chrome.
-  if (product_components.size() != 2)
-    return E_FAIL;
-  *app_version =
-      SysAllocString(base::UTF8ToWide(product_components[1]).c_str());
+  *app_version = SysAllocString(
+      base::UTF8ToWide(ui::AXPlatform::GetInstance().product_version())
+          .c_str());
   DCHECK(*app_version);
   return *app_version ? S_OK : E_FAIL;
 }
@@ -160,6 +141,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitName(BSTR* toolkit_name) {
   return *toolkit_name ? S_OK : E_FAIL;
 }
 
+// TODO(https://crbug.com/337998769): Confirm this is the intended behavior of
+// this API. Do ATs really need to know more than just the app version?
+// In Chrome, we return the User agent string here.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitVersion(
     BSTR* toolkit_version) {
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_toolkitVersion");
@@ -167,8 +151,9 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitVersion(
   if (!toolkit_version)
     return E_INVALIDARG;
 
-  std::string user_agent = GetContentClient()->browser()->GetUserAgent();
-  *toolkit_version = SysAllocString(base::UTF8ToWide(user_agent).c_str());
+  *toolkit_version = SysAllocString(
+      base::UTF8ToWide(ui::AXPlatform::GetInstance().toolkit_version())
+          .c_str());
   DCHECK(*toolkit_version);
   return *toolkit_version ? S_OK : E_FAIL;
 }

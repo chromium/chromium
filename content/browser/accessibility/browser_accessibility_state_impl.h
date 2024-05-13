@@ -148,7 +148,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
                                    ui::AXMode new_mode);
 
   // The process's single AXPlatform instance.
-  ui::AXPlatform ax_platform_{*this};
+  ui::AXPlatform ax_platform_;
 
   base::TimeDelta histogram_delay_;
 

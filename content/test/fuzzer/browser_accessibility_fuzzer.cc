@@ -6,17 +6,39 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <memory>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/test_content_browser_client.h"
+#include "content/test/test_content_client.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 struct Env {
-  Env() { base::CommandLine::Init(0, nullptr); }
+  Env() {
+    base::CommandLine::Init(0, nullptr);
+
+    // BrowserAccessibilityStateImpl requires a ContentBrowserClient.
+    content_client_ = std::make_unique<content::TestContentClient>();
+    content_browser_client_ =
+        std::make_unique<content::TestContentBrowserClient>();
+    content::SetContentClient(content_client_.get());
+    content::SetBrowserClientForTesting(content_browser_client_.get());
+  }
+
+  ~Env() {
+    content::SetBrowserClientForTesting(nullptr);
+    content::SetContentClient(nullptr);
+  }
+
   content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
+  std::unique_ptr<content::ContentClient> content_client_;
   base::AtExitManager at_exit;
 };
 

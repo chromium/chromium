@@ -51,7 +51,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Constructs a new instance. Only one instance may be alive in a process at
   // any given time. Typically, the embedder creates one during process startup
   // and ensures that it is kept alive throughout the process's UX.
-  explicit AXPlatform(Delegate& delegate);
+  explicit AXPlatform(Delegate& delegate,
+                      const std::string& product_name,
+                      const std::string& product_version,
+                      const std::string& toolkit_version);
   AXPlatform(const AXPlatform&) = delete;
   AXPlatform& operator=(const AXPlatform&) = delete;
   ~AXPlatform();
@@ -73,6 +76,16 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // we need to ensure that we keep ATs aware of caret movement.
   bool IsCaretBrowsingEnabled();
   void SetCaretBrowsingState(bool enabled);
+
+  // Returns the product name, e.g. "Chrome".
+  const std::string& product_name() const { return product_name_; }
+
+  // Returns the version number, e.g. "aa.bb.cc.dd".
+  const std::string& product_version() const { return product_version_; }
+
+  // Returns the toolkit version of the product, for example, the User Agent
+  // string.
+  const std::string& toolkit_version() const { return toolkit_version_; }
 
 #if BUILDFLAG(IS_WIN)
   // Enables or disables use of the UI Automation Provider on Windows. If this
@@ -104,6 +117,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
                      /*check_empty=*/true,
                      /*allow_reentrancy=*/false>
       observers_;
+
+  // See product_name() product_version(), and toolkit_version().
+  // These are passed by the embedder at construction.
+  const std::string product_name_;
+  const std::string product_version_;
+  const std::string toolkit_version_;
 
 #if BUILDFLAG(IS_WIN)
   enum class UiaProviderEnablement {

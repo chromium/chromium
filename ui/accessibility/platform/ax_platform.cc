@@ -22,7 +22,14 @@ AXPlatform& AXPlatform::GetInstance() {
   return *g_instance;
 }
 
-AXPlatform::AXPlatform(Delegate& delegate) : delegate_(delegate) {
+AXPlatform::AXPlatform(Delegate& delegate,
+                       const std::string& product_name,
+                       const std::string& product_version,
+                       const std::string& toolkit_version)
+    : delegate_(delegate),
+      product_name_(product_name),
+      product_version_(product_version),
+      toolkit_version_(toolkit_version) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }

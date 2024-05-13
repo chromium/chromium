@@ -19,7 +19,6 @@ class TestSuite;
 }
 
 namespace content {
-class BrowserAccessibilityStateImpl;
 class ContentBrowserClient;
 class ContentClient;
 class ContentUtilityClient;
@@ -83,8 +82,6 @@ class UnitTestTestSuite {
   raw_ptr<v8::Isolate> isolate_;
 
   std::unique_ptr<TestHostResolver> test_host_resolver_;
-
-  std::unique_ptr<BrowserAccessibilityStateImpl> browser_accessibility_state_;
 
   base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients_;
 

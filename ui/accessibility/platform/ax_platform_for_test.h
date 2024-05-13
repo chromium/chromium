@@ -31,7 +31,7 @@ class AXPlatformForTest : public AXPlatform::Delegate {
  private:
   friend class ScopedAXModeSetter;
 
-  AXPlatform ax_platform_{*this};
+  AXPlatform ax_platform_{*this, "", "", ""};
 
   AXMode mode_;
 };
