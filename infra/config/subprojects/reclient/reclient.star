@@ -92,6 +92,8 @@ def fyi_reclient_staging_builder(
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_fast_log_collection": "true",
         "RBE_use_unified_uploads": "true",
+        # TODO(b/297350970): remove once fully rolled out.
+        "RBE_use_round_robin_balancer": "true",
     })
 
     reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
@@ -140,6 +142,7 @@ def fyi_reclient_test_builder(
         "RBE_fast_log_collection": "true",
     })
     reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
+
     reclient_rewrapper_env.update({
         "RBE_exec_timeout": "15m",
     })
@@ -196,10 +199,6 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    # TODO(b/297350970): remove once fully rolled out.
-    reclient_bootstrap_env = {
-        "RBE_use_round_robin_balancer": "true",
-    },
     reclient_rewrapper_env = {
         "RBE_compression_threshold": "0",
     },
