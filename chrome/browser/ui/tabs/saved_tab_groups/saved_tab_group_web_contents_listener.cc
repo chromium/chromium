@@ -130,6 +130,11 @@ void SavedTabGroupWebContentsListener::TitleWasSet(
   SavedTabGroup* group = model_->GetGroupContainingTab(token_);
   CHECK(group);
 
+  // Don't update the title if the URL should not be synced.
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(entry->GetURL())) {
+    return;
+  }
+
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetTitle(entry->GetTitleForDisplay());
   model_->UpdateTabInGroup(group->saved_guid(), *tab);
@@ -143,6 +148,12 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
     const gfx::Image& image) {
   SavedTabGroup* group = model_->GetGroupContainingTab(token_);
   CHECK(group);
+
+  // Don't update the favicon if the URL should not be synced.
+  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(
+          favicon_driver->GetActiveURL())) {
+    return;
+  }
 
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetFavicon(image);
