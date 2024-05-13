@@ -99,7 +99,8 @@ Chrome.\
         retry_failed_shards = False,
     ),
     gn_args = "ci/win10-wpt-chromium-rel",
-    os = os.LINUX_DEFAULT,
+    builderless = True,
+    os = os.WINDOWS_10,
     contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
@@ -402,7 +403,10 @@ Chrome.\
         retry_failed_shards = False,
     ),
     gn_args = "ci/mac13-wpt-chromium-rel",
-    os = os.LINUX_DEFAULT,
+    builderless = True,
+    cores = None,
+    os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     contact_team_email = "chrome-blink-engprod@google.com",
     main_list_view = "try",
 )
