@@ -92,55 +92,87 @@ component.
 ## Current policies
 
 New features should be designed to adhere to the “desired state” as closely as
-practical. Due to the volume of legacy code it is often impossible to achieve
-100% compliance with the desired state so we have to be pragmatic. In
-particular:
+practical. However, it is currently not possible to implement all functionality
+in Ash according to that state:
 
-- New ChromeOS features should avoid compile-time dependencies on //chrome.
-  - Exceptions are permitted, especially when interacting with legacy code that
-    does not follow these rules.
-  - When you can’t implement the “right” design, get as close as possible and
-    try to make it as easy as possible to migrate in the future (see
-    “Implementation advice” below).
+- Some functionality (e.g., the `Profile` class) is only available in //chrome,
+  and there is no clear alternative to use.
 
-- Existing OS-to-browser dependencies will be grandfathered in via DEPS.
-  - Modification of existing code is permitted, including modifications that
-    require adding new DEPS entries when necessary. The DEPS file is there today
-    to help flag issues that may need more thought rather than prevent
-    additions.
-  - Try to move incrementally toward the desired goal.
+- Legacy code still has significant //chrome dependencies and has not been
+  migrated away from this state.
 
-- Undesirable browser-to-OS dependencies are enforced by the linking of the
-  Lacros browser without Ash code.
+Thus, we must be pragmatic about implementing Ash features in the meantime,
+using the following guidance:
 
-Reach out to crosapi-council@ for advice.
+- Any new Ash functionality should add its core functionality outside of
+  //chrome.
+  - In this context, "core" functionality includes the primary business logic of
+    a feature.
+  - Guidance on where this code should exist:
+    - **Ash-only code which is not system UI:** //chromeos/ash/components
+    - **Ash-only system UI code:** //ash
+    - **Lacros-only code:** Match other platform code for that component
+      (contact chrome-cros@google.com if you are unsure)
+    - **Shared by both Ash and Lacros:**
+      - *UI code:* //chromeos/ui
+      - *Non-UI code:* //chromeos/components
+    - **Shared between ChromeOS (i.e., ash-chrome and lacros-chrome) and other
+      platforms:** //components
 
-## The path forward
+- For code which must depend on //chrome, push logic down lower in the
+  dependency graph as much as possible, and only implement a thin wrapper in
+  //chrome. With this pattern, the code in //chrome is mostly "glue" or
+  initialization code, which will minimize the effort required in the future to
+  break these dependencies completely.
+  - Example 1: Phone Hub's [`BrowserTabsModelProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/phonehub/browser_tabs_model_provider.h;drc=2a153c1bc9f24cae375eee3cc875903866997918)
+    is declared in //chromeos/ash/components alongside related code logic, but
+    [`BrowserTabsModelProviderImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h;drc=fe132eeb21687c455d695d6af346f15454828d01)
+    (in //chrome) implements the interface using a //chrome dependency.
+  - Example 2: Phone Hub's [`PhoneHubManagerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/phonehub/phone_hub_manager_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf)
+    is declared in //chromeos/ash/components and has dependencies outside of
+    //chrome, but the concrete implementations of some of these components are
+    [`KeyedService`](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/core/keyed_service.h;drc=d23075f3066f6aab6fd5f8446ea5dde3ebff1097)s
+    requiring //chrome. In this case, [`PhoneHubManagerFactory`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/phonehub/phone_hub_manager_factory.h;drc=d23075f3066f6aab6fd5f8446ea5dde3ebff1097)
+    instantiates [`PhoneHubManagerImpl`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/phonehub/phone_hub_manager_impl.h;drc=6b2b6f5aa258a1616fab24634c4e9477cfef5daf)
+    in //chrome (serving as a thin wrapper around the dependencies), but the
+    vast majority of logic is lower in the dependency graph.
+
+- A few common //chrome dependencies that may be able to be broken easily:
+  - Instead of using [`ProfileKeyedServiceFactory`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/profiles/profile_keyed_service_factory.h;drc=77a7a02b1822640e35cac72c0ddd7af7275eeb9b)
+    (in //chrome), consider using [`BrowserContextKeyedServiceFactory`](https://source.chromium.org/chromium/chromium/src/+/main:components/keyed_service/content/browser_context_keyed_service_factory.h;drc=371515598109bf869e1acbe5ea67813fc1a4cc3d)
+    (in //components) instead.
+  - Instead of using a [`Profile`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/profiles/profile.h;l=308-311;drc=3f4203f7dca2f7e804f30cfa783e24f90acd9059)
+    (in //chrome) to access user prefs, consider using
+    [`User::GetProfilePrefs()`](https://source.chromium.org/chromium/chromium/src/+/main:components/user_manager/user.h;l=127-131;drc=e49b1aec9585b0a527c24502dd4b0ee94b142c3c)
+    (in //components) instead.
+
+- For any new code added in //chrome/browser/ash, a DEPS file must be created
+  which explicitly declares //chrome dependencies. People residing in
+  //chrome/OWNERS can help suggest alternatives to these dependencies if
+  possible when reviewing the code which adds this new DEPS file. See
+  [b/332805865](http://b/332805865) for more details.
+
+- Note: Any features related specifically to the Ash browser (in Lacros-disabled
+  mode) should stay in //chrome since this code will be deleted after Lacros is
+  launched. For example, [`BrowserViewAsh`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/frame/browser_view_ash.h;drc=1f59e9522facce081aea6b0eb7ab8b122e60428b) implements UI
+  specific to the ash-chrome browser, and we should not attempt to push this
+  lower in the dependency graph.
+
+If you need advice to help you make a decision regarding your design, please
+reach out to ash-chrome-refactor@google.com for feedback.
+
+## Path forward
 
 The current policy aims to stop accumulating more undesirable OS/browser
 dependencies while acknowledging there is a large amount of legacy code that
-does not follow the guidelines.
+does not follow the guidelines. The team is moving toward the desired state
+using a 2-pronged approach:
 
-The Lacros project has been creating a clear OS API (“crosapi”) to provide the
-correct browser-to-OS calls.
+1) Eliminating OS ⇔ Browser calls: the Lacros project has been creating a clear
+   OS API (“crosapi”) to communicate between the Lacros browser and Ash.
 
-For the OS-to-browser calls, there is no current project staffed to clean up all
-of the existing code dependencies, the biggest example being the existence of
-//chrome/browser/ash. As such, there is no schedule or cost/benefit analysis for
-such work, but efforts to improve the situation are welcome.
-
-The plan is to increase the requirements over time to move in the direction of
-the architectural goal. This will likely take the form of additional levels of
-review for new includes of browser headers from OS code.
-
-## Best practices
-
-### Where should ChromeOS-only code be placed?
-
-- **Ash-Chrome-only code:** //chromeos/ash/components
-- **Lacros-only code:** Match other platform code for that component, consult
-  with chrome-cros@google.com if unsure.
-- **Both Ash-Chrome and Lacros:**
-  - **UI code:** //chromeos/ui
-  - **Non-UI code:** //chromeos/components
-
+2) Removing Ash code from //chrome: The go/ash-chrome-refactor project seeks to
+   refactor Ash code in //chrome and decouple it from browser code as much as
+   possible. This project, which will introduce a C++ based glue layer, has a
+   long time horizon. Although its long-term goals are clear, the project is
+   only on its early milestones at this stage.
