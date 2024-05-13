@@ -17,7 +17,10 @@ namespace chromeos {
 
 PrintViewManagerCros::PrintViewManagerCros(content::WebContents* web_contents)
     : PrintViewManagerCrosBase(web_contents),
-      content::WebContentsUserData<PrintViewManagerCros>(*web_contents) {}
+      content::WebContentsUserData<PrintViewManagerCros>(*web_contents),
+      token_(base::UnguessableToken::Create()) {}
+
+PrintViewManagerCros::~PrintViewManagerCros() = default;
 
 // static
 void PrintViewManagerCros::BindPrintManagerHost(

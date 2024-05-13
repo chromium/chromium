@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_PREVIEW_PRINT_VIEW_MANAGER_CROS_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_PREVIEW_PRINT_VIEW_MANAGER_CROS_H_
 
+#include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_base.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -28,7 +29,7 @@ class PrintViewManagerCros
   PrintViewManagerCros(const PrintViewManagerCros&) = delete;
   PrintViewManagerCros& operator=(const PrintViewManagerCros&) = delete;
 
-  ~PrintViewManagerCros() override = default;
+  ~PrintViewManagerCros() override;
 
   static void BindPrintManagerHost(
       mojo::PendingAssociatedReceiver<::printing::mojom::PrintManagerHost>
@@ -64,6 +65,10 @@ class PrintViewManagerCros
 
   // The current RFH that is print previewing.
   raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  // Unique ID of the webcontent tied to this instance. This token is created
+  // by this class and is passed to clients interested in identifying the
+  // webcontents.
+  base::UnguessableToken token_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
