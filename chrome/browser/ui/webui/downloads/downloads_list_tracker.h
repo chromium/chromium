@@ -58,7 +58,14 @@ class DownloadsListTracker
   // Returns the number of dangerous download items that have been sent to the
   // page. Does not count those which we know about but are not yet displayed
   // on the page, e.g. due to not having scrolled far enough yet.
+  // Note this includes items that have been cancelled; they still display a
+  // warning in grayed out text.
   int NumDangerousItemsSent() const;
+
+  // Returns the first dangerous item that is not cancelled, i.e. it is the
+  // first (topmost) item to be shown on the page with an active warning.
+  // Returns nullptr if none are found.
+  download::DownloadItem* GetFirstActiveWarningItem();
 
   content::DownloadManager* GetMainNotifierManager() const;
   content::DownloadManager* GetOriginalNotifierManager() const;

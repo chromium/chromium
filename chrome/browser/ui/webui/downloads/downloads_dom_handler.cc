@@ -36,6 +36,7 @@
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -212,6 +213,7 @@ DownloadsDOMHandler::DownloadsDOMHandler(
 }
 
 DownloadsDOMHandler::~DownloadsDOMHandler() {
+  OnDownloadsPageDismissed();
   list_tracker_.Stop();
   list_tracker_.Reset();
   if (!render_process_gone_) {
@@ -836,6 +838,26 @@ void DownloadsDOMHandler::MaybeTriggerDownloadWarningHatsSurvey(
   psd.AddNumPageWarnings(list_tracker_.NumDangerousItemsSent());
 
   MaybeLaunchDownloadWarningHatsSurvey(profile, psd);
+}
+
+void DownloadsDOMHandler::OnDownloadsPageDismissed() {
+  // If the chrome://downloads page is closed as part of the browser shutting
+  // down, do not run the HaTS survey because that would call into the network
+  // stack and try to use objects that are already being torn down.
+  if (browser_shutdown::HasShutdownStarted()) {
+    return;
+  }
+
+  // There's no specific warning associated with navigating away from
+  // chrome://downloads or closing the tab, so let's just launch the survey on
+  // the topmost download with a warning.
+  if (download::DownloadItem* first_dangerous_item =
+          list_tracker_.GetFirstActiveWarningItem();
+      first_dangerous_item &&
+      CanShowDownloadWarningHatsSurvey(first_dangerous_item)) {
+    MaybeTriggerDownloadWarningHatsSurvey(
+        first_dangerous_item, DownloadWarningHatsType::kDownloadsPageIgnore);
+  }
 }
 
 bool DownloadsDOMHandler::IsDeletingHistoryAllowed() {

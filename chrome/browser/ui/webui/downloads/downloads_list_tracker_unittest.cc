@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/mock_downloads_page.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/download/public/common/download_item.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -366,6 +367,63 @@ TEST_F(DownloadsListTrackerTest, NumDangerousItemsSent) {
     std::vector<uint64_t> expected = {0};
     EXPECT_CALL(page_, InsertItems(6, MatchIds(expected)));
     EXPECT_EQ(tracker()->NumDangerousItemsSent(), 2);
+  }
+}
+
+TEST_F(DownloadsListTrackerTest, GetFirstActiveWarningItem) {
+  // Create the items in the reverse order from how they are displayed.
+  MockDownloadItem* second_dangerous_active_item = CreateNextItem();
+  ON_CALL(*second_dangerous_active_item, IsDangerous())
+      .WillByDefault(Return(true));
+  ON_CALL(*second_dangerous_active_item, GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  CreateNextItem();
+  MockDownloadItem* dangerous_active_item = CreateNextItem();
+  ON_CALL(*dangerous_active_item, IsDangerous()).WillByDefault(Return(true));
+  ON_CALL(*dangerous_active_item, GetState())
+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  MockDownloadItem* dangerous_cancelled_item = CreateNextItem();
+  ON_CALL(*dangerous_cancelled_item, IsDangerous()).WillByDefault(Return(true));
+  ON_CALL(*dangerous_cancelled_item, GetState())
+      .WillByDefault(Return(download::DownloadItem::CANCELLED));
+  CreateNextItem();
+
+  CreateTracker();
+  tracker()->SetChunkSizeForTesting(1);
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {4};
+    EXPECT_CALL(page_, InsertItems(0, MatchIds(expected)));
+    // Item is not dangerous.
+    EXPECT_EQ(tracker()->GetFirstActiveWarningItem(), nullptr);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {3};
+    EXPECT_CALL(page_, InsertItems(1, MatchIds(expected)));
+    // Item is cancelled.
+    EXPECT_EQ(tracker()->GetFirstActiveWarningItem(), nullptr);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {2};
+    EXPECT_CALL(page_, InsertItems(2, MatchIds(expected)));
+    // Item is active and warning so it is returned.
+    EXPECT_EQ(tracker()->GetFirstActiveWarningItem(), dangerous_active_item);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {1};
+    EXPECT_CALL(page_, InsertItems(3, MatchIds(expected)));
+    // Next item is not dangerous and active, so it doesn't change the answer.
+    EXPECT_EQ(tracker()->GetFirstActiveWarningItem(), dangerous_active_item);
+  }
+  {
+    tracker()->StartAndSendChunk();
+    std::vector<uint64_t> expected = {0};
+    EXPECT_CALL(page_, InsertItems(4, MatchIds(expected)));
+    // A second dangerous active item doesn't change the answer.
+    EXPECT_EQ(tracker()->GetFirstActiveWarningItem(), dangerous_active_item);
   }
 }
 

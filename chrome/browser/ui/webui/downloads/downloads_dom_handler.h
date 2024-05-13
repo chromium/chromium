@@ -124,6 +124,10 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
       download::DownloadItem* item,
       DownloadWarningHatsType survey_type);
 
+  // Called when the downloads page is dismissed by closing the tab, or
+  // navigating the tab to another page.
+  void OnDownloadsPageDismissed();
+
   // Returns true if the records of any downloaded items are allowed (and able)
   // to be deleted.
   bool IsDeletingHistoryAllowed();

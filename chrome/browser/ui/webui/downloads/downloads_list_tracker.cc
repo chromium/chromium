@@ -241,6 +241,22 @@ int DownloadsListTracker::NumDangerousItemsSent() const {
       [](download::DownloadItem* item) { return item->IsDangerous(); });
 }
 
+download::DownloadItem* DownloadsListTracker::GetFirstActiveWarningItem() {
+  auto sent_items_end_it = sorted_items_.begin();
+  std::advance(sent_items_end_it, sent_to_page_);
+
+  auto iter = base::ranges::find_if(
+      sorted_items_.begin(), sent_items_end_it,
+      [](download::DownloadItem* item) {
+        return item->GetState() != download::DownloadItem::CANCELLED &&
+               item->IsDangerous();
+      });
+  if (iter != sent_items_end_it) {
+    return *iter;
+  }
+  return nullptr;
+}
+
 DownloadManager* DownloadsListTracker::GetMainNotifierManager() const {
   return main_notifier_.GetManager();
 }
