@@ -7,7 +7,7 @@ import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -26,6 +26,7 @@ suite('ExtensionsMV2DeprecationPanel', function() {
       name: 'Extension A',
       id: 'a'.repeat(32),
       isAffectedByMV2Deprecation: true,
+      mustRemainInstalled: false,
     })];
     panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
@@ -68,34 +69,74 @@ suite('ExtensionsMV2DeprecationPanel', function() {
   });
 
   test(
-      'extension action menu buttons trigger the correct call',
+      'remove action is visible if extension can be removed, and triggers' +
+          'the extension removal when clicked',
       async function() {
-        const extension = panelElement.shadowRoot!
-                              .querySelectorAll<HTMLElement>('.extension-row')
-                              ?.[0];
+        let extension = panelElement.shadowRoot!
+                            .querySelectorAll<HTMLElement>('.extension-row')
+                            ?.[0];
         assertTrue(!!extension);
 
-        // Click on the extension's action menu button so we store the extension
-        // id whose action menu was expanded.
-        const actionButton =
+        // Open the extension's action menu button.
+        let actionButton =
             extension.querySelector<CrIconButtonElement>('cr-icon-button');
         assertTrue(!!actionButton);
         actionButton.click();
 
+        // Remove button is visible when the extension doesn't need to remain
+        // installed.
+        let removeAction = panelElement.shadowRoot!.querySelector<HTMLElement>(
+            '#removeAction');
+        assertTrue(isVisible(removeAction));
+
         // Click on the remove button in the action menu, and verify it
         // triggered the correct delegate call.
-        const removeAction =
-            panelElement.shadowRoot!.querySelector<HTMLElement>(
-                '#removeAction');
-        assertTrue(!!removeAction);
-        removeAction.click();
+        removeAction?.click();
         await mockDelegate.whenCalled('deleteItem');
         assertEquals(1, mockDelegate.getCallCount('deleteItem'));
         assertDeepEquals(
             [panelElement.extensions[0]?.id],
             mockDelegate.getArgs('deleteItem'));
 
-        // Click the action button again (the previous click closed it).
+        // Set the extension property to be force installed.
+        panelElement.set('extensions.0', createExtensionInfo({
+                           name: 'Extension A',
+                           id: 'a'.repeat(32),
+                           isAffectedByMV2Deprecation: true,
+                           mustRemainInstalled: true,
+                         }));
+        await flushTasks();
+
+        // Open the extension's action menu button again, since clicking on the
+        // action closed the menu.
+        extension = panelElement.shadowRoot!
+                        .querySelectorAll<HTMLElement>('.extension-row')
+                        ?.[0];
+        assertTrue(!!extension);
+        actionButton =
+            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+        assertTrue(!!actionButton);
+        actionButton.click();
+
+        // Remove action is hidden when the extension must remain installed.
+        removeAction = panelElement.shadowRoot!.querySelector<HTMLElement>(
+            '#removeAction');
+        assertFalse(isVisible(removeAction));
+      });
+
+  test(
+      'keep action menu button triggers a warning dismissal for the extension' +
+          'when clicked',
+      async function() {
+        const extension = panelElement.shadowRoot!
+                              .querySelectorAll<HTMLElement>('.extension-row')
+                              ?.[0];
+        assertTrue(!!extension);
+
+        // Open the extension's action menu button.
+        const actionButton =
+            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+        assertTrue(!!actionButton);
         actionButton.click();
 
         // Next, click on the "keep for now" button in the action menu, and

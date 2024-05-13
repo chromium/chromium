@@ -86,7 +86,8 @@
         $i18n{mv2DeprecationPanelKeepForNowButton}
       </button>
       <button class="dropdown-item" id="removeAction"
-          on-click="onRemoveExtensionActionClicked_">
+          on-click="onRemoveExtensionActionClicked_"
+          hidden="[[extensionWithActionMenuOpened_.mustRemainInstalled]]">
         $i18n{mv2DeprecationPanelRemoveExtensionButton}
       </button>
     </cr-action-menu>

@@ -56,6 +56,11 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
        * The string for the panel's subtitle.
        */
       subtitleString_: String,
+
+      /**
+       * Extension which has its action menu opened.
+       */
+      extensionWithActionMenuOpened_: Object,
     };
   }
 
@@ -67,7 +72,7 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   delegate: ItemDelegate&Mv2DeprecationPanelDelegate;
   private headerString_: string;
   private subtitleString_: string;
-  private lastClickedExtensionId_: string;
+  private extensionWithActionMenuOpened_: chrome.developerPrivate.ExtensionInfo;
 
   /**
    * Updates properties after extensions change.
@@ -90,12 +95,12 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   }
 
   /**
-   * Opens the action menu.
+   * Opens the action menu for a specific extension when the action menu button
+   * is clicked.
    */
   private onExtensionActionMenuClick_(
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
-    // Store the id of the extension whose action menu was opened.
-    this.lastClickedExtensionId_ = event.model.item.id;
+    this.extensionWithActionMenuOpened_ = event.model.item;
     this.$.actionMenu.showAt(event.target as HTMLElement);
   }
 
@@ -105,7 +110,7 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
    */
   private onRemoveExtensionActionClicked_(): void {
     this.$.actionMenu.close();
-    this.delegate.deleteItem(this.lastClickedExtensionId_);
+    this.delegate.deleteItem(this.extensionWithActionMenuOpened_.id);
   }
 
   /**
@@ -114,7 +119,7 @@ export class ExtensionsMv2DeprecationPanelElement extends PolymerElement {
   private onKeepExtensionActionClick_(): void {
     this.$.actionMenu.close();
     this.delegate.dismissMv2DeprecationWarningForExtension(
-        this.lastClickedExtensionId_);
+        this.extensionWithActionMenuOpened_.id);
   }
 }
 
