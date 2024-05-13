@@ -18,6 +18,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view_class_properties.h"
 
@@ -104,6 +105,8 @@ ProductSpecificationsButton::ProductSpecificationsButton(
   set_paint_transparent_for_custom_image_theme(false);
 
   layout_manager->SetFlexForView(close_button_, 1);
+
+  SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   UpdateColors();
 }
