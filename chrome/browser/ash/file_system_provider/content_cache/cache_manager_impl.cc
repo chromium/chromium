@@ -40,18 +40,15 @@ OptionalContextDatabase InitializeContextDatabase(
 
 }  // namespace
 
-CacheManagerImpl::CacheManagerImpl(const base::FilePath& profile_path,
-                                   bool in_memory_only)
+CacheManagerImpl::CacheManagerImpl(const base::FilePath& profile_path)
     : root_content_cache_directory_(
-          profile_path.Append(kFspContentCacheDirName)),
-      in_memory_only_(in_memory_only) {}
+          profile_path.Append(kFspContentCacheDirName)) {}
 
 CacheManagerImpl::~CacheManagerImpl() = default;
 
 std::unique_ptr<CacheManager> CacheManagerImpl::Create(
-    const base::FilePath& profile_path,
-    bool in_memory_only) {
-  return std::make_unique<CacheManagerImpl>(profile_path, in_memory_only);
+    const base::FilePath& profile_path) {
+  return std::make_unique<CacheManagerImpl>(profile_path);
 }
 
 void CacheManagerImpl::InitializeForProvider(
@@ -62,12 +59,6 @@ void CacheManagerImpl::InitializeForProvider(
   if (cache_directory_path.empty()) {
     std::move(callback).Run(
         base::unexpected(base::File::FILE_ERROR_INVALID_URL));
-    return;
-  }
-
-  if (in_memory_only_) {
-    OnProviderDirectoryCreationComplete(
-        std::move(callback), cache_directory_path, base::File::FILE_OK);
     return;
   }
 
@@ -95,12 +86,6 @@ void CacheManagerImpl::UninitializeForProvider(
 
   // Remove the provider from the set.
   initialized_providers_.erase(base64_encoded_provider_folder_name);
-
-  if (in_memory_only_) {
-    OnUninitializeForProvider(base64_encoded_provider_folder_name,
-                              base::File::FILE_OK);
-    return;
-  }
 
   // Attempt to delete the cache directory to ensure dead files don't remain
   // on the user's disk as the logic changes in this experimental design phase.
@@ -160,9 +145,7 @@ void CacheManagerImpl::OnProviderDirectoryCreationComplete(
   db_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&InitializeContextDatabase,
-                     (in_memory_only_)
-                         ? base::FilePath()
-                         : cache_directory_path.Append("context.db")),
+                     cache_directory_path.Append("context.db")),
       base::BindOnce(&CacheManagerImpl::OnProviderContextDatabaseSetup,
                      weak_ptr_factory_.GetWeakPtr(), cache_directory_path,
                      std::move(callback), db_task_runner));

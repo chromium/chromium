@@ -25,8 +25,7 @@ namespace ash::file_system_provider {
 
 class CacheManagerImpl : public CacheManager {
  public:
-  explicit CacheManagerImpl(const base::FilePath& profile_path,
-                            bool in_memory_only = false);
+  explicit CacheManagerImpl(const base::FilePath& profile_path);
 
   CacheManagerImpl(const CacheManagerImpl&) = delete;
   CacheManagerImpl& operator=(const CacheManagerImpl&) = delete;
@@ -34,8 +33,7 @@ class CacheManagerImpl : public CacheManager {
   ~CacheManagerImpl() override;
 
   static std::unique_ptr<CacheManager> Create(
-      const base::FilePath& profile_path,
-      bool in_memory_only = false);
+      const base::FilePath& profile_path);
 
   // Setup the cache directory for the specific FSP.
   void InitializeForProvider(const ProvidedFileSystemInfo& file_system_info,
@@ -87,7 +85,6 @@ class CacheManagerImpl : public CacheManager {
       FileErrorOrContentCache error_or_content_cache);
 
   const base::FilePath root_content_cache_directory_;
-  bool in_memory_only_ = false;
   std::set<base::FilePath> initialized_providers_;
   base::ObserverList<Observer> observers_;
 

@@ -73,17 +73,6 @@ class FileSystemProviderCacheManagerImplTest : public testing::Test {
 };
 
 TEST_F(FileSystemProviderCacheManagerImplTest,
-       InMemoryOnlyDoesntCreateFolderOnDisk) {
-  CacheManagerImpl cache_manager(profile_dir_, /*in_memory_only=*/true);
-  TestFuture<FileErrorOrContentCache> future;
-  cache_manager.InitializeForProvider(kFileSystemInfo, future.GetCallback());
-  EXPECT_THAT(future.Get(),
-              Property(&FileErrorOrContentCache::has_value, IsTrue()));
-  EXPECT_FALSE(base::PathExists(GetProviderMountPath("fsp_id")));
-  EXPECT_TRUE(cache_manager.IsProviderInitialized(kFileSystemInfo));
-}
-
-TEST_F(FileSystemProviderCacheManagerImplTest,
        EmptyProviderIdFailsInitialization) {
   CacheManagerImpl cache_manager(profile_dir_);
   TestFuture<FileErrorOrContentCache> future;
