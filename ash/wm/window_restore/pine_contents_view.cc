@@ -331,7 +331,6 @@ void PineContentsView::CreateChildViews() {
     screenshot_size.set_height(
         std::max(kScreenshotMinHeight, screenshot_size.height()));
 
-    views::View* image_view;
     views::BoxLayoutView* icon_row_container;
     views::View* icon_row_spacer;
     // This box layout is used to set the vertical space when the screenshot's
@@ -347,8 +346,7 @@ void PineContentsView::CreateChildViews() {
                     .SetPreferredSize(screenshot_size)
                     .AddChildren(
                         views::Builder<views::ImageView>()
-                            .CopyAddressTo(&image_view)
-                            .SetPaintToLayer()
+                            .CopyAddressTo(&image_view_)
                             .SetImage(pine_image)
                             .SetImageSize(screenshot_size),
                         views::Builder<views::BoxLayoutView>()
@@ -360,12 +358,8 @@ void PineContentsView::CreateChildViews() {
                                              .CopyAddressTo(&icon_row_spacer))))
             .Build());
 
-    image_view->layer()->SetFillsBoundsOpaquely(false);
-    image_view->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
     icon_row_container->layer()->SetFillsBoundsOpaquely(false);
-
-    icon_row_container->AddChildView(
+    screenshot_icon_row_view_ = icon_row_container->AddChildView(
         std::make_unique<PineScreenshotIconRowView>(
             pine_contents_data->apps_infos));
     icon_row_container->SetFlexForView(icon_row_spacer, 1);
@@ -428,6 +422,66 @@ void PineContentsView::OnMenuClosed() {
   menu_runner_.reset();
   menu_model_adapter_.reset();
   context_menu_model_.reset();
+}
+
+void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (showing_list_view_) {
+    return;
+  }
+
+  const gfx::Size icon_row_size = screenshot_icon_row_view_->GetPreferredSize();
+  const int icon_row_width = icon_row_size.width();
+  const int icon_row_height = icon_row_size.height();
+
+  const gfx::Size image_view_size = image_view_->GetPreferredSize();
+  const int image_view_width = image_view_size.width();
+  const int image_view_height = image_view_size.height();
+
+  const auto top_left = SkPoint::Make(0, 0);
+  const auto bottom_right = SkPoint::Make(image_view_width, image_view_height);
+  const auto top_right = SkPoint::Make(image_view_width, 0);
+
+  const int cutout_curve1_end_x = pine::kPreviewContainerRadius;
+  const int cutout_curve1_end_y =
+      image_view_height - icon_row_height + pine::kPreviewContainerRadius;
+
+  const int cutout_curve2_end_x =
+      icon_row_width - pine::kPreviewContainerRadius;
+  const int cutout_curve2_end_y = image_view_height;
+
+  auto clip_path =
+      SkPath()
+          // Start from the top-left point.
+          .moveTo(top_left)
+          // Draw the first concave arc at the bottom-left and a horizontal line
+          // connecting it to the bottom-right concave arc.
+          .arcTo(SkPoint::Make(0, cutout_curve1_end_y),
+                 SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
+                 pine::kPreviewContainerRadius)
+          // Draw the bottom-right concave arc and a horizontal line connecting
+          // it to the bottom-right rounded corner.
+          .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve1_end_y),
+                 SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
+                 pine::kPreviewContainerRadius)
+          .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
+                 bottom_right, pine::kPreviewContainerRadius)
+          // Draw the bottom-right rounded corner.
+          .arcTo(
+              bottom_right,
+              SkPoint::Make(image_view_width,
+                            image_view_height - pine::kPreviewContainerRadius),
+              pine::kPreviewContainerRadius)
+          // Draw the top-right rounded corner.
+          .arcTo(top_right,
+                 SkPoint::Make(image_view_width - pine::kPreviewContainerRadius,
+                               0),
+                 pine::kPreviewContainerRadius)
+          // Draw the top-left rounded corner.
+          .arcTo(top_left, SkPoint::Make(0, pine::kPreviewContainerRadius),
+                 pine::kPreviewContainerRadius)
+          .close();
+  CHECK(image_view_);
+  image_view_->SetClipPath(clip_path);
 }
 
 BEGIN_METADATA(PineContentsView)
