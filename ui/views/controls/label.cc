@@ -115,7 +115,12 @@ void Label::SetText(const std::u16string& new_text) {
   ClearDisplayText();
 
   if (GetAccessibleName().empty() || GetAccessibleName() == current_text) {
-    SetAccessibleName(new_text);
+    if (new_text.empty()) {
+      SetAccessibleName(new_text,
+                        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    } else {
+      SetAccessibleName(new_text);
+    }
   }
 
   OnPropertyChanged(&full_text_ + kLabelText,

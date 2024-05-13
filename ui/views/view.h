@@ -1497,7 +1497,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Get the object managing the accessibility interface for this View.
   ViewAccessibility& GetViewAccessibility() const;
 
-  // Modifies |node_data| to reflect the current accessible state of this view.
+  // Modifies `node_data` to reflect the current accessible state of this view.
   // It accomplishes this by keeping the data up-to-date in response to the use
   // of the accessible-property setters.
   // NOTE: View authors should use the available property setters rather than
@@ -1507,8 +1507,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // parent class. This ensures that if an owning view customizes an accessible
   // property, such as the name, role, or description, that customization is
   // included in your view's `AXNodeData`.
-  virtual void GetAccessibleNodeData(ui::AXNodeData* node_data);
+  virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) {}
 
+  // DEPRECATED: Use `ViewAccessibility::SetName` instead.
+  //
   // Sets/gets the accessible name.
   // The value of the accessible name is a localized, end-user-consumable string
   // which may be derived from visible information (e.g. the text on a button)
@@ -1517,8 +1519,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // reader when that object gains focus and is critical to understanding the
   // purpose of that object non-visually.
   void SetAccessibleName(const std::u16string& name);
-  const std::u16string& GetAccessibleName() const;
 
+  // This function is deprecated. Use `ViewAccessibility::GetCachedName`
+  // instead.
+  std::u16string GetAccessibleName() const;
+
+  // DEPRECATED: Use `ViewAccessibility::SetName` instead.
+  //
   // Sets the accessible name to the specified string and source type.
   // To indicate that this view should never have an accessible name, e.g. to
   // prevent screen readers from speaking redundant information, set the type to
@@ -1528,6 +1535,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // especially for views which are focusable or otherwise interactive.
   void SetAccessibleName(std::u16string name, ax::mojom::NameFrom name_from);
 
+  // DEPRECATED: Use `ViewAccessibility::SetName` instead.
+  //
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name
   // will work.
@@ -1619,6 +1628,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void RemoveObserver(ViewObserver* observer);
   bool HasObserver(const ViewObserver* observer) const;
 
+  // Called when the accessible name of the View changed.
+  virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
+
+  // Called by `SetAccessibleName` to allow subclasses to adjust the new name.
+  // Potential use cases include setting the accessible name to the tooltip
+  // text when the new name is empty and prepending/appending additional text
+  // to the new name.
+  virtual void AdjustAccessibleName(std::u16string& new_name,
+                                    ax::mojom::NameFrom& name_from) {}
+
   // View Controller Interfaces -----------------------------------------------
   // These functions provide a common interface for view controllers to interact
   // with views.
@@ -1679,16 +1698,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
       std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
       std::optional<ax::mojom::DescriptionFrom> description_from =
           std::nullopt);
-
-  // Called when the accessible name of the View changed.
-  virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
-
-  // Called by `SetAccessibleName` to allow subclasses to adjust the new name.
-  // Potential use cases include setting the accessible name to the tooltip
-  // text when the new name is empty and prepending/appending additional text
-  // to the new name.
-  virtual void AdjustAccessibleName(std::u16string& new_name,
-                                    ax::mojom::NameFrom& name_from) {}
 
   // Size and disposition ------------------------------------------------------
 
@@ -1941,7 +1950,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCache);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCacheInRTL);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
-  FRIEND_TEST_ALL_PREFIXES(ViewTest, PauseAccessibilityEvents);
 
   // Painting  -----------------------------------------------------------------
 
@@ -2485,27 +2493,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Manages the accessibility interface for this View.
   mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
 
-  // Updated by the accessibility property setters and returned by
-  // `GetAccessibleNodeData`.
-  std::unique_ptr<ui::AXNodeData> ax_node_data_;
-
-  // TODO(accessibility): Remove this attribute once we migrate the
-  // SetAccessibilityProperties function to ViewAccessibility.
-  //
-  // Used by `SetAccessibilityProperties` and to prevent accessibility
-  // property-change events from being fired during initialization of this view.
-  bool pause_accessibility_events_ = false;
-
   // Keeps track of whether accessibility checks for this View have run yet.
   // They run once inside ::OnPaint() to keep overhead low. The idea is that if
   // a View is ready to paint it should also be set up to be accessible.
   bool has_run_accessibility_paint_checks_ = false;
-
-  // Accessible properties whose values are set by views using the accessible
-  // property setters, and used to populate the `AXNodeData` associated with
-  // this view and provided by `View::GetAccessibleNodeData`.
-  std::u16string accessible_name_;
-  ax::mojom::Role accessible_role_ = ax::mojom::Role::kUnknown;
 
   // Observers -----------------------------------------------------------------
 
