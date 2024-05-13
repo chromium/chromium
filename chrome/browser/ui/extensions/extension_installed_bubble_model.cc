@@ -8,8 +8,8 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -98,7 +98,7 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
   show_key_binding_ = command.has_value();
 
   show_sign_in_promo_ = extensions::util::ShouldSync(extension, profile) &&
-                        SyncPromoUI::ShouldShowSyncPromo(profile);
+                        signin::ShouldShowSyncPromo(*profile);
 
   if (show_how_to_use_)
     how_to_use_text_ = MakeHowToUseText(action_info, command, keyword);

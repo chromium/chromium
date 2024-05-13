@@ -1508,8 +1508,6 @@ static_library("ui") {
       "sync/browser_synced_window_delegates_getter.h",
       "sync/profile_signin_confirmation_helper.cc",
       "sync/profile_signin_confirmation_helper.h",
-      "sync/sync_promo_ui.cc",
-      "sync/sync_promo_ui.h",
       "tab_contents/tab_contents_iterator.cc",
       "tab_contents/tab_contents_iterator.h",
       "tab_modal_confirm_dialog_delegate.cc",

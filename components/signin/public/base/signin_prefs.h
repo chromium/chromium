@@ -72,12 +72,18 @@ class SigninPrefs {
   int IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id);
   int GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const;
 
+  void IncrementPasswordSigninPromoImpressionCount(GaiaId gaia_id);
+  int GetPasswordSigninPromoImpressionCount(GaiaId gaia_id) const;
+
+  void IncrementAutofillSigninPromoDismissCount(GaiaId gaia_id);
+  int GetAutofillSigninPromoDismissCount(GaiaId gaia_id) const;
+
   // Note: `callback` will be notified on every change in the main dictionary
   // and sub-dictionries (account dictionaries).
   static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,
                                         base::RepeatingClosure callback);
 
-  // Checks if the account pref with the given `gaia_id` exists.
+  // Checks if the an account pref with the given `gaia_id` exists.
   bool HasAccountPrefs(GaiaId gaia_id) const;
 
   // Keeps all prefs with the gaia ids given in `gaia_ids_to_keep`.
@@ -90,6 +96,12 @@ class SigninPrefs {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
+  // Increments any specified `pref` of type int for the given `gaia_id`.
+  int IncrementIntPrefForAccount(GaiaId gaia_id, std::string_view pref);
+  // Gets any specified `pref` of type int for the given `gaia_id`.
+  // Returns 0 if the corresponding `pref` doesn't exist for `gaia_id`.
+  int GetIntPrefForAccount(GaiaId gaia_id, std::string_view pref) const;
+
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
 };
 

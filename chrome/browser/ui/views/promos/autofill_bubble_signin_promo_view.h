@@ -37,6 +37,9 @@ class AutofillBubbleSignInPromoView : public views::View {
       const AutofillBubbleSignInPromoView&) = delete;
   ~AutofillBubbleSignInPromoView() override;
 
+  // Records that the bubble has been dismissed.
+  static void RecordSignInPromoDismissed(content::WebContents* web_contents);
+
  private:
   // Delegate for the personalized sign in promo view used when desktop identity
   // consistency is enabled.

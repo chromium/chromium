@@ -12,6 +12,15 @@ namespace prefs {
 inline constexpr char kProfileCreationInterceptionDeclined[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
 
+// Integer pref to store the number of times the password bubble signin promo
+// has been shown per profile while the user is signed out.
+inline constexpr char kPasswordSignInPromoShownCountPerProfile[] =
+    "signin.PasswordSignInPromoShownCount";
+// Integer pref to store the number of times any autofill bubble signin promo
+// has been dismissed per profile while the user is signed out.
+inline constexpr char kAutofillSignInPromoDismissCountPerProfile[] =
+    "signin.AutofillSignInPromoDismissCount";
+
 }  // namespace prefs
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_PREF_NAMES_H_

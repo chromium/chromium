@@ -11,6 +11,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -166,6 +167,10 @@ signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url) {
 void RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kDiceSigninUserMenuPromoCount, 0);
+  registry->RegisterIntegerPref(
+      prefs::kAutofillSignInPromoDismissCountPerProfile, 0);
+  registry->RegisterIntegerPref(prefs::kPasswordSignInPromoShownCountPerProfile,
+                                0);
 }
 
 }  // namespace signin

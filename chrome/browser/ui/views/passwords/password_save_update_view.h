@@ -10,6 +10,8 @@
 #include "base/token.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/user_education/common/help_bubble.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view.h"
@@ -62,6 +64,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+
+  // views::WidgetDelegate override.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // If the sign in promo should be shown, it will remove the current contents
   // of the bubble and replace them with the sign in promo. Returns true if the
@@ -116,6 +123,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // True iff it is an update password bubble on creation. False iff it is a
   // save bubble.
   const bool is_update_bubble_;
+
+  // True if the bubble is showing the sign in promo. False if not.
+  bool is_signin_promo_bubble_ = false;
 
   raw_ptr<views::Combobox> destination_dropdown_ = nullptr;
 

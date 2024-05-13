@@ -134,7 +134,8 @@ BubbleSignInPromoView::~BubbleSignInPromoView() = default;
 void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnSignIn(account.value_or(AccountInfo()));
-  GetWidget()->Close();
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
 BEGIN_METADATA(BubbleSignInPromoView)

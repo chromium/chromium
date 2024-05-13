@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
@@ -40,7 +41,9 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
@@ -520,6 +523,25 @@ IN_PROC_BROWSER_TEST_P(
       "PasswordManager.SaveUIDismissalReason",
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_P(
+    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam,
+    DismissBubbleBeforeSignInPromoDoesNotIncrementPref) {
+  signin::IdentityTestEnvironment identity_test_env;
+
+  AccountInfo info = identity_test_env.MakeAccountAvailable(
+      "test@email.com", {.set_cookie = true});
+  SetupPendingPassword();
+  ASSERT_TRUE(IsBubbleShowing());
+  PasswordBubbleViewBase::manage_password_bubble()->Cancel();
+
+  EXPECT_EQ(0, browser()->profile()->GetPrefs()->GetInteger(
+                   prefs::kAutofillSignInPromoDismissCountPerProfile));
+  EXPECT_EQ(0, SigninPrefs(*browser()->profile()->GetPrefs())
+                   .GetAutofillSigninPromoDismissCount(info.gaia));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam);

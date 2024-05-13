@@ -29,7 +29,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "content/public/browser/storage_partition.h"
@@ -232,6 +231,18 @@ const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
   return &controller_;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool PasswordSaveUpdateView::OnCloseRequested(
+    views::Widget::ClosedReason close_reason) {
+  if (is_signin_promo_bubble_ &&
+      (close_reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+       close_reason == views::Widget::ClosedReason::kEscKeyPressed)) {
+    AutofillBubbleSignInPromoView::RecordSignInPromoDismissed(web_contents());
+  }
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Close the bubble if the sign in promo should not be shown.
@@ -265,6 +276,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   AddChildView(std::move(sign_in_promo));
   SizeToContents();
 
+  is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kPasswordBubble);
 

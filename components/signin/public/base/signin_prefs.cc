@@ -32,6 +32,15 @@ constexpr char kChromeSigninInterceptionUserChoice[] =
 constexpr char kChromeSigninInterceptionDismissCount[] =
     "ChromeSigninInterceptionDismissCount";
 
+// Pref to store the number of times the password bubble signin promo
+// has been shown per account.
+constexpr char kPasswordSignInPromoShownCount[] =
+    "PasswordSignInPromoShownCount";
+// Pref to store the number of times any autofill bubble signin promo
+// has been dismissed per account.
+constexpr char kAutofillSignInPromoDismissCount[] =
+    "AutofillSignInPromoDismissCount";
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -104,24 +113,49 @@ ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
 }
 
 int SigninPrefs::IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id) {
+  return IncrementIntPrefForAccount(gaia_id,
+                                    kChromeSigninInterceptionDismissCount);
+}
+
+int SigninPrefs::GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kChromeSigninInterceptionDismissCount);
+}
+
+void SigninPrefs::IncrementPasswordSigninPromoImpressionCount(GaiaId gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kPasswordSignInPromoShownCount);
+}
+
+int SigninPrefs::GetPasswordSigninPromoImpressionCount(GaiaId gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kPasswordSignInPromoShownCount);
+}
+
+void SigninPrefs::IncrementAutofillSigninPromoDismissCount(GaiaId gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kAutofillSignInPromoDismissCount);
+}
+
+int SigninPrefs::GetAutofillSigninPromoDismissCount(GaiaId gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kAutofillSignInPromoDismissCount);
+}
+
+int SigninPrefs::IncrementIntPrefForAccount(GaiaId gaia_id,
+                                            std::string_view pref) {
+  CHECK(!gaia_id.empty());
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
 
   // `EnsureDict` gets or create the dictionary.
   base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
   // Get the current value of the pref.
-  std::optional<int> value =
-      account_dict->FindInt(kChromeSigninInterceptionDismissCount);
-  // Increment the `value`. If `value` was not set before, default is 0.
-  int new_value = value.value_or(0) + 1;
+  int new_value = account_dict->FindInt(pref).value_or(0) + 1;
+  // `Set` will add an entry if it doesn't already exists, or if it does, it
+  // will overwrite it.
+  account_dict->Set(pref, new_value);
 
-  // `Set` will add an entry if it doesn't already exists.
-  account_dict->Set(kChromeSigninInterceptionDismissCount, new_value);
-
-  // Return the incremented value.
   return new_value;
 }
 
-int SigninPrefs::GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const {
+int SigninPrefs::GetIntPrefForAccount(GaiaId gaia_id,
+                                      std::string_view pref) const {
+  CHECK(!gaia_id.empty());
   const base::Value::Dict* account_dict =
       pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
   // If the account dict does not exist yet; return the default value.
@@ -130,6 +164,5 @@ int SigninPrefs::GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const {
   }
 
   // Return the pref value if it exists, otherwise return the default value.
-  return account_dict->FindInt(kChromeSigninInterceptionDismissCount)
-      .value_or(0);
+  return account_dict->FindInt(pref).value_or(0);
 }

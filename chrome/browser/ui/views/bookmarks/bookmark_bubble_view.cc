@@ -19,12 +19,12 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
@@ -453,7 +453,7 @@ void BookmarkBubbleView::ShowBubble(
                                            bookmark_node)) {
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
-  } else if (SyncPromoUI::ShouldShowSyncPromo(profile)) {
+  } else if (signin::ShouldShowSyncPromo(*profile)) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
