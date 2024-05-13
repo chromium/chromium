@@ -93,7 +93,7 @@ def main():
     ])
     args.extend(targets)
     env = os.environ.copy()
-    env['SISO_EXPERIMENTS'] = 'no-fast-deps'
+    env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
     with subprocess.Popen(
         args,
         cwd=repo_root,
