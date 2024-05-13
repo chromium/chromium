@@ -98,9 +98,6 @@ extern const char kEnableExtensionActivityLogging[];
 extern const char kEnableExtensionActivityLogTesting[];
 extern const char kEnableUnsafeExtensionDebugging[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kEnableLacrosForkZygotesAtLoginScreen[];
-#endif
 extern const char kEnableNaCl[];
 extern const char kEnableNetBenchmarking[];
 extern const char kEnablePotentiallyAnnoyingSecurityFeatures[];

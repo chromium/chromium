@@ -273,13 +273,6 @@ const char kEnableUnsafeExtensionDebugging[] =
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Makes Lacros fork the zygotes before blocking when prelaunched at login
-// screen.
-const char kEnableLacrosForkZygotesAtLoginScreen[] =
-    "enable-lacros-fork-zygotes-at-login-screen";
-#endif
-
 // Allows NaCl to run in all contexts (such as open web). Note that
 // kDisableNaCl disables NaCl in all contexts and takes precedence.
 const char kEnableNaCl[] = "enable-nacl";

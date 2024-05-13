@@ -70,9 +70,6 @@ class BrowserLauncher {
     // Sets true if Lacros uses resource file sharing.
     bool enable_resource_file_sharing = false;
 
-    // Sets true if Lacros forks Zygotes at login screen.
-    bool enable_fork_zygotes_at_login_screen = false;
-
     // Any additional args to start lacros with.
     std::vector<std::string> lacros_additional_args;
   };

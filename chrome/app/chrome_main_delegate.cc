@@ -932,11 +932,8 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableLacrosForkZygotesAtLoginScreen)) {
-    // If prelaunched at login screen, block waiting for the user to login.
-    MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/true);
-  }
+  // If prelaunched at login screen, block waiting for the user to login.
+  MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/true);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1506,14 +1503,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
   crash_reporter::InitializeCrashKeys();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableLacrosForkZygotesAtLoginScreen)) {
-    // If prelaunched at login screen, block waiting for the user to login.
-    MaybeBlockAtLoginScreen(/*after_zygotes_fork=*/false);
-  }
-#endif
 
 #if BUILDFLAG(IS_POSIX)
   ChromeCrashReporterClient::Create();

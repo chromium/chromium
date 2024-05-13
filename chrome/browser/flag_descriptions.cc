@@ -7358,12 +7358,6 @@ const char kLacrosLaunchAtLoginScreenName[] =
 const char kLacrosLaunchAtLoginScreenDescription[] =
     "When enabled, it causes Lacros to be pre-launched at login screen.";
 
-const char kLacrosForkZygotesAtLoginScreenName[] =
-    "Fork Zygotes at login screen when pre-launching";
-const char kLacrosForkZygotesAtLoginScreenDescription[] =
-    "When enabled, it causes Lacros to fork the Zygotes at login screen, when "
-    "pre-launching is enabled.";
-
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";

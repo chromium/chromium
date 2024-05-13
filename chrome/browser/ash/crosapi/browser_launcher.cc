@@ -284,9 +284,6 @@ void DoLacrosBackgroundWorkPreLaunch(
     clear_shared_resource_file = true;
   }
 
-  params.enable_fork_zygotes_at_login_screen = base::FeatureList::IsEnabled(
-      browser_util::kLacrosForkZygotesAtLoginScreen);
-
   // Clear shared resource file cache if it's initial lacros launch after ash
   // reboot. If not, rename shared resource file cache to temporal name on
   // Lacros launch.
@@ -599,11 +596,6 @@ void SetUpFeatures(const LaunchParamsFromBackground& params,
     // run with enabling the feature as well since the feature is based on some
     // ash behavior(clear or move cached shared resource file at lacros launch).
     parameters.command_line.AppendSwitch(switches::kEnableResourcesFileSharing);
-  }
-
-  if (params.enable_fork_zygotes_at_login_screen) {
-    parameters.command_line.AppendSwitch(
-        switches::kEnableLacrosForkZygotesAtLoginScreen);
   }
 }
 

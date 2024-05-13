@@ -4275,9 +4275,6 @@ extern const char kWindowSplittingDescription[];
 extern const char kLacrosLaunchAtLoginScreenName[];
 extern const char kLacrosLaunchAtLoginScreenDescription[];
 
-extern const char kLacrosForkZygotesAtLoginScreenName[];
-extern const char kLacrosForkZygotesAtLoginScreenDescription[];
-
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 
