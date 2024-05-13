@@ -173,10 +173,19 @@ TEST_F(ConnectionInfoMetricsLoggerTest, ConnectionState) {
       kWifiConnectionStateHistogram,
       NetworkMetricsHelper::ConnectionState::kConnected, 1);
 
-  // Disconnecting Wifi because of an error.
+  // Disconnecting Wifi due to suspend, state changes to idle with Shill error.
   SetShillError(kWifiServicePath, shill::kErrorConnectFailed);
   SetShillState(kWifiServicePath, shill::kStateIdle);
-  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 2);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kWifiConnectionStateHistogram,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction, 0);
+
+  // Disconnecting Wifi due to some system error, state changes to failure with
+  // Shill error.
+  SetShillState(kWifiServicePath, shill::kStateOnline);
+  SetShillError(kWifiServicePath, shill::kErrorConnectFailed);
+  SetShillState(kWifiServicePath, shill::kStateFailure);
   histogram_tester_->ExpectBucketCount(
       kWifiConnectionStateHistogram,
       NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction, 1);

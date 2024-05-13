@@ -21,14 +21,17 @@ ConnectionInfoMetricsLogger::ConnectionInfo::ConnectionInfo(
     : guid(network->guid()),
       shill_error(network->GetError()),
       is_user_initiated(is_user_initiated) {
-  if (network->IsConnectedState())
+  if (network->IsConnectedState()) {
     status = Status::kConnected;
-  else if (network->IsConnectingState())
+  } else if (network->IsConnectingState()) {
     status = Status::kConnecting;
-  else if (network->connection_state() == shill::kStateDisconnecting) {
+  } else if (network->connection_state() == shill::kStateDisconnecting) {
     status = Status::kDisconnecting;
-  } else
+  } else if (network->connection_state() == shill::kStateFailure) {
+    status = Status::kFailure;
+  } else {
     status = Status::kDisconnected;
+  }
 }
 
 ConnectionInfoMetricsLogger::ConnectionInfo::~ConnectionInfo() = default;
@@ -214,7 +217,7 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
   // as a result of a shill error.
   if (prev_info && prev_info->status == ConnectionInfo::Status::kConnected &&
       (curr_info.status == ConnectionInfo::Status::kDisconnected ||
-       curr_info.status == ConnectionInfo::Status::kDisconnecting) &&
+       curr_info.status == ConnectionInfo::Status::kFailure) &&
       NetworkState::ErrorIsValid(curr_info.shill_error)) {
     NetworkMetricsHelper::LogConnectionStateResult(
         curr_info.guid,

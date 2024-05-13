@@ -250,6 +250,18 @@ void NetworkMetricsHelper::LogConnectionStateResult(
     return;
   }
 
+  // Only when WiFi network becomes "failure" from a connected state indicates
+  // there's a real disconnection without user action. If the network becomes
+  // "idle" from a connected state with a shill error, it usually indicates the
+  // disconnections are triggered by device suspend. See
+  // go/cros-wifi-disconnection-metrics for details.
+  if (network_state->GetNetworkTechnologyType() ==
+          NetworkState::NetworkTechnologyType::kWiFi &&
+      connection_state == ConnectionState::kDisconnectedWithoutUserAction &&
+      network_state->connection_state() != shill::kStateFailure) {
+    return;
+  }
+
   for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
     base::UmaHistogramEnumeration(kNetworkMetricsPrefix + network_type +
                                       kDisconnectionsWithoutUserActionSuffix,
