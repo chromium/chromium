@@ -484,7 +484,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1367817137674340530"><ph name="COUNT" /> billeder blev genereret</translation>
 <translation id="1368603372088757436">Linux understøttes ikke på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto</translation>
-<translation id="1370384480654163477">Se og rediger filer fra sidste gang, du besøgte dette website:</translation>
+<translation id="1370384480654163477">Se og redigere filer fra sidste gang, du besøgte dette website:</translation>
 <translation id="1372841398847029212">Synkroniser med din konto</translation>
 <translation id="1373176046406139583">Din enheds synlighed styrer, hvem der kan dele indhold med dig, når din skærm er låst op. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Det certifikat, som netværket "<ph name="NETWORK_NAME" />" kræver, er enten ikke installeret eller ikke længere gyldigt.  Få fat i et nyt certifikat, og prøv at oprette forbindelse igen.</translation>
@@ -8042,7 +8042,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7199452998289813782">Sæt casting til <ph name="DEVICE_NAME" /> på pause</translation>
 <translation id="720110658997053098">Lad kiosktilstand forblive aktiveret på denne enhed</translation>
 <translation id="7201118060536064622">"<ph name="DELETED_ITEM_NAME" />" er slettet</translation>
-<translation id="7201420661433230412">Få vist filer</translation>
+<translation id="7201420661433230412">Se filer</translation>
 <translation id="7201535955609308429">Vent, mens verificeringen er i gang</translation>
 <translation id="7202337678781136582">Scan QR-koden med din Android-telefon</translation>
 <translation id="7203150201908454328">Udvidet</translation>

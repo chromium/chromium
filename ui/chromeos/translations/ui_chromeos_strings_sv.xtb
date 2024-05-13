@@ -95,7 +95,7 @@
 <translation id="1742316578210444689">hebreiska, translitterering</translation>
 <translation id="1747761757048858544">nederländska (Nederländerna)</translation>
 <translation id="174937106936716857">Totalt antal filer</translation>
-<translation id="1755345808328621801">Den här filen är avsedd för en dator med Windows-programvara. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
+<translation id="1755345808328621801">Den här filen är avsedd för en dator med Windows-mjukvara. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1761091787730831947">Dela med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentiseringscertifikatet godkändes inte lokalt</translation>
@@ -243,7 +243,7 @@
 <translation id="2949781154072577687">Formaterar <ph name="DRIVE_NAME" /> …</translation>
 <translation id="2951236788251446349">Manet</translation>
 <translation id="2958458230122209142">Ont om lagringsutrymme – <ph name="REMAINING_PERCENTAGE" /> % kvar av ditt individuella lagringsutrymme på <ph name="TOTAL_SPACE" />.</translation>
-<translation id="2977940621473452797">Den här filen är avsedd för en dator med programvara från Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
+<translation id="2977940621473452797">Den här filen är avsedd för en dator med mjukvara från Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. Sök efter en lämplig ersättningsapp i Chrome Web Store.</translation>
 <translation id="2984337792991268709">Idag kl. <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">franska (Kanada)</translation>
 <translation id="3003189754374775221">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
