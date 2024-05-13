@@ -9,7 +9,8 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSafetyHubNotificationPermissionsModuleElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckNotificationsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
+import type {SettingsRoutes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions as Interactions, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -25,6 +26,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsSafetyHubNotificationPermissionsModuleElement;
+  let testRoutes: SettingsRoutes;
 
   const origin1 = 'https://www.example1.com:443';
   const detail1 = 'About 4 notifications a day';
@@ -93,7 +95,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement(
         'settings-safety-hub-notification-permissions-module');
-    Router.getInstance().navigateTo(routes.SAFETY_HUB);
+    Router.getInstance().navigateTo(testRoutes.SAFETY_HUB);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
@@ -215,7 +217,10 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     pluralStringProxy = new TestPluralStringProxy();
     SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
-    resetRouterForTesting();
+    testRoutes = {
+      SAFETY_HUB: routes.SAFETY_HUB,
+    } as unknown as SettingsRoutes;
+    Router.resetInstanceForTesting(new Router(routes));
     await createPage();
     assertEquals(2, getEntries().length);
     metricsBrowserProxy.reset();

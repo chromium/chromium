@@ -9,7 +9,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsReviewNotificationPermissionsElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
+import type {SettingsRoutes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -28,6 +29,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsReviewNotificationPermissionsElement;
+  let testRoutes: SettingsRoutes;
 
   const origin1 = 'https://www.example1.com:443';
   const detail1 = 'About 4 notifications a day';
@@ -100,7 +102,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('review-notification-permissions');
     testElement.setModelUpdateDelayMsForTesting(0);
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS_NOTIFICATIONS);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
@@ -114,7 +116,10 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    resetRouterForTesting();
+    testRoutes = {
+      SITE_SETTINGS_NOTIFICATIONS: routes.SITE_SETTINGS_NOTIFICATIONS,
+    } as unknown as SettingsRoutes;
+    Router.resetInstanceForTesting(new Router(routes));
     await createPage();
     // Clear the metrics that were recorded as part of the initial creation of
     // the page.

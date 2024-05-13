@@ -163,7 +163,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 /**
  * Adds Route objects for each path.
  */
-function createRoutes(): SettingsRoutes {
+function createBrowserSettingsRoutes(): SettingsRoutes {
   const r: Partial<SettingsRoutes> = {};
 
   // Root pages.
@@ -319,25 +319,18 @@ function createRoutes(): SettingsRoutes {
  * @return A router with the browser settings routes.
  */
 export function buildRouter(): Router {
-  return new Router(createRoutes());
-}
-
-export function resetRouterForTesting(router: Router = buildRouter()) {
-  Router.resetInstanceForTesting(router);
-
-  // Update the exported `routes` variable, otherwise it will be holding stale
-  // routes from the previous singleton instance.
-  routes = Router.getInstance().getRoutes();
+  return new Router(createBrowserSettingsRoutes());
 }
 
 Router.setInstance(buildRouter());
+
 window.addEventListener('popstate', function() {
   // On pop state, do not push the state onto the window.history again.
   const routerInstance = Router.getInstance();
   routerInstance.setCurrentRoute(
       routerInstance.getRouteForPath(window.location.pathname) ||
-          routerInstance.getRoutes().BASIC,
+          (routerInstance.getRoutes() as SettingsRoutes).BASIC,
       new URLSearchParams(window.location.search), true);
 });
 
-export let routes: SettingsRoutes = Router.getInstance().getRoutes();
+export const routes = Router.getInstance().getRoutes() as SettingsRoutes;
