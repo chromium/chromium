@@ -1128,6 +1128,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac (reclient)",
+    schedule = "0 */4 * * *",
     gn_args = {
         "build1": gn_args.config(
             configs = [
@@ -1164,6 +1165,7 @@ fyi_mac_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 (reclient)",
+    schedule = "0 */4 * * *",
     gn_args = {
         "build1": gn_args.config(
             configs = [
@@ -1201,6 +1203,7 @@ fyi_mac_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 on arm64 (reclient)",
+    schedule = "0 */4 * * *",
     gn_args = {
         "build1": gn_args.config(
             configs = [
@@ -1345,6 +1348,7 @@ fyi_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison ios (reclient)",
+    schedule = "0 */4 * * *",
     gn_args = {
         "build1": gn_args.config(
             configs = [
@@ -1406,6 +1410,7 @@ fyi_mac_reclient_comparison_builder(
 This builder measures Mac build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
 """,
+    schedule = "0 */4 * * *",
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -1474,6 +1479,7 @@ fyi_mac_reclient_comparison_builder(
 This builder measures iOS build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator">ios-simulator</a>.\
 """,
+    schedule = "0 */4 * * *",
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -1616,7 +1622,7 @@ ci.builder(
 fyi_mac_builder(
     name = "Mac Builder (reclient compare)",
     description_html = "Verifies whether local and remote build artifacts are identical.",
-    schedule = "@daily",
+    schedule = "0 */4 * * *",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
