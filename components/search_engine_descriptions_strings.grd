@@ -213,7 +213,7 @@ process but are generated using a script that pulls them from outside the repo.-
         Search the web and answer life’s daily questions with Yahoo.
       </message>
       <message name="IDS_YOU_SEARCH_DESCRIPTION" use_name_for_id="true">
-        AI-enhanced searching and browsing. Search results, summaries, and citations.
+        AI enhanced search
       </message>
     </messages>
   </release>
