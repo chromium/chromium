@@ -406,11 +406,12 @@
     },
     "werkzeug": {
       "hashes": [
-        "sha256:507e811ecea72b18a404947aded4b3390e1db8f826b494d76550ef45bb3b1dcc",
-        "sha256:90a285dc0e42ad56b34e696398b8122ee4c681833fb35b8334a095d82c56da10"
+        "sha256:097e5bfda9f0aba8da6b8545146def481d06aa7d3266e7448e2cccf67dd8bd18",
+        "sha256:fc9645dc43e03e4d630d23143a04a7f947a9a3b5727cd535fdfe155a17cc48c8"
       ],
+      "index": "pypi",
       "markers": "python_version >= '3.8'",
-      "version": "==3.0.1"
+      "version": "==3.0.3"
     }
   },
   "develop": {
