@@ -29,17 +29,18 @@ class MahiCacheManagerTest : public testing::Test {
     mahi_cache_manager_ = std::make_unique<MahiCacheManager>();
     mahi_cache_manager_->page_cache_[GURL("http://url1.com/")] =
         MahiCacheManager::MahiData(
-            "http://url1.com", u"title 1", std::nullopt, u"page content 1",
-            u"summary 1",
+            "http://url1.com", u"title 1", u"page content 1",
+            /* favicon_image = */ std::nullopt, u"summary 1",
             {{u"Question 1", u"Answer 1"}, {u"Question 2", u"Answer 2"}});
 
     // Next item in the cache is logged 5 hours later.
     task_environment_.FastForwardBy(base::Hours(5));
 
     mahi_cache_manager_->page_cache_[GURL("http://url2.com/")] =
-        MahiCacheManager::MahiData("http://url2.com", u"title 2", std::nullopt,
-                                   u"page content 2", u"summary 2",
-                                   {{u"question 1", u"answer 1"}});
+        MahiCacheManager::MahiData(
+            "http://url2.com", u"title 2", u"page content 2",
+            /* favicon_image = */ std::nullopt, u"summary 2",
+            {{u"question 1", u"answer 1"}});
   }
 
   void TearDown() override { mahi_cache_manager_.reset(); }
@@ -57,8 +58,8 @@ TEST_F(MahiCacheManagerTest, AddNewURL) {
   GetMahiCacheManager()->AddCacheForUrl("http://url3.com",
                                         {"http://url3.com",
                                          u"title 3",
-                                         std::nullopt,
                                          u"page content 3",
+                                         /* favicon_image = */ std::nullopt,
                                          u"summary 3",
                                          {{u"new question", u"new answer"}}});
   EXPECT_EQ(GetPageCache().size(), 3u);
@@ -66,8 +67,9 @@ TEST_F(MahiCacheManagerTest, AddNewURL) {
 
 TEST_F(MahiCacheManagerTest, ReplacingExistingURLWithNewContent) {
   MahiCacheManager::MahiData new_data(
-      "http://url1.com", u"New title", std::nullopt, u"New content",
-      u"New summary", {{u"new question", u"new answer"}});
+      "http://url1.com", u"New title", u"New content",
+      /* favicon_image = */ std::nullopt, u"New summary",
+      {{u"new question", u"new answer"}});
   GetMahiCacheManager()->AddCacheForUrl("http://url1.com", new_data);
   EXPECT_EQ(GetPageCache().size(), 2u);
   EXPECT_EQ(GetPageCache().at(GURL("http://url1.com")).url, new_data.url);
@@ -116,6 +118,10 @@ TEST_F(MahiCacheManagerTest, GetQAFromCacheURLWithRef) {
 }
 
 TEST_F(MahiCacheManagerTest, ClearCacheSuccessfully) {
+  // Current cache size.
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  // Clear the cache.
   GetMahiCacheManager()->ClearCache();
   EXPECT_EQ(GetPageCache().size(), 0u);
 }
@@ -138,6 +144,16 @@ TEST_F(MahiCacheManagerTest, CorrectlyClearCacheWithRetention) {
   // Four hours later, the second cache should be deleted.
   task_environment_.FastForwardBy(base::Hours(4));
   EXPECT_EQ(GetPageCache().size(), 0u);
+}
+
+TEST_F(MahiCacheManagerTest, GetCorrectPageContentFromURL) {
+  // Get correct content if the url is found.
+  auto result = GetMahiCacheManager()->GetPageContentForUrl("http://url1.com");
+  EXPECT_EQ(result, u"page content 1");
+
+  // No url is found
+  result = GetMahiCacheManager()->GetPageContentForUrl("http://notfound.com");
+  EXPECT_EQ(result, u"");
 }
 
 }  // namespace ash

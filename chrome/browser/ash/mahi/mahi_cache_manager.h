@@ -27,9 +27,9 @@ class MahiCacheManager {
     MahiData();
     MahiData(const std::string& url,
              const std::u16string& title,
-             const std::optional<gfx::ImageSkia>& favicon_image,
              const std::u16string& page_content,
-             const std::u16string& summary,
+             const std::optional<gfx::ImageSkia>& favicon_image,
+             const std::optional<std::u16string>& summary,
              const std::vector<MahiQA>& previous_qa);
     MahiData(const MahiData&);
     MahiData& operator=(const MahiData&);
@@ -39,12 +39,12 @@ class MahiCacheManager {
     std::string url;
     // The title of the page.
     std::u16string title;
-    // The favicon of the page.
-    std::optional<gfx::ImageSkia> favicon_image;
     // The extracted content of the page.
     std::u16string page_content;
+    // The favicon of the page.
+    std::optional<gfx::ImageSkia> favicon_image;
     // The summary of the page;
-    std::u16string summary;
+    std::optional<std::u16string> summary;
     // List of previous questions and answers for this page.
     std::vector<MahiQA> previous_qa;
 
@@ -62,6 +62,9 @@ class MahiCacheManager {
   // Add page cache for a given url. If the url exists in the cache, replace
   // with the new one.
   void AddCacheForUrl(const std::string& url, const MahiData& data);
+
+  // Return the content for the given url.
+  std::u16string GetPageContentForUrl(const std::string& url) const;
 
   // Return the summary for the given url. If it's not in the cache, return
   // nullopt.

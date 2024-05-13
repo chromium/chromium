@@ -26,14 +26,14 @@ MahiCacheManager::MahiData::MahiData() : creation_time(base::Time::Now()) {}
 MahiCacheManager::MahiData::MahiData(
     const std::string& url,
     const std::u16string& title,
-    const std::optional<gfx::ImageSkia>& favicon_image,
     const std::u16string& page_content,
-    const std::u16string& summary,
+    const std::optional<gfx::ImageSkia>& favicon_image,
+    const std::optional<std::u16string>& summary,
     const std::vector<MahiQA>& previous_qa)
     : url(url),
       title(title),
-      favicon_image(favicon_image),
       page_content(page_content),
+      favicon_image(favicon_image),
       summary(summary),
       previous_qa(previous_qa),
       creation_time(base::Time::Now()) {}
@@ -59,12 +59,18 @@ void MahiCacheManager::AddCacheForUrl(const std::string& url,
   page_cache_[gurl] = data;
 }
 
+std::u16string MahiCacheManager::GetPageContentForUrl(
+    const std::string& url) const {
+  auto gurl = GURL(url).GetWithoutRef();
+  return page_cache_.contains(gurl) ? page_cache_.at(gurl).page_content
+                                    : std::u16string();
+}
+
 std::optional<std::u16string> MahiCacheManager::GetSummaryForUrl(
     const std::string& url) const {
   auto gurl = GURL(url).GetWithoutRef();
-  return page_cache_.contains(gurl)
-             ? std::make_optional(page_cache_.at(gurl).summary)
-             : std::nullopt;
+  return page_cache_.contains(gurl) ? page_cache_.at(gurl).summary
+                                    : std::nullopt;
 }
 
 std::vector<MahiCacheManager::MahiQA> MahiCacheManager::GetQAForUrl(
