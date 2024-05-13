@@ -7,8 +7,6 @@
 #include <delayimp.h>
 #include <roerrorapi.h>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/common/win/delay_load_notify_hook.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -20,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
 
@@ -108,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDelayLoadHookTest, ObserveDelayLoadFailure) {
 // implementation. Note we can only override functions that haven't been
 // called or statically resolved before this point.
 IN_PROC_BROWSER_TEST_F(ChromeDelayLoadHookTest, OverrideDelayloadBehavior) {
-  base::ScopedClosureRunner reset_callback(
-      base::BindOnce(&SetDelayLoadHookCallback, nullptr));
+  absl::Cleanup reset_callback = [] { SetDelayLoadHookCallback(nullptr); };
 
   SetDelayLoadHookCallback(TestDelayLoadCallbackFunction);
   g_callback_ran = false;

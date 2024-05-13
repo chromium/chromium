@@ -4,9 +4,8 @@
 
 #include "chrome/common/win/delay_load_notify_hook.h"
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -37,8 +36,9 @@ TEST(ChromeDelayLoadNotifyHookTest, HooksAreSetAtLinkTime) {
 TEST(ChromeDelayLoadNotifyHookTest, OverrideDliNotifyHook) {
   DelayLoadInfo dli = {.szDll = kTestDll};
   dli.dlp.szProcName = kDummyFunction;
-  base::ScopedClosureRunner reset_callback(
-      base::BindOnce(&chrome::SetDelayLoadHookCallback, nullptr));
+  absl::Cleanup reset_callback = [] {
+    chrome::SetDelayLoadHookCallback(nullptr);
+  };
   chrome::SetDelayLoadHookCallback(&TestDelayLoadCallbackFunction);
   EXPECT_EQ(__pfnDliNotifyHook2(dliNotePreGetProcAddress, &dli),
             reinterpret_cast<FARPROC>(DummyFunction));
