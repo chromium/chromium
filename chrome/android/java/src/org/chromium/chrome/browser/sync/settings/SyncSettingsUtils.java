@@ -126,7 +126,6 @@ public class SyncSettingsUtils {
 
     /** Returns the type of the sync error, for syncing users. */
     public static @SyncError int getSyncError(Profile profile) {
-        assert profile != null;
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) {
             return SyncError.NO_ERROR;
@@ -136,13 +135,19 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        @SyncError int error = getCommonError(profile);
+        @SyncError int error = getSyncErrorFromSyncService(syncService);
         if (error != SyncError.NO_ERROR) {
             return error;
         }
 
         if (!syncService.isInitialSyncFeatureSetupComplete()) {
             return SyncError.SYNC_SETUP_INCOMPLETE;
+        }
+
+        if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
+                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
+            return SyncError.UPM_BACKEND_OUTDATED;
         }
 
         return SyncError.NO_ERROR;
@@ -568,12 +573,8 @@ public class SyncSettingsUtils {
         return canShowFullName ? fullName : accountEmail;
     }
 
-    /**
-     * Returns the type of the sync error/identity error for signed-in non-syncing users.
-     * TODO(crbug.com/330290259): Merge this into getSyncError().
-     */
+    /** Returns the type of the sync error/identity error for signed-in non-syncing users. */
     public static @SyncError int getIdentityError(Profile profile) {
-        assert profile != null;
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         // TODO(crbug.com/40944114): Consider converting this to an assertion instead.
         if (syncService == null) {
@@ -592,7 +593,7 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        @SyncError int error = getCommonError(profile);
+        @SyncError int error = getSyncErrorFromSyncService(syncService);
         // Do not show identity error for unrecoverable errors, since they are not actionable.
         // TODO(crbug.com/40944114): Remove these unused values after sync-to-signin transition.
         if (error == SyncError.OTHER_ERRORS) {
@@ -601,9 +602,8 @@ public class SyncSettingsUtils {
         return error;
     }
 
-    /** Returns the errors common to both getSyncError() and getIdentityError(). */
-    private static @SyncError int getCommonError(Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+    /** Returns the type of the sync error from sync service. */
+    private static @SyncError int getSyncErrorFromSyncService(SyncService syncService) {
         assert syncService != null;
 
         if (syncService.getAuthError() == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
@@ -636,12 +636,6 @@ public class SyncSettingsUtils {
             return syncService.isEncryptEverythingEnabled()
                     ? SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
                     : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
-        }
-
-        if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
-                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
-            return SyncError.UPM_BACKEND_OUTDATED;
         }
 
         return SyncError.NO_ERROR;
@@ -684,10 +678,6 @@ public class SyncSettingsUtils {
                 return new ErrorCardDetails(
                         R.string.identity_error_card_sync_recoverability_degraded_for_passwords,
                         R.string.identity_error_card_button_verify);
-            case SyncError.UPM_BACKEND_OUTDATED:
-                return new ErrorCardDetails(
-                        R.string.sync_error_card_outdated_gms,
-                        R.string.password_manager_outdated_gms_positive_button);
             case SyncError.OTHER_ERRORS:
             case SyncError.SYNC_SETUP_INCOMPLETE:
             case SyncError.NO_ERROR:

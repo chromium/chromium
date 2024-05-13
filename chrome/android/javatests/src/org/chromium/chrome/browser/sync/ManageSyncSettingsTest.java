@@ -1207,7 +1207,6 @@ public class ManageSyncSettingsTest {
         verifyUrlKeyedAnonymizedDataCollectionNotSet();
     }
 
-    // TODO(crbug.com/330438265): Extend this test for the identity error card.
     @Test
     @LargeTest
     @Feature({"Sync"})
@@ -1236,7 +1235,6 @@ public class ManageSyncSettingsTest {
         Intents.release();
     }
 
-    // TODO(crbug.com/330438265): Extend this test for the identity error card.
     @Test
     @SmallTest
     @Feature({"Sync"})
