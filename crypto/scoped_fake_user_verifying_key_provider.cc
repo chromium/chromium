@@ -101,12 +101,59 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   }
 };
 
+class FailingUserVerifyingSigningKey : public UserVerifyingSigningKey {
+ public:
+  FailingUserVerifyingSigningKey() : label_("") {}
+  ~FailingUserVerifyingSigningKey() override = default;
+
+  void Sign(base::span<const uint8_t> data,
+            base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+                callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  std::vector<uint8_t> GetPublicKey() const override { return {1, 2, 3, 4}; }
+
+  const UserVerifyingKeyLabel& GetKeyLabel() const override { return label_; }
+
+ private:
+  const UserVerifyingKeyLabel label_;
+};
+
+class FailingUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
+ public:
+  ~FailingUserVerifyingKeyProvider() override = default;
+
+  void GenerateUserVerifyingSigningKey(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms,
+      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
+          callback) override {
+    std::move(callback).Run(std::make_unique<FailingUserVerifyingSigningKey>());
+  }
+
+  void GetUserVerifyingSigningKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
+          callback) override {
+    std::move(callback).Run(std::make_unique<FailingUserVerifyingSigningKey>());
+  }
+
+  void DeleteUserVerifyingKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(bool)> callback) override {}
+};
+
 std::unique_ptr<UserVerifyingKeyProvider> GetMockUserVerifyingKeyProvider() {
   return std::make_unique<FakeUserVerifyingKeyProvider>();
 }
 
 std::unique_ptr<UserVerifyingKeyProvider> GetNullUserVerifyingKeyProvider() {
   return nullptr;
+}
+
+std::unique_ptr<UserVerifyingKeyProvider> GetFailingUserVerifyingKeyProvider() {
+  return std::make_unique<FailingUserVerifyingKeyProvider>();
 }
 
 }  // namespace
@@ -129,4 +176,13 @@ ScopedNullUserVerifyingKeyProvider::~ScopedNullUserVerifyingKeyProvider() {
   internal::SetUserVerifyingKeyProviderForTesting(nullptr);
 }
 
+ScopedFailingUserVerifyingKeyProvider::ScopedFailingUserVerifyingKeyProvider() {
+  internal::SetUserVerifyingKeyProviderForTesting(
+      GetFailingUserVerifyingKeyProvider);
+}
+
+ScopedFailingUserVerifyingKeyProvider::
+    ~ScopedFailingUserVerifyingKeyProvider() {
+  internal::SetUserVerifyingKeyProviderForTesting(nullptr);
+}
 }  // namespace crypto

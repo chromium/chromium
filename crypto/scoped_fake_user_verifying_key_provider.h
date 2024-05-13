@@ -25,6 +25,15 @@ class ScopedNullUserVerifyingKeyProvider {
   ~ScopedNullUserVerifyingKeyProvider();
 };
 
+// ScopedFailingUserVerifyingKeyProvider causes `GetUserVerifyingKeyProvider` to
+// return a mock implementation of `UserVerifyingKeyProvider` that fails all
+// signing requests.
+class ScopedFailingUserVerifyingKeyProvider {
+ public:
+  ScopedFailingUserVerifyingKeyProvider();
+  ~ScopedFailingUserVerifyingKeyProvider();
+};
+
 }  // namespace crypto
 
 #endif  // CRYPTO_SCOPED_FAKE_USER_VERIFYING_KEY_PROVIDER_H_

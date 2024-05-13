@@ -248,7 +248,7 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
 void EnclaveAuthenticator::ProcessMakeCredentialResponse(
     std::optional<cbor::Value> response) {
   if (!response) {
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOperationDenied);
     return;
   }
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
@@ -298,7 +298,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
 void EnclaveAuthenticator::ProcessGetAssertionResponse(
     std::optional<cbor::Value> response) {
   if (!response) {
-    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOperationDenied);
     return;
   }
 

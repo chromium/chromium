@@ -94,14 +94,22 @@ struct Transaction : base::RefCounted<Transaction> {
   friend class base::RefCounted<Transaction>;
   ~Transaction() = default;
 
-  void RequestReady(std::vector<uint8_t> request) {
-    if (!crypter_->Encrypt(&request)) {
+  void RequestReady(std::optional<std::vector<uint8_t>> request) {
+    if (!request) {
+      FIDO_LOG(EVENT)
+          << "Signing failed, potentially due to the user canceling";
+      std::move(callback_).Run(std::nullopt);
+      client_.reset();
+      return;
+    }
+
+    if (!crypter_->Encrypt(&request.value())) {
       FIDO_LOG(ERROR) << "Failed to encrypt message to enclave";
       std::move(callback_).Run(std::nullopt);
       client_.reset();
       return;
     }
-    client_->Write(request);
+    client_->Write(*request);
   }
 
   bool CompleteHandshake(

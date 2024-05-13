@@ -125,6 +125,13 @@ std::string StringOfZeros(size_t len) {
   return std::string(len, '0');
 }
 
+enclave::SigningCallback AlwaysFailsSigningCallback() {
+  return base::BindOnce(
+      [](enclave::SignedMessage,
+         base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
+             callback) { std::move(callback).Run(std::nullopt); });
+}
+
 webauthn_pb::EnclaveLocalState::WrappedPIN GetTestWrappedPIN() {
   webauthn_pb::EnclaveLocalState::WrappedPIN wrapped_pin;
   wrapped_pin.set_wrapped_pin(StringOfZeros(30));
@@ -870,6 +877,54 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
                                     *recovery_key_store_);
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+}
+
+TEST_F(EnclaveManagerTest, SigningFails) {
+  auto ui_request = std::make_unique<enclave::CredentialRequest>();
+  ui_request->signing_callback = AlwaysFailsSigningCallback();
+  ui_request->wrapped_secret = {1, 2, 3};
+  ui_request->key_version = 1;
+
+  enclave::EnclaveAuthenticator authenticator(
+      std::move(ui_request), /*network_context_factory=*/
+      base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+        return network_context_.get();
+      }));
+
+  std::vector<device::PublicKeyCredentialParams::CredentialInfo> pub_key_params;
+  pub_key_params.emplace_back();
+
+  device::MakeCredentialOptions ctap_options;
+  ctap_options.json = JSONFromString(R"({
+        "attestation": "none",
+        "challenge": "xHyLYEorFsaL6vb",
+        "extensions": { "credProps": true }
+      })");
+
+  auto quit_closure = task_env_.QuitClosure();
+  std::optional<device::CtapDeviceResponseCode> status;
+  std::optional<device::AuthenticatorMakeCredentialResponse> response;
+  authenticator.MakeCredential(
+      /*request=*/{R"({"foo": "bar"})",
+                   /*rp=*/{"rpid", "rpname"},
+                   /*user=*/{{'u', 'i', 'd'}, "user", "display name"},
+                   device::PublicKeyCredentialParams(
+                       std::move(pub_key_params))},
+      std::move(ctap_options),
+      base::BindLambdaForTesting(
+          [&quit_closure, &status, &response](
+              device::CtapDeviceResponseCode in_status,
+              std::optional<device::AuthenticatorMakeCredentialResponse>
+                  in_responses) {
+            status = in_status;
+            response = std::move(in_responses);
+            quit_closure.Run();
+          }));
+  task_env_.RunUntilQuit();
+
+  ASSERT_TRUE(status.has_value());
+  ASSERT_EQ(status, device::CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+  ASSERT_FALSE(response.has_value());
 }
 
 #if BUILDFLAG(IS_MAC)

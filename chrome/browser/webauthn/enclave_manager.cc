@@ -642,7 +642,7 @@ base::flat_set<std::string> GetGaiaIDs(
 }
 
 std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return label;
 #else
   return std::string("placeholder");
@@ -651,7 +651,7 @@ std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 
 std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
     std::string saved_label) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return saved_label;
 #else
   return std::nullopt;
@@ -2983,10 +2983,8 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
   }
   // Delegate prompting the user for their screen lock to macOS.
   return UvKeyState::kUsesSystemUI;
-#elif BUILDFLAG(IS_WIN)
-  return UvKeyState::kUsesSystemUI;
 #else
-  return UvKeyState::kNone;
+  return UvKeyState::kUsesSystemUI;
 #endif
 }
 

@@ -205,6 +205,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     // unlike security keys) because, like hybrid, the user has taken some
     // action to send the request to the enclave.
     kEnclaveError,
+    // kEnclaveCancel means that the user canceled an enclave transaction.
+    // At the time of writing the only way to trigger this is to cancel the
+    // Windows Hello user verification dialog.
+    kEnclaveCancel,
   };
 
   // RequestSource enumerates the source of a request, which is either the Web

@@ -22,6 +22,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -61,7 +62,8 @@ const std::set<pin::Permissions> GetMakeCredentialRequestPermissions(
 }
 
 std::optional<MakeCredentialStatus> ConvertDeviceResponseCode(
-    CtapDeviceResponseCode device_response_code) {
+    CtapDeviceResponseCode device_response_code,
+    AuthenticatorType auth_type) {
   switch (device_response_code) {
     case CtapDeviceResponseCode::kSuccess:
       return MakeCredentialStatus::kSuccess;
@@ -74,6 +76,9 @@ std::optional<MakeCredentialStatus> ConvertDeviceResponseCode(
     // when the user cancels the macOS prompt. External authenticators may
     // return it e.g. after the user fails fingerprint verification.
     case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
+      if (auth_type == AuthenticatorType::kEnclave) {
+        return MakeCredentialStatus::kEnclaveCancel;
+      }
       return MakeCredentialStatus::kUserConsentDenied;
 
     // External authenticators may return this error if internal user
@@ -828,7 +833,7 @@ void MakeCredentialRequestHandler::HandleResponse(
   }
 
   const std::optional<MakeCredentialStatus> maybe_result =
-      ConvertDeviceResponseCode(status);
+      ConvertDeviceResponseCode(status, authenticator->GetType());
   if (!maybe_result) {
     if (state_ == State::kWaitingForResponseWithToken) {
       std::move(completion_callback_)

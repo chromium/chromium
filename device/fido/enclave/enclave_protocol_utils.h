@@ -101,7 +101,8 @@ void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     cbor::Value command,
     SigningCallback signing_callback,
     base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
-    base::OnceCallback<void(std::vector<uint8_t>)> complete_callback);
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+        complete_callback);
 
 }  // namespace enclave
 

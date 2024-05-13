@@ -159,8 +159,8 @@ class BuildCommandCompletionWaiter {
 
   ~BuildCommandCompletionWaiter() { loop_.Quit(); }
 
-  void CompletionCallback(std::vector<uint8_t> result) {
-    result_ = std::move(result);
+  void CompletionCallback(std::optional<std::vector<uint8_t>> result) {
+    result_ = std::move(*result);
     loop_.Quit();
   }
 

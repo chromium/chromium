@@ -494,7 +494,8 @@ void BuildCommandRequestBody(
     cbor::Value command,
     SigningCallback signing_callback,
     base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
-    base::OnceCallback<void(std::vector<uint8_t>)> complete_callback) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+        complete_callback) {
   if (!command.is_array()) {
     cbor::Value::ArrayValue requests;
     requests.emplace_back(std::move(command));
@@ -525,15 +526,13 @@ void BuildCommandRequestBody(
 
   auto append_signature_and_finish =
       [](cbor::Value::MapValue request_body_map,
-         base::OnceCallback<void(std::vector<uint8_t>)> complete_callback,
+         base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+             complete_callback,
          std::optional<ClientSignature> client_signature) {
         if (!client_signature) {
           // If the signing fails, this acts the same as if we didn't have a
           // signing callback at all.
-          // TODO(enclave): This might not be the best way to fail.
-          std::move(complete_callback)
-              .Run(*cbor::Writer::Write(
-                  cbor::Value(std::move(request_body_map))));
+          std::move(complete_callback).Run(std::nullopt);
           return;
         }
         request_body_map.emplace(

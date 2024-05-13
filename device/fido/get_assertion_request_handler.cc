@@ -28,6 +28,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -87,6 +88,9 @@ std::optional<GetAssertionStatus> ConvertDeviceResponseCode(
     // when the user cancels the macOS prompt. External authenticators may
     // return it e.g. after the user fails fingerprint verification.
     case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
+      if (auth_type == AuthenticatorType::kEnclave) {
+        return GetAssertionStatus::kEnclaveCancel;
+      }
       return GetAssertionStatus::kUserConsentDenied;
 
     // External authenticators may return this error if internal user

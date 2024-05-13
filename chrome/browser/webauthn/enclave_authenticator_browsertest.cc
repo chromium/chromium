@@ -61,6 +61,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
 #include "device/fido/test_callback_receiver.h"
@@ -507,7 +508,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     void WaitForStep() {
       ASSERT_TRUE(run_loop_);
       run_loop_->Run();
-      CHECK_EQ(step_, model_->step());
+      // When waiting for `kClosed` the model is deleted at this point.
+      if (step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
+        CHECK_EQ(step_, model_->step());
+      }
       step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
       run_loop_.reset();
     }
@@ -575,6 +579,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         }));
 
     fake_uv_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
+
+    // Disabling Bluetooth significantly speeds up tests on Linux.
+    bluetooth_values_for_testing_ =
+        device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+    bluetooth_values_for_testing_->SetLESupported(false);
   }
 
   ~EnclaveAuthenticatorBrowserTest() override {
@@ -773,8 +782,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   std::unique_ptr<ModelObserver> model_observer_;
   raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
+      bluetooth_values_for_testing_;
   absl::variant<crypto::ScopedNullUserVerifyingKeyProvider,
-                crypto::ScopedFakeUserVerifyingKeyProvider>
+                crypto::ScopedFakeUserVerifyingKeyProvider,
+                crypto::ScopedFailingUserVerifyingKeyProvider>
       fake_uv_provider_;
 };
 
@@ -1551,6 +1563,73 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   EXPECT_TRUE(IsReady(request_delegate()
                           ->enclave_controller_for_testing()
                           ->account_state_for_testing()));
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
+  EnableUVKeySupport();
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // Do a get() to ensure that any deferred UV key creation has happened.
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Do a get() where the signing fails, simulating the user canceling the
+  // request. There should not be any Chrome error UI.
+
+  fake_uv_provider_.emplace<crypto::ScopedFailingUserVerifyingKeyProvider>();
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->ClearCachedKeysForTesting();
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kClosed);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("\"error NotAllowedError"));
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
