@@ -58,6 +58,10 @@ class MockComposeClient : public compose::ComposeClient {
   MOCK_METHOD(compose::PageUkmTracker*, getPageUkmTracker, (), (override));
   MOCK_METHOD(void, DisableProactiveNudge, (), (override));
   MOCK_METHOD(void, OpenProactiveNudgeSettings, (), (override));
+  MOCK_METHOD(void,
+              AddSiteToNeverPromptList,
+              (const url::Origin& origin),
+              (override));
 };
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
@@ -192,10 +196,12 @@ TEST_F(
       autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus,
       /*has_session=*/false);
   ASSERT_TRUE(suggestion.has_value());
-  // Checks that the 2 expected child suggestions exist.
+  // Checks that the 3 expected child suggestions exist.
   EXPECT_THAT(
       suggestion->children,
       ElementsAre(
+          EqualsSuggestion(
+              autofill::SuggestionType::kComposeNeverShowOnThisSiteAgain),
           EqualsSuggestion(autofill::SuggestionType::kComposeDisable),
           EqualsSuggestion(autofill::SuggestionType::kComposeGoToSettings)));
 }
@@ -394,4 +400,29 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   histograms().ExpectUniqueSample(
       compose::kComposeContextMenuCtr,
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
+}
+
+TEST_F(ComposeManagerImplTest, NeverShowForOrigin_HistogramTest) {
+  auto test_origin = url::Origin::Create(GURL("http://foo"));
+  compose_manager_impl().NeverShowComposeForOrigin(test_origin);
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite, 1);
+}
+
+TEST_F(ComposeManagerImplTest, DisableCompose_HistogramTest) {
+  compose_manager_impl().DisableCompose();
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
+}
+
+TEST_F(ComposeManagerImplTest, GoToSettings_HistogramTest) {
+  compose_manager_impl().GoToSettings();
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeProactiveNudgeCtrEvent::kOpenSettings, 1);
 }

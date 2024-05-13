@@ -2292,6 +2292,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_COMPOSE)
   registry->RegisterBooleanPref(prefs::kPrefHasCompletedComposeFRE, false);
   registry->RegisterBooleanPref(prefs::kEnableProactiveNudge, true);
+  registry->RegisterDictionaryPref(prefs::kProactiveNudgeDisabledSitesWithTime);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

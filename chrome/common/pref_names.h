@@ -1903,6 +1903,19 @@ inline constexpr char kPrefHasCompletedComposeFRE[] =
 // enabled. When false, the UI will never be shown.
 inline constexpr char kEnableProactiveNudge[] =
     "compose.proactive_nudge_enabled";
+
+// Dictionary of domains mapped to the time that they are added. A domain can be
+// added through the proactive nudge UI, and can be removed through the "Offer
+// writing help" settings page. When a domain is on the disabled list, the
+// proactive nudge is prevented from being shown on all pages under that domain.
+// The recorded time tracks when the domain was added to the disabled list and
+// is used for integrating with the Chrome settings "Clear browsing data"
+// feature.
+// TODO(b/339524210): Refactor the stored dictionary value to track a second
+// timestamp, `last_visit`, that can be used for re-surfacing the nudge after an
+// elapsed time.
+inline constexpr char kProactiveNudgeDisabledSitesWithTime[] =
+    "compose.proactive_nudge_disabled_sites_with_time";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

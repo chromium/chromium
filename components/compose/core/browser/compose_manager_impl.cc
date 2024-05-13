@@ -196,6 +196,10 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   if (!has_session &&
       base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge)) {
     // Add compose child suggestions
+    Suggestion never_show_on_site = Suggestion(
+        l10n_util::GetStringUTF16(
+            IDS_COMPOSE_NEVER_SHOW_ON_THIS_SITE_AGAIN_CHILD_SUGGESTION_TEXT),
+        SuggestionType::kComposeNeverShowOnThisSiteAgain);
     Suggestion disable =
         Suggestion(l10n_util::GetStringUTF16(
                        IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT),
@@ -204,14 +208,15 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
         Suggestion(l10n_util::GetStringUTF16(
                        IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT),
                    SuggestionType::kComposeGoToSettings);
-    suggestion.children = {std::move(disable), std::move(go_to_settings)};
+    suggestion.children = {std::move(never_show_on_site), std::move(disable),
+                           std::move(go_to_settings)};
   }
 
   return suggestion;
 }
 
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
-  // TODO(b/333929225): Implement.
+  client_->AddSiteToNeverPromptList(origin);
   compose::LogComposeProactiveNudgeCtr(
       compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
 }

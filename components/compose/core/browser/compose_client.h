@@ -53,6 +53,10 @@ class ComposeClient {
 
   // Open the "Offer writing help" settings page in a new active tab.
   virtual void OpenProactiveNudgeSettings() = 0;
+
+  // Add `origin` to the preference managing sites on which the proactive nudge
+  // is disabled.
+  virtual void AddSiteToNeverPromptList(const url::Origin& origin) = 0;
 };
 
 }  // namespace compose

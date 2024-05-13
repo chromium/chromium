@@ -2305,6 +2305,40 @@ TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
 }
 
+TEST_F(ChromeComposeClientTest,
+       AddSiteToNeverPromptListBlocksProactiveNudgeTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_delay = base::Seconds(0);
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  auto test_url = GURL("http://foo");
+  auto test_origin = url::Origin::Create(test_url);
+
+  autofill::FormData form_data;
+  form_data.url = test_url;
+  form_data.fields = {autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+
+  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  selected_field_data.set_origin(test_origin);
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  EXPECT_FALSE(prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
+                   .Find(test_origin.Serialize()));
+  EXPECT_TRUE(client().ShouldTriggerPopup(selected_field_data, trigger_source));
+
+  client().AddSiteToNeverPromptList(test_origin);
+
+  EXPECT_TRUE(prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
+                  .Find(test_origin.Serialize()));
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(selected_field_data, trigger_source));
+}
+
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   ShowDialogAndBindMojo();
 

@@ -223,9 +223,9 @@ ComposeEnabling::ShouldTriggerPopup(
   compose::LogComposeProactiveNudgeShowStatus(show_status.error());
   switch (show_status.error()) {
     case compose::ComposeShowStatus::
-        kPractiveNudgeDisabledGloballyByUserPreference:
+        kProactiveNudgeDisabledGloballyByUserPreference:
     case compose::ComposeShowStatus::
-        kPractiveNudgeDisabledForSiteByUserPreference:
+        kProactiveNudgeDisabledForSiteByUserPreference:
     case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
     case compose::ComposeShowStatus::kRandomlyBlocked:
     case compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB:
@@ -296,8 +296,15 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   }
 
   if (!prefs->GetBoolean(prefs::kEnableProactiveNudge)) {
+    return base::unexpected(
+        compose::ComposeShowStatus::
+            kProactiveNudgeDisabledGloballyByUserPreference);
+  }
+
+  if (prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
+          .Find(element_frame_origin.Serialize())) {
     return base::unexpected(compose::ComposeShowStatus::
-                                kPractiveNudgeDisabledGloballyByUserPreference);
+                                kProactiveNudgeDisabledForSiteByUserPreference);
   }
 
   if (!compose::GetComposeConfig().proactive_nudge_enabled) {

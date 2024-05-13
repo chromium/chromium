@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -550,6 +551,12 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
   // its WebContents is destroyed.
   CHECK(browser);
   chrome::ShowSettingsSubPage(browser, chrome::kOfferWritingHelpSubpage);
+}
+
+void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
+  ScopedDictPrefUpdate update(pref_service_,
+                              prefs::kProactiveNudgeDisabledSitesWithTime);
+  update->Set(origin.Serialize(), base::TimeToValue(base::Time::Now()));
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(

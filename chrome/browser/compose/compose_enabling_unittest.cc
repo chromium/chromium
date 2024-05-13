@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -182,6 +183,12 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
   void SetProactiveNudgePref(bool pref_value) {
     PrefService* prefs = GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kEnableProactiveNudge, pref_value);
+  }
+
+  void AddDomainToProactiveNudgeDisabledSitesPref() {
+    ScopedDictPrefUpdate update(GetProfile()->GetPrefs(),
+                                prefs::kProactiveNudgeDisabledSitesWithTime);
+    update->Set(GetOrigin().Serialize(), base::TimeToValue(base::Time::Now()));
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
@@ -1120,7 +1127,51 @@ TEST_F(ComposeEnablingTest, ProactiveNudgePreferenceTest) {
   histogram_tester.ExpectBucketCount(
       compose::kComposeProactiveNudgeShowStatus,
       compose::ComposeShowStatus::
-          kPractiveNudgeDisabledGloballyByUserPreference,
+          kProactiveNudgeDisabledGloballyByUserPreference,
+      1);
+}
+
+TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
+  ResetFeaturesAndConfig({compose::features::kEnableComposeProactiveNudge}, {});
+  base::HistogramTester histogram_tester;
+  // Enable the feature.
+  auto scoped_compose_enabled =
+      ComposeEnabling::ScopedEnableComposeForTesting();
+  std::string autocomplete_attribute;
+
+  // Preference is enabled by default, proactive nudge should trigger on default
+  // origin.
+  EXPECT_TRUE(
+      compose_enabling_
+          ->ShouldTriggerPopup(
+              autocomplete_attribute, GetProfile(), GetProfile()->GetPrefs(),
+              mock_translate_manager_.get(),
+              /*ongoing_session=*/false, GetOrigin(), GetOrigin(),
+              GURL(kExampleURL),
+              autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange,
+              /*is_msbb_enabled*/ true)
+          .has_value());
+
+  // When origin is added to disabled sites list, proactive nudge should not
+  // trigger.
+  AddDomainToProactiveNudgeDisabledSitesPref();
+  EXPECT_FALSE(
+      compose_enabling_
+          ->ShouldTriggerPopup(
+              autocomplete_attribute, GetProfile(), GetProfile()->GetPrefs(),
+              mock_translate_manager_.get(),
+              /*ongoing_session=*/false, GetOrigin(), GetOrigin(),
+              GURL(kExampleURL),
+              autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange,
+              /*is_msbb_enabled*/ true)
+          .has_value());
+  histogram_tester.ExpectBucketCount(compose::kComposeProactiveNudgeShowStatus,
+                                     compose::ComposeShowStatus::kShouldShow,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::
+          kProactiveNudgeDisabledForSiteByUserPreference,
       1);
 }
 

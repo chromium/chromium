@@ -72,6 +72,7 @@ class ChromeComposeClient
   compose::PageUkmTracker* getPageUkmTracker() override;
   void DisableProactiveNudge() override;
   void OpenProactiveNudgeSettings() override;
+  void AddSiteToNeverPromptList(const url::Origin& origin) override;
 
   // autofill::AutofillManager::Observer:
   // Used to observe field focus changes so that the saved state notification
