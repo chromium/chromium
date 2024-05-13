@@ -5233,6 +5233,16 @@
     "expiry_milestone": 129
   },
   {
+    "name": "ios-promo-refreshed-password-bubble",
+    "owners": [
+      "aliaaborhamy@google.com",
+      "nicolasmacbeth@google.com",
+      "gujen@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "ios-quick-delete",
     "owners": [
       "fsenra@google.com",

@@ -10097,6 +10097,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsEnableGetTheMostOutOfChromeDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(::features::kGetTheMostOutOfChrome)},
 
+    {"ios-promo-refreshed-password-bubble",
+     flag_descriptions::kIOSPromoRefreshedPasswordBubbleName,
+     flag_descriptions::kIOSPromoRefreshedPasswordBubbleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIOSPromoRefreshedPasswordBubble)},
+
     {"ios-promo-address-bubble", flag_descriptions::kIOSPromoAddressBubbleName,
      flag_descriptions::kIOSPromoAddressBubbleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIOSPromoAddressBubble)},

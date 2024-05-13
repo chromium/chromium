@@ -313,7 +313,9 @@
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -2945,12 +2947,20 @@ void BrowserView::ShowIOSPasswordPromoBubble() {
   ToolbarButtonProvider* button_provider =
       BrowserView::GetBrowserViewForBrowser(browser_.get())
           ->toolbar_button_provider();
-
-  IOSPromoPasswordBubble::ShowBubble(
-      button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-      button_provider->GetPageActionIconView(
-          PageActionIconType::kManagePasswords),
-      browser_.get());
+  if (base::FeatureList::IsEnabled(
+          features::kIOSPromoRefreshedPasswordBubble)) {
+    IOSPromoBubble::ShowPromoBubble(
+        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
+        button_provider->GetPageActionIconView(
+            PageActionIconType::kManagePasswords),
+        browser_.get(), IOSPromoType::kPassword);
+  } else {
+    IOSPromoPasswordBubble::ShowBubble(
+        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
+        button_provider->GetPageActionIconView(
+            PageActionIconType::kManagePasswords),
+        browser_.get());
+  }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

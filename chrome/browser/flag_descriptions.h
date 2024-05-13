@@ -3005,6 +3005,9 @@ extern const char kSmartCardWebApiDescription[];
 extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
 
+extern const char kIOSPromoRefreshedPasswordBubbleName[];
+extern const char kIOSPromoRefreshedPasswordBubbleDescription[];
+
 extern const char kIOSPromoAddressBubbleName[];
 extern const char kIOSPromoAddressBubbleDescription[];
 

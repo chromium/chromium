@@ -18766,6 +18766,7 @@ from previous Chrome versions.
   <int value="-1102212525" label="enable-tcp-fastopen"/>
   <int value="-1101334831" label="SyncSupportTrustedVaultPassphrase:disabled"/>
   <int value="-1101036307" label="SetTimeoutWithoutClamp:enabled"/>
+  <int value="-1099799372" label="IOSPromoRefreshedPasswordBubble:enabled"/>
   <int value="-1099643243" label="NtpDriveModuleSegmentation:enabled"/>
   <int value="-1099618411" label="UpdatedCellularActivationUi:enabled"/>
   <int value="-1099496822" label="CaptureModeSelfieCamera:enabled"/>
@@ -23420,6 +23421,7 @@ from previous Chrome versions.
   <int value="957458620" label="MediaRouterOTRInstance:enabled"/>
   <int value="960413971" label="GlanceablesV2CalendarView:disabled"/>
   <int value="960696967" label="TabResumptionModuleAndroid:enabled"/>
+  <int value="961019394" label="IOSPromoRefreshedPasswordBubble:disabled"/>
   <int value="962191833" label="StopAppIndexingReport:disabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
