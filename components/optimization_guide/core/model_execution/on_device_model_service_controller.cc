@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/safety_model_info.h"
@@ -102,10 +103,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     }
   }
 
-  // Check feature config.
-  scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
-      model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
-  if (!adapter) {
+  if (!GetFeatureAdapter(feature)) {
     return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
 
@@ -114,8 +112,7 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
   }
 
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature) &&
-      !base::Contains(model_adaptation_assets_,
-                      ToModelExecutionFeatureProto(feature))) {
+      !base::Contains(model_adaptation_metadata_, feature)) {
     return OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable;
   }
 
@@ -173,17 +170,14 @@ OnDeviceModelServiceController::CreateSession(
       CHECK(!model_paths.language_detection_model.empty());
     }
   }
-
-  scoped_refptr<const OnDeviceModelFeatureAdapter> adapter =
-      model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
+  auto adapter = GetFeatureAdapter(feature);
   CHECK(adapter);
 
   std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {
-    auto it =
-        model_adaptation_assets_.find(ToModelExecutionFeatureProto(feature));
-    CHECK(it != model_adaptation_assets_.end());
-    adaptation_assets = it->second;
+    auto it = model_adaptation_metadata_.find(feature);
+    CHECK(it != model_adaptation_metadata_.end());
+    adaptation_assets = it->second.asset_paths();
   }
 
   SessionImpl::OnDeviceOptions opts;
@@ -302,12 +296,11 @@ void OnDeviceModelServiceController::UpdateModel(
 
 void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
     ModelBasedCapabilityKey feature,
-    std::unique_ptr<on_device_model::AdaptationAssetPaths> adaptations_assets) {
-  if (!adaptations_assets) {
-    model_adaptation_assets_.erase(ToModelExecutionFeatureProto(feature));
+    std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata) {
+  if (!adaptation_metadata) {
+    model_adaptation_metadata_.erase(feature);
   } else {
-    model_adaptation_assets_[ToModelExecutionFeatureProto(feature)] =
-        *adaptations_assets;
+    model_adaptation_metadata_.emplace(feature, *adaptation_metadata);
   }
   auto it = model_adaptation_controllers_.find(feature);
   if (it != model_adaptation_controllers_.end()) {
@@ -405,6 +398,19 @@ void OnDeviceModelServiceController::OnDeviceModelClient::OnSessionTimedOut() {
   if (controller_) {
     controller_->access_controller_->OnSessionTimedOut();
   }
+}
+
+scoped_refptr<const OnDeviceModelFeatureAdapter>
+OnDeviceModelServiceController::GetFeatureAdapter(
+    ModelBasedCapabilityKey feature) {
+  // Take the feature config from adaptation model metadata or base model
+  // metadata.
+  auto adaptation_metadata_it = model_adaptation_metadata_.find(feature);
+  if (adaptation_metadata_it != model_adaptation_metadata_.end() &&
+      adaptation_metadata_it->second.adapter()) {
+    return adaptation_metadata_it->second.adapter();
+  }
+  return model_metadata_->GetAdapter(ToModelExecutionFeatureProto(feature));
 }
 
 }  // namespace optimization_guide

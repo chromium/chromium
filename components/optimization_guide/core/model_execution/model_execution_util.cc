@@ -4,8 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 
+#include "base/files/file_util.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -135,6 +137,21 @@ OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
     case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
       return OnDeviceModelLoadResult::kFailedToLoadLibrary;
   }
+}
+
+std::unique_ptr<proto::OnDeviceModelExecutionConfig>
+ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
+  // Unpack and verify model config file.
+  std::string binary_config_pb;
+  if (!base::ReadFileToString(config_path, &binary_config_pb)) {
+    return nullptr;
+  }
+
+  auto config = std::make_unique<proto::OnDeviceModelExecutionConfig>();
+  if (!config->ParseFromString(binary_config_pb)) {
+    return nullptr;
+  }
+  return config;
 }
 
 }  // namespace optimization_guide

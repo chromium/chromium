@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_test_utils.h"
@@ -442,10 +443,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kCompose,
-      std::make_unique<on_device_model::AdaptationAssetPaths>());
+      OnDeviceModelAdaptationMetadata::New(
+          on_device_model::AdaptationAssetPaths(), /*adapter=*/nullptr));
   test_controller_->MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey::kTest,
-      std::make_unique<on_device_model::AdaptationAssetPaths>());
+      OnDeviceModelAdaptationMetadata::New(
+          on_device_model::AdaptationAssetPaths(), /*adapter=*/nullptr));
 
   auto session_compose = test_controller_->CreateSession(
       ModelBasedCapabilityKey::kCompose, base::DoNothing(),

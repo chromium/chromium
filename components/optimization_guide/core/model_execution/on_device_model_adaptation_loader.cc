@@ -6,9 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -32,7 +34,63 @@ void RecordAdaptationModelAvailability(
       availability);
 }
 
+base::expected<std::unique_ptr<OnDeviceModelAdaptationMetadata>,
+               OnDeviceModelAdaptationAvailability>
+CreateAdaptatonMetadataFromModelExecutionConfig(
+    ModelBasedCapabilityKey feature,
+    std::unique_ptr<on_device_model::AdaptationAssetPaths> asset_paths,
+    std::unique_ptr<proto::OnDeviceModelExecutionConfig> execution_config) {
+  if (!execution_config) {
+    return base::unexpected(OnDeviceModelAdaptationAvailability::
+                                kAdaptationModelExecutionConfigInvalid);
+  }
+  if (execution_config->feature_configs_size() != 1) {
+    return base::unexpected(OnDeviceModelAdaptationAvailability::
+                                kAdaptationModelExecutionConfigInvalid);
+  }
+  auto& config = *execution_config->mutable_feature_configs(0);
+  if (config.feature() != ToModelExecutionFeatureProto(feature)) {
+    return base::unexpected(OnDeviceModelAdaptationAvailability::
+                                kAdaptationModelExecutionConfigInvalid);
+  }
+  return base::ok(OnDeviceModelAdaptationMetadata::New(
+      *asset_paths,
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config))));
+}
+
+std::unique_ptr<OnDeviceModelAdaptationMetadata>
+OnDeviceModelAdaptationMetadataCreated(
+    ModelBasedCapabilityKey feature,
+    base::expected<std::unique_ptr<OnDeviceModelAdaptationMetadata>,
+                   OnDeviceModelAdaptationAvailability> metadata) {
+  if (!metadata.has_value()) {
+    RecordAdaptationModelAvailability(feature, metadata.error());
+    return nullptr;
+  }
+  RecordAdaptationModelAvailability(
+      feature, OnDeviceModelAdaptationAvailability::kAvailable);
+  return std::move(metadata.value());
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<OnDeviceModelAdaptationMetadata>
+OnDeviceModelAdaptationMetadata::New(
+    const on_device_model::AdaptationAssetPaths& asset_paths,
+    scoped_refptr<OnDeviceModelFeatureAdapter> adapter) {
+  return base::WrapUnique(
+      new OnDeviceModelAdaptationMetadata(asset_paths, std::move(adapter)));
+}
+
+OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
+    const on_device_model::AdaptationAssetPaths& asset_paths,
+    scoped_refptr<OnDeviceModelFeatureAdapter> adapter)
+    : asset_paths_(std::move(asset_paths)), adapter_(std::move(adapter)) {}
+
+OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
+    const OnDeviceModelAdaptationMetadata&) = default;
+OnDeviceModelAdaptationMetadata::~OnDeviceModelAdaptationMetadata() = default;
 
 OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     ModelBasedCapabilityKey feature,
@@ -42,7 +100,9 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     OnLoadFn on_load_fn)
     : feature_(feature),
       on_load_fn_(on_load_fn),
-      model_provider_(model_provider) {
+      model_provider_(model_provider),
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature_));
   if (const auto adaptations_override = GetOnDeviceModelAdaptationOverride(
           ToModelExecutionFeatureProto(feature_))) {
@@ -113,9 +173,24 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
     RecordAdaptationModelAvailability(feature_, result.error());
     return;
   }
-  RecordAdaptationModelAvailability(
-      feature_, OnDeviceModelAdaptationAvailability::kAvailable);
-  on_load_fn_.Run(std::move(result.value()));
+  auto execution_config_file = model_info->GetAdditionalFileWithBaseName(
+      kOnDeviceModelExecutionConfigFile);
+  if (!execution_config_file) {
+    RecordAdaptationModelAvailability(
+        feature_, OnDeviceModelAdaptationAvailability::
+                      kAdaptationModelExecutionConfigInvalid);
+
+    return;
+  }
+
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ReadOnDeviceModelExecutionConfig, *execution_config_file),
+      base::BindOnce(&CreateAdaptatonMetadataFromModelExecutionConfig, feature_,
+                     std::move(result.value()))
+          .Then(
+              base::BindOnce(&OnDeviceModelAdaptationMetadataCreated, feature_))
+          .Then(on_load_fn_));
 }
 
 base::expected<std::unique_ptr<on_device_model::AdaptationAssetPaths>,

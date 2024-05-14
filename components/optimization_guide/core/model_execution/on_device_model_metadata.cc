@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -21,27 +21,6 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace optimization_guide {
-
-namespace {
-
-std::unique_ptr<proto::OnDeviceModelExecutionConfig>
-ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
-  // Unpack and verify model config file.
-  base::FilePath config_path = path.Append(kOnDeviceModelExecutionConfigFile);
-  std::string binary_config_pb;
-  if (!base::ReadFileToString(config_path, &binary_config_pb)) {
-    return nullptr;
-  }
-
-  auto config = std::make_unique<proto::OnDeviceModelExecutionConfig>();
-  if (!config->ParseFromString(binary_config_pb)) {
-    return nullptr;
-  }
-
-  return config;
-}
-
-}  // namespace
 
 OnDeviceModelMetadata::OnDeviceModelMetadata(
     const base::FilePath& model_path,
@@ -114,7 +93,9 @@ OnDeviceModelMetadataLoader::~OnDeviceModelMetadataLoader() {
 void OnDeviceModelMetadataLoader::Load(const base::FilePath& model_path,
                                        const std::string& version) {
   background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ReadOnDeviceModelExecutionConfig, model_path),
+      FROM_HERE,
+      base::BindOnce(&ReadOnDeviceModelExecutionConfig,
+                     model_path.Append(kOnDeviceModelExecutionConfigFile)),
       base::BindOnce(&OnDeviceModelMetadata::New, model_path, version)
           .Then(on_load_fn_));
 }

@@ -4,18 +4,49 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_ADAPTATION_MODEL_LOADER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_ADAPTATION_MODEL_LOADER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 namespace optimization_guide {
 
+class OnDeviceModelFeatureAdapter;
 class OnDeviceModelMetadata;
 class OptimizationGuideModelProvider;
 enum class OnDeviceModelAdaptationAvailability;
+
+class OnDeviceModelAdaptationMetadata {
+ public:
+  static std::unique_ptr<OnDeviceModelAdaptationMetadata> New(
+      const on_device_model::AdaptationAssetPaths& asset_paths,
+      scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
+
+  OnDeviceModelAdaptationMetadata(const OnDeviceModelAdaptationMetadata&);
+  ~OnDeviceModelAdaptationMetadata();
+
+  const on_device_model::AdaptationAssetPaths& asset_paths() const {
+    return asset_paths_;
+  }
+
+  scoped_refptr<const OnDeviceModelFeatureAdapter> adapter() const {
+    return adapter_;
+  }
+
+ private:
+  friend class OnDeviceModelServiceControllerTest;
+
+  OnDeviceModelAdaptationMetadata(
+      const on_device_model::AdaptationAssetPaths& asset_paths,
+      scoped_refptr<OnDeviceModelFeatureAdapter> adapter);
+  on_device_model::AdaptationAssetPaths asset_paths_;
+  scoped_refptr<OnDeviceModelFeatureAdapter> adapter_;
+};
 
 // Loads model adaptation assets for a particular feature. Performs adaptation
 // model compatibility checks with the base model and reloads the assets if the
@@ -25,7 +56,7 @@ class OnDeviceModelAdaptationLoader
       public OnDeviceModelComponentStateManager::Observer {
  public:
   using OnLoadFn = base::RepeatingCallback<void(
-      std::unique_ptr<on_device_model::AdaptationAssetPaths>)>;
+      std::unique_ptr<OnDeviceModelAdaptationMetadata>)>;
 
   OnDeviceModelAdaptationLoader(
       ModelBasedCapabilityKey feature,
@@ -70,6 +101,9 @@ class OnDeviceModelAdaptationLoader
   // The model provider to observe for updates to model adaptations.
   raw_ptr<OptimizationGuideModelProvider> model_provider_;
   bool registered_with_model_provider_ = false;
+
+  // Background thread where file processing should be performed.
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 };
 
 }  // namespace optimization_guide

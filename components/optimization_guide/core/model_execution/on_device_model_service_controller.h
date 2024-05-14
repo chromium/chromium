@@ -42,6 +42,7 @@ class FilePath;
 namespace optimization_guide {
 enum class OnDeviceModelEligibilityReason;
 class OnDeviceModelAccessController;
+class OnDeviceModelAdaptationMetadata;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelMetadata;
 class ModelQualityLogsUploaderService;
@@ -119,8 +120,7 @@ class OnDeviceModelServiceController
   // Updates the model adaptation for the feature.
   void MaybeUpdateModelAdaptation(
       ModelBasedCapabilityKey feature,
-      std::unique_ptr<on_device_model::AdaptationAssetPaths>
-          adaptations_assets);
+      std::unique_ptr<OnDeviceModelAdaptationMetadata> adaptation_metadata);
 
   // Called when the model adaptation remote is disconnected.
   void OnModelAdaptationRemoteDisconnected(ModelBasedCapabilityKey feature,
@@ -200,6 +200,9 @@ class OnDeviceModelServiceController
   // idle.
   void OnRemoteIdle();
 
+  scoped_refptr<const OnDeviceModelFeatureAdapter> GetFeatureAdapter(
+      ModelBasedCapabilityKey feature);
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
@@ -225,9 +228,8 @@ class OnDeviceModelServiceController
   // Map from feature to its adaptation assets. Present only for features that
   // have valid model adaptation. It could be missing for features that require
   // model adaptation, but they have not been loaded yet.
-  base::flat_map<proto::ModelExecutionFeature,
-                 on_device_model::AdaptationAssetPaths>
-      model_adaptation_assets_;
+  base::flat_map<ModelBasedCapabilityKey, OnDeviceModelAdaptationMetadata>
+      model_adaptation_metadata_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

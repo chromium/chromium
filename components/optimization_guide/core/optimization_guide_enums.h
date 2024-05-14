@@ -390,9 +390,12 @@ enum class OnDeviceModelAdaptationAvailability {
   // The received adaptation model was incompatible with the base model.
   kAdaptationModelIncompatible = 5,
 
+  // The execution config in the adaptation model was invalid.
+  kAdaptationModelExecutionConfigInvalid = 6,
+
   // This must be kept in sync with OnDeviceModelAdaptationAvailability in
   // optimization/enums.xml.
-  kMaxValue = kAdaptationModelIncompatible,
+  kMaxValue = kAdaptationModelExecutionConfigInvalid,
 };
 
 }  // namespace optimization_guide
