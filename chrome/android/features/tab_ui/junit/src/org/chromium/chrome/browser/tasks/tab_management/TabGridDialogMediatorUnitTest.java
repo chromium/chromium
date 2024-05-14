@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -68,6 +69,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -127,6 +129,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock ActionConfirmationManager mActionConfirmationManager;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
@@ -165,6 +168,9 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
+        doNothing()
+                .when(mTabGroupModelFilter)
+                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
         doReturn(mView).when(mAnimationSourceViewProvider).getAnimationSourceViewForTab(anyInt());
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(mEditable).when(mTitleTextView).getText();
@@ -194,6 +200,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
+        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(false));
     }
 
     private static SharedPreferences getGroupColorSharedPreferences() {
@@ -1371,6 +1378,40 @@ public class TabGridDialogMediatorUnitTest {
         assertEquals(
                 mActivity.getString(R.string.remove_last_tab_action),
                 mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testTabGroupColorUpdated() {
+        int rootId = TAB1_ID;
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
+
+        mMediator.onReset(tabGroup);
+
+        assertNotEquals(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), COLOR_3);
+
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupColor(rootId, COLOR_3);
+
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
+    }
+
+    @Test
+    public void testTabGroupTitleUpdated() {
+        int rootId = TAB1_ID;
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
+
+        when(mTabGroupTitleEditor.getTabGroupTitle(rootId)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        mMediator.onReset(tabGroup);
+
+        assertEquals(mModel.get(TabGridDialogProperties.HEADER_TITLE), CUSTOMIZED_DIALOG_TITLE);
+
+        String newTitle = "BAR";
+        when(mTabGroupTitleEditor.getTabGroupTitle(rootId)).thenReturn(newTitle);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(rootId, newTitle);
+
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));
     }
 
     @Test
