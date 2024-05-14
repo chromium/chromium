@@ -498,25 +498,6 @@ bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
-// Whether to bypass any available grants from the Third Party Cookie
-// Deprecation TPCD Metadata.
-bool IgnoreTpcdDtGracePeriodMetadataEntry(const SettingInfo& info) {
-  if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl)) {
-    return false;
-  }
-
-  switch (info.metadata.tpcd_metadata_cohort()) {
-    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF:
-      return true;
-    case mojom::TpcdMetadataCohort::DEFAULT:
-    case mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON:
-      return false;
-  }
-
-  NOTREACHED_NORETURN() << "Invalid enum value: "
-                        << info.metadata.tpcd_metadata_cohort();
-}
-
 absl::variant<CookieSettingsBase::AllowAllCookies,
               CookieSettingsBase::AllowPartitionedCookies,
               CookieSettingsBase::BlockAllCookies>
@@ -583,8 +564,7 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   // Chrome controlled mechanisms (ex. 3PCD Metadata Grants):
   SettingInfo tpcd_metadata_info;
   if (IsAllowedBy3pcdMetadataGrantsSettings(url, first_party_url, overrides,
-                                            &tpcd_metadata_info) &&
-      !IgnoreTpcdDtGracePeriodMetadataEntry(tpcd_metadata_info)) {
+                                            &tpcd_metadata_info)) {
     return AllowAllCookies{TpcdMetadataSourceToAllowMechanism(
         tpcd_metadata_info.metadata.tpcd_metadata_rule_source())};
   }
