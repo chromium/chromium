@@ -995,9 +995,8 @@ bool AXNodeObject::ComputeIsIgnored(
       return ParentObject()->IsIgnored();
     }
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
-    if (IsAriaHidden() || IsHiddenViaStyle() || IsHiddenByChildTree() ||
-        !node || !node->parentElement() ||
-        !node->parentElement()->IsInCanvasSubtree()) {
+    if (IsAriaHidden() || IsHiddenViaStyle() || !node ||
+        !node->parentElement() || !node->parentElement()->IsInCanvasSubtree()) {
       return true;
     }
   }
@@ -5750,6 +5749,12 @@ void AXNodeObject::InsertChild(AXObject* child,
 
 bool AXNodeObject::CanHaveChildren() const {
   DCHECK(!IsDetached());
+
+  // A child tree has been stitched onto this node, hiding its usual subtree.
+  if (child_tree_id()) {
+    return false;
+  }
+
   // Notes:
   // * Native text fields expose any children they might have, complying
   // with browser-side expectations that editable controls have children

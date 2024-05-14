@@ -1735,9 +1735,6 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   EXPECT_EQ(1, canvas->ChildCountIncludingIgnored());
   EXPECT_TRUE(ignored_button->IsIncludedInTree());
   EXPECT_FALSE(ignored_button->IsVisible());
-  EXPECT_FALSE(paragraph->IsHiddenByChildTree());
-  EXPECT_FALSE(paragraph_text->IsHiddenByChildTree());
-  EXPECT_FALSE(ignored_button->IsHiddenByChildTree());
 
   ui::AXActionData action_data;
   action_data.action = ax::mojom::blink::Action::kStitchChildTree;
@@ -1801,16 +1798,11 @@ TEST_F(AccessibilityTest, StitchChildTree) {
          "tree.";
   EXPECT_EQ(0, canvas->ChildCountIncludingIgnored());
 
-  // Re-create the detached objects and check that they are still "hidden by the
-  // child tree". We need to do this because Blink will re-create the objects
-  // once it walks the DOM tree again.
-
-  EXPECT_TRUE(paragraph->IsHiddenByChildTree());
-  EXPECT_TRUE(paragraph->IsIgnored());
-  EXPECT_FALSE(paragraph->IsVisible());
-  EXPECT_TRUE(ignored_button->IsHiddenByChildTree());
-  EXPECT_TRUE(ignored_button->IsIgnored());
-  EXPECT_FALSE(ignored_button->IsVisible());
+  // Try to re-create the pruned objects and check that they are still pruned.
+  paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_EQ(nullptr, paragraph);
+  ignored_button = GetAXObjectByElementId("ignoredButton");
+  ASSERT_EQ(nullptr, ignored_button);
 }
 
 TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedLiveProperty) {

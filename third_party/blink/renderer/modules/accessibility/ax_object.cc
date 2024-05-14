@@ -3137,18 +3137,15 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // dependent on having the correct new cached value.
   bool is_inert = ComputeIsInertViaStyle(style);
   bool is_aria_hidden = ComputeIsAriaHidden();
-  bool is_hidden_by_child_tree = ComputeIsHiddenByChildTree();
   bool is_descendant_of_disabled_node = ComputeIsDescendantOfDisabledNode();
   bool is_changing_inherited_values = false;
   if (cached_is_inert_ != is_inert ||
       cached_is_aria_hidden_ != is_aria_hidden ||
-      cached_is_hidden_by_child_tree_ != is_hidden_by_child_tree ||
       cached_is_descendant_of_disabled_node_ !=
           is_descendant_of_disabled_node) {
     is_changing_inherited_values = true;
     cached_is_inert_ = is_inert;
     cached_is_aria_hidden_ = is_aria_hidden;
-    cached_is_hidden_by_child_tree_ = is_hidden_by_child_tree;
     cached_is_descendant_of_disabled_node_ = is_descendant_of_disabled_node;
   }
 
@@ -3367,13 +3364,6 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
     return true;
   }
 
-  if (cached_is_hidden_by_child_tree_) {
-    if (ignored_reasons) {
-      ignored_reasons->emplace_back(kAXHiddenByChildTree);
-    }
-    return true;
-  }
-
   if (cached_is_hidden_via_style_) {
     if (ignored_reasons) {
       ignored_reasons->push_back(
@@ -3540,26 +3530,6 @@ bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   return false;
 }
 
-bool AXObject::IsHiddenByChildTree() {
-  CheckCanAccessCachedValues();
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_is_hidden_by_child_tree_;
-}
-
-bool AXObject::ComputeIsHiddenByChildTree(IgnoredReasons* ignored_reasons) {
-  const AXObject* parent = ParentObject();
-  if (!parent) {
-    return false;
-  }
-  if (parent->child_tree_id()) {
-    if (ignored_reasons) {
-      ignored_reasons->emplace_back(kAXHiddenByChildTree, parent);
-    }
-    return true;
-  }
-  return parent->IsHiddenByChildTree();
-}
-
 bool AXObject::IsModal() const {
   if (RoleValue() != ax::mojom::blink::Role::kDialog &&
       RoleValue() != ax::mojom::blink::Role::kAlertDialog)
@@ -3609,8 +3579,7 @@ bool AXObject::IsBlockedByAriaModalDialog(
 bool AXObject::IsVisible() const {
   // TODO(accessibility) Consider exposing inert objects as visible, since they
   // are visible. It should be fine, since the objexcts are ignored.
-  return !IsDetached() && !IsAriaHidden() && !IsHiddenByChildTree() &&
-         !IsInert() && !IsHiddenViaStyle();
+  return !IsDetached() && !IsAriaHidden() && !IsInert() && !IsHiddenViaStyle();
 }
 
 const AXObject* AXObject::AriaHiddenRoot() const {
@@ -3942,10 +3911,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
                   element->GetPseudoElement(kPseudoIdAfter) ||
                   element->GetPseudoElement(kPseudoIdMarker))) {
     return true;
-  }
-
-  if (IsHiddenByChildTree()) {
-    return false;
   }
 
   if (IsUsedForLabelOrDescription()) {
@@ -6112,17 +6077,10 @@ void AXObject::SetChildTree(const ui::AXTreeID& child_tree_id) {
     return;
   }
   child_tree_id_ = child_tree_id;
-  // Child objects inherit their cached_is_hidden_by_child_tree_ from their
-  // parents. However, this is not true for the direct children of the root,
-  // because the root itself is not hidden by the child tree. Therefore the
-  // root's direct children must inherit cached_is_hidden_by_child_tree_ from
-  // the presence of a child tree id on their parent (the root). Calling
-  // OnInheritedCachedValuesChanged() as we set child_tree_id_ will cause
-  // cached_is_hidden_by_child_tree_ as well as ignored/included changes from
-  // that to propagate to the children, and further propagation to descendants
-  // wil result from changes to cached_is_hidden_by_child_tree_.
+  // A node with a child tree is automatically considered a leaf, and
+  // CanHaveChildren() will return false for it.
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
-  OnInheritedCachedValuesChanged();
+  AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /*remove_root*/ false);
   AXObjectCache().UpdateAXForAllDocuments();
 }
 
@@ -8023,10 +7981,6 @@ String AXObject::ToString(bool verbose) const {
       }
     } else if (AriaHiddenRoot()) {
       string_builder = string_builder + " ariaHiddenRootExtra";
-    }
-    if (cached_values_only ? cached_is_hidden_by_child_tree_
-                           : IsHiddenByChildTree()) {
-      string_builder = string_builder + " isHiddenByChildTree";
     }
     if (cached_values_only ? cached_is_hidden_via_style_ : IsHiddenViaStyle()) {
       string_builder = string_builder + " isHiddenViaCSS";

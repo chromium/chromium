@@ -535,14 +535,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsInert();
   bool IsAriaHidden() const { return cached_is_aria_hidden_; }
   bool IsAriaHidden();
-  bool IsHiddenByChildTree() const { return cached_is_hidden_by_child_tree_; }
-  bool IsHiddenByChildTree();
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInert(IgnoredReasons* = nullptr) const;
   bool ComputeIsAriaHidden(IgnoredReasons* = nullptr) const;
-  // Determines if the object is hidden because a child tree has been stitched
-  // into one of its ancestor objects.
-  bool ComputeIsHiddenByChildTree(IgnoredReasons* = nullptr);
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
   bool IsDescendantOfDisabledNode() const {
     return cached_is_descendant_of_disabled_node_;
@@ -1571,6 +1566,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeTextInsertionDeletionOffsetAttributes(
       ui::AXNodeData* node_data) const;
 
+  const std::optional<ui::AXTreeID>& child_tree_id() const {
+    return child_tree_id_;
+  }
+
  private:
   bool ComputeCanSetFocusAttribute();
   String KeyboardShortcut() const;
@@ -1594,7 +1593,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool cached_is_ignored_but_included_in_tree_ : 1 = false;
   bool cached_is_inert_ : 1 = false;
   bool cached_is_aria_hidden_ : 1 = false;
-  bool cached_is_hidden_by_child_tree_ : 1 = false;
   bool cached_is_hidden_via_style_ : 1 = false;
   bool cached_is_used_for_label_or_description_ : 1;
   bool cached_is_descendant_of_disabled_node_ : 1 = false;
@@ -1646,9 +1644,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // from the parent.
   bool ShouldDestroyWhenDetachingFromParent() const;
 
-  const std::optional<ui::AXTreeID>& child_tree_id() const {
-    return child_tree_id_;
-  }
   // Attaches the tree with the given ID to this object as a child tree and
   // updates the cache.
   void SetChildTree(const ui::AXTreeID& child_tree_id);
