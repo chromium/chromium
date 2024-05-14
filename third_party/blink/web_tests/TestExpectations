@@ -1254,7 +1254,6 @@ crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-k
 
 # css counters failures to be fixed with new implementation.
 crbug.com/990657 external/wpt/css/css-contain/contain-style-counters-005.html [ Failure ]
-crbug.com/990657 fast/css/containment/style-contain-dialogue-element.html [ Failure ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
