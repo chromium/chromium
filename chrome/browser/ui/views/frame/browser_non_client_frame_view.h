@@ -13,7 +13,6 @@
 #include "ui/views/window/non_client_view.h"
 
 class BrowserView;
-class TabSearchBubbleHost;
 
 // Type used for functions whose return values depend on the active state of
 // the frame.
@@ -133,10 +132,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
-
-  // Gets the TabSearchBubbleHost if present in the NonClientFrameView. Can
-  // return null.
-  virtual TabSearchBubbleHost* GetTabSearchBubbleHost();
 
   // Returns the insets from the edge of the native window to the client view in
   // DIPs. The value is left-to-right even on RTL locales. That is,

@@ -211,9 +211,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
   SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 
-  if (browser && tab_search_container &&
-      !WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser) &&
-      !render_tab_search_before_tab_strip_) {
+  if (browser && tab_search_container && !render_tab_search_before_tab_strip_) {
     if (product_specifications_button) {
       product_specifications_button_ =
           AddChildView(std::move(product_specifications_button));

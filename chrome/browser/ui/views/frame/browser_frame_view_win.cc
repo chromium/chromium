@@ -252,10 +252,6 @@ void BrowserFrameViewWin::WindowControlsOverlayEnabledChanged() {
   caption_button_container_->OnWindowControlsOverlayEnabledChanged();
 }
 
-TabSearchBubbleHost* BrowserFrameViewWin::GetTabSearchBubbleHost() {
-  return caption_button_container_->GetTabSearchBubbleHost();
-}
-
 void BrowserFrameViewWin::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 

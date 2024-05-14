@@ -202,10 +202,6 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
     OnProfileAvatarChanged(base::FilePath());
 }
 
-TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
-  return nullptr;
-}
-
 gfx::Insets BrowserNonClientFrameView::MirroredFrameBorderInsets() const {
   NOTREACHED_NORETURN();
 }

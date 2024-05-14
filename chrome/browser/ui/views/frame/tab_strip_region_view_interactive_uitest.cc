@@ -201,33 +201,31 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        TestSearchContainerIsEndAligned) {
-  if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser())) {
-    EXPECT_EQ(tab_search_container(), nullptr);
-  } else {
-    if (TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()) {
-      // The TabSearchContainer is calculated as controls padding away from the
-      // first tab (not including bottom corner radius)
-      const int tab_search_container_expected_end =
-          tab_strip_region_view()->GetTabStripContainerForTesting()->x() +
-          TabStyle::Get()->GetBottomCornerRadius() -
-          GetLayoutConstant(TAB_STRIP_PADDING);
+  if (TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()) {
+    // The TabSearchContainer is calculated as controls padding away from the
+    // first tab (not including bottom corner radius)
+    const int tab_search_container_expected_end =
+        tab_strip_region_view()->GetTabStripContainerForTesting()->x() +
+        TabStyle::Get()->GetBottomCornerRadius() -
+        GetLayoutConstant(TAB_STRIP_PADDING);
 
-      EXPECT_EQ(tab_search_container()->bounds().right(),
-                tab_search_container_expected_end);
-    } else {
-      if (features::IsChromeRefresh2023()) {
-        const int tab_search_container_expected_end =
-            tab_strip_region_view()->GetLocalBounds().right() -
-            GetLayoutConstant(TAB_STRIP_PADDING);
-        EXPECT_EQ(tab_search_container()->bounds().right(),
-                  tab_search_container_expected_end);
-      } else {
-        const int tab_search_container_expected_end =
-            tab_strip_region_view()->GetLocalBounds().right() -
-            GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
-        EXPECT_EQ(tab_search_container()->bounds().right(),
-                  tab_search_container_expected_end);
-      }
-    }
+    EXPECT_EQ(tab_search_container()->bounds().right(),
+              tab_search_container_expected_end);
+    return;
   }
+
+  if (features::IsChromeRefresh2023()) {
+    const int tab_search_container_expected_end =
+        tab_strip_region_view()->GetLocalBounds().right() -
+        GetLayoutConstant(TAB_STRIP_PADDING);
+    EXPECT_EQ(tab_search_container()->bounds().right(),
+              tab_search_container_expected_end);
+    return;
+  }
+
+  const int tab_search_container_expected_end =
+      tab_strip_region_view()->GetLocalBounds().right() -
+      GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
+  EXPECT_EQ(tab_search_container()->bounds().right(),
+            tab_search_container_expected_end);
 }

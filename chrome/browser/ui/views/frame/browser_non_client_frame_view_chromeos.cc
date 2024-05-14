@@ -343,11 +343,6 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   return color.value_or(fallback_color);
 }
 
-TabSearchBubbleHost*
-BrowserNonClientFrameViewChromeOS::GetTabSearchBubbleHost() {
-  return tab_search_bubble_host_;
-}
-
 void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
   gfx::Size current_min_size = GetMinimumSize();
   if (last_minimum_size_ == current_min_size)

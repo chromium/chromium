@@ -7,12 +7,6 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "ui/base/ui_base_features.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 // static
 SkAlpha WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
     SkAlpha theme_alpha) {
@@ -28,14 +22,4 @@ gfx::Size WindowFrameUtil::GetWindowsCaptionButtonAreaSize() {
   return gfx::Size((kNumButtons * kWindowsCaptionButtonWidth) +
                        ((kNumButtons - 1) * kWindowsCaptionButtonVisualSpacing),
                    kWindowsCaptionButtonHeightRestored);
-}
-
-// static
-bool WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
-    const Browser* browser) {
-#if BUILDFLAG(IS_WIN)
-  return !features::IsChromeRefresh2023() && browser->is_type_normal();
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN)
 }

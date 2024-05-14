@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
-#include "chrome/browser/ui/views/frame/windows_tab_search_caption_button.h"
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,14 +65,6 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
           frame_view_,
           VIEW_ID_CLOSE_BUTTON,
           IDS_APP_ACCNAME_CLOSE))) {
-  if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
-          frame_view_->browser_view()->browser())) {
-    tab_search_button_ =
-        AddChildViewAt(std::make_unique<WindowsTabSearchCaptionButton>(
-                           frame_view_, VIEW_ID_TAB_SEARCH_BUTTON,
-                           l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH)),
-                       0);
-  }
   // Layout is horizontal, with buttons placed at the trailing end of the view.
   // This allows the container to expand to become a faux titlebar/drag handle.
   auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -99,9 +90,6 @@ int BrowserCaptionButtonContainer::NonClientHitTest(
     const gfx::Point& point) const {
   DCHECK(HitTestPoint(point))
       << "should only be called with a point inside this view's bounds";
-  if (tab_search_button_ && HitTestCaptionButton(tab_search_button_, point)) {
-    return HTCLIENT;
-  }
   // BrowserView covers the frame view when Window Controls Overlay is enabled.
   // The native window that encompasses Web Contents gets the mouse events meant
   // for the caption buttons, so returning HTClient allows these buttons to be
@@ -143,11 +131,6 @@ void BrowserCaptionButtonContainer::OnWindowControlsOverlayEnabledChanged() {
   UpdateButtonToolTipsForWindowControlsOverlay();
 }
 
-TabSearchBubbleHost* BrowserCaptionButtonContainer::GetTabSearchBubbleHost() {
-  return tab_search_button_ ? tab_search_button_->tab_search_bubble_host()
-                            : nullptr;
-}
-
 void BrowserCaptionButtonContainer::OnThemeChanged() {
   if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
@@ -157,9 +140,6 @@ void BrowserCaptionButtonContainer::OnThemeChanged() {
 }
 
 void BrowserCaptionButtonContainer::ResetWindowControls() {
-  if (tab_search_button_) {
-    tab_search_button_->SetState(views::Button::STATE_NORMAL);
-  }
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   maximize_button_->SetState(views::Button::STATE_NORMAL);
   restore_button_->SetState(views::Button::STATE_NORMAL);
