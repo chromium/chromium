@@ -415,7 +415,9 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
             new_profile, user_email_, gaia_id,
             /*is_under_advanced_protection=*/false,
             signin_metrics::AccessPoint::
-                ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION);
+                ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION,
+            signin_metrics::SourceForRefreshTokenOperation::
+                kMachineLogon_CredentialProvider);
 
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Operation of setting account id " << gaia_id

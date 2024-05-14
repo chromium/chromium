@@ -136,13 +136,15 @@ void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
 // TODO(b/339214136): Add a standalone unit for this function.
 // Add an account with `user_email` and `gaia_id` to `profile`, and then set it
 // as the primary account. A invalid refresh token will be set to mimic the
-// behavior of a signed-out user. It is expected that
+// behavior of a signed-out user. It is expected that the user is not tracked
+// yet.
 PrimaryAccountError SetPrimaryAccountWithInvalidToken(
     Profile* profile,
     const std::string& user_email,
     const std::string& gaia_id,
     bool is_under_advanced_protection,
-    signin_metrics::AccessPoint access_point);
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::SourceForRefreshTokenOperation source);
 
 }  // namespace signin_util
 

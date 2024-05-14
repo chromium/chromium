@@ -269,7 +269,8 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
     const std::string& user_email,
     const std::string& gaia_id,
     bool is_under_advanced_protection,
-    signin_metrics::AccessPoint access_point) {
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   CHECK(identity_manager->FindExtendedAccountInfoByEmailAddress(user_email)
@@ -287,9 +288,8 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id, user_email, GaiaConstants::kInvalidRefreshToken,
-          is_under_advanced_protection, access_point,
-          signin_metrics::SourceForRefreshTokenOperation::
-              kMachineLogon_CredentialProvider);
+          is_under_advanced_protection, access_point, source);
+
   DVLOG(1) << "Account id <" << account_id.ToString()
            << "> has been added to the profile with invalid token.";
 
