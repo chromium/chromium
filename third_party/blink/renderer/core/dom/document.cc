@@ -7435,12 +7435,17 @@ void Document::FinishedParsing() {
       // of sync. Loader()->HasLoadedNonInitialEmptyDocument() is more correct.
       // Keeping both for now behind a flag so that it's finch-testable.
       if (GetFrame()->IsMainFrame() ||
-
           Loader()->HasLoadedNonInitialEmptyDocument() ||
           !base::FeatureList::IsEnabled(
               blink::features::
                   kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe)) {
         UpdateStyleAndLayoutTree();
+        if (base::FeatureList::IsEnabled(
+                features::kPrerender2EarlyDocumentLifecycleUpdate) &&
+            IsPrerendering()) {
+          View()->UpdateAllLifecyclePhasesExceptPaint(
+              DocumentUpdateReason::kPrerender);
+        }
       }
     }
 

@@ -123,6 +123,23 @@ void SimTest::InitializeFencedFrameRoot(
       local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
 }
 
+void SimTest::InitializePrerenderPageRoot() {
+  web_view_helper_->InitializeWithOpener(
+      /*opener=*/nullptr,
+      /*frame_client=*/nullptr,
+      /*view_client=*/nullptr,
+      /*update_settings_func=*/nullptr,
+      /*fenced_frame_mode=*/std::nullopt,
+      /*is_prerendering=*/true);
+  compositor_->SetWebView(WebView());
+  page_->SetPage(WebView().GetPage());
+  web_frame_client_ =
+      std::make_unique<frame_test_helpers::TestWebFrameClient>();
+  local_frame_root_ = WebView().MainFrameImpl();
+  compositor_->SetLayerTreeHost(
+      local_frame_root_->FrameWidgetImpl()->LayerTreeHostForTesting());
+}
+
 void SimTest::LoadURL(const String& url_string) {
   KURL url(url_string);
   frame_test_helpers::LoadFrameDontWait(local_frame_root_.Get(), url);

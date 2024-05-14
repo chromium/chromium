@@ -39,6 +39,9 @@ class SimTest : public testing::Test {
   void InitializeFencedFrameRoot(
       blink::FencedFrame::DeprecatedFencedFrameMode mode);
 
+  // Creates a WebView that is prerendered.
+  void InitializePrerenderPageRoot();
+
   // Load URL in the local frame root.
   void LoadURL(const String& url);
 

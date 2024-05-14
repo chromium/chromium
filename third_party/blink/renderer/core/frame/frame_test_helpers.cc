@@ -435,11 +435,12 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
     WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*),
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+        fenced_frame_mode,
+    bool is_prerendering) {
   Reset();
 
   InitializeWebView(web_view_client, opener ? opener->View() : nullptr,
-                    fenced_frame_mode);
+                    fenced_frame_mode, is_prerendering);
   if (update_settings_func)
     update_settings_func(web_view_->GetSettings());
 
@@ -539,7 +540,9 @@ WebViewHelper::InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver) {
   Reset();
 
-  InitializeWebView(web_view_client, nullptr, std::nullopt);
+  InitializeWebView(web_view_client, /*opener=*/nullptr,
+                    /*fenced_frame_mode=*/std::nullopt,
+                    /*is_prerendering=*/false);
 
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
@@ -714,7 +717,8 @@ void WebViewHelper::InitializeWebView(
     WebViewClient* web_view_client,
     class WebView* opener,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+        fenced_frame_mode,
+    bool is_prerendering) {
   auto browsing_context_group_info = BrowsingContextGroupInfo::CreateUnique();
   if (opener) {
     WebViewImpl* opener_impl = To<WebViewImpl>(opener);
@@ -725,8 +729,8 @@ void WebViewHelper::InitializeWebView(
       CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
   web_view_ = To<WebViewImpl>(
       WebView::Create(web_view_client,
-                      /*is_hidden=*/false,
-                      /*is_prerendering=*/false,
+                      /*is_hidden=*/is_prerendering,
+                      /*is_prerendering=*/is_prerendering,
                       /*is_inside_portal=*/false,
                       /*fenced_frame_mode=*/fenced_frame_mode,
                       /*compositing_enabled=*/true,

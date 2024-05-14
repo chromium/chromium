@@ -342,7 +342,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient* = nullptr,
       void (*update_settings_func)(WebSettings*) = nullptr,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-          fenced_frame_mode = std::nullopt);
+          fenced_frame_mode = std::nullopt,
+      bool is_prerendering = false);
 
   // Same as InitializeWithOpener(), but always sets the opener to null.
   WebViewImpl* Initialize(TestWebFrameClient* = nullptr,
@@ -479,7 +480,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient*,
       class WebView* opener,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-          fenced_frame_mode);
+          fenced_frame_mode,
+      bool is_prerendering);
   void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
 
   bool viewport_enabled_ = false;

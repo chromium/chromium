@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -821,6 +823,39 @@ TEST_F(ResizableLocalFrameViewTest, FocusedElementStaysOnResizeWithCQ) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(element, GetDocument().FocusedElement());
+}
+
+class PrerenderLocalFrameViewTest : public base::test::WithFeatureOverride,
+                                    public SimTest {
+ public:
+  PrerenderLocalFrameViewTest()
+      : base::test::WithFeatureOverride(
+            features::kPrerender2EarlyDocumentLifecycleUpdate) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PrerenderLocalFrameViewTest);
+
+TEST_P(PrerenderLocalFrameViewTest, RunPrePaintLifecyclePhaseBeforeActivation) {
+  InitializePrerenderPageRoot();
+  ASSERT_TRUE(GetDocument().IsPrerendering());
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"(
+    <body>
+    This is a prerendering page.
+    </body>
+  )");
+
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2EarlyDocumentLifecycleUpdate)) {
+    EXPECT_EQ(DocumentLifecycle::kPrePaintClean,
+              GetDocument().Lifecycle().GetState());
+    EXPECT_FALSE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
+  } else {
+    EXPECT_EQ(DocumentLifecycle::kLayoutClean,
+              GetDocument().Lifecycle().GetState());
+    EXPECT_TRUE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
+  }
 }
 
 }  // namespace

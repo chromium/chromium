@@ -421,6 +421,8 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
     case DocumentUpdateReason::kTest:
     // Don't report if we don't know why.
     case DocumentUpdateReason::kUnknown:
+    // TODO(https://crbug.com/336963892): Give prerender a dedicated metric.
+    case DocumentUpdateReason::kPrerender:
       break;
   }
 
