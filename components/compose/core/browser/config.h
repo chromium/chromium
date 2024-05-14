@@ -68,7 +68,7 @@ struct Config {
   bool proactive_nudge_bypass_optimization_guide = false;
 
   // Uses segmentation platform to predict nudge utility.
-  bool proactive_nudge_segmentation = false;
+  bool proactive_nudge_segmentation = true;
 
   // How long to wait to show the proactive nudge.
   base::TimeDelta proactive_nudge_delay = base::Seconds(3);

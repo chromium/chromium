@@ -204,8 +204,6 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     compose::ResetConfigForTesting();
-    compose::GetMutableConfigForTesting().proactive_nudge_show_probability =
-        1.0;
   }
 
   CustomMockOptimizationGuideKeyedService& opt_guide() { return *opt_guide_; }
@@ -1175,38 +1173,3 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
       1);
 }
 
-TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledByRandomness) {
-  ResetFeaturesAndConfig({compose::features::kEnableComposeProactiveNudge}, {});
-  base::HistogramTester histogram_tester;
-  // Enable the feature.
-  auto scoped_compose_enabled =
-      ComposeEnabling::ScopedEnableComposeForTesting();
-  std::string autocomplete_attribute;
-
-  EXPECT_TRUE(
-      compose_enabling_
-          ->ShouldTriggerPopup(
-              autocomplete_attribute, GetProfile(), GetProfile()->GetPrefs(),
-              mock_translate_manager_.get(),
-              /*ongoing_session=*/false, GetOrigin(), GetOrigin(),
-              GURL(kExampleURL),
-              autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange,
-              /*is_msbb_enabled*/ true)
-          .has_value());
-
-  compose::GetMutableConfigForTesting().proactive_nudge_show_probability = 0;
-  EXPECT_FALSE(
-      compose_enabling_
-          ->ShouldTriggerPopup(
-              autocomplete_attribute, GetProfile(), GetProfile()->GetPrefs(),
-              mock_translate_manager_.get(),
-              /*ongoing_session=*/false, GetOrigin(), GetOrigin(),
-              GURL(kExampleURL),
-              autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange,
-              /*is_msbb_enabled*/ true)
-          .has_value());
-
-  histogram_tester.ExpectBucketCount(
-      compose::kComposeProactiveNudgeShowStatus,
-      compose::ComposeShowStatus::kRandomlyBlocked, 1);
-}

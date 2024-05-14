@@ -3,6 +3,7 @@
 *CachedResultProviderTest.*
 *CachedResultWriterTest.*
 *ClientResultPrefsTest.*
+*ComposePromotionTest.*
 *ConfigParserTest.*
 *ContextualPageActionsModelTest.*
 *CrossDeviceUserModelTest.*
