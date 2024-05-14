@@ -574,6 +574,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       VAConfigAttrib attrib{};
       attrib.type = VAConfigAttribEncQualityRange;
       {
+        VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(wrapper->sequence_checker_);
         base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
         VAStatus va_res = vaGetConfigAttributes(
             wrapper->va_display_, va_profile, entrypoint, &attrib, 1);
@@ -592,6 +593,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       // |pending_va_buffers_| that, when mapped, looks correct. That buffer
       // should be created by CreateContext().
       ASSERT_TRUE(wrapper->CreateContext(gfx::Size(640, 368)));
+      VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(wrapper->sequence_checker_);
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
         base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
@@ -860,6 +862,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   // Request the underlying DRM metadata for |scoped_va_surface|.
   VADRMPRIMESurfaceDescriptor va_descriptor{};
   {
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(wrapper->sequence_checker_);
     base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
     VAStatus va_res =
         vaSyncSurface(wrapper->va_display_, scoped_va_surface->id());
@@ -895,6 +898,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
               base::checked_cast<uint32_t>(2 * uv_width * uv_height));
   }
 
+  VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(wrapper->sequence_checker_);
   base::AutoLockMaybe auto_lock(wrapper->va_lock_.get());
   const std::string va_vendor_string
          = vaQueryVendorString(wrapper->va_display_);

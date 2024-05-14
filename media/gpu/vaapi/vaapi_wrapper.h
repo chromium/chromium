@@ -49,6 +49,14 @@ class Rect;
   if (lock)                         \
     lock->AssertAcquired()
 
+#if DCHECK_IS_ON()
+#define VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker) \
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker)
+#else
+#define VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker) \
+  CHECK(sequence_checker.CalledOnValidSequence())
+#endif
+
 namespace media {
 constexpr unsigned int kInvalidVaRtFormat = 0u;
 
@@ -148,15 +156,6 @@ class VADisplayStateHandle {
 // It is also responsible for managing and freeing VABuffers (not VASurfaces),
 // which are used to queue parameters and slice data to the HW codec,
 // as well as underlying memory for VASurfaces themselves.
-//
-// Historical note: the sequence affinity characteristic was introduced as a
-// pre-requisite to remove the global *|va_lock_|. However, the legacy
-// VaapiVideoDecodeAccelerator is known to use its VaapiWrapper from multiple
-// threads. Therefore, to avoid doing a large refactoring of a legacy class, we
-// allow it to call VaapiWrapper::Create() or
-// VaapiWrapper::CreateForVideoCodec() with |enforce_sequence_affinity| == false
-// so that sequence affinity is not enforced. This also indicates that the
-// global lock will still be in effect for the VaapiVideoDecodeAccelerator.
 class MEDIA_GPU_EXPORT VaapiWrapper
     : public base::RefCountedThreadSafe<VaapiWrapper> {
  public:
@@ -471,8 +470,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // be the size of the type of |*data|.
   template <typename T>
   [[nodiscard]] bool SubmitBuffer(VABufferType va_buffer_type, const T* data) {
-    CHECK(!enforce_sequence_affinity_ ||
-          sequence_checker_.CalledOnValidSequence());
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return SubmitBuffer(va_buffer_type, sizeof(T), data);
   }
   // Batch-version of SubmitBuffer(), where the lock for accessing libva is
@@ -693,45 +691,53 @@ class MEDIA_GPU_EXPORT VaapiWrapper
 
   // This is declared before |va_display_| and |va_lock_| to guarantee their
   // validity for as long as the VaapiWrapper is alive.
-  VADisplayStateHandle va_display_state_handle_;
+  VADisplayStateHandle va_display_state_handle_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If using a global VA lock, this is a pointer to VADisplayStateSingleton's
   // member |va_lock_|. Guaranteed to be valid for the lifetime of the
   // VaapiWrapper due to the |va_display_state_handle_| above.
-  raw_ptr<base::Lock> va_lock_;
+  raw_ptr<base::Lock> va_lock_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Guaranteed to be valid for the lifetime of the VaapiWrapper due to the
   // |va_display_state_handle_| above.
-  VADisplay va_display_ GUARDED_BY(va_lock_);
+  VADisplay va_display_ GUARDED_BY(va_lock_)
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // VA handles.
   // All valid after successful Initialize() and until Deinitialize().
-  VAConfigID va_config_id_{VA_INVALID_ID};
+  VAConfigID va_config_id_ GUARDED_BY_CONTEXT(sequence_checker_){VA_INVALID_ID};
   // Created in CreateContext() or CreateContextAndSurfaces() and valid until
   // DestroyContext() or DestroyContextAndSurfaces().
-  VAContextID va_context_id_{VA_INVALID_ID};
+  VAContextID va_context_id_ GUARDED_BY_CONTEXT(sequence_checker_){
+      VA_INVALID_ID};
 
   // Profile and entrypoint configured for the corresponding |va_context_id_|.
-  VAProfile va_profile_;
-  VAEntrypoint va_entrypoint_;
+  VAProfile va_profile_ GUARDED_BY_CONTEXT(sequence_checker_);
+  VAEntrypoint va_entrypoint_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Data queued up for HW codec, to be committed on next execution.
   // TODO(b/166646505): let callers manage the lifetime of these buffers.
-  std::vector<VABufferID> pending_va_buffers_;
+  std::vector<VABufferID> pending_va_buffers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // VA buffer to be used for kVideoProcess. Allocated the first time around,
   // and reused afterwards.
-  std::unique_ptr<ScopedVABuffer> va_buffer_for_vpp_;
+  std::unique_ptr<ScopedVABuffer> va_buffer_for_vpp_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For protected decode mode.
-  VAConfigID va_protected_config_id_{VA_INVALID_ID};
-  VAProtectedSessionID va_protected_session_id_{VA_INVALID_ID};
+  VAConfigID va_protected_config_id_ GUARDED_BY_CONTEXT(sequence_checker_){
+      VA_INVALID_ID};
+  VAProtectedSessionID va_protected_session_id_
+      GUARDED_BY_CONTEXT(sequence_checker_){VA_INVALID_ID};
 #endif
 
   // Called to report codec errors to UMA. Errors to clients are reported via
   // return values from public methods.
-  ReportErrorToUMACB report_error_to_uma_cb_;
+  ReportErrorToUMACB report_error_to_uma_cb_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace media

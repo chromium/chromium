@@ -88,6 +88,7 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
     // On Stoney-Ridge devices the output image format is dependent on the
     // surface format. However when context has not been executed the output
     // image format seems to default to I420. https://crbug.com/828119
@@ -116,6 +117,7 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
     VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
     EXPECT_DCHECK_DEATH(ScopedVAImage::Create(
@@ -134,6 +136,7 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 // This test exercises creation of a ScopedVABufferMapping with bad VABufferIDs.
 TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
+  VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
   base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
 
   // A ScopedVABufferMapping with a VA_INVALID_ID VABufferID is DCHECK()ed.
