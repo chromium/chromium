@@ -194,7 +194,7 @@ WebViewSyncClient::GetExtensionsActivity() {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 WebViewSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 }
 

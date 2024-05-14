@@ -40,7 +40,7 @@ IOSParcelTrackingOptInStatus OptInStatusForItemType(ItemType item_type) {
       return IOSParcelTrackingOptInStatus::kNeverTrack;
     }
     case kFooterItem:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IOSParcelTrackingOptInStatus::kNeverTrack;
   }
 }

@@ -99,7 +99,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
     case DebugCommandsSection:
       return DebugCommandsRowsCount;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }
@@ -137,7 +137,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
@@ -175,12 +175,12 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         }
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -201,7 +201,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           [self.delegate showAllItems];
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
@@ -224,12 +224,12 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           [self clearAndReindexTopSites];
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

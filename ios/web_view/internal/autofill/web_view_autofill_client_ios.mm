@@ -192,7 +192,7 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
 
 void WebViewAutofillClientIOS::ShowAutofillSettings(
     FillingProduct main_filling_product) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
@@ -227,7 +227,7 @@ void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
     AddressProfileSavePromptCallback on_user_decision_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
@@ -235,7 +235,7 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
@@ -243,18 +243,18 @@ bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
 }
 
 void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebViewAutofillClientIOS::ShowAutofillSuggestions(

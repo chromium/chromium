@@ -124,7 +124,8 @@
     case kOmniboxPosition:
     case kDockingPromo:
     case kStepsCompleted:
-      NOTREACHED() << "Type of screen not supported." << static_cast<int>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Type of screen not supported." << static_cast<int>(type);
       break;
   }
   return nil;

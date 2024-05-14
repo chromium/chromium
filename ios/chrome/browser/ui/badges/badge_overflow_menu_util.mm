@@ -92,13 +92,15 @@ UIAction* GetOverflowMenuElementForBadgeType(
                                          kInfobarSymbolPointSize);
       break;
     case kBadgeTypeIncognito:
-      NOTREACHED() << "An overflow menu badge should not be an Incognito badge";
+      NOTREACHED_IN_MIGRATION()
+          << "An overflow menu badge should not be an Incognito badge";
       break;
     case kBadgeTypeOverflow:
-      NOTREACHED() << "A overflow menu badge should not be an overflow badge";
+      NOTREACHED_IN_MIGRATION()
+          << "A overflow menu badge should not be an overflow badge";
       break;
     case kBadgeTypeNone:
-      NOTREACHED() << "A badge should not have kBadgeTypeNone";
+      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
       break;
   }
 

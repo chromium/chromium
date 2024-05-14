@@ -437,9 +437,10 @@ using SaveSessionCallback =
                                              sessionPath:sessionPath];
                           }));
   } @catch (NSException* exception) {
-    NOTREACHED() << "Error serializing session for path: "
-                 << base::SysNSStringToUTF8(sessionPath) << ": "
-                 << base::SysNSStringToUTF8([exception description]);
+    NOTREACHED_IN_MIGRATION()
+        << "Error serializing session for path: "
+        << base::SysNSStringToUTF8(sessionPath) << ": "
+        << base::SysNSStringToUTF8([exception description]);
     return;
   }
 }
@@ -472,9 +473,9 @@ using SaveSessionCallback =
   }
 
   if (!isDirectory) {
-    NOTREACHED() << "Error creating destination directory: "
-                 << base::SysNSStringToUTF8(directory) << ": "
-                 << "file exists and is not a directory.";
+    NOTREACHED_IN_MIGRATION() << "Error creating destination directory: "
+                              << base::SysNSStringToUTF8(directory) << ": "
+                              << "file exists and is not a directory.";
     return;
   }
 

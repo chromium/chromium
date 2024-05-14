@@ -191,7 +191,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     default:
       // Not a switch.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

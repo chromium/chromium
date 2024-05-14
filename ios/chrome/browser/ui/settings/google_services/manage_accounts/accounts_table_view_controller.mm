@@ -500,7 +500,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

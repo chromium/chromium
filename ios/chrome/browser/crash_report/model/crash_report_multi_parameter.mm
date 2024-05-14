@@ -69,7 +69,7 @@ const int kMaximumMultiParameterValueSize = 256;
   std::string stateAsJson;
   base::JSONWriter::Write(_dictionary, &stateAsJson);
   if (stateAsJson.length() > (kMaximumMultiParameterValueSize - 1)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   _key->Set(stateAsJson);

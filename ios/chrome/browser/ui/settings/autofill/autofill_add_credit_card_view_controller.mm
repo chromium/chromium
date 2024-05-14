@@ -244,7 +244,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardNickname:
       return YES;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NO;
 }
 

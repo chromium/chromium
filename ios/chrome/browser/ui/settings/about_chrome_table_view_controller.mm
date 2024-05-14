@@ -153,7 +153,7 @@ const CGFloat kDefaultHeight = 70;
       break;
     case ItemTypeVersion:
       // Version is a footer, it is not interactable.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

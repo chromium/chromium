@@ -112,11 +112,11 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
       return base::FeatureList::IsEnabled(kOmniboxLockIconEnabled) ? SECURE
                                                                    : NONE;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "SECURE_WITH_POLICY_INSTALLED_CERT is used only on ChromeOS";
       return NONE;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LOCATION_BAR_SECURITY_ICON_TYPE_COUNT;
   }
 }

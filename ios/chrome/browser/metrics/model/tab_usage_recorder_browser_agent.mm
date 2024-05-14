@@ -503,7 +503,7 @@ void TabUsageRecorderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
   // itself from WebStates' WebStateObservers when notified by WebStateList
   // that a WebState is removed, so it should never notice WebStateDestroyed
   // event. Thus the implementation enforces this with NOTREACHED().
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #pragma mark - WebStateListObserver

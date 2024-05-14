@@ -327,7 +327,7 @@
     }
     default:
       // Not a switch.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -345,7 +345,7 @@
     case ItemIdentifierTips:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

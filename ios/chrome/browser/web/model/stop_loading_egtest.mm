@@ -52,7 +52,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
     } else if (request.url == GetInfinitePendingResponseUrl()) {
       base::PlatformThread::Sleep(base::Days(1));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

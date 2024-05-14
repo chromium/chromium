@@ -98,7 +98,7 @@ bool IsSigninControllableByUser(const PrefService* prefService) {
     case BrowserSigninMode::kForced:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -113,7 +113,7 @@ bool GetStatusForSigninPolicy() {
     case BrowserSigninMode::kDisabled:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -544,7 +544,7 @@ bool GetStatusForSigninPolicy() {
     case BetterSearchAndBrowsingManagedItemType:
     case ImproveChromeManagedItemType:
     case ImproveSearchSuggestionsManagedItemType:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ParcelTrackingItemType:
       break;

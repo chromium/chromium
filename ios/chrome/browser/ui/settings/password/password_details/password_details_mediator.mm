@@ -373,23 +373,23 @@ bool ShouldDisplayCredentialAsMuted(
             (PasswordDetailsTableViewController*)viewController
                 didAddPasswordDetails:(NSString*)username
                              password:(NSString*)password {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)checkForDuplicates:(NSString*)username {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)showExistingCredential:(NSString*)username {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)didCancelAddPasswordDetails {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)setWebsiteURL:(NSString*)website {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (BOOL)isURLValid {

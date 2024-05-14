@@ -58,7 +58,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
     case kBadgeTypeParcelTracking:
       return [self parcelTrackingBadgeButton];
     case kBadgeTypeNone:
-      NOTREACHED() << "A badge should not have kBadgeTypeNone";
+      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
       return nil;
   }
 }

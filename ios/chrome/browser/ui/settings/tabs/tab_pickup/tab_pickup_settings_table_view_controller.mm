@@ -285,7 +285,7 @@ enum ItemType {
     }
     case TabSyncState::kEnabled:
     case TabSyncState::kDisabled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Disable the button when showing the bubble.

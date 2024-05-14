@@ -46,7 +46,7 @@ void IOSTrustedVaultClient::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   // Not used on iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void IOSTrustedVaultClient::MarkLocalKeysAsStale(
@@ -72,7 +72,7 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
     int method_type_hint,
     base::OnceClosure callback) {
   // Not used on iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void IOSTrustedVaultClient::ClearLocalDataForAccount(

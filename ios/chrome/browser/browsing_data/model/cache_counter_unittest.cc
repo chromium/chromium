@@ -209,7 +209,7 @@ class CacheCounterTest : public PlatformTest {
         }
 
         case STEP_DONE: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }
     }

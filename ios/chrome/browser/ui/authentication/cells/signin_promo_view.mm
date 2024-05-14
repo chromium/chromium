@@ -414,7 +414,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 #pragma mark - NSObject(Accessibility)
 
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (NSString*)accessibilityLabel {

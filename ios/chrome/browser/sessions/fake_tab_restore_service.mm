@@ -47,26 +47,26 @@ std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
 }
 
 void FakeTabRestoreService::BrowserClosing(sessions::LiveTabContext* context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeTabRestoreService::BrowserClosed(sessions::LiveTabContext* context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeTabRestoreService::CreateHistoricalGroup(
     sessions::LiveTabContext* context,
     const tab_groups::TabGroupId& group) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeTabRestoreService::GroupClosed(const tab_groups::TabGroupId& group) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeTabRestoreService::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeTabRestoreService::ClearEntries() {
@@ -74,7 +74,7 @@ void FakeTabRestoreService::ClearEntries() {
 
 void FakeTabRestoreService::DeleteNavigationEntries(
     const DeletionPredicate& predicate) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const FakeTabRestoreService::Entries& FakeTabRestoreService::entries() const {
@@ -83,7 +83,7 @@ const FakeTabRestoreService::Entries& FakeTabRestoreService::entries() const {
 
 std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreMostRecentEntry(
     sessions::LiveTabContext* context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<sessions::LiveTab*>();
 }
 
@@ -100,16 +100,16 @@ std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreEntryById(
     sessions::LiveTabContext* context,
     SessionID session_id,
     WindowOpenDisposition disposition) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<sessions::LiveTab*>();
 }
 
 void FakeTabRestoreService::LoadTabsFromLastSession() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeTabRestoreService::IsLoaded() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -117,7 +117,7 @@ void FakeTabRestoreService::DeleteLastSession() {
 }
 
 bool FakeTabRestoreService::IsRestoring() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

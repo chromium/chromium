@@ -123,7 +123,7 @@ WhatsNewType WhatsNewTypeFromInt(int type) {
   const int max_value = static_cast<int>(WhatsNewType::kMaxValue);
 
   if (min_value > type || type > max_value) {
-    NOTREACHED() << "unexpected type: " << type;
+    NOTREACHED_IN_MIGRATION() << "unexpected type: " << type;
     return WhatsNewType::kError;
   }
 
@@ -135,7 +135,7 @@ WhatsNewPrimaryAction WhatsNewPrimaryActionFromInt(int type) {
   const int max_value = static_cast<int>(WhatsNewPrimaryAction::kMaxValue);
 
   if (min_value > type || type > max_value) {
-    NOTREACHED() << "unexpected type: " << type;
+    NOTREACHED_IN_MIGRATION() << "unexpected type: " << type;
     return WhatsNewPrimaryAction::kError;
   }
 

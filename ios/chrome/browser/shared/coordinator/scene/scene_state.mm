@@ -241,7 +241,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
                        errorHandler:^(NSError* error) {
                          LOG(ERROR) << base::SysNSStringToUTF8(
                              error.localizedDescription);
-                         NOTREACHED();
+                         NOTREACHED_IN_MIGRATION();
                        }];
 }
 

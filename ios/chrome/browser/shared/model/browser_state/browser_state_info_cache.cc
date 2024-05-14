@@ -76,7 +76,7 @@ void BrowserStateInfoCache::RemoveBrowserState(
   size_t browser_state_index =
       GetIndexOfBrowserStateWithPath(browser_state_path);
   if (browser_state_index == std::string::npos) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);

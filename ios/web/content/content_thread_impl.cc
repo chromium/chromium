@@ -47,7 +47,7 @@ content::BrowserThread::ID MapWebToBrowserID(WebThread::ID identifier) {
   if (identifier == WebThread::IO) {
     return content::BrowserThread::IO;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return content::BrowserThread::UI;  // default?
 }
 

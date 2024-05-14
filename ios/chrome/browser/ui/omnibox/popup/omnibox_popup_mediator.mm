@@ -328,8 +328,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       _delegate->OnMatchSelectedForAppending(match);
     }
   } else {
-    NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
-                 << " not handled for trailing button tap.";
+    NOTREACHED_IN_MIGRATION()
+        << "Suggestion type " << NSStringFromClass(suggestion.class)
+        << " not handled for trailing button tap.";
   }
 }
 

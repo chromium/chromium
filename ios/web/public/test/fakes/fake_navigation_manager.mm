@@ -16,7 +16,7 @@ BrowserState* FakeNavigationManager::GetBrowserState() const {
 }
 
 WebState* FakeNavigationManager::GetWebState() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -59,7 +59,7 @@ void FakeNavigationManager::LoadIfNecessary() {
 
 void FakeNavigationManager::AddTransientURLRewriter(
     BrowserURLRewriter::URLRewriter rewriter) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int FakeNavigationManager::GetItemCount() const {
@@ -105,7 +105,7 @@ bool FakeNavigationManager::CanGoForward() const {
 }
 
 bool FakeNavigationManager::CanGoToOffset(int offset) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -118,7 +118,7 @@ void FakeNavigationManager::GoForward() {
 }
 
 void FakeNavigationManager::GoToIndex(int index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeNavigationManager::Reload(ReloadType reload_type,
@@ -154,7 +154,7 @@ std::vector<NavigationItem*> FakeNavigationManager::GetForwardItems() const {
 void FakeNavigationManager::Restore(
     int last_committed_item_index,
     std::vector<std::unique_ptr<NavigationItem>> items) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeNavigationManager::IsRestoreSessionInProgress() const {
@@ -163,7 +163,7 @@ bool FakeNavigationManager::IsRestoreSessionInProgress() const {
 
 void FakeNavigationManager::AddRestoreCompletionCallback(
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Adds a new navigation item of `transition` type at the end of this

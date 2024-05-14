@@ -37,7 +37,7 @@ Destination DestinationForStringName(std::string destination) {
   } else if (destination == "overflow_menu::Destination::SpotlightDebugger") {
     return overflow_menu::Destination::SpotlightDebugger;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // Randomly chosen destination which should never be returned due to
     // NOTREACHED() above.
     return overflow_menu::Destination::Settings;

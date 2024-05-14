@@ -650,7 +650,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setTopCellView:(UIView*)topCellView {
   // The top cell view is `topBar` and can't be changed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (UIView*)topCellView {
@@ -666,7 +666,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setMainCellView:(UIView*)mainCellView {
   // The main cell view is the snapshot view and can't be changed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (UIView*)mainCellView {

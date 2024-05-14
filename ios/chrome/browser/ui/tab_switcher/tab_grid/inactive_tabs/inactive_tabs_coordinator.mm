@@ -331,7 +331,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewControllerDidMoveItem:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
@@ -368,17 +368,17 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewControllerDropAnimationWillBegin:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)gridViewControllerDropAnimationDidEnd:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
@@ -483,17 +483,17 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
     handlerForSettings {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
 - (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

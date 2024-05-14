@@ -133,7 +133,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
       ShowSignin();
       break;
     case TipsNotificationType::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

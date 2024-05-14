@@ -55,7 +55,7 @@ CGFloat LeadingDistance(CGPoint anchor_point,
           leading_offset = bubble_width - bubble_alignment_offset;
           break;
         default:
-          NOTREACHED() << "Invalid bubble alignment " << alignment;
+          NOTREACHED_IN_MIGRATION() << "Invalid bubble alignment " << alignment;
           break;
       }
       break;
@@ -158,7 +158,7 @@ CGFloat BubbleMaxWidth(CGFloat anchor_point_x,
               bubble_alignment_offset;
           break;
         default:
-          NOTREACHED() << "Invalid bubble alignment " << alignment;
+          NOTREACHED_IN_MIGRATION() << "Invalid bubble alignment " << alignment;
           break;
       }
       break;

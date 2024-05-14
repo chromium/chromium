@@ -282,7 +282,7 @@ UIView* IconInSquare(NSString* symbol,
     }
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
   }
 }

@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   switch (self.state) {
     case IdentityChooserCoordinatorStateNotStarted:
     case IdentityChooserCoordinatorStateClosedByDismiss:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case IdentityChooserCoordinatorStateStarted:
       // Dismissing the identity chooser dialog should be the same as accepting

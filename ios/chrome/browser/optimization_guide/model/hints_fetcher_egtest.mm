@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
              optimization_guide::HintsFetcherRemoteResponseType::kHung) {
     return std::make_unique<net::test_server::HungResponse>();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return std::move(response);

@@ -48,7 +48,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
       case PushNotificationClientId::kTips:
       case PushNotificationClientId::kCommerce:
         // Features do not support feedback.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       default:
         break;

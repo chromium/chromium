@@ -411,7 +411,7 @@ class UpgradeInfoBarDismissObserver
     // The application may crash if the URL is invalid. As the URL is defined
     // externally to the application it needs to bail right away and ignore the
     // upgrade notification.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -419,7 +419,7 @@ class UpgradeInfoBarDismissObserver
       !base::Version(details.next_version).IsValid()) {
     // If the upgrade version is not known or is invalid just ignore the
     // upgrade notification.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

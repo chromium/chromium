@@ -41,7 +41,7 @@ favicon::FaviconService* FaviconServiceFactory::GetForBrowserState(
   }
 
   // ChromeBrowserState is OffTheRecord without access.
-  NOTREACHED() << "ChromeBrowserState is OffTheRecord";
+  NOTREACHED_IN_MIGRATION() << "ChromeBrowserState is OffTheRecord";
   return nullptr;
 }
 

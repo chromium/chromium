@@ -1226,7 +1226,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       sectionIndex++;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

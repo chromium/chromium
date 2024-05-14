@@ -1977,7 +1977,7 @@ bool IsBookmarked(const GURL& url,
     case overflow_menu::ActionType::Help:
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
     case overflow_menu::ActionType::Follow:
       return [self newFollowAction];

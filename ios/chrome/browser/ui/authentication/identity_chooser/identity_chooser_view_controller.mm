@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           identityChooserViewControllerDidTapOnAddAccount:self];
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

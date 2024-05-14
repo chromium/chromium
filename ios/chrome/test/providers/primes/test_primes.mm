@@ -15,22 +15,22 @@ bool IsPrimesSupported() {
 
 void PrimesStartLogging() {
   // Primes is not supported for tests.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrimesStopLogging() {
   // Primes is not supported for tests.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrimesAppReady() {
   // Primes is not supported for tests.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrimesTakeMemorySnapshot(NSString* eventName) {
   // Primes is not used by Chromium
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace provider

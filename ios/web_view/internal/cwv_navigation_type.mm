@@ -53,8 +53,9 @@ CWVNavigationType CWVNavigationTypeFromPageTransition(
       // The compiler cannot do this check automatically because
       // ui::PageTransition contains both core values and qualifiers while only
       // core values are enumerated here.
-      NOTREACHED() << "Unknown core value of ui::PageTransition. Update "
-                      "CWVNavigationTypeFromUIPageTransition() to add one.";
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown core value of ui::PageTransition. Update "
+             "CWVNavigationTypeFromUIPageTransition() to add one.";
   }
 
   if (ui_page_transition & ui::PAGE_TRANSITION_BLOCKED) {

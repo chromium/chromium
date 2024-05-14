@@ -327,7 +327,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
       return [NSIndexPath indexPathForItem:itemIndex inSection:section];
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
@@ -349,7 +349,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
         DCHECK_LT(0ul, items.count);
         return 1;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return items.count;
 }

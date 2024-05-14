@@ -268,11 +268,11 @@ IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::DEVICE_INFO:
     case syncer::READING_LIST:
     case syncer::SESSIONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
   }
 }

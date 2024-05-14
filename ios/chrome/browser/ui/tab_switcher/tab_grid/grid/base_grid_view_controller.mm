@@ -846,7 +846,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       break;
     }
     case GridItemType::SuggestedActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -872,7 +872,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent, dragEvent);
       break;
     case GridItemType::SuggestedActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -921,7 +921,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
             dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
         break;
       case GridItemType::SuggestedActions:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     if (!dragItem) {
@@ -1605,7 +1605,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
     case TabGridModeSelection:
     case TabGridModeGroup:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case TabGridModeSearch:
       registration = self.gridHeaderRegistration;
@@ -1840,7 +1840,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       break;
     }
     case GridItemType::SuggestedActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

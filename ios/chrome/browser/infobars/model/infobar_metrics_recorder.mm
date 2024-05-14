@@ -358,7 +358,7 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeTailoredSecurityService:
       // TailoredSecurityService infobar doesn't have a badge.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBadgeTappedHistogram, state);

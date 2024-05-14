@@ -188,7 +188,7 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
   } else {
-    NOTREACHED();  // Missing breadcrumbs for the dialog.
+    NOTREACHED_IN_MIGRATION();  // Missing breadcrumbs for the dialog.
   }
 
   if (!initial_presentation) {

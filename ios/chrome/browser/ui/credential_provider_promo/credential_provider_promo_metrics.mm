@@ -51,7 +51,7 @@ void RecordAction(IOSCredentialProviderPromoSource source,
                  : kIOSCredentialProviderPromoOnSetUpListHistogram;
       break;
     case IOSCredentialProviderPromoSource::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       name = is_reminder
                  ? "IOS.CredentialProviderExtension.Promo.Unknown.IsReminder"
                  : "IOS.CredentialProviderExtension.Promo.Unknown";

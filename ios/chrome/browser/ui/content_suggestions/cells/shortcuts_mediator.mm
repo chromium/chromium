@@ -147,7 +147,7 @@
       [self.dispatcher showWhatsNew];
       break;
     case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return;

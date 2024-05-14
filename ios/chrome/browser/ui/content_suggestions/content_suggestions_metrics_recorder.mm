@@ -116,7 +116,7 @@ const float kMaxModuleEngagementIndex = 50;
       base::RecordAction(base::UserMetricsAction(kShowWhatsNewAction));
       break;
     case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -44,7 +44,7 @@ network::mojom::ReferrerPolicy ToContentReferrerPolicy(ReferrerPolicy policy) {
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
       return network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return network::mojom::ReferrerPolicy::kDefault;
 }

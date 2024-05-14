@@ -2104,7 +2104,7 @@ using UserFeedbackDataCallback =
   }
 
   if (self.currentInterface.incognito) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (self.settingsNavigationController) {

@@ -83,7 +83,7 @@
       break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   };
 }

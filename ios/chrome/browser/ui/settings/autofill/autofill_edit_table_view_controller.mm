@@ -131,7 +131,8 @@
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED() << "The typing shield should only be present on web";
+  NOTREACHED_IN_MIGRATION()
+      << "The typing shield should only be present on web";
 }
 
 #pragma mark - Helper methods
@@ -192,7 +193,7 @@
 }
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return YES;
 }
 

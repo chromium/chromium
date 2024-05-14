@@ -107,7 +107,7 @@
 }
 
 - (void)presentPushNotificationPermissionAlert {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #pragma mark - NotificationsOptInAlertCoordinatorDelegate

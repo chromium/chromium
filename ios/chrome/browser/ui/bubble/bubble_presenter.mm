@@ -744,7 +744,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
                                kIPHiOSSwipeToolbarToChangeTabFeature
                 withSnooze:snoozeAction];
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -758,7 +758,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   } else if (view == self.toolbarSwipeGestureIPH) {
     // Do nothing. Swipe happens outside of the view.
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

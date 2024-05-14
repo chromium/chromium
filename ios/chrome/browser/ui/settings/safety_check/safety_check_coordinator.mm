@@ -209,7 +209,7 @@ using password_manager::WarningType;
 
 - (void)showUpdateAtLocation:(NSString*)location {
   if (!location) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const GURL url(base::SysNSStringToUTF8(location));

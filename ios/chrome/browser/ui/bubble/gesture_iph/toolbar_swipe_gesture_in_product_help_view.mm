@@ -90,7 +90,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
   switch (self.animatingDirection) {
     case UISwipeGestureRecognizerDirectionUp:
     case UISwipeGestureRecognizerDirectionDown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
     case UISwipeGestureRecognizerDirectionLeft:
     case UISwipeGestureRecognizerDirectionRight:

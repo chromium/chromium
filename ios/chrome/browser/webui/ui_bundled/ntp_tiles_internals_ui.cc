@@ -80,7 +80,7 @@ bool IOSNTPTilesInternalsMessageHandlerBridge::DoesSourceExist(
     case ntp_tiles::TileSource::ALLOWLIST:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

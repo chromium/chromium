@@ -311,7 +311,7 @@ using web::NavigationManager;
   // The WebState is owned by the current instance, and the observer bridge
   // is unregistered before the WebState is destroyed, so this event should
   // never happen.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 @end

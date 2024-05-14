@@ -1278,7 +1278,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
       break;
     }
@@ -2184,7 +2184,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)reportBackUserAction {
   // Not called for root settings controller.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)settingsWillBeDismissed {
@@ -2391,7 +2391,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
             : l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION);
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

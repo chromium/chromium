@@ -172,7 +172,7 @@
       return interaction;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
     }
   }

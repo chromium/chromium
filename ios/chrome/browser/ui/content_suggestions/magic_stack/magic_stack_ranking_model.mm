@@ -107,7 +107,7 @@
         _safetyCheckMediator.delegate = self;
       } else {
         // Known module mediators need to be handled.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -477,7 +477,7 @@
       default:
         // These module types should not have been added by the logic
         // receiving the order list from Segmentation.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -540,7 +540,7 @@
       default:
         // These module types should not have been added by the logic
         // receiving the order list from Segmentation.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

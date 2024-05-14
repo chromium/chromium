@@ -797,7 +797,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -819,7 +819,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -832,7 +832,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

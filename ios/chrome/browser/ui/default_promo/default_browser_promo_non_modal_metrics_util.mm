@@ -37,7 +37,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
       // No-op.
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -107,7 +107,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
 
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

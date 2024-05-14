@@ -25,8 +25,9 @@ BOOL IsDefaultSettingValueValid(id value) {
   if ([value isKindOfClass:[NSString class]])
     return [value length] == 0;
   // Add support for other types as necessary.
-  NOTREACHED() << "Unhandled value type "
-               << base::SysNSStringToUTF8(NSStringFromClass([value class]));
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled value type "
+      << base::SysNSStringToUTF8(NSStringFromClass([value class]));
   return NO;
 }
 }  // namespace

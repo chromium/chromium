@@ -255,7 +255,7 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
                        IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON);
     }
     case BUTTON_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }

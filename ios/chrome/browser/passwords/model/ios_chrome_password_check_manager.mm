@@ -78,7 +78,7 @@ PasswordCheckState ConvertBulkCheckState(State state) {
     case State::kServiceError:
       return PasswordCheckState::kOther;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PasswordCheckState::kIdle;
 }
 }  // namespace

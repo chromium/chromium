@@ -255,7 +255,7 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
 
 void ChromeAutofillClientIOS::ShowAutofillSettings(
     FillingProduct main_filling_product) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 payments::MandatoryReauthManager*
@@ -396,18 +396,18 @@ bool ChromeAutofillClientIOS::HasCreditCardScanFeature() const {
 }
 
 void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const CreditCard> cards_to_suggest) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSuggestions(

@@ -727,7 +727,7 @@
       case SetUpListItemType::kFollow:
       case SetUpListItemType::kAllSet:
         // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   };
 

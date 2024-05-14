@@ -57,38 +57,38 @@ void ChromiumTrustedVaultClientBackend::
 
 void ChromiumTrustedVaultClientBackend::FetchKeys(id<SystemIdentity> identity,
                                                   KeyFetchedCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
     UIViewController* presenting_view_controller,
     CompletionBlock callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::FixDegradedRecoverability(
     id<SystemIdentity> identity,
     UIViewController* presenting_view_controller,
     CompletionBlock callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::CancelDialog(BOOL animated,
                                                      ProceduralBlock callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
@@ -100,7 +100,7 @@ void ChromiumTrustedVaultClientBackend::ClearLocalData(
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // anonymous namespace

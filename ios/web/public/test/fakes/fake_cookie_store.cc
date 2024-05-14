@@ -83,7 +83,7 @@ net::CookieChangeDispatcher& FakeCookieStore::GetChangeDispatcher() {
   // This is NOTREACHED not NOTIMPLEMENTED because it would likely cause a weird
   // SEGV in the next line anyways. Crashing here with a more friendly error
   // message is preferred.
-  NOTREACHED() << "Not implemented. Implement this if necessary.";
+  NOTREACHED_IN_MIGRATION() << "Not implemented. Implement this if necessary.";
   // Perform a crazy thing here just to make the compiler happy. It doesn't
   // matter because it should never reach here.
   return *reinterpret_cast<net::CookieChangeDispatcher*>(this);

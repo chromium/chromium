@@ -335,7 +335,7 @@ CAGradientLayer* CarouselGradientLayer() {
   } else if (keyboardAction == previousTileAction) {
     nextHighlightedIndex = MAX(prevHighlightedIndex - 1, 0);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   allTiles[prevHighlightedIndex].selected = NO;
   allTiles[nextHighlightedIndex].selected = YES;

@@ -43,7 +43,7 @@ void JavaScriptFindTabHelper::ContinueFinding(FindDirection direction) {
     [controller_ findPreviousStringInPage];
 
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

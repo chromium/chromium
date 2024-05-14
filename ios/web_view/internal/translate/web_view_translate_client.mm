@@ -81,7 +81,7 @@ bool WebViewTranslateClient::RequestTranslationOffer() {
 
 std::unique_ptr<infobars::InfoBar> WebViewTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -118,7 +118,7 @@ WebViewTranslateClient::GetAcceptLanguagesService() {
 }
 
 int WebViewTranslateClient::GetInfobarIconID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

@@ -378,7 +378,7 @@ const CGFloat kSymbolSize = 20;
       break;
     default:
       // Not a switch.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -471,7 +471,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
     case AutofillUITypeProfileHomePhoneWholeNumber:
       return DefaultSymbolTemplateWithPointSize(kPhoneFillSymbol, kSymbolSize);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
   }
 }
@@ -510,11 +510,11 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       if (update) {
         return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
       }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

@@ -237,7 +237,7 @@ void TestResponseProvider::GetResponseHeadersAndBody(
     *response_body = kTranslateScript;
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestResponseProvider::GetLanguageResponse(

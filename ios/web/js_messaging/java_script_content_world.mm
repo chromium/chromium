@@ -34,7 +34,7 @@ WKUserScriptInjectionTime InjectionTimeToWKUserScriptInjectionTime(
     case JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd:
       return WKUserScriptInjectionTimeAtDocumentEnd;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WKUserScriptInjectionTimeAtDocumentStart;
 }
 

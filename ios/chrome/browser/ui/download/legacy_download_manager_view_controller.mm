@@ -602,7 +602,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     }
     case kDownloadManagerStateInProgress: {
       // The button should not be visible.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case kDownloadManagerStateSucceeded: {

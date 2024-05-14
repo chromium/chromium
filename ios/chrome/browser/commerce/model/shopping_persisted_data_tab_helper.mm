@@ -46,7 +46,7 @@ const char* GetLogIdString(PriceDropLogId& log_id) {
     case NAVIGATION_COMPLETE:
       return kFinishNavigationMetricsString;
   }
-  NOTREACHED() << "Unknown PriceDropLogId " << log_id;
+  NOTREACHED_IN_MIGRATION() << "Unknown PriceDropLogId " << log_id;
   return "";
 }
 

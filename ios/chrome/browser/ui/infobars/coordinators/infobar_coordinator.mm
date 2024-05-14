@@ -285,51 +285,51 @@
 #pragma mark InfobarCoordinatorImplementation
 
 - (BOOL)configureModalViewController {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
   return NO;
 }
 
 - (BOOL)isInfobarAccepted {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
   return NO;
 }
 
 - (BOOL)infobarBannerActionWillPresentModal {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
   return NO;
 }
 
 - (void)infobarBannerWasPresented {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (void)infobarModalPresentedFromBanner:(BOOL)presentedFromBanner {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (void)dismissBannerIfReady {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (BOOL)infobarActionInProgress {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
   return NO;
 }
 
 - (void)performInfobarAction {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (void)infobarWasDismissed {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
 }
 
 - (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
-  NOTREACHED() << "Subclass must implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
   return 0;
 }
 

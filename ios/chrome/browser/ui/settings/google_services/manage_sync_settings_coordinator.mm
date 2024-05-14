@@ -161,7 +161,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     case SyncSettingsAccountState::kSignedIn:
       break;
     case SyncSettingsAccountState::kSignedOut:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

@@ -313,7 +313,7 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     }
 
     case web::FormWarningType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

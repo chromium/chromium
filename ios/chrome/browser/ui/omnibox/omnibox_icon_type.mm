@@ -21,7 +21,7 @@ NSString* GetLocationBarSecuritySymbolName(
     case DANGEROUS:
       return kDangerousOmniboxSymbol;
     case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kInfoCircleSymbol;
   }
 }

@@ -38,7 +38,7 @@ bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
       language = locale_config->GetDefaultLocale().code;
     }
     if (!language.length()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       language = "en-US";
     }
   }

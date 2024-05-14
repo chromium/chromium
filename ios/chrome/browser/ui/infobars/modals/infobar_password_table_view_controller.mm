@@ -92,7 +92,7 @@ const CGFloat kSymbolSize = 15;
                 initWithType:PasswordInfobarType::kPasswordInfobarTypeSave];
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

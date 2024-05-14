@@ -174,7 +174,7 @@ bool IOSChromeSyncedTabDelegate::ProfileHasChildAccount() const {
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 IOSChromeSyncedTabDelegate::GetBlockedNavigations() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -255,7 +255,7 @@ int64_t IOSChromeSyncedTabDelegate::GetRootTaskIdForNavigationId(
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
 IOSChromeSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "CreatePlaceholderTabSyncedTabDelegate is not supported for the "
          "iOS platform.";
   return nullptr;

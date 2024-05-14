@@ -86,7 +86,7 @@ CGFloat kSectionFooterHeight = 8.;
           accountPickerListTableViewControllerDidTapOnAddAccount:self];
       break;
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

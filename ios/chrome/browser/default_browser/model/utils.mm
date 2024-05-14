@@ -181,7 +181,7 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
     case DefaultPromoTypeStaySafe:
       return kLastSignificantUserEventStaySafe;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

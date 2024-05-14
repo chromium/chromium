@@ -115,7 +115,7 @@ void ActivateFieldTrialForGroup(IOSChromeVariationsGroup group) {
   std::string group_name;
   switch (group) {
     case IOSChromeVariationsGroup::kNotAssigned:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case IOSChromeVariationsGroup::kNotFirstRun:
       // First run completed before the experiment is setup. Use group

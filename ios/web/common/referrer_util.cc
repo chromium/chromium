@@ -49,7 +49,7 @@ std::string ReferrerHeaderValueForNavigation(const GURL& destination,
         return referrer.url.DeprecatedGetOriginAsURL().spec();
       return referrer.url.GetAsReferrer().spec();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -77,7 +77,7 @@ net::ReferrerPolicy PolicyForNavigation(const GURL& destination,
     case ReferrerPolicyStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
 }
 

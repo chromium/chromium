@@ -139,7 +139,7 @@ TestingApplicationContext::GetSharedURLLoaderFactory() {
 network::mojom::NetworkContext*
 TestingApplicationContext::GetSystemNetworkContext() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

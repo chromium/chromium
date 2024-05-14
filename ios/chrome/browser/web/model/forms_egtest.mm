@@ -138,7 +138,7 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
     *response_body = request.method + std::string(" ") + request.body;
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Waits for the keyboard to appear. Returns NO on timeout.

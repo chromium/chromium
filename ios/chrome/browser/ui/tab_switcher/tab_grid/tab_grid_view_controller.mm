@@ -1117,10 +1117,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.regularGridHandler addNewItem];
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to open a new tab in Recent Tabs.";
+      NOTREACHED_IN_MIGRATION()
+          << "It is invalid to open a new tab in Recent Tabs.";
       break;
     case TabGridPageTabGroups:
-      NOTREACHED() << "It is invalid to open a new tab in Tab Groups.";
+      NOTREACHED_IN_MIGRATION()
+          << "It is invalid to open a new tab in Tab Groups.";
       break;
   }
   self.activePage = page;
@@ -1154,10 +1156,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self openNewRegularTabForKeyboardCommand];
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to open a new tab from Recent Tabs.";
+      NOTREACHED_IN_MIGRATION()
+          << "It is invalid to open a new tab from Recent Tabs.";
       break;
     case TabGridPageTabGroups:
-      NOTREACHED() << "It is invalid to open a new tab from Tab Groups.";
+      NOTREACHED_IN_MIGRATION()
+          << "It is invalid to open a new tab from Tab Groups.";
       break;
   }
 }
@@ -1482,7 +1486,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       self.remoteTabsViewController.searchTerms = searchText;
       break;
     case TabGridPage::TabGridPageTabGroups:
-      NOTREACHED() << "Tab Groups doesn't support searching";
+      NOTREACHED_IN_MIGRATION() << "Tab Groups doesn't support searching";
       break;
   }
 }
@@ -1864,7 +1868,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController

@@ -132,7 +132,7 @@ class WebViewPasswordStoreObserver
           [removed addObject:password];
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

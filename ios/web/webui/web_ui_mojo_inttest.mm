@@ -86,7 +86,7 @@ class TestUIHandler : public mojom::TestUIHandlerMojo {
       DCHECK(!fin_received_);
       fin_received_ = true;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

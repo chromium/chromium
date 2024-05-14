@@ -64,7 +64,7 @@
       return;
     }
     case GridItemType::SuggestedActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -89,7 +89,7 @@
       return;
     }
     case GridItemType::SuggestedActions:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

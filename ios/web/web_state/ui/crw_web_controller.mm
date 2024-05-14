@@ -1338,7 +1338,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     case WKFullscreenStateNotInFullscreen:
       return CrFullscreenState::kNotInFullScreen;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CrFullscreenState::kNotInFullScreen;
   }
 }

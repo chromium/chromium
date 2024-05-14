@@ -1940,7 +1940,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypeLinkHeader:
     case ItemTypeHeader:
     case ItemTypeWidgetPromo:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

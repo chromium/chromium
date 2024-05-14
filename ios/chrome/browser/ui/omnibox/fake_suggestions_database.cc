@@ -105,7 +105,7 @@ std::u16string FakeSuggestionsDatabase::ExtractSearchTerms(
 
 void FakeSuggestionsDatabase::LoadFakeSuggestions(base::FilePath file_path) {
   if (!base::PathExists(file_path)) {
-    NOTREACHED() << "File doesn't exist";
+    NOTREACHED_IN_MIGRATION() << "File doesn't exist";
   }
   std::string data_str = "";
   if (base::ReadFileToString(file_path, &data_str)) {

@@ -145,7 +145,7 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
       break;
     case web::DownloadTask::State::kNotStarted:
       // OnDownloadUpdated cannot be called with this state.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

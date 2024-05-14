@@ -61,7 +61,7 @@ CGFloat CenteredTilesMarginForWidth(UITraitCollection* trait_collection,
       return margin;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

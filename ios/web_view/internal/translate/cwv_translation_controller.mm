@@ -53,7 +53,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TranslateErrors::SCRIPT_LOAD_ERROR:
       return CWVTranslationErrorScriptLoadError;
     case translate::TranslateErrors::TRANSLATE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CWVTranslationErrorNone;
   }
 }
@@ -252,7 +252,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case CWVTranslationPolicyAuto: {
       // TODO(crbug.com/41310094): Support auto translation policies for
       // websites.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

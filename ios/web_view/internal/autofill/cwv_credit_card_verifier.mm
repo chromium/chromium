@@ -33,7 +33,7 @@ CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
         kVcnRetrievalTryAgainFailure:
     case autofill::AutofillClient::PaymentsRpcResult::
         kVcnRetrievalPermanentFailure:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CWVCreditCardVerificationErrorNone;
     case autofill::AutofillClient::PaymentsRpcResult::kTryAgainFailure:
       return CWVCreditCardVerificationErrorTryAgainFailure;

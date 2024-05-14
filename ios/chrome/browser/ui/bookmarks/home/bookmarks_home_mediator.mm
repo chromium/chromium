@@ -560,7 +560,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded:(LegacyBookmarkModel*)model {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // The node has changed, but not its children.

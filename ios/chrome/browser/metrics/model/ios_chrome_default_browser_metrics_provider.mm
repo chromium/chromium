@@ -83,5 +83,5 @@ void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
       CHECK(false);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

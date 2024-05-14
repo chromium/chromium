@@ -86,7 +86,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
           hit_counter_, cache_control_header.c_str(),
           first_page_url_.spec().c_str(), kCacheTestLinkID);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

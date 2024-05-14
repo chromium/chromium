@@ -98,7 +98,7 @@ UIAlertController* DialogForCameraState(
   switch (state) {
     case scanner::CAMERA_AVAILABLE:
     case scanner::CAMERA_NOT_LOADED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
 
     case scanner::CAMERA_IN_USE_BY_ANOTHER_APPLICATION:

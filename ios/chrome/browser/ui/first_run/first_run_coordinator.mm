@@ -152,7 +152,7 @@
                                    browser:self.browser
                                   delegate:self];
     case kStepsCompleted:
-      NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
+      NOTREACHED_IN_MIGRATION() << "Reaches kStepsCompleted unexpectedly.";
       break;
   }
   return nil;

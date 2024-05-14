@@ -66,7 +66,7 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
     return WidgetKitExtensionKind::kSearchPasswords;
   }
 
-  NOTREACHED() << base::SysNSStringToUTF8(kind);
+  NOTREACHED_IN_MIGRATION() << base::SysNSStringToUTF8(kind);
   return WidgetKitExtensionKind::kObsolete;
 }
 

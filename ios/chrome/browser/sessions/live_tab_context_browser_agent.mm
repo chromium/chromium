@@ -89,7 +89,7 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
     const tab_groups::TabGroupId& group) const {
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -102,7 +102,7 @@ const std::optional<base::Uuid>
 LiveTabContextBrowserAgent::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
   // Not supported by iOS... yet.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

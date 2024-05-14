@@ -119,7 +119,8 @@ static BOOL g_seed_fetching_in_progress = NO;
   // from `doActualFetch` immediately. Note that the block will retain `self`.
   dispatch_async(queue, ^{
     if (g_seed_fetching_in_progress) {
-      NOTREACHED() << "SeedFetch started while already in progress";
+      NOTREACHED_IN_MIGRATION()
+          << "SeedFetch started while already in progress";
       [self notifyDelegateSeedFetchResult:NO];
     } else {
       [self doActualFetch];

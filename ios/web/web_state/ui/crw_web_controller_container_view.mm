@@ -42,12 +42,12 @@
 }
 
 - (instancetype)initWithCoder:(NSCoder*)decoder {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

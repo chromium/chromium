@@ -510,7 +510,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
     base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

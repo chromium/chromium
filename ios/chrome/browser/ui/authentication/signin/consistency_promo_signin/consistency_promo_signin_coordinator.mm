@@ -395,7 +395,7 @@
              initWithAnimation:ConsistencySheetSlideAnimationPopping
           navigationController:self.navigationController];
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

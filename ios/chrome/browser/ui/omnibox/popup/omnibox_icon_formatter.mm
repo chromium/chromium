@@ -39,7 +39,7 @@ OmniboxSuggestionIconType IconTypeFromMatch(const AutocompleteMatch& match) {
         return OmniboxSuggestionIconType::kFallbackAnswer;
       case SuggestionAnswer::ANSWER_TYPE_INVALID:
       case SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

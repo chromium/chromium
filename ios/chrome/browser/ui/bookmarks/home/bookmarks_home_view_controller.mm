@@ -1189,7 +1189,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)handleMoveNode:(const bookmarks::BookmarkNode*)node
@@ -1928,7 +1928,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     case BookmarksContextBarBeginSelection:
       // This must never happen, as the leading button is disabled at this
       // point.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case BookmarksContextBarSingleURLSelection:
     case BookmarksContextBarMultipleURLSelection:
@@ -1941,7 +1941,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       break;
     case BookmarksContextBarNone:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1986,7 +1986,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     case BookmarksContextBarBeginSelection:
     case BookmarksContextBarNone:
       // Center button is disabled in these states.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -2422,7 +2422,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [self configureCoordinator:self.actionSheetCoordinator
         forSingleBookmarkFolder:node];
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

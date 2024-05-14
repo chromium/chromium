@@ -320,7 +320,7 @@ bool HasMachineLevelPolicies() {
   _state = [self nextState];
   switch (_state) {
     case BEGIN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
 
     case CHECK_SIGNIN_STEPS:
@@ -386,7 +386,7 @@ bool HasMachineLevelPolicies() {
     case DONE:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)checkSigninSteps {

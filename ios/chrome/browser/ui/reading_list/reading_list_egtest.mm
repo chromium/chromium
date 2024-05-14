@@ -365,7 +365,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     response->set_content("<html><head><title>greens</title></head></html>");
     return std::move(response);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::move(response);
 }
 
@@ -401,7 +401,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
         static_cast<const char*>(image_data.bytes), image_data.length));
     return std::move(response);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::move(response);
 }
 

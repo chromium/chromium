@@ -32,7 +32,7 @@
 #pragma mark - Public
 
 + (const OverlayRequestSupport*)requestSupport {
-  NOTREACHED() << "Subclasses implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
   return OverlayRequestSupport::None();
 }
 

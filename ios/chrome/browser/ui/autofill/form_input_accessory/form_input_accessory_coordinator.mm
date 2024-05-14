@@ -446,7 +446,7 @@ const CGFloat kIPHVerticalOffset = -5;
     // This method can't be reached when `kEnableStartupImprovements` is not
     // enabled. It will call `[self tapInsideRecognized:]` to dismiss the bubble
     // instead;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -586,7 +586,7 @@ const CGFloat kIPHVerticalOffset = -5;
     // enabled. It will call `[self
     // formInputAccessoryViewController:didTapFormInputAccessoryView:]` to
     // dismiss the bubble instead;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

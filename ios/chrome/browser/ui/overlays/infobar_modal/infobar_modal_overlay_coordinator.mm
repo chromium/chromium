@@ -113,17 +113,17 @@
 @implementation InfobarModalOverlayCoordinator (ModalConfiguration)
 
 - (OverlayRequestMediator*)modalMediator {
-  NOTREACHED() << "Subclasses implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
   return nullptr;
 }
 
 - (UIViewController*)modalViewController {
-  NOTREACHED() << "Subclasses implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
   return nil;
 }
 
 - (void)configureModal {
-  NOTREACHED() << "Subclasses implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
 }
 
 - (void)configureViewController {
@@ -144,7 +144,7 @@
 }
 
 - (void)resetModal {
-  NOTREACHED() << "Subclasses implement.";
+  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
 }
 
 @end

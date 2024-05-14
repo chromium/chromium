@@ -71,7 +71,7 @@ OffTheRecordChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
 
 void OffTheRecordChromeBrowserStateImpl::
     DestroyOffTheRecordChromeBrowserState() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 BrowserStatePolicyConnector*

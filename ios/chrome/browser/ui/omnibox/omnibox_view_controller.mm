@@ -452,7 +452,7 @@ using base::UserMetricsAction;
   } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
     [self.textField performKeyboardAction:keyboardAction];
   } else {
-    NOTREACHED() << "Check canPerformKeyboardAction before!";
+    NOTREACHED_IN_MIGRATION() << "Check canPerformKeyboardAction before!";
   }
 }
 

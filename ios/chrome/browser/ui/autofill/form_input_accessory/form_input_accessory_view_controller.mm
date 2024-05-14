@@ -304,7 +304,7 @@ using manual_fill::ManualFillDataType;
   } else {
     // This method can't be reached when `kEnableStartupImprovements` is
     // enabled.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

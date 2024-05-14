@@ -659,7 +659,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     switch (state) {
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS:
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_IN_PROGRESS:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
 
       case SessionsSyncUserState::USER_SIGNED_IN_SYNC_OFF:
@@ -815,7 +815,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     if (_displayedTabs[i].session_tag == distantSession->tag)
       return i + kFirstSessionSectionIdentifier;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 

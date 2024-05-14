@@ -488,7 +488,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
       break;
     case SyncSettingsAccountState::kSignedOut:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -670,7 +670,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // which also checks for the case of having no items to upload, thus this case
   // is not reached here.
   if (!_localPasswordsToUpload && !_localItemsToUpload) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::u16string userEmail =
@@ -901,7 +901,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::UserSelectableType::kSharedTabGroupData:
     case syncer::UserSelectableType::kCompare:
     case syncer::UserSelectableType::kCookies:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   DCHECK_NE(itemType, 0);
@@ -961,7 +961,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         kTrustedVaultRecoverabilityDegradedForEverything:
       return NO;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
@@ -1172,7 +1172,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       case AccountErrorMessageItemType:
       case BatchUploadButtonItemType:
       case BatchUploadRecommendationItemType:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1488,7 +1488,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::SyncService::UserActionableError::kNone:
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

@@ -322,7 +322,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeNickname:
       return YES;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NO;
 }
 

@@ -50,7 +50,7 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type) {
     case autofill::ADDRESS_HOME_ADDRESS:
       return AutofillUITypeAddressHomeAddress;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AutofillUITypeUnknown;
   }
 }
@@ -101,7 +101,7 @@ autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
     case AutofillUITypeCreditCardBillingAddress:
     case AutofillUITypeCreditCardSaveToChrome:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return autofill::UNKNOWN_TYPE;
   }
 }

@@ -172,7 +172,7 @@ using base::UserMetricsAction;
       [self.dispatcher showPriceNotifications];
       break;
     default:
-      NOTREACHED() << "Unexpected identifier";
+      NOTREACHED_IN_MIGRATION() << "Unexpected identifier";
       break;
   }
 

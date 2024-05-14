@@ -202,7 +202,8 @@ void ExternalFileRemoverImpl::TabRestoreServiceChanged(
 void ExternalFileRemoverImpl::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Should never happen as unregistration happen in Shutdown";
+  NOTREACHED_IN_MIGRATION()
+      << "Should never happen as unregistration happen in Shutdown";
 }
 
 void ExternalFileRemoverImpl::Remove(bool all_files,
