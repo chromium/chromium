@@ -28,9 +28,13 @@ found in the LICENSE file.
             on-apps-icons-loaded="onFullyLoaded">
         </oobe-personalized-apps-list>
     </div>
+    <div slot="back-navigation">
+        <oobe-back-button id="backButton" on-click="onBackClicked">
+        </oobe-back-button>
+      </div>
     <div slot="bottom-buttons">
       <oobe-text-button id="skipButton"
-            text-key="personalizedRecommendedAppsScreenSkip" 
+            text-key="personalizedRecommendedAppsScreenSkip"
             on-click="onSkip" border>
       </oobe-text-button>
       <oobe-next-button id="nextButton" on-click="onNextClicked"

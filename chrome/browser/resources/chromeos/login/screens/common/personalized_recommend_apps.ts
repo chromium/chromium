@@ -33,6 +33,7 @@ enum PersonalizedAppsStep {
 enum UserAction {
   SKIP = 'skip',
   NEXT = 'next',
+  BACK = 'back',
 }
 
 interface RecommendAppsScreenData {
@@ -138,6 +139,10 @@ export class PersonalizedRecommedAppsElement extends
 
   private canProceed(): boolean {
     return this.numberOfSelectedApps > 0;
+  }
+
+  private onBackClicked(): void {
+    this.userActed(UserAction.BACK);
   }
 }
 
