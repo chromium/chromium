@@ -31,7 +31,7 @@ build_webui_tests("build_webui_tests") {
     "ethernet_info_test.ts",
     "fake_network_health_provider_test.js",
     "fake_system_data_provider_test.js",
-    "fake_system_routine_controller_test.js",
+    "fake_system_routine_controller_test.ts",
     "frequency_channel_utils_test.ts",
     "input_card_test.ts",
     "input_list_test.ts",
