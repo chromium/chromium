@@ -11,6 +11,8 @@
 @interface AccountSwitcherTransitionDelegate
     : NSObject <UIViewControllerTransitioningDelegate>
 
+@property(nonatomic, assign) CGPoint anchorPoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_SWITCHING_ACCOUNT_SWITCHER_TRANSITION_DELEGATE_H_

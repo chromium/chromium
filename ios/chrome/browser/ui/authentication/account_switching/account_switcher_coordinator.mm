@@ -20,6 +20,7 @@
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   AccountSwitcherTransitionDelegate* transitionController =
       [[AccountSwitcherTransitionDelegate alloc] init];
+  transitionController.anchorPoint = self.anchorPoint;
   _viewController.transitioningDelegate = transitionController;
 
   [self.baseViewController presentViewController:_viewController

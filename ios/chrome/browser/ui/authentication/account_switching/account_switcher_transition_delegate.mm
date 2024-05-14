@@ -16,9 +16,12 @@
                             presentingViewController:
                                 (UIViewController*)presenting
                                 sourceViewController:(UIViewController*)source {
-  return [[AccountSwitcherPresentationController alloc]
-      initWithPresentedViewController:presented
-             presentingViewController:presenting];
+  AccountSwitcherPresentationController* presentationController =
+      [[AccountSwitcherPresentationController alloc]
+          initWithPresentedViewController:presented
+                 presentingViewController:presenting];
+  presentationController.anchorPoint = self.anchorPoint;
+  return presentationController;
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)

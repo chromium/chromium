@@ -12,6 +12,9 @@
 // Coordinator to display the fast account switcher view controller.
 @interface AccountSwitcherCoordinator : ChromeCoordinator
 
+// Click point to anchor the menu.
+@property(nonatomic, assign) CGPoint anchorPoint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_SWITCHING_ACCOUNT_SWITCHER_COORDINATOR_H_

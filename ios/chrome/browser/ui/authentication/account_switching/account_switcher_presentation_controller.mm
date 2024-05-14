@@ -13,6 +13,8 @@ const CGFloat kMaxWidth = 350;
 const CGFloat kMaxHeight = 350;
 const CGFloat kMinimumMarginHorizontal = 25;
 const CGFloat kMinimumMarginVertical = 35;
+const CGFloat kNTPIdentityAvatarDimension = 32;
+const CGFloat kAvatarToMenuMarginVertical = 20;
 
 }  // namespace
 
@@ -36,8 +38,12 @@ const CGFloat kMinimumMarginVertical = 35;
       MIN(kMaxHeight, availableHeight - 2 * kMinimumMarginVertical);
 
   CGRect presentedViewFrame = safeAreaFrame;
-  presentedViewFrame.origin.x += (availableWidth - width) / 2;
-  presentedViewFrame.origin.y += (availableHeight - height) / 2;
+  presentedViewFrame.origin.x =
+      self.anchorPoint.x - width + kNTPIdentityAvatarDimension;
+  presentedViewFrame.origin.y = self.anchorPoint.y +
+                                kAvatarToMenuMarginVertical +
+                                kNTPIdentityAvatarDimension;
+
   presentedViewFrame.size.width = width;
   presentedViewFrame.size.height = height;
 
