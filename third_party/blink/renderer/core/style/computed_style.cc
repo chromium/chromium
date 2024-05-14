@@ -910,7 +910,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
-  if (ScrollAnchorDisablingPropertyChanged(other, diff)) {
+  if ((field_diff & kScrollAnchor) || diff.TransformChanged()) {
     diff.SetScrollAnchorDisablingPropertyChanged();
   }
 
@@ -923,20 +923,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   // transition properly.
 
   return diff;
-}
-
-bool ComputedStyle::ScrollAnchorDisablingPropertyChanged(
-    const ComputedStyle& other,
-    const StyleDifference& diff) const {
-  if (ComputedStyleBase::ScrollAnchorDisablingPropertyChanged(*this, other)) {
-    return true;
-  }
-
-  if (diff.TransformChanged()) {
-    return true;
-  }
-
-  return false;
 }
 
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(

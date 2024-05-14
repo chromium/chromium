@@ -325,6 +325,7 @@
         "opacity",
         "outline",
         "out-of-flow",
+        "scroll-anchor",
         "table",
         "text-decoration",
         "transform-property",
@@ -2511,7 +2512,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      invalidate: ["inset", "out-of-flow"],
+      invalidate: ["inset", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "box-shadow",
@@ -2758,6 +2759,7 @@
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "contain-intrinsic-height",
@@ -2771,6 +2773,7 @@
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "container-name",
@@ -3266,6 +3269,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "hyphenate-limit-chars",
@@ -3433,7 +3437,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      invalidate: ["inset", "out-of-flow"],
+      invalidate: ["inset", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "letter-spacing",
@@ -3552,7 +3556,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
-      invalidate: ["margin", "out-of-flow"],
+      invalidate: ["margin", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "margin-left",
@@ -3576,7 +3580,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
-      invalidate: ["margin", "out-of-flow"],
+      invalidate: ["margin", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "margin-right",
@@ -3600,7 +3604,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
-      invalidate: ["margin", "out-of-flow"],
+      invalidate: ["margin", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "margin-top",
@@ -3624,7 +3628,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
-      invalidate: ["margin", "out-of-flow"],
+      invalidate: ["margin", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "marker-end",
@@ -3719,6 +3723,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "max-width",
@@ -3739,6 +3744,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "min-height",
@@ -3758,6 +3764,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "min-width",
@@ -3777,6 +3784,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "mix-blend-mode",
@@ -4198,6 +4206,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "padding-left",
@@ -4218,6 +4227,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "padding-right",
@@ -4238,6 +4248,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "padding-top",
@@ -4258,6 +4269,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "page",
@@ -4358,6 +4370,7 @@
       // have a priority higher than inset-area which is already at priority:1.
       priority: 2,
       valid_for_permission_element: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "position-anchor",
@@ -4484,7 +4497,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      invalidate: ["inset", "out-of-flow"],
+      invalidate: ["inset", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "r",
@@ -5587,7 +5600,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
-      invalidate: ["inset", "out-of-flow"],
+      invalidate: ["inset", "out-of-flow", "scroll-anchor"],
     },
     {
       name: "overlay",
@@ -6602,6 +6615,7 @@
       affected_by_zoom: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["scroll-anchor"],
     },
     {
       name: "will-change",

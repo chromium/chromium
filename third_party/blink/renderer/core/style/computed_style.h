@@ -2504,8 +2504,6 @@ class ComputedStyle final : public ComputedStyleBase {
       const gfx::SizeF& reference_box_size) const;
   PointAndTangent CalculatePointAndTangentOnPath(const Path& path) const;
 
-  bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
-                                            const StyleDifference&) const;
   bool DiffNeedsFullLayoutAndPaintInvalidation(const ComputedStyle& other,
                                                uint32_t field_diff) const;
   bool DiffNeedsFullLayout(const Document&, const ComputedStyle& other) const;
