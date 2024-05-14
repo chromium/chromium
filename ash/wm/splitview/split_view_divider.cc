@@ -171,15 +171,18 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
 
 void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
-  const bool horizontal = IsLayoutHorizontal(GetRootWindow());
+  aura::Window* root = GetRootWindow();
+  const bool horizontal = IsLayoutHorizontal(root);
   if (!display::Screen::GetScreen()->InTabletMode()) {
     // In clamshell mode, we try to keep the center point of the divider as in
     // sync with the mouse event location as possible. `SetDividerPosition()`
     // will clamp the position between the windows' minimum sizes.
+    gfx::Point location_in_root(location_in_screen);
+    wm::ConvertPointFromScreen(root, &location_in_root);
     SetDividerPosition(
         horizontal
-            ? location_in_screen.x() - kSplitviewDividerShortSideLength / 2
-            : location_in_screen.y() - kSplitviewDividerShortSideLength / 2);
+            ? location_in_root.x() - kSplitviewDividerShortSideLength / 2
+            : location_in_root.y() - kSplitviewDividerShortSideLength / 2);
     return;
   }
 

@@ -50,6 +50,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   ~SplitViewDivider() override;
 
   // static
+  // Returns the divider bounds in screen where `divider_position` is in the
+  // divider's root window's bounds.
   static gfx::Rect GetDividerBoundsInScreen(
       const gfx::Rect& work_area_bounds_in_screen,
       bool landscape,
@@ -79,8 +81,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Updates the divider's target visibility.
   void SetVisible(bool visible);
 
-  // Sets the divider's position, ensuring it meets the minimum window size
-  // requirement.
+  // Sets the divider's position in root window bounds, ensuring it meets the
+  // minimum window size requirement.
   void SetDividerPosition(int divider_position);
 
   // Updates divider position while resizing, keeping it within allowed range.
@@ -195,7 +197,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   const raw_ptr<LayoutDividerController> controller_;
 
   // The distance between the origin of `divider_widget_` and the origin
-  // of the current display's work area in screen coordinates.
+  // of the current display's work area in screen coordinates, which essentially
+  // makes it relative to the divider widget's root window.
   //     |<---     divider_position_    --->|
   //     ---------------------------------------------------------------
   //     |                                  | |                        |
