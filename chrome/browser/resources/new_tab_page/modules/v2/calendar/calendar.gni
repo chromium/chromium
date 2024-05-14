@@ -7,3 +7,7 @@ calendar_v2_web_component_files = [
   "modules/v2/calendar/google_calendar_module.ts",
   "modules/v2/calendar/outlook_calendar_module.ts",
 ]
+
+# List of files that don't need to be passed to html_to_wrapper().
+calendar_v2_non_web_component_files =
+    [ "modules/v2/calendar/google_calendar_proxy.ts" ]

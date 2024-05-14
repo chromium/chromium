@@ -17,6 +17,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
@@ -53,44 +54,47 @@
 
 namespace base {
 class RefCountedMemory;
-}
+}  // namespace base
 
 namespace content {
 class NavigationHandle;
 class WebUI;
 }  // namespace content
 
+namespace ntp {
+class FeedHandler;
+}  // namespace ntp
+
+namespace page_image_service {
+class ImageServiceHandler;
+}  // namespace page_image_service
+
 namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
 
-namespace page_image_service {
-class ImageServiceHandler;
-}
-
+class BrowserCommandHandler;
+class CartHandler;
 class ChromeCustomizeThemesHandler;
+class FileSuggestionHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
 #endif
+class GoogleCalendarPageHandler;
 class GURL;
-class MostVisitedHandler;
-class NewTabPageHandler;
-class PrefRegistrySimple;
-class PrefService;
-class Profile;
-class BrowserCommandHandler;
-class RealboxHandler;
-class RecipesHandler;
-class CartHandler;
-class FileSuggestionHandler;
-class PhotosHandler;
-namespace ntp {
-class FeedHandler;
-}
 class HistoryClustersPageHandler;
 class HistoryClustersPageHandlerV2;
 class MostRelevantTabResumptionPageHandler;
+class MostVisitedHandler;
+class NewTabPageHandler;
+class PhotosHandler;
+class PrefRegistrySimple;
+class PrefService;
+class Profile;
+class RealboxHandler;
+class RecipesHandler;
 class TabResumptionPageHandler;
+
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
@@ -170,6 +174,13 @@ class NewTabPageUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<file_suggestion::mojom::FileSuggestionHandler>
+          pending_receiver);
+
+  // Instantiates the implementor of
+  // npt::calendar::mojom::GoogleCalendarPageHandler mojo interface passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
           pending_receiver);
 
   // Instantiates the implementor of photos::mojom::PhotosHandler mojo interface
@@ -319,6 +330,7 @@ class NewTabPageUI
   const std::vector<std::pair<const std::string, int>> module_id_names_;
 
   // Mojo implementations for modules:
+  std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
   std::unique_ptr<RecipesHandler> recipes_handler_;
   std::unique_ptr<FileSuggestionHandler> file_handler_;
   std::unique_ptr<PhotosHandler> photos_handler_;
