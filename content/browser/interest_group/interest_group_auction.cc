@@ -4647,6 +4647,11 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     return false;
   }
 
+  if (!std::isfinite(score)) {
+    score_ad_receivers_.ReportBadMessage("Invalid score");
+    return false;
+  }
+
   // Only validate `component_auction_modified_bid_params` if the bid was
   // accepted.
   if (score > 0) {

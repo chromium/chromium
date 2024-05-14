@@ -11261,7 +11261,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
        "Invalid component_auction_modified_bid_params bid"},
       {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
            /*ad=*/"null",
-           /*bid=*/-std::numeric_limits<double>::quiet_NaN(),
+           /*bid=*/std::numeric_limits<double>::quiet_NaN(),
+           /*bid_currency=*/std::nullopt),
+       "Invalid component_auction_modified_bid_params bid"},
+      {auction_worklet::mojom::ComponentAuctionModifiedBidParams::New(
+           /*ad=*/"null",
+           /*bid=*/std::numeric_limits<double>::signaling_NaN(),
            /*bid_currency=*/std::nullopt),
        "Invalid component_auction_modified_bid_params bid"},
 
@@ -11957,6 +11962,26 @@ TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
           blink::AdCurrency::From("CAD"),
           -5,
       },
+      {
+          "Must be a valid bid",
+          blink::AdCurrency::From("CAD"),
+          std::numeric_limits<double>::infinity(),
+      },
+      {
+          "Must be a valid bid",
+          blink::AdCurrency::From("CAD"),
+          -std::numeric_limits<double>::infinity(),
+      },
+      {
+          "Must be a valid bid",
+          blink::AdCurrency::From("CAD"),
+          std::numeric_limits<double>::quiet_NaN(),
+      },
+      {
+          "Must be a valid bid",
+          blink::AdCurrency::From("CAD"),
+          std::numeric_limits<double>::signaling_NaN(),
+      },
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.test_name);
@@ -12002,6 +12027,64 @@ TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
             /*errors=*/{});
     auction_run_loop_->Run();
     EXPECT_EQ("Invalid bid_in_seller_currency", TakeBadMessage());
+
+    // No bidder won.
+    EXPECT_FALSE(result_.winning_group_id);
+  }
+}
+
+// Invalid scoreAd() scores are rejected as bad messages.
+TEST_F(AuctionRunnerTest, BadScoreAdScore) {
+  double kTestCases[]{
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::signaling_NaN(),
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity(),
+  };
+  size_t i = 0u;
+  for (double test_case : kTestCases) {
+    SCOPED_TRACE(i++);
+
+    StartStandardAuctionWithMockService();
+    auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+    ASSERT_TRUE(seller_worklet);
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+
+    // Only Bidder1 bids, to keep things simple.
+    bidder1_worklet->InvokeGenerateBidCallback(
+        /*bid=*/5, /*bid_currency=*/std::nullopt,
+        blink::AdDescriptor(GURL("https://ad1.com/")));
+    bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/std::nullopt);
+
+    auto score_ad_params = seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(5, score_ad_params.bid);
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/test_case,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*bid_in_seller_currency=*/std::nullopt,
+            /*scoring_signals_data_version=*/std::nullopt,
+            /*debug_loss_report_url=*/std::nullopt,
+            /*debug_win_report_url=*/std::nullopt, /*pa_requests=*/{},
+            /*real_time_contributions=*/{},
+            /*scoring_latency=*/base::TimeDelta(),
+            /*score_ad_dependency_latencies=*/
+            auction_worklet::mojom::ScoreAdDependencyLatencies::New(
+                /*code_ready_latency=*/std::nullopt,
+                /*direct_from_seller_signals_latency=*/std::nullopt,
+                /*trusted_scoring_signals_latency=*/std::nullopt),
+            /*errors=*/{});
+    auction_run_loop_->Run();
+    EXPECT_EQ("Invalid score", TakeBadMessage());
 
     // No bidder won.
     EXPECT_FALSE(result_.winning_group_id);
