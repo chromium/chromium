@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/message_loop/message_pump_type.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
 #include "base/ranges/algorithm.h"
@@ -166,15 +165,12 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // continue to function.
   ScopedIPCSupportWrapper ipc_support;
 #endif
-  // TODO(crbug.com/40279944) - eliminate the need to have a UI message type
-  // on the main sequence by refactoring the UI code.
-  const bool is_app_install_mode = command_line->HasSwitch(kInstallSwitch) ||
-                                   command_line->HasSwitch(kHandoffSwitch);
-  const bool is_silent = command_line->HasSwitch(kSilentSwitch);
-  base::SingleThreadTaskExecutor main_task_executor(
-      (is_app_install_mode && !is_silent) ? base::MessagePumpType::UI
-                                          : base::MessagePumpType::DEFAULT);
-  if (is_app_install_mode) {
+
+  // Only tasks and timers are supported on the main sequence.
+  base::SingleThreadTaskExecutor main_task_executor;
+
+  if (command_line->HasSwitch(kInstallSwitch) ||
+      command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
   }
 
