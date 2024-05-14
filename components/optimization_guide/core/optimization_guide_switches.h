@@ -66,6 +66,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelQualityServiceURL[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelQualityServiceAPIKey[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kEnableModelQualityDogfoodLogging[];
 
 // The API key for the ModelQualityLoggingService.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

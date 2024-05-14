@@ -116,6 +116,11 @@ const char kModelQualityServiceURL[] = "model-quality-service-url";
 // Overrides the ModelQuality Service API Key for remote requests to be made.
 const char kModelQualityServiceAPIKey[] = "model-quality-service-api-key";
 
+// Enables model quality logs regardless of other client-side settings, as long
+// as the client is a dogfood client.
+const char kEnableModelQualityDogfoodLogging[] =
+    "enable-model-quality-dogfood-logging";
+
 std::string GetModelQualityServiceAPIKey() {
   // Command line override takes priority.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

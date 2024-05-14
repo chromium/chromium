@@ -103,6 +103,7 @@
   "memlog-stack-mode",
   "minutes-delay-to-restore-gaia-cookies-if-deleted",
   "omaha-min-sdk-version-android",
+  "optimization-guide-enable-dogfood-logging",
   "overlay-scrollbars",
   "overlay-strategies",
   "prefer-dcheck",

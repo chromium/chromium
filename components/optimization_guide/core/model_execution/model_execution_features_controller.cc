@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,6 +13,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -136,11 +138,13 @@ bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
 
 ModelExecutionFeaturesController::ModelExecutionFeaturesController(
     PrefService* browser_context_profile_service,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    DogfoodStatus dogfood_status)
     : browser_context_profile_service_(browser_context_profile_service),
       identity_manager_(identity_manager),
       features_allowed_for_unsigned_user_(
-          features::internal::GetAllowedFeaturesForUnsignedUser()) {
+          features::internal::GetAllowedFeaturesForUnsignedUser()),
+      dogfood_status_(dogfood_status) {
   CHECK(browser_context_profile_service_);
 
   pref_change_registrar_.Init(browser_context_profile_service_);
@@ -204,6 +208,16 @@ bool ModelExecutionFeaturesController::
   if (!ShouldFeatureBeCurrentlyEnabledForUser(feature)) {
     return false;
   }
+
+  // For dogfood users only, allow the relevant chrome://flags option to
+  // override the default enterprise policy.
+  bool has_logging_force_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableModelQualityDogfoodLogging);
+  if (dogfood_status_ == DogfoodStatus::DOGFOOD && has_logging_force_enabled) {
+    return true;
+  }
+
   return GetEnterprisePolicyValue(feature) ==
          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow;
 }

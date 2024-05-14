@@ -6569,6 +6569,12 @@
     "expiry_milestone": 125
   },
   {
+    "name": "optimization-guide-enable-dogfood-logging",
+    "owners": [ "isherman@chromium.org", "curranmax@chromium.org", "chrome-intelligence-core@google.com" ],
+    // This flag is used in regular manual QA and should not be removed.
+    "expiry_milestone": -1
+  },
+  {
     "name": "optimization-guide-model-execution",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 125

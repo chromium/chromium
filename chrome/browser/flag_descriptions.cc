@@ -2662,6 +2662,13 @@ const char kOptimizationGuideModelExecutionName[] =
 const char kOptimizationGuideModelExecutionDescription[] =
     "Enables the optimization guide to execute models.";
 
+const char kOptimizationGuideEnableDogfoodLoggingName[] =
+    "Enable optimization guide dogfood logging";
+const char kOptimizationGuideEnableDogfoodLoggingDescription[] =
+    "If this client is a Google-internal dogfood client, overrides enterprise "
+    "policy to enable model quality logs. Googlers: See "
+    "go/chrome-mqls-dogfood-logging for details.";
+
 const char kOptimizationGuideOnDeviceModelName[] =
     "Enables optimization guide on device";
 const char kOptimizationGuideOnDeviceModelDescription[] =

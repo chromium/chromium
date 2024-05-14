@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,6 +12,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -23,6 +25,8 @@
 
 namespace optimization_guide {
 
+using model_execution::prefs::ModelExecutionEnterprisePolicyValue;
+
 class ModelExecutionFeaturesControllerTest : public testing::Test {
  public:
   ModelExecutionFeaturesControllerTest() = default;
@@ -34,10 +38,12 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
     model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
-  void CreateModelExecutionFeaturesController() {
-    model_execution_features_controller_ =
-        std::make_unique<ModelExecutionFeaturesController>(
-            pref_service_.get(), identity_test_env_.identity_manager());
+  void CreateController(
+      ModelExecutionFeaturesController::DogfoodStatus dogfood_status =
+          ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD) {
+    controller_ = std::make_unique<ModelExecutionFeaturesController>(
+        pref_service_.get(), identity_test_env_.identity_manager(),
+        dogfood_status);
   }
 
   void EnableSignIn() {
@@ -65,9 +71,15 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
         pref_service_->GetInteger(prefs::GetSettingEnabledPrefName(feature)));
   }
 
-  ModelExecutionFeaturesController* model_execution_features_controller() {
-    return model_execution_features_controller_.get();
+  void SetEnterprisePolicy(UserVisibleFeatureKey feature,
+                           ModelExecutionEnterprisePolicyValue value) {
+    const char* key =
+        model_execution::prefs::GetEnterprisePolicyPrefName(feature);
+    ASSERT_TRUE(key);
+    return pref_service_->SetInteger(key, static_cast<int>(value));
   }
+
+  ModelExecutionFeaturesController* controller() { return controller_.get(); }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return &identity_test_env_;
@@ -87,8 +99,7 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  std::unique_ptr<ModelExecutionFeaturesController>
-      model_execution_features_controller_;
+  std::unique_ptr<ModelExecutionFeaturesController> controller_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -96,15 +107,14 @@ TEST_F(ModelExecutionFeaturesControllerTest, OneFeatureSettingVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::internal::kComposeSettingsVisibility);
-  CreateModelExecutionFeaturesController();
+  CreateController();
 
   EnableSignIn();
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
       1);
@@ -125,19 +135,17 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       {{features::internal::kComposeSettingsVisibility, {}},
        {features::internal::kTabOrganizationSettingsVisibility, {}}},
       {});
-  CreateModelExecutionFeaturesController();
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+  CreateController();
+  EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 
   EnableSignIn();
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -149,19 +157,17 @@ TEST_F(ModelExecutionFeaturesControllerTest,
        {features::internal::kTabOrganizationSettingsVisibility,
         {{"allow_unsigned_user", "true"}}}},
       {});
-  CreateModelExecutionFeaturesController();
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+  CreateController();
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 
   EnableSignIn();
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -169,14 +175,13 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::internal::kComposeSettingsVisibility}, {});
-  CreateModelExecutionFeaturesController();
+  CreateController();
   EnableSignInWithoutCapability();
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -186,13 +191,12 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       {features::internal::kComposeSettingsVisibility,
        features::internal::kModelExecutionCapabilityDisable},
       {});
-  CreateModelExecutionFeaturesController();
+  CreateController();
   EnableSignInWithoutCapability();
 
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
@@ -203,28 +207,24 @@ TEST_F(ModelExecutionFeaturesControllerTest,
        features::internal::kTabOrganizationSettingsVisibility,
        features::internal::kWallpaperSearchSettingsVisibility},
       {features::internal::kWallpaperSearchGraduated});
-  CreateModelExecutionFeaturesController();
+  CreateController();
   EnableSignIn();
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 
   // Enabling the main toggle enables visible features.
   pref_service()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyEnabledForUser(
-                      UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyEnabledForUser(
-                      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyEnabledForUser(
-                      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kWallpaperSearch));
   // Only the visible feature prefs should be enabled.
   EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
@@ -238,15 +238,12 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       prefs::kModelExecutionMainToggleSettingState,
       static_cast<int>(
           optimization_guide::prefs::FeatureOptInState::kDisabled));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kWallpaperSearch));
   // Only the visible feature prefs should be disabled.
   EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
@@ -265,26 +262,22 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
       /*disabled_features=*/
       {features::internal::kComposeSettingsVisibility,
        features::internal::kWallpaperSearchSettingsVisibility});
-  CreateModelExecutionFeaturesController();
+  CreateController();
 
   EnableSignIn();
   // IsSettingVisible
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
-      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      controller()->IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   // ShouldFeatureBeCurrentlyEnabledForUser
-  EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyEnabledForUser(
-                      UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(model_execution_features_controller()
-                  ->ShouldFeatureBeCurrentlyEnabledForUser(
-                      UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey::kWallpaperSearch));
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
       1);
@@ -296,6 +289,74 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
       "WallpaperSearch",
       false, 1);
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       Logging_DisabledByEnterprisePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kComposeSettingsVisibility);
+  CreateController();
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       Logging_DisabledByEnterprisePolicy_NotOverriddenByDogfoodStatusAlone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kComposeSettingsVisibility);
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD);
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       Logging_DisabledByEnterprisePolicy_NotOverriddenBySwitchAlone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kComposeSettingsVisibility);
+  CreateController();
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableModelQualityDogfoodLogging);
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
+}
+
+TEST_F(ModelExecutionFeaturesControllerTest,
+       Logging_DisabledByEnterprisePolicy_OverriddenBySwitchWhenDogfood) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kComposeSettingsVisibility);
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD);
+
+  auto feature = UserVisibleFeatureKey::kCompose;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableModelQualityDogfoodLogging);
+  EnableSignIn();
+  SetEnterprisePolicy(
+      feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      controller()->ShouldFeatureBeCurrentlyAllowedForLogging(feature));
 }
 
 }  // namespace optimization_guide

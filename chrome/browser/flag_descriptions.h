@@ -1554,6 +1554,9 @@ extern const char kOptimizationGuideDebugLogsDescription[];
 extern const char kOptimizationGuideModelExecutionName[];
 extern const char kOptimizationGuideModelExecutionDescription[];
 
+extern const char kOptimizationGuideEnableDogfoodLoggingName[];
+extern const char kOptimizationGuideEnableDogfoodLoggingDescription[];
+
 extern const char kOptimizationGuideOnDeviceModelName[];
 extern const char kOptimizationGuideOnDeviceModelDescription[];
 

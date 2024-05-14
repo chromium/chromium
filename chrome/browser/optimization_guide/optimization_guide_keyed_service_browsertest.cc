@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -262,7 +263,8 @@ class OptimizationGuideKeyedServiceBrowserTest
                                     base::Unretained(this)));
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
@@ -466,6 +468,28 @@ class OptimizationGuideKeyedServiceBrowserTest
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+};
+
+// Configures the global VariationsService to treat this client as a likely
+// dogfood client, before any keyed services are created.
+class DogfoodOptimizationGuideKeyedServiceBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  DogfoodOptimizationGuideKeyedServiceBrowserTest() = default;
+
+  DogfoodOptimizationGuideKeyedServiceBrowserTest(
+      const OptimizationGuideKeyedServiceBrowserTest&) = delete;
+  DogfoodOptimizationGuideKeyedServiceBrowserTest& operator=(
+      const OptimizationGuideKeyedServiceBrowserTest&) = delete;
+
+  ~DogfoodOptimizationGuideKeyedServiceBrowserTest() override = default;
+
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    OptimizationGuideKeyedServiceBrowserTest::
+        OnWillCreateBrowserContextServices(context);
+    SetIsDogfoodClient(true);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1610,6 +1634,62 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   histogram_tester()->ExpectBucketCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kDisabledDueToEnterprisePolicy, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LoggingDisabledByEnterprisePolicy_NonDogfood_NoSwitch) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OptimizationGuideKeyedServiceBrowserTest,
+    LoggingDisabledByEnterprisePolicy_NonDogfood_WithSwitch) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableModelQualityDogfoodLogging);
+
+  EXPECT_FALSE(
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
+                       LoggingDisabledByEnterprisePolicy_Dogfood_NoSwitch) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+
+  EXPECT_FALSE(
+      model_execution_features_controller()
+          ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
+}
+
+IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
+                       LoggingDisabledByEnterprisePolicy_Dogfood_WithSwitch) {
+  auto compose_feature = UserVisibleFeatureKey::kCompose;
+  EnableFeature(compose_feature);
+  SetEnterprisePolicy(
+      policy::key::kHelpMeWriteSettings,
+      ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableModelQualityDogfoodLogging);
+
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,

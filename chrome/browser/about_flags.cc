@@ -11315,7 +11315,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccountPasswordsOnSigninName,
      flag_descriptions::kAccountPasswordsOnSigninDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
-         syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)}
+         syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -11330,6 +11330,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          performance_manager::features::kMemorySaverModeAggressiveness)},
 #endif
+
+    {"optimization-guide-enable-dogfood-logging",
+     flag_descriptions::kOptimizationGuideEnableDogfoodLoggingName,
+     flag_descriptions::kOptimizationGuideEnableDogfoodLoggingDescription,
+     kOsAll,
+     SINGLE_VALUE_TYPE(
+         optimization_guide::switches::kEnableModelQualityDogfoodLogging)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

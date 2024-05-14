@@ -25649,6 +25649,7 @@ from previous Chrome versions.
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918229773"
       label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>
+  <int value="1918410646" label="enable-model-quality-dogfood-logging"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
   <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>

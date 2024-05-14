@@ -85,6 +85,7 @@
 
 namespace {
 
+using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
 
@@ -435,9 +436,15 @@ void OptimizationGuideKeyedService::Initialize() {
             on_device_component_manager_->GetWeakPtr());
       }
 
+      auto* variations_service = g_browser_process->variations_service();
+      auto dogfood_status =
+          variations_service && variations_service->IsLikelyDogfoodClient()
+              ? ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD
+              : ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD;
       model_execution_features_controller_ = std::make_unique<
           optimization_guide::ModelExecutionFeaturesController>(
-          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
+          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+          dogfood_status);
 
       // Don't create logs uploader service when feature is disabled. All the
       // logs upload get route through this service which exists one per

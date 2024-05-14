@@ -52,9 +52,15 @@ class ModelExecutionFeaturesController
     kMaxValue = kNotVisibleGraduatedFeature
   };
 
+  enum class DogfoodStatus {
+    DOGFOOD,
+    NON_DOGFOOD,
+  };
+
   // Must be created only for non-incognito browser contexts.
   ModelExecutionFeaturesController(PrefService* browser_context_profile_service,
-                                   signin::IdentityManager* identity_manager);
+                                   signin::IdentityManager* identity_manager,
+                                   DogfoodStatus dogfood_status);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -158,6 +164,9 @@ class ModelExecutionFeaturesController
   // Set of features that are visible to unsigned users.
   const base::flat_set<UserVisibleFeatureKey>
       features_allowed_for_unsigned_user_;
+
+  // Whether this client is a (likely) dogfood client.
+  const DogfoodStatus dogfood_status_;
 
   THREAD_CHECKER(thread_checker_);
 
