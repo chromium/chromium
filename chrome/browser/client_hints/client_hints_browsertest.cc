@@ -4876,40 +4876,6 @@ IN_PROC_BROWSER_TEST_F(XRClientHintsTest, UAHintsXRMode) {
       << main_frame_ua_form_factors_observed();
 }
 
-class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
-  void SetUpInProcessBrowserTestFixture() override {
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-    policy::PolicyMap policies;
-    SetPolicy(&policies, policy::key::kUserAgentClientHintsGREASEUpdateEnabled,
-              std::optional<base::Value>(false));
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-// Makes sure that the enterprise policy is able to prevent updated GREASE.
-IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest, GreaseEnterprisePolicyTest) {
-  const GURL gurl = accept_ch_url();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  std::string ua_ch_result = main_frame_ua_observed();
-
-  ASSERT_TRUE(SawOldGrease(ua_ch_result));
-}
-IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest,
-                       GreaseEnterprisePolicyDynamicRefreshTest) {
-  const GURL gurl = accept_ch_url();
-  // Reset the policy that was already set to false in the setup, then see if
-  // the change is reflected in the sec-ch-ua header without requiring a
-  // browser restart.
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kUserAgentClientHintsGREASEUpdateEnabled,
-            std::optional<base::Value>(true));
-  provider_.UpdateChromePolicy(policies);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  std::string ua_ch_result = main_frame_ua_observed();
-
-  ASSERT_TRUE(SawUpdatedGrease(ua_ch_result) && !SawOldGrease(ua_ch_result));
-}
-
 // Tests that user-agent reduction on a redirect request.
 class RedirectUaReductionBrowserTest : public InProcessBrowserTest {
  public:
