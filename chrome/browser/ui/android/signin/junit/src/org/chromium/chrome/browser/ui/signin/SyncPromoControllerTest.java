@@ -133,6 +133,27 @@ public class SyncPromoControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void shouldShowSigninPromoForNTP_noAccountsOnDevice() {
+        Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void shouldNotShowNTPSigninPromo_alreadySignedIn() {
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        BOTTOM_SHEET_STRINGS,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+
+        Assert.assertFalse(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
     public void shouldShowSyncPromoForNTPWhenNoAccountOnDevice() {
         Assert.assertTrue(mSyncPromoController.canShowSyncPromo());
     }

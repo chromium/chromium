@@ -293,8 +293,14 @@ public class SyncPromoController {
                 mImpressionUserActionName = "Signin_Impression_FromNTPFeedTopPromo";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED;
-                mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
-                mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
+                if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+                    mTitleStringId = R.string.signin_promo_title_ntp_feed_top_promo;
+                    mDescriptionStringId = R.string.signin_promo_description_ntp_feed_top_promo;
+                } else {
+                    mTitleStringId = R.string.sync_promo_title_ntp_content_suggestions;
+                    mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
+                }
                 mHistoryOptInMode = SigninAndHistoryOptInCoordinator.HistoryOptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
@@ -386,6 +392,15 @@ public class SyncPromoController {
     }
 
     private boolean canShowNTPPromo() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            if (IdentityServicesProvider.get()
+                    .getIdentityManager(mProfile)
+                    .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                return false;
+            }
+        }
+
         int promoShowCount =
                 ChromeSharedPreferences.getInstance()
                         .readInt(

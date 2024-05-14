@@ -120,7 +120,10 @@ import java.util.Map;
     ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
     ChromeFeatureList.FEED_CONTAINMENT
 })
-@EnableFeatures({ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED})
+@EnableFeatures({
+    ChromeFeatureList.KID_FRIENDLY_CONTENT_FEED,
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
     private static final long SURFACE_CREATION_TIME_NS = 1234L;
