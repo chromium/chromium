@@ -486,7 +486,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
 }
 
 bool DesktopWindowTreeHostPlatform::IsVisible() const {
-  return platform_window()->IsVisible();
+  return platform_window() && platform_window()->IsVisible();
 }
 
 void DesktopWindowTreeHostPlatform::SetSize(const gfx::Size& size) {
