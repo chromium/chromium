@@ -208,6 +208,9 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
+                # This is necessary due to child builders running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
