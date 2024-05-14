@@ -520,8 +520,6 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // startup.
     bool has_first_run_experience = false;
     if (promotional_tabs_enabled) {
-      // TODO(b/337135021): Investigate whether the below build flag is causing
-      // a wrong behavior on Lacros.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       if (is_first_run_ == chrome::startup::IsFirstRun::kYes) {
         // We just showed the first run experience in the Desktop FRE window.
