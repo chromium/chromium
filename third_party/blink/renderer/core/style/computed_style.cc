@@ -1254,10 +1254,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
   if (field_diff & kTextDecoration) {
     diff.SetTextDecorationOrColorChanged();
   }
-
-  if (!diff.NeedsNormalPaintInvalidation() &&
-      ComputedStyleBase::UpdatePropertySpecificDifferencesTextDecorationOrColor(
-          *this, other)) {
+  if (field_diff & kColor) {
     diff.SetTextDecorationOrColorChanged();
   }
 

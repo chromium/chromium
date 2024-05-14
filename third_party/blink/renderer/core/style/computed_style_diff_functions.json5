@@ -83,7 +83,7 @@
                 "-webkit-text-security",
                 "hyphens", "hyphenate-character", "hyphenate-limit-chars",
                 "image-orientation", "ruby-position",
-                "TextEmphasisMark", "text-emphasis-position",
+                "TextEmphasisMark", "TextEmphasisFill", "text-emphasis-position",
                 "TextEmphasisCustomMark", "text-orientation",
                 "text-combine-upright", "tab-size", "text-size-adjust",
                 "list-style-image",
@@ -379,46 +379,6 @@
           {
             predicate: "a.BorderVisualOverflowEqual(b)",
             field_dependencies: ["border-image"]
-          },
-        ]
-    },
-    {
-        name: "UpdatePropertySpecificDifferencesTextDecorationOrColor",
-        fields_to_diff: ["color", "-internal-visited-color",
-                         "text-decoration-color", "-internal-visited-text-decoration-color",
-                         "TextEmphasisFill"],
-        methods_to_diff: [
-          {
-            method: "TextFillColor()",
-            field_dependencies: ["-webkit-text-fill-color"]
-          },
-          {
-            method: "TextStrokeColor()",
-            field_dependencies: ["-webkit-text-stroke-color"]
-          },
-          {
-            method: "TextEmphasisColor()",
-            field_dependencies: ["text-emphasis-color"]
-          },
-          {
-            method: "InternalVisitedTextFillColor()",
-            field_dependencies: ["-internal-visited-text-fill-color"]
-          },
-          {
-            method: "InternalVisitedTextStrokeColor()",
-            field_dependencies: ["-internal-visited-text-stroke-color"]
-          },
-          {
-            method: "InternalVisitedTextEmphasisColor()",
-            field_dependencies: ["-internal-visited-text-emphasis-color"]
-          },
-          {
-            method: "CaretColor()",
-            field_dependencies: ["caret-color"]
-          },
-          {
-            method: "InternalVisitedCaretColor()",
-            field_dependencies: ["-internal-visited-caret-color"]
           },
         ]
     },

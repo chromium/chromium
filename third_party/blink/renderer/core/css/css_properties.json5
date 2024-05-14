@@ -315,6 +315,7 @@
       valid_values: [
         "border-radius",
         "clip-path",
+        "color",
         "filter-data",
         "list-item",
         "mask",
@@ -1146,6 +1147,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["color"],
     },
     {
       name: "direction",
@@ -2604,6 +2606,7 @@
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
+      invalidate: ["color"],
     },
     {
       name: "clear",
@@ -5315,6 +5318,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["color"],
     },
     {
       name: "text-decoration-line",
@@ -6366,6 +6370,7 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "text-emphasis-position",
@@ -6400,6 +6405,7 @@
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "-webkit-text-security",
@@ -6425,6 +6431,7 @@
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "-webkit-text-stroke-width",
@@ -8044,6 +8051,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
+      invalidate: ["color"],
     },
     {
       name: "-internal-visited-caret-color",
@@ -8062,6 +8070,7 @@
         initial_color: "StyleAutoColor::AutoColor",
       },
       valid_for_highlight_legacy: true,
+      invalidate: ["color"],
     },
     {
       name: "-internal-visited-column-rule-color",
@@ -8279,6 +8288,7 @@
       valid_for_cue: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "-internal-visited-text-emphasis-color",
@@ -8295,6 +8305,7 @@
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "-internal-visited-text-fill-color",
@@ -8311,6 +8322,7 @@
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
     {
       name: "-internal-visited-text-stroke-color",
@@ -8327,6 +8339,7 @@
       style_builder_template: "visited_color",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["color"],
     },
 
     // Forced colors properties.
