@@ -45,6 +45,7 @@ mojom("mojom") {
     "midis.mojom",
     "nearby_share.mojom",
     "net.mojom",
+    "net_shared.mojom",
     "obb_mounter.mojom",
     "pip.mojom",
     "policy.mojom",

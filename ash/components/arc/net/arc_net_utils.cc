@@ -6,6 +6,7 @@
 
 #include <netinet/in.h>
 
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "ash/components/arc/mojom/net.mojom-shared.h"
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/containers/map_util.h"
@@ -299,6 +300,17 @@ void FillConfigurationsFromState(const ash::NetworkState* network_state,
       }
     }
   }
+}
+
+arc::mojom::WifiScanResultPtr NetworkStateToWifiScanResult(
+    const ash::NetworkState& network_state) {
+  auto mojo = arc::mojom::WifiScanResult::New();
+  mojo->bssid = network_state.bssid();
+  mojo->hex_ssid = network_state.GetHexSsid();
+  mojo->security = TranslateWiFiSecurity(network_state.security_class());
+  mojo->frequency = network_state.frequency();
+  mojo->rssi = network_state.rssi();
+  return mojo;
 }
 
 void FillConfigurationsFromDevice(const patchpanel::NetworkDevice& device,
@@ -613,6 +625,20 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     networks.push_back(std::move(network));
   }
   return networks;
+}
+
+std::vector<arc::mojom::WifiScanResultPtr> TranslateScanResults(
+    const ash::NetworkStateHandler::NetworkStateList& network_states) {
+  std::vector<arc::mojom::WifiScanResultPtr> results;
+  for (const ash::NetworkState* const state : network_states) {
+    if (state->GetNetworkTechnologyType() !=
+        ash::NetworkState::NetworkTechnologyType::kWiFi) {
+      continue;
+    }
+
+    results.push_back(NetworkStateToWifiScanResult(*state));
+  }
+  return results;
 }
 
 base::Value::List TranslateSubjectNameMatchListToValue(

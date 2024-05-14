@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -530,6 +531,21 @@ TEST_F(ArcNetUtilsTest, TranslateSocketConnectionEvent) {
   EXPECT_EQ(patchpanel::SocketConnectionEvent::IpProtocol::
                 SocketConnectionEvent_IpProtocol_TCP,
             msg->proto());
+}
+
+TEST_F(ArcNetUtilsTest, TranslateScanResults) {
+  ash::NetworkStateHandler::NetworkStateList network_states;
+  network_states.push_back(GetNetworkState());
+  std::vector<arc::mojom::WifiScanResultPtr> res =
+      net_utils::TranslateScanResults(network_states);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, res.size());
+  EXPECT_EQ(kBssid, res[0]->bssid);
+  EXPECT_EQ(kHexSsid, res[0]->hex_ssid);
+  EXPECT_EQ(arc::mojom::SecurityType::WPA_PSK, res[0]->security);
+  EXPECT_EQ(kFrequency, res[0]->frequency);
+  EXPECT_EQ(kRssi, res[0]->rssi);
 }
 }  // namespace
 }  // namespace arc

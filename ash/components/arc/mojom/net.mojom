@@ -13,6 +13,7 @@
 module arc.mojom;
 
 import "ash/components/arc/mojom/app.mojom";
+import "ash/components/arc/mojom/net_shared.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "url/mojom/url.mojom";
 
@@ -281,18 +282,6 @@ struct IPConfiguration {
 
   // IP family for that configuration
   IPAddressType type;
-};
-
-// The subset of wireless security protocols that Android defines in
-// android.net.wifi.WifiConfiguration and that can be supported by the
-// host.
-[Extensible]
-enum SecurityType {
-  NONE,
-  WEP_PSK,
-  WEP_8021X,
-  WPA_PSK,
-  WPA_EAP,
 };
 
 // Deprecated enum. |is_metered| in NetworkConfiguration should be

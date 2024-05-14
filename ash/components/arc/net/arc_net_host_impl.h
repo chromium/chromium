@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
@@ -66,6 +67,11 @@ class ArcNetHostImpl : public KeyedService,
   void SetCertManager(std::unique_ptr<CertManager> cert_manager);
 
   // Overridden from mojom::NetHost.
+
+  // TODO(b/329552433): Delete get visible networks part in this method after
+  // pi-arc is removed.
+  // Deprecated for getting visible networks. ArcWifiHostImpl::GetScanResults()
+  // should be used.
   void GetNetworks(mojom::GetNetworksRequestType type,
                    GetNetworksCallback callback) override;
   // TODO(b/329552433): Delete this method after pi-arc is removed.
@@ -75,6 +81,8 @@ class ArcNetHostImpl : public KeyedService,
   // Deprecated. ArcWifiHostImpl::SetWifiEnabledState() should be used.
   void SetWifiEnabledState(bool is_enabled,
                            SetWifiEnabledStateCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::StartScan() should be used.
   void StartScan() override;
   void CreateNetwork(mojom::WifiConfigurationPtr cfg,
                      CreateNetworkCallback callback) override;

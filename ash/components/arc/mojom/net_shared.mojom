@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file includes shared components used by both arc_wifi.mojom and
+// net.mojom.
+
+module arc.mojom;
+
+// The subset of wireless security protocols that Android defines in
+// android.net.wifi.WifiConfiguration and that can be supported by the
+// host.
+[Extensible]
+enum SecurityType {
+  [Default] NONE,
+  WEP_PSK,
+  WEP_8021X,
+  WPA_PSK,
+  WPA_EAP,
+};

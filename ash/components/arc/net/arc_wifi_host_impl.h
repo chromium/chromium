@@ -44,6 +44,8 @@ class ArcWifiHostImpl : public KeyedService,
   void GetWifiEnabledState(GetWifiEnabledStateCallback callback) override;
   void SetWifiEnabledState(bool is_enabled,
                            SetWifiEnabledStateCallback callback) override;
+  void StartScan() override;
+  void GetScanResults(GetScanResultsCallback callback) override;
 
   static void EnsureFactoryBuilt();
 

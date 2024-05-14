@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
@@ -68,6 +69,12 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
     const std::map<std::string, base::Value::Dict>& shill_network_properties);
+
+// Translates a vector of NetworkStates to a vector of ScanResults.
+// For each state, fill the fields in ScanResult.
+// TODO(b/329552433): Move this method to a separate util file for WiFi.
+std::vector<arc::mojom::WifiScanResultPtr> TranslateScanResults(
+    const ash::NetworkStateHandler::NetworkStateList& network_states);
 
 // Translates a vector of NetworkDevices to a vector of NetworkConfigurations.
 // For each device, fill the fields in NetworkConfiguration. For each active
