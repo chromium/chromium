@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/user_education/low_usage_help_controller.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,6 +70,13 @@ void LowUsageHelpController::MaybeShowPromo() {
   auto* const browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     // This can happen if windows are still loading up; that's fine.
+
+    // Record the try count.
+    const int try_count = retrying_ ? 2 : 1;
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "UserEducation.MessageNotShown.DesktopReEngagement.NoBrowser",
+        try_count, 3);
+
     // Try again with a small delay. If this was already a retry, then just
     // don't show the promo.
     if (!retrying_) {
@@ -85,7 +93,5 @@ void LowUsageHelpController::MaybeShowPromo() {
   const bool result = browser->window()->MaybeShowStartupFeaturePromo(
       feature_engagement::kIPHDesktopReEngagementFeature);
 
-  // TODO(dfried): maybe write some additional telemetry here (though just
-  // checking the show result histograms should be fairly informative).
   (void)result;
 }
