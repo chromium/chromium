@@ -178,7 +178,10 @@ class LensOverlayController : public LensSearchboxClient,
     // Encoding the screenshot failed.
     kErrorScreenshotEncodingFailed = 8,
 
-    kMaxValue = kErrorScreenshotEncodingFailed
+    // User pressed the escape key.
+    kEscapeKeyPress = 9,
+
+    kMaxValue = kEscapeKeyPress
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
 
@@ -521,6 +524,7 @@ class LensOverlayController : public LensSearchboxClient,
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
+  void CloseRequestedByOverlayEscapeKeyPress() override;
   void FeedbackRequestedByOverlay() override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;
@@ -528,6 +532,8 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
+  // lens::mojom::LensSidePanelPageHandler overrides.
+  void CloseRequestedBySidePanelEscapeKeyPress() override;
 
   // Closes search bubble.
   void CloseSearchBubble() override;

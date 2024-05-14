@@ -17,6 +17,14 @@ import type {BrowserProxy} from './browser_proxy.js';
 import type {InitialToastElement} from './initial_toast.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 
+// Closes overlay if escape button is pressed.
+function maybeCloseOverlay(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    BrowserProxyImpl.getInstance()
+        .handler.closeRequestedByOverlayEscapeKeyPress();
+  }
+}
+
 export interface LensOverlayAppElement {
   $: {
     backgroundScrim: HTMLElement,
@@ -66,6 +74,7 @@ export class LensOverlayAppElement extends PolymerElement {
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
     ];
+    window.addEventListener('keyup', maybeCloseOverlay);
   }
 
   override disconnectedCallback() {
@@ -73,6 +82,7 @@ export class LensOverlayAppElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+    window.removeEventListener('keyup', maybeCloseOverlay);
   }
 
   private onBackgroundScrimClicked() {

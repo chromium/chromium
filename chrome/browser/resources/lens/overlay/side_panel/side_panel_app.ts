@@ -21,6 +21,14 @@ import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
 const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
 
+// Closes overlay if the escape key is pressed.
+function maybeCloseOverlay(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    SidePanelBrowserProxyImpl.getInstance()
+        .handler.closeRequestedBySidePanelEscapeKeyPress();
+  }
+}
+
 export interface LensSidePanelAppElement {
   $: {
     results: HTMLIFrameElement,
@@ -89,6 +97,7 @@ export class LensSidePanelAppElement extends PolymerElement {
       this.browserProxy.callbackRouter.setBackArrowVisible.addListener(
           this.setBackArrowVisible.bind(this)),
     ];
+    window.addEventListener('keyup', maybeCloseOverlay);
   }
 
   override disconnectedCallback() {
@@ -97,6 +106,7 @@ export class LensSidePanelAppElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+    window.removeEventListener('keyup', maybeCloseOverlay);
   }
 
   private onBackArrowClick() {

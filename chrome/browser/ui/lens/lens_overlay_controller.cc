@@ -1056,6 +1056,14 @@ void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
   CloseUIAsync(DismissalSource::kOverlayBackgroundClick);
 }
 
+void LensOverlayController::CloseRequestedByOverlayEscapeKeyPress() {
+  CloseUIAsync(DismissalSource::kEscapeKeyPress);
+}
+
+void LensOverlayController::CloseRequestedBySidePanelEscapeKeyPress() {
+  CloseUIAsync(DismissalSource::kEscapeKeyPress);
+}
+
 void LensOverlayController::FeedbackRequestedByOverlay() {
   Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
   if (!tab_browser) {
