@@ -139,7 +139,7 @@ TEST_F(BookmarksHomeViewControllerTest,
                    [controller.tableViewModel
                        sectionForSectionIdentifier:
                            BookmarksHomeSectionIdentifierRootLocalOrSyncable]]);
-    EXPECT_EQ(0, [controller tableView:controller.tableView
+    EXPECT_EQ(1, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
                              sectionForSectionIdentifier:

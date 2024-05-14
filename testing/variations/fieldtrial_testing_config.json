@@ -10255,21 +10255,6 @@
             ]
         }
     ],
-    "IOSUnifiedBookmarkModel": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBookmarkFoldersForAccountStorage"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [
