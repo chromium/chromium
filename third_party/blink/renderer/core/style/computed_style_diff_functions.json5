@@ -301,10 +301,6 @@
             field_dependencies: ["shape-outside"]
           },
           {
-            predicate: "a.OutlineVisuallyEqual(b)",
-            field_dependencies: ["outline-width", "outline-color", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
-          },
-          {
             predicate: "a.InternalVisitedBorderLeftColorHasNotChanged(b)",
             field_dependencies: ["-internal-visited-border-left-color"]
           },
@@ -365,10 +361,6 @@
           {
             predicate: "a.BoxShadowDataEquivalent(b)",
             field_dependencies: ["box-shadow"]
-          },
-          {
-            predicate: "a.OutlineVisuallyEqual(b)",
-            field_dependencies: ["outline-width", "outline-color", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
           },
           {
             predicate: "a.BorderVisualOverflowEqual(b)",

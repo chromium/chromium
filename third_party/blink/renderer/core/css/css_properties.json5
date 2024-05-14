@@ -320,6 +320,7 @@
         "list-item",
         "mask",
         "opacity",
+        "outline",
         "table",
         "text-decoration",
         "transform-property",
@@ -3953,6 +3954,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["outline"],
     },
     {
       name: "outline-offset",
@@ -3968,6 +3970,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["outline"],
     },
     {
       name: "outline-style",
@@ -3985,6 +3988,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["outline"],
     },
     {
       name: "outline-width",
@@ -4001,6 +4005,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["outline"],
     },
     {
       name: "overflow-anchor",

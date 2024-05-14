@@ -904,7 +904,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetClipPathChanged();
   }
 
-  AdjustDiffForNeedsPaintInvalidation(other, diff, document);
+  AdjustDiffForNeedsPaintInvalidation(other, field_diff, diff, document);
 
   UpdatePropertySpecificDifferences(other, field_diff, diff);
 
@@ -1079,10 +1079,12 @@ bool ComputedStyle::DiffNeedsFullLayoutForLayoutCustomChild(
 
 void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     const ComputedStyle& other,
+    uint32_t field_diff,
     StyleDifference& diff,
     const Document& document) const {
   if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other) ||
-      !BorderVisuallyEqual(other) || diff.BorderRadiusChanged()) {
+      !BorderVisuallyEqual(other) || (field_diff & kBorderRadius) ||
+      ((field_diff & kOutline) && !OutlineVisuallyEqual(other))) {
     diff.SetNeedsNormalPaintInvalidation();
   }
 
@@ -1245,6 +1247,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
   if (ComputedStyleBase::
           UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow(
               *this, other) ||
+      ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) ||
       ((field_diff & kTextDecoration) &&
        TextDecorationVisualOverflowChanged(other))) {
     diff.SetNeedsRecomputeVisualOverflow();

@@ -568,6 +568,7 @@
       type_name: "bool",
       default_value: "false",
       field_group: "*",
+      invalidate: ["outline"],
     },
     {
       name: "CallbackSelectors",

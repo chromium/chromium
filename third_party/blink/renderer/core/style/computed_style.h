@@ -2540,6 +2540,7 @@ class ComputedStyle final : public ComputedStyleBase {
       const Document&,
       const ComputedStyle& other) const;
   void AdjustDiffForNeedsPaintInvalidation(const ComputedStyle& other,
+                                           uint32_t field_diff,
                                            StyleDifference&,
                                            const Document&) const;
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
