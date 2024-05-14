@@ -521,6 +521,11 @@ void CloudFileSystem::Notify(
   VLOG(2) << "Notify {fsid = '" << GetFileSystemId() << "', recursive = '"
           << recursive << "', change_type = '" << change_type << "', tag = '"
           << tag << "', changes = {" << changes.get() << "}}";
+
+  if (content_cache_ && changes) {
+    content_cache_->Notify(*changes);
+  }
+
   return file_system_->Notify(entry_path, recursive, change_type,
                               std::move(changes), tag, std::move(callback));
 }
@@ -597,7 +602,7 @@ void CloudFileSystem::OnGetMetadataCompleted(
     GetMetadataCallback callback,
     std::unique_ptr<EntryMetadata> entry_metadata,
     base::File::Error result) {
-  if (result == base::File::FILE_ERROR_NOT_FOUND) {
+  if (content_cache_ && result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(entry_path);
   }

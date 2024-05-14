@@ -789,5 +789,42 @@ TEST_F(FileSystemProviderContentCacheImplTest, ResizeCallsCallback) {
   EXPECT_EQ(future.Take(), random_path1);
 }
 
+TEST_F(FileSystemProviderContentCacheImplTest,
+       NotifyEvictsDeletedFilesAndFilesWithDifferentVersionTagsFromCache) {
+  // Insert files into cache.
+  const std::string version_tagA("versionA");
+  const base::FilePath fsp_path1("random-path1");
+  WriteFileToCache(fsp_path1, version_tagA, kDefaultChunkSize);
+  const base::FilePath fsp_path2("random-path2");
+  WriteFileToCache(fsp_path2, version_tagA, kDefaultChunkSize);
+  const base::FilePath fsp_path3("random-path3");
+  WriteFileToCache(fsp_path3, version_tagA, kDefaultChunkSize);
+
+  // The files now exists in the cache.
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
+              ElementsAre(fsp_path3, fsp_path2, fsp_path1));
+
+  auto changes = std::make_unique<ProvidedFileSystemObserver::Changes>();
+  // Deleted file.
+  changes->emplace_back(
+      fsp_path1, storage::WatcherManager::ChangeType::DELETED,
+      std::make_unique<ash::file_system_provider::CloudFileInfo>(version_tagA));
+  // Regular file. This change will be ignored.
+  changes->emplace_back(
+      fsp_path1, storage::WatcherManager::ChangeType::CHANGED,
+      std::make_unique<ash::file_system_provider::CloudFileInfo>(version_tagA));
+  // File with different version tag.
+  changes->emplace_back(
+      fsp_path3, storage::WatcherManager::ChangeType::CHANGED,
+      std::make_unique<ash::file_system_provider::CloudFileInfo>("versionB"));
+
+  // Notify of the file changes.
+  content_cache_->Notify(*changes);
+
+  // The deleted file and file with different version tag are now evicted from
+  // the cache.
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(), ElementsAre(fsp_path2));
+}
+
 }  // namespace
 }  // namespace ash::file_system_provider

@@ -58,6 +58,8 @@ class ContentCacheImpl : public ContentCache {
 
   std::vector<base::FilePath> GetCachedFilePaths() override;
 
+  void Notify(ProvidedFileSystemObserver::Changes& changes) override;
+
   void Evict(const base::FilePath& file_path) override;
 
   void SetOnItemEvictedCallback(

@@ -97,6 +97,32 @@ void ContentCacheImpl::SetMaxCacheItems(size_t max_cache_items) {
   EvictItems();
 }
 
+void ContentCacheImpl::Notify(ProvidedFileSystemObserver::Changes& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& change : changes) {
+    ContentLRUCache::iterator it = lru_cache_.Peek(change.entry_path);
+    if (it == lru_cache_.end()) {
+      VLOG(1) << "File is not in cache";
+      continue;
+    }
+    CacheFileContext& ctx = it->second;
+
+    // Evict any deleted items or items with mismatched version tags from the
+    // cache.
+    if (change.change_type == storage::WatcherManager::ChangeType::DELETED) {
+      VLOG(2) << "File is deleted, evict from the cache";
+      EvictContext(change.entry_path, ctx);
+    } else if (change.cloud_file_info &&
+               change.cloud_file_info->version_tag != ctx.version_tag()) {
+      VLOG(2) << "File version is out of date, evict from the cache";
+      EvictContext(change.entry_path, ctx);
+    }
+  }
+  // Remove all evicted items.
+  RemoveItems(base::DoNothing());
+}
+
 void ContentCacheImpl::Evict(const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

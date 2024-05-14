@@ -82,6 +82,10 @@ class ContentCache {
   // used order.
   virtual std::vector<base::FilePath> GetCachedFilePaths() = 0;
 
+  // Called with the changes in the file system. This potentially indicates
+  // cached files are deleted or changes.
+  virtual void Notify(ProvidedFileSystemObserver::Changes& changes) = 0;
+
   // Evict the item with path `file_path` from the cache, if it exists. The item
   // is inaccessible from this point onwards despite it remaining on disk and
   // the database. It will be removed when `RemoveItems()` is called.
