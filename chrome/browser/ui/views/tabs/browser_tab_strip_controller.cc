@@ -217,7 +217,7 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 
 bool BrowserTabStripController::IsCommandEnabledForTab(
     TabStripModel::ContextMenuCommand command_id,
-    Tab* tab) const {
+    const Tab* tab) const {
   const std::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
   return model_index.has_value() ? model_->IsContextMenuCommandEnabled(
                                        model_index.value(), command_id)
@@ -226,13 +226,13 @@ bool BrowserTabStripController::IsCommandEnabledForTab(
 
 void BrowserTabStripController::ExecuteCommandForTab(
     TabStripModel::ContextMenuCommand command_id,
-    Tab* tab) {
+    const Tab* tab) {
   const std::optional<int> model_index = tabstrip_->GetModelIndexOf(tab);
   if (model_index.has_value())
     model_->ExecuteContextMenuCommand(model_index.value(), command_id);
 }
 
-bool BrowserTabStripController::IsTabPinned(Tab* tab) const {
+bool BrowserTabStripController::IsTabPinned(const Tab* tab) const {
   return IsTabPinned(tabstrip_->GetModelIndexOf(tab).value());
 }
 
@@ -423,9 +423,11 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
   }
   tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
 
-  tab_groups::TabGroupVisualData new_data(
-      GetGroupTitle(group), GetGroupColorId(group), !is_currently_collapsed);
-  model_->group_model()->GetTabGroup(group)->SetVisualData(new_data, true);
+  model_->group_model()->GetTabGroup(group)->SetVisualData(
+      tab_groups::TabGroupVisualData(GetGroupTitle(group),
+                                     GetGroupColorId(group),
+                                     !is_currently_collapsed),
+      true);
 }
 
 void BrowserTabStripController::ShowContextMenuForTab(

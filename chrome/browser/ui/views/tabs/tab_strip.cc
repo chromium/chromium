@@ -567,9 +567,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // Reset the layout size as we've effectively laid out a different size.
     // This ensures a layout happens after the drag is done.
     tab_strip_->tab_container_->InvalidateIdealBounds();
-    if (views[0]->group().has_value()) {
+    if (views.at(0)->group().has_value()) {
       tab_strip_->tab_container_->UpdateTabGroupVisuals(
-          views[0]->group().value());
+          views.at(0)->group().value());
     }
   }
 

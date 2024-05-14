@@ -56,10 +56,10 @@ class BrowserTabStripController : public TabStripController,
   TabStripModel* model() const { return model_; }
 
   bool IsCommandEnabledForTab(TabStripModel::ContextMenuCommand command_id,
-                              Tab* tab) const;
+                              const Tab* tab) const;
   void ExecuteCommandForTab(TabStripModel::ContextMenuCommand command_id,
-                            Tab* tab);
-  bool IsTabPinned(Tab* tab) const;
+                            const Tab* tab);
+  bool IsTabPinned(const Tab* tab) const;
 
   // TabStripController implementation:
   const ui::ListSelectionModel& GetSelectionModel() const override;

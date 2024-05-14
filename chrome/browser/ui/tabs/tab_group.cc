@@ -33,18 +33,21 @@ TabGroup::TabGroup(TabGroupController* controller,
 
 TabGroup::~TabGroup() = default;
 
-void TabGroup::SetVisualData(const tab_groups::TabGroupVisualData& visual_data,
+void TabGroup::SetVisualData(tab_groups::TabGroupVisualData visual_data,
                              bool is_customized) {
+  // Move current visuals to old_visuals before updating
   std::unique_ptr<tab_groups::TabGroupVisualData> old_visuals =
       std::move(visual_data_);
   TabGroupChange::VisualsChange visuals;
   visuals.old_visuals = old_visuals.get();
   visuals.new_visuals = &visual_data;
+
   visual_data_ = std::make_unique<tab_groups::TabGroupVisualData>(visual_data);
 
   // Once the visual data is customized, it should stay customized.
   is_customized_ |= is_customized;
 
+  // Notify the controller of the visual change
   controller_->ChangeTabGroupVisuals(id_, visuals);
 }
 
