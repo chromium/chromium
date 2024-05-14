@@ -882,19 +882,19 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsFullLayout();
   }
 
-  if (!diff.NeedsFullLayout() && !MarginEqual(other)) {
-    // Inflow elements participate in margin-collapsing so need a full layout.
-    if (HasOutOfFlowPosition()) {
+  if (HasOutOfFlowPosition()) {
+    if (!diff.NeedsLayout() && (field_diff & kOutOfFlow)) {
       diff.SetNeedsPositionedMovementLayout();
-    } else {
+    }
+  } else {
+    // Inflow elements participate in margin-collapsing so need a full layout.
+    if (field_diff & kMargin) {
       diff.SetNeedsFullLayout();
     }
-  }
 
-  if (!diff.NeedsFullLayout() && GetPosition() != EPosition::kStatic &&
-      (!InsetsEqual(other) ||
-       (HasOutOfFlowPosition() && GetInsetArea() != other.GetInsetArea()))) {
-    diff.SetNeedsPositionedMovementLayout();
+    if (!diff.NeedsLayout() && HasInFlowPosition() && (field_diff & kInset)) {
+      diff.SetNeedsPositionedMovementLayout();
+    }
   }
 
   if (field_diff & kBorderRadius) {
@@ -1270,7 +1270,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetCSSClipChanged();
   }
 
-  if (GetBlendMode() != other.GetBlendMode()) {
+  if (field_diff & kBlendMode) {
     diff.SetBlendModeChanged();
   }
 

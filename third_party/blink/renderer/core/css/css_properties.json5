@@ -313,14 +313,18 @@
       default: [],
       valid_type: "list",
       valid_values: [
+        "blend-mode",
         "border-radius",
         "clip-path",
         "color",
         "filter-data",
+        "inset",
         "list-item",
+        "margin",
         "mask",
         "opacity",
         "outline",
+        "out-of-flow",
         "table",
         "text-decoration",
         "transform-property",
@@ -2507,6 +2511,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["inset", "out-of-flow"],
     },
     {
       name: "box-shadow",
@@ -3428,6 +3433,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["inset", "out-of-flow"],
     },
     {
       name: "letter-spacing",
@@ -3546,6 +3552,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
+      invalidate: ["margin", "out-of-flow"],
     },
     {
       name: "margin-left",
@@ -3569,6 +3576,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
+      invalidate: ["margin", "out-of-flow"],
     },
     {
       name: "margin-right",
@@ -3592,6 +3600,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
+      invalidate: ["margin", "out-of-flow"],
     },
     {
       name: "margin-top",
@@ -3615,6 +3624,7 @@
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
+      invalidate: ["margin", "out-of-flow"],
     },
     {
       name: "marker-end",
@@ -3783,6 +3793,7 @@
       default_value: "normal",
       name_for_methods: "BlendMode",
       type_name: "BlendMode",
+      invalidate: ["blend-mode"],
     },
     {
       name: "object-fit",
@@ -4473,6 +4484,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["inset", "out-of-flow"],
     },
     {
       name: "r",
@@ -5575,6 +5587,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["inset", "out-of-flow"],
     },
     {
       name: "overlay",
@@ -7330,6 +7343,7 @@
       // anchor() functions compute relative to the containing block that is
       // modified by inset-area in AnchorEvaluatorImpl.
       priority: 1,
+      invalidate: ["out-of-flow"],
     },
 
     // Shorthands

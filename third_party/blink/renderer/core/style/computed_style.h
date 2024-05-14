@@ -1216,12 +1216,6 @@ class ComputedStyle final : public ComputedStyleBase {
   const Length& MarginBlockEndUsing(const ComputedStyle& other) const {
     return PhysicalMarginToLogical(other).BlockEnd();
   }
-  bool MarginEqual(const ComputedStyle& other) const {
-    return MarginTop() == other.MarginTop() &&
-           MarginLeft() == other.MarginLeft() &&
-           MarginRight() == other.MarginRight() &&
-           MarginBottom() == other.MarginBottom();
-  }
 
   // Padding utility functions.
   const Length& PaddingBlockStart() const {
@@ -1450,25 +1444,6 @@ class ComputedStyle final : public ComputedStyleBase {
   const Length& ClipRight() const { return Clip().Right(); }
   const Length& ClipTop() const { return Clip().Top(); }
   const Length& ClipBottom() const { return Clip().Bottom(); }
-
-  // Offset utility functions.
-  // Accessors for positioned object edges that take into account writing mode.
-  const Length& LogicalInlineStart() const {
-    return PhysicalBoundsToLogical().InlineStart();
-  }
-  const Length& LogicalInlineEnd() const {
-    return PhysicalBoundsToLogical().InlineEnd();
-  }
-  const Length& LogicalTop() const {
-    return PhysicalBoundsToLogical().BlockStart();
-  }
-  const Length& LogicalBottom() const {
-    return PhysicalBoundsToLogical().BlockEnd();
-  }
-  bool InsetsEqual(const ComputedStyle& other) const {
-    return Left() == other.Left() && Right() == other.Right() &&
-           Top() == other.Top() && Bottom() == other.Bottom();
-  }
 
   // Whether or not a positioned element requires normal flow x/y to be computed
   // to determine its position.
