@@ -259,6 +259,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void MaybeStartNavigation(int64_t navigation_id);
   void MaybeDoneWithNavigation(int64_t navigation_id, bool due_to_timeout);
 
+  void AddNavigationSourceRegistrationToBatchMap(
+      int64_t navigation_id,
+      const attribution_reporting::SuitableOrigin& reporting_origin);
+  void ClearRegistrationsForNavigationBatch(int64_t navigation_id);
+
   void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
   void ClearRegistrationsDeferUntilNavigation(int64_t navigation_id);
 
@@ -382,6 +387,13 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // Guardrail to ensure that a navigation which can receive registrations is
   // always eventually considered done.
   SequentialTimeoutsTimer navigation_registrations_timer_;
+
+  // Stores the reporting origin of each registration tied to navigation keyed
+  // by the navigation id.
+  base::flat_map<
+      int64_t,
+      base::flat_map<attribution_reporting::SuitableOrigin, int /*count*/>>
+      registrations_per_navigation_;
 
   data_decoder::DataDecoder data_decoder_;
 
