@@ -997,6 +997,18 @@
   <summary>
     Project used to record a sequence of events that are related to each other.
   </summary>
+  <enum name="AppInstallSurface">
+    <variant value="0">APP_PRELOAD_SERVICE_OEM</variant>
+    <variant value="1">APP_PRELOAD_SERVICE_DEFAULT</variant>
+    <variant value="2">OOBE_APP_RECOMMENDATIONS</variant>
+    <variant value="3">APP_INSTALL_URI_UNKNOWN</variant>
+    <variant value="4">APP_INSTALL_URI_SHOWOFF</variant>
+    <variant value="5">APP_INSTALL_URI_MALL</variant>
+    <variant value="6">APP_INSTALL_URI_GETIT</variant>
+    <variant value="7">APP_INSTALL_URI_LAUNCHER</variant>
+    <variant value="8">APP_INSTALL_URI_PERIPHERALS</variant>
+  </enum>
+
   <enum name="CameraAppLaunchType">
     <variant value="0">DEFAULT</variant>
     <variant value="1">ASSISTANT</variant>
@@ -1262,6 +1274,24 @@
     <metric name="InstallReason" type="int">
       <summary>
         Reason for which the app was installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppInstallService.InstallRequested">
+    <summary>
+      Recorded when an app discovery surface requests an app be installed through
+      App Install Service. This is called very early in the App Install Service
+      process, before any user confirmation/validity checks/network requests.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        App ID of the app requested to be installed.
+      </summary>
+    </metric>
+    <metric name="Surface" type="AppInstallSurface">
+      <summary>
+        UI surface from which this install was requested.
       </summary>
     </metric>
   </event>

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +25,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/ukm/app_source_url_recorder.h"
 
 namespace apps {
 
@@ -76,6 +78,31 @@ AppDiscoveryMetrics::~AppDiscoveryMetrics() {
 // static
 void AppDiscoveryMetrics::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kAppDiscoveryAppsInstallList);
+}
+
+std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecordForPackage(
+    const PackageId& package_id) {
+  switch (package_id.package_type()) {
+    case apps::PackageType::kArc:
+      return ukm::AppSourceUrlRecorder::GetURLForArcPackageName(
+                 package_id.identifier())
+          .spec();
+    case apps::PackageType::kBorealis:
+      return ukm::AppSourceUrlRecorder::GetURLForBorealis(
+                 package_id.identifier())
+          .spec();
+    case apps::PackageType::kChromeApp:
+      return ukm::AppSourceUrlRecorder::GetURLForChromeApp(
+                 package_id.identifier())
+          .spec();
+    case apps::PackageType::kWeb:
+      return web_app::GenerateAppIdFromManifestId(
+          GURL(package_id.identifier()));
+    case apps::PackageType::kGeForceNow:
+      // GFN is not currently supported by the metrics system.
+    case apps::PackageType::kUnknown:
+      return std::nullopt;
+  }
 }
 
 void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,

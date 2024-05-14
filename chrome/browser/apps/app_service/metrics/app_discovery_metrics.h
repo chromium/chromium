@@ -43,6 +43,19 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Returns the string identifier to be logged in app discovery metrics for the
+  // given `package_id`.
+  //
+  // This can be used for apps which aren't installed yet (but have, for
+  // example, been shown in an app discovery surface), and so aren't registered
+  // in App Service and don't have an App ID.
+  //
+  // This returns the same value as `GetAppStringToRecord(app_id, app_type)`
+  // would if the package was installed. Returns std::nullopt if metrics for
+  // this package shouldn't be recorded.
+  static std::optional<std::string> GetAppStringToRecordForPackage(
+      const PackageId& package_id);
+
   // AppPlatformMetrics::Observer
   void OnAppInstalled(const std::string& app_id,
                       AppType app_type,

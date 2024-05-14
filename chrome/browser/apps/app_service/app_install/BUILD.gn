@@ -46,6 +46,8 @@ source_set("implementation") {
     sources += [
       "app_install_almanac_endpoint.cc",
       "app_install_almanac_endpoint.h",
+      "app_install_discovery_metrics.cc",
+      "app_install_discovery_metrics.h",
       "app_install_service_ash.cc",
       "app_install_service_ash.h",
       "arc_app_installer.cc",
@@ -67,6 +69,7 @@ source_set("implementation") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chromeos/components/mgs",
       "//chromeos/constants:constants",
       "//components/webapps/browser",
       "//components/webapps/common",

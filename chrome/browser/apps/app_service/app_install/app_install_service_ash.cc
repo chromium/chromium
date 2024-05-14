@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_discovery_metrics.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/borealis/borealis_game_install_flow.h"
@@ -157,6 +158,9 @@ void AppInstallServiceAsh::InstallApp(
   if (InstallAppCallbackForTesting()) {
     std::move(InstallAppCallbackForTesting()).Run(package_id);
   }
+
+  RecordAppDiscoveryMetricForInstallRequest(&profile_.get(), surface,
+                                            package_id);
 
   base::OnceCallback<void(AppInstallResult)> result_callback =
       base::BindOnce(&RecordInstallResult, std::move(callback), surface);
@@ -304,6 +308,9 @@ void AppInstallServiceAsh::PerformInstallHeadless(
     std::move(callback).Run(false);
     return;
   }
+
+  RecordAppDiscoveryMetricForInstallRequest(&profile_.get(), surface,
+                                            expected_package_id);
 
   PerformInstall(surface, *data, std::move(callback));
 }
