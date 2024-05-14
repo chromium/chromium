@@ -1781,6 +1781,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ideographicBaseline
 [Worker]     getter width
 [Worker]     method constructor
+[Worker]     method getSelectionRects
 [Worker] interface TimestampTrigger
 [Worker]     attribute @@toStringTag
 [Worker]     getter timestamp

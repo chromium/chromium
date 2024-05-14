@@ -43,4 +43,7 @@ interface TextMetrics {
     [RuntimeEnabled=TextMetricsBaselines] readonly attribute double ideographicBaseline;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
+
+    // For selection
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
 };

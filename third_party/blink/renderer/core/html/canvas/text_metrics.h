@@ -35,6 +35,8 @@
 
 namespace blink {
 
+class DOMRectReadOnly;
+
 class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -64,6 +66,11 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
+  const HeapVector<Member<DOMRectReadOnly>> getSelectionRects(
+      uint32_t start,
+      uint32_t end,
+      ExceptionState& exception_state);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -78,7 +85,8 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   Vector<double> advances_;
   double actual_bounding_box_left_ = 0.0;
   double actual_bounding_box_right_ = 0.0;
-
+  // Delta needed for handling textAlign correctly.
+  float text_align_dx_ = 0.0;
   // y-direction
   double font_bounding_box_ascent_ = 0.0;
   double font_bounding_box_descent_ = 0.0;
@@ -87,6 +95,11 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   double em_height_ascent_ = 0.0;
   double em_height_descent_ = 0.0;
   Member<Baselines> baselines_;
+
+  // Needed for selection rects.
+  Vector<TextRun> text_runs_;
+  Font font_;
+  uint32_t text_length_ = 0;
 };
 
 }  // namespace blink

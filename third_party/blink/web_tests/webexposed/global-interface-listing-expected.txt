@@ -9979,6 +9979,7 @@ interface TextMetrics
     getter ideographicBaseline
     getter width
     method constructor
+    method getSelectionRects
 interface TextTrack : EventTarget
     attribute @@toStringTag
     getter activeCues

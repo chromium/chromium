@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
@@ -55,6 +59,7 @@ float TextMetrics::GetFontBaseline(const TextBaseline& text_baseline,
 
 void TextMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(baselines_);
+  visitor->Trace(font_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -86,6 +91,10 @@ void TextMetrics::Update(const Font& font,
     advances_ = font.IndividualCharacterAdvances(text_run);
   }
 
+  text_runs_.clear();
+  font_ = font;
+  text_length_ = text.length();
+
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
   // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
@@ -97,6 +106,7 @@ void TextMetrics::Update(const Font& font,
   BidiParagraph::Runs runs;
   bidi.GetLogicalRuns(text16, &runs);
   float xpos = 0;
+  text_runs_.reserve(runs.size());
   for (const auto& run : runs) {
     // Measure each run.
     TextRun text_run(StringView(text, run.start, run.Length()), run.Direction(),
@@ -109,19 +119,23 @@ void TextMetrics::Update(const Font& font,
     run_glyph_bounds.Offset(xpos, 0);
     glyph_bounds.Union(run_glyph_bounds);
     xpos += run_width;
+
+    // Save the run for computing selection boxes.
+    text_runs_.push_back(text_run);
   }
   double real_width = xpos;
   width_ = real_width;
 
-  float dx = 0.0f;
-  if (align == kCenterTextAlign)
-    dx = real_width / 2.0f;
-  else if (align == kRightTextAlign ||
-           (align == kStartTextAlign && direction == TextDirection::kRtl) ||
-           (align == kEndTextAlign && direction != TextDirection::kRtl))
-    dx = real_width;
-  actual_bounding_box_left_ = -glyph_bounds.x() + dx;
-  actual_bounding_box_right_ = glyph_bounds.right() - dx;
+  text_align_dx_ = 0.0f;
+  if (align == kCenterTextAlign) {
+    text_align_dx_ = real_width / 2.0f;
+  } else if (align == kRightTextAlign ||
+             (align == kStartTextAlign && direction == TextDirection::kRtl) ||
+             (align == kEndTextAlign && direction != TextDirection::kRtl)) {
+    text_align_dx_ = real_width;
+  }
+  actual_bounding_box_left_ = -glyph_bounds.x() + text_align_dx_;
+  actual_bounding_box_right_ = glyph_bounds.right() - text_align_dx_;
 
   // y direction
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
@@ -162,6 +176,77 @@ void TextMetrics::Update(const Font& font,
   } else {
     baselines_->setIdeographic(-descent - baseline_y);
   }
+}
+
+const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState& exception_state) {
+  HeapVector<Member<DOMRectReadOnly>> selection_rects;
+
+  // Checks indexes that go over the maximum for the text. For indexes less than
+  // 0, an exception is thrown by [EnforceRange] in the idl binding.
+  if (start >= text_length_ || end >= text_length_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        String::Format("The %s index is out of bounds.",
+                       start >= text_length_ ? "start" : "end"));
+    return selection_rects;
+  }
+
+  const double height = font_bounding_box_ascent_ + font_bounding_box_descent_;
+  const double y = -font_bounding_box_ascent_;
+  double accumulated_width = 0.0;
+  unsigned int accumulated_string_length = 0;
+
+  for (const auto& text_run : text_runs_) {
+    // Accumulate string length to know the indexes of this run on the input
+    // string.
+    const unsigned int run_start_index = accumulated_string_length;
+    const unsigned int run_end_index =
+        accumulated_string_length + text_run.length() - 1;
+    accumulated_string_length += text_run.length();
+
+    // Past the selection interval.
+    if (run_start_index > end) {
+      break;
+    }
+
+    // Position of the left border for this run.
+    const double left_border = accumulated_width;
+    accumulated_width += font_.Width(text_run);
+
+    // Handle start > end case the same way the DOM does, returning a zero-width
+    // rect after the advance of the character at the end position.
+    if (start > end && run_start_index <= end && end <= run_end_index) {
+      const unsigned index = base::CheckSub(end, run_start_index).ValueOrDie();
+      gfx::RectF rect = font_.SelectionRectForText(
+          text_run, gfx::PointF(left_border - text_align_dx_, y), height, index,
+          index + 1);
+      rect.set_x(rect.right());
+      rect.set_width(0);
+      selection_rects.push_back(DOMRectReadOnly::FromRectF(rect));
+      break;
+    }
+
+    // Before the selection interval.
+    if (run_end_index < start) {
+      continue;
+    }
+
+    // Calculate the required indexes for this specific run.
+    const unsigned int starting_index =
+        start > run_start_index ? start - run_start_index : 0;
+    const unsigned int ending_index =
+        end < run_end_index ? end - run_start_index + 1 : text_run.length();
+
+    gfx::RectF selection_rect = font_.SelectionRectForText(
+        text_run, gfx::PointF(left_border - text_align_dx_, y), height,
+        starting_index, ending_index);
+    selection_rects.push_back(DOMRectReadOnly::FromRectF(selection_rect));
+  }
+
+  return selection_rects;
 }
 
 }  // namespace blink
