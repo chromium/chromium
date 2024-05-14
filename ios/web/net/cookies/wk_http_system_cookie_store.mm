@@ -56,6 +56,19 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
       .status.IsInclude();
 }
 
+// Helper method that insert a cookie in `weak_creation_time_manager`
+// while ensuring the time is unique.
+void SetCreationTimeEnsureUnique(
+    base::WeakPtr<net::CookieCreationTimeManager> weak_creation_time_manager,
+    NSHTTPCookie* cookie,
+    base::Time creation_time) {
+  if (net::CookieCreationTimeManager* creation_time_manager =
+          weak_creation_time_manager.get()) {
+    creation_time_manager->SetCreationTime(
+        cookie, creation_time_manager->MakeUniqueCreationTime(creation_time));
+  }
+}
+
 // Returns a closure that invokes `one` and then `two` unconditionally. If `two`
 // is null, then returns `one`.
 base::OnceClosure ChainClosure(base::OnceClosure one, base::OnceClosure two) {
@@ -230,15 +243,12 @@ void WKHTTPSystemCookieStore::SetCookieAsync(
     NSHTTPCookie* cookie,
     const base::Time* optional_creation_time,
     SystemCookieCallback callback) {
-  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
-      creation_time_manager_->GetWeakPtr();
+  const base::Time creation_time =
+      optional_creation_time ? *optional_creation_time : base::Time::Now();
 
   base::OnceClosure closure = base::BindOnce(
-      &net::CookieCreationTimeManager::SetCreationTime, weak_time_manager,
-      cookie,
-      weak_time_manager->MakeUniqueCreationTime(optional_creation_time
-                                                    ? *optional_creation_time
-                                                    : base::Time::Now()));
+      &SetCreationTimeEnsureUnique, creation_time_manager_->GetWeakPtr(),
+      cookie, creation_time);
 
   helper_->InsertCookie(cookie,
                         ChainClosure(std::move(closure), std::move(callback)));
