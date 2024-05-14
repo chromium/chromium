@@ -205,8 +205,7 @@ void PickerView::SelectZeroStateCategory(PickerCategory category) {
   SelectCategory(category);
 }
 
-void PickerView::SelectSuggestedZeroStateResult(
-    const PickerSearchResult& result) {
+void PickerView::SelectZeroStateResult(const PickerSearchResult& result) {
   SelectSearchResult(result);
 }
 
@@ -398,7 +397,7 @@ void PickerView::AddContentsViewWithSeparator(PickerLayoutType layout_type) {
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
           this, delegate_->GetAvailableCategories(),
-          delegate_->ShouldShowSuggestedResults(), kMaxSize.width()));
+          delegate_->ShouldShowRecentResults(), kMaxSize.width()));
 
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
       this, kMaxSize.width(), delegate_->GetAssetFetcher()));

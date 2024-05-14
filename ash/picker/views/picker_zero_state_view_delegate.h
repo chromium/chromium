@@ -24,8 +24,7 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   virtual void SelectZeroStateCategory(PickerCategory category) = 0;
 
-  virtual void SelectSuggestedZeroStateResult(
-      const PickerSearchResult& result) = 0;
+  virtual void SelectZeroStateResult(const PickerSearchResult& result) = 0;
 
   virtual void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

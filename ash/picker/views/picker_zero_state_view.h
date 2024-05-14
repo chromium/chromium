@@ -57,13 +57,13 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
     return section_views_;
   }
 
-  PickerSectionView* SuggestedSectionForTesting() const {
-    return suggested_section_view_;
+  PickerSectionView* RecentSectionForTesting() const {
+    return recent_section_view_;
   }
 
  private:
   void OnCategorySelected(PickerCategory category);
-  void OnSuggestedResultSelected(const PickerSearchResult& result);
+  void OnResultSelected(const PickerSearchResult& result);
 
   // Gets or creates the section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
@@ -72,7 +72,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void ScrollPseudoFocusedViewToVisible();
 
-  void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
+  void OnFetchRecentResults(std::vector<PickerSearchResult> result);
 
   void OnFetchZeroStateEditorResults(PickerCategory category,
                                      std::vector<PickerSearchResult> result);
@@ -89,7 +89,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
-  raw_ptr<PickerSectionView> suggested_section_view_ = nullptr;
+  raw_ptr<PickerSectionView> recent_section_view_ = nullptr;
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   base::WeakPtrFactory<PickerZeroStateView> weak_ptr_factory_{this};

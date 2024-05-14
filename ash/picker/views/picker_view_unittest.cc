@@ -115,7 +115,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     requested_case_transformation_category_ = category;
   }
 
-  bool ShouldShowSuggestedResults() override { return true; }
+  bool ShouldShowRecentResults() override { return true; }
 
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {

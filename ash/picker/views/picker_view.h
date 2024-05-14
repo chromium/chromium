@@ -72,8 +72,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // PickerZeroStateViewDelegate:
   void SelectZeroStateCategory(PickerCategory category) override;
-  void SelectSuggestedZeroStateResult(
-      const PickerSearchResult& result) override;
+  void SelectZeroStateResult(const PickerSearchResult& result) override;
   void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void NotifyPseudoFocusChanged(views::View* view) override;

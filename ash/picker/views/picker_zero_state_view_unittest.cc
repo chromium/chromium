@@ -71,7 +71,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
  public:
   MOCK_METHOD(void, SelectZeroStateCategory, (PickerCategory), (override));
   MOCK_METHOD(void,
-              SelectSuggestedZeroStateResult,
+              SelectZeroStateResult,
               (const PickerSearchResult&),
               (override));
   MOCK_METHOD(void,
@@ -95,7 +95,7 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
                           Key(PickerCategoryType::kEditorRewrite),
                           Key(PickerCategoryType::kGeneral),
                           Key(PickerCategoryType::kCalculations)));
-  EXPECT_THAT(view.SuggestedSectionForTesting(), IsNull());
+  EXPECT_THAT(view.RecentSectionForTesting(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
@@ -150,7 +150,7 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
 
   EXPECT_CALL(
       mock_delegate,
-      SelectSuggestedZeroStateResult(Property(
+      SelectZeroStateResult(Property(
           "data", &ash::PickerSearchResult::data,
           VariantWith<ash::PickerSearchResult::ClipboardData>(AllOf(
               Field("item_id", &ash::PickerSearchResult::ClipboardData::item_id,
@@ -163,14 +163,14 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
                     u"test"))))))
       .Times(1);
 
-  ASSERT_THAT(view->SuggestedSectionForTesting(), Not(IsNull()));
+  ASSERT_THAT(view->RecentSectionForTesting(), Not(IsNull()));
   PickerItemView* item_view =
-      view->SuggestedSectionForTesting()->item_views_for_testing()[0];
+      view->RecentSectionForTesting()->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }
 
-TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
+TEST_F(PickerZeroStateViewTest, HidesRecentSectionWhenNoItemsToDisplay) {
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
@@ -185,7 +185,7 @@ TEST_F(PickerZeroStateViewTest, HidesSuggestedSectionWhenNoItemsToDisplay) {
       &mock_delegate, kAllCategories, true, kPickerWidth));
   widget->Show();
 
-  EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
+  EXPECT_THAT(view->RecentSectionForTesting(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
@@ -196,7 +196,7 @@ TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
       &mock_delegate, kAllCategories, false, kPickerWidth));
   widget->Show();
 
-  EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
+  EXPECT_THAT(view->RecentSectionForTesting(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest,

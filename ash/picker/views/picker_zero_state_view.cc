@@ -94,7 +94,7 @@ std::unique_ptr<PickerListItemView> CreateListItemViewForSearchResult(
 PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
     base::span<const PickerCategory> available_categories,
-    bool show_suggested_results,
+    bool show_recent_results,
     int picker_view_width)
     : delegate_(delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -103,10 +103,10 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ =
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 
-  if (show_suggested_results) {
+  if (show_recent_results) {
     clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
     clipboard_provider_->FetchResults(
-        base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+        base::BindRepeating(&PickerZeroStateView::OnFetchRecentResults,
                             weak_ptr_factory_.GetWeakPtr()),
         u"", kClipboardRecency);
   }
@@ -269,9 +269,8 @@ void PickerZeroStateView::OnCategorySelected(PickerCategory category) {
   delegate_->SelectZeroStateCategory(category);
 }
 
-void PickerZeroStateView::OnSuggestedResultSelected(
-    const PickerSearchResult& result) {
-  delegate_->SelectSuggestedZeroStateResult(result);
+void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
+  delegate_->SelectZeroStateResult(result);
 }
 
 void PickerZeroStateView::SetPseudoFocusedView(views::View* view) {
@@ -312,23 +311,23 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
   }
 }
 
-void PickerZeroStateView::OnFetchSuggestedResults(
+void PickerZeroStateView::OnFetchRecentResults(
     std::vector<PickerSearchResult> results) {
   if (results.empty()) {
     return;
   }
-  if (!suggested_section_view_) {
-    suggested_section_view_ = section_list_view_->AddSectionAt(0);
-    suggested_section_view_->AddTitleLabel(
-        l10n_util::GetStringUTF16(IDS_PICKER_SUGGESTED_SECTION_TITLE));
+  if (!recent_section_view_) {
+    recent_section_view_ = section_list_view_->AddSectionAt(0);
+    recent_section_view_->AddTitleLabel(
+        GetSectionTitleForPickerSectionType(PickerSectionType::kRecentlyUsed));
   }
   for (const auto& result : results) {
     if (std::unique_ptr<PickerListItemView> item_view =
             CreateListItemViewForSearchResult(
-                result, base::BindRepeating(
-                            &PickerZeroStateView::OnSuggestedResultSelected,
-                            weak_ptr_factory_.GetWeakPtr(), result))) {
-      suggested_section_view_->AddListItem(std::move(item_view));
+                result,
+                base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                                    weak_ptr_factory_.GetWeakPtr(), result))) {
+      recent_section_view_->AddListItem(std::move(item_view));
     }
   }
   SetPseudoFocusedView(section_list_view_->GetTopItem());
@@ -348,7 +347,7 @@ void PickerZeroStateView::OnFetchZeroStateEditorResults(
     CHECK(editor_data);
 
     auto item_view = std::make_unique<PickerListItemView>(
-        base::BindRepeating(&PickerZeroStateView::OnSuggestedResultSelected,
+        base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                             weak_ptr_factory_.GetWeakPtr(), result));
     item_view->SetPrimaryText(editor_data->display_name);
     if (editor_data->category.has_value()) {

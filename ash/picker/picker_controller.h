@@ -75,7 +75,7 @@ class ASH_EXPORT PickerController
 
   // PickerViewDelegate:
   std::vector<PickerCategory> GetAvailableCategories() override;
-  bool ShouldShowSuggestedResults() override;
+  bool ShouldShowRecentResults() override;
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override;
   void TransformSelectedText(PickerCategory category) override;
