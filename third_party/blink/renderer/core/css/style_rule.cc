@@ -809,13 +809,12 @@ Vector<String> StyleRuleLayerStatement::GetNamesAsStrings() const {
 StyleRulePage::StyleRulePage(CSSSelectorList* selector_list,
                              CSSPropertyValueSet* properties,
                              HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleBase(kPage),
+    : StyleRuleGroup(kPage, std::move(child_rules)),
       properties_(properties),
-      selector_list_(selector_list),
-      child_rules_(std::move(child_rules)) {}
+      selector_list_(selector_list) {}
 
 StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
-    : StyleRuleBase(page_rule),
+    : StyleRuleGroup(page_rule),
       properties_(page_rule.properties_->MutableCopy()),
       selector_list_(page_rule.selector_list_->Copy()) {}
 
@@ -830,8 +829,7 @@ void StyleRulePage::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(layer_);
   visitor->Trace(selector_list_);
-  visitor->Trace(child_rules_);
-  StyleRuleBase::TraceAfterDispatch(visitor);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
 StyleRulePageMargin::StyleRulePageMargin(CSSAtRuleID id,

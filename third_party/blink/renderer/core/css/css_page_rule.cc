@@ -34,7 +34,7 @@
 namespace blink {
 
 CSSPageRule::CSSPageRule(StyleRulePage* page_rule, CSSStyleSheet* parent)
-    : CSSRule(parent), page_rule_(page_rule) {}
+    : CSSGroupingRule(page_rule, parent), page_rule_(page_rule) {}
 
 CSSPageRule::~CSSPageRule() = default;
 
@@ -117,12 +117,13 @@ void CSSPageRule::Reattach(StyleRuleBase* rule) {
   if (properties_cssom_wrapper_) {
     properties_cssom_wrapper_->Reattach(page_rule_->MutableProperties());
   }
+  CSSGroupingRule::Reattach(rule);
 }
 
 void CSSPageRule::Trace(Visitor* visitor) const {
   visitor->Trace(page_rule_);
   visitor->Trace(properties_cssom_wrapper_);
-  CSSRule::Trace(visitor);
+  CSSGroupingRule::Trace(visitor);
 }
 
 }  // namespace blink
