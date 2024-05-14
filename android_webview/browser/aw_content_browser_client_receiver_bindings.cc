@@ -287,9 +287,6 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 void AwContentBrowserClient::
     RegisterMojoBinderPoliciesForSameOriginPrerendering(
         content::MojoBinderPolicyMap& policy_map) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
-    return;
-  }
   policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(
       content::MojoBinderAssociatedPolicy::kGrant);
 }
