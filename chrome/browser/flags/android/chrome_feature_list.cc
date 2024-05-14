@@ -213,6 +213,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDragDropIntoOmnibox,
     &kDragDropTabTearing,
     &kDrawEdgeToEdge,
+    &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kDrawWebEdgeToEdge,
     &kDynamicTopChrome,
@@ -632,6 +633,10 @@ BASE_FEATURE(kDragDropTabTearing,
 
 BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDrawKeyNativeEdgeToEdge,
+             "DrawKeyNativeEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDrawNativeEdgeToEdge,

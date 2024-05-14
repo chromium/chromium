@@ -20447,6 +20447,7 @@ from previous Chrome versions.
   <int value="-350558651" label="EnableWebHidInWebView:disabled"/>
   <int value="-350336634"
       label="ExperimentalAccessibilityDictationExtension:enabled"/>
+  <int value="-349924568" label="DrawKeyNativeEdgeToEdge:enabled"/>
   <int value="-349505266" label="ShimlessRMADisableDarkMode:enabled"/>
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
   <int value="-349380607" label="AndroidNightMode:disabled"/>
@@ -22525,6 +22526,7 @@ from previous Chrome versions.
   <int value="560369327" label="LauncherImageSearch:disabled"/>
   <int value="560953355"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:disabled"/>
+  <int value="561162418" label="DrawKeyNativeEdgeToEdge:disabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>

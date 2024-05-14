@@ -2409,6 +2409,9 @@ extern const char kDrawCutoutEdgeToEdgeDescription[];
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 
+extern const char kDrawKeyNativeEdgeToEdgeName[];
+extern const char kDrawKeyNativeEdgeToEdgeDescription[];
+
 extern const char kDrawNativeEdgeToEdgeName[];
 extern const char kDrawNativeEdgeToEdgeDescription[];
 
