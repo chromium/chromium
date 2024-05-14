@@ -34,6 +34,9 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_filters.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
@@ -194,6 +197,20 @@ LensOverlayQueryController::CreateClientContext() {
       lens::RENDERING_ENV_LENS_OVERLAY);
   context.mutable_locale_context()->set_language(
       g_browser_process->GetApplicationLocale());
+  context.mutable_locale_context()->set_region(
+      icu::Locale(g_browser_process->GetApplicationLocale().c_str())
+          .getCountry());
+  std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
+  icu::UnicodeString time_zone_id, time_zone_canonical_id;
+  zone->getID(time_zone_id);
+  UErrorCode status = U_ZERO_ERROR;
+  icu::TimeZone::getCanonicalID(time_zone_id, time_zone_canonical_id, status);
+  if (status == U_ZERO_ERROR) {
+    std::string zone_id_str;
+    time_zone_canonical_id.toUTF8String(zone_id_str);
+    context.mutable_locale_context()->set_time_zone(zone_id_str);
+  }
+
   return context;
 }
 
