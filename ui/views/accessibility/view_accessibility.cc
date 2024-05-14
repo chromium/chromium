@@ -35,6 +35,7 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
     // These roles all have special meaning and shouldn't ever be
     // set on a View.
     case ax::mojom::Role::kDesktop:
+    case ax::mojom::Role::kDocument:  // Used for ARIA role="document".
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kPdfRoot:
@@ -44,18 +45,6 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
     case ax::mojom::Role::kUnknown:
       return false;
 
-    // The role kDocument should not be allowed on Views, but it needs to be
-    // allowed temporarily for the CaptionBubbleLabel view. This is because the
-    // CaptionBubbleLabel is designed to be interacted with by a braille display
-    // in virtual buffer mode. In order to activate the virtual buffer in NVDA,
-    // we set the role to kDocument and the readonly restriction.
-    //
-    // TODO(crbug.com/339479333): Investigate this further to either add a
-    // views-specific role that maps to the document role on the various
-    // platform APIs, or remove this comment and update the allowed usage of the
-    // kDocument role.
-    case ax::mojom::Role::kDocument:  // Used for ARIA role="document".
-      return true;
     default:
       return true;
   }
@@ -192,18 +181,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
       data->SetNameExplicitlyEmpty();
     }
     return;
-  }
-
-  // The role and the name needs to be set on the data member passed to
-  // View::GetAccessibleNodeData in case the view changes either or both.
-  //
-  // TODO(accessibility): This won't be necessary once all Views initialize
-  // their role and name in Views::GetAccessibleNodeData, and that function
-  // is only called once to initialize the cached data.
-  data->role = data_.role;
-  data->SetNameFrom(GetCachedNameFrom());
-  if (!GetCachedName().empty()) {
-    data->SetName(GetCachedName());
   }
 
   view_->GetAccessibleNodeData(data);
@@ -364,7 +341,7 @@ void ViewAccessibility::SetProperties(
     if (name_from.has_value()) {
       SetName(name.value(), name_from.value());
     } else {
-      SetName(name.value());
+      SetName(name.value(), ax::mojom::NameFrom::kAttribute);
     }
   }
 
@@ -460,14 +437,16 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role,
   SetRole(role);
 }
 
-void ViewAccessibility::SetName(std::u16string name,
+void ViewAccessibility::SetName(const std::string& name,
                                 ax::mojom::NameFrom name_from) {
-  // Allow subclasses to adjust the name.
-  view_->AdjustAccessibleName(name, name_from);
-
+  DCHECK_NE(name_from, ax::mojom::NameFrom::kNone);
   // Ensure we have a current `name_from` value. For instance, the name might
   // still be an empty string, but a view is now indicating that this is by
   // design by setting `NameFrom::kAttributeExplicitlyEmpty`.
+  DCHECK_EQ(name.empty(),
+            name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+      << "If the name is being removed to improve the user experience, "
+         "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
   data_.SetNameFrom(name_from);
 
   if (name == GetCachedName()) {
@@ -492,22 +471,23 @@ void ViewAccessibility::SetName(std::u16string name,
     data_.SetName(name);
   }
 
-  view_->OnAccessibleNameChanged(name);
   NotifyEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-void ViewAccessibility::SetName(const std::string& name,
+void ViewAccessibility::SetName(const std::u16string& name,
                                 ax::mojom::NameFrom name_from) {
-  std::u16string string_name = base::UTF8ToUTF16(name);
+  std::string string_name = base::UTF16ToUTF8(name);
   SetName(string_name, name_from);
 }
 
 void ViewAccessibility::SetName(const std::string& name) {
-  SetName(name, GetCachedNameFrom());
+  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
+                    ax::mojom::IntAttribute::kNameFrom)));
 }
 
 void ViewAccessibility::SetName(const std::u16string& name) {
-  SetName(name, GetCachedNameFrom());
+  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
+                    ax::mojom::IntAttribute::kNameFrom)));
 }
 
 void ViewAccessibility::SetName(View& naming_view) {
@@ -528,7 +508,8 @@ void ViewAccessibility::SetName(View& naming_view) {
     DCHECK(!name.empty());
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   } else {
-    std::u16string name = naming_view.GetViewAccessibility().GetCachedName();
+    const std::string& name =
+        naming_view.GetViewAccessibility().GetCachedName();
     DCHECK(!name.empty());
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   }
@@ -538,8 +519,8 @@ void ViewAccessibility::SetName(View& naming_view) {
       {naming_view.GetViewAccessibility().GetUniqueId().Get()});
 }
 
-std::u16string ViewAccessibility::GetCachedName() const {
-  return data_.GetString16Attribute(ax::mojom::StringAttribute::kName);
+const std::string& ViewAccessibility::GetCachedName() const {
+  return data_.GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 ax::mojom::NameFrom ViewAccessibility::GetCachedNameFrom() const {
@@ -632,7 +613,8 @@ void ViewAccessibility::SetDescription(
 void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
 
-  std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
+  const std::string& name =
+      describing_view.GetViewAccessibility().GetCachedName();
   if (name.empty()) {
     // TODO(javiercon): This is a temporary workaround for the scenarios where
     // the name is set via View::SetAccessibleName, which means that

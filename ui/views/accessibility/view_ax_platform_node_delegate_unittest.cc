@@ -471,6 +471,21 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
             ax::mojom::DescriptionFrom::kNone);
 
+  // Setting the name to the empty string without explicitly setting the
+  // source to reflect that should trigger a DCHECK in SetName.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->SetName("", ax::mojom::NameFrom::kAttribute),
+      "Check failed: name.empty\\(\\) == name_from == "
+      "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
+
+  // Setting the name to a non-empty string with a NameFrom of
+  // kAttributeExplicitlyEmpty should trigger a DCHECK in SetName.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->SetName(
+          "foo", ax::mojom::NameFrom::kAttributeExplicitlyEmpty),
+      "Check failed: name.empty\\(\\) == name_from == "
+      "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
+
   button_accessibility()->SetName(
       "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   EXPECT_EQ(button_accessibility()->GetName(), "");
