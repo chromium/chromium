@@ -91,6 +91,10 @@ ci.gpu.linux_builder(
             config = "chromium",
             apply_configs = [
                 "use_clang_coverage",
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Linux Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -156,6 +160,10 @@ ci.gpu.mac_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Mac Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
                 "use_clang_coverage",
             ],
         ),
@@ -225,6 +233,10 @@ ci.gpu.windows_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                # This is not necessary for this builder itself, but is
+                # necessary in order to keep configs in sync with
+                # "ci/Mac Builder" in order for mirroring to work correctly.
+                "chromium_with_telemetry_dependencies",
                 "use_clang_coverage",
             ],
         ),
