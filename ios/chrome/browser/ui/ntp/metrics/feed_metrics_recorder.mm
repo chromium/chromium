@@ -1229,16 +1229,15 @@ using feed::FeedUserActionType;
   base::Time now = base::Time::Now();
   base::TimeDelta additionalTimeInFeed = now - self.feedBecameVisibleTime;
 
-  if (self.feedBecameVisibleTime.is_null()) {
-    base::debug::DumpWithoutCrashing();
-  }
   if (additionalTimeInFeed.is_negative()) {
-    base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/340554892): Fix Good Visits metric.
+    // Temporary fix, but it should reduce the number of occurances.
+    self.feedBecameVisibleTime = base::Time::Now();
+    additionalTimeInFeed = now - self.feedBecameVisibleTime;
   }
   // Temporary fix to resolve negative values in prefs.
   // TODO(crbug.com/329274886): Remove fix once crashes are down to zero.
   if (self.previousTimeInFeedForGoodVisitSession < 0) {
-    base::debug::DumpWithoutCrashing();
     self.previousTimeInFeedForGoodVisitSession = 0;
   }
   self.previousTimeInFeedForGoodVisitSession =
