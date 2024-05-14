@@ -29,55 +29,62 @@ bool BirchItemRemover::Initialized() {
 
 void BirchItemRemover::RemoveItem(BirchItem* item) {
   CHECK(removed_items_proto_.initialized());
-  if (item->GetType() == BirchItemType::kTab) {
-    BirchTabItem* tab_item = static_cast<BirchTabItem*>(item);
-    const std::string hashed_url = base::SHA1HashString(tab_item->url().spec());
 
-    // Add the hashed url to the `removed_tab_items` map.
-    // Note: We are using a map for its set capabilities; the map value is
-    // arbitrary.
-    removed_items_proto_->mutable_removed_tab_items()->insert(
-        {hashed_url, false});
+  // Note: We are using a map for removed items for its set capabilities; the
+  // map value is arbitrary.
+  auto hash_and_insert = [&](const std::string& identifier,
+                             google::protobuf::Map<std::string, bool>* map) {
+    const std::string hashed_identifier = base::SHA1HashString(identifier);
+    map->insert({hashed_identifier, false});
     removed_items_proto_.StartWrite();
-    return;
-  }
-  if (item->GetType() == BirchItemType::kCalendar) {
-    BirchCalendarItem* calendar_item = static_cast<BirchCalendarItem*>(item);
-    const std::string hashed_event_id =
-        base::SHA1HashString(calendar_item->event_id());
+  };
 
-    // Add the hashed event id to the `removed_calendar_items` map.
-    // Note: We are using a map for its set capabilities; the map value is
-    // arbitrary.
-    removed_items_proto_->mutable_removed_calendar_items()->insert(
-        {hashed_event_id, false});
-    removed_items_proto_.StartWrite();
-    return;
-  }
-  if (item->GetType() == BirchItemType::kAttachment ||
-      item->GetType() == BirchItemType::kFile) {
-    std::string hashed_file_id;
-    if (item->GetType() == BirchItemType::kAttachment) {
-      hashed_file_id = base::SHA1HashString(
-          static_cast<BirchAttachmentItem*>(item)->file_id());
-    } else {
-      hashed_file_id =
-          base::SHA1HashString(static_cast<BirchFileItem*>(item)->file_id());
+  switch (item->GetType()) {
+    case BirchItemType::kTab: {
+      hash_and_insert(static_cast<BirchTabItem*>(item)->url().spec(),
+                      removed_items_proto_->mutable_removed_tab_items());
+      return;
+    };
+    case BirchItemType::kSelfShare: {
+      hash_and_insert(static_cast<BirchSelfShareItem*>(item)->url().spec(),
+                      removed_items_proto_->mutable_removed_tab_items());
+      return;
     }
-
-    // Add the hashed file id to the `removed_file_items` map.
-    // Note: We are using a map for its set capabilities; the map value is
-    // arbitrary.
-    removed_items_proto_->mutable_removed_file_items()->insert(
-        {hashed_file_id, false});
-    removed_items_proto_.StartWrite();
-    return;
+    case BirchItemType::kCalendar: {
+      hash_and_insert(static_cast<BirchCalendarItem*>(item)->event_id(),
+                      removed_items_proto_->mutable_removed_calendar_items());
+      return;
+    }
+    case BirchItemType::kAttachment: {
+      hash_and_insert(static_cast<BirchAttachmentItem*>(item)->file_id(),
+                      removed_items_proto_->mutable_removed_file_items());
+      return;
+    }
+    case BirchItemType::kFile: {
+      hash_and_insert(static_cast<BirchFileItem*>(item)->file_id(),
+                      removed_items_proto_->mutable_removed_file_items());
+      return;
+    }
+    case ash::BirchItemType::kReleaseNotes:
+    case ash::BirchItemType::kWeather:
+    case ash::BirchItemType::kTest: {
+      NOTREACHED_NORETURN();
+    }
   }
 }
 
 void BirchItemRemover::FilterRemovedTabs(std::vector<BirchTabItem>* tab_items) {
   CHECK(removed_items_proto_.initialized());
   std::erase_if(*tab_items, [this](const BirchTabItem& item) {
+    const std::string hashed_url = base::SHA1HashString(item.url().spec());
+    return removed_items_proto_->removed_tab_items().contains(hashed_url);
+  });
+}
+
+void BirchItemRemover::FilterRemovedSelfShareItems(
+    std::vector<BirchSelfShareItem>* self_share_items) {
+  CHECK(removed_items_proto_.initialized());
+  std::erase_if(*self_share_items, [this](const BirchSelfShareItem& item) {
     const std::string hashed_url = base::SHA1HashString(item.url().spec());
     return removed_items_proto_->removed_tab_items().contains(hashed_url);
   });

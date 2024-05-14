@@ -268,7 +268,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   item_remover_->FilterRemovedCalendarItems(&calendar_data_.items);
   item_remover_->FilterRemovedAttachmentItems(&attachment_data_.items);
   item_remover_->FilterRemovedFileItems(&file_suggest_data_.items);
-  // TODO(b/333412417): Implement item remove for Self Share items.
+  item_remover_->FilterRemovedSelfShareItems(&self_share_data_.items);
 
   BirchRanker ranker(GetNow());
   ranker.RankCalendarItems(&calendar_data_.items);

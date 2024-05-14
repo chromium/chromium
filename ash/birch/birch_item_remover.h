@@ -43,6 +43,8 @@ class ASH_EXPORT BirchItemRemover {
   // Erases from the BirchItem list any items which have been removed by the
   // user. The list is mutated in place.
   void FilterRemovedTabs(std::vector<BirchTabItem>* tab_items);
+  void FilterRemovedSelfShareItems(
+      std::vector<BirchSelfShareItem>* self_share_items);
   void FilterRemovedCalendarItems(
       std::vector<BirchCalendarItem>* calendar_items);
   void FilterRemovedAttachmentItems(
