@@ -1221,7 +1221,7 @@ BASE_FEATURE(kWebViewSuppressTapDuringFling,
 // NV12 is present (as determined by the relevant command-line flags).
 BASE_FEATURE(kGateNV12GMBVideoFramesOnHWSupport,
              "GateNV12GMBVideoFramesOnHWSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)
