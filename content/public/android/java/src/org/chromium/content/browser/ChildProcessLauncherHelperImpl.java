@@ -755,7 +755,12 @@ public final class ChildProcessLauncherHelperImpl {
             boolean boostForPendingViews,
             @ChildProcessImportance int importance) {
         assert LauncherThread.runningOnLauncherThread();
-        assert mLauncher.getPid() == pid;
+        assert mLauncher.getPid() == pid
+                : "The provided pid ("
+                        + pid
+                        + ") did not match the launcher's pid ("
+                        + mLauncher.getPid()
+                        + ").";
         if (getByPid(pid) == null) {
             // Child already disconnected. Ignore any trailing calls.
             return;
