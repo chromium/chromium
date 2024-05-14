@@ -496,7 +496,7 @@ TEST(CSSSelectorParserTest, ScrollMarkerPseudos) {
   };
 
   TestCase test_cases[] = {
-      {"ul::scroll-markers", CSSSelector::kPseudoScrollMarkers},
+      {"ul::scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
   };
 

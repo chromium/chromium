@@ -228,8 +228,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ScrollbarCorner;
     case kPseudoIdScrollMarker:
       return protocol::DOM::PseudoTypeEnum::ScrollMarker;
-    case kPseudoIdScrollMarkers:
-      return protocol::DOM::PseudoTypeEnum::ScrollMarkers;
+    case kPseudoIdScrollMarkerGroup:
+      return protocol::DOM::PseudoTypeEnum::ScrollMarkerGroup;
     case kPseudoIdResizer:
       return protocol::DOM::PseudoTypeEnum::Resizer;
     case kPseudoIdInputListButton:
