@@ -276,14 +276,6 @@
             "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
           }
         ]
-      },
-      {
-        "apk": "android-cts/testcases/CtsTextTestCases.apk",
-        "includes": [
-          {
-            "match": "android.text.cts.EmojiTest#testEmojiGlyph"
-          }
-        ]
       }
     ]
   },
