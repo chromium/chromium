@@ -729,6 +729,8 @@ tflite_static_library("tflite") {
     sources += [
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
+      "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
+      "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
     ]
