@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1607,8 +1608,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
                                         can_create_web_app);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-  command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF,
-                                        CanSendTabToSelf(browser_));
+  UpdateCommandAndActionEnabled(IDC_SEND_TAB_TO_SELF, kActionSendTabToSelf,
+                                CanSendTabToSelf(browser_));
+
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR,
                                         CanGenerateQrCode(browser_));
 
@@ -1873,15 +1875,7 @@ void BrowserCommandController::UpdatePrintingState() {
   if (is_locked_fullscreen_)
     return;
 
-  bool print_enabled = CanPrint(browser_);
-  command_updater_.UpdateCommandEnabled(IDC_PRINT, print_enabled);
-  if (features::IsToolbarPinningEnabled()) {
-    actions::ActionItem* const print_action =
-        actions::ActionManager::Get().FindAction(kActionPrint);
-    if (print_action) {
-      print_action->SetEnabled(print_enabled);
-    }
-  }
+  UpdateCommandAndActionEnabled(IDC_PRINT, kActionPrint, CanPrint(browser_));
 #if BUILDFLAG(ENABLE_PRINTING)
   command_updater_.UpdateCommandEnabled(IDC_BASIC_PRINT,
                                         CanBasicPrint(browser_));
@@ -1986,6 +1980,26 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
                                         CanMoveActiveTabToNewWindow(browser_));
   UpdateCommandsForBookmarkEditing();
+}
+
+actions::ActionItem* BrowserCommandController::FindAction(
+    actions::ActionId action_id) {
+  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
+  return browser_actions ? actions::ActionManager::Get().FindAction(
+                               action_id, browser_actions->root_action_item())
+                         : nullptr;
+}
+
+void BrowserCommandController::UpdateCommandAndActionEnabled(
+    int command_id,
+    actions::ActionId action_id,
+    bool enabled) {
+  command_updater_.UpdateCommandEnabled(command_id, enabled);
+  if (features::IsToolbarPinningEnabled()) {
+    if (auto* const action = FindAction(action_id)) {
+      action->SetEnabled(enabled);
+    }
+  }
 }
 
 BrowserWindow* BrowserCommandController::window() {

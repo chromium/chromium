@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -305,5 +306,19 @@ void BrowserActions::InitializeBrowserActions() {
                            base::Unretained(&(browser_.get()))),
                        kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
                        kDeveloperToolsIcon)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                send_tab_to_self::ShowBubble(
+                    browser->tab_strip_model()->GetActiveWebContents());
+              },
+              base::Unretained(&(browser_.get()))),
+          kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
+          kDevicesChromeRefreshIcon)
+          .SetEnabled(chrome::CanSendTabToSelf(&(browser_.get())))
           .Build());
 }
