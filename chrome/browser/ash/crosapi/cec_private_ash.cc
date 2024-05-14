@@ -75,18 +75,17 @@ void CecPrivateAsh::QueryDisplayCecPowerState(
     LOG(WARNING)
         << "CecPrivate crosapi invoked before dbus client became available.";
     std::move(callback).Run({});
-  } else {
-    dbus_client->QueryDisplayCecPowerState(
-        base::BindOnce([](const std::vector<ash::CecServiceClient::PowerState>&
-                              power_states) {
-          std::vector<PowerState> converted_states;
-          for (const ash::CecServiceClient::PowerState& state : power_states) {
-            converted_states.push_back(
-                ConvertCecServiceClientPowerState(state));
-          }
-          return converted_states;
-        }).Then(std::move(callback)));
+    return;
   }
+  dbus_client->QueryDisplayCecPowerState(
+      base::BindOnce([](const std::vector<ash::CecServiceClient::PowerState>&
+                            power_states) {
+        std::vector<PowerState> converted_states;
+        for (const ash::CecServiceClient::PowerState& state : power_states) {
+          converted_states.push_back(ConvertCecServiceClientPowerState(state));
+        }
+        return converted_states;
+      }).Then(std::move(callback)));
 }
 
 }  // namespace crosapi
