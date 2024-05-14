@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_navigation_helper.h"
 
 #include <string_view>
 

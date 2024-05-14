@@ -172,7 +172,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
-#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "ui/events/test/event_generator.h"
 #endif
 

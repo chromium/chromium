@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_LENS_LENS_SIDE_PANEL_HELPER_H_
-#define CHROME_BROWSER_UI_LENS_LENS_SIDE_PANEL_HELPER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_HELPER_H_
+#define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_HELPER_H_
 
 #include "base/functional/callback_forward.h"
 #include "url/gurl.h"
@@ -56,4 +56,4 @@ content::WebContents* GetLensUnifiedSidePanelWebContentsForTesting(
 void CreateLensUnifiedSidePanelEntryForTesting(Browser* browser);
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_LENS_LENS_SIDE_PANEL_HELPER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_HELPER_H_

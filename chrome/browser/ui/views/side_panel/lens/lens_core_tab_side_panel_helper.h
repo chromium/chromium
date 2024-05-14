@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_
-#define CHROME_BROWSER_UI_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_
 
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
@@ -37,4 +37,4 @@ bool IsSidePanelEnabledFor3PDse(content::WebContents* web_contents);
 
 }  // namespace lens
 
-#endif  // CHROME_BROWSER_UI_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_LENS_LENS_CORE_TAB_SIDE_PANEL_HELPER_H_

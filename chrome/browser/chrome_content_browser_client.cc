@@ -613,7 +613,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_navigation_helper.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
