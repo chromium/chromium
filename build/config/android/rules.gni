@@ -1939,6 +1939,10 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "_IS_FOR_TEST" ]
       }
 
+      if (is_cronet_build) {
+        defines += [ "_IS_CRONET_BUILD" ]
+      }
+
       if (defined(invoker.write_clang_profiling_data) &&
           invoker.write_clang_profiling_data) {
         defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
