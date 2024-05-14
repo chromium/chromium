@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -18,6 +19,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
+import org.chromium.chrome.browser.tab_resumption.ForeignSessionSuggestionBackend.UrlFilteringDelegate;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class ForeignSessionSuggestionBackendTest extends TestSupport {
     @Mock private ForeignSessionHelper mForeignSessionHelper;
+    @Mock private UrlFilteringDelegate mUrlFilteringDelegate;
 
     private ForeignSessionSuggestionBackend mSuggestionBackend;
 
@@ -36,7 +39,7 @@ public class ForeignSessionSuggestionBackendTest extends TestSupport {
         MockitoAnnotations.initMocks(this);
 
         mSuggestionBackend =
-                new ForeignSessionSuggestionBackend(mForeignSessionHelper) {
+                new ForeignSessionSuggestionBackend(mForeignSessionHelper, mUrlFilteringDelegate) {
                     @Override
                     long getCurrentTimeMs() {
                         return CURRENT_TIME_MS;
@@ -66,6 +69,24 @@ public class ForeignSessionSuggestionBackendTest extends TestSupport {
         mSuggestionBackend.readCached(
                 (List<SuggestionEntry> suggestions) -> {
                     assertSuggestionsEqual(makeForeignSessionSuggestionsB(), suggestions);
+                    mIsCalled = true;
+                });
+        assert mIsCalled;
+    }
+
+    @Test
+    @SmallTest
+    public void testUrlFiltering() {
+        when(mForeignSessionHelper.getForeignSessions()).thenReturn(makeForeignSessionsA());
+        when(mUrlFilteringDelegate.shouldExcludeUrl(eq(TAB1.url))).thenReturn(true);
+        List<SuggestionEntry> expectedSuggestions = makeForeignSessionSuggestionsA();
+        // The index of TAB1 is 2.
+        expectedSuggestions.remove(2);
+
+        mIsCalled = false;
+        mSuggestionBackend.readCached(
+                (List<SuggestionEntry> suggestions) -> {
+                    assertSuggestionsEqual(expectedSuggestions, suggestions);
                     mIsCalled = true;
                 });
         assert mIsCalled;

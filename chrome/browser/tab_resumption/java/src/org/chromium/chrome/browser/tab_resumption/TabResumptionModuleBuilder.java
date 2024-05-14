@@ -155,7 +155,8 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                     isV2Enabled
                             ? new VisitedUrlRankingBackend(profile)
                             : new ForeignSessionSuggestionBackend(
-                                    new ForeignSessionHelper(profile));
+                                    new ForeignSessionHelper(profile),
+                                    (url) -> TabResumptionModuleUtils.shouldExcludeUrl(url));
             mSuggestionEntrySource =
                     SyncDerivedSuggestionEntrySource.createFromProfile(profile, suggestionBackend);
         }
