@@ -76,9 +76,11 @@ class CORE_EXPORT SpaceSplitString {
   bool IsNull() const { return !data_; }
   const AtomicString& operator[](wtf_size_t i) const { return (*data_)[i]; }
   Vector<AtomicString, 4>::const_iterator begin() const {
-    return data_->begin();
+    return data_ ? data_->begin() : nullptr;
   }
-  Vector<AtomicString, 4>::const_iterator end() const { return data_->end(); }
+  Vector<AtomicString, 4>::const_iterator end() const {
+    return data_ ? data_->end() : nullptr;
+  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(data_); }
 
