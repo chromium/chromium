@@ -101,11 +101,6 @@ BASE_FEATURE(kAltClickAndSixPackCustomization,
              "AltClickAndSixPackCustomization",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable AutoEnrollment for Kiosk in OOBE
-BASE_FEATURE(kAutoEnrollmentKioskInOobe,
-             "AutoEnrollmentKioskInOobe",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to allow Dev channel to use Prod server feature.
 BASE_FEATURE(kAmbientModeDevUseProdFeature,
              "ChromeOSAmbientModeDevChannelUseProdServer",
@@ -816,11 +811,6 @@ BASE_FEATURE(kEnableOAuthIpp,
 // Enables the OOBE ChromeVox hint dialog and announcement feature.
 BASE_FEATURE(kEnableOobeChromeVoxHint,
              "EnableOobeChromeVoxHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Kiosk enrollment option in OOBE.
-BASE_FEATURE(kEnableKioskEnrollmentInOobe,
-             "EnableKioskEnrollmentInOobe",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Kiosk UI in Login screen.
@@ -1832,11 +1822,6 @@ BASE_FEATURE(kFeatureManagementLocalImageSearch,
              "FeatureManagementLocalImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables new flow for license packaged devices with enterprise license.
-BASE_FEATURE(kLicensePackagedOobeFlow,
-             "LicensePackagedOobeFlow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables cross device supported reports within the feedback tool.
 // (This feature is only available for dogfooders)
 BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
@@ -1866,11 +1851,6 @@ BASE_FEATURE(kLockScreenHideSensitiveNotificationsSupport,
 BASE_FEATURE(kLockScreenInlineReply,
              "LockScreenInlineReply",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables new flow for Education license packaged devices.
-BASE_FEATURE(kEducationEnrollmentOobeFlow,
-             "EducationEnrollmentOobeFlow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables notifications on the lock screen.
 BASE_FEATURE(kLockScreenNotifications,
@@ -3207,10 +3187,6 @@ bool IsAudioSelectionImprovementEnabled() {
   return base::FeatureList::IsEnabled(kAudioSelectionImprovement);
 }
 
-bool IsAutoEnrollmentKioskInOobeEnabled() {
-  return base::FeatureList::IsEnabled(kAutoEnrollmentKioskInOobe);
-}
-
 bool Is16DesksEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagement16Desks);
 }
@@ -3917,10 +3893,6 @@ bool IsLauncherSearchControlEnabled() {
          base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
 
-bool IsLicensePackagedOobeFlowEnabled() {
-  return base::FeatureList::IsEnabled(kLicensePackagedOobeFlow);
-}
-
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
 }
@@ -3944,10 +3916,6 @@ void ForceEnableLocalPasswordsForConsumers() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
-}
-
-bool IsEducationEnrollmentOobeFlowEnabled() {
-  return base::FeatureList::IsEnabled(kEducationEnrollmentOobeFlow);
 }
 
 bool IsGameDashboardEnabled() {
@@ -4083,10 +4051,6 @@ bool IsOobeChromeVoxHintEnabled() {
 
 bool IsOobeGaiaInfoScreenEnabled() {
   return base::FeatureList::IsEnabled(kOobeGaiaInfoScreen);
-}
-
-bool IsKioskEnrollmentInOobeEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKioskEnrollmentInOobe);
 }
 
 bool IsKioskLoginScreenEnabled() {
