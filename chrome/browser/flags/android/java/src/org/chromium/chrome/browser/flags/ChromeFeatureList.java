@@ -552,8 +552,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctIntentFeatureOverrides =
             newCachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
     public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, false);
-    public static final CachedFlag sCctPageInsightsHub =
-            newCachedFlag(CCT_PAGE_INSIGHTS_HUB, false);
+    public static final CachedFlag sCctPageInsightsHub = newCachedFlag(CCT_PAGE_INSIGHTS_HUB, true);
     public static final CachedFlag sCctGoogleBottomBar =
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctResizableForThirdParties =
