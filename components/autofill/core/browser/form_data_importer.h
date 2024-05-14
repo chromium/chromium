@@ -91,11 +91,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
-  // TODO(crbug.com/40876814): Rename to ExtractCreditCardFromForm() once
-  // `features::kAutofillRelaxCreditCardImport` is launched.
-  ExtractCreditCardFromFormResult ExtractCreditCardFromFormRelaxed(
-      const FormStructure& form);
-
   // Tries to initiate the saving of `extracted_iban` if applicable.
   bool ProcessIbanImportCandidate(Iban& extracted_iban);
 

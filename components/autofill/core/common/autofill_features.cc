@@ -156,12 +156,6 @@ const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
     &kAutofillEnableRankingFormulaCreditCards,
     "autofill_ranking_formula_virtual_card_boost_half_life", 15};
 
-// Relaxes the requirements for offering credit card import.
-// TODO(crbug.com/40876814): Clean up when launched.
-BASE_FEATURE(kAutofillRelaxCreditCardImport,
-             "AutofillRelaxCreditCardImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, addresses of every country are considered eligible for account
 // address storage.
 BASE_FEATURE(kAutofillEnableAccountStorageForIneligibleCountries,
