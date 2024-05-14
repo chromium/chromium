@@ -512,11 +512,13 @@ BASE_FEATURE(kCacheStorageCodeCacheHintHeader,
 const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
     &kCacheStorageCodeCacheHintHeader, "name", "x-CacheStorageCodeCacheHint"};
 
-// Enabled 03/2024 on macOS (and much earlier elsewhere).
-// Keeping the feature to perform a holdback experiment.
+// Temporarily disabled due to issues:
+// - PDF blank previews
+// - Canvas corruption on ARM64 macOS
+// See https://g-issues.chromium.org/issues/328755781
 BASE_FEATURE(kCanvas2DHibernation,
              "Canvas2DHibernation",
-             base::FeatureState::FEATURE_ENABLED_BY_DEFAULT);
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
