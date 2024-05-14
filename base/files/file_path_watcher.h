@@ -157,6 +157,13 @@ class BASE_EXPORT FilePathWatcher {
     // allow to shut down properly while the object is still alive.
     virtual void Cancel() = 0;
 
+#if BUILDFLAG(IS_WIN)
+    // Gets the Lock associated with the base::FilePathWatcher implementation's
+    // Watch thread. Tests can use this to block that thread and cause a buffer
+    // overflow.
+    virtual Lock& GetWatchThreadLockForTest() = 0;
+#endif
+
    protected:
     friend class FilePathWatcher;
 
@@ -212,6 +219,13 @@ class BASE_EXPORT FilePathWatcher {
   bool WatchWithChangeInfo(const FilePath& path,
                            const WatchOptions& options,
                            const CallbackWithChangeInfo& callback);
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the Lock associated with the base::FilePathWatcher implementation's
+  // Watch thread. Tests can use this to block that thread and cause a buffer
+  // overflow.
+  Lock& GetWatchThreadLockForTest();
+#endif
 
  private:
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);

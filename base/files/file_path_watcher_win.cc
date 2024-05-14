@@ -8,11 +8,15 @@
 
 #include <winnt.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <tuple>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -105,16 +109,27 @@ class CompletionIOPortThread final : public PlatformThread::Delegate {
   // Thread safe.
   std::optional<WatcherEntryId> AddWatcher(
       FilePathWatcherImpl& watcher,
-      base::win::ScopedHandle watched_handle);
+      base::win::ScopedHandle watched_handle,
+      base::FilePath watched_path);
 
   // Thread safe.
   void RemoveWatcher(WatcherEntryId watcher_id);
 
+  Lock& GetLockForTest();  // IN-TEST
+
  private:
   friend NoDestructor<CompletionIOPortThread>;
 
-  // Choose something small since we won't actually be processing the buffer.
-  static constexpr size_t kWatchBufferSizeBytes = sizeof(DWORD);
+  // The max size of a file notification assuming that long paths aren't
+  // enabled.
+  static constexpr size_t kMaxFileNotifySize =
+      sizeof(FILE_NOTIFY_INFORMATION) + MAX_PATH;
+
+  // Choose a decent number of notifications to support that isn't too large.
+  // Whatever we choose will be doubled by the kernel's copy of the buffer.
+  static constexpr int kBufferNotificationCount = 20;
+  static constexpr size_t kWatchBufferSizeBytes =
+      kBufferNotificationCount * kMaxFileNotifySize;
 
   // Must be DWORD aligned.
   static_assert(kWatchBufferSizeBytes % sizeof(DWORD) == 0);
@@ -125,10 +140,12 @@ class CompletionIOPortThread final : public PlatformThread::Delegate {
   struct WatcherEntry {
     WatcherEntry(base::WeakPtr<FilePathWatcherImpl> watcher_weak_ptr,
                  scoped_refptr<SequencedTaskRunner> task_runner,
-                 base::win::ScopedHandle watched_handle)
+                 base::win::ScopedHandle watched_handle,
+                 base::FilePath watched_path)
         : watcher_weak_ptr(std::move(watcher_weak_ptr)),
           task_runner(std::move(task_runner)),
-          watched_handle(std::move(watched_handle)) {}
+          watched_handle(std::move(watched_handle)),
+          watched_path(std::move(watched_path)) {}
     ~WatcherEntry() = default;
 
     // Delete copy and move constructors since `buffer` should not be copied or
@@ -142,6 +159,7 @@ class CompletionIOPortThread final : public PlatformThread::Delegate {
     scoped_refptr<SequencedTaskRunner> task_runner;
 
     base::win::ScopedHandle watched_handle;
+    base::FilePath watched_path;
 
     alignas(DWORD) uint8_t buffer[kWatchBufferSizeBytes];
   };
@@ -200,6 +218,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   void Cancel() override;
 
+  Lock& GetWatchThreadLockForTest() override;  // IN-TEST
+
  private:
   friend CompletionIOPortThread;
 
@@ -209,7 +229,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   void CloseWatchHandle();
 
-  void OnObjectSignaled();
+  void BufferOverflowed();
+
+  void WatchedDirectoryDeleted(base::FilePath watched_path,
+                               base::HeapArray<uint8_t> notification_batch);
+
+  void ProcessNotificationBatch(base::FilePath watched_path,
+                                base::HeapArray<uint8_t> notification_batch);
 
   // Callback to notify upon changes.
   FilePathWatcher::CallbackWithChangeInfo callback_;
@@ -222,13 +248,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // The type of watch requested.
   Type type_ = Type::kNonRecursive;
 
-  // Keep track of the last modified time of the file.  We use nulltime to
-  // represent the file not existing.
-  Time last_modified_;
-
-  // The time at which we processed the first notification with the
-  // `last_modified_` time stamp.
-  Time first_notification_;
+  bool target_exists_ = false;
 
   WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -238,9 +258,9 @@ CompletionIOPortThread::CompletionIOPortThread() {
 }
 
 DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
-  bool success = ::ReadDirectoryChangesW(
+  bool success = ReadDirectoryChangesW(
       watcher_entry.watched_handle.get(), &watcher_entry.buffer,
-      static_cast<DWORD>(kWatchBufferSizeBytes), /*bWatchSubtree =*/true,
+      kWatchBufferSizeBytes, /*bWatchSubtree=*/true,
       FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
           FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
           FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY,
@@ -253,7 +273,8 @@ DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
 
 std::optional<CompletionIOPortThread::WatcherEntryId>
 CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
-                                   base::win::ScopedHandle watched_handle) {
+                                   base::win::ScopedHandle watched_handle,
+                                   base::FilePath watched_path) {
   AutoLock auto_lock(watchers_lock_);
 
   WatcherEntryId watcher_id = watcher_id_generator_.GenerateNextId();
@@ -267,7 +288,8 @@ CompletionIOPortThread::AddWatcher(FilePathWatcherImpl& watcher,
   auto [it, inserted] = watcher_entries_.emplace(
       std::piecewise_construct, std::forward_as_tuple(watcher_id),
       std::forward_as_tuple(watcher.weak_factory_.GetWeakPtr(),
-                            watcher.task_runner(), std::move(watched_handle)));
+                            watcher.task_runner(), std::move(watched_handle),
+                            std::move(watched_path)));
 
   CHECK(inserted);
 
@@ -304,6 +326,10 @@ void CompletionIOPortThread::RemoveWatcher(WatcherEntryId watcher_id) {
   }
 }
 
+Lock& CompletionIOPortThread::GetLockForTest() {
+  return watchers_lock_;
+}
+
 void CompletionIOPortThread::ThreadMain() {
   while (true) {
     DWORD bytes_transferred;
@@ -315,10 +341,11 @@ void CompletionIOPortThread::ThreadMain() {
         INFINITE);
     CHECK(&overlapped == overlapped_out);
 
+    DWORD io_port_error = ERROR_SUCCESS;
     if (io_port_result == FALSE) {
-      DWORD io_port_error = ::GetLastError();
+      io_port_error = ::GetLastError();
       // `ERROR_ACCESS_DENIED` should be the only error we can receive.
-      DCHECK_EQ(io_port_error, static_cast<DWORD>(ERROR_ACCESS_DENIED));
+      CHECK_EQ(io_port_error, static_cast<DWORD>(ERROR_ACCESS_DENIED));
     }
 
     AutoLock auto_lock(watchers_lock_);
@@ -327,14 +354,12 @@ void CompletionIOPortThread::ThreadMain() {
 
     auto watcher_entry_it = watcher_entries_.find(watcher_id);
 
-    if (watcher_entry_it == watcher_entries_.end()) {
-      NOTREACHED() << "!watcher_entries_.contains(watcher_id)";
-      continue;
-    }
+    CHECK(watcher_entry_it != watcher_entries_.end())
+        << "WatcherEntryId not in map";
 
     auto& watcher_entry = watcher_entry_it->second;
-    auto& [watcher_weak_ptr, task_runner, watched_handle, buffer] =
-        watcher_entry;
+    auto& [watcher_weak_ptr, task_runner, watched_handle, watched_path,
+           buffer] = watcher_entry;
 
     if (!watched_handle.is_valid()) {
       // After the handle has been closed, a final notification will be sent
@@ -348,9 +373,58 @@ void CompletionIOPortThread::ThreadMain() {
       continue;
     }
 
-    task_runner->PostTask(FROM_HERE,
-                          base::BindOnce(&FilePathWatcherImpl::OnObjectSignaled,
-                                         watcher_weak_ptr));
+    // `GetQueuedCompletionStatus` can fail with `ERROR_ACCESS_DENIED` when the
+    // watched directory is deleted.
+    if (io_port_result == FALSE) {
+      CHECK(bytes_transferred == 0);
+
+      task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(&FilePathWatcherImpl::WatchedDirectoryDeleted,
+                         watcher_weak_ptr, watched_path,
+                         base::HeapArray<uint8_t>()));
+      continue;
+    }
+
+    base::HeapArray<uint8_t> notification_batch;
+    if (bytes_transferred > 0) {
+      notification_batch = base::HeapArray<uint8_t>::CopiedFrom(
+          base::span<uint8_t>(buffer).first(bytes_transferred));
+    }
+
+    // Let the kernel know that we're ready to receive change events again in
+    // the `watcher_entry`'s `buffer`.
+    //
+    // We do this as soon as possible, so that not too many events are received
+    // in the next batch. Too many events can cause a buffer overflow.
+    DWORD result = SetupWatch(watcher_entry);
+
+    // `SetupWatch` can fail if the watched directory was deleted before
+    // `SetupWatch` was called but after `GetQueuedCompletionStatus` returned.
+    if (result != ERROR_SUCCESS) {
+      CHECK_EQ(result, static_cast<DWORD>(ERROR_ACCESS_DENIED));
+      task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(&FilePathWatcherImpl::WatchedDirectoryDeleted,
+                         watcher_weak_ptr, watched_path,
+                         std::move(notification_batch)));
+      continue;
+    }
+
+    // `GetQueuedCompletionStatus` succeeds with zero bytes transferred if there
+    // is a buffer overflow.
+    if (bytes_transferred == 0) {
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&FilePathWatcherImpl::BufferOverflowed,
+                                    watcher_weak_ptr));
+      continue;
+    }
+
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FilePathWatcherImpl::ProcessNotificationBatch,
+                       watcher_weak_ptr, watched_path,
+                       std::move(notification_batch)));
   }
 }
 
@@ -389,10 +463,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   type_ = options.type;
 
   File::Info file_info;
-  if (GetFileInfo(target_, &file_info)) {
-    last_modified_ = file_info.last_modified;
-    first_notification_ = Time::Now();
-  }
+  target_exists_ = GetFileInfo(target_, &file_info);
 
   return SetupWatchHandleForTarget();
 }
@@ -412,69 +483,118 @@ void FilePathWatcherImpl::Cancel() {
   callback_.Reset();
 }
 
-void FilePathWatcherImpl::OnObjectSignaled() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+Lock& FilePathWatcherImpl::GetWatchThreadLockForTest() {
+  return CompletionIOPortThread::Get()->GetLockForTest();  // IN-TEST
+}
 
-  auto self = weak_factory_.GetWeakPtr();
+void FilePathWatcherImpl::BufferOverflowed() {
+  // `this` may be deleted after `callback_` is run.
+  callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
+}
 
+void FilePathWatcherImpl::WatchedDirectoryDeleted(
+    base::FilePath watched_path,
+    base::HeapArray<uint8_t> notification_batch) {
   if (!SetupWatchHandleForTarget()) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
     return;
   }
 
-  // Check whether the event applies to `target_` and notify the callback.
-  File::Info file_info;
-  bool file_exists = false;
-  {
-    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-    file_exists = GetFileInfo(target_, &file_info);
+  if (!notification_batch.empty()) {
+    auto self = weak_factory_.GetWeakPtr();
+    // `ProcessNotificationBatch` may delete `this`.
+    ProcessNotificationBatch(std::move(watched_path),
+                             std::move(notification_batch));
+    if (!self) {
+      return;
+    }
   }
-  if (type_ == Type::kRecursive) {
-    // Only the mtime of `target_` is tracked but in a recursive watch, some
-    // other file or directory may have changed so all notifications are passed
-    // through. It is possible to figure out which file changed using
-    // ReadDirectoryChangesW() instead of FindFirstChangeNotification(), but
-    // that function is quite complicated:
-    // http://qualapps.blogspot.com/2010/05/understanding-readdirectorychangesw.html
 
+  bool target_was_deleted = target_exists_ || watched_path == target_;
+  if (target_was_deleted) {
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
-  } else if (file_exists && (last_modified_.is_null() ||
-                             last_modified_ != file_info.last_modified)) {
-    last_modified_ = file_info.last_modified;
-    first_notification_ = Time::Now();
+  }
+}
 
-    // `this` may be deleted after `callback_` is run.
-    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
-  } else if (file_exists && last_modified_ == file_info.last_modified &&
-             !first_notification_.is_null()) {
-    // The target's last modification time is equal to what's on record. This
-    // means that either an unrelated event occurred, or the target changed
-    // again (file modification times only have a resolution of 1s). Comparing
-    // file modification times against the wall clock is not reliable to find
-    // out whether the change is recent, since this code might just run too
-    // late. Moreover, there's no guarantee that file modification time and wall
-    // clock times come from the same source.
-    //
-    // Instead, the time at which the first notification carrying the current
-    // `last_notified_` time stamp is recorded. Later notifications that find
-    // the same file modification time only need to be forwarded until wall
-    // clock has advanced one second from the initial notification. After that
-    // interval, client code is guaranteed to having seen the current revision
-    // of the file.
-    if (Time::Now() - first_notification_ > Seconds(1)) {
-      // Stop further notifications for this `last_modification_` time stamp.
-      first_notification_ = Time();
+void FilePathWatcherImpl::ProcessNotificationBatch(
+    base::FilePath watched_path,
+    base::HeapArray<uint8_t> notification_batch) {
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!notification_batch.empty());
+
+  auto self = weak_factory_.GetWeakPtr();
+
+  // Check whether the event applies to `target_` and notify the callback.
+  File::Info target_info;
+  bool target_exists_after_batch = GetFileInfo(target_, &target_info);
+
+  bool target_created_or_deleted = target_exists_after_batch != target_exists_;
+  target_exists_ = target_exists_after_batch;
+
+  // This keeps track of whether we just notified for a
+  // `FILE_ACTION_RENAMED_OLD_NAME`.
+  bool last_event_notified_for_old_name = false;
+
+  auto sub_span = notification_batch.as_span();
+  bool has_next_entry = true;
+
+  while (has_next_entry) {
+    const auto& file_notify_info =
+        *reinterpret_cast<FILE_NOTIFY_INFORMATION*>(sub_span.data());
+
+    has_next_entry = file_notify_info.NextEntryOffset != 0;
+    if (has_next_entry) {
+      sub_span = sub_span.subspan(file_notify_info.NextEntryOffset);
     }
 
-    // `this` may be deleted after `callback_` is run.
-    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
-  } else if (!file_exists && !last_modified_.is_null()) {
-    last_modified_ = Time();
+    DWORD change_type = file_notify_info.Action;
+
+    // A rename will generate two move events, but we only report it as one move
+    // event. So continue if we just reported a `FILE_ACTION_RENAMED_OLD_NAME`.
+    if (last_event_notified_for_old_name &&
+        change_type == FILE_ACTION_RENAMED_NEW_NAME) {
+      last_event_notified_for_old_name = false;
+      continue;
+    }
+    last_event_notified_for_old_name = false;
+
+    FilePath change_path = watched_path.Append(std::basic_string_view<wchar_t>(
+        file_notify_info.FileName,
+        file_notify_info.FileNameLength / sizeof(wchar_t)));
+
+    // Ancestors of the `target_` are outside the watch scope.
+    if (change_path.IsParent(target_)) {
+      // Only report move events where the target was created or deleted.
+      if ((change_type != FILE_ACTION_RENAMED_NEW_NAME &&
+           change_type != FILE_ACTION_RENAMED_OLD_NAME) ||
+          !target_created_or_deleted) {
+        continue;
+      }
+    } else if (type_ == FilePathWatcher::Type::kNonRecursive &&
+               change_path != target_ && change_path.DirName() != target_) {
+      // For non recursive watches, only report events for the target or its
+      // direct children.
+      continue;
+    }
+
+    if (change_type == FILE_ACTION_MODIFIED) {
+      // Don't report modified events for directories.
+      File::Info file_info;
+      if (GetFileInfo(change_path, &file_info) && file_info.is_directory) {
+        continue;
+      }
+    }
+
+    last_event_notified_for_old_name =
+        change_type == FILE_ACTION_RENAMED_OLD_NAME;
 
     // `this` may be deleted after `callback_` is run.
     callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
+    if (!self) {
+      return;
+    }
   }
 }
 
@@ -488,13 +608,16 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   // child directories stripped from target, in reverse order.
   std::vector<FilePath> child_dirs;
   FilePath path_to_watch(target_);
+
   base::win::ScopedHandle watched_handle;
+  FilePath watched_path;
   while (true) {
     auto result = CreateDirectoryHandle(path_to_watch);
 
     // Break if a valid handle is returned.
     if (result.has_value()) {
       watched_handle = std::move(result.value());
+      watched_path = path_to_watch;
       break;
     }
 
@@ -511,7 +634,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
       DLOG(ERROR) << "Reached the root directory";
       return false;
     }
-    path_to_watch = parent;
+    path_to_watch = std::move(parent);
   }
 
   // At this point, `watched_handle` is valid. However, the bottom-up search
@@ -531,10 +654,11 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
       break;
     }
     watched_handle = std::move(result.value());
+    watched_path = path_to_watch;
   }
 
   watcher_id_ = CompletionIOPortThread::Get()->AddWatcher(
-      *this, std::move(watched_handle));
+      *this, std::move(watched_handle), std::move(watched_path));
 
   return watcher_id_.has_value();
 }

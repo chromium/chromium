@@ -60,7 +60,8 @@ namespace {
 
 AtomicSequenceNumber g_next_delegate_id;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
 // inotify fires two events - one for each file creation + modification.
 constexpr size_t kExpectedEventsForNewFileWrite = 2;
 #else
@@ -503,6 +504,11 @@ TEST_F(FilePathWatcherTest, ModifiedFile) {
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(WriteFile(test_file(), "new content"));
+#if BUILDFLAG(IS_WIN)
+  // WriteFile causes two writes on Windows because it calls two syscalls:
+  // ::CreateFile and ::WriteFile.
+  event_expecter.AddExpectedEventForPath(test_file());
+#endif
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
 }
@@ -620,6 +626,45 @@ TEST_F(FilePathWatcherTest, DeletedFile) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(FilePathWatcherTest, WindowsBufferOverflow) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  {
+    // Block the Watch thread.
+    AutoLock auto_lock(watcher.GetWatchThreadLockForTest());
+
+    // Generate an event that will try to acquire the lock on the watch thread.
+    ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+    // The packet size plus the path size. `WriteFile` generates two events so
+    // it's twice that.
+    const size_t kWriteFileEventSize =
+        (sizeof(FILE_NOTIFY_INFORMATION) + test_file().AsUTF8Unsafe().size()) *
+        2;
+
+    // The max size that's allowed for network drives:
+    // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-readdirectorychangesw#remarks.
+    const size_t kMaxBufferSize = 64 * 1024;
+
+    for (size_t bytes_in_buffer = 0; bytes_in_buffer < kMaxBufferSize;
+         bytes_in_buffer += kWriteFileEventSize) {
+      WriteFile(test_file(), "content");
+    }
+  }
+
+  // The initial `WriteFile` generates an event.
+  event_expecter.AddExpectedEventForPath(test_file());
+  // The rest should only appear as a buffer overflow.
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
+}
+#endif
+
 namespace {
 
 // Used by the DeleteDuringNotify test below.
@@ -729,6 +774,11 @@ TEST_F(FilePathWatcherTest, NonExistentDirectory) {
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file change";
+#if BUILDFLAG(IS_WIN)
+  // WriteFile causes two writes on Windows because it calls two syscalls:
+  // ::CreateFile and ::WriteFile.
+  event_expecter.AddExpectedEventForPath(file);
+#endif
   event_expecter.AddExpectedEventForPath(file);
   delegate.RunUntilEventsMatch(event_expecter);
 
@@ -775,6 +825,11 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
 
   ASSERT_TRUE(WriteFile(file, "content v2"));
   VLOG(1) << "Waiting for file modification";
+#if BUILDFLAG(IS_WIN)
+  // WriteFile causes two writes on Windows because it calls two syscalls:
+  // ::CreateFile and ::WriteFile.
+  event_expecter.AddExpectedEventForPath(file);
+#endif
   event_expecter.AddExpectedEventForPath(file);
   delegate.RunUntilEventsMatch(event_expecter);
 }
@@ -856,6 +911,11 @@ TEST_F(FilePathWatcherTest, WatchDirectory) {
   // does on other platforms.
   VLOG(1) << "Waiting for file1 modification";
   event_expecter.AddExpectedEventForPath(dir);
+#if BUILDFLAG(IS_WIN)
+  // WriteFile causes two writes on Windows because it calls two syscalls:
+  // ::CreateFile and ::WriteFile.
+  event_expecter.AddExpectedEventForPath(dir);
+#endif
   delegate.RunUntilEventsMatch(event_expecter);
 #endif  // !BUILDFLAG(IS_APPLE)
 
@@ -1006,6 +1066,11 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   // Write into "$dir/subdir/subdir_child_dir/child_dir_file1".
   ASSERT_TRUE(WriteFile(child_dir_file1, "content"));
   event_expecter.AddExpectedEventForPath(dir);
+#if BUILDFLAG(IS_WIN)
+  // WriteFile causes two writes on Windows because it calls two syscalls:
+  // ::CreateFile and ::WriteFile.
+  event_expecter.AddExpectedEventForPath(dir);
+#endif
   delegate.RunUntilEventsMatch(event_expecter);
 
 // Apps cannot change file attributes on Android in /sdcard as /sdcard uses the
