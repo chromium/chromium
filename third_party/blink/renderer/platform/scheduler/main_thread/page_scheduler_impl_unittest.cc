@@ -86,7 +86,6 @@ class MockPageSchedulerDelegate : public PageScheduler::Delegate {
   MockPageSchedulerDelegate() {}
 
  private:
-  void ReportIntervention(const WTF::String&) override {}
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   void OnSetPageFrozen(bool is_frozen) override {}
   bool IsOrdinary() const override { return true; }

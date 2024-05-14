@@ -364,7 +364,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // PageScheduler::Delegate implementation.
   bool IsOrdinary() const override;
-  void ReportIntervention(const String& message) override;
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
   void OnSetPageFrozen(bool is_frozen) override;
 

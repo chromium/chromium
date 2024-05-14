@@ -2286,12 +2286,6 @@ void MainThreadSchedulerImpl::OnPageResumed() {
   UpdatePolicy();
 }
 
-void MainThreadSchedulerImpl::BroadcastIntervention(const String& message) {
-  helper_.CheckOnValidThread();
-  for (auto* page_scheduler : main_thread_only().page_schedulers)
-    page_scheduler->ReportIntervention(message);
-}
-
 void MainThreadSchedulerImpl::OnTaskStarted(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,

@@ -369,10 +369,6 @@ void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
   frame_schedulers_.erase(frame_scheduler);
 }
 
-void PageSchedulerImpl::ReportIntervention(const String& message) {
-  delegate_->ReportIntervention(message);
-}
-
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
   if (is_audio_playing) {
     PolicyUpdater policy_updater;

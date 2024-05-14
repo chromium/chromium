@@ -557,9 +557,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // nagigation. This function does that. Must be called from the main thread.
   void ResetForNavigationLocked();
 
-  // Report an intervention to all WebViews in this process.
-  void BroadcastIntervention(const String& message);
-
   // Trigger an update to all task queues' priorities, throttling, and
   // enabled/disabled state based on current policy. When triggered from a
   // policy update, |previous_policy| should be populated with the pre-update

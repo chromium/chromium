@@ -1285,16 +1285,6 @@ bool Page::IsOrdinary() const {
   return is_ordinary_;
 }
 
-void Page::ReportIntervention(const String& text) {
-  if (LocalFrame* local_frame = DeprecatedLocalMainFrame()) {
-    auto* message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kOther,
-        mojom::ConsoleMessageLevel::kWarning, text,
-        std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
-    local_frame->GetDocument()->AddConsoleMessage(message);
-  }
-}
-
 bool Page::RequestBeginMainFrameNotExpected(bool new_state) {
   if (!main_frame_ || !main_frame_->IsLocalFrame())
     return false;

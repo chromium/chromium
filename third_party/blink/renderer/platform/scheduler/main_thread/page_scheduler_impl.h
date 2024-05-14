@@ -86,9 +86,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
   scoped_refptr<scheduler::WidgetScheduler> CreateWidgetScheduler() override;
 
-  // Virtual for testing.
-  virtual void ReportIntervention(const String& message);
-
   bool IsFrozen() const;
   bool OptedOutFromAggressiveThrottling() const;
   // Returns whether CPU time is throttled for the page. Note: This is
