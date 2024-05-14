@@ -57,7 +57,7 @@ constexpr char kUserName1[] = "John.Doe@example.com";
 constexpr char kUserName2[] = "Jane.Doe@example.com";
 constexpr uint8_t kCredId1[] = {'a', 'b', 'c', 'd'};
 constexpr uint8_t kCredId2[] = {'e', 'f', 'g', 'h'};
-constexpr uint8_t kCredIdEnclave[] = {'a', 'd', 'e', 'm'};
+constexpr uint8_t kCredIdGpm[] = {'a', 'd', 'e', 'm'};
 constexpr char kRpId[] = "example.com";
 const device::DiscoverableCredentialMetadata user1{
     device::AuthenticatorType::kOther, kRpId,
@@ -73,9 +73,13 @@ const device::DiscoverableCredentialMetadata user2{
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName2,
         /*display_name=*/std::nullopt)};
-const device::DiscoverableCredentialMetadata userEnclave{
-    device::AuthenticatorType::kEnclave, kRpId,
-    device::fido_parsing_utils::Materialize(kCredIdEnclave),
+const device::DiscoverableCredentialMetadata userGpm{
+#if BUILDFLAG(IS_CHROMEOS)
+    device::AuthenticatorType::kChromeOSPasskeys,
+#else
+    device::AuthenticatorType::kEnclave,
+#endif
+    kRpId, device::fido_parsing_utils::Materialize(kCredIdGpm),
     device::PublicKeyCredentialUserEntity(
         device::fido_parsing_utils::Materialize(kUserId),
         kUserName1,
@@ -99,8 +103,8 @@ const PasskeyCredential passkey1 =
 const PasskeyCredential passkey2 =
     CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
                   kUserName2);
-const PasskeyCredential passkeyEnclave =
-    CreatePasskey(device::fido_parsing_utils::Materialize(kCredIdEnclave),
+const PasskeyCredential passkeyGpm =
+    CreatePasskey(device::fido_parsing_utils::Materialize(kCredIdGpm),
                   kUserName1,
                   PasskeyCredential::Source::kGooglePasswordManager);
 
@@ -297,32 +301,41 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
                                         mock_callback.Get());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ChromeWebAuthnCredentialsDelegateTest,
-       OnStepTransitionCallbackEnclaveSource) {
-  base::test::ScopedFeatureList enabled{device::kWebAuthnEnclaveAuthenticator};
+class GpmPasskeyChromeWebAuthnCredentialsDelegateTest
+    : public ChromeWebAuthnCredentialsDelegateTest {
+ private:
+  base::test::ScopedFeatureList enabled{
+#if BUILDFLAG(IS_CHROMEOS)
+      device::kChromeOsPasskeys
+#else
+      device::kWebAuthnEnclaveAuthenticator
+#endif
+  };
+};
+
+TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
+       OnStepTransitionCallbackGpmSource) {
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
-  SetCredList({userEnclave});
+  SetCredList({userGpm});
   credentials_delegate()->OnCredentialsReceived(
-      {passkeyEnclave},
+      {passkeyGpm},
       /*offer_passkey_from_another_device=*/true);
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(0);
-  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdEnclave),
+  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
                                         mock_callback.Get());
 }
 
-TEST_F(ChromeWebAuthnCredentialsDelegateTest,
-       OnStepTransitionCallbackEnclaveSourceAndUiNotDisabled) {
-  base::test::ScopedFeatureList enabled{device::kWebAuthnEnclaveAuthenticator};
+TEST_F(GpmPasskeyChromeWebAuthnCredentialsDelegateTest,
+       OnStepTransitionCallbackGpmSourceAndUiNotDisabled) {
   base::MockCallback<OnPasskeySelectedCallback> mock_callback;
-  SetCredList({userEnclave});
+  SetCredList({userGpm});
   credentials_delegate()->OnCredentialsReceived(
-      {passkeyEnclave},
+      {passkeyGpm},
       /*offer_passkey_from_another_device=*/true);
   dialog_controller()->SetAccountPreselectedCallback(base::DoNothing());
   EXPECT_CALL(mock_callback, Run()).Times(0);
-  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdEnclave),
+  credentials_delegate()->SelectPasskey(base::Base64Encode(kCredIdGpm),
                                         mock_callback.Get());
 
   model()->ui_disabled_ = true;
@@ -335,7 +348,6 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   EXPECT_CALL(mock_callback, Run()).Times(1);
   task_environment()->FastForwardBy(base::Milliseconds(350));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

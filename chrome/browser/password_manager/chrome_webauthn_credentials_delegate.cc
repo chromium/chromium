@@ -34,6 +34,12 @@ using device::AuthenticatorType;
 // `passkey_selected_callback_` at least 300ms to avoid the flicker.
 // TODO(crbug.com/332619045): Move this to a UI layer.
 constexpr base::TimeDelta kFlickerDuration = base::Milliseconds(300);
+
+bool IsGpmPasskeyAuthenticatorType(AuthenticatorType type) {
+  return type == AuthenticatorType::kEnclave ||
+         type == AuthenticatorType::kChromeOSPasskeys;
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
@@ -89,9 +95,9 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   AuthenticatorType credential_source =
       authenticator_delegate->dialog_controller()->OnAccountPreselected(
           *selected_credential_id);
-  // If the credential is not from the enclave authenticator, we do not need to
+  // If the credential is not from a GPM authenticator, we do not need to
   // observe the model anymore.
-  if (credential_source != AuthenticatorType::kEnclave) {
+  if (!IsGpmPasskeyAuthenticatorType(credential_source)) {
     authenticator_observation_.Reset();
     std::move(passkey_selected_callback_).Run();
   }
@@ -114,7 +120,7 @@ void ChromeWebAuthnCredentialsDelegate::OnStepTransition() {
       authenticator_observation_.GetSource();
   CHECK(model) << "The model just stepped but not registered as source.";
   if (!passkey_selected_callback_ || !model->preselected_cred.has_value() ||
-      model->preselected_cred.value().source != AuthenticatorType::kEnclave) {
+      !IsGpmPasskeyAuthenticatorType(model->preselected_cred.value().source)) {
     return;
   }
   // Do not dismiss the autofill popup when the AuthenticatorRequestDialogModel
