@@ -421,7 +421,9 @@ TranslateBubbleView::TranslateBubbleView(
     translate::TranslateErrors error_type,
     content::WebContents* web_contents,
     base::OnceClosure on_closing)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
       model_(std::move(model)),
       error_type_(error_type),
       is_in_incognito_window_(
@@ -472,7 +474,6 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
   model_->SetAlwaysTranslate(should_always_translate_);
   if (model_->IsPageTranslatedInCurrentLanguages()) {
     SwitchView(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
-    SizeToContents();
   } else {
     std::u16string source_language_name;
     std::u16string target_language_name;
@@ -527,10 +528,6 @@ void TranslateBubbleView::UpdateChildVisibilities() {
   for (views::View* view : children()) {
     view->SetVisible(view == GetCurrentView());
   }
-
-  // BoxLayout only considers visible children, so ensure any newly visible
-  // child views are positioned correctly.
-  DeprecatedLayoutImmediately();
 }
 
 std::unique_ptr<views::View> TranslateBubbleView::CreateEmptyPane() {
@@ -999,7 +996,6 @@ void TranslateBubbleView::SwitchView(
   }
 
   UpdateChildVisibilities();
-  SizeToContents();
 
   if (view_state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
     AnnounceTextToScreenReader(l10n_util::GetStringFUTF16(

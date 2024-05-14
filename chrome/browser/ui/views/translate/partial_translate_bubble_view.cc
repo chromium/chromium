@@ -355,7 +355,9 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
     std::unique_ptr<PartialTranslateBubbleModel> model,
     content::WebContents* web_contents,
     base::OnceClosure on_closing)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
       model_(std::move(model)),
       on_closing_(std::move(on_closing)),
       web_contents_(web_contents) {
@@ -432,7 +434,6 @@ void PartialTranslateBubbleView::ConfirmAdvancedOptions() {
     }
   } else {
     SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
-    SizeToContents();
     if (from_source_language_view) {
       translate::ReportPartialTranslateBubbleUiAction(
           translate::PartialTranslateBubbleUiEvent::
@@ -473,10 +474,6 @@ void PartialTranslateBubbleView::UpdateChildVisibilities() {
   for (views::View* view : children()) {
     view->SetVisible(view == GetCurrentView());
   }
-
-  // BoxLayout only considers visible children, so ensure any newly visible
-  // child views are positioned correctly.
-  DeprecatedLayoutImmediately();
 }
 
 std::unique_ptr<views::View> PartialTranslateBubbleView::CreateEmptyPane() {
@@ -986,7 +983,6 @@ void PartialTranslateBubbleView::SwitchView(
   }
 
   UpdateChildVisibilities();
-  SizeToContents();
 }
 
 void PartialTranslateBubbleView::UpdateTextForViewState(
