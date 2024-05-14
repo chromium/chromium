@@ -5,23 +5,28 @@
 import 'chrome://os-print/js/data/destination_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
-import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
+import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {createTestDestination} from './test_utils.js';
 
 suite('DestinationManager', () => {
   let instance: DestinationManager;
   let destinationProvider: FakeDestinationProvider;
+  let mockController: MockController;
   let mockTimer: MockTimer;
 
   const testDelay = 1;
 
   setup(() => {
+    mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
 
@@ -37,6 +42,7 @@ suite('DestinationManager', () => {
     DestinationManager.resetInstanceForTesting();
     destinationProvider.reset();
     mockTimer.uninstall();
+    mockController.reset();
   });
 
   test('is a singleton', () => {
@@ -143,5 +149,48 @@ suite('DestinationManager', () => {
         assertTrue(
             instance.isSessionInitialized(),
             'After initializeSession, instance should be initialized');
+      });
+
+  // Verify observeDestinationChanges is called on construction of manager.
+  test('on create observeDestinationChanges is called', () => {
+    const expectedCallCount = 1;
+    assertEquals(
+        expectedCallCount,
+        destinationProvider.getCallCount(OBSERVE_DESTINATION_CHANGES_METHOD),
+        `${OBSERVE_DESTINATION_CHANGES_METHOD} called in constructor`);
+  });
+
+  // Verify DESTINATION_MANAGER_DESTINATIONS_CHANGED event not triggered from
+  // onDestinationsChanged when there are no destinations.
+  test(
+      `${DESTINATION_MANAGER_DESTINATIONS_CHANGED} triggered not from ` +
+          'onDestinationsChanged when destinations is empty',
+      async () => {
+        const dispatchFn =
+            mockController.createFunctionMock(instance, 'dispatchEvent');
+        // Set destinations returned to empty array to verify dispatch is not
+        // called.
+        destinationProvider.setDestinationsChangesData([]);
+        destinationProvider.triggerOnDestinationsChanged();
+
+        // No calls expected.
+        dispatchFn.verifyMock();
+      });
+
+  // Verify DESTINATION_MANAGER_DESTINATIONS_CHANGED event triggered from
+  // onDestinationsChanged when destinations are updated.
+  test(
+      `${DESTINATION_MANAGER_DESTINATIONS_CHANGED} triggered from ` +
+          'onDestinationsChanged when destinations are updated',
+      async () => {
+        // Reset mock controller to allow actual call to dispatch.
+        mockController.reset();
+        const destinationsChanged =
+            eventToPromise(DESTINATION_MANAGER_DESTINATIONS_CHANGED, instance);
+        const destinations = [createTestDestination(), createTestDestination()];
+        destinationProvider.setDestinationsChangesData(destinations);
+        destinationProvider.triggerOnDestinationsChanged();
+
+        await destinationsChanged;
       });
 });

@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Destination, DestinationProvider, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
 
@@ -30,12 +30,15 @@ export enum DestinationManagerState {
 
 export const DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED =
     'destination-manager.active-destination-changed';
+export const DESTINATION_MANAGER_DESTINATIONS_CHANGED =
+    'destination-manager.destinations-changed';
 export const DESTINATION_MANAGER_SESSION_INITIALIZED =
     'destination-manager.session-initialized';
 export const DESTINATION_MANAGER_STATE_CHANGED =
     'destination-manager.state-changed';
 
-export class DestinationManager extends EventTarget {
+export class DestinationManager extends EventTarget implements
+    FakeDestinationObserverInterface {
   private static instance: DestinationManager|null = null;
 
   static getInstance(): DestinationManager {
@@ -86,6 +89,7 @@ export class DestinationManager extends EventTarget {
 
     // Setup mojo data providers.
     this.destinationProvider = getDestinationProvider();
+    this.destinationProvider.observeDestinationChanges(this);
 
     // Request initial data.
     this.updateState(DestinationManagerState.FETCHING);
@@ -130,6 +134,22 @@ export class DestinationManager extends EventTarget {
         null;
   }
 
+  // FakeDestinationObserverInterface:
+  // `onDestinationsChanged` receives new and updated destinations from the
+  // the DestinationProvider then processes the destinations into the set of
+  // known destinations. Existing destinations will not be removed from the set
+  // of known destinations if disconnected during a preview session.
+  onDestinationsChanged(destinations: Destination[]): void {
+    if (destinations.length === 0) {
+      // TODO(b/323421684): Check if no-destination state has occurred.
+      return;
+    }
+
+    // TODO(b/323421684): Process destinations into this.destinations.
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_MANAGER_DESTINATIONS_CHANGED));
+  }
+
   // Updates destination ID and triggers event.
   private updateActiveDestination(destinationId: string): void {
     this.activeDestinationId = destinationId;
@@ -152,6 +172,7 @@ export class DestinationManager extends EventTarget {
 declare global {
   interface HTMLElementEventMap {
     [DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED]: CustomEvent<void>;
+    [DESTINATION_MANAGER_DESTINATIONS_CHANGED]: CustomEvent<void>;
     [DESTINATION_MANAGER_SESSION_INITIALIZED]: CustomEvent<void>;
     [DESTINATION_MANAGER_STATE_CHANGED]: CustomEvent<void>;
   }
