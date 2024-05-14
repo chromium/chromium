@@ -6874,6 +6874,47 @@ TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplay) {
                                    group2->snap_group_divider());
 }
 
+// Tests no overlap in the divider and window bounds after disconnecting and
+// reconnecting the primary display.
+TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplayAfterResize) {
+  UpdateDisplay("1200x900,0+901-1200x900/u");
+  ASSERT_EQ(2U, display_manager()->active_display_list().size());
+
+  // Create Snap Group #1 on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  auto* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+
+  // Resize via the divider to an arbitrary point.
+  auto* snap_group_divider = snap_group->snap_group_divider();
+  const gfx::Point divider_point(
+      snap_group_divider_bounds_in_screen().CenterPoint());
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(divider_point);
+  event_generator->PressLeftButton();
+  const gfx::Point resize_point(350, divider_point.y());
+  event_generator->MoveMouseTo(resize_point, /*count=*/22);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(resize_point.x(),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Disconnect the primary display.
+  UpdateDisplay("1200x900/u");
+  ASSERT_EQ(1U, display_manager()->active_display_list().size());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider);
+
+  // Reconnect the primary display.
+  UpdateDisplay("1200x900,0+901-1200x900/u");
+  ASSERT_EQ(2U, display_manager()->active_display_list().size());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+}
+
 // Tests that resizing via the cursor between displays works correctly.
 TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
   UpdateDisplay("800x700,801+0-800x700");

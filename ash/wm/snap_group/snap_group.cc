@@ -433,8 +433,9 @@ void SnapGroup::RefreshSnapGroup() {
 
   // Otherwise call `ApplyPrimarySnapRatio()`, which will clamp the divider
   // position to between the windows' minimum sizes.
-  ApplyPrimarySnapRatio(WindowState::Get(window1_)->snap_ratio().value_or(
-      chromeos::kDefaultSnapRatio));
+  ApplyPrimarySnapRatio(WindowState::Get(GetPhysicallyLeftOrTopWindow())
+                            ->snap_ratio()
+                            .value_or(chromeos::kDefaultSnapRatio));
 }
 
 void SnapGroup::OnOverviewModeStarting() {
