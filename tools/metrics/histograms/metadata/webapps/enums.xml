@@ -221,6 +221,11 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Metadata validation error"/>
 </enum>
 
+<enum name="LaunchedAppType">
+  <int value="0" label="DIY app launched"/>
+  <int value="1" label="Crafted app launched"/>
+</enum>
+
 <enum name="LaunchFromHomeScreen">
   <int value="0" label="Launched as standalone web app"/>
   <int value="1" label="Launched as a tab"/>

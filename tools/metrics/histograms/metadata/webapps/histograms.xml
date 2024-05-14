@@ -168,6 +168,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Launch.WebApp.DiyOrCrafted" enum="LaunchedAppType"
+    expires_after="2025-05-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records whether the type of app that was launched in a windowed context was
+    a DIY app or a crafted app.
+  </summary>
+</histogram>
+
 <histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
     expires_after="2024-11-03">
   <owner>peter@chromium.org</owner>
@@ -175,7 +185,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the display mode (as defined in the Web App Manifest spec) at the
     launch of the Added to Home screen or installed Web App (including WebAPKs).
-    This is only recorded if the launch was to a windowed context, not a browwer
+    This is only recorded if the launch was to a windowed context, not a browser
     tab.
   </summary>
 </histogram>
@@ -193,12 +203,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="Launch.Window.CreateShortcutApp.WebAppDisplayMode"
     enum="WebAppDisplayMode" expires_after="2024-04-28">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwa-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the display mode (as defined in the Web App Manifest spec) at the
     launch of a shortcut created using &quot;Add to Homescreen&quot; on mobile,
     or a &quot;Create Shortcut...&quot; on desktop. This is only recorded if the
-    launch was to a windowed context, not a browwer tab.
+    launch was to a windowed context, not a browser tab.
   </summary>
 </histogram>
 
@@ -842,7 +852,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApp.InstallConfirmation.CloseReason"
     enum="WidgetClosedReason" expires_after="2024-11-03">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwa-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the reason that the WebApp install confirmation dialog is closed.
     This dialog is shown when the user clicks on the 'install' icon in the
@@ -1042,7 +1052,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApp.MlInstall.DialogResponse"
     enum="WebAppMlInstallResponse" expires_after="2024-11-10">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwa-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the user's response to an install dialog, but only if the dialog was
     triggered by the ML promotion prediction system, or if the dialog was
@@ -1060,7 +1070,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApp.MlInstall.InstallSource" enum="WebappInstallSource"
     expires_after="2024-09-10">
   <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwa-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Recorded when a result occurs on an installation dialog that was either
     triggered via ML or was showing through another means when ML returned a
@@ -1071,7 +1081,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApp.MLInstallPromo.UserResponse"
     enum="WebAppMlInstallResponse" expires_after="2025-04-25">
   <owner>dibyapal@chromium.org</owner>
-  <owner>desktop-pwa-team@google.com</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Similar to WebApp.MlInstall.DialogResponse, but measures the user response
     only if ML triggered the install dialog for PWAs. This is a subset of the

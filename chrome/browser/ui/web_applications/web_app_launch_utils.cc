@@ -639,6 +639,11 @@ void RecordAppWindowLaunchMetric(Profile* profile,
         "Launch.WebAppLaunchHandlerClientMode",
         web_app->launch_handler().value_or(LaunchHandler()).client_mode);
   }
+
+  base::UmaHistogramEnumeration("Launch.WebApp.DiyOrCrafted",
+                                web_app->is_diy_app()
+                                    ? LaunchedAppType::kDiy
+                                    : LaunchedAppType::kCrafted);
 }
 
 void RecordAppTabLaunchMetric(Profile* profile,

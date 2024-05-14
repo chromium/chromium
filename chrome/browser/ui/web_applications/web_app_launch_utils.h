@@ -35,6 +35,14 @@ namespace web_app {
 class AppBrowserController;
 class WithAppResources;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LaunchedAppType {
+  kDiy = 0,
+  kCrafted = 1,
+  kMaxValue = kCrafted,
+};
+
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
 
 // Clears navigation history prior to user entering app scope.
