@@ -92,6 +92,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom-forward.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace net {
@@ -2917,6 +2918,24 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void BindModelManager(
       RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::ModelManager> receiver);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Given the last committed URL of the RenderFrameHost, |frame_url|, and the
+  // |manifest_id| of an app, the embedder should call |callback| with the
+  // first matching web app ensuring:
+  //
+  // - |manifest_id| is equal to the found app id.
+  // - |frame_url| is within the scope of the found app.
+  // - The found app is locally installed in |browser_context|.
+  //
+  // When no app is found, |callback| should be called with a nullopt.
+  virtual void QueryInstalledWebAppsByManifestId(
+      const GURL& frame_url,
+      const GURL& manifest_id,
+      content::BrowserContext* browser_context,
+      base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
+          callback);
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

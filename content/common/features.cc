@@ -189,6 +189,19 @@ BASE_FEATURE(kFedCmSameSiteNone,
              "FedCmSameSiteNone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables installed web app matching for getInstalledRelatedApps API.
+BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
+             "FilterInstalledAppsWebAppMatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN)
+// Enables installed windows app matching for getInstalledRelatedApps API.
+// Note: This is enabled by default as a kill switch, since the functionality
+// was already implemented but without a related feature flag.
+BASE_FEATURE(kFilterInstalledAppsWinMatching,
+             "FilterInstalledAppsWinMatching",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 // If enabled, limits the number of FLEDGE auctions that can be run between page
 // load and unload -- any attempt to run more than this number of auctions will
 // fail (return null to JavaScript).

@@ -509,6 +509,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -8368,3 +8371,72 @@ void ChromeContentBrowserClient::BindModelManager(
     mojo::PendingReceiver<blink::mojom::ModelManager> receiver) {
   ModelManagerImpl::Create(rfh, std::move(receiver));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
+    const GURL& frame_url,
+    const GURL& manifest_id,
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
+        callback) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::WebAppProvider* const provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
+
+  if (app_id.empty()) {
+    return std::move(callback).Run(std::nullopt);
+  }
+
+  // arg_for_shutdown must be explicitly defined, otherwise
+  // ScheduleCallbackWithResult cannot infer the optional type the nullopt
+  // is associated with.
+  std::optional<blink::mojom::RelatedApplication> arg_for_shutdown =
+      std::nullopt;
+  web_app::AppLockDescription lock_description(app_id);
+
+  provider->scheduler().ScheduleCallbackWithResult<web_app::AppLock>(
+      "QueryInstalledWebAppsByManifestId", std::move(lock_description),
+      base::BindOnce(
+          [](webapps::AppId app_id, webapps::ManifestId manifest_id,
+             GURL frame_url, web_app::AppLock& lock,
+             base::Value::Dict& debug_value)
+              -> std::optional<blink::mojom::RelatedApplication> {
+            debug_value.Set("input", base::Value::Dict()
+                                         .Set("manifest_id", manifest_id.spec())
+                                         .Set("frame_url", frame_url.spec()));
+
+            if (!lock.registrar().IsLocallyInstalled(app_id)) {
+              debug_value.Set("did_find_application", false);
+              return std::nullopt;
+            }
+
+            if (!lock.registrar().IsUrlInAppScope(frame_url, app_id)) {
+              debug_value.Set("did_find_application", false);
+              return std::nullopt;
+            }
+
+            blink::mojom::RelatedApplication application;
+            application.platform = "webapp";
+            application.id = lock.registrar().GetAppManifestId(app_id).spec();
+            // Note: This url is the manifest_url for purely legacy reasons
+            // where Android used to implement the unique identifier using the
+            // manifest url.
+            if (lock.registrar().GetAppManifestUrl(app_id).is_valid()) {
+              application.url =
+                  lock.registrar().GetAppManifestUrl(app_id).spec();
+            }
+
+            debug_value.Set("did_find_application", true);
+            debug_value.Set(
+                "application",
+                base::Value::Dict()
+                    .Set("app_id", application.id.value_or(""))
+                    .Set("manifest_url", application.url.value_or("")));
+            return application;
+          },
+          std::move(app_id), std::move(manifest_id), std::move(frame_url)),
+      std::move(callback), std::move(arg_for_shutdown));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

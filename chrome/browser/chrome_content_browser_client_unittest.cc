@@ -89,6 +89,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -96,8 +100,10 @@
 // the (conditional) dependency path exists, adding `nogncheck`:
 #include "components/media_effects/media_effects_service.h"  // nogncheck
 #include "components/password_manager/core/common/password_manager_features.h"
-// Ditto:
+// `gn check` is failing on Android for this particular include even though
+// the (conditional) dependency path exists, adding `nogncheck`:
 #include "services/video_effects/test/fake_video_effects_service.h"  // nogncheck
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
 #else
 #include "base/system/sys_info.h"
@@ -353,6 +359,66 @@ TEST_F(ChromeContentBrowserClientWindowTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeContentBrowserClientWindowTest,
+       QueryInstalledWebAppsByManifestIdFrameUrlInScope) {
+  ChromeContentBrowserClient client;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(browser()->profile());
+
+  const GURL app_url("http://foo.com");
+  const GURL frame_url("http://foo.com");
+
+  auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
+                                                  "dummyapp", app_url);
+  base::test::TestFuture<std::optional<blink::mojom::RelatedApplication>>
+      future;
+
+  client.QueryInstalledWebAppsByManifestId(
+      frame_url, app_url, browser()->profile(), future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  EXPECT_TRUE(result.has_value());
+
+  web_app::WebAppProvider* const web_app_provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(browser()->profile());
+  const web_app::WebAppRegistrar& registrar =
+      web_app_provider->registrar_unsafe();
+
+  EXPECT_EQ(result->platform, "webapp");
+  EXPECT_FALSE(result->url.has_value());
+  EXPECT_FALSE(result->version.has_value());
+  EXPECT_EQ(result->id, registrar.GetAppManifestId(app_id));
+}
+
+TEST_F(ChromeContentBrowserClientWindowTest,
+       QueryInstalledWebAppsByManifestIdFrameUrlOutOfScope) {
+  ChromeContentBrowserClient client;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(browser()->profile());
+
+  const GURL app_url("http://foo.com");
+  const GURL out_of_scope_frame_url("http://foo-out.com");
+
+  auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
+                                                  "dummyapp", app_url);
+  base::test::TestFuture<std::optional<blink::mojom::RelatedApplication>>
+      future;
+
+  client.QueryInstalledWebAppsByManifestId(/*frame_url=*/out_of_scope_frame_url,
+                                           app_url, browser()->profile(),
+                                           future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get().has_value());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // NOTE: Any updates to the expectations in these tests should also be done in
 // the browser test WebRtcDisableEncryptionFlagBrowserTest.

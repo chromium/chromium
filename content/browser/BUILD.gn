@@ -1095,6 +1095,7 @@ source_set("browser") {
     "image_capture/image_capture_impl.h",
     "indexed_db/indexed_db_internals_ui.cc",
     "indexed_db/indexed_db_internals_ui.h",
+    "installedapp/fetch_related_apps_task.h",
     "installedapp/installed_app_provider_impl.cc",
     "installedapp/installed_app_provider_impl.h",
     "interest_group/ad_auction_document_data.cc",
@@ -2799,8 +2800,11 @@ source_set("browser") {
       "device_posture/device_posture_registry_watcher_win.h",
       "font_access/font_enumeration_data_source_win.cc",
       "font_access/font_enumeration_data_source_win.h",
-      "installedapp/installed_app_provider_impl_win.cc",
-      "installedapp/installed_app_provider_impl_win.h",
+      "installedapp/fetch_related_win_apps_task.cc",
+      "installedapp/fetch_related_win_apps_task.h",
+      "installedapp/native_win_app_fetcher.h",
+      "installedapp/native_win_app_fetcher_impl.cc",
+      "installedapp/native_win_app_fetcher_impl.h",
       "media/dcomp_surface_registry_broker.cc",
       "media/dcomp_surface_registry_broker.h",
       "media/key_system_support_win.cc",
@@ -3245,6 +3249,11 @@ source_set("browser") {
       # WebHID is non-Android
       "hid/hid_service.cc",
       "hid/hid_service.h",
+
+      # These fetch web app tasks, used by getInstalledRelatedApps API, are not
+      # supported in Android.
+      "installedapp/fetch_related_web_apps_task.cc",
+      "installedapp/fetch_related_web_apps_task.h",
 
       # Non-Android platforms that don't presently support
       # enable_screen_capture, like Fuchsia, nevertheless compile

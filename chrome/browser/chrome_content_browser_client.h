@@ -1044,6 +1044,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::ModelManager> receiver) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  void QueryInstalledWebAppsByManifestId(
+      const GURL& frame_url,
+      const GURL& manifest_id,
+      content::BrowserContext* browser_context,
+      base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
+          callback) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
