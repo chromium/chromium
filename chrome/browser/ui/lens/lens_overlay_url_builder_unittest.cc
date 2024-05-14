@@ -70,8 +70,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
   std::string expected_url =
-      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
-                         text_query.c_str(), kLanguage);
+      base::StringPrintf("%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(text_query,
                                          /*page_url=*/std::nullopt,
@@ -97,8 +97,8 @@ TEST_F(LensOverlayUrlBuilderTest,
                           std::make_optional<std::string>(kPageTitle));
 
   std::string expected_url =
-      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
-                         text_query.c_str(), kLanguage);
+      base::StringPrintf("%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query, std::make_optional<GURL>(kPageUrl),
@@ -113,9 +113,10 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
       EncodeSearchContext(std::make_optional<GURL>(kPageUrl),
                           std::make_optional<std::string>(kPageTitle));
 
-  std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1&masfc=c&hl=%s&mactx=%s", kResultsSearchBaseUrl,
-      text_query.c_str(), kLanguage, expected_search_context.c_str());
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s&mactx=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+                         expected_search_context.c_str());
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query, std::make_optional<GURL>(kPageUrl),
@@ -129,9 +130,10 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrl) {
   std::string expected_search_context = EncodeSearchContext(
       std::make_optional<GURL>(kPageUrl), /*page_title=*/std::nullopt);
 
-  std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1&masfc=c&hl=%s&mactx=%s", kResultsSearchBaseUrl,
-      text_query.c_str(), kLanguage, expected_search_context.c_str());
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s&mactx=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+                         expected_search_context.c_str());
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query, std::make_optional<GURL>(kPageUrl),
@@ -145,9 +147,10 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageTitle) {
   std::string expected_search_context = EncodeSearchContext(
       /*page_url=*/std::nullopt, std::make_optional<std::string>(kPageTitle));
 
-  std::string expected_url = base::StringPrintf(
-      "%s?q=%s&gsc=1&masfc=c&hl=%s&mactx=%s", kResultsSearchBaseUrl,
-      text_query.c_str(), kLanguage, expected_search_context.c_str());
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s&mactx=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+                         expected_search_context.c_str());
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(
                 text_query,
@@ -159,8 +162,9 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageTitle) {
 TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLEmpty) {
   std::string text_query = "";
   std::map<std::string, std::string> additional_params;
-  std::string expected_url = base::StringPrintf(
-      "%s?q=&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl, kLanguage);
+  std::string expected_url =
+      base::StringPrintf("%s?q=&lns_mode=text&gsc=1&masfc=c&hl=%s",
+                         kResultsSearchBaseUrl, kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(text_query,
                                          /*page_url=*/std::nullopt,
@@ -174,9 +178,9 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLPunctuation) {
   std::map<std::string, std::string> additional_params;
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
-  std::string expected_url =
-      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
-                         escaped_text_query.c_str(), kLanguage);
+  std::string expected_url = base::StringPrintf(
+      "%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
+      escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(text_query,
                                          /*page_url=*/std::nullopt,
@@ -190,9 +194,9 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWhitespace) {
   std::map<std::string, std::string> additional_params;
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
-  std::string expected_url =
-      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
-                         escaped_text_query.c_str(), kLanguage);
+  std::string expected_url = base::StringPrintf(
+      "%s?q=%s&lns_mode=text&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
+      escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(lens::BuildTextOnlySearchURL(text_query,
                                          /*page_url=*/std::nullopt,
@@ -218,7 +222,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLEmptyClusterInfo) {
   request_id->set_image_sequence_id(image_sequence_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?gsc=1&masfc=c&hl=%s&q=%s&gsessionid=&udm=24&vsrid=%s",
+      "%s?gsc=1&masfc=c&hl=%s&q=%s&lns_mode=mu&gsessionid=&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       EncodeRequestId(request_id.get()).c_str());
 
@@ -246,7 +250,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
   request_id->set_image_sequence_id(image_sequence_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?gsc=1&masfc=c&hl=%s&q=%s&gsessionid=%s&udm=24&vsrid=%s",
+      "%s?gsc=1&masfc=c&hl=%s&q=%s&lns_mode=mu&gsessionid=%s&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), EncodeRequestId(request_id.get()).c_str());
 
@@ -278,7 +282,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?gsc=1&masfc=c&hl=%s&q=&gsessionid=%s&udm=26&vsrid=%s",
+      "%s?gsc=1&masfc=c&hl=%s&q=&lns_mode=un&gsessionid=%s&udm=26&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 
@@ -311,7 +315,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?param=value&gsc=1&masfc=c&hl=%s&q=&gsessionid=%s&udm=26&vsrid=%s",
+      "%s?param=value&gsc=1&masfc=c&hl=%s&q=&lns_mode=un&gsessionid=%s&udm=26&"
+      "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 

@@ -1477,7 +1477,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
-      "https://www.google.com/search?q=oranges&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?q=oranges&lns_mode=text&gsc=1&masfc=c&hl=en-US");
   controller->LoadURLInResultsFrame(first_search_url);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1497,7 +1498,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
-      "https://www.google.com/search?q=kiwi&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?q=kiwi&lns_mode=text&gsc=1&masfc=c&hl=en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(
@@ -1563,7 +1565,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a url in the side panel should show the results page.
   const GURL first_search_url(
-      "https://www.google.com/search?q=oranges&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?q=oranges&lns_mode=text&gsc=1&masfc=c&hl=en-US");
   controller->IssueTextSelectionRequestForTesting("oranges", 20, 200);
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
@@ -1585,7 +1588,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Loading a second url in the side panel should show the results page.
   const GURL second_search_url(
-      "https://www.google.com/search?q=kiwi&gsc=1&masfc=c&hl=en-US");
+      "https://www.google.com/"
+      "search?q=kiwi&lns_mode=text&gsc=1&masfc=c&hl=en-US");
   // We can't use content::WaitForLoadStop here since the last navigation is
   // successful.
   content::TestNavigationObserver observer(

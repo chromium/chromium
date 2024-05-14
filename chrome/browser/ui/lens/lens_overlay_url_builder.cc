@@ -43,6 +43,12 @@ inline constexpr char kLanguageCodeParameterKey[] = "hl";
 // Query parameter for the search context.
 inline constexpr char kSearchContextParameterKey[] = "mactx";
 
+// Query parameter for the lens mode.
+inline constexpr char kLensModeParameterKey[] = "lns_mode";
+inline constexpr char kLensModeParameterTextValue[] = "text";
+inline constexpr char kLensModeParameterUnimodalValue[] = "un";
+inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -109,6 +115,9 @@ GURL BuildTextOnlySearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensModeParameterKey,
+      kLensModeParameterTextValue);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params);
   url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
@@ -130,6 +139,10 @@ GURL BuildLensSearchURL(
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey,
       text_query.has_value() ? *text_query : "");
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kLensModeParameterKey,
+      text_query.has_value() ? kLensModeParameterMultimodalValue
+                             : kLensModeParameterUnimodalValue);
 
   // The search url should use the search session id from the cluster info.
   url_with_query_params = net::AppendOrReplaceQueryParameter(
