@@ -5,12 +5,15 @@
 #include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
 
 #include <Windows.h>
+
 #include <d3d12.h>
 
 #include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
@@ -46,21 +49,21 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       Microsoft::WRL::ComPtr<ID3D12Device> device,
       Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
       Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
-      Microsoft::WRL::ComPtr<ID3D12Fence> fence,
       Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device,
       Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder,
       Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap,
-      Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list)
+      Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list,
+      scoped_refptr<D3D12Fence> fence)
       : D3D12VideoDecoderWrapper(media_log),
         device_(std::move(device)),
         video_device_(std::move(video_device)),
         command_queue_(std::move(command_queue)),
         command_allocator_(std::move(command_allocator)),
         command_list_(std::move(command_list)),
-        fence_(std::move(fence)),
         video_decoder_(std::move(video_decoder)),
         video_decoder_heap_(std::move(video_decoder_heap)),
-        reference_frame_list_(std::move(video_decoder_heap)) {
+        reference_frame_list_(std::move(video_decoder_heap)),
+        fence_(std::move(fence)) {
     input_stream_arguments_.pHeap = video_decoder_heap_.Get();
   }
 
@@ -190,23 +193,22 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     ID3D12CommandList* command_lists[] = {command_list_.Get()};
     command_queue_->ExecuteCommandLists(std::size(command_lists),
                                         command_lists);
-    hr = command_queue_->Signal(fence_.Get(), ++fence_id_);
-    RETURN_IF_FAILED("D3D12CommandQueue Signal() failed",
-                     D3D11StatusCode::kDecoderEndFrameFailed, hr);
 
-    // Just wait here like D3D11's behavior before render side supports D3D12
-    if (fence_->GetCompletedValue() >= fence_id_) {
-      return true;
+    auto fence_value_or_error = fence_->Signal(*command_queue_.Get());
+    if (!fence_value_or_error.has_value()) {
+      RecordFailure("Failed to signal fence",
+                    std::move(fence_value_or_error).error().code());
+      return false;
     }
-    base::win::ScopedHandle fence_event{::CreateEvent(
-        nullptr, /*bManualReset*/ TRUE, /*bInitialState*/ FALSE, nullptr)};
-    hr = fence_->SetEventOnCompletion(fence_id_, fence_event.get());
-    RETURN_IF_FAILED("D3D12Fence SetEventOnCompletion() failed",
-                     D3D11StatusCode::kDecoderEndFrameFailed, hr);
-
+    // Just wait here like D3D11's behavior before render side supports D3D12
     // TODO(crbug.com/40233230): Let ID3D11DeviceContext4::Wait() for a
     // ID3D11Fence instead.
-    return WaitForSingleObject(fence_event.get(), INFINITE) == WAIT_OBJECT_0;
+    D3D11Status status = fence_->Wait(std::move(fence_value_or_error).value());
+    if (!status.is_ok()) {
+      RecordFailure("Failed to wait for fence", status.code());
+      return false;
+    }
+    return true;
   }
 
  private:
@@ -221,8 +223,6 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue_;
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list_;
-  Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-  UINT64 fence_id_ = 0;
 
   Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder_;
   Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap_;
@@ -233,6 +233,8 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   std::vector<uint8_t> slice_control_buffer_;
   Microsoft::WRL::ComPtr<ID3D12Resource> compressed_bitstream_;
   D3D12ReferenceFrameList reference_frame_list_;
+
+  scoped_refptr<D3D12Fence> fence_{};
 };
 
 class ScopedD3D12MemoryBuffer : public ScopedD3DBuffer {
@@ -436,15 +438,16 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
 
   CHECK_EQ(command_list->Close(), S_OK);
 
-  Microsoft::WRL::ComPtr<ID3D12Fence> fence;
-  hr = device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-  RETURN_IF_FAILED2(hr, "D3D12Device CreateFence failed");
+  scoped_refptr<D3D12Fence> fence = D3D12Fence::Create(device.Get());
+  if (!fence) {
+    return nullptr;
+  }
 
   return std::make_unique<D3D12VideoDecoderWrapperImpl>(
       media_log, std::move(device), std::move(command_queue),
-      std::move(command_allocator), std::move(fence), std::move(video_device),
+      std::move(command_allocator), std::move(video_device),
       std::move(video_decoder), std::move(video_decoder_heap),
-      std::move(command_list));
+      std::move(command_list), std::move(fence));
 }
 
 D3D12VideoDecoderWrapper::D3D12VideoDecoderWrapper(MediaLog* media_log)
