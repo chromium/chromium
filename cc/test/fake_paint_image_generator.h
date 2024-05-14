@@ -49,28 +49,47 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const override;
   const ImageHeaderMetadata* GetMetadataForDecodeAcceleration() const override;
 
-  const base::flat_map<size_t, int>& frames_decoded() const {
+  base::flat_map<size_t, int> frames_decoded() {
+    base::AutoLock lock(lock_);
+
     return frames_decoded_count_;
   }
-  const std::vector<SkImageInfo>& decode_infos() const {
+  std::vector<SkImageInfo> decode_infos() {
+    base::AutoLock lock(lock_);
+
     CHECK(!is_yuv_);
     return decode_infos_;
   }
-  void reset_frames_decoded() { frames_decoded_count_.clear(); }
-  void SetExpectFallbackToRGB() { expect_fallback_to_rgb_ = true; }
+  void reset_frames_decoded() {
+    base::AutoLock lock(lock_);
+
+    frames_decoded_count_.clear();
+  }
+  void SetExpectFallbackToRGB() {
+    base::AutoLock lock(lock_);
+
+    expect_fallback_to_rgb_ = true;
+  }
   void SetImageHeaderMetadata(const ImageHeaderMetadata& image_metadata) {
+    base::AutoLock lock(lock_);
+
     image_metadata_ = image_metadata;
   }
-  SkPixmap& GetPixmap() { return image_pixmap_; }
+  SkPixmap& GetPixmap() {
+    // TODO(crbug.com/340576175): This should be made thread-safe.
+    return image_pixmap_;
+  }
 
  private:
+  base::Lock lock_;
+
   std::vector<uint8_t> image_backing_memory_;
   SkPixmap image_pixmap_;
   base::flat_map<size_t, int> frames_decoded_count_;
-  std::vector<SkISize> supported_sizes_;
+  const std::vector<SkISize> supported_sizes_;
   std::vector<SkImageInfo> decode_infos_;
-  bool is_yuv_ = false;
-  SkYUVAPixmapInfo yuva_pixmap_info_;
+  const bool is_yuv_ = false;
+  const SkYUVAPixmapInfo yuva_pixmap_info_;
   // TODO(skbug.com/8564): After Skia supports rendering from software YUV
   // planes and after Chrome implements it, we should no longer expect RGB
   // fallback.
