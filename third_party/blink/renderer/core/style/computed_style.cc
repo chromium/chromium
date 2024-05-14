@@ -871,8 +871,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
+  uint32_t field_diff = FieldInvalidationDiff(*this, other);
   if ((!diff.NeedsFullLayout() || !diff.NeedsNormalPaintInvalidation()) &&
-      DiffNeedsFullLayoutAndPaintInvalidation(other)) {
+      DiffNeedsFullLayoutAndPaintInvalidation(other, field_diff)) {
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
   }
@@ -896,7 +897,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsPositionedMovementLayout();
   }
 
-  uint32_t field_diff = FieldInvalidationDiff(*this, other);
   if (field_diff & kBorderRadius) {
     diff.SetBorderRadiusChanged();
   }
@@ -937,7 +937,8 @@ bool ComputedStyle::ScrollAnchorDisablingPropertyChanged(
 }
 
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
-    const ComputedStyle& other) const {
+    const ComputedStyle& other,
+    uint32_t field_diff) const {
   // FIXME: Not all cases in this method need both full layout and paint
   // invalidation.
   // Should move cases into DiffNeedsFullLayout() if
@@ -979,9 +980,7 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
       return true;
     }
   } else if (IsDisplayListItem()) {
-    if (ComputedStyleBase::
-            DiffNeedsFullLayoutAndPaintInvalidationDisplayListItem(*this,
-                                                                   other)) {
+    if (field_diff & kListItem) {
       return true;
     }
   }
@@ -1231,8 +1230,8 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     const ComputedStyle& other,
     uint32_t field_diff,
     StyleDifference& diff) const {
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesZIndex(*this,
-                                                                 other)) {
+  if ((field_diff & kZIndex) || (IsStackingContextWithoutContainment() !=
+                                 other.IsStackingContextWithoutContainment())) {
     diff.SetZIndexChanged();
   }
 
@@ -1246,8 +1245,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetOtherTransformPropertyChanged();
   }
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesOpacity(*this,
-                                                                  other)) {
+  if (field_diff & kOpacity) {
     diff.SetOpacityChanged();
   }
 
@@ -1267,7 +1265,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetTextDecorationOrColorChanged();
   }
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesMask(*this, other)) {
+  if (field_diff & kMask) {
     diff.SetMaskChanged();
   }
 

@@ -511,6 +511,7 @@
       field_group: "*",
       default_value: "FillLayer(EFillLayerType::kMask, true)",
       computed_style_custom_functions: ["initial", "getter", "setter"],
+      invalidate: ["mask"],
     },
     {
       name: "CounterDirectives",
@@ -550,6 +551,7 @@
       default_value: "NinePieceImage::MaskDefaults()",
       include_paths: ["third_party/blink/renderer/core/style/nine_piece_image.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      invalidate: ["mask"],
     },
     {
       name: "PageSize",

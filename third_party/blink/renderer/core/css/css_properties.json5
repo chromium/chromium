@@ -315,6 +315,10 @@
       valid_values: [
         "border-radius",
         "filter-data",
+        "list-item",
+        "mask",
+        "opacity",
+        "z-index",
       ],
     },
 
@@ -3488,6 +3492,7 @@
       keywords: ["outside", "inside"],
       typedom_types: ["Keyword"],
       default_value: "outside",
+      invalidate: ["list-item"],
     },
     {
       name: "list-style-type",
@@ -3505,6 +3510,7 @@
         "decimal", "none"
       ],
       style_builder_custom_functions: ["value"],
+      invalidate: ["list-item"],
     },
     {
       name: "margin-bottom",
@@ -3881,6 +3887,7 @@
       valid_for_cue: true,
       supports_incremental_style: true,
       accepts_numeric_literal: true,
+      invalidate: ["opacity"],
     },
     {
       name: "order",
@@ -6604,6 +6611,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
       valid_for_permission_element: true,
+      invalidate: ["z-index"],
     },
 
     // CSS logical props

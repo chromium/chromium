@@ -231,21 +231,6 @@
         ]
     },
     {
-        name: "DiffNeedsFullLayoutAndPaintInvalidationDisplayListItem",
-        methods_to_diff: [
-          {
-            method: "ListStylePosition()",
-            field_dependencies: ["list-style-position"]
-          },
-        ],
-        predicates_to_test: [
-          {
-            predicate: "a.ListStyleTypeDataEquivalent(b)",
-            field_dependencies: ["list-style-type"]
-          },
-        ]
-    },
-    {
         name: "DiffNeedsFullLayout",
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
@@ -367,16 +352,6 @@
         ]
     },
     {
-        name: "UpdatePropertySpecificDifferencesZIndex",
-        fields_to_diff: ["z-index"],
-        methods_to_diff: [
-          {
-            method: "IsStackingContextWithoutContainment()",
-            field_dependencies: ["IsStackingContextWithoutContainment"]
-          },
-        ]
-    },
-    {
         name: "DiffTransformData",
         fields_to_diff: ["transform", "translate", "rotate",
                     "scale", "offset-path", "offset-rotate", "transform-origin",
@@ -410,14 +385,6 @@
                     "translate", "rotate", "scale"]
           },
         ]
-    },
-    {
-        name: "UpdatePropertySpecificDifferencesOpacity",
-        fields_to_diff: ["opacity"],
-    },
-    {
-        name: "UpdatePropertySpecificDifferencesMask",
-        fields_to_diff: ["Mask", "MaskBoxImage"],
     },
     {
         name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",
