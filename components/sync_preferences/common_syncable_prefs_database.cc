@@ -39,7 +39,7 @@ namespace syncable_prefs_ids {
 // tools/metrics/histograms/metadata/sync/enums.xml. When removing an unused
 // enumerator, comment it out here, making it clear the value was previously
 // used, and add "(obsolete)" to the corresponding entry in enums.xml.
-// LINT.IfChange(SyncablePref)
+// LINT.IfChange(CommonSyncablePref)
 enum {
   kSyncablePrefForTesting = 0,  // For tests.
   kAutofillCreditCardEnabled = 1,
@@ -122,7 +122,7 @@ enum {
   // guidance and escalation path in case anything is unclear.
   // ^^^^^ IMPORTANT! ^^^^^
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncablePref)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CommonSyncablePref)
 }  // namespace syncable_prefs_ids
 
 // List of syncable preferences common across platforms.

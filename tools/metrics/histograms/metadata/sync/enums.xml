@@ -216,9 +216,9 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:RemoteBookmarkUpdateError) -->
 
-<!-- LINT.IfChange(SyncablePref) -->
-
 <enum name="SyncablePref">
+<!-- LINT.IfChange(CommonSyncablePref) -->
+
   <int value="0" label="(test) SyncablePrefForTesting"/>
   <int value="1" label="AutofillCreditCardEnabled"/>
   <int value="2" label="(obsolete) AutofillEnabledDeprecated"/>
@@ -294,6 +294,10 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="ShowTabGroupsInBookmarkBar"/>
   <int value="72" label="FacilitatedPaymentsPix"/>
   <int value="73" label="SyncableTabGroups"/>
+<!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
+
+<!-- LINT.IfChange(ChromeSyncablePref) -->
+
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>
   <int value="100002" label="ContextualSearchEnabled_Android"/>
@@ -601,6 +605,10 @@ chromium-metrics-reviews@google.com.
   <int value="100278" label="AccessibilityReadAnythingLanguagesEnabled"/>
   <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
   <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
+<!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
+
+<!-- LINT.IfChange(IosSyncablePref) -->
+
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
@@ -614,9 +622,7 @@ chromium-metrics-reviews@google.com.
   <int value="200010" label="VoiceSearchLocale"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:SyncablePref)-->
-
-<!-- TODO(crbug.com/249297195): Check common_, chrome_ OR ios_ file above. -->
+<!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
 
 <!-- LINT.IfChange(SyncBookmarkModelMetadataCorruptionReason) -->
 
@@ -1246,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
 
-<!-- TODO(crbug.com/336793181): `git cl format` deletes the ThenChange above
+<!-- TODO(crbug.com/338170016): `git cl format` deletes the ThenChange above
      unless this enum is here. Fix the issue and delete this fake enum.  -->
 
 <enum name="ZZZZZZ">

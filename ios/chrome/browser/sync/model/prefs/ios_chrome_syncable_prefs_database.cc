@@ -22,6 +22,7 @@ namespace syncable_prefs_ids {
 // tools/metrics/histograms/enums.xml. When removing an unused enumerator,
 // comment it out here, making it clear the value was previously used, and
 // add "(obsolete)" to the corresponding entry in enums.xml.
+// LINT.IfChange(IosSyncablePref)
 enum {
   // Starts with 200000 to avoid clash with prefs listed in
   // common_syncable_prefs_database.cc and
@@ -44,6 +45,7 @@ enum {
   // guidance and escalation path in case anything is unclear.
   // ^^^^^ IMPORTANT! ^^^^^
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:IosSyncablePref)
 }  // namespace syncable_prefs_ids
 
 // iOS specific list of syncable preferences.
