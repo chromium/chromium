@@ -446,7 +446,11 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
     DLOG(WARNING) << "Failed to reserve video capture buffer";
     return;
   }
-  if (retire_old_buffer_id != VideoCaptureBufferPool::kInvalidId) {
+  // TODO(b/333813928): This is a temporary solution to fix the cros camera
+  // service crash until we figure out the crash root cause.
+  const bool kEnableBufferSynchronizationWithCameraService = false;
+  if (kEnableBufferSynchronizationWithCameraService &&
+      retire_old_buffer_id != VideoCaptureBufferPool::kInvalidId) {
     buffer_observer_->OnBufferRetired(
         client_type, GetBufferIpcId(stream_type, retire_old_buffer_id));
   }
@@ -456,7 +460,8 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
       stream_context->buffer_dimension, *gfx_format,
       stream_context->buffer_usage, base::NullCallback());
 
-  if (require_new_buffer_id != VideoCaptureBufferPool::kInvalidId) {
+  if (kEnableBufferSynchronizationWithCameraService &&
+      require_new_buffer_id != VideoCaptureBufferPool::kInvalidId) {
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle = gmb->CloneHandle();
     gfx::NativePixmapHandle& native_pixmap_handle =
         gpu_memory_buffer_handle.native_pixmap_handle;
