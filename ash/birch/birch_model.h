@@ -95,6 +95,8 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetFileSuggestItems(
       const std::vector<BirchFileItem>& file_suggest_items);
   void SetRecentTabItems(const std::vector<BirchTabItem>& recent_tab_items);
+  void SetSelfShareItems(
+      const std::vector<BirchSelfShareItem>& self_share_items);
   void SetReleaseNotesItems(
       const std::vector<BirchReleaseNotesItem>& release_notes_items);
   void SetWeatherItems(const std::vector<BirchWeatherItem>& weather_items);
@@ -116,6 +118,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   }
   const std::vector<BirchTabItem>& GetTabsForTest() const {
     return recent_tab_data_.items;
+  }
+  const std::vector<BirchSelfShareItem>& GetSelfShareItemsForTest() const {
+    return self_share_data_.items;
   }
   const std::vector<BirchReleaseNotesItem>& GetReleaseNotesItemsForTest()
       const {
@@ -184,6 +189,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnCalendarPrefChanged();
   void OnFileSuggestPrefChanged();
   void OnRecentTabPrefChanged();
+  void OnSelfSharePrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
 
@@ -213,6 +219,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   DataTypeInfo<BirchAttachmentItem> attachment_data_;
   DataTypeInfo<BirchFileItem> file_suggest_data_;
   DataTypeInfo<BirchTabItem> recent_tab_data_;
+  DataTypeInfo<BirchSelfShareItem> self_share_data_;
   DataTypeInfo<BirchReleaseNotesItem> release_notes_data_;
   DataTypeInfo<BirchWeatherItem> weather_data_;
 
@@ -231,6 +238,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   PrefChangeRegistrar calendar_pref_registrar_;
   PrefChangeRegistrar file_suggest_pref_registrar_;
   PrefChangeRegistrar recent_tab_pref_registrar_;
+  PrefChangeRegistrar self_share_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;
   PrefChangeRegistrar release_notes_pref_registrar_;
 

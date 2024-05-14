@@ -422,6 +422,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
   BirchModel* model = Shell::Get()->birch_model();
   model->SetCalendarItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   model->SetAttachmentItems({});
@@ -507,6 +508,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   release_notes_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   task_environment()->RunUntilIdle();
   auto& release_notes_items = model->GetReleaseNotesItemsForTest();
@@ -527,6 +529,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   model->SetCalendarItems({});
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 1u);
@@ -543,6 +546,7 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(model->GetReleaseNotesItemsForTest().size(), 0u);

@@ -172,6 +172,31 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
   }
 }
 
+void BirchRanker::RankSelfShareItems(std::vector<BirchSelfShareItem>* items) {
+  CHECK(items);
+
+  // Sort the self share items by their shared time, descending.
+  std::sort(items->begin(), items->end(),
+            [](const BirchSelfShareItem& a, const BirchSelfShareItem& b) {
+              return b.shared_time() < a.shared_time();
+            });
+
+  for (BirchSelfShareItem& item : *items) {
+    if (now_ - base::Hours(1) < item.shared_time()) {
+      item.set_ranking(11.f);
+      continue;
+    }
+    if (now_ - base::Days(1) < item.shared_time()) {
+      item.set_ranking(27.f);
+      continue;
+    }
+    if (now_ - base::Days(2) < item.shared_time()) {
+      item.set_ranking(37.f);
+      continue;
+    }
+  }
+}
+
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
   // TODO(jamescook): Limit weather to `IsMorning()`. For now show it at a much
   // lower priority during non-morning hours as this helps with debugging and

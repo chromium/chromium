@@ -87,7 +87,7 @@ BirchBarController::BirchBarController(bool from_pine_service)
   for (const auto& suggestion_pref :
        {prefs::kBirchUseCalendar, prefs::kBirchUseWeather,
         prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs,
-        prefs::kBirchUseReleaseNotes}) {
+        prefs::kBirchUseSelfShare, prefs::kBirchUseReleaseNotes}) {
     customize_suggestions_pref_registrar_.Add(
         suggestion_pref,
         base::BindRepeating(

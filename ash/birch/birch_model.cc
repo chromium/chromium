@@ -56,6 +56,7 @@ BirchModel::BirchModel()
       attachment_data_(prefs::kBirchUseCalendar, "Attachment"),
       file_suggest_data_(prefs::kBirchUseFileSuggest, "File"),
       recent_tab_data_(prefs::kBirchUseRecentTabs, "Tab"),
+      self_share_data_(prefs::kBirchUseSelfShare, "SelfShare"),
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather") {
   if (features::IsBirchWeatherEnabled()) {
@@ -83,6 +84,7 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseCalendar, true);
   registry->RegisterBooleanPref(prefs::kBirchUseFileSuggest, true);
   registry->RegisterBooleanPref(prefs::kBirchUseRecentTabs, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseSelfShare, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
 }
@@ -126,6 +128,11 @@ void BirchModel::SetFileSuggestItems(
 void BirchModel::SetRecentTabItems(
     const std::vector<BirchTabItem>& recent_tab_items) {
   SetItems(recent_tab_data_, recent_tab_items, /*record_latency=*/true);
+}
+
+void BirchModel::SetSelfShareItems(
+    const std::vector<BirchSelfShareItem>& self_share_items) {
+  SetItems(self_share_data_, self_share_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetWeatherItems(
@@ -241,6 +248,8 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
                            birch_client_->GetFileSuggestProvider());
     StartDataFetchIfNeeded(recent_tab_data_,
                            birch_client_->GetRecentTabsProvider());
+    StartDataFetchIfNeeded(self_share_data_,
+                           birch_client_->GetSelfShareProvider());
     StartDataFetchIfNeeded(release_notes_data_,
                            birch_client_->GetReleaseNotesProvider());
   }
@@ -259,14 +268,35 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   item_remover_->FilterRemovedCalendarItems(&calendar_data_.items);
   item_remover_->FilterRemovedAttachmentItems(&attachment_data_.items);
   item_remover_->FilterRemovedFileItems(&file_suggest_data_.items);
+  // TODO(b/333412417): Implement item remove for Self Share items.
 
   BirchRanker ranker(GetNow());
   ranker.RankCalendarItems(&calendar_data_.items);
   ranker.RankAttachmentItems(&attachment_data_.items);
   ranker.RankFileSuggestItems(&file_suggest_data_.items);
   ranker.RankRecentTabItems(&recent_tab_data_.items);
+  ranker.RankSelfShareItems(&self_share_data_.items);
   ranker.RankWeatherItems(&weather_data_.items);
   ranker.RankReleaseNotesItems(&release_notes_data_.items);
+
+  // Avoid showing a duplicate tab item by removing the item with the higher
+  // ranking.
+  std::unordered_map<std::string, BirchSelfShareItem> url_to_self_share_item;
+  for (auto& item : self_share_data_.items) {
+    url_to_self_share_item.emplace(item.url().spec(), item);
+  }
+  std::erase_if(recent_tab_data_.items, [&url_to_self_share_item](
+                                            const auto& recent_tab_item) {
+    if (auto iter = url_to_self_share_item.find(recent_tab_item.url().spec());
+        iter != url_to_self_share_item.end()) {
+      if (recent_tab_item.ranking() > iter->second.ranking()) {
+        return true;
+      }
+
+      url_to_self_share_item.erase(iter);
+    }
+    return false;
+  });
 
   // Avoid showing a duplicate file which is both an attachment and file
   // suggestion by erasing the item with the higher ranking.
@@ -301,6 +331,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   }
   for (auto& tab : recent_tab_data_.items) {
     all_items.push_back(std::make_unique<BirchTabItem>(tab));
+  }
+  for (auto& event : url_to_self_share_item) {
+    all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
   }
   for (auto& file_suggestion : file_suggest_data_.items) {
     all_items.push_back(std::make_unique<BirchFileItem>(file_suggestion));
@@ -342,7 +375,7 @@ bool BirchModel::IsDataFresh() {
       !birch_client_ ||
       (calendar_data_.is_fresh && attachment_data_.is_fresh &&
        file_suggest_data_.is_fresh && recent_tab_data_.is_fresh &&
-       release_notes_data_.is_fresh);
+       self_share_data_.is_fresh && release_notes_data_.is_fresh);
 
   // Use the same logic for weather.
   bool is_weather_fresh = !weather_provider_ || weather_data_.is_fresh;
@@ -480,6 +513,11 @@ void BirchModel::InitPrefChangeRegistrars() {
       prefs::kBirchUseRecentTabs,
       base::BindRepeating(&BirchModel::OnRecentTabPrefChanged,
                           base::Unretained(this)));
+  self_share_pref_registrar_.Init(prefs);
+  self_share_pref_registrar_.Add(
+      prefs::kBirchUseSelfShare,
+      base::BindRepeating(&BirchModel::OnSelfSharePrefChanged,
+                          base::Unretained(this)));
   weather_pref_registrar_.Init(prefs);
   weather_pref_registrar_.Add(
       prefs::kBirchUseWeather,
@@ -515,6 +553,13 @@ void BirchModel::OnRecentTabPrefChanged() {
   }
 }
 
+void BirchModel::OnSelfSharePrefChanged() {
+  if (birch_client_) {
+    StartDataFetchIfNeeded(self_share_data_,
+                           birch_client_->GetSelfShareProvider());
+  }
+}
+
 void BirchModel::OnWeatherPrefChanged() {
   StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
 }
@@ -538,6 +583,8 @@ void BirchModel::RecordProviderHiddenHistograms() {
                             !prefs->GetBoolean(prefs::kBirchUseFileSuggest));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.RecentTabs",
                             !prefs->GetBoolean(prefs::kBirchUseRecentTabs));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.SelfShare",
+                            !prefs->GetBoolean(prefs::kBirchUseSelfShare));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Weather",
                             !prefs->GetBoolean(prefs::kBirchUseWeather));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ReleaseNotes",

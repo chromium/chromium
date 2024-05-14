@@ -42,6 +42,7 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetCalendarProvider() override { return &provider_; }
   BirchDataProvider* GetFileSuggestProvider() override { return &provider_; }
   BirchDataProvider* GetRecentTabsProvider() override { return &provider_; }
+  BirchDataProvider* GetSelfShareProvider() override { return &provider_; }
   BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }
 
   void WaitForRefreshTokens(base::OnceClosure callback) override {

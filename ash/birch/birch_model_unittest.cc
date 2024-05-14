@@ -100,6 +100,9 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetRecentTabsProvider() override {
     return &recent_tabs_provider_;
   }
+  BirchDataProvider* GetSelfShareProvider() override {
+    return &self_share_provider_;
+  }
   BirchDataProvider* GetReleaseNotesProvider() override {
     return &release_notes_provider_;
   }
@@ -113,6 +116,7 @@ class StubBirchClient : public BirchClient {
   StubBirchDataProvider calendar_provider_;
   StubBirchDataProvider file_suggest_provider_;
   StubBirchDataProvider recent_tabs_provider_;
+  StubBirchDataProvider self_share_provider_;
   StubBirchDataProvider release_notes_provider_;
   base::ScopedTempDir test_dir_;
 };
@@ -235,6 +239,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetAttachmentItems(std::vector<BirchAttachmentItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -245,6 +250,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
 
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -270,6 +276,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
@@ -295,6 +302,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -306,6 +314,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
   histograms.ExpectTotalCount("Ash.Birch.Latency.Calendar", 1);
   histograms.ExpectTotalCount("Ash.Birch.Latency.File", 1);
   histograms.ExpectTotalCount("Ash.Birch.Latency.Tab", 1);
+  histograms.ExpectTotalCount("Ash.Birch.Latency.SelfShare", 1);
   histograms.ExpectTotalCount("Ash.Birch.Latency.Weather", 1);
   histograms.ExpectTotalCount("Ash.Birch.Latency.ReleaseNotes", 1);
 
@@ -331,6 +340,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -345,6 +355,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -385,6 +396,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   model->SetAttachmentItems({});
   model->SetFileSuggestItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   ASSERT_TRUE(model->IsDataFresh());
@@ -396,6 +408,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -418,6 +431,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   EXPECT_FALSE(client.calendar_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
   EXPECT_TRUE(model->IsDataFresh());
@@ -433,6 +447,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, true);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -449,6 +464,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
 }
@@ -461,16 +477,23 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("https://www.favicon.com/"),
+                             "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  GURL faviconUrl = GURL("https://www.favicon.com/");
+  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
+                                    GURL("https://www.example.com/"),
+                                    base::Time(), u"my device", faviconUrl);
+  model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
-  release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
-                                       base::Time());
+  release_notes_item_list.emplace_back(
+      u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
   ASSERT_TRUE(model->IsDataFresh());
 
@@ -481,6 +504,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -490,6 +514,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   EXPECT_TRUE(model->GetAttachmentItemsForTest().empty());
   EXPECT_TRUE(model->GetFileSuggestItemsForTest().empty());
   EXPECT_TRUE(model->GetTabsForTest().empty());
+  EXPECT_TRUE(model->GetSelfShareItemsForTest().empty());
   EXPECT_TRUE(model->GetWeatherForTest().empty());
   EXPECT_TRUE(model->GetReleaseNotesItemsForTest().empty());
 }
@@ -505,6 +530,7 @@ TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -533,6 +559,7 @@ TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   model->SetAttachmentItems({});
   model->SetFileSuggestItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetReleaseNotesItems({});
 
   // Consumer was notified that fetch was complete.
@@ -553,6 +580,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
 
   // Request a fetch, creating a pending fetch request.
@@ -562,6 +590,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   EXPECT_FALSE(client.calendar_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.file_suggest_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
 
   // Enable prefs and then expect that data fetch requests are called for each
@@ -569,10 +598,12 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, true);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, true);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, true);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, true);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, true);
   EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.file_suggest_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.recent_tabs_provider_.did_request_birch_data_fetch_);
+  EXPECT_TRUE(client.self_share_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.release_notes_provider_.did_request_birch_data_fetch_);
 }
 
@@ -609,6 +640,7 @@ TEST_F(BirchModelTest, IsDataFresh_Attachments) {
   model->SetCalendarItems({});
   model->SetFileSuggestItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   EXPECT_FALSE(model->IsDataFresh());
@@ -639,6 +671,8 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
 
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetSelfShareItems({});
   std::vector<BirchWeatherItem> weather_items;
   weather_items.emplace_back(u"desc", u"temp", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_items));
@@ -689,6 +723,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   // not notify consumer.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -739,6 +774,7 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
 
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -766,6 +802,14 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   model->SetRecentTabItems(tab_item_list);
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  GURL faviconUrl = GURL("https://www.favicon.com/");
+  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
+                                    GURL("foo.bar.two"), base::Time(),
+                                    u"my device", faviconUrl);
+  model->SetSelfShareItems(std::move(self_share_item_list));
+  EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
+
   // Test that passing enough time notifies that items are ready.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -784,6 +828,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
 
   // Setting items in the model does not notify when no request has occurred.
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -793,7 +838,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"0"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
-
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -818,6 +863,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -891,21 +937,27 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  GURL faviconUrl = GURL("favicon");
+  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
+                                    GURL("foo.bar.two"), base::Time(),
+                                    u"my device", faviconUrl);
+  model->SetSelfShareItems(std::move(self_share_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
-  release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
-                                       base::Time());
+  release_notes_item_list.emplace_back(
+      u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 6u);
+  EXPECT_EQ(model->GetAllItems().size(), 7u);
 
   model->RequestBirchDataFetch(/*is_post_login=*/false,
                                base::BindOnce(&TestModelConsumer::OnItemsReady,
@@ -919,6 +971,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
@@ -937,14 +990,14 @@ TEST_F(BirchModelTest, GetAllItems) {
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
-  release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
-                                       base::Time());
+  release_notes_item_list.emplace_back(
+      u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(std::move(release_notes_item_list));
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
@@ -975,8 +1028,8 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
@@ -984,8 +1037,8 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
-  release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
-                                       base::Time());
+  release_notes_item_list.emplace_back(
+      u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(std::move(release_notes_item_list));
 
   // Histograms were recorded for each type.
@@ -1017,8 +1070,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   model->SetAttachmentItems(std::move(attachment_item_list));
 
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   tab_item_list.back().set_ranking(2.f);
   model->SetRecentTabItems(std::move(tab_item_list));
@@ -1061,8 +1114,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   model->SetAttachmentItems(std::move(attachment_item_list));
 
   std::vector<BirchTabItem> tab_item_list;
-  tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
-                             GURL("favicon"), "session",
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   tab_item_list.back().set_ranking(4.f);
   model->SetRecentTabItems(std::move(tab_item_list));
@@ -1168,6 +1221,7 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   ASSERT_TRUE(model->IsDataFresh());
@@ -1210,6 +1264,7 @@ TEST_F(BirchModelTest, RemoveAndFilterTabItem) {
 
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
+  model->SetSelfShareItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -1237,6 +1292,7 @@ TEST_F(BirchModelTest, RemoveAndFilterCalendarItem) {
   BirchModel* model = Shell::Get()->birch_model();
 
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetAttachmentItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
@@ -1261,6 +1317,7 @@ TEST_F(BirchModelTest, RemoveAndFilterAttachmentItem) {
 
   model->SetCalendarItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -1283,6 +1340,7 @@ TEST_F(BirchModelTest, RemoveAndFilterFileItem) {
   BirchModel* model = Shell::Get()->birch_model();
 
   model->SetCalendarItems({});
+  model->SetSelfShareItems({});
   model->SetAttachmentItems({});
   model->SetRecentTabItems({});
   model->SetWeatherItems({});
@@ -1307,6 +1365,7 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
 
   model->SetCalendarItems({});
   model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
 
@@ -1350,6 +1409,66 @@ TEST_F(BirchModelTest, DuplicateFileAndAttachmentItem) {
   EXPECT_EQ(all_items[1]->title(), u"Recently Edited File 2");
 }
 
+TEST_F(BirchModelTest, DuplicateSelfShareAndRecentTabItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("https://www.favicon.com/"),
+                             "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  GURL faviconUrl = GURL("https://www.favicon.com/");
+  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
+                                    GURL("https://www.example.com/"),
+                                    base::Time(), u"my device", faviconUrl);
+  model->SetSelfShareItems(std::move(self_share_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 1u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[0]->title(), u"tab");
+}
+
+TEST_F(BirchModelTest, DifferentSelfShareAndRecentTabItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetRecentTabItems({});
+  model->SetSelfShareItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchTabItem> tab_item_list;
+  tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
+                             base::Time(), GURL("https://www.favicon.com/"),
+                             "session",
+                             BirchTabItem::DeviceFormFactor::kDesktop);
+  model->SetRecentTabItems(std::move(tab_item_list));
+
+  std::vector<BirchSelfShareItem> self_share_item_list;
+  GURL faviconUrl = GURL("https://www.favicon.com/");
+  self_share_item_list.emplace_back(u"self share guid", u"self share tab",
+                                    GURL("https://www.exampletwo.com/"),
+                                    base::Time(), u"my device", faviconUrl);
+  model->SetSelfShareItems(std::move(self_share_item_list));
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[0]->title(), u"tab");
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kSelfShare);
+  EXPECT_EQ(all_items[1]->title(), u"self share tab");
+}
+
 TEST_F(BirchModelTest, SetClientObservation) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelObserver test_observer;
@@ -1389,6 +1508,7 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -1399,6 +1519,7 @@ TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Calendar", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.FileSuggest", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.RecentTabs", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.SelfShare", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
                                1);

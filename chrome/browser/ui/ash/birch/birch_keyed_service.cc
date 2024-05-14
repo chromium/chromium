@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
 #include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
 
 namespace ash {
@@ -34,6 +35,7 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
       recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
       release_notes_provider_(
           std::make_unique<BirchReleaseNotesProvider>(profile)),
+      self_share_provider_(std::make_unique<BirchSelfShareProvider>(profile)),
       refresh_token_waiter_(std::make_unique<RefreshTokenWaiter>(profile)) {
   calendar_provider_->Initialize();
   Shell::Get()->birch_model()->SetClientAndInit(this);
@@ -62,6 +64,10 @@ BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
 
 BirchDataProvider* BirchKeyedService::GetReleaseNotesProvider() {
   return release_notes_provider_.get();
+}
+
+BirchDataProvider* BirchKeyedService::GetSelfShareProvider() {
+  return self_share_provider_.get();
 }
 
 void BirchKeyedService::WaitForRefreshTokens(base::OnceClosure callback) {

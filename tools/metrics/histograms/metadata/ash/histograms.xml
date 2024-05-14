@@ -881,6 +881,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Calendar" summary="calendar"/>
     <variant name=".File" summary="file"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".SelfShare" summary="self share"/>
     <variant name=".Tab" summary="recent tab"/>
     <variant name=".Weather" summary="weather"/>
   </token>
@@ -899,6 +900,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FileSuggest" summary="file suggest"/>
     <variant name=".RecentTabs" summary="recent tabs"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".SelfShare" summary="self share"/>
     <variant name=".Weather" summary="weather"/>
   </token>
 </histogram>
@@ -933,6 +935,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Calendar" summary="calendar"/>
     <variant name=".File" summary="file"/>
     <variant name=".ReleaseNotes" summary="release notes"/>
+    <variant name=".SelfShare" summary="self share"/>
     <variant name=".Tab" summary="recent tab"/>
     <variant name=".Weather" summary="weather"/>
   </token>

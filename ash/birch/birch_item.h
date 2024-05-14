@@ -25,7 +25,8 @@ enum class BirchItemType {
   kTab = 4,           // Recent tab from other device.
   kWeather = 5,       // Weather conditions.
   kReleaseNotes = 6,  // Release notes from recent OS update.
-  kMaxValue = kReleaseNotes,
+  kSelfShare = 7,     // Tabs shared to self from ChromeSync API.
+  kMaxValue = kSelfShare,
 };
 
 // The base item which is stored by the birch model.
@@ -262,6 +263,43 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   GURL favicon_url_;
   std::string session_name_;
   DeviceFormFactor form_factor_;
+};
+
+// A birch item which contains tabs shared to self information.
+class ASH_EXPORT BirchSelfShareItem : public BirchItem {
+ public:
+  BirchSelfShareItem(const std::u16string& guid,
+                     const std::u16string& title,
+                     const GURL& url,
+                     const base::Time& shared_time,
+                     const std::u16string& device_name,
+                     GURL& favicon_url);
+  BirchSelfShareItem(BirchSelfShareItem&&);
+  BirchSelfShareItem(const BirchSelfShareItem&);
+  BirchSelfShareItem& operator=(const BirchSelfShareItem&);
+  bool operator==(const BirchSelfShareItem& rhs) const;
+  ~BirchSelfShareItem() override;
+
+  // BirchItem:
+  BirchItemType GetType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void PerformSecondaryAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
+
+  const std::u16string& guid() const { return guid_; }
+  const base::Time& shared_time() const { return shared_time_; }
+  const GURL& url() const { return url_; }
+  void set_favicon_url(const GURL& favicon_url) { favicon_url_ = favicon_url; }
+
+ private:
+  static std::u16string GetSubtitle(const std::u16string& device_name,
+                                    base::Time shared_time);
+
+  std::u16string guid_;
+  GURL url_;
+  base::Time shared_time_;
+  GURL favicon_url_;
 };
 
 class ASH_EXPORT BirchWeatherItem : public BirchItem {

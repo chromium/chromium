@@ -20,6 +20,7 @@ class BirchCalendarProvider;
 class BirchFileSuggestProvider;
 class BirchRecentTabsProvider;
 class BirchReleaseNotesProvider;
+class BirchSelfShareProvider;
 class RefreshTokenWaiter;
 class Shell;
 
@@ -50,6 +51,8 @@ class BirchKeyedService : public KeyedService,
   BirchDataProvider* GetFileSuggestProvider() override;
   BirchDataProvider* GetRecentTabsProvider() override;
   BirchDataProvider* GetReleaseNotesProvider() override;
+  BirchDataProvider* GetSelfShareProvider() override;
+
   void WaitForRefreshTokens(base::OnceClosure callback) override;
   base::FilePath GetRemovedItemsFilePath() override;
 
@@ -68,6 +71,8 @@ class BirchKeyedService : public KeyedService,
   std::unique_ptr<BirchRecentTabsProvider> recent_tabs_provider_;
 
   std::unique_ptr<BirchReleaseNotesProvider> release_notes_provider_;
+
+  std::unique_ptr<BirchSelfShareProvider> self_share_provider_;
 
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 

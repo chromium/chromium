@@ -22,6 +22,7 @@ class ASH_EXPORT BirchClient {
   virtual BirchDataProvider* GetCalendarProvider() = 0;
   virtual BirchDataProvider* GetFileSuggestProvider() = 0;
   virtual BirchDataProvider* GetRecentTabsProvider() = 0;
+  virtual BirchDataProvider* GetSelfShareProvider() = 0;
   virtual BirchDataProvider* GetReleaseNotesProvider() = 0;
 
   // Waits for refresh tokens to be loaded then calls `callback`. Calls

@@ -34,6 +34,7 @@ class ASH_EXPORT BirchRanker {
   void RankAttachmentItems(std::vector<BirchAttachmentItem>* items);
   void RankFileSuggestItems(std::vector<BirchFileItem>* items);
   void RankRecentTabItems(std::vector<BirchTabItem>* items);
+  void RankSelfShareItems(std::vector<BirchSelfShareItem>* items);
   void RankWeatherItems(std::vector<BirchWeatherItem>* items);
   void RankReleaseNotesItems(std::vector<BirchReleaseNotesItem>* items);
 

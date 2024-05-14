@@ -12,6 +12,7 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -149,6 +150,11 @@ class TestBirchClient : public BirchClient {
         base::BindRepeating(&BirchModel::SetRecentTabItems,
                             base::Unretained(birch_model)),
         prefs::kBirchUseRecentTabs);
+    self_share_provider_ =
+        std::make_unique<TestBirchDataProvider<BirchSelfShareItem>>(
+            base::BindRepeating(&BirchModel::SetSelfShareItems,
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseSelfShare);
     release_notes_provider_ =
         std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
             base::BindRepeating(&BirchModel::SetReleaseNotesItems,
@@ -176,12 +182,17 @@ class TestBirchClient : public BirchClient {
     release_notes_provider_->set_items(items);
   }
 
+  void SetSelfShareItems(const std::vector<BirchSelfShareItem>& items) {
+    self_share_provider_->set_items(items);
+  }
+
   // Clear all items.
   void Reset() {
     calendar_provider_->ClearItems();
     file_provider_->ClearItems();
     tab_provider_->ClearItems();
     release_notes_provider_->ClearItems();
+    self_share_provider_->ClearItems();
   }
 
   // BirchClient:
@@ -193,6 +204,9 @@ class TestBirchClient : public BirchClient {
   }
   BirchDataProvider* GetRecentTabsProvider() override {
     return tab_provider_.get();
+  }
+  BirchDataProvider* GetSelfShareProvider() override {
+    return self_share_provider_.get();
   }
   BirchDataProvider* GetReleaseNotesProvider() override {
     return release_notes_provider_.get();
@@ -216,6 +230,8 @@ class TestBirchClient : public BirchClient {
   std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchSelfShareItem>>
+      self_share_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
   base::ScopedTempDir test_dir_;
@@ -240,11 +256,14 @@ class BirchBarTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    image_downloader_ = std::make_unique<ash::TestImageDownloader>();
+
     // Set prefs of all suggestion types and show suggestions enabled.
     for (const auto& pref_name :
          {prefs::kBirchShowSuggestions, prefs::kBirchUseCalendar,
           prefs::kBirchUseWeather, prefs::kBirchUseFileSuggest,
-          prefs::kBirchUseRecentTabs, prefs::kBirchUseReleaseNotes}) {
+          prefs::kBirchUseRecentTabs, prefs::kBirchUseReleaseNotes,
+          prefs::kBirchUseSelfShare}) {
       GetPrefService()->SetBoolean(pref_name, true);
     }
 
@@ -274,8 +293,11 @@ class BirchBarTest : public AshTestBase {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     weather_provider_ = nullptr;
     birch_client_.reset();
+    image_downloader_.reset();
     AshTestBase::TearDown();
   }
+
+  std::unique_ptr<TestImageDownloader> image_downloader_;
 
  protected:
   // Adds a number of `num` file birch items to data source.
@@ -310,17 +332,34 @@ class BirchBarTest : public AshTestBase {
     birch_client_->SetCalendarItems(item_list);
   }
 
-  // Adds a  number of `num` tab birch items to data source.
+  // Adds a number of `num` tab birch items to data source.
   void SetTabItems(size_t num) {
     std::vector<BirchTabItem> item_list;
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(
-          /*title=*/u"tab", /*url*/ GURL("foo.bar"), /*timestamp=*/base::Time(),
-          /*favicon_url=*/GURL("favicon"), /*session_name=*/"session",
+          /*title=*/u"tab", /*url*/ GURL("https://www.example.com/"),
+          /*timestamp=*/base::Time(),
+          /*favicon_url=*/GURL("https://www.favicon.com/"),
+          /*session_name=*/"session",
           /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetRecentTabsItems(item_list);
+  }
+
+  // Adds a number of `num` self share birch items to data source.
+  GURL faviconUrl = GURL("https://www.favicon.com/");
+  void SetSelfShareItems(size_t num) {
+    std::vector<BirchSelfShareItem> item_list;
+    for (size_t i = 0; i < num; i++) {
+      item_list.emplace_back(
+          /*guid=*/u"self share guid", /*title*/ u"self share tab",
+          /*url=*/GURL("https://www.exampletwo.com/"),
+          /*shared_time=*/base::Time(), /*device_name=*/u"my device",
+          /*favicon_url=*/faviconUrl);
+      item_list.back().set_ranking(1.0f);
+    }
+    birch_client_->SetSelfShareItems(item_list);
   }
 
   // Adds a number of `num` release notes birch items to data source.
@@ -329,7 +368,7 @@ class BirchBarTest : public AshTestBase {
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*release_notes_title=*/u"note",
                              /*release_notes_text=*/u"explore",
-                             /*url=*/GURL("foo.bar"),
+                             /*url=*/GURL("https://www.example.com/"),
                              /*first_seen=*/base::Time());
       item_list.back().set_ranking(1.0f);
     }
@@ -656,7 +695,7 @@ TEST_F(BirchBarMenuTest, ShowHideBar) {
 
 // Tests customizing suggestions from context menu.
 TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
-  // Create 4 suggestions, one for each customizable suggestion type.
+  // Create 5 suggestions, one for each customizable suggestion type.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/1);
   SetFileItems(/*num=*/1);
@@ -742,10 +781,10 @@ TEST_F(BirchBarMenuTest, CustomizeSuggestions) {
 // Tests resetting suggestions from context menu.
 TEST_F(BirchBarMenuTest, ResetSuggestions) {
   // Create 4 suggestions, one for each customizable suggestion type.
-  SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/1);
   SetFileItems(/*num=*/1);
   SetTabItems(/*num=*/1);
+  SetSelfShareItems(/*num*/ 1);
 
   // Enter Overview and check a bar view is created.
   EnterOverview();
@@ -759,15 +798,27 @@ TEST_F(BirchBarMenuTest, ResetSuggestions) {
   // Cache the chips.
   const auto& bar_chips = grid_test_api.GetBirchChips();
 
-  // Disable the calendar and file suggestions such that only weather and tab
-  // suggestions are shown.
+  // The functor to check if given suggestion types are shown in the bar chips.
+  auto has_suggestion_types =
+      [](const std::vector<BirchItemType>& types,
+         const std::vector<raw_ptr<BirchChipButtonBase>>& chips) -> bool {
+    return base::ranges::all_of(types, [&](BirchItemType type) {
+      return base::ranges::any_of(chips,
+                                  [&](raw_ptr<BirchChipButtonBase> chip) {
+                                    return chip->GetItem()->GetType() == type;
+                                  });
+    });
+  };
+
+  // Disable the calendar and file suggestions such that only tab and
+  // self share suggestions are shown.
   auto* pref_service = GetPrefService();
   pref_service->SetBoolean(prefs::kBirchUseCalendar, false);
   pref_service->SetBoolean(prefs::kBirchUseFileSuggest, false);
 
   EXPECT_EQ(2u, bar_chips.size());
-  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kWeather, BirchItemType::kTab},
-                                 bar_chips));
+  EXPECT_TRUE(has_suggestion_types(
+      {BirchItemType::kTab, BirchItemType::kSelfShare}, bar_chips));
 
   auto* root_window_controller = RootWindowController::ForWindow(root_window);
   // Right clicking on the wallpaper of the first display to show the context
@@ -788,16 +839,16 @@ TEST_F(BirchBarMenuTest, ResetSuggestions) {
   // Clicking on the reset button to enable all suggestions pref and all four
   // types of suggestion chips should be shown on the bar.
   LeftClickOn(reset_item);
-  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseWeather));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseCalendar));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseFileSuggest));
   EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseRecentTabs));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseSelfShare));
 
   EXPECT_EQ(4u, bar_chips.size());
   EXPECT_TRUE(
-      HasSuggestionTypes({BirchItemType::kWeather, BirchItemType::kCalendar,
-                          BirchItemType::kFile, BirchItemType::kTab},
-                         bar_chips));
+      has_suggestion_types({BirchItemType::kCalendar, BirchItemType::kFile,
+                            BirchItemType::kTab, BirchItemType::kSelfShare},
+                           bar_chips));
 }
 
 // Tests that there is no crash if hiding the suggestions by toggle the switch

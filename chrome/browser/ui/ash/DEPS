@@ -295,4 +295,9 @@ specific_include_rules = {
   "shelf_context_menu_unittest\.cc": [
     "+components/viz/test/test_gpu_service_holder.h",
   ],
+  "birch_self_share_provider\.cc": [
+    "+chrome/browser/favicon/favicon_utils.h",
+    "+chrome/browser/sync/send_tab_to_self_sync_service_factory.h",
+  ]
 }
+

@@ -2677,6 +2677,8 @@ static_library("ui") {
       "ash/birch/birch_recent_tabs_provider.h",
       "ash/birch/birch_release_notes_provider.cc",
       "ash/birch/birch_release_notes_provider.h",
+      "ash/birch/birch_self_share_provider.cc",
+      "ash/birch/birch_self_share_provider.h",
       "ash/birch/refresh_token_waiter.cc",
       "ash/birch/refresh_token_waiter.h",
       "ash/browser_data_migration_error_dialog.cc",
