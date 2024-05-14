@@ -1087,36 +1087,6 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   if (!cdr.access_token().empty())
     dict.Set("access_token", cdr.access_token());
 
-  if (cdr.has_document_summary()) {
-    base::Value::Dict dict_document_summary;
-    auto document_summary = cdr.document_summary();
-    if (document_summary.has_metadata()) {
-      base::Value::Dict dict_document_metadata;
-      dict_document_metadata.Set("contains_macros",
-                                 document_summary.metadata().contains_macros());
-      dict_document_summary.Set("metadata", std::move(dict_document_metadata));
-    }
-
-    if (document_summary.has_processing_info()) {
-      base::Value::Dict dict_document_processing_info;
-      auto processing_info = document_summary.processing_info();
-      if (processing_info.has_maldoca_error_type()) {
-        dict_document_processing_info.Set("maldoca_error_type",
-                                          processing_info.maldoca_error_type());
-      }
-      if (!processing_info.maldoca_error_message().empty()) {
-        dict_document_processing_info.Set(
-            "maldoca_error_message", processing_info.maldoca_error_message());
-      }
-      dict_document_processing_info.Set(
-          "processing_successful", processing_info.processing_successful());
-      dict_document_summary.Set("processing_info",
-                                std::move(dict_document_processing_info));
-    }
-
-    dict.Set("document_summary", std::move(dict_document_summary));
-  }
-
   if (cdr.has_archive_summary()) {
     base::Value::Dict dict_archive_summary;
     auto archive_summary = cdr.archive_summary();

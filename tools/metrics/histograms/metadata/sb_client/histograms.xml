@@ -126,27 +126,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DocumentCheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2025-02-20">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the reason why document downloads are marked as being malicious or
-    clean by the Safe Browsing download protection. This is logged after
-    downloads are scanned by Safe Browsing.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DocumentContainsMacros"
-    enum="BooleanContainsMacros" expires_after="2025-02-20">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether or not a downloaded document contains macros. This is logged
-    on each document download.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DownloadExtensions"
     enum="SBClientDownloadExtensions" expires_after="2024-09-22">
   <owner>vakh@chromium.org</owner>

@@ -36,22 +36,6 @@ if (safe_browsing_mode == 1) {
     ]
   }
 
-  if (is_linux || is_win) {
-    source_set("document_analyzer_results") {
-      sources = [
-        "document_analyzer_results.cc",
-        "document_analyzer_results.h",
-      ]
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-      deps = [
-        ":download_type_util",
-        "//base",
-        "//components/safe_browsing/content/common:file_type_policies",
-      ]
-      public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
-    }
-  }
-
   source_set("download_type_util") {
     sources = [
       "download_type_util.cc",
@@ -157,9 +141,5 @@ source_set("safe_browsing") {
       "//ipc",
       "//third_party/zlib/google:zip",
     ]
-
-    if (is_linux || is_win) {
-      public_deps += [ ":document_analyzer_results" ]
-    }
   }
 }

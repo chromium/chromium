@@ -181,10 +181,6 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMaldocaSkipCheck,
-             "MaldocaSkipCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
 // TODO(crbug.com/40061554): Fix iOS tests with this enabled.

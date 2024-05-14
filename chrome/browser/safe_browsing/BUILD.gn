@@ -361,12 +361,6 @@ static_library("safe_browsing") {
         ]
       }
 
-      if (is_linux || is_win) {
-        sources += [
-          "download_protection/document_analysis_service.cc",
-          "download_protection/document_analysis_service.h",
-        ]
-      }
       deps += [
         ":advanced_protection",
         ":verdict_cache_manager_factory",
@@ -415,12 +409,6 @@ static_library("safe_browsing") {
         deps += [
           "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
           "//chrome/common:version_header",
-        ]
-      }
-      if (is_linux || is_win) {
-        deps += [
-          "//chrome/common/safe_browsing:document_analyzer_results",
-          "//chrome/services/file_util/public/mojom",
         ]
       }
       if (is_chromeos_ash) {

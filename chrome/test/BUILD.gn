@@ -5369,15 +5369,6 @@ if (!is_android) {
         "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       ]
 
-      if (is_win || is_linux) {
-        sources += [ "../browser/safe_browsing/download_protection/file_analyzer_browsertest.cc" ]
-
-        deps += [
-          "//chrome/services/file_util:file_util",
-          "//chrome/services/file_util/public/cpp:cpp",
-        ]
-      }
-
       if (!is_mac) {
         sources += [
           # single-process mode hangs on Mac sometimes because of multiple UI
