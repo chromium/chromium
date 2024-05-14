@@ -137,10 +137,16 @@ BoxBackgroundPaintContext::BoxBackgroundPaintContext(
 }
 
 PhysicalBoxStrut BoxBackgroundPaintContext::BorderOutsets() const {
+  if (box_fragment_) {
+    return box_fragment_->Borders();
+  }
   return positioning_box_->BorderOutsets();
 }
 
 PhysicalBoxStrut BoxBackgroundPaintContext::PaddingOutsets() const {
+  if (box_fragment_) {
+    return box_fragment_->Padding();
+  }
   return positioning_box_->PaddingOutsets();
 }
 
