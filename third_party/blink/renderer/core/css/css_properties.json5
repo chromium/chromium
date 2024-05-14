@@ -4457,6 +4457,16 @@
       supports_incremental_style: true,
     },
     {
+      name: "scroll-markers",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "after", "before"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "CSSPseudoScrollMarkers",
+    },
+    {
       interpolable: true,
       name: "scrollbar-color",
       property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],

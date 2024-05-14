@@ -386,6 +386,7 @@ scrollMarginInlineStart
 scrollMarginLeft
 scrollMarginRight
 scrollMarginTop
+scrollMarkers
 scrollPadding
 scrollPaddingBlock
 scrollPaddingBlockEnd

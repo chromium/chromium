@@ -7395,6 +7395,14 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+const CSSValue* ScrollMarkers::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.ScrollMarkers());
+}
+
 // https://www.w3.org/TR/css-scrollbars/
 // auto | <color>{2}
 const CSSValue* ScrollbarColor::ParseSingleValueFromRange(

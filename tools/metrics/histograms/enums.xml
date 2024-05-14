@@ -27150,6 +27150,7 @@ Called by update_use_counter_css.py.-->
   <int value="790" label="types"/>
   <int value="791" label="line-clamp"/>
   <int value="792" label="font-variant-emoji"/>
+  <int value="793" label="scroll-markers"/>
 </enum>
 
 <enum name="MediaEncryptionType">

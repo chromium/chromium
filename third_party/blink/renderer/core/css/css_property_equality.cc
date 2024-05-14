@@ -598,6 +598,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Right() == b.Right();
     case CSSPropertyID::kRubyPosition:
       return a.GetRubyPosition() == b.GetRubyPosition();
+    case CSSPropertyID::kScrollMarkers:
+      return a.ScrollMarkers() == b.ScrollMarkers();
     case CSSPropertyID::kScrollbarColor:
       return a.ScrollbarColor() == b.ScrollbarColor();
     case CSSPropertyID::kScrollbarGutter:
