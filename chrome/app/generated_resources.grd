@@ -560,18 +560,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-         Fill in form
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
-         Addresses and more
-        </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
-         Payment methods
-        </message>
         <!-- TODO(321678141): Finalize the strings and make them translatable -->
         <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS" desc="This is a context menu entry. Upon clicking, it triggers the password selection bubble (for non-syncing users) or a submenu with more entries (for syncing users)." translateable="false">
-         Passwords
+          Passwords
         </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
@@ -874,7 +865,16 @@ are declared in tools/grit/grit_rule.gni.
             Open with <ph name="APP">$1<ex>Hangouts</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
-           Help improve autofill
+            Help improve autofill
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
+            Fill in form
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
+            Addresses and more
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
+            Payment methods
           </message>
           <!-- TODO(321678141): Finalize the strings and make them translatable -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble." translateable="false">
@@ -1194,8 +1194,17 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="In Title Case: The name of the Generate Password command in the content area context menu">
             Suggest Password...
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
-           Help Improve Autofill
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="In Title Case: The name of the Autofill Feedback command in the content area context menu">
+            Help Improve Autofill
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="In Title Case: The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
+            Fill in Form
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS" desc="In Title Case: The name of the Autofill manual fallback for showing address suggestions in the content area context menu.">
+            Addresses and More
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
+            Payment Methods
           </message>
           <!-- TODO(321678141): Finalize the strings and make them translatable -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble." translateable="false">
