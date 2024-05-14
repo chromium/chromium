@@ -337,15 +337,23 @@ float Font::BidiWidth(const TextRun& run, gfx::RectF* glyph_bounds) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
 
+  if (run.length() == 0) {
+    return 0;
+  }
+
   // Run bidi algorithm on the given text. Step 5 of:
   // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  String text16 =
-      run.length() == 0 ? String("") : run.ToStringView().ToString();
+  String text16 = run.ToStringView().ToString();
   text16.Ensure16Bit();
   BidiParagraph bidi;
   bidi.SetParagraph(text16, run.Direction());
   BidiParagraph::Runs runs;
   bidi.GetLogicalRuns(text16, &runs);
+
+  if (runs.size() == 1 && run.Direction() == runs[0].Direction()) {
+    return shaper.Width(run, glyph_bounds);
+  }
+
   float width = 0;
   for (const BidiParagraph::Run& logical_run : runs) {
     // Measure each run.
