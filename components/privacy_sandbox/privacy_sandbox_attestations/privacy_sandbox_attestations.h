@@ -155,10 +155,20 @@ class PrivacySandboxAttestations {
   void SetLoadAttestationsParsingStartedCallbackForTesting(
       base::OnceClosure callback);
 
+  // Set the callback to be invoked as part of the component registration
+  // callback.
+  void SetComponentRegistrationCallbackForTesting(base::OnceClosure callback);
+
   // Returns true if the attestations have ever been loaded or if attestations
   // are not enforced.
   bool AddObserver(content::PrivacySandboxAttestationsObserver* observer);
   void RemoveObserver(content::PrivacySandboxAttestationsObserver* observer);
+
+  // Called when component installer finished registration and the check for
+  // attestations file.
+  void OnAttestationsFileCheckComplete();
+
+  bool attestations_file_checked() const { return attestations_file_checked_; }
 
  private:
   friend class base::NoDestructor<PrivacySandboxAttestations>;
@@ -184,6 +194,9 @@ class PrivacySandboxAttestations {
   // we're in a test). If it returns false, do nothing.
   bool RunLoadAttestationsParsingStartedCallbackForTesting();
 
+  // Invoke the `component_registration_callback_` registered by tests, if any.
+  void RunComponentRegistrationCallbackForTesting();
+
   // Called when attestations parsing finishes. Stores the parsed attestations
   // map and its version. Also notifies the observers the attestations map has
   // been loaded / updated.
@@ -206,6 +219,9 @@ class PrivacySandboxAttestations {
 
   // This callback is invoked when parsing for the attestations map starts.
   base::OnceClosure load_attestations_parsing_started_callback_;
+
+  // This callback is invoked as part of the component registration callback.
+  base::OnceClosure component_registration_callback_;
 
   Progress attestations_parse_progress_ GUARDED_BY_CONTEXT(sequence_checker_) =
       kNotStarted;
@@ -230,6 +246,9 @@ class PrivacySandboxAttestations {
 
   // If true, all Privacy Sandbox APIs are considered attested for any site.
   bool is_all_apis_attested_for_testing_ = false;
+
+  // Whether the component installer has checked the attestations file.
+  bool attestations_file_checked_ = false;
 
   base::ObserverList<content::PrivacySandboxAttestationsObserver> observers_;
 

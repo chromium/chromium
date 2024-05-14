@@ -131,6 +131,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       CallComponentReadyWhenRegistrationFindsExistingComponent);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
                            SentinelFilePreventsSubsequentParsings);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxAttestationsBrowserTest,
+                           DifferentHistogramAfterAttestationsFileCheck);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, FledgeJoiningAllowed);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest, NonEtldPlusOneBlocked);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
@@ -150,12 +152,14 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
     kSiteDataAccessBlocked = 4,
     kMismatchedConsent = 5,
     kAttestationFailed = 6,
-    kAttestationsFileNotYetReady = 7,
+    kAttestationsFileNotYetReadyNOLONGERRECORDED = 7,
     kAttestationsDownloadedNotYetLoaded = 8,
     kAttestationsFileCorrupt = 9,
     kJoiningTopFrameBlocked = 10,
     kBlockedBy3pcdExperiment = 11,
-    kMaxValue = kBlockedBy3pcdExperiment,
+    kAttestationsFileNotYetChecked = 12,
+    kAttestationsFileNotPresent = 13,
+    kMaxValue = kAttestationsFileNotPresent,
   };
 
   static bool IsAllowed(Status status);

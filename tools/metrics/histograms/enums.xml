@@ -30442,12 +30442,16 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Mismatched Consent"/>
   <int value="6" label="Attestation failed"/>
   <int value="7"
-      label="Attestations not yet (confirmed to have been) downloaded"/>
+      label="Deprecated. Component installer has not yet checked the
+             attestations file, or attestations file not present"/>
   <int value="8" label="Attestations downloaded, not yet loaded"/>
   <int value="9" label="Attestations file corrupt"/>
   <int value="10" label="Protected Audience joining blocked due to top frame"/>
   <int value="11"
       label="Disabled by third-party cookie deprecation experiment"/>
+  <int value="12"
+      label="Component installer has not yet checked the attestations file"/>
+  <int value="13" label="Attestations file not present"/>
 </enum>
 
 <enum name="PrivacySandboxAttestationParsingStatus">

@@ -1581,11 +1581,11 @@ class PrivacySandboxAttestationsTest : public base::test::WithFeatureOverride,
   bool IsAttestationsDefaultAllowed() const { return IsParamFeatureEnabled(); }
 };
 
-// When the attestations map has not yet been downloaded, or the browser hasn't
-// confirmed that it is present in the filesystem, attestation:
+// When the browser hasn't yet confirmed that the attestations file is present
+// in the filesystem. An attestation check:
 // 1. succeeds if `kDefaultAllowPrivacySandboxAttestations` is on.
 // 2. fails otherwise.
-TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
+TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetChecked) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
   RunTestCase(
@@ -1635,7 +1635,7 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
                kIsEventReportingDestinationAttestedForFledgeMetric},
            static_cast<int>(IsAttestationsDefaultAllowed()
                                 ? Status::kAllowed
-                                : Status::kAttestationsFileNotYetReady)},
+                                : Status::kAttestationsFileNotYetChecked)},
           {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
                               kIsPrivateAggregationBlockSiteSettingSpecific},
            &kFalse_}});

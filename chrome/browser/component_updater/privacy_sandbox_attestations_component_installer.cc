@@ -218,7 +218,10 @@ void RegisterPrivacySandboxAttestationsComponent(ComponentUpdateService* cus) {
 
   base::MakeRefCounted<ComponentInstaller>(
       std::move(policy), /*action_handler=*/nullptr, GetRegistrationPriority())
-      ->Register(cus, base::OnceClosure());
+      ->Register(cus, base::BindOnce([]() {
+                   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+                       ->OnAttestationsFileCheckComplete();
+                 }));
 }
 
 }  // namespace component_updater

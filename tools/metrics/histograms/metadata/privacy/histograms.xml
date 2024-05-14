@@ -869,7 +869,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttested"
-    enum="PrivacySandboxApiAllowed" expires_after="2024-11-03">
+    enum="PrivacySandboxApiAllowed" expires_after="M127">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -889,6 +889,26 @@ reviewer.
     attestation check. This metric should be recorded at most once per Chrome
     session. Here the measurement is taken from the time Chrome application
     starts.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.Attestations.IsSiteAttestedStatus"
+    enum="PrivacySandboxApiAllowed" expires_after="2024-09-01">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Same as PrivacySandbox.Attestations.IsSiteAttested. This histogram entry is
+    created because what the histogram buckets represent has changed. Its bucket
+    `AttestationsFileNotYetReady` used to represent the aggregation of the
+    following cases: 1. The component installer has already checked and found
+    the attestations file did not exist on disk. 2. The component installer has
+    not checked the attestations file yet. The file may or may not exist on
+    disk.
+
+    In this version, these two cases have been separated out. Case 1 is recorded
+    in `AttestationsFileNotPresent`, which is remaned from
+    `AttestationsFileNotYetReady`. Case 2 now goes into
+    `AttestationsFileNotYetChecked`.
   </summary>
 </histogram>
 

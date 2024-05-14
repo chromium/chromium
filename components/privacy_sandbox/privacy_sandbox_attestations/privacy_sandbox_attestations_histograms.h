@@ -21,7 +21,7 @@ enum class ParsingStatus {
 };
 
 inline constexpr char kAttestationStatusUMA[] =
-    "PrivacySandbox.Attestations.IsSiteAttested";
+    "PrivacySandbox.Attestations.IsSiteAttestedStatus";
 inline constexpr char kAttestationFirstCheckTimeUMA[] =
     "PrivacySandbox.Attestations.IsSiteAttested.FirstCheckTime";
 inline constexpr char kAttestationsFileParsingStatusUMA[] =

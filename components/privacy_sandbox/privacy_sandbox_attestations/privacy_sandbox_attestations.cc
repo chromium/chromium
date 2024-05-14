@@ -289,10 +289,11 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
   // If the attestations map is absent and feature
   // `kDefaultAllowPrivacySandboxAttestations` is on, default allow.
   switch (status) {
-    case PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetReady:
+    case PrivacySandboxSettingsImpl::Status::kAttestationsFileNotPresent:
     case PrivacySandboxSettingsImpl::Status::
         kAttestationsDownloadedNotYetLoaded:
     case PrivacySandboxSettingsImpl::Status::kAttestationsFileCorrupt:
+    case PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetChecked:
       return base::FeatureList::IsEnabled(
                  kDefaultAllowPrivacySandboxAttestations)
                  ? PrivacySandboxSettingsImpl::Status::kAllowed
@@ -327,11 +328,16 @@ PrivacySandboxAttestations::IsSiteAttestedInternal(
   if (!attestations_map_.has_value()) {
     // Break down by type of failure.
 
-    // If parsing hasn't started, the attestations file hasn't been downloaded,
-    // or this is a fresh boot and the component hasn't checked the filesystem
-    // yet.
+    // If parsing hasn't started, there are two possible cases:
+    // 1. `kAttestationsFileNotPresent`: The component installer has already
+    // checked and found the attestations file did not exist on disk.
+    // 2. `kAttestationsFileNotYetChecked`: The component installer has not
+    // checked the attestations file yet. The file may or may not exist on disk.
     if (attestations_parse_progress_ == Progress::kNotStarted) {
-      return PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetReady;
+      return attestations_file_checked() ? PrivacySandboxSettingsImpl::Status::
+                                               kAttestationsFileNotPresent
+                                         : PrivacySandboxSettingsImpl::Status::
+                                               kAttestationsFileNotYetChecked;
     }
 
     // If parsing is in progress, the attestation file has been downloaded but
@@ -449,6 +455,11 @@ void PrivacySandboxAttestations::
   load_attestations_parsing_started_callback_ = std::move(callback);
 }
 
+void PrivacySandboxAttestations::SetComponentRegistrationCallbackForTesting(
+    base::OnceClosure callback) {
+  component_registration_callback_ = std::move(callback);
+}
+
 PrivacySandboxAttestations::PrivacySandboxAttestations()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
@@ -466,6 +477,12 @@ bool PrivacySandboxAttestations::
     return true;
   }
   return false;
+}
+
+void PrivacySandboxAttestations::RunComponentRegistrationCallbackForTesting() {
+  if (component_registration_callback_) {
+    std::move(component_registration_callback_).Run();
+  }
 }
 
 void PrivacySandboxAttestations::OnAttestationsParsed(
@@ -539,6 +556,11 @@ bool PrivacySandboxAttestations::IsEverLoaded() const {
   return attestations_map_.has_value() ||
          attestations_parse_progress_ == Progress::kFinished ||
          is_all_apis_attested_for_testing_;
+}
+
+void PrivacySandboxAttestations::OnAttestationsFileCheckComplete() {
+  attestations_file_checked_ = true;
+  RunComponentRegistrationCallbackForTesting();  // IN-TEST
 }
 
 }  // namespace privacy_sandbox
