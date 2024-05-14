@@ -83,6 +83,8 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_NV12A:
       return frame.format();
     default:
@@ -717,6 +719,8 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
       // kGray_8_SkColorType would make more sense but doesn't work on Windows.
       return kAlpha_8_SkColorType;
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
       return plane == VideoFrame::Plane::kY ? kAlpha_8_SkColorType
                                             : kR8G8_unorm_SkColorType;
     case PIXEL_FORMAT_NV12A:
@@ -725,6 +729,8 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
                  ? kAlpha_8_SkColorType
                  : kR8G8_unorm_SkColorType;
     case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P416LE:
       return plane == VideoFrame::Plane::kY ? kA16_unorm_SkColorType
                                             : kR16G16_unorm_SkColorType;
     case PIXEL_FORMAT_XBGR:
@@ -800,6 +806,12 @@ VideoPixelFormatToSkiaValues(VideoPixelFormat video_format) {
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_P016LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_P216LE:
+      return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k422};
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P416LE:
+      return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k444};
     case PIXEL_FORMAT_NV12A:
       return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_I420:

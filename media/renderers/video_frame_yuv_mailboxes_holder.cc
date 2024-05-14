@@ -46,14 +46,22 @@ viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
   switch (video_format) {
     case PIXEL_FORMAT_NV12:
       return viz::MultiPlaneFormat::kNV12;
-    case PIXEL_FORMAT_P016LE:
-      return viz::MultiPlaneFormat::kP010;
+    case PIXEL_FORMAT_NV16:
+      return viz::MultiPlaneFormat::kNV16;
+    case PIXEL_FORMAT_NV24:
+      return viz::MultiPlaneFormat::kNV24;
     case PIXEL_FORMAT_NV12A:
       return viz::MultiPlaneFormat::kNV12A;
+    case PIXEL_FORMAT_P016LE:
+      return viz::MultiPlaneFormat::kP010;
+    case PIXEL_FORMAT_P216LE:
+      return viz::MultiPlaneFormat::kP210;
+    case PIXEL_FORMAT_P416LE:
+      return viz::MultiPlaneFormat::kP410;
     case PIXEL_FORMAT_I420:
       return viz::MultiPlaneFormat::kI420;
     case PIXEL_FORMAT_I420A:
-      return viz::MultiPlaneFormat::kI420;
+      return viz::MultiPlaneFormat::kI420A;
     default:
       NOTREACHED_NORETURN();
   }

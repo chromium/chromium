@@ -89,7 +89,9 @@
 //media/test/data/bear-1280x720-hevc-12bit-420.mp4
 //media/test/data/bear-1280x720-hevc-12bit-422.mp4
 //media/test/data/bear-1280x720-hevc-12bit-444.mp4
+//media/test/data/bear-1280x720-hevc-8bit-422-no-audio.mp4
 //media/test/data/bear-1280x720-hevc-8bit-422.mp4
+//media/test/data/bear-1280x720-hevc-8bit-444-no-audio.mp4
 //media/test/data/bear-1280x720-hevc-no-audio.mp4
 //media/test/data/bear-1280x720-hevc.mp4
 //media/test/data/bear-1280x720-hls-clear-mpl.m3u8

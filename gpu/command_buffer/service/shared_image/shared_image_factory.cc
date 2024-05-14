@@ -627,13 +627,6 @@ bool SharedImageFactory::CreateSharedImage(
     return false;
   }
 
-  if (!viz::HasEquivalentBufferFormat(format)) {
-    // Client GMB code still operates on BufferFormat so the SharedImageFormat
-    // received here must have an equivalent BufferFormat.
-    LOG(ERROR) << "Invalid format " << format.ToString();
-    return false;
-  }
-
   // Log UMA for multiplanar shared image formats.
   if (format.is_multi_plane()) {
     RecordIsNewMultiplanarFormat(/*is_multiplanar*/ true);

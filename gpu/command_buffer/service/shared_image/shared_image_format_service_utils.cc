@@ -474,12 +474,20 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   } else if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kNV12) {
     return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
-  } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
-             format == viz::MultiPlaneFormat::kP010) {
-    return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
+  } else if (format == viz::MultiPlaneFormat::kNV16) {
+    return wgpu::TextureFormat::R8BG8Biplanar422Unorm;
+  } else if (format == viz::MultiPlaneFormat::kNV24) {
+    return wgpu::TextureFormat::R8BG8Biplanar444Unorm;
   } else if (format == viz::LegacyMultiPlaneFormat::kNV12A ||
              format == viz::MultiPlaneFormat::kNV12A) {
     return wgpu::TextureFormat::R8BG8A8Triplanar420Unorm;
+  } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
+             format == viz::MultiPlaneFormat::kP010) {
+    return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
+  } else if (format == viz::MultiPlaneFormat::kP210) {
+    return wgpu::TextureFormat::R10X6BG10X6Biplanar422Unorm;
+  } else if (format == viz::MultiPlaneFormat::kP410) {
+    return wgpu::TextureFormat::R10X6BG10X6Biplanar444Unorm;
   }
   NOTREACHED() << "Unsupported format: " << format.ToString();
   return wgpu::TextureFormat::Undefined;

@@ -48,14 +48,18 @@ std::optional<viz::SharedImageFormat> PixelFormatToImageFormat(
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
       return viz::MultiPlaneFormat::kNV12;
+    case kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kNV16;
+    case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kNV24;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
       return viz::MultiPlaneFormat::kP010;
+    case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kP210;
+    case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
+      return viz::MultiPlaneFormat::kP410;
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return viz::MultiPlaneFormat::kNV12A;
-    case kCVPixelFormatType_32BGRA:
-      return viz::SinglePlaneFormat::kBGRA_8888;
-    case kCVPixelFormatType_64RGBAHalf:
-      return viz::SinglePlaneFormat::kRGBA_F16;
     default:
       return std::nullopt;
   }
@@ -65,14 +69,18 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
   switch (pixel_format) {
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
       return PIXEL_FORMAT_NV12;
+    case kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange:
+      return PIXEL_FORMAT_NV16;
+    case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
+      return PIXEL_FORMAT_NV24;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
       return PIXEL_FORMAT_P016LE;
+    case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
+      return PIXEL_FORMAT_P216LE;
+    case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
+      return PIXEL_FORMAT_P416LE;
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return PIXEL_FORMAT_NV12A;
-    case kCVPixelFormatType_32BGRA:
-      return PIXEL_FORMAT_ARGB;
-    case kCVPixelFormatType_64RGBAHalf:
-      return PIXEL_FORMAT_RGBAF16;
     default:
       return PIXEL_FORMAT_UNKNOWN;
   }

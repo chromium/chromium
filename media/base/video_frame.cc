@@ -134,6 +134,8 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_Y16:
         case PIXEL_FORMAT_I444A:
         case PIXEL_FORMAT_YUV444AP10:
+        case PIXEL_FORMAT_NV24:
+        case PIXEL_FORMAT_P416LE:
           return gfx::Size(1, 1);
 
         case PIXEL_FORMAT_I422:
@@ -142,6 +144,8 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_YUV422P12:
         case PIXEL_FORMAT_I422A:
         case PIXEL_FORMAT_YUV422AP10:
+        case PIXEL_FORMAT_NV16:
+        case PIXEL_FORMAT_P216LE:
           return gfx::Size(2, 1);
 
         case PIXEL_FORMAT_YV12:
@@ -207,7 +211,9 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
       return false;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
+    case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_YUY2:
@@ -226,6 +232,8 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P416LE:
     case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_YUV420AP10:
@@ -382,10 +390,12 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   if (format != PIXEL_FORMAT_ARGB && format != PIXEL_FORMAT_XRGB &&
-      format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_NV12A &&
+      format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_NV16 &&
+      format != PIXEL_FORMAT_NV24 && format != PIXEL_FORMAT_NV12A &&
       format != PIXEL_FORMAT_I420 && format != PIXEL_FORMAT_ABGR &&
       format != PIXEL_FORMAT_XBGR && format != PIXEL_FORMAT_XR30 &&
       format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P016LE &&
+      format != PIXEL_FORMAT_P216LE && format != PIXEL_FORMAT_P416LE &&
       format != PIXEL_FORMAT_RGBAF16 && format != PIXEL_FORMAT_YV12 &&
       format != PIXEL_FORMAT_BGRA) {
     DLOG(ERROR) << "Unsupported pixel format: "
@@ -1174,7 +1184,9 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_YUV444AP10:
       return 2;
     case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_NV21: {
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_NV24: {
       static const int bytes_per_element[] = {1, 2};
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
@@ -1184,7 +1196,9 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
-    case PIXEL_FORMAT_P016LE: {
+    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P416LE: {
       static const int bytes_per_element[] = {1, 2};
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane] * 2;

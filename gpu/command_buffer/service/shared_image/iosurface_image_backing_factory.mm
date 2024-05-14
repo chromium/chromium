@@ -27,6 +27,7 @@
 #include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "ui/gfx/mac/display_icc_profiles.h"
 #endif
 
@@ -145,13 +146,23 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
     if (IsFormatSupported(format)) {
       supported_formats_.insert(format);
     }
-
-    // Add supported multi-plane formats.
-    supported_formats_.insert(viz::MultiPlaneFormat::kNV12);
-    if (feature_info->feature_flags().chromium_image_ycbcr_p010) {
-      supported_formats_.insert(viz::MultiPlaneFormat::kP010);
-    }
   }
+
+  // Add supported multi-plane formats.
+  supported_formats_.insert(viz::MultiPlaneFormat::kNV12);
+  supported_formats_.insert(viz::MultiPlaneFormat::kP210);
+  supported_formats_.insert(viz::MultiPlaneFormat::kP410);
+  if (feature_info->feature_flags().chromium_image_ycbcr_p010) {
+    supported_formats_.insert(viz::MultiPlaneFormat::kP010);
+  }
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSMajorVersion() < 11) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  supported_formats_.insert(viz::MultiPlaneFormat::kNV12A);
+  supported_formats_.insert(viz::MultiPlaneFormat::kNV16);
+  supported_formats_.insert(viz::MultiPlaneFormat::kNV24);
 }
 
 IOSurfaceImageBackingFactory::~IOSurfaceImageBackingFactory() = default;
@@ -433,17 +444,9 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     return nullptr;
   }
 
-  auto buffer_format = ToBufferFormat(format);
-  if (!gpu_memory_buffer_formats_.Has(buffer_format)) {
-    LOG(ERROR) << "CreateSharedImage: unsupported buffer format "
-               << gfx::BufferFormatToString(buffer_format);
-    return nullptr;
-  }
-
-  // Note that `size` refers to the size of the IOSurface.
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
-    LOG(ERROR) << "Invalid size " << size.ToString() << " for "
-               << gfx::BufferFormatToString(buffer_format);
+  if (!base::Contains(supported_formats_, format)) {
+    LOG(ERROR) << "CreateSharedImage: Unable to create SharedImage with format "
+               << format.ToString();
     return nullptr;
   }
 
@@ -451,7 +454,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   const auto io_surface_id = handle.id;
 
   // Ensure that the IOSurface has the same size and pixel format as those
-  // specified by `size` and `buffer_format`. A malicious client could lie about
+  // specified by `size` and `format`. A malicious client could lie about
   // this, which, if subsequently used to determine parameters for bounds
   // checking, could result in an out-of-bounds memory access.
   {
@@ -462,10 +465,10 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
 #else
         gr_context_type_ == GrContextType::kGL;
 #endif
-    if (io_surface_format != BufferFormatToIOSurfacePixelFormat(
-                                 buffer_format, override_rgba_to_bgra)) {
-      LOG(ERROR)
-          << "IOSurface pixel format does not match specified buffer format.";
+    if (io_surface_format != SharedImageFormatToIOSurfacePixelFormat(
+                                 format, override_rgba_to_bgra)) {
+      LOG(ERROR) << "IOSurface pixel format does not match specified shared "
+                    "image format.";
       return nullptr;
     }
     gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface.get()),
@@ -483,6 +486,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
 
   if (is_plane_format) {
     const gfx::Size plane_size = gpu::GetPlaneSize(buffer_plane, size);
+    const gfx::BufferFormat buffer_format = ToBufferFormat(format);
     auto plane_format = viz::GetSinglePlaneSharedImageFormat(
         GetPlaneBufferFormat(buffer_plane, buffer_format));
     return std::make_unique<IOSurfaceImageBacking>(

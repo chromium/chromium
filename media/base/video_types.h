@@ -25,7 +25,7 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =
       1,  // 12bpp YUV planar 1x1 Y, 2x2 UV samples, a.k.a. YU12.
-  PIXEL_FORMAT_YV12 = 2,  // 12bpp YVU planar 1x1 Y, 2x2 VU samples.
+  PIXEL_FORMAT_YV12 = 2,   // 12bpp YVU planar 1x1 Y, 2x2 VU samples.
   PIXEL_FORMAT_I422 = 3,   // 16bpp YUV planar 1x1 Y, 2x1 UV samples.
   PIXEL_FORMAT_I420A = 4,  // 20bpp YUVA planar 1x1 Y, 2x2 UV, 1x1 A samples.
   PIXEL_FORMAT_I444 = 5,   // 24bpp YUV planar, no subsampling.
@@ -87,9 +87,21 @@ enum VideoPixelFormat {
   // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
   PIXEL_FORMAT_NV12A = 39,
 
+  // 16bpp YUV planar 1x1 Y, 2x1 interleaved UV, 8 bits per channel.
+  PIXEL_FORMAT_NV16 = 40,
+
+  // 24bpp YUV planar 1x1 Y, 1x1 interleaved UV, 8 bits per channel.
+  PIXEL_FORMAT_NV24 = 41,
+
+  // 32bpp YUV planar 1x1 Y, 2x1 interleaved UV, 16 bits per channel.
+  PIXEL_FORMAT_P216LE = 42,
+
+  // 48bpp YUV planar 1x1 Y, 1x1 interleaved UV, 16 bits per channel.
+  PIXEL_FORMAT_P416LE = 43,
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_NV12A,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_P416LE,  // Must always be equal to largest entry logged.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

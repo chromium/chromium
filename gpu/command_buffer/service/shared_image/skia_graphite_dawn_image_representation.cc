@@ -110,7 +110,11 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
       SupportsMultiplanarCopy(context_state_.get());
   if (format().is_multi_plane()) {
     CHECK(format() == viz::MultiPlaneFormat::kP010 ||
+          format() == viz::MultiPlaneFormat::kP210 ||
+          format() == viz::MultiPlaneFormat::kP410 ||
           format() == viz::MultiPlaneFormat::kNV12 ||
+          format() == viz::MultiPlaneFormat::kNV16 ||
+          format() == viz::MultiPlaneFormat::kNV24 ||
           format() == viz::MultiPlaneFormat::kNV12A);
     backend_textures.reserve(format().NumberOfPlanes());
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();

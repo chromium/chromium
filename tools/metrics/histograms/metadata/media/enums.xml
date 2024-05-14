@@ -2173,6 +2173,10 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="YUV422AP10"/>
   <int value="38" label="YUV444AP10"/>
   <int value="39" label="NV12A"/>
+  <int value="40" label="NV16"/>
+  <int value="41" label="NV24"/>
+  <int value="42" label="P216LE"/>
+  <int value="43" label="P416LE"/>
 </enum>
 
 <enum name="VideoResolutionDesignation">

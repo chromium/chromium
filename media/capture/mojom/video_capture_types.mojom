@@ -45,6 +45,10 @@ enum VideoCapturePixelFormat {
   [MinVersion=1] YUV422AP10,
   [MinVersion=1] YUV444AP10,
   [MinVersion=2] NV12A,
+  [MinVersion=3] NV16,
+  [MinVersion=3] NV24,
+  [MinVersion=3] P216LE,
+  [MinVersion=3] P416LE,
 };
 
 [Stable, Extensible]

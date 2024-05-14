@@ -164,6 +164,11 @@ wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
 // Returns MtlPixelFormat format for given `format`.
 GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
                                                int plane_index = 0);
+// Return the expected four character code pixel format for an IOSurface with
+// the specified format.
+GPU_GLES2_EXPORT uint32_t
+SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
+                                        bool override_rgba_to_bgra);
 #endif
 
 // Returns the graphite::TextureInfo for a given `format` and `plane_index`.

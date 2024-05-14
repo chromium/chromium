@@ -227,6 +227,16 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::RGB;
       }
 
+    case PIXEL_FORMAT_NV16:
+      DCHECK_EQ(num_textures, 1u);
+      si_formats[0] = viz::MultiPlaneFormat::kNV16;
+      return VideoFrameResourceType::RGB;
+
+    case PIXEL_FORMAT_NV24:
+      DCHECK_EQ(num_textures, 1u);
+      si_formats[0] = viz::MultiPlaneFormat::kNV24;
+      return VideoFrameResourceType::RGB;
+
     case PIXEL_FORMAT_NV12A:
       if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
         DCHECK_EQ(num_textures, 3u);
@@ -258,6 +268,16 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         si_formats[0] = viz::MultiPlaneFormat::kP010;
         return VideoFrameResourceType::RGB;
       }
+
+    case PIXEL_FORMAT_P216LE:
+      DCHECK_EQ(num_textures, 1u);
+      si_formats[0] = viz::MultiPlaneFormat::kP210;
+      return VideoFrameResourceType::RGB;
+
+    case PIXEL_FORMAT_P416LE:
+      DCHECK_EQ(num_textures, 1u);
+      si_formats[0] = viz::MultiPlaneFormat::kP410;
+      return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_RGBAF16:
       DCHECK_EQ(num_textures, 1u);
@@ -459,9 +479,12 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
     case PIXEL_FORMAT_NV12A:
       return viz::MultiPlaneFormat::kNV12A;
     case PIXEL_FORMAT_I420A:
-      return viz::SharedImageFormat::MultiPlane(
-          PlaneConfig::kY_U_V_A, Subsampling::k420, ChannelFormat::k8);
+      return viz::MultiPlaneFormat::kI420A;
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P416LE:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:

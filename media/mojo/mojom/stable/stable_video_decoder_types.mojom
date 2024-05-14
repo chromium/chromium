@@ -437,6 +437,18 @@ enum VideoPixelFormat {
 
   // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
   [MinVersion=2] kPixelFormatNV12A = 39,
+
+  // 16bpp YUV planar 1x1 Y, 2x1 interleaved UV, 8 bits per channel.
+  [MinVersion=3] kPixelFormatNV16 = 40,
+
+  // 24bpp YUV planar 1x1 Y, 1x1 interleaved UV, 8 bits per channel.
+  [MinVersion=3] kPixelFormatNV24 = 41,
+
+  // 32bpp YUV planar 1x1 Y, 2x1 interleaved UV, 16 bits per channel.
+  [MinVersion=3] kPixelFormatP216LE = 42,
+
+  // 48bpp YUV planar 1x1 Y, 1x1 interleaved UV, 16 bits per channel.
+  [MinVersion=3] kPixelFormatP416LE = 43,
 };
 
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on

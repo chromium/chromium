@@ -4,12 +4,69 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 
+#include <CoreVideo/CoreVideo.h>
 #include <Metal/Metal.h>
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 namespace gpu {
+
+uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
+                                                 bool override_rgba_to_bgra) {
+  if (format.is_single_plane()) {
+    if (format == viz::SinglePlaneFormat::kR_8) {
+      return kCVPixelFormatType_OneComponent8;
+    } else if (format == viz::SinglePlaneFormat::kRG_88) {
+      return kCVPixelFormatType_TwoComponent8;
+    } else if (format == viz::SinglePlaneFormat::kR_16) {
+      return kCVPixelFormatType_OneComponent16;
+    } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+      return kCVPixelFormatType_TwoComponent16;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+      return kCVPixelFormatType_ARGB2101010LEPacked;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+               format == viz::SinglePlaneFormat::kBGRX_8888) {
+      return kCVPixelFormatType_32BGRA;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+               format == viz::SinglePlaneFormat::kRGBX_8888) {
+      return override_rgba_to_bgra ? kCVPixelFormatType_32BGRA
+                                   : kCVPixelFormatType_32RGBA;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      return kCVPixelFormatType_64RGBAHalf;
+    } else if (format == viz::SinglePlaneFormat::kBGR_565 ||
+               format == viz::SinglePlaneFormat::kRGBA_4444 ||
+               format == viz::SinglePlaneFormat::kRGBA_1010102) {
+      // Technically RGBA_1010102 should be accepted as 'R10k', but
+      // then it won't be supported by CGLTexImageIOSurface2D(), so
+      // it's best to reject it here.
+      return 0;
+    }
+  } else if (format.is_multi_plane()) {
+    if (format == viz::MultiPlaneFormat::kNV12) {
+      return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kNV16) {
+      return kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kNV24) {
+      return kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kNV12A) {
+      return kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
+    } else if (format == viz::MultiPlaneFormat::kP010) {
+      return kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kP210) {
+      return kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kP410) {
+      return kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange;
+    } else if (format == viz::MultiPlaneFormat::kI420) {
+      return kCVPixelFormatType_420YpCbCr8Planar;
+    } else if (format == viz::MultiPlaneFormat::kYV12) {
+      return 0;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
 
 unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   MTLPixelFormat mtl_pixel_format = MTLPixelFormatInvalid;
