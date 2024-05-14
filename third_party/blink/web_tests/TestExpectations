@@ -5096,7 +5096,6 @@ crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failur
 
 # Sheriff 2021-12-02
 crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-top-left.html [ Crash Failure Pass Timeout ]
-crbug.com/1275967 [ Debug Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
 
 crbug.com/1159463 crbug.com/1278570 [ Linux ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
@@ -5229,10 +5228,6 @@ crbug.com/1309633 [ Debug Mac13-arm64 ] external/wpt/FileAPI/url/url-lifetime.ht
 crbug.com/1309756 [ Mac13-arm64 ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
 crbug.com/1309756 [ Mac11-arm64 Release ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
 crbug.com/1309756 [ Mac12-arm64 Release ] http/tests/images/force-reload.html [ Crash Failure Pass Timeout ]
-
-# Sheriff 2022-03-25
-crbug.com/1197296 [ Debug Linux ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
-crbug.com/1197296 [ Debug Linux ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 
 # Scroll Unification known issues (go/su-web-tests) for enabling in test:
 crbug.com/1311431 [ Debug Mac13-arm64 ] fast/scroll-behavior/overscroll-behavior.html [ Failure Pass ]
@@ -6239,10 +6234,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure ]
 [ Debug Mac13 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
-[ Debug Mac13 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/elements/edit/undo-dom-edits.js [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure ]
-[ Debug Mac13 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure ]
 [ Debug Mac13 ] animations/insert-composited-animation.html [ Skip Timeout ]
@@ -6993,7 +6985,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14-arm64 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Failure Timeout ]
 [ Mac14-arm64 ] external/wpt/css/css-transforms/animation/canvas-webgl-translate-in-animation.html [ Timeout ]
 [ Mac14-arm64 ] external/wpt/density-size-correction/density-corrected-image-in-canvas.html [ Timeout ]
-[ Mac14-arm64 ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
 [ Mac14-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 [ Mac14-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 [ Mac14-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.transfer.to.imagebitmap.w.html [ Failure ]
@@ -7126,7 +7117,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14 ] external/wpt/css/css-fonts/font-display/font-display.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure Pass ]
 [ Debug Mac14 ] accessibility/aria-activedescendant-events.html [ Failure Pass ]
-[ Debug Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 [ Debug Mac14 ] external/wpt/upgrade-insecure-requests/link-upgrade.sub.https.html [ Failure Pass ]
 [ Debug Mac14 ] media/controls/closed-captions-dynamic-update.html [ Failure Pass ]
 [ Debug Mac14 ] editing/selection/editable-links.html [ Failure Pass ]
