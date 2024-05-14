@@ -186,7 +186,9 @@ void RealtimeAudioDestinationHandler::Render(
     AudioBus* destination_bus,
     uint32_t number_of_frames,
     const AudioIOPosition& output_position,
-    const AudioCallbackMetric& metric) {
+    const AudioCallbackMetric& metric,
+    base::TimeDelta playout_delay,
+    const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT0("webaudio", "RealtimeAudioDestinationHandler::Render");
 
   // Denormals can seriously hurt performance of audio processing. This will
@@ -213,7 +215,8 @@ void RealtimeAudioDestinationHandler::Render(
     return;
   }
 
-  context->HandlePreRenderTasks(&output_position, &metric);
+  context->HandlePreRenderTasks(number_of_frames, &output_position, &metric,
+                                playout_delay, glitch_info);
 
   // Only pull on the audio graph if we have not stopped the destination.  It
   // takes time for the destination to stop, but we want to stop pulling before

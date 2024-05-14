@@ -88,14 +88,20 @@ class AudioCallback : public AudioIOCallback {
   void Render(AudioBus*,
               uint32_t frames_to_process,
               const AudioIOPosition&,
-              const AudioCallbackMetric&) override {
+              const AudioCallbackMetric&,
+              base::TimeDelta delay,
+              const media::AudioGlitchInfo& glitch_info) override {
     frames_processed_ += frames_to_process;
+    last_latency_ = delay;
+    glitch_accumulator_.Add(glitch_info);
   }
 
   MOCK_METHOD(void, OnRenderError, (), (final));
 
   AudioCallback() = default;
   int frames_processed_ = 0;
+  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
+  base::TimeDelta last_latency_;
 };
 
 class AudioDestinationTest
@@ -169,6 +175,59 @@ TEST_P(AudioDestinationTest, ResamplingTest) {
   }
 
   CountWASamplesProcessedForRate(GetParam());
+}
+
+TEST_P(AudioDestinationTest, GlitchAndDelay) {
+  ScopedTestingPlatformSupport<TestPlatform> platform;
+  {
+    InSequence s;
+    EXPECT_CALL(platform->web_audio_device(), Start).Times(1);
+    EXPECT_CALL(platform->web_audio_device(), Stop).Times(1);
+  }
+
+  std::optional<float> sample_rate = GetParam();
+  WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
+
+  const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
+  const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
+
+  // Assume the default audio device. (i.e. the empty string)
+  WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""), kFrameToken);
+
+  scoped_refptr<AudioDestination> destination =
+      AudioDestination::Create(callback_, sink_descriptor, channel_count,
+                               latency_hint, sample_rate, 128);
+
+  const int kRenderCount = 3;
+
+  media::AudioGlitchInfo glitches[]{
+      {.duration = base::Milliseconds(120), .count = 3},
+      {},
+      {.duration = base::Milliseconds(20), .count = 1}};
+
+  base::TimeDelta delays[]{base::Milliseconds(100), base::Milliseconds(90),
+                           base::Milliseconds(80)};
+  auto audio_bus = media::AudioBus::Create(channel_count, request_frames);
+
+  destination->Start();
+
+  for (int i = 0; i < kRenderCount; ++i) {
+    destination->Render(delays[i], base::TimeTicks::Now(), glitches[i],
+                        audio_bus.get());
+
+    EXPECT_EQ(callback_.glitch_accumulator_.GetAndReset(), glitches[i]);
+
+    if (destination->SampleRate() !=
+        Platform::Current()->AudioHardwareSampleRate()) {
+      // Resampler kernel adds a bit of a delay.
+      EXPECT_GE(callback_.last_latency_, delays[i]);
+      EXPECT_LE(callback_.last_latency_, delays[i] + base::Milliseconds(1));
+    } else {
+      EXPECT_EQ(callback_.last_latency_, delays[i]);
+    }
+  }
+
+  destination->Stop();
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,

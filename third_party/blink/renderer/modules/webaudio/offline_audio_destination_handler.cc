@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/trace_event/typed_macros.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -285,7 +286,9 @@ bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
   // Take care pre-render tasks at the beginning of each render quantum. Then
   // it will stop the rendering loop if the context needs to be suspended
   // at the beginning of the next render quantum.
-  if (Context()->HandlePreRenderTasks(nullptr, nullptr)) {
+  if (Context()->HandlePreRenderTasks(number_of_frames, nullptr, nullptr,
+                                      base::TimeDelta(),
+                                      media::AudioGlitchInfo())) {
     SuspendOfflineRendering();
     return true;
   }

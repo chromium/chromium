@@ -246,8 +246,12 @@ class MODULES_EXPORT BaseAudioContext
   //   AudioIOPosition.
   //   - The return value indicates whether the context needs to be suspended or
   //   not after rendering.
-  virtual bool HandlePreRenderTasks(const AudioIOPosition* output_position,
-                                    const AudioCallbackMetric* metric) = 0;
+  virtual bool HandlePreRenderTasks(
+      uint32_t frames_to_process,
+      const AudioIOPosition* output_position,
+      const AudioCallbackMetric* metric,
+      base::TimeDelta playout_delay,
+      const media::AudioGlitchInfo& glitch_info) = 0;
 
   // Called at the end of each render quantum.
   virtual void HandlePostRenderTasks() = 0;

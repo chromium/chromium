@@ -99,8 +99,11 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
 
-  bool HandlePreRenderTasks(const AudioIOPosition* output_position,
-                            const AudioCallbackMetric* metric) final;
+  bool HandlePreRenderTasks(uint32_t frames_to_process,
+                            const AudioIOPosition* output_position,
+                            const AudioCallbackMetric* metric,
+                            base::TimeDelta playout_delay,
+                            const media::AudioGlitchInfo& glitch_info) final;
 
   // Called at the end of each render quantum.
   void HandlePostRenderTasks() final;

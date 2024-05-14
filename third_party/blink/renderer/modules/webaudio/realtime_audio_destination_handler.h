@@ -63,7 +63,9 @@ class RealtimeAudioDestinationHandler final
   void Render(AudioBus* destination_bus,
               uint32_t number_of_frames,
               const AudioIOPosition& output_position,
-              const AudioCallbackMetric& metric) override;
+              const AudioCallbackMetric& metric,
+              base::TimeDelta playout_delay,
+              const media::AudioGlitchInfo& glitch_info) override;
 
   // For AudioIOCallback. This is invoked by the `AudioDestination` to notify
   // when an error has occurred in the lower layer in the stack. It may be

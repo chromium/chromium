@@ -85,8 +85,11 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // Fire completion event when the rendering is finished.
   void FireCompletionEvent();
 
-  bool HandlePreRenderTasks(const AudioIOPosition* output_position,
-                            const AudioCallbackMetric* metric) final;
+  bool HandlePreRenderTasks(uint32_t frames_to_process,
+                            const AudioIOPosition* output_position,
+                            const AudioCallbackMetric* metric,
+                            base::TimeDelta playout_delay,
+                            const media::AudioGlitchInfo& glitch_info) final;
   void HandlePostRenderTasks() final;
 
   // Resolve a suspend scheduled at the specified frame. With this specified

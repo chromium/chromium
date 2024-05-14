@@ -38,6 +38,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -172,6 +173,10 @@ class PLATFORM_EXPORT AudioDestination final
   // Provide input to the resampler (if used).
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
 
+  // Pulls audio from `callback_` and delivers the latest glitch and delay info
+  // into it.
+  void PullFromCallback(AudioBus* destination_bus, base::TimeDelta delay);
+
   void SendLogMessage(const String& message) const;
 
   // Accessed by the main thread.
@@ -211,6 +216,12 @@ class PLATFORM_EXPORT AudioDestination final
 
   // Required for RequestRender and also in the resampling callback (if used).
   AudioIOPosition output_position_;
+
+  // Recent gltich information to be reported to `callback_`.
+  media::AudioGlitchInfo::Accumulator glitch_info_to_report_;
+
+  // Recent delay information to be reported to `callback_`.
+  base::TimeDelta delay_to_report_;
 
   // The task runner for AudioWorklet operation. This is only valid when
   // the AudioWorklet is activated.

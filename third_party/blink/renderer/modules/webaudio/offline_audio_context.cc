@@ -27,6 +27,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_offline_audio_context_options.h"
@@ -386,12 +387,17 @@ void OfflineAudioContext::FireCompletionEvent() {
 }
 
 bool OfflineAudioContext::HandlePreRenderTasks(
+    uint32_t frames_to_process,
     const AudioIOPosition* output_position,
-    const AudioCallbackMetric* metric) {
+    const AudioCallbackMetric* metric,
+    base::TimeDelta playout_delay,
+    const media::AudioGlitchInfo& glitch_info) {
   // TODO(hongchan): passing `nullptr` as an argument is not a good
   // pattern. Consider rewriting this method/interface.
   DCHECK_EQ(output_position, nullptr);
   DCHECK_EQ(metric, nullptr);
+  DCHECK_EQ(playout_delay, base::TimeDelta());
+  DCHECK_EQ(glitch_info, media::AudioGlitchInfo());
 
   DCHECK(IsAudioThread());
 
