@@ -6875,6 +6875,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "prerender-early-document-lifecycle-update",
+    "owners": [ "lingqi@chromium.org", "//content/browser/preloading/prerender/OWNERS" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "prerender2",
     "owners": [
       "//content/browser/preloading/prerender/OWNERS"

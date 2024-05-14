@@ -2903,6 +2903,12 @@ const char kSupportSearchSuggestionForPrerender2Description[] =
     "Allows Prerender2 to prerender search suggestions provided by the default "
     "search engine.";
 
+const char kPrerender2EarlyDocumentLifecycleUpdateName[] =
+    "Prerender more document lifecycle phases";
+const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =
+    "Allows prerendering pages to execute more lifecycle updates, such as "
+    "prepaint, before activation";
+
 const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
 const char kEnableOmniboxSearchPrefetchDescription[] =
     "Allows omnibox to prefetch likely search suggestions provided by the "

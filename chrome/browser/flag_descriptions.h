@@ -1686,6 +1686,9 @@ extern const char kSpeculationRulesPrerenderingTargetHintDescription[];
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 
+extern const char kPrerender2EarlyDocumentLifecycleUpdateName[];
+extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
+
 extern const char kEnableOmniboxSearchPrefetchName[];
 extern const char kEnableOmniboxSearchPrefetchDescription[];
 

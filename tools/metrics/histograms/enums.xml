@@ -22744,6 +22744,8 @@ from previous Chrome versions.
   <int value="659775785" label="(Obsolete) disable-simplified-fullscreen-ui"/>
   <int value="659871291"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
+  <int value="660018273"
+      label="Prerender2EarlyDocumentLifecycleUpdate:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
   <int value="661537613" label="WebNotesPublish:enabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
@@ -23847,6 +23849,8 @@ from previous Chrome versions.
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
+  <int value="1148637402"
+      label="Prerender2EarlyDocumentLifecycleUpdate:disabled"/>
   <int value="1148731895"
       label="OmniboxMostVisitedTilesAddRecycledViewPool:enabled"/>
   <int value="1149417604" label="StreamlinedUsbPrinterSetup:disabled"/>
