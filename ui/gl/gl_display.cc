@@ -229,7 +229,7 @@ EGLDisplay GetPlatformANGLEDisplay(
         display_attribs.push_back(EGL_HIGH_POWER_ANGLE);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -376,7 +376,7 @@ EGLDisplay GetDisplayFromType(
           display, EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return EGL_NO_DISPLAY;
   }
 }
@@ -452,7 +452,7 @@ const char* DisplayTypeString(DisplayType display_type) {
     case ANGLE_METAL_NULL:
       return "MetalNull";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Err";
   }
 }
@@ -536,7 +536,7 @@ GLDisplayPlatform* GLDisplay::GetAs() {
   bool type_checked = false;
   switch (type_) {
     case NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case EGL:

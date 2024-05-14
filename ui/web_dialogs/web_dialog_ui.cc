@@ -108,7 +108,7 @@ void WebDialogUIBase::OnDialogClosed(const base::Value::List& args) {
       if (args[0].is_string())
         json_retval = args[0].GetString();
       else
-        NOTREACHED() << "Could not read JSON argument";
+        NOTREACHED_IN_MIGRATION() << "Could not read JSON argument";
     }
 
     delegate->OnDialogCloseFromWebUI(json_retval);

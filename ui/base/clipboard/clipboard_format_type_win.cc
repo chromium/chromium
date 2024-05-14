@@ -68,7 +68,7 @@ ClipboardFormatType ClipboardFormatType::Deserialize(
   // |serialization| is expected to be a string representing the Windows
   // data_.cfFormat (format number) returned by GetType.
   if (!base::StringToInt(serialization, &clipboard_format)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ClipboardFormatType();
   }
   return ClipboardFormatType(clipboard_format);

@@ -288,13 +288,13 @@ std::string_view EventTypeName(EventType type) {
     CASE_TYPE(ET_CANCEL_MODE);
     CASE_TYPE(ET_UMA_DATA);
     case ET_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
       // Don't include default, so that we get an error when new type is added.
   }
 #undef CASE_TYPE
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

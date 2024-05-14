@@ -93,7 +93,7 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {
       .translation = {rounded_bounds.x(), rounded_bounds.y()},
       .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,

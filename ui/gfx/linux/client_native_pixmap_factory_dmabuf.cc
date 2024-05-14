@@ -33,7 +33,7 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
     return pixmap_handle_.planes.size();
   }
   void* GetMemoryAddress(size_t plane) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   int GetStride(size_t plane) const override {
@@ -128,7 +128,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
         return base::WrapUnique(
             new ClientNativePixmapOpaque(std::move(handle)));
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

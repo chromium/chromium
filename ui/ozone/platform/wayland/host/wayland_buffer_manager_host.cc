@@ -56,7 +56,7 @@ KernelVersion KernelVersionNumbers() {
   KernelVersion ver;
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     ver.major = 0;
     ver.minor = 0;
     ver.bugfix = 0;

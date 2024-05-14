@@ -512,7 +512,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       PaintSelectedMenuItem(canvas, color_provider, rect, menu_item);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

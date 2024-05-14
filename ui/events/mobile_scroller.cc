@@ -406,8 +406,9 @@ bool MobileScroller::ComputeScrollOffsetInternal(base::TimeTicks time) {
   const float u = time_passed.InSecondsF() * duration_seconds_reciprocal_;
   switch (mode_) {
     case UNDEFINED:
-      NOTREACHED() << "|StartScroll()| or |Fling()| must be called prior to "
-                      "scroll offset computation.";
+      NOTREACHED_IN_MIGRATION()
+          << "|StartScroll()| or |Fling()| must be called prior to "
+             "scroll offset computation.";
       return false;
 
     case SCROLL_MODE: {

@@ -1065,7 +1065,8 @@ bool PbufferGLSurfaceEGL::IsOffscreen() {
 
 gfx::SwapResult PbufferGLSurfaceEGL::SwapBuffers(PresentationCallback callback,
                                                  gfx::FrameData data) {
-  NOTREACHED() << "Attempted to call SwapBuffers on a PbufferGLSurfaceEGL.";
+  NOTREACHED_IN_MIGRATION()
+      << "Attempted to call SwapBuffers on a PbufferGLSurfaceEGL.";
   return gfx::SwapResult::SWAP_FAILED;
 }
 
@@ -1110,7 +1111,7 @@ EGLSurface PbufferGLSurfaceEGL::GetHandle() {
 
 void* PbufferGLSurfaceEGL::GetShareHandle() {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #else
   if (!display_->ext->b_EGL_ANGLE_query_surface_pointer)

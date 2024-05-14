@@ -36,7 +36,8 @@ void DrmWindowHostManager::RemoveWindow(gfx::AcceleratedWidget widget) {
       window_mouse_currently_on_ = nullptr;
     window_map_.erase(it);
   } else {
-    NOTREACHED() << "Attempting to remove non-existing window " << widget;
+    NOTREACHED_IN_MIGRATION()
+        << "Attempting to remove non-existing window " << widget;
   }
 
   if (event_grabber_ == widget)
@@ -48,7 +49,8 @@ DrmWindowHost* DrmWindowHostManager::GetWindow(gfx::AcceleratedWidget widget) {
   if (it != window_map_.end())
     return it->second;
 
-  NOTREACHED() << "Attempting to get non-existing window " << widget;
+  NOTREACHED_IN_MIGRATION()
+      << "Attempting to get non-existing window " << widget;
   return NULL;
 }
 

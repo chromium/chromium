@@ -54,7 +54,7 @@ unsigned WaylandOzoneUIControlsTestHelper::ButtonDownMask() const {
   // use SendMouseMotionNotifyEvent instead of calling MoveCursorTo via
   // aura::Window, regardless of what the button down mask is.
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -125,7 +125,7 @@ void WaylandOzoneUIControlsTestHelper::UpdateDisplay(
 
 void WaylandOzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
     base::OnceClosure closure) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WaylandOzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {

@@ -416,7 +416,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
       event_type = NSEventTypeRightMouseDown;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_mouse_button_down[type] = button_state == DOWN;

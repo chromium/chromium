@@ -34,7 +34,7 @@ display::mojom::DisplayConnectionType EnumTraits<
       return display::mojom::DisplayConnectionType::
           DISPLAY_CONNECTION_TYPE_NETWORK;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_NONE;
 }
 
@@ -86,7 +86,7 @@ EnumTraits<display::mojom::HDCPState, display::HDCPState>::ToMojom(
     case display::HDCPState::HDCP_STATE_ENABLED:
       return display::mojom::HDCPState::HDCP_STATE_ENABLED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::HDCPState::HDCP_STATE_UNDESIRED;
 }
 
@@ -126,7 +126,7 @@ display::mojom::ContentProtectionMethod EnumTraits<
       return display::mojom::ContentProtectionMethod::
           CONTENT_PROTECTION_METHOD_HDCP_TYPE_1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::ContentProtectionMethod::
       CONTENT_PROTECTION_METHOD_NONE;
 }
@@ -169,7 +169,7 @@ display::mojom::PanelOrientation EnumTraits<
     case display::PanelOrientation::kRightUp:
       return display::mojom::PanelOrientation::RIGHT_UP;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::PanelOrientation::NORMAL;
 }
 
@@ -210,7 +210,7 @@ display::mojom::PrivacyScreenState EnumTraits<
     case display::PrivacyScreenState::kNotSupported:
       return display::mojom::PrivacyScreenState::NOT_SUPPORTED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::PrivacyScreenState::NOT_SUPPORTED;
 }
 
@@ -252,7 +252,7 @@ EnumTraits<display::mojom::VariableRefreshRateState,
     case display::VariableRefreshRateState::kVrrNotCapable:
       return display::mojom::VariableRefreshRateState::kVrrNotCapable;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::VariableRefreshRateState::kVrrNotCapable;
 }
 

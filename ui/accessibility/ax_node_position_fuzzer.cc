@@ -115,7 +115,7 @@ TestPositionType AXNodePositionFuzzerGenerator::CreateNewPosition(
       return ui::AXNodePosition::CreateTextPosition(
           *anchor, child_index_or_text_offset, affinity);
       case ui::AXPositionKind::NULL_POSITION:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ui::AXNodePosition::CreateNullPosition();
     }
   }

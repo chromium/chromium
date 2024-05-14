@@ -155,7 +155,7 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferWithModifiers(
       bytes_per_pixel = 2;
       break;
     default:
-      NOTREACHED() << "Unsupported format: " << format;
+      NOTREACHED_IN_MIGRATION() << "Unsupported format: " << format;
       return nullptr;
   }
 
@@ -187,7 +187,7 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferFromHandle(
     uint32_t format,
     const gfx::Size& size,
     gfx::NativePixmapHandle handle) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

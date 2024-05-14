@@ -39,7 +39,7 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
         return gfx::mojom::OverlayTransform::
             OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::OverlayTransform::OVERLAY_TRANSFORM_INVALID;
   }
 
@@ -78,7 +78,7 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
             OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

@@ -46,7 +46,7 @@ int GetAsInt(const base::Value& value) {
   if (value.is_string())
     return atoi(value.GetString().c_str());
 
-  NOTREACHED() << "Unexpected: " << value;
+  NOTREACHED_IN_MIGRATION() << "Unexpected: " << value;
   return 0;
 }
 
@@ -58,7 +58,7 @@ double GetAsDouble(const base::Value& value) {
   if (value.is_string())
     return atof(value.GetString().c_str());
 
-  NOTREACHED() << "Unexpected: " << value;
+  NOTREACHED_IN_MIGRATION() << "Unexpected: " << value;
   return 0;
 }
 
@@ -72,7 +72,7 @@ bool GetAsBoolean(const base::Value& value) {
       return true;
   }
 
-  NOTREACHED() << "Unexpected: " << value;
+  NOTREACHED_IN_MIGRATION() << "Unexpected: " << value;
   return false;
 }
 
@@ -217,7 +217,7 @@ uint32_t ConvertRgbaStringToArgbInt(const std::string& argb_string) {
   } else if (values.size() == 5 && values[0] == "rgba") {
     a = base::ClampRound(atof(values[4].c_str()) * 255);
   } else {
-    NOTREACHED() << "Unexpected color value: " << argb_string;
+    NOTREACHED_IN_MIGRATION() << "Unexpected color value: " << argb_string;
     return -1;
   }
 
@@ -278,7 +278,7 @@ void ParseExtras(ui::AXNodeData& node_data, const base::Value& extras) {
       for (const auto& style : items)
         ParseStyle(node_data, style);
     } else {
-      NOTREACHED() << "Unexpected: " << extra.first;
+      NOTREACHED_IN_MIGRATION() << "Unexpected: " << extra.first;
     }
   }
 }
@@ -313,7 +313,7 @@ ui::AXNodeID AddNode(ui::AXTreeUpdate& tree_update,
       node_data.role =
           RoleFromString(item.second.GetString(), role_conversions);
     } else {
-      NOTREACHED() << "Unexpected: " << item.first;
+      NOTREACHED_IN_MIGRATION() << "Unexpected: " << item.first;
     }
   }
 

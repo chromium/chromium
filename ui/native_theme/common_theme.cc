@@ -48,7 +48,7 @@ void CommonThemePaintMenuItemBackground(
       break;
     }
     default:
-      NOTREACHED() << "Invalid state " << state;
+      NOTREACHED_IN_MIGRATION() << "Invalid state " << state;
       break;
   }
   if (menu_item.corner_radius > 0) {

@@ -57,7 +57,7 @@ const SkBitmap& HandleViewResources::GetBitmap(
     case ui::TouchHandleOrientation::CENTER:
       return center_bitmap_;
     case ui::TouchHandleOrientation::UNDEFINED:
-      NOTREACHED() << "Invalid touch handle orientation.";
+      NOTREACHED_IN_MIGRATION() << "Invalid touch handle orientation.";
   };
   return center_bitmap_;
 }

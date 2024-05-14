@@ -31,7 +31,8 @@ Clipboard* Clipboard::Create() {
     return new ClipboardOzone;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED() << "System clipboard integration should be in place.";
+  NOTREACHED_IN_MIGRATION()
+      << "System clipboard integration should be in place.";
 #endif
   return new ClipboardNonBacked;
 }

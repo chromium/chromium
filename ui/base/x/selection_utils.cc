@@ -62,7 +62,7 @@ std::vector<std::string> ParseURIList(const SelectionData& data) {
 std::string RefCountedMemoryToString(
     const scoped_refptr<base::RefCountedMemory>& memory) {
   if (!memory.get()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 
@@ -72,7 +72,7 @@ std::string RefCountedMemoryToString(
 std::u16string RefCountedMemoryToString16(
     const scoped_refptr<base::RefCountedMemory>& memory) {
   if (!memory.get()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 
@@ -179,7 +179,7 @@ std::string SelectionData::GetText() const {
   } else {
     // BTW, I looked at COMPOUND_TEXT, and there's no way we're going to
     // support that. Yuck.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 }
@@ -206,7 +206,7 @@ std::u16string SelectionData::GetHtml() const {
 
     return markup;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return markup;
   }
 }

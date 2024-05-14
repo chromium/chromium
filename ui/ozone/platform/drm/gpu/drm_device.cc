@@ -79,7 +79,7 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
       case DRM_EVENT_VBLANK:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

@@ -1286,7 +1286,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
             green = blue = 1;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;

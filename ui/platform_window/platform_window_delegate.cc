@@ -101,7 +101,7 @@ void PlatformWindowDelegate::OnOcclusionStateChanged(
 
 int64_t PlatformWindowDelegate::OnStateUpdate(const State& old,
                                               const State& latest) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 

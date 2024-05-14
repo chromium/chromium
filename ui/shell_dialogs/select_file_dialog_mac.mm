@@ -134,7 +134,7 @@ void SelectFileDialogImpl::SelectFileImpl(
       mojo_type = SelectFileDialogType::kSaveAsFile;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

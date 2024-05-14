@@ -110,7 +110,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return false;

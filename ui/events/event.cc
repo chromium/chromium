@@ -111,10 +111,10 @@ SourceEventType EventTypeToLatencySourceEventType(EventType type) {
       return SourceEventType::WHEEL;
 
     case ET_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SourceEventType::UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SourceEventType::UNKNOWN;
 }
 
@@ -1232,8 +1232,8 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
     GetFlingData(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                  &y_offset_ordinal_, nullptr);
   } else {
-    NOTREACHED() << "Unexpected event type " << type()
-                 << " when constructing a ScrollEvent.";
+    NOTREACHED_IN_MIGRATION() << "Unexpected event type " << type()
+                              << " when constructing a ScrollEvent.";
   }
   if (IsScrollEvent())
     latency()->set_source_event_type(SourceEventType::WHEEL);

@@ -72,7 +72,7 @@ gfx::Transform ComputeTransform(EdgeEffect::Edge edge,
                  viewport_size.height() / 2.f) *
              gfx::Transform::Make90degRotation();
     default:
-      NOTREACHED() << "Invalid edge: " << edge;
+      NOTREACHED_IN_MIGRATION() << "Invalid edge: " << edge;
       return gfx::Transform();
   };
 }
@@ -90,7 +90,7 @@ gfx::SizeF ComputeOrientedSize(EdgeEffect::Edge edge,
     case EdgeEffect::EDGE_RIGHT:
       return gfx::SizeF(viewport_size.height(), viewport_size.width());
     default:
-      NOTREACHED() << "Invalid edge: " << edge;
+      NOTREACHED_IN_MIGRATION() << "Invalid edge: " << edge;
       return gfx::SizeF();
   };
 }

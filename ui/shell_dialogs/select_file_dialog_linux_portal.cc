@@ -489,7 +489,7 @@ void SelectFileDialogLinuxPortal::DialogInfo::SelectFileImplOnBusThread(
       method = kFileChooserMethodSaveFile;
       break;
     case SELECT_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -761,7 +761,7 @@ void SelectFileDialogLinuxPortal::DialogInfo::OnCallResponse(
     LOG(ERROR) << "Portal returned error: " << error_name << ": "
                << error_message;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // All error paths end up here.

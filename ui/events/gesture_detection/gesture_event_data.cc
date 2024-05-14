@@ -26,7 +26,7 @@ EventPointerType ToEventPointerType(MotionEvent::ToolType tool_type) {
     case MotionEvent::ToolType::ERASER:
       return EventPointerType::kEraser;
     default:
-      NOTREACHED() << "Invalid ToolType = " << tool_type;
+      NOTREACHED_IN_MIGRATION() << "Invalid ToolType = " << tool_type;
       return EventPointerType::kUnknown;
   }
 }

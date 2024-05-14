@@ -11,7 +11,7 @@ namespace ui {
 
 namespace {
 OzoneUIControlsTestHelper* PrintErrorAndReturnNullptr() {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Notimplemented or not supported by the underlaying platform.";
   return nullptr;
 }

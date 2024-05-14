@@ -174,7 +174,7 @@ void MutateTextRangeProvider(ComPtr<ITextRangeProvider>& text_range,
                                      &units_moved);
       return;
     case TextRangeMutation::kLast:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

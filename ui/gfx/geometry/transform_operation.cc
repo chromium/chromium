@@ -168,7 +168,7 @@ bool TransformOperation::ApproximatelyEqual(const TransformOperation& other,
     case TransformOperation::TRANSFORM_OPERATION_IDENTITY:
       return other.matrix.IsIdentity();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -517,7 +517,7 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

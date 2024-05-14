@@ -53,7 +53,7 @@ EventResult DispatchEventFromNativeUiEvent(
     // TODO(mohsen): Use the same pattern for scroll/touch/wheel events.
     // Apparently, there is no need for them to wrap the |event|.
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ER_UNHANDLED;
   }
 }

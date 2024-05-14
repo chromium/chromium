@@ -191,7 +191,7 @@ DomKey TestDomKeyboardLayoutMap::GetDomKeyFromDomCodeForLayout(
   if (test_layout_id == kKeyboardLayoutWithNoValidKeys)
     return GetDomKeyForLayoutWithNoValidKeys();
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DomKey::NONE;
 }
 

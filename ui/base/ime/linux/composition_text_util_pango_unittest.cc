@@ -135,7 +135,7 @@ TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
           pango_attr = pango_attr_background_new(0, 0, 0);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       pango_attr->start_index =
           g_utf8_offset_to_pointer(text, attrs[a].start_offset) - text;

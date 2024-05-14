@@ -3547,7 +3547,7 @@ void MenuController::SetChildMenuOpenDirectionAtDepth(
   } else if (index < child_menu_open_direction_.size()) {
     child_menu_open_direction_[index] = direction;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

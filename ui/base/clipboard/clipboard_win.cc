@@ -85,7 +85,7 @@ class ScopedClipboard {
     const int kMaxAttemptsToOpenClipboard = 5;
 
     if (opened_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
@@ -127,7 +127,7 @@ class ScopedClipboard {
       ::CloseClipboard();
       opened_ = false;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -373,7 +373,7 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
   if (!result) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -402,7 +402,7 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
   if (!result) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -667,7 +667,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
                             std::string* result) const {
   RecordRead(ClipboardFormatMetric::kData);
   if (!result) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -919,7 +919,7 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     case 24:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
                             bitmap->bmiHeader.biSize +

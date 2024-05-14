@@ -5043,7 +5043,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -5476,8 +5476,9 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       if (SupportsOrientation(GetRole())) {
         if (HasState(ax::mojom::State::kHorizontal) &&
             HasState(ax::mojom::State::kVertical)) {
-          NOTREACHED() << "An accessibility object cannot have a horizontal "
-                          "and a vertical orientation at the same time.";
+          NOTREACHED_IN_MIGRATION()
+              << "An accessibility object cannot have a horizontal "
+                 "and a vertical orientation at the same time.";
         }
         if (HasState(ax::mojom::State::kHorizontal)) {
           result->vt = VT_I4;
@@ -7225,7 +7226,7 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
         properties.emplace_back(L"pressed=mixed");
       } else if (GetRole() == ax::mojom::Role::kSwitch) {
         // This is disallowed both by the ARIA standard and by Blink.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       } else {
         properties.emplace_back(L"checked=mixed");
       }
@@ -7247,7 +7248,7 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
 
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
   if (HasIntAttribute(ax::mojom::IntAttribute::kDropeffectDeprecated)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   StateToUIAAriaProperty(properties, ax::mojom::State::kExpanded, "expanded");
 
@@ -8406,7 +8407,7 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetLowestAccessibleElementForUIA() {
     node = node->GetParentPlatformNodeWin();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

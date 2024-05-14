@@ -405,7 +405,7 @@ void WindowCache::OnGetRectanglesResponse(
         info->bounding_rects_px = std::move(response->rectangles);
         break;
       case Shape::Sk::Clip:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case Shape::Sk::Input:
         info->input_rects_px = std::move(response->rectangles);

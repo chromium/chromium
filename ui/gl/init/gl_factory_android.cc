@@ -107,7 +107,7 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       return stub_context;
     }
     case kGLImplementationDisabled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     default:
       if (compatible_surface->GetHandle() ||
@@ -136,7 +136,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
         return InitializeGLSurface(new GLSurfaceStub());
       }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -160,7 +160,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -177,7 +177,7 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -193,7 +193,7 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
     case kGLImplementationStubGL:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

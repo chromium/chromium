@@ -68,7 +68,7 @@ display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
       NOTIMPLEMENTED_LOG_ONCE();
       return display::Display::ROTATE_0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::Display::ROTATE_0;
 }
 
@@ -373,7 +373,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
       return display;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetPrimaryDisplay();
 }
 

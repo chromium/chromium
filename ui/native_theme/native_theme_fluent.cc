@@ -350,7 +350,7 @@ void NativeThemeFluent::OffsetArrowRect(gfx::RectF& arrow_rect,
       arrow_rect.Offset(scaled_offset, 0);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -141,7 +141,7 @@ std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
       }
       return std::nullopt;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

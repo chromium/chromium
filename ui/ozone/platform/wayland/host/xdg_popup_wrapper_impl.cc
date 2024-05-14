@@ -142,13 +142,14 @@ XDGPopupWrapperImpl::~XDGPopupWrapperImpl() = default;
 
 bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
   if (!connection_->shell()) {
-    NOTREACHED() << "Wrong shell protocol";
+    NOTREACHED_IN_MIGRATION() << "Wrong shell protocol";
     return false;
   }
 
   auto* xdg_parent = wayland_window_->AsWaylandPopup()->GetXdgParentWindow();
   if (!xdg_parent) {
-    NOTREACHED() << "xdg_popup does not have a valid parent xdg_surface";
+    NOTREACHED_IN_MIGRATION()
+        << "xdg_popup does not have a valid parent xdg_surface";
     return false;
   }
 

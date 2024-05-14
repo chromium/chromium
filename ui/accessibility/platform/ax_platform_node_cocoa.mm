@@ -1439,7 +1439,7 @@ void CollectAncestorRoles(
 
   switch (static_cast<ax::mojom::AriaCurrentState>(ariaCurrent)) {
     case ax::mojom::AriaCurrentState::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return @"false";
     case ax::mojom::AriaCurrentState::kFalse:
       return @"false";
@@ -1457,7 +1457,7 @@ void CollectAncestorRoles(
       return @"time";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return @"false";
 }
 

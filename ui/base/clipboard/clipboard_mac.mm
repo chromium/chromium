@@ -587,7 +587,7 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
 
   NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRep(bitmap);
   if (!image_rep) {
-    NOTREACHED() << "SkBitmapToNSBitmapImageRep failed";
+    NOTREACHED_IN_MIGRATION() << "SkBitmapToNSBitmapImageRep failed";
     return;
   }
   // Attempt to format the image representation as a PNG, and write it directly

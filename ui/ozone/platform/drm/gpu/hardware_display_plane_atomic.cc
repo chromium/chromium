@@ -39,7 +39,7 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }

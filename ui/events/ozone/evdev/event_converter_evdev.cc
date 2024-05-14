@@ -116,7 +116,7 @@ void EventConverterEvdev::OnDisabled() {}
 void EventConverterEvdev::DumpTouchEventLog(const char* filename) {}
 
 void EventConverterEvdev::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 KeyboardType EventConverterEvdev::GetKeyboardType() const {
@@ -176,60 +176,60 @@ bool EventConverterEvdev::HasStylusSwitch() const {
 }
 
 ui::StylusState EventConverterEvdev::GetStylusSwitchState() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::StylusState::REMOVED;
 }
 
 gfx::Size EventConverterEvdev::GetTouchscreenSize() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Size();
 }
 
 std::vector<ui::GamepadDevice::Axis> EventConverterEvdev::GetGamepadAxes()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<ui::GamepadDevice::Axis>();
 }
 
 bool EventConverterEvdev::GetGamepadRumbleCapability() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::vector<uint64_t> EventConverterEvdev::GetGamepadKeyBits() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<uint64_t>();
 }
 
 void EventConverterEvdev::PlayVibrationEffect(uint8_t amplitude,
                                               uint16_t duration_millis) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EventConverterEvdev::StopVibration() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EventConverterEvdev::PlayHapticTouchpadEffect(
     HapticTouchpadEffect effect,
     HapticTouchpadEffectStrength strength) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EventConverterEvdev::SetHapticTouchpadEffectForNextButtonRelease(
     HapticTouchpadEffect effect,
     HapticTouchpadEffectStrength strength) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int EventConverterEvdev::GetTouchPoints() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 void EventConverterEvdev::SetKeyFilter(bool enable_filter,
                                        std::vector<DomCode> allowed_keys) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EventConverterEvdev::SetBlockModifiers(bool block_modifiers) {

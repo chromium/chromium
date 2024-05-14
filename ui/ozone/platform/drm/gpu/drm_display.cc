@@ -353,7 +353,7 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       return gfx::HDRStaticMetadata::Eotf::kGammaHdrRange;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::HDRStaticMetadata::Eotf::kGammaSdrRange;
   }
 }

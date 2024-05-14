@@ -72,7 +72,7 @@ blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
       type = blink::WebInputEvent::Type::kKeyUp;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   blink::WebKeyboardEvent webkit_event(
@@ -133,7 +133,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       webkit_event.phase = blink::WebMouseWheelEvent::kPhaseEnded;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   switch (event.momentum_phase()) {
@@ -156,7 +156,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       webkit_event.momentum_phase = blink::WebMouseWheelEvent::kPhaseBlocked;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return webkit_event;
@@ -173,10 +173,10 @@ blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
       type = blink::WebInputEvent::Type::kGestureFlingCancel;
       break;
     case ET_SCROLL:
-      NOTREACHED() << "Invalid gesture type: " << event.type();
+      NOTREACHED_IN_MIGRATION() << "Invalid gesture type: " << event.type();
       break;
     default:
-      NOTREACHED() << "Unknown gesture type: " << event.type();
+      NOTREACHED_IN_MIGRATION() << "Unknown gesture type: " << event.type();
   }
 
   blink::WebGestureEvent webkit_event(

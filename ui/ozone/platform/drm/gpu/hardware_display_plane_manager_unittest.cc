@@ -899,7 +899,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanePinningAndUnpinning) {
         return plane->owning_crtc();
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return UINT32_MAX;
   };
 
@@ -947,7 +947,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnFailedFlip) {
         return plane->owning_crtc();
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return UINT32_MAX;
   };
 
@@ -984,7 +984,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
         return plane->owning_crtc();
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return UINT32_MAX;
   };
 

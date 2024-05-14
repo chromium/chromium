@@ -54,7 +54,7 @@ void WindowPositionInRootMonitor::OnWindowParentChanged(aura::Window* window,
     ancestors_.back()->RemoveObserver(this);
     ancestors_.pop_back();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WindowPositionInRootMonitor::OnWindowBoundsChanged(

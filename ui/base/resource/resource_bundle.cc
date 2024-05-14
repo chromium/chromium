@@ -236,8 +236,8 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
-      NOTREACHED() << "Unable to load bitmap image with id " << resource_id_
-                   << ", scale=" << scale;
+      NOTREACHED_IN_MIGRATION() << "Unable to load bitmap image with id "
+                                << resource_id_ << ", scale=" << scale;
       return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
 #endif
     }
@@ -319,7 +319,7 @@ void ResourceBundle::InitSharedInstanceWithPakFileRegion(
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
     LOG(WARNING) << "failed to load pak file";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   g_shared_instance_->locale_resources_data_ = std::move(data_pack);
@@ -376,7 +376,7 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
     LOG(WARNING) << "failed to load secondary pak file";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   secondary_locale_resources_data_ = std::move(data_pack);
@@ -594,7 +594,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
     gfx::ImageSkia image_skia = CreateImageSkia(resource_id);
     if (image_skia.isNull()) {
       LOG(WARNING) << "Unable to load image with id " << resource_id;
-      NOTREACHED();  // Want to assert in debug mode.
+      NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
       // The load failed to retrieve the image; show a debugging red square.
       return GetEmptyImage();
     }
@@ -640,7 +640,7 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   if (!data) {
     LOG(WARNING) << "Unable to load themed Lottie image with id "
                  << resource_id;
-    NOTREACHED();  // Want to assert in debug mode.
+    NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
     // The load failed to retrieve the bytes string; show a debugging red
     // square.
     return GetEmptyImageModel();
@@ -1117,7 +1117,8 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   }
 #endif
 
-  NOTREACHED() << "Unable to decode theme image resource " << resource_id;
+  NOTREACHED_IN_MIGRATION()
+      << "Unable to decode theme image resource " << resource_id;
   return false;
 }
 

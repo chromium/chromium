@@ -22,8 +22,9 @@ bool SurfaceOzoneCanvas::SupportsOverridePlatformSize() const {
 
 void SurfaceOzoneCanvas::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
                                        gfx::FrameData data) {
-  NOTREACHED() << "If the SurfaceOzoneCanvas wants to handle the buffer swap "
-                  "callback, it must override this method.";
+  NOTREACHED_IN_MIGRATION()
+      << "If the SurfaceOzoneCanvas wants to handle the buffer swap "
+         "callback, it must override this method.";
 }
 
 int SurfaceOzoneCanvas::MaxFramesPending() const {

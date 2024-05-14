@@ -105,14 +105,14 @@ VulkanImplementationHeadless::GetOptionalDeviceExtensions() {
 
 VkFence VulkanImplementationHeadless::CreateVkFenceForGpuFence(
     VkDevice vk_device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VK_NULL_HANDLE;
 }
 
 std::unique_ptr<gfx::GpuFence>
 VulkanImplementationHeadless::ExportVkFenceToGpuFence(VkDevice vk_device,
                                                       VkFence vk_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

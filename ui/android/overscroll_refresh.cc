@@ -129,7 +129,8 @@ bool OverscrollRefresh::WillHandleScrollUpdate(
       return true;
   }
 
-  NOTREACHED() << "Invalid overscroll state: " << scroll_consumption_state_;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid overscroll state: " << scroll_consumption_state_;
   return false;
 }
 

@@ -676,7 +676,7 @@ bool AnimateWindow(aura::Window* window, WindowAnimationType type) {
     AnimateBounce(window);
     return true;
   default:
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 }

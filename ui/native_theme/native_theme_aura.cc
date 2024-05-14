@@ -365,7 +365,7 @@ void NativeThemeAura::PaintScrollbarThumb(
         color_id = kScrollbarThumbPressed;
         break;
       case NativeTheme::kNumStates:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     // If there are no scrollbuttons then provide some padding so that the thumb

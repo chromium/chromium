@@ -65,7 +65,7 @@ int TableModel::CompareValues(size_t row1, size_t row2, int column_id) {
   if (collator)
     return base::i18n::CompareString16WithCollator(*collator, value1, value2);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -82,7 +82,7 @@ icu::Collator* TableModel::GetCollator() {
     g_collator = icu::Collator::createInstance(create_status);
     if (!U_SUCCESS(create_status)) {
       g_collator = nullptr;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   return g_collator;

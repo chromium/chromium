@@ -152,7 +152,7 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
     case DXGI_FORMAT_NV12:
       return "NV12";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "UNKNOWN";
   }
 }

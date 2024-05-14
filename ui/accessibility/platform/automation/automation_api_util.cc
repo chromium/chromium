@@ -87,7 +87,7 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -182,7 +182,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

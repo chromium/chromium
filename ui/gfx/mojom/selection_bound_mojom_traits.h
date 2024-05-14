@@ -28,7 +28,7 @@ gfx::mojom::SelectionBoundType GfxSelectionBoundTypeToMojo(
     case gfx::SelectionBound::EMPTY:
       return gfx::mojom::SelectionBoundType::EMPTY;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::mojom::SelectionBoundType::EMPTY;
 }
 
@@ -46,7 +46,7 @@ gfx::SelectionBound::Type MojoSelectionBoundTypeToGfx(
     case gfx::mojom::SelectionBoundType::EMPTY:
       return gfx::SelectionBound::EMPTY;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::SelectionBound::EMPTY;
 }
 

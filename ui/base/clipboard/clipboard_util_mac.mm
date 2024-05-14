@@ -460,7 +460,7 @@ NSPasteboard* PasteboardFromBuffer(ClipboardBuffer buffer) {
       buffer_type = NSPasteboardNameDrag;
       break;
     case ClipboardBuffer::kSelection:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

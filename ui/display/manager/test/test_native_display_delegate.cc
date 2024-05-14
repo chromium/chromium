@@ -220,7 +220,7 @@ void TestNativeDisplayDelegate::DoSetHDCPState(
 
   switch (state) {
     case HDCP_STATE_ENABLED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case HDCP_STATE_DESIRED:

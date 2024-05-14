@@ -94,7 +94,8 @@ void NativeWindowOcclusionTrackerWin::DeleteInstanceForTesting() {
 void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
   DCHECK(window->IsRootWindow());
   if (window->HasObserver(this)) {
-    NOTREACHED() << "window shouldn't already be observing occlusion tracker";
+    NOTREACHED_IN_MIGRATION()
+        << "window shouldn't already be observing occlusion tracker";
     return;
   }
   // Add this as an observer so that we can be notified

@@ -19,7 +19,7 @@ ui::EventTarget* NullWindowTargeter::FindTargetForEvent(ui::EventTarget* root,
 ui::EventTarget* NullWindowTargeter::FindNextBestTarget(
     ui::EventTarget* previous_target,
     ui::Event* event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

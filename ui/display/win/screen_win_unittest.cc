@@ -69,7 +69,7 @@ class TestScreenWin : public ScreenWin {
       if (gfx::Rect(monitor_info.rcMonitor).Contains(screen_point))
         return monitor_info;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return monitor_infos_[0];
   }
 
@@ -114,7 +114,7 @@ class TestScreenWin : public ScreenWin {
         return monitor_info;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return monitor_infos_[0];
   }
 

@@ -69,7 +69,7 @@ const char* ToRotationString(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return "270";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 
@@ -138,7 +138,7 @@ display::Display::Rotation Display::DegreesToRotation(int degrees) {
     return display::Display::ROTATE_180;
   if (degrees == 270)
     return display::Display::ROTATE_270;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::Display::ROTATE_0;
 }
 
@@ -154,7 +154,7 @@ int Display::RotationToDegrees(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return 270;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -199,7 +199,7 @@ int Display::RotationAsDegree() const {
     case ROTATE_270:
       return 270;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -227,7 +227,7 @@ void Display::SetRotationAsDegree(int rotation) {
       break;
     default:
       // We should not reach that but we will just ignore the call if we do.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -103,7 +103,7 @@ NativeThemeGtk::NativeThemeGtk()
 }
 
 NativeThemeGtk::~NativeThemeGtk() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {

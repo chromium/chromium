@@ -59,7 +59,7 @@ gfx::Image* GetHandleImage(TouchHandleOrientation orientation) {
       resource_id = IDR_TEXT_SELECTION_HANDLE_RIGHT;
       break;
     case TouchHandleOrientation::UNDEFINED:
-      NOTREACHED() << "Invalid touch handle bound type.";
+      NOTREACHED_IN_MIGRATION() << "Invalid touch handle bound type.";
       return nullptr;
   };
   return &ResourceBundle::GetSharedInstance().GetImageNamed(resource_id);

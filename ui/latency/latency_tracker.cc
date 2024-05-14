@@ -188,7 +188,7 @@ LatencyTracker::ScrollInputModality LatencyTracker::ToScrollInputModality(
     case ui::SourceEventType::SCROLLBAR:
       return ScrollInputModality::kScrollbar;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ScrollInputModality::kLastValue;
 }

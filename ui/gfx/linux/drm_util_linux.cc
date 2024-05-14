@@ -80,7 +80,7 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
     case DRM_FORMAT_ABGR16161616F:
       return gfx::BufferFormat::RGBA_F16;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::BufferFormat::BGRA_8888;
   }
 }

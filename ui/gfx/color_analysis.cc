@@ -188,7 +188,7 @@ class ColorBox {
         case BLUE:
           return SkColorGetB(a) < SkColorGetB(b);
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SkColorGetB(a) < SkColorGetB(b);
     };
     // Just the portion of |color_space_| that's covered by this box should be

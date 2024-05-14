@@ -846,7 +846,7 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
       return std::u16string();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

@@ -18,7 +18,7 @@ std::unique_ptr<MediaKeysListener> MediaKeysListener::Create(
     if (!GlobalMediaKeysListenerWin::has_instance())
       return std::make_unique<GlobalMediaKeysListenerWin>(delegate);
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

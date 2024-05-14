@@ -69,7 +69,7 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
     case ClipboardBuffer::kDrag:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

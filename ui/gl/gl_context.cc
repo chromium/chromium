@@ -206,7 +206,7 @@ void GLContext::ReinitializeDynamicBindings() {
 }
 
 void GLContext::ForceReleaseVirtuallyCurrent() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLContext::DirtyVirtualContextState() {
@@ -347,7 +347,7 @@ bool GLContext::LosesAllContextsOnContextLost() {
     case kGLImplementationStubGL:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return true;
   }
 }

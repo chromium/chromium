@@ -497,7 +497,7 @@ TrackedElement* InteractionSequence::GetNamedElement(std::string_view name) {
   if (it != named_elements_.end()) {
     result = it->second.get();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return result;
 }
@@ -659,7 +659,7 @@ void InteractionSequence::OnTriggerDuringStepTransition(
         return;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -725,7 +725,7 @@ void InteractionSequence::OnElementHiddenWaitingForEvent(
       case ContextMode::kAny:
         break;
       case ContextMode::kFromPreviousStep:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Context should always have been updated by this point.";
         break;
     }
@@ -1210,7 +1210,7 @@ ElementContext InteractionSequence::UpdateNextStepContext(
         if (temp)
           current_context = *temp;
       } else {
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Should not specify kFromPreviousStep without a previous step.";
       }
       next.context = current_context;

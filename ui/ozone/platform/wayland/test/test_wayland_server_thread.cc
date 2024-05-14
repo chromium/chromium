@@ -296,7 +296,7 @@ bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
     case ShouldUseExplicitSynchronizationProtocol::kUse:
       return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

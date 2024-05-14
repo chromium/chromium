@@ -92,7 +92,7 @@ class OzonePlatformCast : public OzonePlatform {
     return event_factory_ozone_->input_controller();
   }
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }

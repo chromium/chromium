@@ -47,7 +47,7 @@ int TreeGenerator::IgnoredPermutationCountPerUniqueTree(int tree_index) const {
     unique_tree_count_so_far += unique_tree_count;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

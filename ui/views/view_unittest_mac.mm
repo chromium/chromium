@@ -71,7 +71,7 @@ class ThreeFingerSwipeView : public View {
     } else if (event->details().swipe_down()) {
       last_swipe_ = SWIPE_DOWN;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

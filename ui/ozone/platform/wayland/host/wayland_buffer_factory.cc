@@ -35,7 +35,7 @@ void WaylandBufferFactory::CreateDmabufBuffer(
   } else {
     // This method must never be called if neither zwp_linux_dmabuf or wl_drm
     // are supported.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

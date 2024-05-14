@@ -202,7 +202,7 @@ GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference,
                                                         display_key);
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

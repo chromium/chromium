@@ -3632,7 +3632,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     file.write('void NoContextHelper(const char* method_name) {\n')
     no_context_error = ('<< "Trying to call " << method_name << " without '
                         'current GL context"')
-    file.write('  NOTREACHED() %s;\n' % no_context_error)
+    file.write('  NOTREACHED_IN_MIGRATION() %s;\n' % no_context_error)
     file.write('  LOG(ERROR) %s;\n' % no_context_error)
     file.write('}\n')
     file.write('}  // namespace\n')
@@ -3755,7 +3755,7 @@ namespace gl {
   # GLProcAddress().
   file.write('\n')
   file.write('static void Mock%sInvalidFunction() {\n' % set_name.capitalize())
-  file.write('  NOTREACHED();\n')
+  file.write('  NOTREACHED_IN_MIGRATION();\n')
   file.write('}\n')
 
   # Write a function to lookup a mock GL function based on its name.

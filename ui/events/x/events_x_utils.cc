@@ -250,7 +250,7 @@ ui::EventType GetTouchEventType(const x11::Event& x11_event) {
         return ui::ET_TOUCH_MOVED;
       return ui::ET_UNKNOWN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ui::ET_UNKNOWN;
 }
@@ -345,7 +345,7 @@ base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {
     }
     return TimeTicksFromXEventTime(device->time);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::TimeTicks();
 }
 

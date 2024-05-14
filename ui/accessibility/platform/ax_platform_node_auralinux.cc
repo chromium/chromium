@@ -4488,7 +4488,7 @@ bool AXPlatformNodeAuraLinux::
       return child->GrabFocusOrSetSequentialFocusNavigationStartingPoint();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -4912,7 +4912,7 @@ int AXPlatformNodeAuraLinux::FindStartOfStyle(
 
   switch (direction) {
     case ax::mojom::MoveDirection::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return start_offset;
     case ax::mojom::MoveDirection::kBackward: {
       auto iterator = offset_to_text_attributes_.upper_bound(start_offset);
@@ -4928,7 +4928,7 @@ int AXPlatformNodeAuraLinux::FindStartOfStyle(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return start_offset;
 }
 

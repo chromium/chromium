@@ -24,7 +24,7 @@ struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
       case ui::DIALOG_BUTTON_CANCEL:
         return ui::mojom::DialogButton::CANCEL;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ui::mojom::DialogButton::NONE;
     }
   }
@@ -42,7 +42,7 @@ struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
         *out = ui::DIALOG_BUTTON_CANCEL;
         return true;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -61,7 +61,7 @@ struct EnumTraits<ui::mojom::ModalType, ui::ModalType> {
       case ui::MODAL_TYPE_SYSTEM:
         return ui::mojom::ModalType::SYSTEM;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ui::mojom::ModalType::NONE;
     }
   }
@@ -81,7 +81,7 @@ struct EnumTraits<ui::mojom::ModalType, ui::ModalType> {
         *out = ui::MODAL_TYPE_SYSTEM;
         return true;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -114,7 +114,7 @@ struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
       case ui::MENU_SOURCE_ADJUST_SELECTION_RESET:
         return ui::mojom::MenuSourceType::ADJUST_SELECTION_RESET;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ui::mojom::MenuSourceType::NONE;
   }
 
@@ -155,7 +155,7 @@ struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
         *out = ui::MENU_SOURCE_ADJUST_SELECTION_RESET;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

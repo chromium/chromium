@@ -108,7 +108,7 @@ WebMouseEvent WebMouseEventBuilder::Build(
         button = WebMouseEvent::Button::kForward;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // set modifiers:

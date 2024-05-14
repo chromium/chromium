@@ -30,7 +30,7 @@ static uint64_t GetModeIndex(
         modes[i].get()->refresh_rate() == mode->refresh_rate())
       return i;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::numeric_limits<uint64_t>::max();
 }
 

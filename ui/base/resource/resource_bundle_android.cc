@@ -80,7 +80,7 @@ std::unique_ptr<DataPack> LoadDataPackFromLocalePak(
   auto data_pack = std::make_unique<DataPack>(k100Percent);
   if (!data_pack->LoadFromFileRegion(base::File(locale_pack_fd), region)) {
     LOG(WARNING) << "failed to load locale.pak";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   return data_pack;

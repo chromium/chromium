@@ -67,14 +67,14 @@ EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(
     case gfx::kCALayerFailedVideoCaptureEnabled:  // = 33,
       return gfx::mojom::CALayerResult::kCALayerFailedVideoCaptureEnabled;
     case gfx::kCALayerUnknownDidNotSwap:  // = 34,
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::mojom::CALayerResult::kCALayerFailedUnknown;
     case gfx::kCALayerUnknownNoWidget:  // = 35,
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::mojom::CALayerResult::kCALayerFailedUnknown;
   }
 
-  NOTREACHED() << "CALayer result:" << ca_layer_error_code;
+  NOTREACHED_IN_MIGRATION() << "CALayer result:" << ca_layer_error_code;
   return gfx::mojom::CALayerResult::kCALayerFailedUnknown;
 }
 
@@ -168,7 +168,7 @@ bool EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
       return true;
   }
 
-  NOTREACHED() << "Invalid CALayer result: " << input;
+  NOTREACHED_IN_MIGRATION() << "Invalid CALayer result: " << input;
   return false;
 }
 #endif

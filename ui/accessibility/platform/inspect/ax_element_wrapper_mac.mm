@@ -93,7 +93,7 @@ NSArray* AXElementWrapper::Children() const {
     return nil;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
   return nil;
 }
@@ -104,7 +104,7 @@ NSSize AXElementWrapper::Size() const {
   }
 
   if (!IsAXUIElement()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
     return NSMakeSize(0, 0);
   }
@@ -140,7 +140,7 @@ NSPoint AXElementWrapper::Position() const {
     }
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
   return NSMakePoint(0, 0);
 }
@@ -160,7 +160,7 @@ NSArray* AXElementWrapper::AttributeNames() const {
     return nil;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
   return nil;
 }
@@ -180,7 +180,7 @@ NSArray* AXElementWrapper::ParameterizedAttributeNames() const {
     return nil;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
   return nil;
 }
@@ -278,7 +278,7 @@ void AXElementWrapper::SetAttributeValue(NSString* attribute, id value) const {
     return;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 
@@ -296,7 +296,7 @@ NSArray* AXElementWrapper::ActionNames() const {
     return nil;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
   return nil;
 }
@@ -313,7 +313,7 @@ void AXElementWrapper::PerformAction(NSString* action) const {
     return;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
 }
 

@@ -81,7 +81,7 @@ GLenum glClientWaitSyncEmulateEGL(GLsync sync,
       return GL_WAIT_FAILED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -101,7 +101,7 @@ void glWaitSyncEmulateEGL(GLsync sync, GLbitfield flags, GLuint64 timeout) {
 }
 
 GLboolean glIsSyncEmulateEGL(GLsync sync) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

@@ -47,7 +47,7 @@ x11::KeyEvent::Opcode XKeyEventType(ui::EventType type) {
     case ui::ET_KEY_RELEASED:
       return x11::KeyEvent::Release;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {};
   }
 }
@@ -73,7 +73,7 @@ int XIButtonEventType(ui::EventType type) {
     case ui::ET_MOUSE_RELEASED:
       return x11::Input::DeviceEvent::ButtonRelease;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

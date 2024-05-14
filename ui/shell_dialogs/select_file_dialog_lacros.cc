@@ -36,7 +36,7 @@ crosapi::mojom::SelectFileDialogType GetMojoType(SelectFileDialog::Type type) {
     case SelectFileDialog::Type::SELECT_SAVEAS_FILE:
       return crosapi::mojom::SelectFileDialogType::kSaveAsFile;
     case SelectFileDialog::Type::SELECT_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::SelectFileDialogType::kOpenFile;
   }
 }

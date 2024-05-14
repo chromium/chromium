@@ -339,7 +339,7 @@ gfx::PointF TouchHandle::ComputeHandleOrigin() const {
       focal_offset_x = drawable_width * 0.5f;
       break;
     case TouchHandleOrientation::UNDEFINED:
-      NOTREACHED() << "Invalid touch handle orientation.";
+      NOTREACHED_IN_MIGRATION() << "Invalid touch handle orientation.";
       break;
   };
 

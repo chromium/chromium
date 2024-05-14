@@ -1483,7 +1483,7 @@ AXEventGenerator::Event ParseGeneratedEvent(const char* attribute) {
     return event;
 
   LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AXEventGenerator::Event::NONE;
 }
 

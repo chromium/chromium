@@ -20,7 +20,7 @@ std::string_view NativeThemeColorSchemeName(
     case NativeTheme::ColorScheme::kPlatformHighContrast:
       return "kPlatformHighContrast";
     default:
-      NOTREACHED() << "Invalid NativeTheme::ColorScheme";
+      NOTREACHED_IN_MIGRATION() << "Invalid NativeTheme::ColorScheme";
       return "<invalid>";
   }
 }

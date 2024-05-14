@@ -20,7 +20,7 @@ EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::ToMojom(
     case gfx::ContentColorUsage::kHDR:
       return gfx::mojom::ContentColorUsage::kHDR;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::mojom::ContentColorUsage::kSRGB;
 }
 
@@ -39,7 +39,7 @@ bool EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::
       *output = gfx::ContentColorUsage::kHDR;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

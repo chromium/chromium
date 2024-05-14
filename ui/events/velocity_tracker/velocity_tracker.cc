@@ -241,7 +241,8 @@ VelocityTrackerStrategy* CreateStrategy(VelocityTracker::Strategy strategy) {
     case VelocityTracker::INT2:
       return new IntegratingVelocityTrackerStrategy(2);
   }
-  NOTREACHED() << "Unrecognized velocity tracker strategy: " << strategy;
+  NOTREACHED_IN_MIGRATION()
+      << "Unrecognized velocity tracker strategy: " << strategy;
   // Quadratic regression is a safe default.
   return CreateStrategy(VelocityTracker::STRATEGY_DEFAULT);
 }

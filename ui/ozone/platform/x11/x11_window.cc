@@ -141,7 +141,7 @@ x11::NotifyMode XI2ModeToXMode(x11::Input::NotifyMode xi2_mode) {
     case x11::Input::NotifyMode::WhileGrabbed:
       return x11::NotifyMode::WhileGrabbed;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return x11::NotifyMode::Normal;
   }
 }
@@ -1286,7 +1286,7 @@ bool X11Window::HandleAsAtkEvent(const x11::KeyEvent& key_event,
                                  bool transient) {
 #if !BUILDFLAG(USE_ATK)
   // TODO(crbug.com/40653448): Support ATK in Ozone/X11.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #else
   if (!x11_extension_delegate_) {

@@ -53,7 +53,7 @@ float EvaluateLut(float x,
       lut_j1 = lut[j1].b;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

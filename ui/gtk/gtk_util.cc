@@ -387,7 +387,7 @@ GtkStateFlags StateToStateFlags(ui::NativeTheme::State state) {
       return static_cast<GtkStateFlags>(GTK_STATE_FLAG_PRELIGHT |
                                         GTK_STATE_FLAG_ACTIVE);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GTK_STATE_FLAG_NORMAL;
   }
 }
@@ -442,7 +442,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           part_type = CSS_PSEUDOCLASS;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     } else {
       switch (part_type) {
@@ -467,7 +467,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           break;
         }
         case CSS_NONE:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

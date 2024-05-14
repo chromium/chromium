@@ -31,7 +31,7 @@ ui::mojom::SourceEventType UISourceEventTypeToMojo(ui::SourceEventType type) {
     case ui::SourceEventType::OTHER:
       return ui::mojom::SourceEventType::OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::mojom::SourceEventType::UNKNOWN;
 }
 
@@ -56,7 +56,7 @@ ui::SourceEventType MojoSourceEventTypeToUI(ui::mojom::SourceEventType type) {
     case ui::mojom::SourceEventType::OTHER:
       return ui::SourceEventType::OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::SourceEventType::UNKNOWN;
 }
 
@@ -180,7 +180,7 @@ EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::ToMojom(
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::mojom::LatencyComponentType::kMaxValue;
 }
 

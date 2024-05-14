@@ -64,7 +64,7 @@ unsigned int GLSurface::GetBackingFramebufferObject() {
 void GLSurface::SwapBuffersAsync(SwapCompletionCallback completion_callback,
                                  PresentationCallback presentation_callback,
                                  gfx::FrameData data) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gfx::SwapResult GLSurface::PostSubBuffer(int x,
@@ -83,7 +83,7 @@ void GLSurface::PostSubBufferAsync(int x,
                                    SwapCompletionCallback completion_callback,
                                    PresentationCallback presentation_callback,
                                    gfx::FrameData data) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool GLSurface::OnMakeCurrent(GLContext* context) {
@@ -139,7 +139,7 @@ bool GLSurface::SupportsSwapTimestamps() const {
 }
 
 void GLSurface::SetEnableSwapTimestamps() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int GLSurface::GetBufferCount() const {
@@ -177,7 +177,7 @@ GpuPreference GLSurface::AdjustGpuPreference(GpuPreference gpu_preference) {
     case GpuPreference::kHighPerformance:
       return forced_gpu_preference_;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GpuPreference::kDefault;
   }
 }

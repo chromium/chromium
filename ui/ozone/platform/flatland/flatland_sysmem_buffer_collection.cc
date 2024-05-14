@@ -51,7 +51,7 @@ VkFormat VkFormatForBufferFormat(gfx::BufferFormat buffer_format) {
       return VK_FORMAT_R8G8B8A8_UNORM;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return VK_FORMAT_UNDEFINED;
   }
 }
@@ -73,7 +73,7 @@ size_t GetBytesPerPixel(gfx::BufferFormat buffer_format) {
       return 4U;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
   }
 }
@@ -89,7 +89,7 @@ bool IsYuvVkFormat(VkFormat format) {
     case VK_FORMAT_R8G8B8A8_UNORM:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

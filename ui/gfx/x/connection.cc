@@ -578,7 +578,7 @@ void Connection::InitRootDepthAndVisual() {
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Connection::InitializeExtensions() {

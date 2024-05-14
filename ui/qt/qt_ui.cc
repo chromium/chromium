@@ -105,7 +105,7 @@ int Qt5WeightToCssWeight(int weight) {
              lo.css_weight;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kMapping[std::size(kMapping) - 1].css_weight;
 }
 

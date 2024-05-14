@@ -57,7 +57,7 @@ const char* GrabStatusToString(x11::GrabStatus grab_status) {
     case x11::GrabStatus::Frozen:
       return "Frozen";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

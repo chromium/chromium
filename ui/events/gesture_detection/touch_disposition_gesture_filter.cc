@@ -120,7 +120,7 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Info(RT_NONE);
 }
 

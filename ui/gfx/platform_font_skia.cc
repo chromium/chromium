@@ -194,7 +194,7 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
     style = query.style;
     weight = query.weight;
 #else
-    NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     params = gfx::GetFontRenderParams(FontRenderParamsQuery(), nullptr);

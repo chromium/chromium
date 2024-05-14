@@ -145,7 +145,7 @@ bool CharacterComposer::FilterKeyPress(const ui::KeyEvent& event) {
     case HEX_MODE:
       return FilterKeyPressHexMode(event);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

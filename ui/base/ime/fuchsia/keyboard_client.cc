@@ -124,8 +124,8 @@ std::optional<EventType> ConvertKeyEventType(
       // SYNC and CANCEL should not generate ui::Events.
       return std::nullopt;
     default:
-      NOTREACHED() << "Unknown KeyEventType received: "
-                   << static_cast<int>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown KeyEventType received: " << static_cast<int>(type);
       return std::nullopt;
   }
 }

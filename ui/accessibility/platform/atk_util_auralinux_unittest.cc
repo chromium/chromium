@@ -28,7 +28,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     TestAXNodeWrapper* wrapper =
         TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
     if (!wrapper)
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     AXPlatformNodeAuraLinux::SetApplication(wrapper->ax_platform_node());
 
     AtkUtilAuraLinux::GetInstance()->InitializeForTesting();
@@ -43,7 +43,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     TestAXNodeWrapper* wrapper =
         TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
     if (!wrapper)
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
 
     AXPlatformNodeTest::TearDown();

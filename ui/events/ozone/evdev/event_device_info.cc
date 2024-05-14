@@ -740,7 +740,7 @@ bool EventDeviceInfo::HasDirect() const {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -760,7 +760,7 @@ bool EventDeviceInfo::HasPointer() const {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

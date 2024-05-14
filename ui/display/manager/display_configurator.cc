@@ -273,8 +273,9 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
   switch (new_display_state) {
     case MULTIPLE_DISPLAY_STATE_INVALID:
-      NOTREACHED() << "Ignoring request to enter invalid state with "
-                   << displays.size() << " connected display(s)";
+      NOTREACHED_IN_MIGRATION()
+          << "Ignoring request to enter invalid state with " << displays.size()
+          << " connected display(s)";
       return false;
     case MULTIPLE_DISPLAY_STATE_HEADLESS:
       if (displays.size() != 0) {

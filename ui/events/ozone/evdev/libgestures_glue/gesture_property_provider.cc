@@ -35,52 +35,52 @@ GesturesProp::GesturesProp(const std::string& name,
     : name_(name), type_(type), count_(count) {}
 
 std::vector<int> GesturesProp::GetIntValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<int>();
 }
 
 bool GesturesProp::SetIntValue(const std::vector<int>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::vector<int16_t> GesturesProp::GetShortValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<int16_t>();
 }
 
 bool GesturesProp::SetShortValue(const std::vector<int16_t>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::vector<bool> GesturesProp::GetBoolValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<bool>();
 }
 
 bool GesturesProp::SetBoolValue(const std::vector<bool>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::string GesturesProp::GetStringValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
 bool GesturesProp::SetStringValue(const std::string& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::vector<double> GesturesProp::GetDoubleValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<double>();
 }
 
 bool GesturesProp::SetDoubleValue(const std::vector<double>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -108,12 +108,12 @@ void GesturesProp::OnSet() const {
 }
 
 const char** GesturesProp::GetStringWritebackPtr() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NULL;
 }
 
 bool GesturesProp::IsAllocated() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -540,7 +540,7 @@ std::ostream& operator<<(std::ostream& out,
     TYPE_CASE(PT_STRING);
     TYPE_CASE(PT_REAL);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 #undef TYPE_CASE
@@ -590,7 +590,7 @@ std::ostream& operator<<(std::ostream& os, const GesturesProp& prop) {
       break;
     default:
       LOG(ERROR) << "Unknown gesture property type: " << property->type();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return os;
@@ -1234,7 +1234,7 @@ GesturePropertyProvider::CreateMatchCriteria(const std::string& match_type,
     return std::make_unique<internal::MatchIsTouchpad>(arg);
   if (match_type == "MatchIsTouchscreen")
     return std::make_unique<internal::MatchIsTouchscreen>(arg);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NULL;
 }
 

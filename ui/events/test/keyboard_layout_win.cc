@@ -34,7 +34,7 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout) {
       return LoadKeyboardLayout(L"00000419", KLF_ACTIVATE);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

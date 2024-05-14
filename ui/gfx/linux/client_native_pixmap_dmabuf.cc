@@ -180,7 +180,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       return format == gfx::BufferFormat::YVU_420 ||
              format == gfx::BufferFormat::YUV_420_BIPLANAR;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

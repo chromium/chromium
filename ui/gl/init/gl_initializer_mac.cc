@@ -37,7 +37,7 @@ const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   // Some unit test targets depend on Angle/SwiftShader but aren't built
@@ -153,7 +153,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return false;

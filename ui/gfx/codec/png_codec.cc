@@ -55,7 +55,7 @@ static bool PrepareForPNGDecode(const unsigned char* input,
       }
       break;
     default:
-      NOTREACHED() << "Invalid color format " << format;
+      NOTREACHED_IN_MIGRATION() << "Invalid color format " << format;
       return false;
   }
   *image_info =

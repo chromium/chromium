@@ -59,7 +59,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
     case kGLImplementationDisabled:
       break;
     default:
-      NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
+      NOTREACHED_IN_MIGRATION()
+          << "Expected Mock or Stub, actual:" << GetGLImplementation();
   }
   return nullptr;
 }
@@ -76,7 +77,8 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
+      NOTREACHED_IN_MIGRATION()
+          << "Expected Mock or Stub, actual:" << GetGLImplementation();
   }
 
   return nullptr;
@@ -103,7 +105,8 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub);
     default:
-      NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
+      NOTREACHED_IN_MIGRATION()
+          << "Expected Mock or Stub, actual:" << GetGLImplementation();
   }
   return nullptr;
 }
@@ -119,7 +122,8 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
+      NOTREACHED_IN_MIGRATION()
+          << "Expected Mock or Stub, actual:" << GetGLImplementation();
   }
 }
 
@@ -132,7 +136,8 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
     case kGLImplementationStubGL:
       return true;
     default:
-      NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
+      NOTREACHED_IN_MIGRATION()
+          << "Expected Mock or Stub, actual:" << GetGLImplementation();
       return false;
   }
 }

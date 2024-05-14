@@ -1284,7 +1284,7 @@ void AXTreeFormatterUia::ProcessValueForOutput(const std::string& name,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

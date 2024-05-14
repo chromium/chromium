@@ -72,7 +72,7 @@ void DrmWindowHost::Hide() {}
 void DrmWindowHost::Close() {}
 
 bool DrmWindowHost::IsVisible() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -90,13 +90,13 @@ gfx::Rect DrmWindowHost::GetBoundsInPixels() const {
 }
 
 void DrmWindowHost::SetBoundsInDIP(const gfx::Rect& bounds) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // No scaling at DRM level and should always use pixel bounds.
 }
 
 gfx::Rect DrmWindowHost::GetBoundsInDIP() const {
   // No scaling at DRM level and should always use pixel bounds.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return bounds_;
 }
 
@@ -157,21 +157,21 @@ void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
 }
 
 void DrmWindowHost::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gfx::Rect DrmWindowHost::GetRestoredBoundsInDIP() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Rect();
 }
 
 void DrmWindowHost::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                    const gfx::ImageSkia& app_icon) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrmWindowHost::SizeConstraintsChanged() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrmWindowHost::OnMouseEnter() {

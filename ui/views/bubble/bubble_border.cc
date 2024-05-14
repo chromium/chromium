@@ -72,7 +72,7 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
         break;
 #endif
       default:
-        NOTREACHED() << "Invalid bubble border shadow type.";
+        NOTREACHED_IN_MIGRATION() << "Invalid bubble border shadow type.";
         break;
     }
   }
@@ -180,7 +180,7 @@ const gfx::ShadowValues& GetShadowValues(
         break;
 #endif
       default:
-        NOTREACHED() << "Invalid bubble border shadow type";
+        NOTREACHED_IN_MIGRATION() << "Invalid bubble border shadow type";
         break;
     }
   } else {

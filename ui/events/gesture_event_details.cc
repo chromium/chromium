@@ -64,7 +64,8 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
       break;
 
     default:
-      NOTREACHED() << "Invalid event type for constructor: " << type;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid event type for constructor: " << type;
   }
 }
 

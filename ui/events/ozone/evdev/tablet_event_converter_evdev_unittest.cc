@@ -345,7 +345,7 @@ class MockTabletCursorEvdev : public CursorDelegateEvdev {
   // CursorDelegateEvdev:
   void MoveCursorTo(gfx::AcceleratedWidget widget,
                     const gfx::PointF& location) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void MoveCursorTo(const gfx::PointF& location) override {
     cursor_location_ = location;

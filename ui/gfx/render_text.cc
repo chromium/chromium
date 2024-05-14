@@ -2003,7 +2003,7 @@ base::i18n::TextDirection RenderText::GetTextDirectionForGivenText(
       // behaviour is always enabled, regardless of the flag.
       return base::i18n::LEFT_TO_RIGHT;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::i18n::UNKNOWN_DIRECTION;
   }
 }

@@ -96,8 +96,8 @@ class ElementTrackerMac::MenuData {
         LOG(WARNING) << "Element " << identifier
                      << " hidden multiple times in a row.";
       } else {
-        NOTREACHED() << "Element " << identifier
-                     << " hidden after its menu was destroyed.";
+        NOTREACHED_IN_MIGRATION() << "Element " << identifier
+                                  << " hidden after its menu was destroyed.";
       }
       return;
     }

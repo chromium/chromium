@@ -40,7 +40,7 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
       case WindowOpenDisposition::IGNORE_ACTION:
         return ui::mojom::WindowOpenDisposition::IGNORE_ACTION;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ui::mojom::WindowOpenDisposition::UNKNOWN;
     }
   }
@@ -82,7 +82,7 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         *out = WindowOpenDisposition::IGNORE_ACTION;
         return true;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

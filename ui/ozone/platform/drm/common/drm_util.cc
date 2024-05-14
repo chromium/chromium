@@ -686,7 +686,7 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return DRM_FORMAT_P010;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -707,7 +707,7 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
       return res->enums[i].value;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -792,7 +792,7 @@ std::string GetEnumNameForProperty(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

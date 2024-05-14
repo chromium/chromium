@@ -708,7 +708,7 @@ std::string EventTypeToString(ui::EventType type) {
 
     default:
       // We should explicitly require each event type.
-      NOTREACHED() << "Received unexpected event: " << type;
+      NOTREACHED_IN_MIGRATION() << "Received unexpected event: " << type;
       break;
   }
   return "";

@@ -800,7 +800,7 @@ MockEGLInterface::Mock_eglWaitUntilWorkScheduledANGLE(EGLDisplay dpy) {
 }
 
 static void MockEglInvalidFunction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 GLFunctionPointerType GL_BINDING_CALL

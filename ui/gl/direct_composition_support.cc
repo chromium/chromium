@@ -776,7 +776,7 @@ UINT GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT format) {
       support_flag = g_rgb10a2_overlay_support_flags;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return support_flag;

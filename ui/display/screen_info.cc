@@ -24,7 +24,7 @@ const char* ToOrientationString(mojom::ScreenOrientation orientaiton_type) {
     case mojom::ScreenOrientation::kLandscapeSecondary:
       return "LandscapeSecondary";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 

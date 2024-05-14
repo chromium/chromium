@@ -993,7 +993,7 @@ ax::mojom::Role StringToRole(const std::string& role) {
   }
 
   // We should never pass in an invalid role.
-  NOTREACHED() << "Invalid role was provided: " << role;
+  NOTREACHED_IN_MIGRATION() << "Invalid role was provided: " << role;
   return ax::mojom::Role::kUnknown;
 }
 
@@ -1084,7 +1084,7 @@ ax::mojom::State StringToState(const std::string& str) {
   }
 
   // We should never pass in an invalid state.
-  NOTREACHED() << "An invalid state was provided: " << str;
+  NOTREACHED_IN_MIGRATION() << "An invalid state was provided: " << str;
   return ax::mojom::State::kNone;
 }
 
@@ -1419,8 +1419,8 @@ ax::mojom::StringAttribute StringToStringAttribute(
   } else if (string_attribute == "kVirtualContent") {
     return ax::mojom::StringAttribute::kVirtualContent;
   } else {
-    NOTREACHED() << "An invalid StringAttribute was provided: "
-                 << string_attribute;
+    NOTREACHED_IN_MIGRATION()
+        << "An invalid StringAttribute was provided: " << string_attribute;
     return ax::mojom::StringAttribute::kNone;
   }
 }
@@ -1699,7 +1699,8 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated;
   }
 
-  NOTREACHED() << "An invalid IntAttribute was provided: " << int_attribute;
+  NOTREACHED_IN_MIGRATION()
+      << "An invalid IntAttribute was provided: " << int_attribute;
   return ax::mojom::IntAttribute::kNone;
 }
 
@@ -1828,7 +1829,8 @@ ax::mojom::BoolAttribute StringToBoolAttribute(
   } else if (bool_attribute == "kLongClickable") {
     return ax::mojom::BoolAttribute::kLongClickable;
   } else {
-    NOTREACHED() << "An invalid BoolAttribute was provided: " << bool_attribute;
+    NOTREACHED_IN_MIGRATION()
+        << "An invalid BoolAttribute was provided: " << bool_attribute;
     return ax::mojom::BoolAttribute::kNone;
   }
 }

@@ -133,7 +133,7 @@ std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateFromGpuFence(gpu_fence);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }
@@ -146,7 +146,7 @@ std::unique_ptr<GLFence> GLFence::CreateForGpuFence() {
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateForGpuFence();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

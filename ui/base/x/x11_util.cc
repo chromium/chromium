@@ -548,7 +548,7 @@ UMALinuxWindowManager GetWindowManagerUMA() {
     case WM_XMONAD:
       return UMALinuxWindowManager::kXmonad;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UMALinuxWindowManager::kOther;
 }
 

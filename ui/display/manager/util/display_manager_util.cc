@@ -113,7 +113,7 @@ std::string MultipleDisplayStateToString(MultipleDisplayState state) {
     case MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED:
       return "MULTI_EXTENDED";
   }
-  NOTREACHED() << "Unknown state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
   return "INVALID";
 }
 
@@ -191,7 +191,7 @@ std::vector<float> GetDisplayZoomFactorForDsf(float dsf) {
       return std::vector<float>(bucket.second.begin(), bucket.second.end());
     }
   }
-  NOTREACHED() << "Received a DSF not on the list: " << dsf;
+  NOTREACHED_IN_MIGRATION() << "Received a DSF not on the list: " << dsf;
   return {1.f / dsf, 1.f};
 }
 

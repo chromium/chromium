@@ -129,7 +129,7 @@ float FromLinear(ColorSpace::TransferID id, float v) {
       // Handled by skcms_TransferFunction.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -175,7 +175,7 @@ float ToLinear(ColorSpace::TransferID id, float v) {
       // Handled by skcms_TransferFunction.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -754,7 +754,7 @@ class ColorTransformFromLinear : public ColorTransformPerChannelTransferFn {
       default:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -824,7 +824,7 @@ class ColorTransformToLinear : public ColorTransformPerChannelTransferFn {
       default:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

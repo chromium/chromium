@@ -81,7 +81,7 @@ const MultiAnimation::Part& MultiAnimation::GetPart(base::TimeDelta* time,
 
     *time -= parts_[i].length;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return parts_[0];
 }
 

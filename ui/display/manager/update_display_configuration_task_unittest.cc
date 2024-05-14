@@ -122,7 +122,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   }
 
   DisplayConfigurator::DisplayStateList GetDisplayStates() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DisplayConfigurator::DisplayStateList();
   }
 

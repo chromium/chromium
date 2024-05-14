@@ -180,7 +180,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -793,7 +793,7 @@ void AXNodeData::RemoveState(ax::mojom::State state_enum) {
 void AXNodeData::AddAction(ax::mojom::Action action_enum) {
   switch (action_enum) {
     case ax::mojom::Action::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     // Note: all of the attributes are included here explicitly, rather than

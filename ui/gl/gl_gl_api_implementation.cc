@@ -55,7 +55,7 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
           gl_internal_format = GL_R32F_EXT;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       return gl_internal_format;
@@ -72,7 +72,7 @@ static inline GLenum GetTexInternalFormat(const GLVersionInfo* version,
           gl_internal_format = GL_RG32F_EXT;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       return gl_internal_format;

@@ -170,7 +170,7 @@ bool IsNameExposedInAXValueForRole(ax::mojom::Role role) {
 void AXPlatformNodeMac::AddAttributeToList(const char* name,
                                            const char* value,
                                            PlatformAttributeList* attributes) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace ui

@@ -350,7 +350,7 @@ int32_t OverlayTransformToWindowTransform(gfx::OverlayTransform transform) {
       return ANATIVEWINDOW_TRANSFORM_MIRROR_HORIZONTAL |
              ANATIVEWINDOW_TRANSFORM_ROTATE_90;
   };
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ANATIVEWINDOW_TRANSFORM_IDENTITY;
 }
 

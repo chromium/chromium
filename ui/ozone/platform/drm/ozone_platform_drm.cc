@@ -85,7 +85,7 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }

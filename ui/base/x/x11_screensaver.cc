@@ -30,7 +30,7 @@ bool IsMitScreensaverActive(x11::ScreenSaver::State state) {
     case x11::ScreenSaver::State::Cycle:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -576,7 +576,7 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
       base::RecordAction(base::UserMetricsAction("SearchPlusDigitRewrite_F12"));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -624,7 +624,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("SearchBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
@@ -652,7 +652,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("AltBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -725,7 +725,7 @@ void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
                                 event_enum);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

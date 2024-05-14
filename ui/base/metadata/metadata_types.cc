@@ -180,7 +180,7 @@ void ClassMetaData::SetTypeName(const std::string_view type_name) {
 
 void MemberMetaDataBase::SetValueAsString(void* obj,
                                           const std::u16string& new_value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const char* MemberMetaDataBase::GetMemberNamePrefix() const {

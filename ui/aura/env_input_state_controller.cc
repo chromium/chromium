@@ -63,7 +63,7 @@ void EnvInputStateController::UpdateStateForTouchEvent(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   const gfx::Point& location_in_root = event.root_location();

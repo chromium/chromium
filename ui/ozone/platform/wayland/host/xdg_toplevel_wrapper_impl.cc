@@ -44,7 +44,7 @@ XDGToplevelWrapperImpl::DecorationMode ToDecorationMode(uint32_t mode) {
     case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
       return XDGToplevelWrapperImpl::DecorationMode::kServerSide;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return XDGToplevelWrapperImpl::DecorationMode::kClientSide;
   }
 }
@@ -56,7 +56,7 @@ uint32_t ToInt32(XDGToplevelWrapperImpl::DecorationMode mode) {
     case XDGToplevelWrapperImpl::DecorationMode::kServerSide:
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
   }
 }
@@ -81,7 +81,7 @@ zaura_toplevel_z_order_level ToZauraToplevelZOrderLevel(
       return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_SECURITY_SURFACE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_NORMAL;
 }
 
@@ -100,7 +100,7 @@ XDGToplevelWrapperImpl::~XDGToplevelWrapperImpl() = default;
 
 bool XDGToplevelWrapperImpl::Initialize() {
   if (!connection_->shell()) {
-    NOTREACHED() << "Wrong shell protocol";
+    NOTREACHED_IN_MIGRATION() << "Wrong shell protocol";
     return false;
   }
 
@@ -714,7 +714,7 @@ void XDGToplevelWrapperImpl::CommitSnap(
         zaura_toplevel_set_snap_secondary(aura_toplevel_.get(), value);
         return;
       case WaylandWindowSnapDirection::kNone:
-        NOTREACHED() << "Toplevel does not support UnsetSnap yet";
+        NOTREACHED_IN_MIGRATION() << "Toplevel does not support UnsetSnap yet";
         return;
     }
   }

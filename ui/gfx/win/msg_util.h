@@ -60,13 +60,13 @@
       case 0:
 
 // Replacement for atlwin.h's END_MSG_MAP for removing ATL usage.
-#define CR_END_MSG_MAP()                                      \
-  break;                                                      \
-  default:                                                    \
-    NOTREACHED() << "Invalid message map ID: " << dwMsgMapID; \
-    break;                                                    \
-    }                                                         \
-    return FALSE;                                             \
+#define CR_END_MSG_MAP()                                                   \
+  break;                                                                   \
+  default:                                                                 \
+    NOTREACHED_IN_MIGRATION() << "Invalid message map ID: " << dwMsgMapID; \
+    break;                                                                 \
+    }                                                                      \
+    return FALSE;                                                          \
     }
 
 // This macro must be last in the class since it contains a

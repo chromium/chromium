@@ -1602,7 +1602,7 @@ Display DisplayManager::GetMirroringDisplayForUnifiedDesktop(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Display();
 }
 

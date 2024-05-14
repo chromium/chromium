@@ -311,7 +311,7 @@ void SelectFileDialogImpl::OnSelectFileExecuted(
               FilePathListToSelectedFileInfoList(paths), params);
           break;
         case SELECT_NONE:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

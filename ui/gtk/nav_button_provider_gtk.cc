@@ -44,7 +44,7 @@ const char* ButtonStyleClassFromButtonType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return "close";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -62,7 +62,7 @@ GtkStateFlags GtkStateFlagsFromButtonState(
     case ui::NavButtonProvider::ButtonState::kDisabled:
       return GTK_STATE_FLAG_INSENSITIVE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GTK_STATE_FLAG_NORMAL;
   }
 }
@@ -79,7 +79,7 @@ const char* IconNameFromButtonType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return "window-close-symbolic";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

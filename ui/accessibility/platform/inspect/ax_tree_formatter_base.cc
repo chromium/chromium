@@ -74,7 +74,7 @@ std::string AXTreeFormatterBase::FormatTree(
 
 base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
     ui::AXNode* root) const {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
   return base::Value::Dict();
 }
@@ -91,7 +91,7 @@ std::string AXTreeFormatterBase::EvaluateScript(
     const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
-  NOTREACHED() << "Not implemented";
+  NOTREACHED_IN_MIGRATION() << "Not implemented";
   return {};
 }
 
@@ -162,7 +162,7 @@ void AXTreeFormatterBase::set_show_ids(bool show_ids) {
 std::string AXTreeFormatterBase::DumpInternalAccessibilityTree(
     ui::AXTreeID tree_id,
     const std::vector<AXPropertyFilter>& property_filters) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
   return std::string("");
 }

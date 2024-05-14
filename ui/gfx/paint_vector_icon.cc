@@ -158,7 +158,7 @@ class PathParser {
         return 0;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -207,7 +207,7 @@ CommandType CommandFromString(const std::string& source) {
   RETURN_IF_IS(FLIPS_IN_RTL);
 #undef RETURN_IF_IS
 
-  NOTREACHED() << "Unrecognized command: " << source;
+  NOTREACHED_IN_MIGRATION() << "Unrecognized command: " << source;
   return CLOSE;
 }
 

@@ -132,7 +132,7 @@ double Tween::CalculateValue(Tween::Type type, double state) {
       return gfx::CubicBezier(0.05, 0.7, 0.1, 1).Solve(state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return state;
 }
 

@@ -409,7 +409,7 @@ void RectangleString::AddString(const std::u16string& input) {
     while (lines.Advance())
       AddLine(lines.GetString());
   } else {
-    NOTREACHED() << "BreakIterator (lines) init failed";
+    NOTREACHED_IN_MIGRATION() << "BreakIterator (lines) init failed";
   }
 }
 
@@ -431,7 +431,7 @@ void RectangleString::AddLine(const std::u16string& line) {
       while (words.Advance())
         AddWord(words.GetString());
     } else {
-      NOTREACHED() << "BreakIterator (words) init failed";
+      NOTREACHED_IN_MIGRATION() << "BreakIterator (words) init failed";
     }
   }
   // Account for naturally-occuring newlines.
@@ -601,7 +601,7 @@ void RectangleText::AddString(const std::u16string& input) {
       AddLine(line);
     }
   } else {
-    NOTREACHED() << "BreakIterator (lines) init failed";
+    NOTREACHED_IN_MIGRATION() << "BreakIterator (lines) init failed";
   }
 }
 
@@ -649,7 +649,7 @@ void RectangleText::AddLine(const std::u16string& line) {
         }
       }
     } else {
-      NOTREACHED() << "BreakIterator (words) init failed";
+      NOTREACHED_IN_MIGRATION() << "BreakIterator (words) init failed";
     }
   }
   // Account for naturally-occuring newlines.

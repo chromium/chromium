@@ -789,7 +789,7 @@ LayerAnimationElement::ToAnimatableProperty(cc::TargetProperty::Type property) {
     case cc::TargetProperty::OPACITY:
       return OPACITY;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AnimatableProperty();
   }
 }
@@ -842,7 +842,7 @@ std::string LayerAnimationElement::AnimatablePropertiesToString(
           str.append("GRADIENT_MASK");
           break;
         case SENTINEL:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       property_count++;

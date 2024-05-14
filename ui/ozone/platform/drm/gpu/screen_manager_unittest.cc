@@ -812,7 +812,7 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
     else if (crtc->crtc() == secondary_crtc_id)
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -46,7 +46,7 @@ void AppendLoadTimeData(std::string* output) {
           IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);
 
   if (load_time_data_src.empty()) {
-    NOTREACHED() << "Unable to get loadTimeData src";
+    NOTREACHED_IN_MIGRATION() << "Unable to get loadTimeData src";
     return;
   }
 

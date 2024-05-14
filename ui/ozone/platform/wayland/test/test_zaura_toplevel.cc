@@ -52,11 +52,11 @@ void SetRestoreInfo(struct wl_client* client,
                     struct wl_resource* resource,
                     int32_t restore_session_id,
                     int32_t restore_window_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetSystemModal(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UnsetSystemModal(struct wl_client* client, struct wl_resource* resource) {
@@ -67,17 +67,17 @@ void SetRestoreInfoWithWindowIdSource(struct wl_client* client,
                                       struct wl_resource* resource,
                                       int32_t restore_session_id,
                                       const char* restore_window_id_source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetDecoration(struct wl_client* client,
                    struct wl_resource* resource,
                    uint32_t type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SetFloat(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UnSetFloat(struct wl_client* client, struct wl_resource* resource) {

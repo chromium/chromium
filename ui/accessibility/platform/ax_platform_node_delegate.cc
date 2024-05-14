@@ -138,7 +138,7 @@ AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreateTextPositionAt(
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNSWindow() {
-  NOTREACHED() << "Only available on macOS.";
+  NOTREACHED_IN_MIGRATION() << "Only available on macOS.";
   return nullptr;
 }
 
@@ -148,7 +148,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
   // overridden this method. On all other platforms, this method should not be
   // called yet. In the future, when all subclasses have moved over to be
   // implemented by AXPlatformNode, we may make this method completely virtual.
-  NOTREACHED() << "https://crbug.com/703369";
+  NOTREACHED_IN_MIGRATION() << "https://crbug.com/703369";
   return nullptr;
 }
 

@@ -57,7 +57,7 @@ std::string DumpGesturePropertyValue(GesturesProp* property) {
     case GesturePropertyProvider::PT_REAL:
       return DumpArrayProperty(property->GetDoubleValue(), "%lf");
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::string();

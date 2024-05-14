@@ -196,7 +196,7 @@ T ParseAXEnum(const char* attribute) {
   }
 
   LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return T::kNone;
 }
 

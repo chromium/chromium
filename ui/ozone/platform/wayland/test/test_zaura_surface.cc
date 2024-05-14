@@ -18,35 +18,35 @@ namespace {
 void set_frame(struct wl_client* client,
                struct wl_resource* resource,
                uint32_t type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_parent(struct wl_client* client,
                 struct wl_resource* resource,
                 struct wl_resource* parent,
                 int32_t x,
                 int32_t y) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_frame_colors(struct wl_client* client,
                       struct wl_resource* resource,
                       uint32_t active_color,
                       uint32_t inactive_color) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_startup_id(struct wl_client* client,
                     struct wl_resource* resource,
                     const char* startup_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_application_id(struct wl_client* client,
                         struct wl_resource* resource,
                         const char* application_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_client_surface_id(struct wl_client* client,
                            struct wl_resource* resource,
                            int32_t client_surface_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_occlusion_tracking(struct wl_client* client,
                             struct wl_resource* resource) {
@@ -54,13 +54,13 @@ void set_occlusion_tracking(struct wl_client* client,
 }
 void unset_occlusion_tracking(struct wl_client* client,
                               struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void activate(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void draw_attention(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_fullscreen_mode(struct wl_client* client,
                          struct wl_resource* resource,
@@ -70,7 +70,7 @@ void set_fullscreen_mode(struct wl_client* client,
 void set_client_surface_str_id(struct wl_client* client,
                                struct wl_resource* resource,
                                const char* client_surface_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_server_start_resize(struct wl_client* client,
                              struct wl_resource* resource) {
@@ -79,13 +79,13 @@ void set_server_start_resize(struct wl_client* client,
 void intent_to_snap(struct wl_client* client,
                     struct wl_resource* resource,
                     uint32_t direction) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_snap_left(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_snap_right(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void unset_snap(struct wl_client* client, struct wl_resource* resource) {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -93,43 +93,43 @@ void unset_snap(struct wl_client* client, struct wl_resource* resource) {
 void set_window_session_id(struct wl_client* client,
                            struct wl_resource* resource,
                            int32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_can_go_back(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void unset_can_go_back(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_pip(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void unset_pip(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_aspect_ratio(struct wl_client* client,
                       struct wl_resource* resource,
                       int32_t width,
                       int32_t height) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void move_to_desk(struct wl_client* client,
                   struct wl_resource* resource,
                   int32_t index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_initial_workspace(struct wl_client* client,
                            struct wl_resource* resource,
                            const char* initial_workspace) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void set_pin(struct wl_client* client,
              struct wl_resource* resource,
              int32_t trusted) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void unset_pin(struct wl_client* client, struct wl_resource* resource) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 }  // namespace
 

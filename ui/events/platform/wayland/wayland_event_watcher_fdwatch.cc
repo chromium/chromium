@@ -53,7 +53,7 @@ void WaylandEventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void WaylandEventWatcherFdWatch::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

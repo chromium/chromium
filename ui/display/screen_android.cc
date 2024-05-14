@@ -13,9 +13,10 @@ gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView view) {
   // Android cannot use this method to convert |NativeView| to |NativeWindow|
   // since it causes cyclic dependency. |GetDisplayNearestView| should be
   // overriden directly.
-  NOTREACHED() << "Wrong screen instance is used. Make sure to use the correct "
-                  "Screen instance that has proper implementation of "
-                  "|GetDisplayNearestView| for Android.";
+  NOTREACHED_IN_MIGRATION()
+      << "Wrong screen instance is used. Make sure to use the correct "
+         "Screen instance that has proper implementation of "
+         "|GetDisplayNearestView| for Android.";
   return nullptr;
 }
 
