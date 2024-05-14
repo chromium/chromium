@@ -233,9 +233,9 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         mockData[4]!.origin,
         siteList[4]!.querySelector(
                         '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Dangerous site. Chrome removed Notifications.',
-        siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+    assertTrue(
+        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+              .match('Dangerous site. Chrome|Chromium removed notifications.'));
   });
 
   test('Record Suggestions Count', async function() {
