@@ -2,15 +2,61 @@
 
 This document describes how the Chromium Commit Queue (CQ) is structured and
 managed. This is specific for the Chromium CQ. Questions about other CQs should
-be directed to infra-dev@chromium.org.
+be directed to infra-dev@chromium.org. If you find terms you're not familiar
+with in this doc, consult the infra [glossary](glossary.md).
+
 
 [TOC]
 
 ## Purpose
 
 The Chromium CQ exists to test developer changes before they land into
-[chromium/src](https://chromium.googlesource.com/chromium/src/). It runs all the
-test suites which a given CL affects, and ensures that they all pass.
+[chromium/src](https://chromium.googlesource.com/chromium/src/). It runs a
+curated set of test suites across a curated set of platforms for a given CL,
+and ensures the CL doesn't introduce any new regressions.
+
+## Modes
+
+The CQ supports a few different modes of execution. Each mode differs in what
+tests it runs and/or what happens when all those tests pass. These modes are
+described below.
+
+### Dry-Run
+
+This runs all the normal set of tests for a CL. When the dry-run has complete,
+it will simply report the results of the CQ attempt as a Gerrit comment on the
+CL and take no further action. This mode is intended to be used frequently as a
+CL is developed. Can be triggered via either the `CQ DRY RUN` button in Gerrit
+or by applying the `Commit-Queue +1` label vote. See
+[below](#what-exactly-does-the-cq-run) for the anatomy of a build on the CQ.
+
+### Full-Run
+
+Runs all the same tests as dry-run. If there are no new regressions introduced,
+the CL will be submitted into the repo. This mode should only be used when a CL
+is finalized. Can be triggered via either the `SUBMIT TO CQ` button in Gerrit or
+by applying the `Commit-Queue +2` label vote.
+
+### Mega-CQ Dry-Run
+
+This runs a much larger set of tests compared to the previous two CQ modes.
+Those run a limited & curated set of tests that optimizes for quick turn-around
+time while still catching most _but not all_ regressions. The Mega CQ, on the
+other hand, aims to catch nearly _all_ regressions regardless of cycle time.
+Consequently, the Mega CQ takes much longer, and should only be used for
+particularly risky CLs. Triggered via the `Mega CQ: Dry Run` button under the
+three-dot menu in Gerrit.
+
+For a peak under the hood, the Mega CQ determines its test coverage by including
+in it the trybot mirrors of all CI builders gardened by the main Chromium
+gardening rotations. It also unconditionally applies
+`Include-Ci-Only-Tests: true` to its builds (see [below](#options)).
+
+### Mega-CQ Full-Run
+
+Runs all the same tests as the Mega-CQ dry-run. Will submit the CL if
+everything passes. Triggered via the `Mega CQ: Submit` button under the
+three-dot menu in Gerrit.
 
 ## Options
 

@@ -59,6 +59,11 @@ infrastructure.
     list of the optional trybots and the filepaths that require them. Trybots
     that fall into that latter category can also be referred to as
     __path-based trybots__.
+  * __Mega CQ__: An alternative mode of Chromium's CQ that greatly increases the
+    amount of trybots triggered. This increases the confidence that a CL won't
+    be reverted after landing, but at the cost of much longer CQ cycle times.
+    Triggered via the `Mega CQ` buttons in Gerrit. See [CQ docs](cq.md#modes)
+    for more info.
 
 * __Builderless__: A Swarming dimension (see below for definition of a
     dimension) that simply indicates the Swarming bot doesn't exclusively run
