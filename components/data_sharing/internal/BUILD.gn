@@ -90,7 +90,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     deps += [
-      ":test_support",
+      "//components/data_sharing:test_support",
       "//url",
     ]
   }
@@ -145,28 +145,4 @@ if (is_android) {
       "//url:gurl_java",
     ]
   }
-}
-
-# TODO(b/339698854): Move these to public/test instead of internal.
-source_set("test_support") {
-  testonly = true
-
-  visibility = [
-    ":*",
-    "//chrome/test:*",
-  ]
-
-  sources = [
-    "mock_data_sharing_network_loader.cc",
-    "mock_data_sharing_network_loader.h",
-    "mock_data_sharing_service.cc",
-    "mock_data_sharing_service.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/data_sharing/public",
-    "//testing/gmock",
-    "//url",
-  ]
 }

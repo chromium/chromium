@@ -7,8 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/data_sharing/internal/mock_data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 

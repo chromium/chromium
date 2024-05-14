@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DATA_SHARING_INTERNAL_MOCK_DATA_SHARING_SERVICE_H_
-#define COMPONENTS_DATA_SHARING_INTERNAL_MOCK_DATA_SHARING_SERVICE_H_
+#ifndef COMPONENTS_DATA_SHARING_TEST_SUPPORT_MOCK_DATA_SHARING_SERVICE_H_
+#define COMPONENTS_DATA_SHARING_TEST_SUPPORT_MOCK_DATA_SHARING_SERVICE_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
@@ -57,4 +57,4 @@ class MockDataSharingService : public DataSharingService {
 
 }  // namespace data_sharing
 
-#endif  // COMPONENTS_DATA_SHARING_INTERNAL_MOCK_DATA_SHARING_SERVICE_H_
+#endif  // COMPONENTS_DATA_SHARING_TEST_SUPPORT_MOCK_DATA_SHARING_SERVICE_H_

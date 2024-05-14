@@ -10,7 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "components/data_sharing/internal/mock_data_sharing_network_loader.h"
+#include "components/data_sharing/test_support/mock_data_sharing_network_loader.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/android/gurl_android.h"
