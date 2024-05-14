@@ -989,6 +989,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.STATIC_ANIMATION_OPTIMIZATION,
                 "Optimize handling of static properties during animations."),
+        Flag.baseFeature("LazyBindJsInjection"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

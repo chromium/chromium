@@ -11172,6 +11172,21 @@
             ]
         }
     ],
+    "LazyBindJsInjection": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LazyBindJsInjection"
+                    ]
+                }
+            ]
+        }
+    ],
     "LeakSkiaEventTracerAtExit": [
         {
             "platforms": [

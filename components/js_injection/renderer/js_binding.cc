@@ -77,18 +77,26 @@ gin::WrapperInfo JsBinding::kWrapperInfo = {gin::kEmbedderNativeGin};
 base::WeakPtr<JsBinding> JsBinding::Install(
     content::RenderFrame* render_frame,
     const std::u16string& js_object_name,
-    base::WeakPtr<JsCommunication> js_communication) {
+    base::WeakPtr<JsCommunication> js_communication,
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context) {
   CHECK(!js_object_name.empty())
       << "JavaScript wrapper name shouldn't be empty";
 
-  blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
-  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
-  if (context.IsEmpty())
-    return nullptr;
+  std::optional<v8::HandleScope> handle_scope;
+  std::optional<v8::Context::Scope> context_scope;
+  // The scopes may have already been setup outside this method.
+  if (!isolate) {
+    blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
+    isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+    handle_scope.emplace(isolate);
+    context = web_frame->MainWorldScriptContext();
+    if (context.IsEmpty()) {
+      return nullptr;
+    }
 
-  v8::Context::Scope context_scope(context);
+    context_scope.emplace(context);
+  }
   // The call to CreateHandle() takes ownership of `js_binding` (but only on
   // success).
   JsBinding* js_binding =
@@ -115,12 +123,6 @@ JsBinding::JsBinding(content::RenderFrame* render_frame,
     : render_frame_(render_frame),
       js_object_name_(js_object_name),
       js_communication_(js_communication) {
-  mojom::JsToBrowserMessaging* js_to_java_messaging =
-      js_communication_->GetJsToJavaMessage(js_object_name_);
-  if (js_to_java_messaging) {
-    js_to_java_messaging->SetBrowserToJsMessaging(
-        receiver_.BindNewEndpointAndPassRemote());
-  }
 }
 
 JsBinding::~JsBinding() = default;
@@ -194,6 +196,12 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
 void JsBinding::ReleaseV8GlobalObjects() {
   listeners_.clear();
   on_message_.Reset();
+}
+
+void JsBinding::Bind(
+    mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessaging> receiver) {
+  receiver_.reset();
+  return receiver_.Bind(std::move(receiver));
 }
 
 gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
