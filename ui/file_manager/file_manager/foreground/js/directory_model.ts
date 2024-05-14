@@ -585,17 +585,16 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       const currentDirectoryOnOdfs =
           isOneDriveId(getVolume(state, currentDirectoryFileData)?.providerId);
       if (currentDirectoryOnOdfs) {
-        const {myFilesEntry} = getMyFiles(state);
-        if (!myFilesEntry) {
-          // This can only happen if local user files are disabled.
-          console.warn(
-              'ODFS disabled, but local user files disabled by policy.');
-          // TODO(b/328030489): Navigate to default display root.
-          this.store_.dispatch(changeDirectory({toKey: ''}));
-          return;
-        }
-        const myFilesRootKey = myFilesEntry.toURL();
-        this.store_.dispatch(changeDirectory({toKey: myFilesRootKey}));
+        const tracker = this.createDirectoryChangeTracker();
+        tracker.start();
+        // / Normally the default root is MyFiles, however with SkyVault, this
+        // is the volume in the Cloud (OneDrive or GoogleDrive).
+        this.volumeManager_.getDefaultDisplayRoot().then((displayRoot) => {
+          if (displayRoot && !tracker.hasChanged) {
+            this.changeDirectoryEntry(displayRoot);
+          }
+        });
+        tracker.stop();
       }
     }
   }
