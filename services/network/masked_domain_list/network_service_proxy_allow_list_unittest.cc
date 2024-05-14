@@ -171,26 +171,44 @@ TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchHttp) {
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchThirdPartyToTopLevelFrame) {
-  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
   const auto kHttpsCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
       net::SchemefulSite(GURL("https://top.com")));
+  const auto kHttpsSameSiteNak = net::NetworkAnonymizationKey::CreateSameSite(
+      net::SchemefulSite(GURL("https://top.com")));
+  const auto kHttpsThirdPartyRequestUrl =
+      GURL(base::StrCat({"https://", kTestDomain}));
 
-  EXPECT_TRUE(
-      allow_list_no_bypass_.Matches(kHttpsRequestUrl, kHttpsCrossSiteNak));
-  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
+  // Regardless of whether the NAK is cross-site, the request URL should be
+  // considered third-party because the request URL doesn't match the top-level
+  // site.
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsThirdPartyRequestUrl,
+                                            kHttpsCrossSiteNak));
+  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpsThirdPartyRequestUrl,
                                                      kHttpsCrossSiteNak));
+
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsThirdPartyRequestUrl,
+                                            kHttpsSameSiteNak));
+  EXPECT_TRUE(allow_list_first_party_bypass_.Matches(kHttpsThirdPartyRequestUrl,
+                                                     kHttpsSameSiteNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
        MatchFirstPartyToTopLevelFrameDependsOnBypass) {
-  const auto kHttpsRequestUrl = GURL(base::StrCat({"https://", kTestDomain}));
+  const auto kHttpsFirstPartyRequestUrl =
+      GURL(base::StrCat({"https://", kTestDomain}));
   const auto kHttpsSameSiteNak = net::NetworkAnonymizationKey::CreateSameSite(
-      net::SchemefulSite(kHttpsRequestUrl));
+      net::SchemefulSite(kHttpsFirstPartyRequestUrl));
+  const auto kHttpsCrossSiteNak = net::NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(kHttpsFirstPartyRequestUrl));
 
-  EXPECT_TRUE(
-      allow_list_no_bypass_.Matches(kHttpsRequestUrl, kHttpsSameSiteNak));
-  EXPECT_FALSE(allow_list_first_party_bypass_.Matches(kHttpsRequestUrl,
-                                                      kHttpsSameSiteNak));
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsFirstPartyRequestUrl,
+                                            kHttpsSameSiteNak));
+  EXPECT_FALSE(allow_list_first_party_bypass_.Matches(
+      kHttpsFirstPartyRequestUrl, kHttpsSameSiteNak));
+  EXPECT_TRUE(allow_list_no_bypass_.Matches(kHttpsFirstPartyRequestUrl,
+                                            kHttpsCrossSiteNak));
+  EXPECT_FALSE(allow_list_first_party_bypass_.Matches(
+      kHttpsFirstPartyRequestUrl, kHttpsCrossSiteNak));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest,
