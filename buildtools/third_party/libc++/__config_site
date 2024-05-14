@@ -43,6 +43,15 @@
 #define _LIBCPP_INSTRUMENTED_WITH_ASAN
 
 // PSTL backends
+/* #undef _LIBCPP_PSTL_BACKEND_SERIAL */
+#if defined(__APPLE__)
+#define _LIBCPP_PSTL_BACKEND_LIBDISPATCH
+#else
+#define _LIBCPP_PSTL_BACKEND_THREAD
+#endif
+
+// PSTL backends, old spelling
+// TODO(thakis): Remove these after the next libc++ roll is in.
 /* #undef _LIBCPP_PSTL_CPU_BACKEND_SERIAL */
 #if defined(__APPLE__)
 #define _LIBCPP_PSTL_CPU_BACKEND_LIBDISPATCH
