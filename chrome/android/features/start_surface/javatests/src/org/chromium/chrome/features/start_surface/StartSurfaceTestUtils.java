@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
@@ -386,19 +387,20 @@ public class StartSurfaceTestUtils {
         TabPersistentStore.TabModelMetadata incognitoInfo =
                 new TabPersistentStore.TabModelMetadata(0);
 
-        byte[] listData = TabPersistentStore.serializeMetadata(normalInfo, incognitoInfo);
+        TabPersistentStore.TabModelSelectorMetadata selectorMetaData =
+                new TabPersistentStore.TabModelSelectorMetadata(normalInfo, incognitoInfo);
 
+        TabPersistentStore.saveTabModelPrefs(normalInfo, incognitoInfo, 0, ActiveTabState.OTHER);
         File metadataFile =
                 new File(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
-        FileOutputStream output = new FileOutputStream(metadataFile);
-        output.write(listData);
-        output.close();
+        TabPersistentStore.saveListToFile(metadataFile, selectorMetaData);
     }
 
     /**
      * Creates a Tab state metadata file without creating Tab state files for the given Tab's info.
+     *
      * @param tabIds All the Tab IDs in the normal tab model.
      * @param urls All the Tab URLs in the normal tab model.
      * @param selectedIndex The selected index of normal tab model.

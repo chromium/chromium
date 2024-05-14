@@ -20,8 +20,6 @@ import android.text.TextUtils;
 
 import androidx.test.filters.SmallTest;
 
-import java.util.List;
-import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -59,6 +58,7 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for the tab persistent store logic. */
@@ -334,7 +334,7 @@ public class TabPersistentStoreUnitTest {
     public void testSerializeTabModelSelector() throws IOException {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, false);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -380,7 +380,7 @@ public class TabPersistentStoreUnitTest {
     public void testWithoutSkipNonActiveNtps() throws IOException {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, false);
 
         assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
         assertEquals(
@@ -407,7 +407,7 @@ public class TabPersistentStoreUnitTest {
     public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() throws IOException {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, true);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -430,7 +430,7 @@ public class TabPersistentStoreUnitTest {
     public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() throws IOException {
         setupSerializationTestMocks();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, true);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -455,7 +455,7 @@ public class TabPersistentStoreUnitTest {
             throws IOException {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, true);
 
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -480,7 +480,7 @@ public class TabPersistentStoreUnitTest {
             throws IOException {
         setupSerializationTestMocksWithGroupedAndNavigableNtps();
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, true);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, true);
 
         assertEquals("Incorrect index for regular", 1, metadata.normalModelMetadata.index);
         assertEquals(
@@ -522,7 +522,7 @@ public class TabPersistentStoreUnitTest {
         tabRestoreDetails.add(unknownTabRestoreDetails);
 
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(
+                TabPersistentStore.saveTabModelSelectorMetadata(
                         mTabModelSelector, tabRestoreDetails, true);
         assertEquals("Incorrect index for regular", 0, metadata.normalModelMetadata.index);
         assertEquals(
@@ -579,7 +579,7 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
 
         TabModelSelectorMetadata metadata =
-                TabPersistentStore.serializeTabModelSelector(mTabModelSelector, null, false);
+                TabPersistentStore.saveTabModelSelectorMetadata(mTabModelSelector, null, false);
 
         assertEquals(1, metadata.normalModelMetadata.ids.size());
         assertEquals(1, metadata.normalModelMetadata.urls.size());

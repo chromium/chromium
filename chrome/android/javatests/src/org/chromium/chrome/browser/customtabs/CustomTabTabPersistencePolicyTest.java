@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
@@ -68,7 +69,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for the Custom Tab persistence logic. */
@@ -299,23 +299,18 @@ public class CustomTabTabPersistencePolicyTest {
 
         // Create a tab model and associated tabs. Ensure it is not marked for deletion as it is
         // new enough.
-        byte[] data =
+        TabModelSelectorMetadata data =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
-                        new Callable<byte[]>() {
-                            @Override
-                            public byte[] call() throws Exception {
-                                TabModelSelectorImpl selectorImpl =
-                                        buildTestTabModelSelector(new int[] {111, 222, 333}, null);
-                                return TabPersistentStore.serializeTabModelSelector(
-                                                selectorImpl, null, false)
-                                        .listData;
-                            }
+                        () -> {
+                            TabModelSelectorImpl selectorImpl =
+                                    buildTestTabModelSelector(new int[] {111, 222, 333}, null);
+                            return TabPersistentStore.saveTabModelSelectorMetadata(
+                                    selectorImpl, null, false);
                         });
         FileOutputStream fos = null;
         File metadataFile = new File(stateDirectory, TabPersistentStore.getMetadataFileName("3"));
         try {
-            fos = new FileOutputStream(metadataFile);
-            fos.write(data);
+            TabPersistentStore.saveListToFile(metadataFile, data);
         } finally {
             StreamUtil.closeQuietly(fos);
         }
