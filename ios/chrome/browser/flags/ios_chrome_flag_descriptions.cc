@@ -893,11 +893,6 @@ const char kPrivacyGuideIosDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "
     "privacy settings.";
 
-const char kIdleTimeoutPoliciesName[] =
-    "IdleTimeout and IdleTimeoutActions Policies";
-const char kIdleTimeoutPoliciesDescription[] =
-    "Enable IdleTimeout and IdleTimeoutActions enterprise policies.";
-
 const char kIPHPriceNotificationsWhileBrowsingName[] =
     "Price Tracking IPH Display";
 const char kIPHPriceNotificationsWhileBrowsingDescription[] =

@@ -4988,11 +4988,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "idle-timeout-policies",
-    "owners": ["esalma@google.com", "cbe-magic@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "ignore-gpu-blocklist",
     "owners": [ "kbr@chromium.org", "zmo@chromium.org" ],
     // A debugging flag intended for end-users where there may not be any other

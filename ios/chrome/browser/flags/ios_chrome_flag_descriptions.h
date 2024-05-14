@@ -420,11 +420,6 @@ extern const char kFullscreenImprovementDescription[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 
-// Title and description for the flag to enable IdleTimeout and
-// IdleTimeoutActions policies.
-extern const char kIdleTimeoutPoliciesName[];
-extern const char kIdleTimeoutPoliciesDescription[];
-
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
 extern const char kFullscreenSmoothScrollingName[];
