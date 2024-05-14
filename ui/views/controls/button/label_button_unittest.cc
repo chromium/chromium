@@ -549,22 +549,26 @@ TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
   const int image_size = font_list.GetHeight();
   const gfx::ImageSkia image = gfx::test::CreateImageSkia(image_size);
   ASSERT_EQ(font_list.GetHeight(), image.width());
+  gfx::Insets button_insets = button()->GetInsets();
+  const int unclamped_size_without_label =
+      image.width() + image_spacing + button_insets.width();
 
   button()->SetImageModel(Button::STATE_NORMAL,
                           ui::ImageModel::FromImageSkia(image));
   button()->SetImageCentered(false);
   button()->SetMaxSize(
-      gfx::Size(image.width() + image_spacing + text_wrap_width, 0));
+      gfx::Size(unclamped_size_without_label + text_wrap_width, 0));
 
-  gfx::Insets button_insets = button()->GetInsets();
   gfx::Size preferred_size = button()->GetPreferredSize({});
   preferred_size.set_height(
       button()->GetHeightForWidth(preferred_size.width()));
   button()->SetSize(preferred_size);
   views::test::RunScheduledLayout(button());
 
+  gfx::Size label_width = button()->label()->GetPreferredSize(
+      views::SizeBounds(text_wrap_width, {}));
   EXPECT_EQ(preferred_size.width(),
-            image.width() + image_spacing + text_wrap_width);
+            unclamped_size_without_label + label_width.width());
   EXPECT_EQ(preferred_size.height(),
             font_list.GetHeight() * 2 + button_insets.height());
 

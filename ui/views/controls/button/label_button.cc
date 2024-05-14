@@ -318,15 +318,14 @@ gfx::Size LabelButton::CalculatePreferredSize(
   // Account for the label only when the button is not shrinking down to hide
   // the label entirely.
   if (!shrinking_down_label_) {
-    if (max_size_.width() > 0) {
-      if (label_->GetMultiLine())
-        label_->SetMaximumWidth(max_size_.width() - size.width());
-      else
-        label_->SetMaximumWidthSingleLine(max_size_.width() - size.width());
-    }
+    SizeBound available_width =
+        max_size_.width() > 0 ? available_size.width().min_of(max_size_.width())
+                              : available_size.width();
+    SizeBound label_available_width =
+        std::max<SizeBound>(0, available_width - size.width());
 
     const gfx::Size preferred_label_size =
-        label_->GetPreferredSize(SizeBounds(label_->width(), {}));
+        label_->GetPreferredSize(SizeBounds(label_available_width, {}));
     size.Enlarge(preferred_label_size.width(), 0);
     size.SetToMax(
         gfx::Size(0, preferred_label_size.height() + GetInsets().height()));
@@ -363,23 +362,7 @@ gfx::Size LabelButton::GetMinimumSize() const {
 }
 
 int LabelButton::GetHeightForWidth(int width) const {
-  const gfx::Size size_without_label = GetUnclampedSizeWithoutLabel();
-  // Get label height for the remaining width.
-  const int label_height_with_insets =
-      label_->GetHeightForWidth(width - size_without_label.width()) +
-      GetInsets().height();
-
-  // Height is the larger of size without label and label height with insets.
-  int height = std::max(size_without_label.height(), label_height_with_insets);
-
-  height = std::max(height, GetMinSize().height());
-
-  // Clamp height to the maximum height (if valid).
-  const gfx::Size max_size = GetMaxSize();
-  if (max_size.height() > 0)
-    return std::min(max_size.height(), height);
-
-  return height;
+  return CalculatePreferredSize(SizeBounds(width, {})).height();
 }
 
 ProposedLayout LabelButton::CalculateProposedLayout(

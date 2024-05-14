@@ -91,8 +91,6 @@ class OmniboxChipButton : public views::MdTextButton {
 
   OmniboxChipTheme theme_ = OmniboxChipTheme::kLowVisibility;
 
-  int base_width_ = 0;
-
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.
   bool fully_collapsed_ = false;

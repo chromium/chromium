@@ -118,13 +118,17 @@ class ContentView : public views::LabelButton {
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    int button_width = std::min(
-        label()->GetPreferredSize(views::SizeBounds(label()->width(), {}))
-                .width() +
-            2 * kHorizontalInset + kSpaceIconLabel + kIconSize,
-        available_width_);
-    int button_height = GetHeightForWidth(button_width);
-    return gfx::Size(button_width, button_height);
+    constexpr int extra_width =
+        2 * kHorizontalInset + kSpaceIconLabel + kIconSize;
+    const views::SizeBound label_available_width =
+        std::max<views::SizeBound>(0, available_size.width() - extra_width);
+
+    const int label_width =
+        label()
+            ->GetPreferredSize(views::SizeBounds(label_available_width, {}))
+            .width();
+    return views::LabelButton::CalculatePreferredSize(views::SizeBounds(
+        std::min(label_width + extra_width, available_width_), {}));
   }
 
   ~ContentView() override = default;

@@ -78,13 +78,11 @@ void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
 }
 
 void OmniboxChipButton::AnimateCollapse(base::TimeDelta duration) {
-  base_width_ = 0;
   animation_->SetSlideDuration(duration);
   ForceAnimateCollapse();
 }
 
 void OmniboxChipButton::AnimateExpand(base::TimeDelta duration) {
-  base_width_ = 0;
   animation_->SetSlideDuration(duration);
   ForceAnimateExpand();
 }
@@ -98,17 +96,18 @@ void OmniboxChipButton::ResetAnimation(double value) {
 gfx::Size OmniboxChipButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int fixed_width = GetIconSize() + GetInsets().width();
-  const int collapsable_width =
-      label()
-          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
-          .width() +
-      kChipImagePadding + kExtraRightPadding;
+  constexpr int extra_width = kChipImagePadding + kExtraRightPadding;
+  views::SizeBound available_width = std::max<views::SizeBound>(
+      0, available_size.width() - fixed_width - extra_width);
+  const int label_width =
+      label()->GetPreferredSize(views::SizeBounds(available_width, {})).width();
+  const int collapsable_width = label_width + extra_width;
 
   const int width =
-      base_width_ +
       base::ClampRound(collapsable_width * animation_->GetCurrentValue()) +
       fixed_width;
-  return gfx::Size(width, GetHeightForWidth(width));
+  return views::LabelButton::CalculatePreferredSize(
+      views::SizeBounds(width, {}));
 }
 
 void OmniboxChipButton::OnThemeChanged() {
