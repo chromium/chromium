@@ -1,8 +1,18 @@
 /// Any ANSI color code scheme
+#[allow(clippy::exhaustive_enums)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Color {
+    /// Available 4-bit ANSI color palette codes
+    ///
+    /// The user's terminal defines the meaning of the each palette code.
     Ansi(AnsiColor),
+    /// 256 (8-bit) color support
+    ///
+    /// - `0..16` are [`AnsiColor`] palette codes
+    /// - `0..232` map to [`RgbColor`] color values
+    /// - `232..` map to [`RgbColor`] gray-scale values
     Ansi256(Ansi256Color),
+    /// 24-bit ANSI RGB color codes
     Rgb(RgbColor),
 }
 
@@ -23,7 +33,7 @@ impl Color {
 
     /// Render the ANSI code for a foreground color
     #[inline]
-    pub fn render_fg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_fg(self) -> impl core::fmt::Display + Copy {
         match self {
             Self::Ansi(color) => color.as_fg_buffer(),
             Self::Ansi256(color) => color.as_fg_buffer(),
@@ -44,7 +54,7 @@ impl Color {
 
     /// Render the ANSI code for a background color
     #[inline]
-    pub fn render_bg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_bg(self) -> impl core::fmt::Display + Copy {
         match self {
             Self::Ansi(color) => color.as_bg_buffer(),
             Self::Ansi256(color) => color.as_bg_buffer(),
@@ -64,7 +74,7 @@ impl Color {
     }
 
     #[inline]
-    pub(crate) fn render_underline(self) -> impl core::fmt::Display + Copy + Clone {
+    pub(crate) fn render_underline(self) -> impl core::fmt::Display + Copy {
         match self {
             Self::Ansi(color) => color.as_underline_buffer(),
             Self::Ansi256(color) => color.as_underline_buffer(),
@@ -122,6 +132,7 @@ impl From<(u8, u8, u8)> for Color {
 /// Available 4-bit ANSI color palette codes
 ///
 /// The user's terminal defines the meaning of the each palette code.
+#[allow(clippy::exhaustive_enums)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum AnsiColor {
@@ -191,7 +202,7 @@ impl AnsiColor {
 
     /// Render the ANSI code for a foreground color
     #[inline]
-    pub fn render_fg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_fg(self) -> impl core::fmt::Display + Copy {
         NullFormatter(self.as_fg_str())
     }
 
@@ -224,7 +235,7 @@ impl AnsiColor {
 
     /// Render the ANSI code for a background color
     #[inline]
-    pub fn render_bg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_bg(self) -> impl core::fmt::Display + Copy {
         NullFormatter(self.as_bg_str())
     }
 
@@ -335,6 +346,7 @@ impl AnsiColor {
 /// - `0..16` are [`AnsiColor`] palette codes
 /// - `0..232` map to [`RgbColor`] color values
 /// - `232..` map to [`RgbColor`] gray-scale values
+#[allow(clippy::exhaustive_structs)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct Ansi256Color(pub u8);
@@ -354,11 +366,13 @@ impl Ansi256Color {
         crate::Style::new().fg_color(Some(Color::Ansi256(self)))
     }
 
+    /// Get the raw value
     #[inline]
     pub const fn index(self) -> u8 {
         self.0
     }
 
+    /// Convert to [`AnsiColor`] when there is a 1:1 mapping
     #[inline]
     pub const fn into_ansi(self) -> Option<AnsiColor> {
         match self.index() {
@@ -382,6 +396,7 @@ impl Ansi256Color {
         }
     }
 
+    /// Losslessly convert from [`AnsiColor`]
     #[inline]
     pub const fn from_ansi(color: AnsiColor) -> Self {
         match color {
@@ -406,7 +421,7 @@ impl Ansi256Color {
 
     /// Render the ANSI code for a foreground color
     #[inline]
-    pub fn render_fg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_fg(self) -> impl core::fmt::Display + Copy {
         self.as_fg_buffer()
     }
 
@@ -420,7 +435,7 @@ impl Ansi256Color {
 
     /// Render the ANSI code for a background color
     #[inline]
-    pub fn render_bg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_bg(self) -> impl core::fmt::Display + Copy {
         self.as_bg_buffer()
     }
 
@@ -456,6 +471,7 @@ impl From<AnsiColor> for Ansi256Color {
 }
 
 /// 24-bit ANSI RGB color codes
+#[allow(clippy::exhaustive_structs)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RgbColor(pub u8, pub u8, pub u8);
 
@@ -474,16 +490,19 @@ impl RgbColor {
         crate::Style::new().fg_color(Some(Color::Rgb(self)))
     }
 
+    /// Red
     #[inline]
     pub const fn r(self) -> u8 {
         self.0
     }
 
+    /// Green
     #[inline]
     pub const fn g(self) -> u8 {
         self.1
     }
 
+    /// Blue
     #[inline]
     pub const fn b(self) -> u8 {
         self.2
@@ -491,7 +510,7 @@ impl RgbColor {
 
     /// Render the ANSI code for a foreground color
     #[inline]
-    pub fn render_fg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_fg(self) -> impl core::fmt::Display + Copy {
         self.as_fg_buffer()
     }
 
@@ -509,7 +528,7 @@ impl RgbColor {
 
     /// Render the ANSI code for a background color
     #[inline]
-    pub fn render_bg(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_bg(self) -> impl core::fmt::Display + Copy {
         self.as_bg_buffer()
     }
 
@@ -592,7 +611,10 @@ impl DisplayBuffer {
     #[inline]
     fn as_str(&self) -> &str {
         // SAFETY: Only `&str` can be written to the buffer
-        unsafe { core::str::from_utf8_unchecked(&self.buffer[0..self.len]) }
+        #[allow(unsafe_code)]
+        unsafe {
+            core::str::from_utf8_unchecked(&self.buffer[0..self.len])
+        }
     }
 
     #[inline]

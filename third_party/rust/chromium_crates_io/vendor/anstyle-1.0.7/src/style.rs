@@ -101,7 +101,7 @@ impl Style {
     ///
     /// `Style` also implements `Display` directly, so calling this method is optional.
     #[inline]
-    pub fn render(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render(self) -> impl core::fmt::Display + Copy {
         StyleDisplay(self)
     }
 
@@ -150,7 +150,7 @@ impl Style {
     ///
     /// Unlike [`Reset::render`][crate::Reset::render], this will elide the code if there is nothing to reset.
     #[inline]
-    pub fn render_reset(self) -> impl core::fmt::Display + Copy + Clone {
+    pub fn render_reset(self) -> impl core::fmt::Display + Copy {
         if self != Self::new() {
             RESET
         } else {
@@ -289,27 +289,32 @@ impl Style {
 
 /// # Reflection
 impl Style {
+    /// Get the foreground color
     #[inline]
     pub const fn get_fg_color(self) -> Option<crate::Color> {
         self.fg
     }
 
+    /// Get the background color
     #[inline]
+    #[allow(missing_docs)]
     pub const fn get_bg_color(self) -> Option<crate::Color> {
         self.bg
     }
 
     #[inline]
+    #[allow(missing_docs)]
     pub const fn get_underline_color(self) -> Option<crate::Color> {
         self.underline
     }
 
     #[inline]
+    #[allow(missing_docs)]
     pub const fn get_effects(self) -> crate::Effects {
         self.effects
     }
 
-    /// Check if no effects are enabled
+    /// Check if no styling is enabled
     #[inline]
     pub const fn is_plain(self) -> bool {
         self.fg.is_none()
@@ -395,7 +400,7 @@ impl core::ops::SubAssign<crate::Effects> for Style {
 /// assert_ne!(anstyle::Effects::UNDERLINE | effects, effects);
 /// assert_ne!(anstyle::RgbColor(0, 0, 0).on_default() | effects, effects);
 /// ```
-impl core::cmp::PartialEq<crate::Effects> for Style {
+impl PartialEq<crate::Effects> for Style {
     #[inline]
     fn eq(&self, other: &crate::Effects) -> bool {
         let other = Self::from(*other);
@@ -424,6 +429,7 @@ impl core::fmt::Display for StyleDisplay {
 }
 
 #[test]
+#[cfg(feature = "std")]
 fn print_size_of() {
     use std::mem::size_of;
     dbg!(size_of::<Style>());

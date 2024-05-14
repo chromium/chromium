@@ -1,6 +1,6 @@
 [package]
 name = "anstyle"
-version = "1.0.6"
+version = "1.0.7"
 description = "ANSI text styling"
 repository = "https://github.com/rust-cli/anstyle.git"
 homepage = "https://github.com/rust-cli/anstyle"
@@ -10,6 +10,10 @@ license.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 include.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [package.metadata.release]
 tag-prefix = ""
@@ -29,3 +33,6 @@ std = []
 
 [dev-dependencies]
 lexopt = "0.3.0"
+
+[lints]
+workspace = true

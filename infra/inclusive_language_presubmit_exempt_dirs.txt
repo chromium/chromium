@@ -86,8 +86,8 @@ chrome/installer/gcapi_mac 7 2
 chrome/install_static 1 1
 chromeos/ash/components/carrier_lock 3 1
 chromeos/ash/components/network/onc 1 1
-chromeos/ash/services/ime/public/cpp/shared_lib/proto 1 1
-chromeos/ash/services/ime/public/mojom/user_data 1 1
+chromeos/ash/services/ime/public/cpp/shared_lib/proto 2 2
+chromeos/ash/services/ime/public/mojom 2 2
 chromeos/crosapi 2 1
 chromeos/lacros 2 1
 chromeos/process_proxy 7 5
@@ -156,6 +156,7 @@ components/url_formatter/spoof_checks 1 1
 components/url_formatter/spoof_checks/common_words/data 2 1
 components/webapk/android/libs/client/src/org/chromium/components/webapk/lib/client 1 1
 components/webcrypto/algorithms 2 2
+components/zucchini/testdata 26 4
 content/browser 9 4
 content/browser/bluetooth 1 1
 content/browser/device_sensors 1 1
@@ -207,7 +208,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -266,6 +267,7 @@ services/network/public/cpp 1 1
 services/network/public/mojom 2 1
 services/network/trust_tokens 1 1
 services/service_manager/tests/connect 3 1
+services/test/data/passage_embeddings 5 1
 services/tracing/perfetto 1 1
 services/tracing/public/mojom 1 1
 storage/browser/database 1 1
@@ -388,8 +390,7 @@ third_party/blink/renderer/core/layout 1 1
 third_party/blink/renderer/core/layout/inline 2 2
 third_party/blink/renderer/core/permissions_policy 1 1
 third_party/blink/renderer/core/resize_observer 1 1
-third_party/blink/renderer/core/script 1 1
-third_party/blink/renderer/modules/accessibility 5 2
+third_party/blink/renderer/modules/accessibility 4 2
 third_party/blink/renderer/modules/ad_auction 2 1
 third_party/blink/renderer/modules/badging 1 1
 third_party/blink/renderer/modules/canvas/canvas2d 1 1
@@ -622,7 +623,6 @@ third_party/polymer/v3_0/components-chromium/neon-animation 5 5
 third_party/polymer/v3_0/components-chromium/neon-animation/animations 2 2
 third_party/polymer/v3_0/components-chromium/paper-progress 1 1
 third_party/polymer/v3_0/components-chromium/paper-spinner 3 3
-third_party/polymer/v3_0/components-chromium/paper-styles 1 1
 third_party/polymer/v3_0/components-chromium/paper-tooltip 1 1
 third_party/polymer/v3_0/components-chromium/polymer 7 1
 third_party/polymer/v3_0/components-chromium/polymer/lib/elements 4 1
@@ -650,7 +650,7 @@ third_party/pyjson5/src 1 1
 third_party/pylint/pylint 8 2
 third_party/qcms 1 1
 third_party/rust/chromium_crates_io/vendor/aho-corasick-1.1.3/.github/workflows 5 1
-third_party/rust/chromium_crates_io/vendor/anstyle-1.0.6 1 1
+third_party/rust/chromium_crates_io/vendor/anstyle-1.0.7 1 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.82 2 1
 third_party/rust/chromium_crates_io/vendor/anyhow-1.0.82/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/base64-0.13.1 1 1
@@ -791,6 +791,7 @@ third_party/wpt_tools/wpt/tools/third_party/atomicwrites 3 1
 third_party/wpt_tools/wpt/tools/third_party/html5lib 1 1
 third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/pytest_mozlog 1 1
 third_party/wpt_tools/wpt/tools/third_party_modified/mozlog/mozlog/unstructured 1 1
+third_party/wpt_tools/wpt/tools/third_party/websockets/src/websockets/legacy 3 1
 third_party/wpt_tools/wpt/tools/wpt 6 3
 third_party/wpt_tools/wpt/tools/wptrunner 1 1
 third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/browsers 1 1
@@ -800,13 +801,12 @@ third_party/xcbproto 2 1
 third_party/xcbproto/src/src 2 1
 third_party/zlib/contrib/minizip 2 2
 third_party/zlib/patches 2 2
-tools 4 2
+tools 1 1
 tools/android 1 1
 tools/android/touch_replay_benchmark 1 1
 tools/binary_size 1 1
 tools/binary_size/libsupersize 17 6
 tools/binary_size/libsupersize/testdata 4 1
-tools/bisect 3 1
 tools/checkperms 1 1
 tools/crates/gnrt 1 1
 tools/cygprofile 1 1
@@ -834,6 +834,7 @@ tools/resources 1 1
 tools/rust 2 2
 tools/symsrc 1 1
 tools/usb_gadget 1 1
+tools/utr 1 1
 tools/vim 1 1
 tools/web_bluetooth 1 1
 tools/win/RetrieveSymbols 1 1

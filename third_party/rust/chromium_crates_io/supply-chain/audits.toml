@@ -94,6 +94,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.4 -> 1.0.6"
 
+[[audits.anstyle]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.6 -> 1.0.7"
+
 [[audits.anyhow]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
